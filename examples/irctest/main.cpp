@@ -26,6 +26,7 @@
  * $Id$
  */
 
+#include <QtCore>
 #include "ircsession.h"
 
 #if 0
@@ -204,9 +205,9 @@ void event_numeric (irc_session_t * session, unsigned int event, const char * or
 
 #endif
 
-int main (int argc, char **argv)
+int main (int argc, char* argv[])
 {
-    //QCoreApplication app(argc, argv);
+    QCoreApplication app(argc, argv);
 
     if (argc < 4)
     {
@@ -223,12 +224,12 @@ int main (int argc, char **argv)
     IrcSession session;
     session.setAutoJoinChannels(channels);
 
-    if (!session.connectToServer(argv[1], 6667, "", argv[2], "", ""))
+    if (!session.connectToServer(argv[1], 6667, "", argv[2], "nobody", "reality"))
     {
         qWarning("Could not connect: %s", qPrintable(session.errorString()));
         return 1;
     }
 
-    session.run();
+    session.exec();
     return 0;
 }
