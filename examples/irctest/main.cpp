@@ -28,182 +28,120 @@
 
 #include <QtCore>
 #include "ircsession.h"
+#include "irchandler.h"
 
-#if 0
-void event_join (irc_session_t * session, const char * event, const char * origin, const char ** params, unsigned int count)
+class TestIrcHandler : public IrcHandler
 {
-    dump_event (session, event, origin, params, count);
-    irc_cmd_user_mode (session, "+i");
-    irc_cmd_msg (session, params[0], "Hi all");
+protected:
+    virtual void connected();
+    virtual void nickChanged(const QString& origin, const QString& nick);
+    virtual void quit(const QString& origin, const QString& message);
+    virtual void joined(const QString& origin, const QString& channel);
+    virtual void parted(const QString& origin, const QString& channel, const QString& message);
+    virtual void channelModeChanged(const QString& origin, const QString& channel, const QString& mode, const QString& args);
+    virtual void userModeChanged(const QString& origin, const QString& mode);
+    virtual void topicChanged(const QString& origin, const QString& channel, const QString& topic);
+    virtual void kicked(const QString& origin, const QString& channel, const QString& nick, const QString& message);
+    virtual void channelMessageReceived(const QString& origin, const QString& channel, const QString& message);
+    virtual void privateMessageReceived(const QString& origin, const QString& receiver, const QString& message);
+    virtual void noticeReceived(const QString& origin, const QString& receiver, const QString& message);
+    virtual void invited(const QString& origin, const QString& nick, const QString& channel);
+    virtual void ctcpRequestReceived(const QString& origin, const QString& message);
+    virtual void ctcpReplyReceived(const QString& origin, const QString& message);
+    virtual void ctcpActionReceived(const QString& origin, const QString& message);
+    virtual void unknownMessageReceived(const QString& origin, const QStringList& params);
+    virtual void numericMessageReceived(const QString& origin, const QStringList& params);
+};
+
+void TestIrcHandler::connected()
+{
+    qDebug() << "connected:";
 }
 
-
-void event_connect (irc_session_t * session, const char * event, const char * origin, const char ** params, unsigned int count)
+void TestIrcHandler::nickChanged(const QString& origin, const QString& nick)
 {
-    irc_ctx_t * ctx = (irc_ctx_t *) irc_get_ctx (session);
-    dump_event (session, event, origin, params, count);
-
-    irc_cmd_join (session, ctx->channel, 0);
+    qDebug() << "nick:" << origin << nick;
 }
 
-
-void event_privmsg (irc_session_t * session, const char * event, const char * origin, const char ** params, unsigned int count)
+void TestIrcHandler::quit(const QString& origin, const QString& message)
 {
-    dump_event (session, event, origin, params, count);
-
-    printf ("'%s' said me (%s): %s\n",
-        origin ? origin : "someone",
-        params[0], params[1] );
+    qDebug() << "quit:" << origin << message;
 }
 
-
-void dcc_recv_callback (irc_session_t * session, irc_dcc_t id, int status, void * ctx, const char * data, unsigned int length)
+void TestIrcHandler::joined(const QString& origin, const QString& channel)
 {
-    static int count = 1;
-    char buf[12];
-
-    switch (status)
-    {
-    case LIBIRC_ERR_CLOSED:
-        printf ("DCC %d: chat closed\n", id);
-        break;
-
-    case 0:
-        if ( !data )
-        {
-            printf ("DCC %d: chat connected\n", id);
-            irc_dcc_msg (session, id, "Hehe");
-        }
-        else
-        {
-            printf ("DCC %d: %s\n", id, data);
-            sprintf (buf, "DCC [%d]: %d", id, count++);
-            irc_dcc_msg (session, id, buf);
-        }
-        break;
-
-    default:
-        printf ("DCC %d: error %s\n", id, irc_strerror(status));
-        break;
-    }
+    qDebug() << "join:" << origin << channel;
 }
 
-
-void dcc_file_recv_callback (irc_session_t * session, irc_dcc_t id, int status, void * ctx, const char * data, unsigned int length)
+void TestIrcHandler::parted(const QString& origin, const QString& channel, const QString& message)
 {
-    if ( status == 0 && length == 0 )
-    {
-        printf ("File sent successfully\n");
-
-        if ( ctx )
-            fclose ((FILE*) ctx);
-    }
-    else if ( status )
-    {
-        printf ("File sent error: %d\n", status);
-
-        if ( ctx )
-            fclose ((FILE*) ctx);
-    }
-    else
-    {
-        if ( ctx )
-            fwrite (data, 1, length, (FILE*) ctx);
-        printf ("File sent progress: %d\n", length);
-    }
+    qDebug() << "part:" << origin << channel << message;
 }
 
-
-void event_channel (irc_session_t * session, const char * event, const char * origin, const char ** params, unsigned int count)
+void TestIrcHandler::channelModeChanged(const QString& origin, const QString& channel, const QString& mode, const QString& args)
 {
-    char nickbuf[128];
-
-    if ( count != 2 )
-        return;
-
-    printf ("'%s' said in channel %s: %s\n",
-        origin ? origin : "someone",
-        params[0], params[1] );
-
-    if ( !origin )
-        return;
-
-    irc_target_get_nick (origin, nickbuf, sizeof(nickbuf));
-
-    if ( !strcmp (params[1], "quit") )
-        irc_cmd_quit (session, "of course, Master!");
-
-    if ( !strcmp (params[1], "help") )
-    {
-        irc_cmd_msg (session, params[0], "quit, help, dcc chat, dcc send, ctcp");
-    }
-
-    if ( !strcmp (params[1], "ctcp") )
-    {
-        irc_cmd_ctcp_request (session, nickbuf, "PING 223");
-        irc_cmd_ctcp_request (session, nickbuf, "FINGER");
-        irc_cmd_ctcp_request (session, nickbuf, "VERSION");
-        irc_cmd_ctcp_request (session, nickbuf, "TIME");
-    }
-
-    if ( !strcmp (params[1], "dcc chat") )
-    {
-        irc_dcc_t dccid;
-        irc_dcc_chat (session, 0, nickbuf, dcc_recv_callback, &dccid);
-        printf ("DCC chat ID: %d\n", dccid);
-    }
-
-    if ( !strcmp (params[1], "dcc send") )
-    {
-        irc_dcc_t dccid;
-        irc_dcc_sendfile (session, 0, nickbuf, "irctest.c", dcc_file_recv_callback, &dccid);
-        printf ("DCC send ID: %d\n", dccid);
-    }
-
-    if ( !strcmp (params[1], "topic") )
-        irc_cmd_topic (session, params[0], 0);
-    else if ( strstr (params[1], "topic ") == params[1] )
-        irc_cmd_topic (session, params[0], params[1] + 6);
-
-    if ( strstr (params[1], "mode ") == params[1] )
-        irc_cmd_channel_mode (session, params[0], params[1] + 5);
-
-    if ( strstr (params[1], "nick ") == params[1] )
-        irc_cmd_nick (session, params[1] + 5);
-
-    if ( strstr (params[1], "whois ") == params[1] )
-        irc_cmd_whois (session, params[1] + 5);
+    qDebug() << "channel_mode:" << origin << channel << mode << args;
 }
 
-
-void irc_event_dcc_chat (irc_session_t * session, const char * nick, const char * addr, irc_dcc_t dccid)
+void TestIrcHandler::userModeChanged(const QString& origin, const QString& mode)
 {
-    printf ("DCC chat [%d] requested from '%s' (%s)\n", dccid, nick, addr);
-
-    irc_dcc_accept (session, dccid, 0, dcc_recv_callback);
+    qDebug() << "user_mode:" << origin << mode;
 }
 
-
-void irc_event_dcc_send (irc_session_t * session, const char * nick, const char * addr, const char * filename, unsigned long size, irc_dcc_t dccid)
+void TestIrcHandler::topicChanged(const QString& origin, const QString& channel, const QString& topic)
 {
-    FILE * fp;
-    printf ("DCC send [%d] requested from '%s' (%s): %s (%lu bytes)\n", dccid, nick, addr, filename, size);
-
-    if ( (fp = fopen ("file", "wb")) == 0 )
-        abort();
-
-    irc_dcc_accept (session, dccid, fp, dcc_file_recv_callback);
+    qDebug() << "topic:" << origin << channel << topic;
 }
 
-void event_numeric (irc_session_t * session, unsigned int event, const char * origin, const char ** params, unsigned int count)
+void TestIrcHandler::kicked(const QString& origin, const QString& channel, const QString& nick, const QString& message)
 {
-    char buf[24];
-    sprintf (buf, "%d", event);
-
-    dump_event (session, buf, origin, params, count);
+    qDebug() << "kick:" << origin << channel << nick << message;
 }
 
-#endif
+void TestIrcHandler::channelMessageReceived(const QString& origin, const QString& channel, const QString& message)
+{
+    qDebug() << "channel:" << origin << channel << message;
+}
+
+void TestIrcHandler::privateMessageReceived(const QString& origin, const QString& receiver, const QString& message)
+{
+    qDebug() << "private:" << origin << receiver << message;
+}
+
+void TestIrcHandler::noticeReceived(const QString& origin, const QString& receiver, const QString& message)
+{
+    qDebug() << "notice:" << origin << receiver << message;
+}
+
+void TestIrcHandler::invited(const QString& origin, const QString& nick, const QString& channel)
+{
+    qDebug() << "invite:" << origin << nick << channel;
+}
+
+void TestIrcHandler::ctcpRequestReceived(const QString& origin, const QString& message)
+{
+    qDebug() << "ctcp_request:" << origin << message;
+}
+
+void TestIrcHandler::ctcpReplyReceived(const QString& origin, const QString& message)
+{
+    qDebug() << "ctcp_reply:" << origin << message;
+}
+
+void TestIrcHandler::ctcpActionReceived(const QString& origin, const QString& message)
+{
+    qDebug() << "ctcp_action:" << origin << message;
+}
+
+void TestIrcHandler::unknownMessageReceived(const QString& origin, const QStringList& params)
+{
+    qDebug() << "unknown:" << origin << params;
+}
+
+void TestIrcHandler::numericMessageReceived(const QString& origin, const QStringList& params)
+{
+    qDebug() << "numeric:" << origin << params;
+}
 
 int main (int argc, char* argv[])
 {
@@ -215,13 +153,16 @@ int main (int argc, char* argv[])
         return 1;
     }
 
+    IrcSession session;
+
+    TestIrcHandler handler;
+    session.addHandler(&handler);
+
     QStringList channels;
     for (int i = 3; i < argc; ++i)
     {
         channels.append(argv[i]);
     }
-
-    IrcSession session;
     session.setAutoJoinChannels(channels);
 
     if (!session.connectToServer(argv[1], 6667, "", argv[2], "nobody", "reality"))
