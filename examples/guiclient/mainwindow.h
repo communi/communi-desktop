@@ -18,11 +18,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QtGui>
+#include <QHash>
 #include <QMainWindow>
 #include "connectdialog.h"
 
 class IrcSession;
+class MessageView;
+class QTabWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -56,10 +58,6 @@ protected slots:
 
 private slots:
     void initialize();
-    void receiveMessage(const QString& sender, const QString& receiver, const QString& message);
-    void receiveNotice(const QString& sender, const QString& receiver, const QString& message);
-    void receiveAction(const QString& sender, const QString& receiver, const QString& message);
-    void logMessage(const QString& sender, const QString& receiver, const QString& format, const QString& message);
     void partCurrentChannel();
     void tabActivated(int index);
     void moveToNextTab();
@@ -69,13 +67,16 @@ private slots:
     void send();
 
 private:
+    QString prepareTarget(const QString& sender, const QString& receiver);
+
     QWidget* centralwidget;
     QGridLayout* gridLayout;
     QTabWidget* tabWidget;
     QLineEdit* lineEdit;
     QPushButton* pushButton;
     QMenuBar* menubar;
-    QHash<QString, QTextBrowser*> channels;
+    QHash<QString, MessageView*> views;
+
     IrcSession* session;
     ConnectDialog connectDialog;
 };

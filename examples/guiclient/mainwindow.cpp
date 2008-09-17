@@ -16,9 +16,11 @@
 */
 
 #include "mainwindow.h"
+#include "messageview.h"
 #include "connectdialog.h"
 #include <ircsession.h>
 #include <irc.h>
+#include <QtGui>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), connectDialog(this)
 {
@@ -47,7 +49,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), connectDialog(thi
     connect(shortcut, SIGNAL(activated()), this, SLOT(moveToNextTab()));
 
     shortcut = new QShortcut(QKeySequence::MoveToPreviousPage, this);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(moveToPreviousPage()));
+    connect(shortcut, SIGNAL(activated()), this, SLOT(moveToPrevPage()));
 
     shortcut = new QShortcut(QKeySequence::MoveToNextPage, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(moveToNextPage()));    
@@ -71,9 +73,9 @@ bool MainWindow::eventFilter(QObject* object, QEvent* event)
 {
     if (event->type() == QEvent::KeyPress)
     {
-        QTextBrowser* browser = qobject_cast<QTextBrowser*>(object);
+        MessageView* view = qobject_cast<MessageView*>(object);
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-        if (browser && keyEvent->modifiers() == Qt::NoModifier)
+        if (view && keyEvent->modifiers() == Qt::NoModifier)
         {
             QApplication::sendEvent(lineEdit, event);
             lineEdit->setFocus();
@@ -96,70 +98,121 @@ void MainWindow::on_irc_disconnected()
 void MainWindow::on_irc_nickChanged(const QString& origin, const QString& nick)
 {
     qDebug() << "nick:" << origin << nick;
-    logMessage(origin, origin, "! %1 %2", nick);
+    foreach (MessageView* view, views)
+    {
+        bool matches = view->matches(origin);
+        bool contains = view->contains(origin);
+        if (matches || contains)
+        {
+            view->logMessage(origin, "! %1 changed nick to %2", nick);
+            if (matches)
+            {
+                views[nick] = views.take(view->receiver());
+                tabWidget->setTabText(tabWidget->indexOf(view), nick);
+                view->setReceiver(nick);
+            }
+        }
+    }
 }
 
 void MainWindow::on_irc_quit(const QString& origin, const QString& message)
 {
     qDebug() << "quit:" << origin << message;
-    if (channels.contains(origin))
-        logMessage(origin, origin, "! %1 Quit: %2", message);
-    logMessage(origin, "", "! %1 Quit: %2", message);
+    foreach (MessageView* view, views)
+    {
+        bool matches = view->matches(origin);
+        bool contains = view->contains(origin);
+        if (matches || contains)
+        {
+            view->logMessage(origin, "! %1 has quit (%2)", message);
+            if (contains)
+                view->removeNick(origin);
+        }
+    }
 }
 
 void MainWindow::on_irc_joined(const QString& origin, const QString& channel)
 {
     qDebug() << "join:" << origin << channel;
-    if (channels.contains(origin))
-        logMessage(origin, origin, "! %1 joined %2", channel);
-    logMessage(origin, channel, "! %1 %2", QString("joined %1").arg(channel));
+    prepareTarget(origin, channel);
+    foreach (MessageView* view, views)
+    {
+        bool originMatches = view->matches(origin);
+        bool channelMatches = view->matches(channel);
+        if (originMatches || channelMatches)
+        {
+            view->logMessage(origin, "! %1 joined %2", channel);
+            if (channelMatches)
+                view->addNick(origin);
+        }
+    }
 }
 
 void MainWindow::on_irc_parted(const QString& origin, const QString& channel, const QString& message)
 {
     qDebug() << "part:" << origin << channel << message;
-    if (origin != connectDialog.nick())
-        logMessage(origin, channel, "! %1 %2", QString("left %1").arg(channel));
+    prepareTarget(origin, channel);
+    foreach (MessageView* view, views)
+    {
+        bool originMatches = view->matches(origin);
+        bool channelMatches = view->matches(channel);
+        if (originMatches || channelMatches)
+        {
+            view->logMessage(origin, "! %1 parted %2", channel);
+            if (channelMatches)
+                view->removeNick(origin);
+        }
+    }
 }
 
+// TODO: check these:
 void MainWindow::on_irc_channelModeChanged(const QString& origin, const QString& channel, const QString& mode, const QString& args)
 {
     qDebug() << "channel_mode:" << origin << channel << mode << args;
-    logMessage(origin, channel, "! %1 %2", "changed the channel mode");
+    QString target = prepareTarget(origin, channel);
+    views[target]->logMessage(origin, "! %1 %2", QString("sets mode %1 %2").arg(mode).arg(args));
+    //logMessage(origin, channel, "! %1 %2", "changed the channel mode");
 }
 
 void MainWindow::on_irc_userModeChanged(const QString& origin, const QString& mode)
 {
     qDebug() << "user_mode:" << origin << mode;
-    logMessage(origin, mode, "! %1 %2", "changed the user mode");
+    QString target = prepareTarget(origin, QString());
+    views[target]->logMessage(origin, "! %1 %2", QString("sets mode %1").arg(mode));
+    //logMessage(origin, mode, "! %1 %2", "changed the user mode");
 }
 
 void MainWindow::on_irc_topicChanged(const QString& origin, const QString& channel, const QString& topic)
 {
     qDebug() << "topic:" << origin << channel << topic;
-    logMessage(origin, channel, "! %1 %2", "changed the channel topic");
+    QString target = prepareTarget(origin, channel);
+    views[target]->logMessage(origin, "! %1 %2", QString("sets topic %1").arg(topic));
+    //logMessage(origin, channel, "! %1 %2", "changed the channel topic");
 }
 
 void MainWindow::on_irc_kicked(const QString& origin, const QString& channel, const QString& nick, const QString& message)
 {
     qDebug() << "kick:" << origin << channel << nick << message;
-    logMessage(origin, channel, "! %1 %2", "kicked from channel");
+    //logMessage(origin, channel, "! %1 %2", "kicked from channel");
 }
 
 void MainWindow::on_irc_channelMessageReceived(const QString& origin, const QString& channel, const QString& message)
 {
-    receiveMessage(origin, channel, message);
+    QString target = prepareTarget(origin, channel);
+    views[target]->receiveMessage(origin, message);
 }
 
 void MainWindow::on_irc_privateMessageReceived(const QString& origin, const QString& receiver, const QString& message)
 {
-    receiveMessage(origin, receiver, message);
+    QString target = prepareTarget(origin, receiver);
+    views[target]->receiveMessage(origin, message);
 }
 
 void MainWindow::on_irc_noticeReceived(const QString& origin, const QString& receiver, const QString& message)
 {
     qDebug() << "notice:" << origin << receiver << message;
-    receiveNotice(origin, receiver, message);
+    QString target = prepareTarget(origin, receiver);
+    views[target]->receiveNotice(origin, message);
 }
 
 void MainWindow::on_irc_invited(const QString& origin, const QString& nick, const QString& channel)
@@ -180,13 +233,13 @@ void MainWindow::on_irc_ctcpReplyReceived(const QString& origin, const QString& 
 void MainWindow::on_irc_ctcpActionReceived(const QString& origin, const QString& message)
 {
     qDebug() << "ctcp_action:" << origin << message;
-    receiveAction(origin, origin, message);
+    //receiveAction(origin, origin, message);
 }
 
 void MainWindow::on_irc_unknownMessageReceived(const QString& origin, const QStringList& params)
 {
     qDebug() << "unknown:" << origin << params;
-    receiveAction(origin, origin, params.join(" "));
+    //receiveAction(origin, origin, params.join(" "));
 }
 
 void MainWindow::on_irc_numericMessageReceived(const QString& origin, uint event, const QStringList& params)
@@ -194,76 +247,39 @@ void MainWindow::on_irc_numericMessageReceived(const QString& origin, uint event
     switch (event)
     {
     case 1:
-        channels[origin] = channels.take(connectDialog.host());
+        views[origin] = views.take(connectDialog.host());
         tabWidget->setTabText(0, origin);
         break;
+
+    case 353:
+        foreach (const QString& nick, params.last().split(" "))
+        {
+            // add nicks
+        }
+        break;
+
     default:
         break;
     }
 
     qDebug() << "numeric:" << origin << event << params;
-    receiveMessage(origin, origin, params.join(" "));
+    //receiveMessage(origin, origin, params.join(" "));
 }
 
 void MainWindow::initialize()
 {
     if (connectDialog.exec())
     {
+        prepareTarget(QString(), connectDialog.host());
         session->connectToServer(connectDialog.host(), connectDialog.port(), connectDialog.nick(), "nobody", "LibIrcCLient-Qt", connectDialog.pass());
-        QMetaObject::invokeMethod(session, "exec", Qt::QueuedConnection);
-        receiveMessage(connectDialog.host(), connectDialog.host(),
-            QString("Connecting to %1:%2...").arg(connectDialog.host()).arg(connectDialog.port()));
+        QMetaObject::invokeMethod(session, "exec", Qt::QueuedConnection);        
+        //receiveMessage(connectDialog.host(), connectDialog.host(),
+            //QString("Connecting to %1:%2...").arg(connectDialog.host()).arg(connectDialog.port()));
     }
     else
     {
         qApp->quit();
     }
-}
-
-void MainWindow::receiveMessage(const QString& sender, const QString& receiver, const QString& message)
-{
-    logMessage(sender, receiver, "<%1> %2", message);
-}
-
-void MainWindow::receiveNotice(const QString& sender, const QString& receiver, const QString& message)
-{
-    logMessage(sender, receiver, "[%1] %2", message);
-}
-
-void MainWindow::receiveAction(const QString& sender, const QString& receiver, const QString& message)
-{
-    logMessage(sender, receiver, "* %1 %2", message);
-}
-
-void MainWindow::logMessage(const QString& sender, const QString& receiver, const QString& format, const QString& message)
-{
-    QString source = sender; //Irc::nickFromTarget(sender);
-    QString target = receiver; //Irc::nickFromTarget(receiver);
-
-    if (target == connectDialog.nick())
-    {
-        if (target == sender)
-            target = tabWidget->tabText(0);
-        else
-            target = sender;
-    }
-    if (target.isEmpty() || target == "AUTH")
-    {
-        target = tabWidget->tabText(0);
-    }
-
-    if (!channels.contains(target))
-    {
-        channels[target] = new QTextBrowser(tabWidget);
-        channels[target]->setFrameShape(QFrame::NoFrame);
-        channels[target]->installEventFilter(this);
-        tabWidget->addTab(channels[target], target);
-    }
-
-    channels[target]->append(format.arg(source).arg(Irc::colorStripFromMirc(message)));
-    int index = tabWidget->indexOf(channels[target]);
-    if (index != tabWidget->currentIndex())
-        tabWidget->setTabIcon(index, qApp->style()->standardIcon(QStyle::SP_DialogNoButton));
 }
 
 void MainWindow::partCurrentChannel()
@@ -274,7 +290,7 @@ void MainWindow::partCurrentChannel()
         QString text = tabWidget->tabText(index);
         if (text.startsWith('#') || text.startsWith('&'))
             session->cmdPart(tabWidget->tabText(tabWidget->currentIndex()));
-        channels.remove(text);
+        views.remove(text);
         tabWidget->currentWidget()->deleteLater();
         tabWidget->removeTab(index);
     }
@@ -303,13 +319,13 @@ void MainWindow::moveToPrevTab()
 
 void MainWindow::moveToNextPage()
 {
-    QScrollBar* scrollBar = qobject_cast<QTextBrowser*>(tabWidget->currentWidget())->verticalScrollBar();
+    QScrollBar* scrollBar = qobject_cast<MessageView*>(tabWidget->currentWidget())->verticalScrollBar();
     scrollBar->triggerAction(QScrollBar::SliderPageStepAdd);
 }
 
 void MainWindow::moveToPrevPage()
 {
-    QScrollBar* scrollBar = qobject_cast<QTextBrowser*>(tabWidget->currentWidget())->verticalScrollBar();
+    QScrollBar* scrollBar = qobject_cast<MessageView*>(tabWidget->currentWidget())->verticalScrollBar();
     scrollBar->triggerAction(QScrollBar::SliderPageStepSub);
 }
 
@@ -326,8 +342,8 @@ void MainWindow::send()
             if (msg.mid(6,1) == "#" || msg.mid(6,1) == "&")
                 session->cmdJoin(msg.mid(6));
 
-            receiveMessage(tabWidget->tabText(0), msg.mid(6), QString("you have joined %1").arg(msg.mid(6)));
-            tabWidget->setCurrentWidget(channels.value(msg.mid(6)));
+            //receiveMessage(tabWidget->tabText(0), msg.mid(6), QString("you have joined %1").arg(msg.mid(6)));
+            tabWidget->setCurrentWidget(views.value(msg.mid(6)));
         }
         else if (msg.startsWith("/me "))
         {
@@ -356,7 +372,7 @@ void MainWindow::send()
         }
         else
         {
-            receiveMessage(tabWidget->tabText(0), tabWidget->tabText(0), QString("unknown command %1"). arg(msg));
+            //receiveMessage(tabWidget->tabText(0), tabWidget->tabText(0), QString("unknown command %1"). arg(msg));
         }
     }
     else
@@ -365,8 +381,36 @@ void MainWindow::send()
                 //tabWidget->tabText(tabWidget->currentIndex()).toUtf8(), msg);
         QString receiver = tabWidget->tabText(tabWidget->currentIndex());
         session->cmdMsg(receiver, msg);
-        receiveMessage(connectDialog.nick(), receiver, msg);
+        //receiveMessage(connectDialog.nick(), receiver, msg);
     }
 
     lineEdit->clear();
+}
+
+QString MainWindow::prepareTarget(const QString& sender, const QString& receiver)
+{
+    QString target = receiver;
+
+    if (target == connectDialog.nick())
+    {
+        if (target == sender)
+            target = tabWidget->tabText(0);
+        else
+            target = sender;
+    }
+
+    if (target.isEmpty() || target == "AUTH")
+    {
+        target = tabWidget->tabText(0);
+    }
+
+    if (!views.contains(target))
+    {
+        views[target] = new MessageView(target, tabWidget);
+        views[target]->setFrameShape(QFrame::NoFrame);
+        views[target]->installEventFilter(this);
+        tabWidget->addTab(views[target], target);
+    }
+
+    return target;
 }
