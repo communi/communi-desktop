@@ -25,6 +25,7 @@
 class IrcSession;
 class MessageView;
 class QTabWidget;
+class HistoryLineEdit;
 
 class MainWindow : public QMainWindow
 {
@@ -72,7 +73,7 @@ private:
     QWidget* centralwidget;
     QGridLayout* gridLayout;
     QTabWidget* tabWidget;
-    QLineEdit* lineEdit;
+    HistoryLineEdit* lineEdit;
     QPushButton* pushButton;
     QMenuBar* menubar;
     QHash<QString, MessageView*> views;

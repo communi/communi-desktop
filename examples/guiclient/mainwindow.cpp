@@ -18,6 +18,7 @@
 #include "mainwindow.h"
 #include "messageview.h"
 #include "connectdialog.h"
+#include "historylineedit.h"
 #include <ircsession.h>
 #include <irc.h>
 #include <QtGui>
@@ -31,7 +32,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), connectDialog(thi
     pushButton = new QPushButton("&Send", centralwidget);
     gridLayout->addWidget(pushButton, 1, 1, 1, 1);
 
-    lineEdit = new QLineEdit(centralwidget);
+    lineEdit = new HistoryLineEdit(centralwidget);
     gridLayout->addWidget(lineEdit, 1, 0, 1, 1);
     setCentralWidget(centralwidget);
 
