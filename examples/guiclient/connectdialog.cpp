@@ -16,11 +16,13 @@
 */
 
 #include "connectdialog.h"
-#include <QSettings>
+#include <QtGui>
 
 ConnectDialog::ConnectDialog(QWidget* parent) : QDialog(parent)
 {
     ui.setupUi(this);
+
+    qsrand(QTime::currentTime().msec());
 
     QSettings settings;
     if (settings.contains("host"))
@@ -29,6 +31,8 @@ ConnectDialog::ConnectDialog(QWidget* parent) : QDialog(parent)
         ui.spinBoxPort->setValue(settings.value("port").toInt());
     if (settings.contains("nick"))
         ui.lineEditNick->setText(settings.value("nick").toString());
+    else
+        ui.lineEditNick->setText(ui.lineEditNick->text().arg(qrand() % 100));
     if (settings.contains("pass"))
         ui.lineEditPass->setText(settings.value("pass").toString());
 }
