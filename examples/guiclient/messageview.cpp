@@ -21,6 +21,8 @@
 MessageView::MessageView(const QString& receiver, QWidget* parent)
     : QTextBrowser(parent), mReceiver(receiver)
 {
+    setFrameShape(QFrame::NoFrame);
+    setOpenExternalLinks(true);
 }
 
 const QString& MessageView::receiver() const
@@ -67,7 +69,7 @@ void MessageView::receiveNicks(const QStringList& nicks)
 
 void MessageView::receiveMessage(const QString& sender, const QString& message)
 {
-    logMessage(sender, "<%1> %2", message);
+    logMessage(sender, "&lt;%1&gt; %2", message);
 }
 
 void MessageView::receiveNotice(const QString& sender, const QString& message)

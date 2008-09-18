@@ -61,7 +61,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), connectDialog(thi
     session = new IrcSession(this);
     session->setObjectName("irc");
     QMetaObject::connectSlotsByName(this);
-    session->addAutoJoinChannel("#communi-dev");
+    session->addAutoJoinChannel("#communi");
     session->setOption(1 << 2); // LIBIRC_OPTION_STRIPNICKS
 
     session->setParent(0);
@@ -191,13 +191,19 @@ void MainWindow::on_irc_kicked(const QString& origin, const QString& channel, co
 void MainWindow::on_irc_channelMessageReceived(const QString& origin, const QString& channel, const QString& message)
 {
     QString target = prepareTarget(origin, channel);
-    views[target]->receiveMessage(origin, message);
+    QString msg = message;
+    if (msg.contains(connectDialog.nick()))
+        msg = QString("<font color='red'>%1</font>").arg(msg);
+    views[target]->receiveMessage(origin, msg);
 }
 
 void MainWindow::on_irc_privateMessageReceived(const QString& origin, const QString& receiver, const QString& message)
 {
     QString target = prepareTarget(origin, receiver);
-    views[target]->receiveMessage(origin, message);
+    QString msg = message;
+    if (msg.contains(connectDialog.nick()))
+        msg = QString("<font color='red'>%1</font>").arg(msg);
+    views[target]->receiveMessage(origin, msg);
 }
 
 void MainWindow::on_irc_noticeReceived(const QString& origin, const QString& receiver, const QString& message)
@@ -428,7 +434,6 @@ QString MainWindow::prepareTarget(const QString& sender, const QString& receiver
     if (!views.contains(target))
     {
         views[target] = new MessageView(target, tabWidget);
-        views[target]->setFrameShape(QFrame::NoFrame);
         views[target]->installEventFilter(this);
         tabWidget->addTab(views[target], target);
         tabWidget->setCurrentIndex(tabWidget->count() - 1);
