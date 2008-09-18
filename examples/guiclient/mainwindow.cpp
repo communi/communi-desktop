@@ -97,7 +97,6 @@ void MainWindow::on_irc_disconnected()
 
 void MainWindow::on_irc_nickChanged(const QString& origin, const QString& nick)
 {
-    qDebug() << "nick:" << origin << nick;
     foreach (MessageView* view, views)
     {
         bool matches = view->matches(origin);
@@ -117,7 +116,6 @@ void MainWindow::on_irc_nickChanged(const QString& origin, const QString& nick)
 
 void MainWindow::on_irc_quit(const QString& origin, const QString& message)
 {
-    qDebug() << "quit:" << origin << message;
     foreach (MessageView* view, views)
     {
         bool matches = view->matches(origin);
@@ -150,7 +148,6 @@ void MainWindow::on_irc_joined(const QString& origin, const QString& channel)
 
 void MainWindow::on_irc_parted(const QString& origin, const QString& channel, const QString& message)
 {
-    qDebug() << "part:" << origin << channel << message;
     prepareTarget(origin, channel);
     foreach (MessageView* view, views)
     {
@@ -247,23 +244,55 @@ void MainWindow::on_irc_numericMessageReceived(const QString& origin, uint event
     switch (event)
     {
     case 1:
-        views[origin] = views.take(connectDialog.host());
-        tabWidget->setTabText(0, origin);
-        break;
-
-    case 353:
-        foreach (const QString& nick, params.last().split(" "))
         {
-            // add nicks
+            views[origin] = views.take(connectDialog.host());
+            tabWidget->setTabText(0, origin);
         }
         break;
+
+    case 332:
+        {
+            QString target = prepareTarget(QString(), params.value(1));
+            views[target]->logMessage(QString(), "%1! topic is '%2'", params.value(2));
+        }
+        return;
+
+    case 333:
+        {
+            QDateTime dateTime = QDateTime::fromTime_t(params.value(3).toInt());
+            if (dateTime.isValid())
+            {
+                QString target = prepareTarget(QString(), params.value(1));
+                views[target]->logMessage(params.value(2), "! topic set %2 by %1", dateTime.toString());
+            }
+        }
+        return;
+
+    case 353:
+        {
+            QStringList list = params;
+            list.removeAll("=");
+            list.removeAll("@");
+
+            QString target = prepareTarget(QString(), list.value(1));
+            foreach (const QString& nick, list.value(2).split(" "))
+            {
+                views[target]->addNick(nick);
+            }
+        }
+        return;
+
+    case 366:
+        return;
 
     default:
         break;
     }
 
-    qDebug() << "numeric:" << origin << event << params;
-    //receiveMessage(origin, origin, params.join(" "));
+    if (views.contains(origin))
+        views[origin]->logMessage(QString::number(event), "[%1] %2", params.join(" "));
+    else
+        qDebug() << "numeric:" << origin << event << params;
 }
 
 void MainWindow::initialize()
@@ -411,6 +440,10 @@ QString MainWindow::prepareTarget(const QString& sender, const QString& receiver
         views[target]->installEventFilter(this);
         tabWidget->addTab(views[target], target);
     }
+
+    int index = tabWidget->indexOf(views[target]);
+    if (index != tabWidget->currentIndex())
+        tabWidget->setTabIcon(index, qApp->style()->standardIcon(QStyle::SP_DialogNoButton));
 
     return target;
 }
