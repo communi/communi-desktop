@@ -52,7 +52,7 @@ protected slots:
     void on_irc_invited(const QString& origin, const QString& nick, const QString& channel);
     void on_irc_ctcpRequestReceived(const QString& origin, const QString& message);
     void on_irc_ctcpReplyReceived(const QString& origin, const QString& message);
-    void on_irc_ctcpActionReceived(const QString& origin, const QString& message);
+    void on_irc_ctcpActionReceived(const QString& origin, const QString& receiver, const QString& message);
     void on_irc_unknownMessageReceived(const QString& origin, const QStringList& params);
     void on_irc_numericMessageReceived(const QString& origin, uint event, const QStringList& params);
 

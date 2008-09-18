@@ -60,7 +60,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), connectDialog(thi
     session = new IrcSession(this);
     session->setObjectName("irc");
     QMetaObject::connectSlotsByName(this);
-    session->addAutoJoinChannel("#communi");
+    session->addAutoJoinChannel("#communi-dev");
     session->setOption(1 << 2); // LIBIRC_OPTION_STRIPNICKS
 
     session->setParent(0);
@@ -74,8 +74,7 @@ bool MainWindow::eventFilter(QObject* object, QEvent* event)
     if (event->type() == QEvent::KeyPress)
     {
         MessageView* view = qobject_cast<MessageView*>(object);
-        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-        if (view && keyEvent->modifiers() == Qt::NoModifier)
+        if (view)
         {
             QApplication::sendEvent(lineEdit, event);
             lineEdit->setFocus();
@@ -131,7 +130,6 @@ void MainWindow::on_irc_quit(const QString& origin, const QString& message)
 
 void MainWindow::on_irc_joined(const QString& origin, const QString& channel)
 {
-    qDebug() << "join:" << origin << channel;
     prepareTarget(origin, channel);
     foreach (MessageView* view, views)
     {
@@ -155,24 +153,22 @@ void MainWindow::on_irc_parted(const QString& origin, const QString& channel, co
         bool channelMatches = view->matches(channel);
         if (originMatches || channelMatches)
         {
-            view->logMessage(origin, "! %1 parted %2", channel);
+            view->logMessage(origin, "! %1 parted %2", QString("%1 (%2)").arg(channel).arg(message));
             if (channelMatches)
                 view->removeNick(origin);
         }
     }
 }
 
-// TODO: check these:
 void MainWindow::on_irc_channelModeChanged(const QString& origin, const QString& channel, const QString& mode, const QString& args)
 {
-    qDebug() << "channel_mode:" << origin << channel << mode << args;
     QString target = prepareTarget(origin, channel);
     views[target]->logMessage(origin, "! %1 %2", QString("sets mode %1 %2").arg(mode).arg(args));
-    //logMessage(origin, channel, "! %1 %2", "changed the channel mode");
 }
 
 void MainWindow::on_irc_userModeChanged(const QString& origin, const QString& mode)
 {
+    // TODO
     qDebug() << "user_mode:" << origin << mode;
     QString target = prepareTarget(origin, QString());
     views[target]->logMessage(origin, "! %1 %2", QString("sets mode %1").arg(mode));
@@ -181,16 +177,14 @@ void MainWindow::on_irc_userModeChanged(const QString& origin, const QString& mo
 
 void MainWindow::on_irc_topicChanged(const QString& origin, const QString& channel, const QString& topic)
 {
-    qDebug() << "topic:" << origin << channel << topic;
     QString target = prepareTarget(origin, channel);
-    views[target]->logMessage(origin, "! %1 %2", QString("sets topic %1").arg(topic));
-    //logMessage(origin, channel, "! %1 %2", "changed the channel topic");
+    views[target]->logMessage(origin, "! %1 %2", QString("sets topic '%1'").arg(topic));
 }
 
 void MainWindow::on_irc_kicked(const QString& origin, const QString& channel, const QString& nick, const QString& message)
 {
-    qDebug() << "kick:" << origin << channel << nick << message;
-    //logMessage(origin, channel, "! %1 %2", "kicked from channel");
+    QString target = prepareTarget(origin, channel);
+    views[target]->logMessage(origin, "! %1 %2", QString("kicked %1 (%2)").arg(nick).arg(message));
 }
 
 void MainWindow::on_irc_channelMessageReceived(const QString& origin, const QString& channel, const QString& message)
@@ -207,34 +201,37 @@ void MainWindow::on_irc_privateMessageReceived(const QString& origin, const QStr
 
 void MainWindow::on_irc_noticeReceived(const QString& origin, const QString& receiver, const QString& message)
 {
-    qDebug() << "notice:" << origin << receiver << message;
     QString target = prepareTarget(origin, receiver);
     views[target]->receiveNotice(origin, message);
 }
 
 void MainWindow::on_irc_invited(const QString& origin, const QString& nick, const QString& channel)
 {
-    qDebug() << "invite:" << origin << nick << channel;
+    MessageView* view = static_cast<MessageView*>(tabWidget->currentWidget());
+    view->logMessage(origin, "! %1 %2", QString("invited %1 to %2").arg(nick).arg(channel));
 }
 
 void MainWindow::on_irc_ctcpRequestReceived(const QString& origin, const QString& message)
 {
+    // TODO
     qDebug() << "ctcp_request:" << origin << message;
 }
 
 void MainWindow::on_irc_ctcpReplyReceived(const QString& origin, const QString& message)
 {
+    // TODO
     qDebug() << "ctcp_reply:" << origin << message;
 }
 
-void MainWindow::on_irc_ctcpActionReceived(const QString& origin, const QString& message)
+void MainWindow::on_irc_ctcpActionReceived(const QString& origin, const QString& receiver, const QString& message)
 {
-    qDebug() << "ctcp_action:" << origin << message;
-    //receiveAction(origin, origin, message);
+    QString target = prepareTarget(origin, receiver);
+    views[target]->receiveAction(origin, message);
 }
 
 void MainWindow::on_irc_unknownMessageReceived(const QString& origin, const QStringList& params)
 {
+    // TODO
     qDebug() << "unknown:" << origin << params;
     //receiveAction(origin, origin, params.join(" "));
 }
@@ -290,7 +287,7 @@ void MainWindow::on_irc_numericMessageReceived(const QString& origin, uint event
     }
 
     if (views.contains(origin))
-        views[origin]->logMessage(QString::number(event), "[%1] %2", params.join(" "));
+        views[origin]->logMessage(QString::number(event), "[%1] %2", params.last());
     else
         qDebug() << "numeric:" << origin << event << params;
 }
@@ -302,8 +299,6 @@ void MainWindow::initialize()
         prepareTarget(QString(), connectDialog.host());
         session->connectToServer(connectDialog.host(), connectDialog.port(), connectDialog.nick(), "nobody", "LibIrcCLient-Qt", connectDialog.pass());
         QMetaObject::invokeMethod(session, "exec", Qt::QueuedConnection);        
-        //receiveMessage(connectDialog.host(), connectDialog.host(),
-            //QString("Connecting to %1:%2...").arg(connectDialog.host()).arg(connectDialog.port()));
     }
     else
     {
@@ -348,13 +343,13 @@ void MainWindow::moveToPrevTab()
 
 void MainWindow::moveToNextPage()
 {
-    QScrollBar* scrollBar = qobject_cast<MessageView*>(tabWidget->currentWidget())->verticalScrollBar();
+    QScrollBar* scrollBar = static_cast<MessageView*>(tabWidget->currentWidget())->verticalScrollBar();
     scrollBar->triggerAction(QScrollBar::SliderPageStepAdd);
 }
 
 void MainWindow::moveToPrevPage()
 {
-    QScrollBar* scrollBar = qobject_cast<MessageView*>(tabWidget->currentWidget())->verticalScrollBar();
+    QScrollBar* scrollBar = static_cast<MessageView*>(tabWidget->currentWidget())->verticalScrollBar();
     scrollBar->triggerAction(QScrollBar::SliderPageStepSub);
 }
 
@@ -364,21 +359,19 @@ void MainWindow::send()
     if (msg.trimmed().isEmpty())
         return;
 
+    QString receiver = tabWidget->tabText(tabWidget->currentIndex());
+    MessageView* view = static_cast<MessageView*>(tabWidget->currentWidget());
     if (msg.startsWith('/'))
     {
         if (msg.startsWith("/join "))
         {
             if (msg.mid(6,1) == "#" || msg.mid(6,1) == "&")
                 session->cmdJoin(msg.mid(6));
-
-            //receiveMessage(tabWidget->tabText(0), msg.mid(6), QString("you have joined %1").arg(msg.mid(6)));
-            tabWidget->setCurrentWidget(views.value(msg.mid(6)));
         }
         else if (msg.startsWith("/me "))
         {
-            //emit sendMessage(IRCName(condiag.nickname().toUtf8()),
-            //        tabWidget->tabText(tabWidget->currentIndex()).toUtf8(),
-            //        QByteArray("\001ACTION " + msg.mid(4) + "\001"));
+            session->cmdMe(receiver, msg.mid(4));
+            view->receiveAction(receiver, msg.mid(4));
         }
         else if (msg.startsWith("/names"))
         {
@@ -393,7 +386,7 @@ void MainWindow::send()
         }
         else if (msg.startsWith("/raw "))
         {
-            //irc.call("raw", msg.mid(5));
+            session->sendRaw(msg.mid(5).toUtf8());
         }
         else if (msg == "/quit")
         {
@@ -401,16 +394,13 @@ void MainWindow::send()
         }
         else
         {
-            //receiveMessage(tabWidget->tabText(0), tabWidget->tabText(0), QString("unknown command %1"). arg(msg));
+            view->logMessage(QString(), "%1! unknown command %2", msg);
         }
     }
     else
     {
-        //emit sendMessage(IRCName(condiag.nickname().toUtf8()),
-                //tabWidget->tabText(tabWidget->currentIndex()).toUtf8(), msg);
-        QString receiver = tabWidget->tabText(tabWidget->currentIndex());
         session->cmdMsg(receiver, msg);
-        //receiveMessage(connectDialog.nick(), receiver, msg);
+        view->receiveMessage(connectDialog.nick(), msg);
     }
 
     lineEdit->clear();
@@ -439,6 +429,7 @@ QString MainWindow::prepareTarget(const QString& sender, const QString& receiver
         views[target]->setFrameShape(QFrame::NoFrame);
         views[target]->installEventFilter(this);
         tabWidget->addTab(views[target], target);
+        tabWidget->setCurrentIndex(tabWidget->count() - 1);
     }
 
     int index = tabWidget->indexOf(views[target]);
