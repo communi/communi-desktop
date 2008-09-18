@@ -65,9 +65,16 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), connectDialog(thi
     session->setOption(1 << 2); // LIBIRC_OPTION_STRIPNICKS
 
     session->setParent(0);
-    QThread* thread = new QThread(this);
+    thread = new QThread(this);
     session->moveToThread(thread);
     thread->start();
+}
+
+MainWindow::~MainWindow()
+{
+    session->cmdQuit();
+    thread->quit();
+    thread->wait();
 }
 
 bool MainWindow::eventFilter(QObject* object, QEvent* event)
@@ -396,7 +403,7 @@ void MainWindow::send()
         {
             session->sendRaw(msg.mid(5).toUtf8());
         }
-        else if (msg == "/quit")
+        else if (msg.startsWith("/quit"))
         {
             qApp->quit();
         }

@@ -26,6 +26,7 @@ class IrcSession;
 class MessageView;
 class QTabWidget;
 class HistoryLineEdit;
+class QThread;
 
 class MainWindow : public QMainWindow
 {
@@ -33,6 +34,7 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget* parent = 0);
+    ~MainWindow();
 
     bool eventFilter(QObject* object, QEvent* event);
 
@@ -78,6 +80,7 @@ private:
     QMenuBar* menubar;
     QHash<QString, MessageView*> views;
 
+    QThread* thread;
     IrcSession* session;
     ConnectDialog connectDialog;
 };
