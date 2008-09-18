@@ -21,8 +21,8 @@
 int main (int argc, char* argv[])
 {
     QApplication app(argc, argv);
+    app.setApplicationName("Irc");
     app.setOrganizationName("libircclient-qt.googlecode.com");
-    app.setApplicationName("guiclient");
     MainWindow window;
     window.resize(800, 600);
     window.show();

@@ -55,7 +55,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), connectDialog(thi
     shortcut = new QShortcut(QKeySequence::MoveToNextPage, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(moveToNextPage()));    
 
-    setWindowTitle("LibIrcCLient-Qt demo");
     QTimer::singleShot(0, this, SLOT(initialize()));
 
     session = new IrcSession(this);
@@ -339,6 +338,7 @@ void MainWindow::partCurrentChannel()
 void MainWindow::tabActivated(int index)
 {
     tabWidget->setTabIcon(index, QIcon());
+    setWindowFilePath(tabWidget->tabText(tabWidget->currentIndex()));
 }
 
 void MainWindow::moveToNextTab()
