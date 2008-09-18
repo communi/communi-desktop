@@ -60,6 +60,11 @@ void MessageView::removeNick(const QString& nick)
         mNicks.append(nick);
 }
 
+void MessageView::receiveNicks(const QStringList& nicks)
+{
+    append(QString("! [ %1 ]").arg(nicks.join(" ] [ ")));
+}
+
 void MessageView::receiveMessage(const QString& sender, const QString& message)
 {
     logMessage(sender, "<%1> %2", message);

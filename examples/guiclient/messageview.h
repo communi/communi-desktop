@@ -36,6 +36,7 @@ public:
     void addNick(const QString& nick);
     void removeNick(const QString& nick);
 
+    void receiveNicks(const QStringList& nicks);
     void receiveMessage(const QString& sender, const QString& message);
     void receiveNotice(const QString& sender, const QString& message);
     void receiveAction(const QString& sender, const QString& message);

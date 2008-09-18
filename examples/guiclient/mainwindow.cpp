@@ -147,7 +147,7 @@ void MainWindow::on_irc_joined(const QString& origin, const QString& channel)
 
 void MainWindow::on_irc_parted(const QString& origin, const QString& channel, const QString& message)
 {
-    prepareTarget(origin, channel);
+    //prepareTarget(origin, channel);
     foreach (MessageView* view, views)
     {
         bool originMatches = view->matches(origin);
@@ -273,7 +273,9 @@ void MainWindow::on_irc_numericMessageReceived(const QString& origin, uint event
             list.removeAll("@");
 
             QString target = prepareTarget(QString(), list.value(1));
-            foreach (const QString& nick, list.value(2).split(" "))
+            QStringList nicks = list.value(2).split(" ", QString::SkipEmptyParts);
+            views[target]->receiveNicks(nicks);
+            foreach (const QString& nick, nicks)
             {
                 views[target]->addNick(nick);
             }
@@ -364,24 +366,23 @@ void MainWindow::send()
     MessageView* view = static_cast<MessageView*>(tabWidget->currentWidget());
     if (msg.startsWith('/'))
     {
-        if (msg.startsWith("/join "))
+        if (msg.startsWith("/join ") || msg.startsWith("/j "))
         {
-            if (msg.mid(6,1) == "#" || msg.mid(6,1) == "&")
-                session->cmdJoin(msg.mid(6));
+            QString channel = msg.mid(msg.indexOf(" ") + 1);
+            if (!channel.startsWith("#") && !channel.startsWith("&"))
+                channel.prepend("#");
+            session->cmdJoin(channel);
         }
         else if (msg.startsWith("/me "))
         {
             session->cmdMe(receiver, msg.mid(4));
             view->receiveAction(receiver, msg.mid(4));
         }
-        else if (msg.startsWith("/names"))
+        else if (msg == "/who" || msg == "/names")
         {
-            //if (msg == "/names")
-            //    irc.call("NAMES", QVariant(), tabWidget->tabText(tabWidget->currentIndex()).toUtf8());
-            //else
-            //    irc.call("NAMES", QVariant(), msg.mid(7));
+            session->cmdNames(receiver);
         }
-        else if (msg == "/part")
+        else if (msg.startsWith("/part"))
         {
             partCurrentChannel();
         }
