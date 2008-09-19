@@ -85,6 +85,9 @@ MainWindow::MainWindow(QWidget* parent) :
 
 MainWindow::~MainWindow()
 {
+    QSettings settings;
+    settings.setValue("font", tabWidget->currentWidget()->font().pointSize());
+
     session->cmdQuit();
     thread->quit();
     thread->wait();
@@ -505,6 +508,13 @@ QString MainWindow::prepareTarget(const QString& sender, const QString& receiver
     if (!views.contains(target))
     {
         views[target] = new MessageView(target, tabWidget);
+        QSettings settings;
+        if (settings.contains("font"))
+        {
+            QFont font = views[target]->font();
+            font.setPointSize(settings.value("font").toInt());
+            views[target]->setFont(font);
+        }
         connect(zoomInShortcut, SIGNAL(activated()), views[target], SLOT(zoomIn()));
         connect(zoomOutShortcut, SIGNAL(activated()), views[target], SLOT(zoomOut()));
         views[target]->installEventFilter(this);
