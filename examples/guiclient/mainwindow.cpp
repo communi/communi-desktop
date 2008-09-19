@@ -274,6 +274,7 @@ void MainWindow::on_irc_unknownMessageReceived(const QString& origin, const QStr
 
 void MainWindow::on_irc_numericMessageReceived(const QString& origin, uint event, const QStringList& params)
 {
+    MessageView* currentView = static_cast<MessageView*>(tabWidget->currentWidget());
     switch (event)
     {
     case 1:
@@ -282,6 +283,48 @@ void MainWindow::on_irc_numericMessageReceived(const QString& origin, uint event
             tabWidget->setTabText(0, origin);
         }
         break;
+
+    case 311:
+        {
+            QStringList list = params;
+            list.removeAll("*");
+            currentView->logMessage(list.value(1), "! %1 is %2", QString("%1@%2 (%3)").arg(list.value(2)).arg(list.value(3)).arg(list.value(4)));
+        }
+        return;
+
+    case 312:
+        {
+            currentView->logMessage(params.value(1), "! %1 is online via %2", QString("%1 (%2)").arg(params.value(2)).arg(params.value(3)));
+        }
+        return;
+
+    case 317:
+        {
+            QTime idle = QTime().addSecs(params.value(2).toInt());
+            currentView->logMessage(params.value(1), "! %1 has been idle for %2", idle.toString());
+
+            QDateTime signon = QDateTime::fromTime_t(params.value(3).toInt());
+            currentView->logMessage(params.value(1), "! %1 has been online since %2", signon.toString());
+        }
+        return;
+
+    case 318:
+        {
+            // End of /WHOIS list.
+        }
+        return;
+
+    case 319:
+        {
+            currentView->logMessage(params.value(1), "! %1 is on channels %2", params.value(2));
+        }
+        return;
+
+    case 320:
+        {
+            currentView->logMessage(params.value(1), "! %1 %2", params.value(2));
+        }
+        return;
 
     case 332:
         {
@@ -417,6 +460,11 @@ void MainWindow::send()
         else if (msg == "/w" || msg == "/who" || msg == "/names")
         {
             session->cmdNames(receiver);
+        }
+        else if (msg.startsWith("/w ") || msg.startsWith("/who ") || msg.startsWith("/whois "))
+        {
+            QString nick = msg.mid(msg.indexOf(" ") + 1);
+            session->cmdWhois(nick);
         }
         else if (msg.startsWith("/part"))
         {
