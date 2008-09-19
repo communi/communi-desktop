@@ -53,7 +53,17 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), connectDialog(thi
     connect(shortcut, SIGNAL(activated()), this, SLOT(moveToPrevPage()));
 
     shortcut = new QShortcut(QKeySequence::MoveToNextPage, this);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(moveToNextPage()));    
+    connect(shortcut, SIGNAL(activated()), this, SLOT(moveToNextPage()));
+
+    if (QSystemTrayIcon::isSystemTrayAvailable())
+    {
+        trayIcon = new QSystemTrayIcon(this);
+        trayIcon->setIcon(QApplication::windowIcon());
+        //trayIcon->setContextMenu(ui.menuFile);
+        trayIcon->setVisible(true);
+        connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+            this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+    }
 
     QTimer::singleShot(0, this, SLOT(initialize()));
 
@@ -421,6 +431,22 @@ void MainWindow::send()
     lineEdit->clear();
 }
 
+void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    switch (reason)
+    {
+        case QSystemTrayIcon::DoubleClick:
+            setVisible(!isVisible());
+            break;
+        case QSystemTrayIcon::Trigger:
+            raise();
+            activateWindow();
+            break;
+        default:
+            break;
+    }
+}
+
 QString MainWindow::prepareTarget(const QString& sender, const QString& receiver)
 {
     QString target = receiver;
@@ -448,7 +474,7 @@ QString MainWindow::prepareTarget(const QString& sender, const QString& receiver
 
     int index = tabWidget->indexOf(views[target]);
     if (index != tabWidget->currentIndex())
-        tabWidget->setTabIcon(index, qApp->style()->standardIcon(QStyle::SP_DialogNoButton));
+        tabWidget->setTabIcon(index, QApplication::windowIcon());
 
     return target;
 }

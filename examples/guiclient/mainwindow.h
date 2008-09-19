@@ -20,6 +20,7 @@
 
 #include <QHash>
 #include <QMainWindow>
+#include <QSystemTrayIcon>
 #include "connectdialog.h"
 
 class IrcSession;
@@ -68,6 +69,7 @@ private slots:
     void moveToNextPage();
     void moveToPrevPage();
     void send();
+    void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:
     QString prepareTarget(const QString& sender, const QString& receiver);
@@ -79,6 +81,7 @@ private:
     QPushButton* pushButton;
     QMenuBar* menubar;
     QHash<QString, MessageView*> views;
+    QSystemTrayIcon* trayIcon;
 
     QThread* thread;
     IrcSession* session;
