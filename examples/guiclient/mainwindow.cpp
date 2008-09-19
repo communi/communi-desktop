@@ -37,6 +37,13 @@ MainWindow::MainWindow(QWidget* parent) :
     gridLayout->addWidget(lineEdit, 1, 0, 1, 1);
     setCentralWidget(centralwidget);
 
+    completer = new QCompleter(this);
+    completer->setWidget(this);
+    completer->setCaseSensitivity(Qt::CaseInsensitive);
+    completer->setCompletionMode(QCompleter::InlineCompletion);
+    connect(completer, SIGNAL(highlighted(QString)), this, SLOT(insertCompletion(QString)));
+
+    connect(lineEdit, SIGNAL(textEdited(QString)), this, SLOT(textEdited()));
     connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(send()));
     connect(pushButton, SIGNAL(clicked()), this, SLOT(send()));
     connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
@@ -46,7 +53,7 @@ MainWindow::MainWindow(QWidget* parent) :
 
     shortcut = new QShortcut(QKeySequence("Alt+Left"), this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(moveToPrevTab()));
-    
+
     shortcut = new QShortcut(QKeySequence("Alt+Right"), this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(moveToNextTab()));
 
@@ -55,6 +62,9 @@ MainWindow::MainWindow(QWidget* parent) :
 
     shortcut = new QShortcut(QKeySequence::MoveToNextPage, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(moveToNextPage()));
+
+    shortcut = new QShortcut(Qt::Key_Tab, this);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(autoComplete()));
 
     zoomInShortcut = new QShortcut(QKeySequence::ZoomIn, this);
     zoomOutShortcut = new QShortcut(QKeySequence::ZoomOut, this);
@@ -163,7 +173,9 @@ void MainWindow::on_irc_joined(const QString& origin, const QString& channel)
         {
             view->logMessage(origin, "! %1 joined %2", channel);
             if (channelMatches)
+            {
                 view->addNick(origin);
+            }
         }
     }
 }
@@ -403,6 +415,8 @@ void MainWindow::partCurrentChannel()
 
 void MainWindow::tabActivated(int index)
 {
+    MessageView* view = static_cast<MessageView*>(tabWidget->currentWidget());
+    completer->setModel(new QStringListModel(view->nicks(), completer));
     tabWidget->setTabIcon(index, QIcon());
     setWindowFilePath(tabWidget->tabText(tabWidget->currentIndex()));
 }
@@ -542,6 +556,46 @@ void MainWindow::alert()
         else
             trayIcon->setIcon(QIcon());
     }
+}
+
+void MainWindow::autoComplete()
+{
+    // store selection
+    int pos = lineEdit->cursorPosition();
+    int start = lineEdit->selectionStart();
+    QString selected = lineEdit->selectedText();
+
+    // select current word
+    lineEdit->cursorWordForward(false);
+    lineEdit->cursorWordBackward(true);
+    QString word = lineEdit->selectedText();
+    completer->setCompletionPrefix(word);
+
+    // restore selection
+    lineEdit->setCursorPosition(pos);
+    if (start != -1)
+        lineEdit->setSelection(start, selected.length());
+
+    // complete
+    if (!word.isEmpty())
+        completer->complete();
+}
+
+void MainWindow::textEdited()
+{
+    if (completer)
+        completer->setCompletionPrefix(QString());
+}
+
+void MainWindow::insertCompletion(const QString& completion)
+{
+    if (!completer || completer->widget() != this)
+        return;
+
+    lineEdit->cursorWordForward(false);
+    lineEdit->cursorWordBackward(true);
+    int pos = lineEdit->cursorPosition();
+    lineEdit->insert(completion + (pos == 0 ? ": " : ""));
 }
 
 QString MainWindow::prepareTarget(const QString& sender, const QString& receiver)

@@ -27,6 +27,7 @@ class IrcSession;
 class MessageView;
 class QTabWidget;
 class HistoryLineEdit;
+class QCompleter;
 class QShortcut;
 class QThread;
 
@@ -72,6 +73,9 @@ private slots:
     void send();
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void alert();
+    void autoComplete();
+    void textEdited();
+    void insertCompletion(const QString& completion);
 
 private:
     QString prepareTarget(const QString& sender, const QString& receiver);
@@ -85,6 +89,7 @@ private:
     QHash<QString, MessageView*> views;
     QSystemTrayIcon* trayIcon;
     QTimer* alertTimer;
+    QCompleter* completer;
 
     QThread* thread;
     IrcSession* session;
