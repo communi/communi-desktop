@@ -19,6 +19,7 @@
 #include "nickhighlighter.h"
 #include "irc.h"
 
+#include <QTime>
 #include <QRegExp>
 #include <QtDebug>
 
@@ -238,7 +239,8 @@ void MessageView::removeNick(const QString& nick)
 
 void MessageView::receiveNicks(const QStringList& nicks)
 {
-    append(QString("! [ %1 ]").arg(nicks.join(" ] [ ")));
+    QString msg = QString("[ %2 ]").arg(nicks.join(" ] [ "));
+    logMessage(QString(), "%1! %2", msg);
 }
 
 void MessageView::receiveMessage(const QString& sender, const QString& message)
@@ -258,5 +260,16 @@ void MessageView::receiveAction(const QString& sender, const QString& message)
 
 void MessageView::logMessage(const QString& sender, const QString& format, const QString& message)
 {
-    append(format.arg(sender).arg(processMessage(message)));
+    QString msg = format.arg(sender).arg(processMessage(message));
+    bool blue = msg.startsWith("! ");
+    bool magenta = msg.startsWith("* ");
+
+    QString time = QTime::currentTime().toString();
+    msg = QString("[%1] %2").arg(time).arg(msg);
+
+    if (blue)
+        msg = QString("<span style='color:darkblue'>%1</span>").arg(msg);
+    else if (magenta)
+        msg = QString("<span style='color:darkmagenta'>%1</span>").arg(msg);
+    append(msg);
 }

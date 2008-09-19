@@ -406,7 +406,7 @@ void MainWindow::send()
         else if (msg.startsWith("/me "))
         {
             session->cmdMe(receiver, msg.mid(4));
-            view->receiveAction(receiver, msg.mid(4));
+            view->receiveAction(connectDialog.nick(), msg.mid(4));
         }
         else if (msg == "/who" || msg == "/names")
         {
