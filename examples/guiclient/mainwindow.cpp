@@ -470,6 +470,14 @@ void MainWindow::send()
         {
             partCurrentChannel();
         }
+        else if (msg.startsWith("/topic"))
+        {
+            QString topic;
+            int idx = msg.indexOf(" ");
+            if (idx > 0)
+                topic = msg.mid(idx + 1);
+            session->cmdTopic(view->receiver(), topic);
+        }
         else if (msg.startsWith("/raw "))
         {
             session->sendRaw(msg.mid(5).toUtf8());
