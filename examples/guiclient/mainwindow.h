@@ -70,6 +70,7 @@ private slots:
     void moveToPrevPage();
     void send();
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
+    void alert();
 
 private:
     QString prepareTarget(const QString& sender, const QString& receiver);
@@ -82,6 +83,7 @@ private:
     QMenuBar* menubar;
     QHash<QString, MessageView*> views;
     QSystemTrayIcon* trayIcon;
+    QTimer* alertTimer;
 
     QThread* thread;
     IrcSession* session;

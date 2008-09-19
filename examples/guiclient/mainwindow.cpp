@@ -23,7 +23,8 @@
 #include <irc.h>
 #include <QtGui>
 
-MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), connectDialog(this)
+MainWindow::MainWindow(QWidget* parent) :
+    QMainWindow(parent), alertTimer(0), connectDialog(this)
 {
     centralwidget = new QWidget(this);
     gridLayout = new QGridLayout(centralwidget);
@@ -209,7 +210,10 @@ void MainWindow::on_irc_channelMessageReceived(const QString& origin, const QStr
     QString target = prepareTarget(origin, channel);
     QString msg = message;
     if (msg.contains(connectDialog.nick()))
-        msg = QString("<font color='red'>%1</font>").arg(msg);
+    {
+        msg = QString("<span style='color: red'>%1</span>").arg(msg);
+        alert();
+    }
     views[target]->receiveMessage(origin, msg);
 }
 
@@ -218,7 +222,10 @@ void MainWindow::on_irc_privateMessageReceived(const QString& origin, const QStr
     QString target = prepareTarget(origin, receiver);
     QString msg = message;
     if (msg.contains(connectDialog.nick()))
-        msg = QString("<font color='red'>%1</font>").arg(msg);
+    {
+        msg = QString("<span style='color: red'>%1</span>").arg(msg);
+        alert();
+    }
     views[target]->receiveMessage(origin, msg);
 }
 
@@ -444,6 +451,34 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
             break;
         default:
             break;
+    }
+}
+
+void MainWindow::alert()
+{
+    if (!alertTimer)
+    {
+        alertTimer = new QTimer(this);
+        connect(alertTimer, SIGNAL(timeout()), this, SLOT(alert()));
+    }
+
+    if (isActiveWindow())
+    {
+        alertTimer->stop();
+        trayIcon->setIcon(QApplication::windowIcon());
+    }
+    else
+    {
+        if (!alertTimer->isActive())
+        {
+            QApplication::alert(this);
+            alertTimer->start(500);
+        }
+
+        if (trayIcon->icon().isNull())
+            trayIcon->setIcon(QApplication::windowIcon());
+        else
+            trayIcon->setIcon(QIcon());
     }
 }
 
