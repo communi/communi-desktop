@@ -157,7 +157,10 @@ void MainWindow::on_irc_quit(const QString& origin, const QString& message)
         {
             view->logMessage(origin, "! %1 has quit (%2)", message);
             if (contains)
+            {
                 view->removeNick(origin);
+                tabActivated(tabWidget->currentIndex());
+            }
         }
     }
 }
@@ -175,6 +178,7 @@ void MainWindow::on_irc_joined(const QString& origin, const QString& channel)
             if (channelMatches)
             {
                 view->addNick(origin);
+                tabActivated(tabWidget->currentIndex());
             }
         }
     }
@@ -191,7 +195,10 @@ void MainWindow::on_irc_parted(const QString& origin, const QString& channel, co
         {
             view->logMessage(origin, "! %1 parted %2", QString("%1 (%2)").arg(channel).arg(message));
             if (channelMatches)
+            {
                 view->removeNick(origin);
+                tabActivated(tabWidget->currentIndex());
+            }
         }
     }
 }
@@ -369,6 +376,7 @@ void MainWindow::on_irc_numericMessageReceived(const QString& origin, uint event
             {
                 views[target]->addNick(nick);
             }
+            tabActivated(tabWidget->currentIndex());
         }
         return;
 

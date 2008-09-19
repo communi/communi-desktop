@@ -233,8 +233,12 @@ void MessageView::addNick(const QString& nick)
 
 void MessageView::removeNick(const QString& nick)
 {
-    if (!mNicks.contains(nick, Qt::CaseInsensitive))
-        mNicks.append(nick);
+    QMutableStringListIterator it(mNicks);
+    while (it.hasNext())
+    {
+        if (!it.next().compare(nick, Qt::CaseInsensitive))
+            it.remove();
+    }
 }
 
 void MessageView::receiveNicks(const QStringList& nicks)
