@@ -520,6 +520,7 @@ void MainWindow::send()
     }
 
     lineEdit->clear();
+    lineEdit->setFocus();
 }
 
 void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
