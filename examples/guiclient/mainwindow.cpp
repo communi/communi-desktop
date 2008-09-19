@@ -411,7 +411,7 @@ void MainWindow::send()
             session->cmdMe(receiver, msg.mid(4));
             view->receiveAction(connectDialog.nick(), msg.mid(4));
         }
-        else if (msg == "/who" || msg == "/names")
+        else if (msg == "/w" || msg == "/who" || msg == "/names")
         {
             session->cmdNames(receiver);
         }
