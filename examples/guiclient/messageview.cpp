@@ -16,6 +16,7 @@
 */
 
 #include "messageview.h"
+#include "nickhighlighter.h"
 #include "irc.h"
 
 #include <QRegExp>
@@ -195,6 +196,7 @@ MessageView::MessageView(const QString& receiver, QWidget* parent)
 {
     setFrameShape(QFrame::NoFrame);
     setOpenExternalLinks(true);
+    new NickHighlighter(document());
 }
 
 const QString& MessageView::receiver() const
