@@ -56,6 +56,9 @@ MainWindow::MainWindow(QWidget* parent) :
     shortcut = new QShortcut(QKeySequence::MoveToNextPage, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(moveToNextPage()));
 
+    zoomInShortcut = new QShortcut(QKeySequence::ZoomIn, this);
+    zoomOutShortcut = new QShortcut(QKeySequence::ZoomOut, this);
+
     if (QSystemTrayIcon::isSystemTrayAvailable())
     {
         trayIcon = new QSystemTrayIcon(this);
@@ -502,6 +505,8 @@ QString MainWindow::prepareTarget(const QString& sender, const QString& receiver
     if (!views.contains(target))
     {
         views[target] = new MessageView(target, tabWidget);
+        connect(zoomInShortcut, SIGNAL(activated()), views[target], SLOT(zoomIn()));
+        connect(zoomOutShortcut, SIGNAL(activated()), views[target], SLOT(zoomOut()));
         views[target]->installEventFilter(this);
         tabWidget->addTab(views[target], target);
         tabWidget->setCurrentIndex(tabWidget->count() - 1);

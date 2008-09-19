@@ -27,6 +27,7 @@ class IrcSession;
 class MessageView;
 class QTabWidget;
 class HistoryLineEdit;
+class QShortcut;
 class QThread;
 
 class MainWindow : public QMainWindow
@@ -88,6 +89,8 @@ private:
     QThread* thread;
     IrcSession* session;
     ConnectDialog connectDialog;
+    QShortcut* zoomInShortcut;
+    QShortcut* zoomOutShortcut;
 };
 
 #endif // MAINWINDOW_H
