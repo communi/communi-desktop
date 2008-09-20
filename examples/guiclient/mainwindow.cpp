@@ -234,31 +234,28 @@ void MainWindow::on_irc_kicked(const QString& origin, const QString& channel, co
 void MainWindow::on_irc_channelMessageReceived(const QString& origin, const QString& channel, const QString& message)
 {
     QString target = prepareTarget(origin, channel);
-    QString msg = message;
-    if (msg.contains(connectDialog.nick()))
-    {
-        msg = QString("<span style='color: red'>%1</span>").arg(msg);
+    bool highlight = message.contains(connectDialog.nick());
+    if (highlight)
         alert();
-    }
-    views[target]->receiveMessage(origin, msg);
+    views[target]->receiveMessage(origin, message, highlight);
 }
 
 void MainWindow::on_irc_privateMessageReceived(const QString& origin, const QString& receiver, const QString& message)
 {
     QString target = prepareTarget(origin, receiver);
-    QString msg = message;
-    if (msg.contains(connectDialog.nick()))
-    {
-        msg = QString("<span style='color: red'>%1</span>").arg(msg);
+    bool highlight = message.contains(connectDialog.nick());
+    if (highlight)
         alert();
-    }
-    views[target]->receiveMessage(origin, msg);
+    views[target]->receiveMessage(origin, message, highlight);
 }
 
 void MainWindow::on_irc_noticeReceived(const QString& origin, const QString& receiver, const QString& message)
 {
     QString target = prepareTarget(origin, receiver);
-    views[target]->receiveNotice(origin, message);
+    bool highlight = message.contains(connectDialog.nick());
+    if (highlight)
+        alert();
+    views[target]->receiveNotice(origin, message, highlight);
 }
 
 void MainWindow::on_irc_invited(const QString& origin, const QString& nick, const QString& channel)
@@ -282,7 +279,10 @@ void MainWindow::on_irc_ctcpReplyReceived(const QString& origin, const QString& 
 void MainWindow::on_irc_ctcpActionReceived(const QString& origin, const QString& receiver, const QString& message)
 {
     QString target = prepareTarget(origin, receiver);
-    views[target]->receiveAction(origin, message);
+    bool highlight = message.contains(connectDialog.nick());
+    if (highlight)
+        alert();
+    views[target]->receiveAction(origin, message, highlight);
 }
 
 void MainWindow::on_irc_unknownMessageReceived(const QString& origin, const QStringList& params)

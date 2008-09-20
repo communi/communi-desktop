@@ -247,22 +247,22 @@ void MessageView::receiveNicks(const QStringList& nicks)
     logMessage(QString(), "%1! %2", msg);
 }
 
-void MessageView::receiveMessage(const QString& sender, const QString& message)
+void MessageView::receiveMessage(const QString& sender, const QString& message, bool highlight)
 {
-    logMessage(sender, "&lt;%1&gt; %2", message);
+    logMessage(sender, "&lt;%1&gt; %2", message, highlight);
 }
 
-void MessageView::receiveNotice(const QString& sender, const QString& message)
+void MessageView::receiveNotice(const QString& sender, const QString& message, bool highlight)
 {
-    logMessage(sender, "[%1] %2", message);
+    logMessage(sender, "[%1] %2", message, highlight);
 }
 
-void MessageView::receiveAction(const QString& sender, const QString& message)
+void MessageView::receiveAction(const QString& sender, const QString& message, bool highlight)
 {
-    logMessage(sender, "* %1 %2", message);
+    logMessage(sender, "* %1 %2", message, highlight);
 }
 
-void MessageView::logMessage(const QString& sender, const QString& format, const QString& message)
+void MessageView::logMessage(const QString& sender, const QString& format, const QString& message, bool highlight)
 {
     QString msg = format.arg(sender).arg(processMessage(message));
     bool blue = msg.startsWith("! ");
@@ -271,7 +271,9 @@ void MessageView::logMessage(const QString& sender, const QString& format, const
     QString time = QTime::currentTime().toString();
     msg = QString("[%1] %2").arg(time).arg(msg);
 
-    if (blue)
+    if (highlight)
+        msg = QString("<span style='color:red'>%1</span>").arg(msg);
+    else if (blue)
         msg = QString("<span style='color:darkblue'>%1</span>").arg(msg);
     else if (magenta)
         msg = QString("<span style='color:darkmagenta'>%1</span>").arg(msg);

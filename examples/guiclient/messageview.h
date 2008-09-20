@@ -37,10 +37,10 @@ public:
     void removeNick(const QString& nick);
 
     void receiveNicks(const QStringList& nicks);
-    void receiveMessage(const QString& sender, const QString& message);
-    void receiveNotice(const QString& sender, const QString& message);
-    void receiveAction(const QString& sender, const QString& message);
-    void logMessage(const QString& sender, const QString& format, const QString& message);
+    void receiveMessage(const QString& sender, const QString& message, bool highlight = false);
+    void receiveNotice(const QString& sender, const QString& message, bool highlight = false);
+    void receiveAction(const QString& sender, const QString& message, bool highlight = false);
+    void logMessage(const QString& sender, const QString& format, const QString& message, bool highlight = false);
 
 private:
     QString mReceiver;
