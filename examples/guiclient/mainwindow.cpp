@@ -19,6 +19,7 @@
 #include "messageview.h"
 #include "connectdialog.h"
 #include "historylineedit.h"
+#include <libircclient.h>
 #include <ircsession.h>
 #include <irc.h>
 #include <QtGui>
@@ -139,7 +140,7 @@ void MainWindow::on_irc_nickChanged(const QString& origin, const QString& nick)
             view->logMessage(origin, "! %1 changed nick to %2", nick);
             if (matches)
             {
-                views[nick] = views.take(view->receiver());
+                views[nick.toLower()] = views.take(view->receiver().toLower());
                 tabWidget->setTabText(tabWidget->indexOf(view), nick);
                 view->setReceiver(nick);
             }
@@ -296,28 +297,42 @@ void MainWindow::on_irc_numericMessageReceived(const QString& origin, uint event
     MessageView* currentView = static_cast<MessageView*>(tabWidget->currentWidget());
     switch (event)
     {
-    case 1:
+    case LIBIRC_RFC_RPL_WELCOME:
         {
-            views[origin] = views.take(connectDialog.host());
+            views[origin.toLower()] = views.take(connectDialog.host().toLower());
             tabWidget->setTabText(0, origin);
         }
         break;
 
-    case 311:
+    case LIBIRC_RFC_RPL_WHOISUSER:
         {
-            QStringList list = params;
-            list.removeAll("*");
-            currentView->logMessage(list.value(1), "! %1 is %2", QString("%1@%2 (%3)").arg(list.value(2)).arg(list.value(3)).arg(list.value(4)));
+            currentView->logMessage(params.value(1), "! %1 is %2", QString("%1@%2 (%3)").arg(params.value(2)).arg(params.value(3)).arg(params.value(5)));
         }
         return;
 
-    case 312:
+    case LIBIRC_RFC_RPL_WHOISSERVER:
         {
             currentView->logMessage(params.value(1), "! %1 is online via %2", QString("%1 (%2)").arg(params.value(2)).arg(params.value(3)));
         }
         return;
 
-    case 317:
+    case LIBIRC_RFC_RPL_WHOISOPERATOR:
+        {
+            qDebug() << "numeric:" << origin << event << params;
+            Q_ASSERT(false);
+            //currentView->logMessage(params.value(1), "! %1 is online via %2", QString("%1 (%2)").arg(params.value(2)).arg(params.value(3)));
+        }
+        return;
+
+    case LIBIRC_RFC_RPL_WHOWASUSER:
+        {
+            qDebug() << "numeric:" << origin << event << params;
+            Q_ASSERT(false);
+            //currentView->logMessage(params.value(1), "! %1 is online via %2", QString("%1 (%2)").arg(params.value(2)).arg(params.value(3)));
+        }
+        return;
+
+    case LIBIRC_RFC_RPL_WHOISIDLE:
         {
             QTime idle = QTime().addSecs(params.value(2).toInt());
             currentView->logMessage(params.value(1), "! %1 has been idle for %2", idle.toString());
@@ -327,13 +342,13 @@ void MainWindow::on_irc_numericMessageReceived(const QString& origin, uint event
         }
         return;
 
-    case 318:
+    case LIBIRC_RFC_RPL_ENDOFWHOIS:
         {
             // End of /WHOIS list.
         }
         return;
 
-    case 319:
+    case LIBIRC_RFC_RPL_WHOISCHANNELS:
         {
             currentView->logMessage(params.value(1), "! %1 is on channels %2", params.value(2));
         }
@@ -345,7 +360,14 @@ void MainWindow::on_irc_numericMessageReceived(const QString& origin, uint event
         }
         return;
 
-    case 332:
+    case LIBIRC_RFC_RPL_NOTOPIC:
+        {
+            QString target = prepareTarget(QString(), params.value(1));
+            views[target]->logMessage(QString(), "%1! no topic set%2", QString());
+        }
+        return;
+
+    case LIBIRC_RFC_RPL_TOPIC:
         {
             QString target = prepareTarget(QString(), params.value(1));
             views[target]->logMessage(QString(), "%1! topic is '%2'", params.value(2));
@@ -363,7 +385,7 @@ void MainWindow::on_irc_numericMessageReceived(const QString& origin, uint event
         }
         return;
 
-    case 353:
+    case LIBIRC_RFC_RPL_NAMREPLY:
         {
             QStringList list = params;
             list.removeAll("=");
@@ -380,7 +402,7 @@ void MainWindow::on_irc_numericMessageReceived(const QString& origin, uint event
         }
         return;
 
-    case 366:
+    case LIBIRC_RFC_RPL_ENDOFNAMES:
         return;
 
     default:
@@ -388,7 +410,7 @@ void MainWindow::on_irc_numericMessageReceived(const QString& origin, uint event
     }
 
     if (views.contains(origin))
-        views[origin]->logMessage(QString::number(event), "[%1] %2", params.last());
+        views[origin.toLower()]->logMessage(QString::number(event), "[%1] %2", params.last());
     else
         qDebug() << "numeric:" << origin << event << params;
 }
@@ -624,26 +646,27 @@ QString MainWindow::prepareTarget(const QString& sender, const QString& receiver
         target = tabWidget->tabText(0);
     }
 
-    if (!views.contains(target))
+    if (!views.contains(target.toLower()))
     {
-        views[target] = new MessageView(target, tabWidget);
+        MessageView* view = new MessageView(target, tabWidget);
+        views.insert(target.toLower(), view);
         QSettings settings;
         if (settings.contains("font"))
         {
             QFont font = views[target]->font();
             font.setPointSize(settings.value("font").toInt());
-            views[target]->setFont(font);
+            view->setFont(font);
         }
         connect(zoomInShortcut, SIGNAL(activated()), views[target], SLOT(zoomIn()));
         connect(zoomOutShortcut, SIGNAL(activated()), views[target], SLOT(zoomOut()));
-        views[target]->installEventFilter(this);
-        tabWidget->addTab(views[target], target);
+        view->installEventFilter(this);
+        tabWidget->addTab(view, target);
         tabWidget->setCurrentIndex(tabWidget->count() - 1);
     }
 
-    int index = tabWidget->indexOf(views[target]);
+    int index = tabWidget->indexOf(views[target.toLower()]);
     if (index != tabWidget->currentIndex())
         tabWidget->setTabIcon(index, QApplication::windowIcon());
 
-    return target;
+    return target.toLower();
 }
