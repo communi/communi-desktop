@@ -227,16 +227,22 @@ bool MessageView::contains(const QString& nick) const
 
 void MessageView::addNick(const QString& nick)
 {
-    if (!mNicks.contains(nick, Qt::CaseInsensitive))
-        mNicks.append(nick);
+    QString tmp = nick;
+    if (tmp.startsWith("@") || tmp.startsWith("+"))
+        tmp = tmp.mid(1);
+    if (!mNicks.contains(tmp, Qt::CaseInsensitive))
+        mNicks.append(tmp);
 }
 
 void MessageView::removeNick(const QString& nick)
 {
+    QString tmp = nick;
+    if (tmp.startsWith("@") || tmp.startsWith("+"))
+        tmp = tmp.mid(1);
     QMutableStringListIterator it(mNicks);
     while (it.hasNext())
     {
-        if (!it.next().compare(nick, Qt::CaseInsensitive))
+        if (!it.next().compare(tmp, Qt::CaseInsensitive))
             it.remove();
     }
 }
