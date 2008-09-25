@@ -22,14 +22,13 @@
 #include <QMainWindow>
 #include <QSystemTrayIcon>
 #include "connectdialog.h"
+#include "ircsession.h"
 
-class IrcSession;
 class MessageView;
 class QTabWidget;
 class HistoryLineEdit;
 class QCompleter;
 class QShortcut;
-class QThread;
 
 class MainWindow : public QMainWindow
 {
@@ -42,25 +41,25 @@ public:
     bool eventFilter(QObject* object, QEvent* event);
 
 protected slots:
-    void on_irc_connected();
-    void on_irc_disconnected();
-    void on_irc_nickChanged(const QString& origin, const QString& nick);
-    void on_irc_quit(const QString& origin, const QString& message);
-    void on_irc_joined(const QString& origin, const QString& channel);
-    void on_irc_parted(const QString& origin, const QString& channel, const QString& message);
-    void on_irc_channelModeChanged(const QString& origin, const QString& channel, const QString& mode, const QString& args);
-    void on_irc_userModeChanged(const QString& origin, const QString& mode);
-    void on_irc_topicChanged(const QString& origin, const QString& channel, const QString& topic);
-    void on_irc_kicked(const QString& origin, const QString& channel, const QString& nick, const QString& message);
-    void on_irc_channelMessageReceived(const QString& origin, const QString& channel, const QString& message);
-    void on_irc_privateMessageReceived(const QString& origin, const QString& receiver, const QString& message);
-    void on_irc_noticeReceived(const QString& origin, const QString& receiver, const QString& message);
-    void on_irc_invited(const QString& origin, const QString& nick, const QString& channel);
-    void on_irc_ctcpRequestReceived(const QString& origin, const QString& message);
-    void on_irc_ctcpReplyReceived(const QString& origin, const QString& message);
-    void on_irc_ctcpActionReceived(const QString& origin, const QString& receiver, const QString& message);
-    void on_irc_unknownMessageReceived(const QString& origin, const QStringList& params);
-    void on_irc_numericMessageReceived(const QString& origin, uint event, const QStringList& params);
+    void on_connected();
+    void on_disconnected();
+    void on_nickChanged(const QString& origin, const QString& nick);
+    void on_quit(const QString& origin, const QString& message);
+    void on_joined(const QString& origin, const QString& channel);
+    void on_parted(const QString& origin, const QString& channel, const QString& message);
+    void on_channelModeChanged(const QString& origin, const QString& channel, const QString& mode, const QString& args);
+    void on_userModeChanged(const QString& origin, const QString& mode);
+    void on_topicChanged(const QString& origin, const QString& channel, const QString& topic);
+    void on_kicked(const QString& origin, const QString& channel, const QString& nick, const QString& message);
+    void on_channelMessageReceived(const QString& origin, const QString& channel, const QString& message);
+    void on_privateMessageReceived(const QString& origin, const QString& receiver, const QString& message);
+    void on_noticeReceived(const QString& origin, const QString& receiver, const QString& message);
+    void on_invited(const QString& origin, const QString& nick, const QString& channel);
+    void on_ctcpRequestReceived(const QString& origin, const QString& message);
+    void on_ctcpReplyReceived(const QString& origin, const QString& message);
+    void on_ctcpActionReceived(const QString& origin, const QString& receiver, const QString& message);
+    void on_unknownMessageReceived(const QString& origin, const QStringList& params);
+    void on_numericMessageReceived(const QString& origin, uint event, const QStringList& params);
 
 private slots:
     void initialize();
@@ -89,10 +88,10 @@ private:
     QHash<QString, MessageView*> views;
     QSystemTrayIcon* trayIcon;
     QTimer* alertTimer;
+    QList<int> alertIndices;
     QCompleter* completer;
 
-    QThread* thread;
-    IrcSession* session;
+    IrcSession session;
     ConnectDialog connectDialog;
     QShortcut* zoomInShortcut;
     QShortcut* zoomOutShortcut;
