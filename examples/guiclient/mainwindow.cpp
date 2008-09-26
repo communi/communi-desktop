@@ -645,12 +645,12 @@ QString MainWindow::prepareTarget(const QString& sender, const QString& receiver
         QSettings settings;
         if (settings.contains("font"))
         {
-            QFont font = views[target]->font();
+            QFont font = view->font();
             font.setPointSize(settings.value("font").toInt());
             view->setFont(font);
         }
-        connect(zoomInShortcut, SIGNAL(activated()), views[target], SLOT(zoomIn()));
-        connect(zoomOutShortcut, SIGNAL(activated()), views[target], SLOT(zoomOut()));
+        connect(zoomInShortcut, SIGNAL(activated()), view, SLOT(zoomIn()));
+        connect(zoomOutShortcut, SIGNAL(activated()), view, SLOT(zoomOut()));
         view->installEventFilter(this);
         tabWidget->addTab(view, target);
         tabWidget->setCurrentIndex(tabWidget->count() - 1);
