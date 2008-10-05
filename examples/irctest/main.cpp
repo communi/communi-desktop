@@ -27,158 +27,154 @@
  */
 
 #include <QtCore>
-#include "ircsession.h"
+#include "coreircsession.h"
 
-class IrcTest : public QObject
+class MyIrcSession : public CoreIrcSession
 {
     Q_OBJECT
 
 public:
-    IrcTest(IrcSession* session)
-    {
-        session->setParent(this);
-        session->setObjectName("irc");
-        QMetaObject::connectSlotsByName(this);
-    }
+    MyIrcSession(QObject* parent = 0);
 
 protected slots:
-    void on_irc_connected();
-    void on_irc_nickChanged(const QString& origin, const QString& nick);
-    void on_irc_quit(const QString& origin, const QString& message);
-    void on_irc_joined(const QString& origin, const QString& channel);
-    void on_irc_parted(const QString& origin, const QString& channel, const QString& message);
-    void on_irc_channelModeChanged(const QString& origin, const QString& channel, const QString& mode, const QString& args);
-    void on_irc_userModeChanged(const QString& origin, const QString& mode);
-    void on_irc_topicChanged(const QString& origin, const QString& channel, const QString& topic);
-    void on_irc_kicked(const QString& origin, const QString& channel, const QString& nick, const QString& message);
-    void on_irc_channelMessageReceived(const QString& origin, const QString& channel, const QString& message);
-    void on_irc_privateMessageReceived(const QString& origin, const QString& receiver, const QString& message);
-    void on_irc_noticeReceived(const QString& origin, const QString& receiver, const QString& message);
-    void on_irc_invited(const QString& origin, const QString& nick, const QString& channel);
-    void on_irc_ctcpRequestReceived(const QString& origin, const QString& message);
-    void on_irc_ctcpReplyReceived(const QString& origin, const QString& message);
-    void on_irc_ctcpActionReceived(const QString& origin, const QString& message);
-    void on_irc_unknownMessageReceived(const QString& origin, const QStringList& params);
-    void on_irc_numericMessageReceived(const QString& origin, const QStringList& params);
+    void on_connected();
+    void on_nickChanged(const QString& origin, const QString& nick);
+    void on_quit(const QString& origin, const QString& message);
+    void on_joined(const QString& origin, const QString& channel);
+    void on_parted(const QString& origin, const QString& channel, const QString& message);
+    void on_channelModeChanged(const QString& origin, const QString& channel, const QString& mode, const QString& args);
+    void on_userModeChanged(const QString& origin, const QString& mode);
+    void on_topicChanged(const QString& origin, const QString& channel, const QString& topic);
+    void on_kicked(const QString& origin, const QString& channel, const QString& nick, const QString& message);
+    void on_channelMessageReceived(const QString& origin, const QString& channel, const QString& message);
+    void on_privateMessageReceived(const QString& origin, const QString& receiver, const QString& message);
+    void on_noticeReceived(const QString& origin, const QString& receiver, const QString& message);
+    void on_invited(const QString& origin, const QString& nick, const QString& channel);
+    void on_ctcpRequestReceived(const QString& origin, const QString& message);
+    void on_ctcpReplyReceived(const QString& origin, const QString& message);
+    void on_ctcpActionReceived(const QString& origin, const QString& message);
+    void on_unknownMessageReceived(const QString& origin, const QStringList& params);
+    void on_numericMessageReceived(const QString& origin, const QStringList& params);
 };
 
-void IrcTest::on_irc_connected()
+MyIrcSession::MyIrcSession(QObject* parent) : CoreIrcSession(parent)
+{
+    connectSlotsByName(this);
+}
+
+void MyIrcSession::on_connected()
 {
     qDebug() << "connected:";
 }
 
-void IrcTest::on_irc_nickChanged(const QString& origin, const QString& nick)
+void MyIrcSession::on_nickChanged(const QString& origin, const QString& nick)
 {
     qDebug() << "nick:" << origin << nick;
 }
 
-void IrcTest::on_irc_quit(const QString& origin, const QString& message)
+void MyIrcSession::on_quit(const QString& origin, const QString& message)
 {
     qDebug() << "quit:" << origin << message;
 }
 
-void IrcTest::on_irc_joined(const QString& origin, const QString& channel)
+void MyIrcSession::on_joined(const QString& origin, const QString& channel)
 {
     qDebug() << "join:" << origin << channel;
 }
 
-void IrcTest::on_irc_parted(const QString& origin, const QString& channel, const QString& message)
+void MyIrcSession::on_parted(const QString& origin, const QString& channel, const QString& message)
 {
     qDebug() << "part:" << origin << channel << message;
 }
 
-void IrcTest::on_irc_channelModeChanged(const QString& origin, const QString& channel, const QString& mode, const QString& args)
+void MyIrcSession::on_channelModeChanged(const QString& origin, const QString& channel, const QString& mode, const QString& args)
 {
     qDebug() << "channel_mode:" << origin << channel << mode << args;
 }
 
-void IrcTest::on_irc_userModeChanged(const QString& origin, const QString& mode)
+void MyIrcSession::on_userModeChanged(const QString& origin, const QString& mode)
 {
     qDebug() << "user_mode:" << origin << mode;
 }
 
-void IrcTest::on_irc_topicChanged(const QString& origin, const QString& channel, const QString& topic)
+void MyIrcSession::on_topicChanged(const QString& origin, const QString& channel, const QString& topic)
 {
     qDebug() << "topic:" << origin << channel << topic;
 }
 
-void IrcTest::on_irc_kicked(const QString& origin, const QString& channel, const QString& nick, const QString& message)
+void MyIrcSession::on_kicked(const QString& origin, const QString& channel, const QString& nick, const QString& message)
 {
     qDebug() << "kick:" << origin << channel << nick << message;
 }
 
-void IrcTest::on_irc_channelMessageReceived(const QString& origin, const QString& channel, const QString& message)
+void MyIrcSession::on_channelMessageReceived(const QString& origin, const QString& channel, const QString& message)
 {
     qDebug() << "channel:" << origin << channel << message;
 }
 
-void IrcTest::on_irc_privateMessageReceived(const QString& origin, const QString& receiver, const QString& message)
+void MyIrcSession::on_privateMessageReceived(const QString& origin, const QString& receiver, const QString& message)
 {
     qDebug() << "private:" << origin << receiver << message;
 }
 
-void IrcTest::on_irc_noticeReceived(const QString& origin, const QString& receiver, const QString& message)
+void MyIrcSession::on_noticeReceived(const QString& origin, const QString& receiver, const QString& message)
 {
     qDebug() << "notice:" << origin << receiver << message;
 }
 
-void IrcTest::on_irc_invited(const QString& origin, const QString& nick, const QString& channel)
+void MyIrcSession::on_invited(const QString& origin, const QString& nick, const QString& channel)
 {
     qDebug() << "invite:" << origin << nick << channel;
 }
 
-void IrcTest::on_irc_ctcpRequestReceived(const QString& origin, const QString& message)
+void MyIrcSession::on_ctcpRequestReceived(const QString& origin, const QString& message)
 {
     qDebug() << "ctcp_request:" << origin << message;
 }
 
-void IrcTest::on_irc_ctcpReplyReceived(const QString& origin, const QString& message)
+void MyIrcSession::on_ctcpReplyReceived(const QString& origin, const QString& message)
 {
     qDebug() << "ctcp_reply:" << origin << message;
 }
 
-void IrcTest::on_irc_ctcpActionReceived(const QString& origin, const QString& message)
+void MyIrcSession::on_ctcpActionReceived(const QString& origin, const QString& message)
 {
     qDebug() << "ctcp_action:" << origin << message;
 }
 
-void IrcTest::on_irc_unknownMessageReceived(const QString& origin, const QStringList& params)
+void MyIrcSession::on_unknownMessageReceived(const QString& origin, const QStringList& params)
 {
     qDebug() << "unknown:" << origin << params;
 }
 
-void IrcTest::on_irc_numericMessageReceived(const QString& origin, const QStringList& params)
+void MyIrcSession::on_numericMessageReceived(const QString& origin, const QStringList& params)
 {
     qDebug() << "numeric:" << origin << params;
 }
 
 int main (int argc, char* argv[])
 {
-    QCoreApplication app(argc, argv);
-
     if (argc < 4)
     {
         qDebug("Usage: %s <server> <nick> <channels...>", argv[0]);
         return 1;
     }
 
-    IrcSession session;
-    IrcTest test(&session);
-
     QStringList channels;
     for (int i = 3; i < argc; ++i)
     {
         channels.append(argv[i]);
     }
-    session.setAutoJoinChannels(channels);
 
-    if (!session.connectTo(argv[1], 6667, "", argv[2], "nobody", "reality"))
+    MyIrcSession session;
+    session.setAutoJoinChannels(channels);
+    if (!session.connectToServer(argv[1], 6667, argv[2], "nobody", "reality"))
     {
         qWarning("Could not connect: %s", qPrintable(session.errorString()));
         return 1;
     }
 
-    return app.exec();
+    return session.exec();
 }
 
 #include "main.moc"
