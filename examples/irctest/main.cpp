@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2004 Georgy Yunaev tim@krasnogorsk.ru
- * Copyright (C) 2008 J-P Nurmi jpnurmi@gmail.com
+ * Copyright (C) 2008-2009 J-P Nurmi jpnurmi@gmail.com
  *
  * This example is free, and not covered by LGPL license. There is no
  * restriction applied to their modification, redistribution, using and so on.
