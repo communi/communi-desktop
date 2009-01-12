@@ -1,5 +1,4 @@
 /*
- * Copyright (C) 2004 Georgy Yunaev tim@krasnogorsk.ru
  * Copyright (C) 2008-2009 J-P Nurmi jpnurmi@gmail.com
  *
  * This example is free, and not covered by LGPL license. There is no
@@ -7,21 +6,6 @@
  * You can study them, modify them, use them in your own program - either
  * completely or partially. By using it you may give me some credits in your
  * program, but you don't have to.
- *
- *
- * This example tests most features of libirc. It can join the specific
- * channel, welcoming all the people there, and react on some messages -
- * 'help', 'quit', 'dcc chat', 'dcc send', 'ctcp'. Also it can reply to
- * CTCP requests, receive DCC files and accept DCC chats.
- *
- * Features used:
- * - nickname parsing;
- * - handling 'channel' event to track the messages;
- * - handling dcc and ctcp events;
- * - using internal ctcp rely procedure;
- * - generating channel messages;
- * - handling dcc send and dcc chat events;
- * - initiating dcc send and dcc chat.
  *
  * $Id$
  */
