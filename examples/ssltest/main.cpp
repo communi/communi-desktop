@@ -33,9 +33,10 @@ int main (int argc, char* argv[])
     session.setNick(argv[3]);
     session.setAutoJoinChannels(channels);
     
-    QSslSocket socket;
-    socket.ignoreSslErrors();
-    socket.setPeerVerifyMode(QSslSocket::VerifyNone);
+    QSslSocket* socket = new QSslSocket(&session);
+    socket->ignoreSslErrors();
+    socket->setPeerVerifyMode(QSslSocket::VerifyNone);
+    session.setSocket(socket);
     session.connectToServer(argv[1], QString(argv[2]).toInt());
 
     return app.exec();
