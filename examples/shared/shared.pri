@@ -2,11 +2,12 @@
 # LibIrcClient-Qt
 ######################################################################
 
-TEMPLATE = app
-TARGET = 
-DEPENDPATH += .
-INCLUDEPATH += .
+QT = core network
+CONFIG += console
+CONFIG += libircclient-qt
 
-# Input
-SOURCES += main.cpp
-include(../shared/shared.pri)
+INCLUDEPATH += ../shared
+DEPENDPATH  += ../shared
+
+HEADERS += session.h
+SOURCES += session.cpp

@@ -11,27 +11,32 @@
  */
 
 #include <QtCore>
+#include <QtNetwork>
 #include "session.h"
 
 int main (int argc, char* argv[])
 {
     QCoreApplication app(argc, argv);
-    if (argc < 4)
+    if (argc < 5)
     {
-        qDebug("Usage: %s <server> <nick> <channels...>", argv[0]);
+        qDebug("Usage: %s <server> <port> <nick> <channels...>", argv[0]);
         return 1;
     }
 
     QStringList channels;
-    for (int i = 3; i < argc; ++i)
+    for (int i = 4; i < argc; ++i)
     {
         channels.append(argv[i]);
     }
 
     MyIrcSession session;
-    session.setNick(argv[2]);
+    session.setNick(argv[3]);
     session.setAutoJoinChannels(channels);
-    session.connectToServer(argv[1], 6667);
+    
+    QSslSocket socket;
+    socket.ignoreSslErrors();
+    socket.setPeerVerifyMode(QSslSocket::VerifyNone);
+    session.connectToServer(argv[1], QString(argv[2]).toInt());
 
     return app.exec();
 }
