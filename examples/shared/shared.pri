@@ -3,7 +3,7 @@
 ######################################################################
 
 QT = core network
-CONFIG += console
+CONFIG += console no_keywords
 CONFIG += libircclient-qt
 
 INCLUDEPATH += ../shared

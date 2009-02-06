@@ -22,7 +22,7 @@ class MyIrcSession : public Irc::Session
 public:
     MyIrcSession(QObject* parent = 0);
 
-protected slots:
+protected Q_SLOTS:
     void on_connected();
     void on_disconnected();
 
