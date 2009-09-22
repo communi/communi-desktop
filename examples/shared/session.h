@@ -14,6 +14,7 @@
 #define SESSION_H
 
 #include <IrcSession>
+#include <IrcBuffer>
 
 class MyIrcSession : public Irc::Session
 {
@@ -26,21 +27,36 @@ protected Q_SLOTS:
     void on_connected();
     void on_disconnected();
 
-    void on_msgJoined(const QString& origin, const QString& channel);
-    void on_msgParted(const QString& origin, const QString& channel, const QString& message);
-    void on_msgQuit(const QString& origin, const QString& message);
-    void on_msgNickChanged(const QString& origin, const QString& nick);
-    void on_msgModeChanged(const QString& origin, const QString& receiver, const QString& mode, const QString& args);
-    void on_msgTopicChanged(const QString& origin, const QString& channel, const QString& topic);
-    void on_msgInvited(const QString& origin, const QString& receiver, const QString& channel);
-    void on_msgKicked(const QString& origin, const QString& channel, const QString& nick, const QString& message);
-    void on_msgMessageReceived(const QString& origin, const QString& receiver, const QString& message);
-    void on_msgNoticeReceived(const QString& origin, const QString& receiver, const QString& notice);
-    void on_msgCtcpRequestReceived(const QString& origin, const QString& request);
-    void on_msgCtcpReplyReceived(const QString& origin, const QString& reply);
-    void on_msgCtcpActionReceived(const QString& origin, const QString& receiver, const QString& action);
-    void on_msgNumericMessageReceived(const QString& origin, uint code, const QStringList& params);
-    void on_msgUnknownMessageReceived(const QString& origin, const QStringList& params);
+    void on_bufferAdded(Irc::Buffer* buffer);
+    void on_bufferRemoved(Irc::Buffer* buffer);
+
+protected:
+    virtual Irc::Buffer* createBuffer(const QString& receiver);
+};
+
+class MyIrcBuffer : public Irc::Buffer
+{
+    Q_OBJECT
+
+public:
+    MyIrcBuffer(const QString& receiver, Irc::Session* parent);
+
+    void on_receiverChanged(const QString& receiver);
+    void on_joined(const QString& origin);
+    void on_parted(const QString& origin, const QString& message);
+    void on_quit(const QString& origin, const QString& message);
+    void on_nickChanged(const QString& origin, const QString& nick);
+    void on_modeChanged(const QString& origin, const QString& mode, const QString& args);
+    void on_topicChanged(const QString& origin, const QString& topic);
+    void on_invited(const QString& origin, const QString& receiver, const QString& channel);
+    void on_kicked(const QString& origin, const QString& nick, const QString& message);
+    void on_messageReceived(const QString& origin, const QString& message);
+    void on_noticeReceived(const QString& origin, const QString& notice);
+    void on_ctcpRequestReceived(const QString& origin, const QString& request);
+    void on_ctcpReplyReceived(const QString& origin, const QString& reply);
+    void on_ctcpActionReceived(const QString& origin, const QString& action);
+    void on_numericMessageReceived(const QString& origin, uint code, const QStringList& params);
+    void on_unknownMessageReceived(const QString& origin, const QStringList& params);
 };
 
 #endif // SESSION_H
