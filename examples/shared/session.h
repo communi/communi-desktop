@@ -6,8 +6,6 @@
  * You can study them, modify them, use them in your own program - either
  * completely or partially. By using it you may give me some credits in your
  * program, but you don't have to.
- *
- * $Id$
  */
 
 #ifndef SESSION_H
