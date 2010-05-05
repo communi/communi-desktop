@@ -3,4 +3,4 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS += irctest ssltest
+SUBDIRS += compattest irctest ssltest
