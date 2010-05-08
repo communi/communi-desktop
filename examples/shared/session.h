@@ -39,6 +39,7 @@ class MyIrcBuffer : public Irc::Buffer
 public:
     MyIrcBuffer(const QString& receiver, Irc::Session* parent);
 
+protected Q_SLOTS:
     void on_receiverChanged(const QString& receiver);
     void on_joined(const QString& origin);
     void on_parted(const QString& origin, const QString& message);
