@@ -49,11 +49,11 @@ protected Q_SLOTS:
     void on_topicChanged(const QString& origin, const QString& topic);
     void on_invited(const QString& origin, const QString& receiver, const QString& channel);
     void on_kicked(const QString& origin, const QString& nick, const QString& message);
-    void on_messageReceived(const QString& origin, const QString& message);
-    void on_noticeReceived(const QString& origin, const QString& notice);
-    void on_ctcpRequestReceived(const QString& origin, const QString& request);
-    void on_ctcpReplyReceived(const QString& origin, const QString& reply);
-    void on_ctcpActionReceived(const QString& origin, const QString& action);
+    void on_messageReceived(const QString& origin, const QString& message, Irc::Buffer::MessageFlags flags);
+    void on_noticeReceived(const QString& origin, const QString& notice, Irc::Buffer::MessageFlags flags);
+    void on_ctcpRequestReceived(const QString& origin, const QString& request, Irc::Buffer::MessageFlags flags);
+    void on_ctcpReplyReceived(const QString& origin, const QString& reply, Irc::Buffer::MessageFlags flags);
+    void on_ctcpActionReceived(const QString& origin, const QString& action, Irc::Buffer::MessageFlags flags);
     void on_numericMessageReceived(const QString& origin, uint code, const QStringList& params);
     void on_unknownMessageReceived(const QString& origin, const QStringList& params);
 };

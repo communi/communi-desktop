@@ -52,11 +52,16 @@ MyIrcBuffer::MyIrcBuffer(const QString& receiver, Irc::Session* parent)
     connect(this, SIGNAL(topicChanged(QString, QString)), SLOT(on_topicChanged(QString, QString)));
     connect(this, SIGNAL(invited(QString, QString, QString)), SLOT(on_invited(QString, QString, QString)));
     connect(this, SIGNAL(kicked(QString, QString, QString)), SLOT(on_kicked(QString, QString, QString)));
-    connect(this, SIGNAL(messageReceived(QString, QString)), SLOT(on_messageReceived(QString, QString)));
-    connect(this, SIGNAL(noticeReceived(QString, QString)), SLOT(on_noticeReceived(QString, QString)));
-    connect(this, SIGNAL(ctcpRequestReceived(QString, QString)), SLOT(on_ctcpRequestReceived(QString, QString)));
-    connect(this, SIGNAL(ctcpReplyReceived(QString, QString)), SLOT(on_ctcpReplyReceived(QString, QString)));
-    connect(this, SIGNAL(ctcpActionReceived(QString, QString)), SLOT(on_ctcpActionReceived(QString, QString)));
+    connect(this, SIGNAL(messageReceived(QString, QString, Irc::Buffer::MessageFlags)),
+                  SLOT(on_messageReceived(QString, QString, Irc::Buffer::MessageFlags)));
+    connect(this, SIGNAL(noticeReceived(QString, QString, Irc::Buffer::MessageFlags)),
+                  SLOT(on_noticeReceived(QString, QString, Irc::Buffer::MessageFlags)));
+    connect(this, SIGNAL(ctcpRequestReceived(QString, QString, Irc::Buffer::MessageFlags)),
+                  SLOT(on_ctcpRequestReceived(QString, QString, Irc::Buffer::MessageFlags)));
+    connect(this, SIGNAL(ctcpReplyReceived(QString, QString, Irc::Buffer::MessageFlags)),
+                  SLOT(on_ctcpReplyReceived(QString, QString, Irc::Buffer::MessageFlags)));
+    connect(this, SIGNAL(ctcpActionReceived(QString, QString, Irc::Buffer::MessageFlags)),
+                  SLOT(on_ctcpActionReceived(QString, QString, Irc::Buffer::MessageFlags)));
     connect(this, SIGNAL(numericMessageReceived(QString, uint, QStringList)), SLOT(on_numericMessageReceived(QString, uint, QStringList)));
     connect(this, SIGNAL(unknownMessageReceived(QString, QStringList)), SLOT(on_unknownMessageReceived(QString, QStringList)));
 }
@@ -106,29 +111,34 @@ void MyIrcBuffer::on_kicked(const QString& origin, const QString& nick, const QS
     qDebug() << "kicked:" << receiver() << origin << nick << message;
 }
 
-void MyIrcBuffer::on_messageReceived(const QString& origin, const QString& message)
+void MyIrcBuffer::on_messageReceived(const QString& origin, const QString& message, Irc::Buffer::MessageFlags flags)
 {
-    qDebug() << "message received:" << receiver() << origin << message;
+    qDebug() << "message received:" << receiver() << origin << message
+             << (flags & Irc::Buffer::IdentifiedFlag ? "(identified!)" : "(not identified)");
 }
 
-void MyIrcBuffer::on_noticeReceived(const QString& origin, const QString& notice)
+void MyIrcBuffer::on_noticeReceived(const QString& origin, const QString& notice, Irc::Buffer::MessageFlags flags)
 {
-    qDebug() << "notice received:" << receiver() << origin << notice;
+    qDebug() << "notice received:" << receiver() << origin << notice
+             << (flags & Irc::Buffer::IdentifiedFlag ? "(identified!)" : "(not identified)");
 }
 
-void MyIrcBuffer::on_ctcpRequestReceived(const QString& origin, const QString& request)
+void MyIrcBuffer::on_ctcpRequestReceived(const QString& origin, const QString& request, Irc::Buffer::MessageFlags flags)
 {
-    qDebug() << "ctcp request received:" << receiver() << origin << request;
+    qDebug() << "ctcp request received:" << receiver() << origin << request
+             << (flags & Irc::Buffer::IdentifiedFlag ? "(identified!)" : "(not identified)");
 }
 
-void MyIrcBuffer::on_ctcpReplyReceived(const QString& origin, const QString& reply)
+void MyIrcBuffer::on_ctcpReplyReceived(const QString& origin, const QString& reply, Irc::Buffer::MessageFlags flags)
 {
-    qDebug() << "ctcp reply received:" << receiver() << origin << reply;
+    qDebug() << "ctcp reply received:" << receiver() << origin << reply
+             << (flags & Irc::Buffer::IdentifiedFlag ? "(identified!)" : "(not identified)");
 }
 
-void MyIrcBuffer::on_ctcpActionReceived(const QString& origin, const QString& action)
+void MyIrcBuffer::on_ctcpActionReceived(const QString& origin, const QString& action, Irc::Buffer::MessageFlags flags)
 {
-    qDebug() << "ctcp action received:" << receiver() << origin << action;
+    qDebug() << "ctcp action received:" << receiver() << origin << action
+             << (flags & Irc::Buffer::IdentifiedFlag ? "(identified!)" : "(not identified)");
 }
 
 void MyIrcBuffer::on_numericMessageReceived(const QString& origin, uint code, const QStringList& params)
