@@ -1,10 +1,10 @@
 ######################################################################
-# LibIrcClient-Qt
+# Communi
 ######################################################################
 
 QT = core network
 CONFIG += console no_keywords
-CONFIG += libircclient-qt
+CONFIG += communi
 
 INCLUDEPATH += ../shared
 DEPENDPATH  += ../shared

@@ -1,5 +1,5 @@
 ######################################################################
-# LibIrcClient-Qt
+# Communi
 ######################################################################
 
 TEMPLATE = app
@@ -9,7 +9,7 @@ INCLUDEPATH += .
 
 QT = core network
 CONFIG += console no_keywords
-CONFIG += libircclient-qt
+CONFIG += communi
 
 # Input
 HEADERS += session.h
