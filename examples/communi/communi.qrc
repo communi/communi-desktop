@@ -1,0 +1,30 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+  <file>resources/commands.xml</file>
+  <file>resources/icons/16x16/communi.png</file>
+  <file>resources/icons/26x26/communi.png</file>
+  <file>resources/icons/32x32/communi.png</file>
+  <file>resources/icons/48x48/communi.png</file>
+  <file>resources/icons/64x64/communi.png</file>
+  <file>resources/icons/128x128/communi.png</file>
+  <file>resources/welcome_header.html</file>
+  <file>resources/welcome_footer.html</file>
+
+  <file>resources/oxygen/16x16/actions/1leftarrow.png</file>
+  <file>resources/oxygen/16x16/actions/1rightarrow.png</file>
+  <file>resources/oxygen/16x16/actions/add.png</file>
+  <file>resources/oxygen/16x16/actions/bookmark.png</file>
+  <file>resources/oxygen/16x16/actions/configure.png</file>
+  <file>resources/oxygen/16x16/actions/dialog_close.png</file>
+  <file>resources/oxygen/16x16/actions/edit.png</file>
+  <file>resources/oxygen/16x16/actions/remove.png</file>
+
+  <file>resources/oxygen/64x64/actions/bookmark.png</file>
+  <file>resources/oxygen/64x64/actions/color_line.png</file>
+  <file>resources/oxygen/64x64/actions/configure.png</file>
+  <file>resources/oxygen/64x64/actions/forward.png</file>
+  <file>resources/oxygen/64x64/actions/network.png</file>
+  <file>resources/oxygen/64x64/actions/user.png</file>
+  <file>resources/oxygen/64x64/actions/save_all.png</file>
+</qresource>
+</RCC>

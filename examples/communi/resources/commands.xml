@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE commands>
+<commands version="1.0">
+    <command name="action">
+        <script>
+            <![CDATA[
+            if (message.length)
+                session.ctcpAction(currentReceiver, message);
+            else
+                messageView.showHelp("action");
+            ]]>
+        </script>
+        <help>&lt;action&gt;</help>
+        <description>Sends a CTCP action to the current receiver.</description>
+        <categories>
+            <category>Message</category>
+        </categories>
+    </command>
+    <command name="clear">
+        <script>
+            <![CDATA[
+            messageView.clear();
+            ]]>
+        </script>
+        <help/>
+        <description>Clears the current view.</description>
+        <categories>
+            <category>View</category>
+        </categories>
+    </command>
+    <command name="close">
+        <script>
+            <![CDATA[
+            tabWidget.closeCurrentView();
+            ]]>
+        </script>
+        <help/>
+        <description>Closes the current view.</description>
+        <categories>
+            <category>View</category>
+        </categories>
+    </command>
+    <command name="connect">
+        <script>
+            <![CDATA[
+            window.connectTo(words[0],
+                             words.length >= 2 ? words[1] : 6667,
+                             words[2], words[3]);
+            ]]>
+        </script>
+        <help>(&lt;host port nick pass&gt;)</help>
+        <description>Connects to a server with given details.</description>
+        <categories>
+            <category>Session</category>
+        </categories>
+    </command>
+    <command name="ctcp">
+        <script>
+            <![CDATA[
+            var receiver = words[0];
+            var request = null;
+            var index = message.indexOf(' ');
+            if (index != -1)
+                request = message.substr(index + 1);
+            if (request.toLowerCase() == "ping") {
+                var date = new Date();
+                request = request + ' ' + date.getTime();
+            }
+            if (receiver.length && request.length)
+                session.ctcpRequest(receiver, request);
+            else
+                messageView.showHelp("ctcp");
+            ]]>
+        </script>
+        <help>&lt;action&gt;</help>
+        <description>Sends a CTCP request to the receiver.</description>
+        <categories>
+            <category>Message</category>
+        </categories>
+    </command>
+    <command name="disconnect">
+        <script>
+            <![CDATA[
+            window.disconnectFrom(message);
+            ]]>
+        </script>
+        <help>(&lt;reason&gt;)</help>
+        <description>Disconnects from the server with an optional reason.</description>
+        <categories>
+            <category>Session</category>
+        </categories>
+    </command>
+    <command name="help">
+        <script>
+            <![CDATA[
+            if (message.length)
+                messageView.showHelp(message);
+            else
+                messageView.showHelp();
+            ]]>
+        </script>
+        <help>(&lt;command&gt;)</help>
+        <description>Shows the help.</description>
+    </command>
+    <command name="invite">
+        <script>
+            <![CDATA[
+            var channel = (words[0] || currentReceiver);
+            if (channel.charAt(0) != '#' && channel.charAt(0) != '&' &&
+                channel.charAt(0) != '!' && channel.charAt(0) != '+')
+                channel = "#" + channel;
+            var user = null;
+            var index = message.indexOf(' ');
+            if (index != -1)
+                user = message.substr(index + 1);
+            if (user.length)
+                session.invite(user, channel);
+            else
+                messageView.showHelp("invite");
+            ]]>
+        </script>
+        <help>&lt;channel&gt; &lt;user&gt;</help>
+        <description>Invites a user to the channel.</description>
+        <categories>
+            <category>Channel</category>
+        </categories>
+    </command>
+    <command name="join">
+        <script>
+            <![CDATA[
+            if (words.length >= 1 && words.length <= 2) {
+                var channel = words[0];
+                if (channel.charAt(0) != '#' && channel.charAt(0) != '&' &&
+                    channel.charAt(0) != '!' && channel.charAt(0) != '+')
+                    channel = "#" + channel;
+                var key = words[1];
+                session.join(channel, key);
+            } else {
+                messageView.showHelp("join");
+            }
+            ]]>
+        </script>
+        <help>&lt;channel&gt; (&lt;key&gt;)</help>
+        <description>Joins a channel with an optional key.</description>
+        <categories>
+            <category>Channel</category>
+        </categories>
+    </command>
+    <command name="kick">
+        <script>
+            <![CDATA[
+            var user = words[0];
+            var reason = null;
+            var index = message.indexOf(' ');
+            if (index != -1)
+                reason = message.substr(index + 1);
+            if (user.length)
+                session.kick(user, currentReceiver, reason);
+            else
+                messageView.showHelp("kick");
+            ]]>
+        </script>
+        <help>&lt;user&gt; (&lt;reason&gt;)</help>
+        <description>Kicks the user from the current channel with an optional reason.</description>
+        <categories>
+            <category>Channel</category>
+            <category>User</category>
+        </categories>
+    </command>
+    <command name="mode">
+        <script>
+            <![CDATA[
+            if (message.length)
+                session.raw("MODE " + message);
+            else
+                messageView.showHelp("mode");
+            ]]>
+        </script>
+        <help>&lt;receiver&gt; (&lt;modes&gt; &lt;limit&gt; &lt;targets&gt;)</help>
+        <description>Shows or sets a mode.</description>
+        <categories>
+            <category>Channel</category>
+            <category>User</category>
+        </categories>
+    </command>
+    <command name="names">
+        <script>
+            <![CDATA[
+            var channel = (words[0] || currentReceiver);
+            if (channel.charAt(0) != '#' && channel.charAt(0) != '&' &&
+                channel.charAt(0) != '!' && channel.charAt(0) != '+')
+                channel = "#" + channel;
+            session.names(channel);
+            ]]>
+        </script>
+        <help>(&lt;channel&gt;)</help>
+        <description>Shows the names (nicks) in the channel.</description>
+        <categories>
+            <category>Channel</category>
+        </categories>
+    </command>
+    <command name="nick">
+        <script>
+            <![CDATA[
+            if (message.length)
+                session.nick = message;
+            else
+                messageView.showHelp("nick");
+            ]]>
+        </script>
+        <help>&lt;nick&gt;</help>
+        <description>Sets the nick.</description>
+        <categories>
+            <category>Session</category>
+            <category>User</category>
+        </categories>
+    </command>
+    <command name="notice">
+        <script>
+            <![CDATA[
+            var receiver = words[0];
+            var msg = message.substr(receiver.length + 1);
+            if (receiver.length && msg.length)
+                session.notice(receiver, msg);
+            else
+                messageView.showHelp("notice");
+            ]]>
+        </script>
+        <help>&lt;receiver&gt; &lt;notice&gt;</help>
+        <description>Sends a notice to the receiver.</description>
+        <categories>
+            <category>Message</category>
+        </categories>
+    </command>
+    <command name="part">
+        <script>
+            <![CDATA[
+            var channel = (words[0] || currentReceiver);
+            if (channel.charAt(0) != '#' && channel.charAt(0) != '&' &&
+                channel.charAt(0) != '!' && channel.charAt(0) != '+')
+                channel = "#" + channel;
+            var reason = null;
+            var index = message.indexOf(' ');
+            if (index != -1)
+                reason = message.substr(index + 1);
+            tabWidget.closeView(channel, reason);
+            ]]>
+        </script>
+        <help>(&lt;channel&gt; &lt;reason&gt;)</help>
+        <description>Parts the channel with an optional reason.</description>
+        <categories>
+            <category>Channel</category>
+        </categories>
+    </command>
+    <command name="privmsg">
+        <script>
+            <![CDATA[
+            var receiver = words[0];
+            var msg = message.substr(receiver.length + 1);
+            if (receiver.length && msg.length)
+                session.message(receiver, msg);
+            else
+                messageView.showHelp("privmsg");
+            ]]>
+        </script>
+        <help>&lt;receiver&gt; &lt;message&gt;</help>
+        <description>Sends a message to the receiver.</description>
+        <categories>
+            <category>Message</category>
+        </categories>
+    </command>
+    <command name="query">
+        <script>
+            <![CDATA[
+            if (message.length)
+                tabWidget.openView(message);
+            else
+                messageView.showHelp("query");
+            ]]>
+        </script>
+        <help>&lt;user&gt;</help>
+        <description>Opens a query with a user.</description>
+        <categories>
+            <category>User</category>
+        </categories>
+    </command>
+    <command name="quit">
+        <script>
+            <![CDATA[
+            window.quit(message);
+            ]]>
+        </script>
+        <help>(&lt;reason&gt;)</help>
+        <description>Quits the application with an optional reason.</description>
+    </command>
+    <command name="raw">
+        <script>
+            <![CDATA[
+            if (message.length)
+                session.raw(message);
+            else
+                session.showHelp("raw");
+            ]]>
+        </script>
+        <help>&lt;command&gt;</help>
+        <description>Sends a raw command.</description>
+        <categories>
+            <category>Message</category>
+        </categories>
+    </command>
+    <command name="reconnect">
+        <script>
+            <![CDATA[
+            session.reconnectToServer();
+            ]]>
+        </script>
+        <help/>
+        <description>Reconnects to the server.</description>
+        <categories>
+            <category>Session</category>
+        </categories>
+    </command>
+    <command name="settings">
+        <script>
+            <![CDATA[
+            app.showSettings();
+            ]]>
+        </script>
+        <help/>
+        <description>Shows the settings wizard.</description>
+    </command>
+    <command name="topic">
+        <script>
+            <![CDATA[
+            var channel = (words[0] || currentReceiver);
+            if (channel.charAt(0) != '#' && channel.charAt(0) != '&' &&
+                channel.charAt(0) != '!' && channel.charAt(0) != '+')
+                channel = "#" + channel;
+            var topic = null;
+            var index = message.indexOf(' ');
+            if (index != -1)
+                topic = message.substr(index + 1);
+            session.topic(channel, topic);
+            ]]>
+        </script>
+        <help>(&lt;channel&gt; &lt;topic&gt;)</help>
+        <description>Shows or sets the channel topic.</description>
+        <categories>
+            <category>Channel</category>
+        </categories>
+    </command>
+    <command name="whois">
+        <script>
+            <![CDATA[
+            if (message.length)
+                session.whois(message);
+            else
+                messageView.showHelp("whois");
+            ]]>
+        </script>
+        <help>&lt;user&gt;</help>
+        <description>Shows who user is.</description>
+        <categories>
+            <category>User</category>
+        </categories>
+    </command>
+    <command name="whowas">
+        <script>
+            <![CDATA[
+            if (message.length)
+                session.whowas(message);
+            else
+                messageView.showHelp("whowas");
+            ]]>
+        </script>
+        <help>&lt;user&gt;</help>
+        <description>Shows who user was.</description>
+        <categories>
+            <category>User</category>
+        </categories>
+    </command>
+</commands>

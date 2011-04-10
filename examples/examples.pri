@@ -2,10 +2,6 @@
 # Communi
 ######################################################################
 
-QT = core network
-CONFIG += console no_keywords
-CONFIG -= app_bundle
-
 INCLUDEPATH += $$PWD/../include
 DEPENDPATH += $$PWD/../include
 
