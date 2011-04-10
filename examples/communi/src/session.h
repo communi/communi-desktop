@@ -34,13 +34,25 @@ public:
 
     Connection connection() const;
 
+    QStringList autoJoinChannels() const;
+    void setAutoJoinChannels(const QStringList& channels);
+
+    int autoReconnectDelay() const;
+    void setAutoReconnectDelay(int seconds);
+
     static bool isChannel(const QString& receiver);
 
 public slots:
     void connectTo(const Connection& connection);
 
+private slots:
+    void onPassword(QString* password);
+    void onMessageReceived(IrcMessage* message);
+
 private:
     mutable Connection conn;
+    QStringList channels;
+    int delay;
 };
 
 #endif // SESSION_H

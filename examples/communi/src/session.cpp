@@ -23,10 +23,10 @@
 #ifndef QT_NO_OPENSSL
 #include <QSslSocket>
 #endif // QT_NO_OPENSSL
+#include <ircmessage.h>
 
-Session::Session(QObject* parent) : IrcSession(parent)
+Session::Session(QObject* parent) : IrcSession(parent), delay(10)
 {
-    //TODO: setAutoReconnectDelay(10);
     //TODO: setOptions(options() | Session::PrefixNicks);
     Application::setSessions(Application::sessions() << this);
 }
@@ -51,6 +51,26 @@ Connection Session::connection() const
     }
     */
     return conn;
+}
+
+QStringList Session::autoJoinChannels() const
+{
+    return channels;
+}
+
+void Session::setAutoJoinChannels(const QStringList& arg)
+{
+    channels = arg;
+}
+
+int Session::autoReconnectDelay() const
+{
+    return delay;
+}
+
+void Session::setAutoReconnectDelay(int seconds)
+{
+    delay = seconds;
 }
 
 bool Session::isChannel(const QString& receiver)
@@ -90,9 +110,26 @@ void Session::connectTo(const Connection& connection)
     setNickName(connection.nick);
     setUserName(appName.toLower());
     setRealName(connection.real.isEmpty() ? appName : connection.real);
-    //TODO: setPassword(connection.pass);
-    //TODO: setAutoJoinChannels(connection.channels);
+    setAutoJoinChannels(connection.channels);
     open();
 
     conn = connection;
+}
+
+void Session::onPassword(QString* password)
+{
+    *password = conn.pass;
+}
+
+void Session::onMessageReceived(IrcMessage* message)
+{
+    if (message->type() == Irc::RPL_ENDOFMOTD || message->type() == Irc::ERR_NOMOTD)
+    {
+        foreach (const QString& channel, channels)
+        {
+            IrcJoinMessage msg;
+            msg.setChannel(channel);
+            sendMessage(&msg);
+        }
+    }
 }

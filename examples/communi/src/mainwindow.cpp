@@ -34,6 +34,7 @@
 #include <mce/dbus-names.h>
 #include <QtDBus>
 #endif // Q_WS_MAEMO_5
+#include <ircmessage.h>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), tabWidget(0)
 #ifndef Q_OS_SYMBIAN
@@ -176,8 +177,6 @@ void MainWindow::connectToImpl(const Connection& connection)
     tab->setTabBarVisible(channelsAction->isChecked());
 #endif // Q_WS_MAEMO_5
     tabWidget->addTab(tab, connection.name.isEmpty() ? session->host() : connection.name);
-
-    //TODO: session->addBuffer(session->host());
 }
 
 void MainWindow::disconnectFrom(const QString& message)
@@ -191,10 +190,12 @@ void MainWindow::disconnectFrom(const QString& message)
         reason = tr("%1 %2 - %3").arg(Application::applicationName())
         .arg(Application::applicationVersion())
         .arg(Application::organizationDomain());
-    //TODO: tab->session()->quit(reason);
-    //TODO: tab->session()->disconnectFromServer();
+    IrcQuitMessage msg;
+    msg.setReason(reason);
+    tab->session()->sendMessage(&msg);
+    tab->session()->close();
     // automatically rejoin channels when reconnected
-    //TODO: tab->session()->setAutoJoinChannels(tab->session()->connection().channels);
+    tab->session()->setAutoJoinChannels(tab->session()->connection().channels);
 }
 
 void MainWindow::quit(const QString& message)
@@ -208,8 +209,10 @@ void MainWindow::quit(const QString& message)
             reason = tr("%1 %2 - %3").arg(Application::applicationName())
                                      .arg(Application::applicationVersion())
                                      .arg(Application::organizationDomain());
-        //TODO: tab->session()->quit(reason);
-        //TODO: tab->session()->disconnectFromServer();
+        IrcQuitMessage msg;
+        msg.setReason(reason);
+        tab->session()->sendMessage(&msg);
+        tab->session()->close();
     }
     close();
 }
