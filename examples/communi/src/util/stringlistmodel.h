@@ -33,6 +33,9 @@ public:
     QStringList stringList(int role) const;
     void setStringList(int role, const QStringList& stringList);
 
+    void add(int role, const QString& str);
+    void remove(int role, const QString& str);
+
 private:
     struct StringListModelData
     {

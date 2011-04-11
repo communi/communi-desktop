@@ -39,3 +39,20 @@ void StringListModel::setStringList(int role, const QStringList& stringList)
         combined << list;
     QStringListModel::setStringList(combined);
 }
+
+void StringListModel::add(int role, const QString& str)
+{
+    QStringList list = d.lists.value(role);
+    if (!list.contains(str))
+    {
+        list += str;
+        setStringList(role, list);
+    }
+}
+
+void StringListModel::remove(int role, const QString& str)
+{
+    QStringList list = d.lists.value(role);
+    if (list.removeAll(str))
+        setStringList(role, list);
+}
