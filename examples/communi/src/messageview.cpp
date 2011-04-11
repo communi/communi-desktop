@@ -220,8 +220,33 @@ void MessageView::onEscPressed()
 
 void MessageView::onSend(const QString& text)
 {
-    QApplication::processEvents();
-    emit send(d.receiver, text);
+    if (text.startsWith('/'))
+    {
+        QStringList words = text.mid(1).split(" ");
+        IrcMessage* msg = IrcMessage::create(words.value(0).toUpper());
+        if (msg)
+        {
+            msg->initFrom(session()->nickName(), words.mid(1));
+            qDebug() << "### CMD:" << msg->toString();
+            session()->sendMessage(msg);
+            if (IrcSendMessage* sendMessage = qobject_cast<IrcSendMessage*>(msg))
+                receiveMessage(sendMessage);
+            msg->deleteLater();
+        }
+        else
+        {
+            showHelp(text.mid(1));
+        }
+    }
+    else if (!text.trimmed().isEmpty())
+    {
+        IrcPrivateMessage msg;
+        msg.setPrefix(session()->nickName());
+        msg.setTarget(d.receiver);
+        msg.setMessage(text);
+        session()->sendMessage(&msg);
+        receiveMessage(&msg);
+    }
 }
 
 void MessageView::onAnchorClicked(const QUrl& link)

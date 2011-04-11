@@ -47,7 +47,6 @@ public slots:
     void receiveMessage(const QString& format, const QStringList& params, bool highlight = false);
 
 signals:
-    void send(const QString& receiver, const QString& text);
     void query(const QString& nick);
     void highlight(MessageView* view, bool on);
     void alert(MessageView* view, bool on);

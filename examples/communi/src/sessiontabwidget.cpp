@@ -83,39 +83,22 @@ void SessionTabWidget::openView(const QString& receiver)
     }
 }
 
-void SessionTabWidget::closeCurrentView(const QString& message)
+void SessionTabWidget::closeCurrentView()
 {
     int index = currentIndex();
     if (index != -1)
     {
-        QString receiver = tabText(index);
-        closeView(receiver, message);
-    }
-}
-
-void SessionTabWidget::closeView(const QString& receiver, const QString& message)
-{
-    QString tmp = receiver;
-    if (!Session::isChannel(tmp) && !d.views.contains(tmp.toLower()))
-        tmp.prepend("#");
-
-    if (Session::isChannel(tmp))
-    {
-        IrcPartMessage msg;
-        msg.setChannel(tmp);
-        d.session->sendMessage(&msg);
-    }
-
-    MessageView* view = d.views.take(tmp.toLower());
-    if (view)
-    {
-        if (indexOf(view) == 0)
+        MessageView* view = d.views.take(tabText(index).toLower());
+        if (view)
         {
-            // closing a server tab
-            emit disconnectFrom(QString());
-            deleteLater();
+            if (indexOf(view) == 0)
+            {
+                // closing a server tab
+                emit disconnectFrom(QString());
+                deleteLater();
+            }
+            view->deleteLater();
         }
-        view->deleteLater();
     }
 }
 
@@ -164,34 +147,6 @@ void SessionTabWidget::bufferRemoved(Irc::Buffer* buffer)
         view->deleteLater();
 }
 */
-
-void SessionTabWidget::send(const QString& receiver, const QString& message)
-{
-    if (message.trimmed().isEmpty())
-        return;
-
-    MessageView* view = static_cast<MessageView*>(currentWidget());
-    if (message.startsWith('/'))
-    {
-        if (!d.engine->evaluateCommand(message.mid(1), receiver, d.views.keys()))
-        {
-            if (view)
-                view->showHelp(message.mid(1));
-        }
-    }
-    else if (indexOf(view) > 0)
-    {
-        IrcPrivateMessage msg;
-        msg.setTarget(receiver);
-        msg.setMessage(message);
-        d.session->sendMessage(&msg);
-    }
-    else
-    {
-        if (view)
-            view->showHelp();
-    }
-}
 
 void SessionTabWidget::tabActivated(int index)
 {
@@ -282,7 +237,6 @@ void SessionTabWidget::createView(const QString& receiver)
     {
         MessageView* view = new MessageView(d.session, this);
         view->setReceiver(receiver);
-        connect(view, SIGNAL(send(QString, QString)), this, SLOT(send(QString, QString)));
         connect(view, SIGNAL(rename(MessageView*)), this, SLOT(nameTab(MessageView*)));
         connect(view, SIGNAL(alert(MessageView*, bool)), this, SLOT(alertTab(MessageView*, bool)));
         connect(view, SIGNAL(highlight(MessageView*, bool)), this, SLOT(highlightTab(MessageView*, bool)));

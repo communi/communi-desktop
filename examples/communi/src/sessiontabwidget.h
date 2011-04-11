@@ -41,8 +41,7 @@ public:
 
 public slots:
     void openView(const QString& receiver);
-    void closeCurrentView(const QString& message = QString());
-    void closeView(const QString& receiver, const QString& message = QString());
+    void closeCurrentView();
 
 signals:
     void vibraRequested(bool on);
@@ -53,7 +52,6 @@ private slots:
     void connected();
     void connecting();
     void disconnected();
-    void send(const QString& receiver, const QString& message);
     void tabActivated(int index);
     void delayedTabReset();
     void delayedTabResetTimeout();
