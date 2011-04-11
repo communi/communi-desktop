@@ -27,6 +27,7 @@
 
 Session::Session(QObject* parent) : IrcSession(parent), delay(10)
 {
+    connect(this, SIGNAL(password(QString*)), SLOT(onPassword(QString*)));
     //TODO: setOptions(options() | Session::PrefixNicks);
     Application::setSessions(Application::sessions() << this);
 }

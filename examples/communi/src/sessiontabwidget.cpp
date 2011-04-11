@@ -24,6 +24,7 @@
 #include "messageview.h"
 #include "settings.h"
 #include "session.h"
+#include <ircmessage.h>
 #include <ircutil.h>
 #include <irc.h>
 #include <QtGui>
@@ -34,9 +35,22 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     // take ownership of the session
     session->setParent(this);
 
+    // TODO: createView()
+    MessageView* view = new MessageView(session, this);
+    view->setReceiver(session->host());
+    connect(view, SIGNAL(send(QString, QString)), this, SLOT(send(QString, QString)));
+    connect(view, SIGNAL(rename(MessageView*)), this, SLOT(nameTab(MessageView*)));
+    connect(view, SIGNAL(alert(MessageView*, bool)), this, SLOT(alertTab(MessageView*, bool)));
+    connect(view, SIGNAL(highlight(MessageView*, bool)), this, SLOT(highlightTab(MessageView*, bool)));
+    connect(view, SIGNAL(query(QString)), this, SLOT(openView(QString)));
+
+    d.views.insert(session->host().toLower(), view);
+    int index = addTab(view, session->host());
+    setCurrentIndex(index);
+
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
     connect(session, SIGNAL(connected()), this, SLOT(connected()));
-    connect(session, SIGNAL(reconnecting()), this, SLOT(reconnecting()));
+    connect(session, SIGNAL(connecting()), this, SLOT(connecting()));
     connect(session, SIGNAL(disconnected()), this, SLOT(disconnected()));
 
     QShortcut* shortcut = new QShortcut(QKeySequence::Close, this);
@@ -65,9 +79,29 @@ Session* SessionTabWidget::session() const
 void SessionTabWidget::openView(const QString& receiver)
 {
     if (d.views.contains(receiver.toLower()))
+    {
         setCurrentWidget(d.views.value(receiver.toLower()));
-    //TODO: else
-    //TODO:     d.session->addBuffer(receiver);
+    }
+    else
+    {
+        if (Session::isChannel(receiver))
+        {
+            IrcJoinMessage msg;
+            msg.setChannel(receiver);
+        }
+
+        MessageView* view = new MessageView(d.session, this);
+        view->setReceiver(receiver);
+        connect(view, SIGNAL(send(QString, QString)), this, SLOT(send(QString, QString)));
+        connect(view, SIGNAL(rename(MessageView*)), this, SLOT(nameTab(MessageView*)));
+        connect(view, SIGNAL(alert(MessageView*, bool)), this, SLOT(alertTab(MessageView*, bool)));
+        connect(view, SIGNAL(highlight(MessageView*, bool)), this, SLOT(highlightTab(MessageView*, bool)));
+        connect(view, SIGNAL(query(QString)), this, SLOT(openView(QString)));
+
+        d.views.insert(receiver.toLower(), view);
+        int index = addTab(view, receiver);
+        setCurrentIndex(index);
+    }
 }
 
 void SessionTabWidget::closeCurrentView(const QString& message)
@@ -86,8 +120,12 @@ void SessionTabWidget::closeView(const QString& receiver, const QString& message
     if (!Session::isChannel(tmp) && !d.views.contains(tmp.toLower()))
         tmp.prepend("#");
 
-    //TODO: if (Session::isChannel(tmp))
-    //TODO:     d.session->part(tmp, message);
+    if (Session::isChannel(tmp))
+    {
+        IrcPartMessage msg;
+        msg.setChannel(tmp);
+        d.session->sendMessage(&msg);
+    }
 
     MessageView* view = d.views.take(tmp.toLower());
     if (view)
@@ -115,7 +153,7 @@ void SessionTabWidget::connected()
     d.connectCounter = 0;
 }
 
-void SessionTabWidget::reconnecting()
+void SessionTabWidget::connecting()
 {
     MessageView* view = static_cast<MessageView*>(widget(0));
     if (view)
@@ -139,21 +177,7 @@ void SessionTabWidget::disconnected()
     }
 }
 
-/*
-void SessionTabWidget::bufferAdded(Irc::Buffer* buffer)
-{
-    MessageView* view = new MessageView(buffer, this);
-    connect(view, SIGNAL(send(QString, QString)), this, SLOT(send(QString, QString)));
-    connect(view, SIGNAL(rename(MessageView*)), this, SLOT(nameTab(MessageView*)));
-    connect(view, SIGNAL(alert(MessageView*, bool)), this, SLOT(alertTab(MessageView*, bool)));
-    connect(view, SIGNAL(highlight(MessageView*, bool)), this, SLOT(highlightTab(MessageView*, bool)));
-    connect(view, SIGNAL(query(QString)), this, SLOT(openView(QString)));
-
-    d.views.insert(buffer->receiver().toLower(), view);
-    int index = addTab(view, buffer->receiver());
-    setCurrentIndex(index);
-}
-
+/* TODO:
 void SessionTabWidget::bufferRemoved(Irc::Buffer* buffer)
 {
     MessageView* view = d.views.take(buffer->receiver().toLower());
@@ -178,7 +202,10 @@ void SessionTabWidget::send(const QString& receiver, const QString& message)
     }
     else if (indexOf(view) > 0)
     {
-        //TODO: d.session->message(receiver, message);
+        IrcPrivateMessage msg;
+        msg.setTarget(receiver);
+        msg.setMessage(message);
+        d.session->sendMessage(&msg);
     }
     else
     {

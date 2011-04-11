@@ -45,13 +45,10 @@ enum ModelRole
     Role_Aliases
 };
 
-MessageView::MessageView(/*Irc::Buffer* buffer,*/ QWidget* parent)
-    : QWidget(parent)
+MessageView::MessageView(IrcSession* session, QWidget* parent) :
+    QWidget(parent), IrcReceiver(session)
 {
     d.setupUi(this);
-
-    //d.buffer = 0;
-    //setBuffer(buffer);
 
     setFocusProxy(d.editFrame->lineEdit());
     d.textBrowser->installEventFilter(this);
@@ -88,46 +85,17 @@ MessageView::MessageView(/*Irc::Buffer* buffer,*/ QWidget* parent)
 
 MessageView::~MessageView()
 {
-    //TODO: d.buffer->deleteLater();
 }
 
-/*
-Irc::Buffer* MessageView::buffer() const
+QString MessageView::receiver() const
 {
-    return d.buffer;
+    return d.receiver;
 }
 
-void MessageView::setBuffer(Irc::Buffer* buffer)
+void MessageView::setReceiver(const QString& receiver)
 {
-    if (d.buffer != buffer)
-    {
-        if (d.buffer)
-            d.buffer->disconnect(this);
-
-        d.buffer = buffer;
-
-        if (buffer)
-        {
-            connect(buffer, SIGNAL(receiverChanged(QString)), this, SLOT(receiverChanged()));
-            connect(buffer, SIGNAL(joined(QString)), this, SLOT(msgJoined(QString)));
-            connect(buffer, SIGNAL(parted(QString, QString)), this, SLOT(msgParted(QString, QString)));
-            connect(buffer, SIGNAL(quit(QString, QString)), this, SLOT(msgQuit(QString, QString)));
-            connect(buffer, SIGNAL(nickChanged(QString, QString)), this, SLOT(msgNickChanged(QString, QString)));
-            connect(buffer, SIGNAL(modeChanged(QString, QString, QString)), this, SLOT(msgModeChanged(QString, QString, QString)));
-            connect(buffer, SIGNAL(topicChanged(QString, QString)), this, SLOT(msgTopicChanged(QString, QString)));
-            connect(buffer, SIGNAL(invited(QString, QString, QString)), this, SLOT(msgInvited(QString, QString, QString)));
-            connect(buffer, SIGNAL(kicked(QString, QString, QString)), this, SLOT(msgKicked(QString, QString, QString)));
-            connect(buffer, SIGNAL(messageReceived(QString, QString)), this, SLOT(msgMessageReceived(QString, QString)));
-            connect(buffer, SIGNAL(noticeReceived(QString, QString)), this, SLOT(msgNoticeReceived(QString, QString)));
-            connect(buffer, SIGNAL(ctcpRequestReceived(QString, QString)), this, SLOT(msgCtcpRequestReceived(QString, QString)));
-            connect(buffer, SIGNAL(ctcpReplyReceived(QString, QString)), this, SLOT(msgCtcpReplyReceived(QString, QString)));
-            connect(buffer, SIGNAL(ctcpActionReceived(QString, QString)), this, SLOT(msgCtcpActionReceived(QString, QString)));
-            connect(buffer, SIGNAL(numericMessageReceived(QString, uint, QStringList)), this, SLOT(msgNumericMessageReceived(QString, uint, QStringList)));
-            connect(buffer, SIGNAL(unknownMessageReceived(QString, QStringList)), this, SLOT(msgUnknownMessageReceived(QString, QStringList)));
-        }
-    }
+    d.receiver = receiver;
 }
-*/
 
 void MessageView::clear()
 {
@@ -229,13 +197,11 @@ bool MessageView::eventFilter(QObject* receiver, QEvent* event)
         QString anchor = d.textBrowser->anchorAt(contextMenuEvent->pos());
         if (anchor.startsWith("query:"))
         {
-            /* TODO:
             QString nick = QUrl(anchor).path();
-            Menu* menu = Menu::createNickContextMenu(nick, d.buffer->receiver(), this);
-            connect(menu, SIGNAL(command(QString)), d.buffer->session(), SLOT(raw(QString)));
+            Menu* menu = Menu::createNickContextMenu(nick, d.receiver, this);
+            //TODO: connect(menu, SIGNAL(command(QString)), d.buffer->session(), SLOT(raw(QString)));
             menu->exec(contextMenuEvent->globalPos());
             delete menu;
-            */
             return true;
         }
     }
@@ -254,7 +220,7 @@ void MessageView::onEscPressed()
 void MessageView::onSend(const QString& text)
 {
     QApplication::processEvents();
-    //TODO: emit send(d.buffer->receiver(), text);
+    emit send(d.receiver, text);
 }
 
 void MessageView::onAnchorClicked(const QUrl& link)
@@ -293,12 +259,19 @@ void MessageView::receiverChanged()
     emit rename(this);
 }
 
-void MessageView::msgJoined(const QString& origin)
+void MessageView::inviteMessage(IrcInviteMessage* message)
+{
+    QStringList params;
+    params << senderHtml(message->prefix()) << senderHtml(message->channel());
+    receiveMessage(tr("! %1 invited to %3"), params);
+}
+
+void MessageView::joinMessage(IrcJoinMessage* message)
 {
     if (Application::settings().messages.value(Settings::Joins))
     {
         QStringList params;
-        //TODO: params << senderHtml(origin) << d.buffer->receiver();
+        params << senderHtml(message->prefix()) << message->channel();
         receiveMessage(tr("! %1 joined %2"), params);
     }
     if (Application::settings().highlights.value(Settings::Joins))
@@ -307,94 +280,14 @@ void MessageView::msgJoined(const QString& origin)
     //TODO: d.model->setStringList(Role_Names, d.buffer->names());
 }
 
-void MessageView::msgParted(const QString& origin, const QString& message)
-{
-    if (Application::settings().messages.value(Settings::Parts))
-    {
-        QStringList params;
-        //TODO: params << senderHtml(origin) << d.buffer->receiver();
-        if (!message.isEmpty())
-            receiveMessage(tr("! %1 parted %2 (%3)"), params << message);
-        else
-            receiveMessage(tr("! %1 parted %2"), params);
-    }
-    if (Application::settings().highlights.value(Settings::Parts))
-        emit highlight(this, true);
-
-    //TODO: d.model->setStringList(Role_Names, d.buffer->names());
-}
-
-void MessageView::msgQuit(const QString& origin, const QString& message)
-{
-    if (Application::settings().messages.value(Settings::Quits))
-    {
-        QStringList params;
-        params << prefixedSender(origin);
-        if (!message.isEmpty())
-            receiveMessage(tr("! %1 has quit (%2)"), params << message);
-        else
-            receiveMessage(tr("! %1 has quit"), params);
-    }
-    if (Application::settings().highlights.value(Settings::Quits))
-        emit highlight(this, true);
-
-    //TODO: d.model->setStringList(Role_Names, d.buffer->names());
-}
-
-void MessageView::msgNickChanged(const QString& origin, const QString& nick)
-{
-    if (Application::settings().messages.value(Settings::Nicks))
-    {
-        QStringList params;
-        params << prefixedSender(origin) << senderHtml(nick);
-        receiveMessage(tr("! %1 changed nick to %2"), params);
-    }
-    if (Application::settings().highlights.value(Settings::Nicks))
-        emit highlight(this, true);
-
-    //TODO: d.model->setStringList(Role_Names, d.buffer->names());
-}
-
-void MessageView::msgModeChanged(const QString& origin, const QString& mode, const QString& args)
-{
-    if (Application::settings().messages.value(Settings::Modes))
-    {
-        QStringList params;
-        params << senderHtml(origin) << mode << args;
-        receiveMessage(tr("! %1 sets mode %2 %3"), params);
-    }
-    if (Application::settings().highlights.value(Settings::Modes))
-        emit highlight(this, true);
-}
-
-void MessageView::msgTopicChanged(const QString& origin, const QString& topic)
-{
-    if (Application::settings().messages.value(Settings::Topics))
-    {
-        QStringList params;
-        //TODO: params << senderHtml(origin) << IrcUtil::messageToHtml(topic) << d.buffer->receiver();
-        receiveMessage(tr("! %1 sets topic \"%2\" on %3"), params);
-    }
-    if (Application::settings().highlights.value(Settings::Topics))
-        emit highlight(this, true);
-}
-
-void MessageView::msgInvited(const QString& origin, const QString& receiver, const QString& channel)
-{
-    Q_UNUSED(receiver);
-    QStringList params;
-    params << senderHtml(origin) << senderHtml(channel);
-    receiveMessage(tr("! %1 invited to %3"), params);
-}
-
-void MessageView::msgKicked(const QString& origin, const QString& nick, const QString& message)
+void MessageView::kickMessage(IrcKickMessage* message)
 {
     if (Application::settings().messages.value(Settings::Kicks))
     {
         QStringList params;
-        params << senderHtml(origin) << senderHtml(nick);
-        if (!message.isEmpty())
-            receiveMessage(tr("! %1 kicked %2 (%3)"), params << message);
+        params << senderHtml(message->prefix()) << senderHtml(message->user());
+        if (!message->reason().isEmpty())
+            receiveMessage(tr("! %1 kicked %2 (%3)"), params << message->reason());
         else
             receiveMessage(tr("! %1 kicked %2"), params);
     }
@@ -404,24 +297,33 @@ void MessageView::msgKicked(const QString& origin, const QString& nick, const QS
     //TODO: d.model->setStringList(Role_Names, d.buffer->names());
 }
 
-void MessageView::msgMessageReceived(const QString& origin, const QString& message)
+void MessageView::modeMessage(IrcModeMessage* message)
 {
-    /* TODO:
-    bool matches = message.contains(d.buffer->session()->nick());
-    QString target = d.buffer->receiver();
-    bool privmsg = !Session::isChannel(target);
-    if (matches || privmsg)
-        emit alert(this, true);
-    else
+    if (Application::settings().messages.value(Settings::Modes))
+    {
+        QStringList params;
+        params << senderHtml(message->prefix()) << message->mode() << message->argument();
+        receiveMessage(tr("! %1 sets mode %2 %3"), params);
+    }
+    if (Application::settings().highlights.value(Settings::Modes))
         emit highlight(this, true);
-
-    QStringList params;
-    params << senderHtml(origin) << IrcUtil::messageToHtml(message);
-    receiveMessage(tr("&lt;%1&gt; %2"), params, matches);
-    */
 }
 
-void MessageView::msgNoticeReceived(const QString& origin, const QString& notice)
+void MessageView::nickNameMessage(IrcNickMessage* message)
+{
+    if (Application::settings().messages.value(Settings::Nicks))
+    {
+        QStringList params;
+        params << prefixedSender(message->prefix()) << senderHtml(message->nick());
+        receiveMessage(tr("! %1 changed nick to %2"), params);
+    }
+    if (Application::settings().highlights.value(Settings::Nicks))
+        emit highlight(this, true);
+
+    //TODO: d.model->setStringList(Role_Names, d.buffer->names());
+}
+
+void MessageView::noticeMessage(IrcNoticeMessage* message)
 {
     /* TODO:
     bool matches = notice.contains(d.buffer->session()->nick());
@@ -429,77 +331,17 @@ void MessageView::msgNoticeReceived(const QString& origin, const QString& notice
         emit alert(this, true);
     else
         emit highlight(this, true);
-
-    QStringList params;
-    params << senderHtml(origin) << IrcUtil::messageToHtml(notice);
-    receiveMessage(tr("[%1] %2"), params, matches);
     */
-}
-
-void MessageView::msgCtcpRequestReceived(const QString& origin, const QString& request)
-{
-    /* TODO
-    QStringList params;
-    params << senderHtml(origin) << request.split(QRegExp("\\s")).first().toUpper();
-    receiveMessage(tr("! %1 requested CTCP-%2"), params);
-
-    if (!request.compare("VERSION", Qt::CaseInsensitive))
-        d.buffer->session()->ctcpReply(origin, QString("%1 %2 %3").arg(request).arg(qApp->applicationName()).arg(qApp->applicationVersion()));
-    else if (request.startsWith("PING", Qt::CaseInsensitive))
-        d.buffer->session()->ctcpReply(origin, request);
-    else if (request.startsWith("TIME", Qt::CaseInsensitive))
-        d.buffer->session()->ctcpReply(origin, QString("%1 %2").arg(request).arg(QDateTime::currentDateTime().toString()));
-    else
-        qWarning("MessageView::on_ctcpRequestReceived '%s' requested '%s'", qPrintable(origin), qPrintable(request));
-    */
-}
-
-void MessageView::msgCtcpReplyReceived(const QString& origin, const QString& reply)
-{
-    QString message = reply;
-    if (message.startsWith("PING", Qt::CaseInsensitive))
-    {
-        QStringList params = message.split(QRegExp("\\s"), QString::SkipEmptyParts);
-        if (!params.isEmpty())
-        {
-            QDateTime dateTime = QDateTime::fromTime_t(params.last().toInt());
-            if (dateTime.isValid())
-            {
-                QDateTime current = QDateTime::currentDateTime();
-                int msecs = dateTime.time().msecsTo(current.time());
-                if (msecs < 1000)
-                    message = QString("PING %1ms").arg(msecs);
-                else if (msecs < 60000)
-                    message = QString("PING %1s").arg(msecs / 1000.0, 0, 'f', 1);
-                else
-                    message = QString("PING %1m").arg(msecs / 60000);
-            }
-        }
-    }
 
     QStringList params;
-    params << senderHtml(origin) << message;
-    receiveMessage(tr("! %1 replied CTCP-%2"), params);
+    params << senderHtml(message->prefix()) << IrcUtil::messageToHtml(message->message());
+    receiveMessage(tr("[%1] %2"), params); //TODO:, matches);
 }
 
-void MessageView::msgCtcpActionReceived(const QString& origin, const QString& action)
+void MessageView::numericMessage(IrcNumericMessage* message)
 {
-    /* TODO:
-    bool matches = action.contains(d.buffer->session()->nick());
-    if (matches)
-        emit alert(this, true);
-    else
-        emit highlight(this, true);
-
-    QStringList params;
-    params << senderHtml(origin) << IrcUtil::messageToHtml(action);
-    receiveMessage(tr("* %1 %2"), params, matches);
-    */
-}
-
-void MessageView::msgNumericMessageReceived(const QString& origin, uint code, const QStringList& params)
-{
-    switch (code)
+    QStringList params = message->parameters();
+    switch (message->code())
     {
         case Irc::RPL_WELCOME:
             emit highlight(this, false);
@@ -614,7 +456,7 @@ void MessageView::msgNumericMessageReceived(const QString& origin, uint code, co
             return;
 
         case Irc::RPL_VERSION:
-            receiveMessage(tr("! %1 version is %2"), QStringList() << origin << params.value(1));
+            receiveMessage(tr("! %1 version is %2"), QStringList() << message->prefix() << params.value(1));
             return;
 
         case Irc::RPL_NAMREPLY:
@@ -643,23 +485,142 @@ void MessageView::msgNumericMessageReceived(const QString& origin, uint code, co
             return;
 
         default:
+            receiveMessage(tr("[%1] %2"), QStringList() << QString::number(message->code()) << params.join(" "));
             break;
     }
-
-    //qDebug() << "numeric:" << origin << code;
-    receiveMessage(tr("[%1] %2"), QStringList() << QString::number(code) << params.join(" "));
 }
 
-void MessageView::msgUnknownMessageReceived(const QString& origin, const QStringList& params)
+void MessageView::partMessage(IrcPartMessage* message)
 {
-    // TODO
-    qWarning() << "unknown:" << origin << params;
+    if (Application::settings().messages.value(Settings::Parts))
+    {
+        QStringList params;
+        params << senderHtml(message->prefix()) << message->channel();
+        if (!message->reason().isEmpty())
+            receiveMessage(tr("! %1 parted %2 (%3)"), params << message->reason());
+        else
+            receiveMessage(tr("! %1 parted %2"), params);
+    }
+    if (Application::settings().highlights.value(Settings::Parts))
+        emit highlight(this, true);
+
+    //TODO: d.model->setStringList(Role_Names, d.buffer->names());
 }
+
+void MessageView::privateMessage(IrcPrivateMessage* message)
+{
+    /* TODO:
+    bool matches = message.contains(d.buffer->session()->nick());
+    QString target = d.buffer->receiver();
+    bool privmsg = !Session::isChannel(target);
+    if (matches || privmsg)
+        emit alert(this, true);
+    else
+        emit highlight(this, true);
+    */
+
+    QStringList params;
+    params << senderHtml(message->prefix()) << IrcUtil::messageToHtml(message->message());
+    receiveMessage(tr("&lt;%1&gt; %2"), params); //TODO:, matches);
+}
+
+void MessageView::quitMessage(IrcQuitMessage* message)
+{
+    if (Application::settings().messages.value(Settings::Quits))
+    {
+        QStringList params;
+        params << prefixedSender(message->prefix());
+        if (!message->reason().isEmpty())
+            receiveMessage(tr("! %1 has quit (%2)"), params << message->reason());
+        else
+            receiveMessage(tr("! %1 has quit"), params);
+    }
+    if (Application::settings().highlights.value(Settings::Quits))
+        emit highlight(this, true);
+
+    //TODO: d.model->setStringList(Role_Names, d.buffer->names());
+}
+
+void MessageView::topicMessage(IrcTopicMessage* message)
+{
+    if (Application::settings().messages.value(Settings::Topics))
+    {
+        QStringList params;
+        params << senderHtml(message->prefix()) << IrcUtil::messageToHtml(message->topic()) << message->channel();
+        receiveMessage(tr("! %1 sets topic \"%2\" on %3"), params);
+    }
+    if (Application::settings().highlights.value(Settings::Topics))
+        emit highlight(this, true);
+}
+
+void MessageView::unknownMessage(IrcMessage* message)
+{
+    qWarning() << "unknown:" << message->prefix() << message->parameters();
+}
+
+/* TODO:
+void MessageView::msgCtcpRequestReceived(const QString& origin, const QString& request)
+{
+    QStringList params;
+    params << senderHtml(message->prefix()) << request.split(QRegExp("\\s")).first().toUpper();
+    receiveMessage(tr("! %1 requested CTCP-%2"), params);
+
+    if (!request.compare("VERSION", Qt::CaseInsensitive))
+        d.buffer->session()->ctcpReply(origin, QString("%1 %2 %3").arg(request).arg(qApp->applicationName()).arg(qApp->applicationVersion()));
+    else if (request.startsWith("PING", Qt::CaseInsensitive))
+        d.buffer->session()->ctcpReply(origin, request);
+    else if (request.startsWith("TIME", Qt::CaseInsensitive))
+        d.buffer->session()->ctcpReply(origin, QString("%1 %2").arg(request).arg(QDateTime::currentDateTime().toString()));
+    else
+        qWarning("MessageView::on_ctcpRequestReceived '%s' requested '%s'", qPrintable(origin), qPrintable(request));
+}
+
+void MessageView::msgCtcpReplyReceived(const QString& origin, const QString& reply)
+{
+    QString message = reply;
+    if (message.startsWith("PING", Qt::CaseInsensitive))
+    {
+        QStringList params = message.split(QRegExp("\\s"), QString::SkipEmptyParts);
+        if (!params.isEmpty())
+        {
+            QDateTime dateTime = QDateTime::fromTime_t(params.last().toInt());
+            if (dateTime.isValid())
+            {
+                QDateTime current = QDateTime::currentDateTime();
+                int msecs = dateTime.time().msecsTo(current.time());
+                if (msecs < 1000)
+                    message = QString("PING %1ms").arg(msecs);
+                else if (msecs < 60000)
+                    message = QString("PING %1s").arg(msecs / 1000.0, 0, 'f', 1);
+                else
+                    message = QString("PING %1m").arg(msecs / 60000);
+            }
+        }
+    }
+
+    QStringList params;
+    params << senderHtml(message->prefix()) << message;
+    receiveMessage(tr("! %1 replied CTCP-%2"), params);
+}
+
+void MessageView::msgCtcpActionReceived(const QString& origin, const QString& action)
+{
+    bool matches = action.contains(d.buffer->session()->nick());
+    if (matches)
+        emit alert(this, true);
+    else
+        emit highlight(this, true);
+
+    QStringList params;
+    params << senderHtml(message->prefix()) << IrcUtil::messageToHtml(action);
+    receiveMessage(tr("* %1 %2"), params, matches);
+}
+*/
 
 QString MessageView::prefixedSender(const QString& sender) const
 {
     //TODO: return d.buffer->visualMode(sender) + sender;
-    return QString();
+    return sender;
 }
 
 QString MessageView::senderHtml(const QString& sender) const

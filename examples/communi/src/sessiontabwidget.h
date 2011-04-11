@@ -50,7 +50,7 @@ signals:
 
 private slots:
     void connected();
-    void reconnecting();
+    void connecting();
     void disconnected();
     void send(const QString& receiver, const QString& message);
     void tabActivated(int index);

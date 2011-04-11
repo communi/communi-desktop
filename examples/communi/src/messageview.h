@@ -22,21 +22,24 @@
 #define MESSAGEVIEW_H
 
 #include "ui_messageview.h"
+#include <ircreceiver.h>
+#include <ircmessage.h>
 
 class QTreeView;
 class StringListModel;
 struct Settings;
 
-class MessageView : public QWidget
+class MessageView : public QWidget, public IrcReceiver
 {
     Q_OBJECT
+    Q_PROPERTY(QString receiver READ receiver WRITE setReceiver)
 
 public:
-    MessageView(/* TODO: Irc::Buffer* buffer,*/ QWidget* parent = 0);
+    MessageView(IrcSession* session, QWidget* parent = 0);
     ~MessageView();
 
-    //TODO: Irc::Buffer* buffer() const;
-    //TODO: void setBuffer(Irc::Buffer* buffer);
+    QString receiver() const;
+    void setReceiver(const QString& receiver);
 
 public slots:
     void clear();
@@ -53,6 +56,20 @@ signals:
 protected:
     bool eventFilter(QObject* receiver, QEvent* event);
 
+    // IrcReceiver
+    virtual void inviteMessage(IrcInviteMessage*);
+    virtual void joinMessage(IrcJoinMessage*);
+    virtual void kickMessage(IrcKickMessage*);
+    virtual void modeMessage(IrcModeMessage*);
+    virtual void nickNameMessage(IrcNickMessage*);
+    virtual void noticeMessage(IrcNoticeMessage*);
+    virtual void numericMessage(IrcNumericMessage*);
+    virtual void partMessage(IrcPartMessage*);
+    virtual void privateMessage(IrcPrivateMessage*);
+    virtual void quitMessage(IrcQuitMessage*);
+    virtual void topicMessage(IrcTopicMessage*);
+    virtual void unknownMessage(IrcMessage*);
+
 private slots:
     void onEscPressed();
     void onSend(const QString& text);
@@ -60,30 +77,14 @@ private slots:
     void applySettings(const Settings& settings);
     void receiverChanged();
 
-    void msgJoined(const QString& origin);
-    void msgParted(const QString& origin, const QString& message);
-    void msgQuit(const QString& origin, const QString& message);
-    void msgNickChanged(const QString& origin, const QString& nick);
-    void msgModeChanged(const QString& origin, const QString& mode, const QString& args);
-    void msgTopicChanged(const QString& origin, const QString& topic);
-    void msgInvited(const QString& origin, const QString& receiver, const QString& channel);
-    void msgKicked(const QString& origin, const QString& nick, const QString& message);
-    void msgMessageReceived(const QString& origin, const QString& message);
-    void msgNoticeReceived(const QString& origin, const QString& notice);
-    void msgCtcpRequestReceived(const QString& origin, const QString& request);
-    void msgCtcpReplyReceived(const QString& origin, const QString& reply);
-    void msgCtcpActionReceived(const QString& origin, const QString& action);
-    void msgNumericMessageReceived(const QString& origin, uint code, const QStringList& params);
-    void msgUnknownMessageReceived(const QString& origin, const QStringList& params);
-
 private:
     QString prefixedSender(const QString& sender) const;
     QString senderHtml(const QString& sender) const;
 
     struct MessageViewData : public Ui::MessageView
     {
-        //TODO: Irc::Buffer* buffer;
         StringListModel* model;
+        QString receiver;
         bool timeStamp;
     } d;
 };
