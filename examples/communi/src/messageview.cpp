@@ -19,13 +19,11 @@
 */
 
 #include "messageview.h"
-#include "menu.h"
 #include "session.h"
 #include "settings.h"
 #include "completer.h"
 #include "application.h"
 #include "stringlistmodel.h"
-#include "nickhighlighter.h"
 #include <QDesktopServices>
 #include <QStringListModel>
 #include <QScrollBar>
@@ -34,7 +32,6 @@
 #include <QKeyEvent>
 #include <QDebug>
 #include <QTime>
-#include <QMenu>
 #include <ircprefix.h>
 #include <ircutil.h>
 #include <irc.h>
@@ -46,6 +43,15 @@ enum ModelRole
     Role_Aliases
 };
 
+static const QStringList NICK_COLORS = QStringList()
+    << QLatin1String("#BF0000")
+    << QLatin1String("#FF0000")
+    << QLatin1String("#BF7900")
+    << QLatin1String("#00BC0F")
+    << QLatin1String("#00A7BA")
+    << QLatin1String("#0F00B7")
+    << QLatin1String("#8100B5");
+
 MessageView::MessageView(IrcSession* session, QWidget* parent) :
     QWidget(parent), IrcReceiver(session)
 {
@@ -54,7 +60,6 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
     setFocusProxy(d.editFrame->lineEdit());
     d.textBrowser->installEventFilter(this);
     d.textBrowser->viewport()->installEventFilter(this);
-    connect(d.textBrowser, SIGNAL(anchorClicked(QUrl)), this, SLOT(onAnchorClicked(QUrl)));
 
     d.model = new StringListModel(this);
 
@@ -75,7 +80,6 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
     connect(d.editFrame, SIGNAL(help(QString)), this, SLOT(showHelp(QString)));
 
     d.findFrame->setTextEdit(d.textBrowser);
-    (void) new NickHighlighter(d.textBrowser->document());
 
     QShortcut* shortcut = new QShortcut(Qt::Key_Escape, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(onEscPressed()));
@@ -96,11 +100,6 @@ QString MessageView::receiver() const
 void MessageView::setReceiver(const QString& receiver)
 {
     d.receiver = receiver;
-}
-
-void MessageView::clear()
-{
-    d.textBrowser->clear();
 }
 
 void MessageView::showHelp(const QString& text)
@@ -192,20 +191,6 @@ bool MessageView::eventFilter(QObject* receiver, QEvent* event)
                 break;
         }
     }
-    else if (event->type() == QEvent::ContextMenu)
-    {
-        QContextMenuEvent* contextMenuEvent = static_cast<QContextMenuEvent*>(event);
-        QString anchor = d.textBrowser->anchorAt(contextMenuEvent->pos());
-        if (anchor.startsWith("query:"))
-        {
-            QString nick = QUrl(anchor).path();
-            Menu* menu = Menu::createNickContextMenu(nick, d.receiver, this);
-            //TODO: connect(menu, SIGNAL(command(QString)), d.buffer->session(), SLOT(raw(QString)));
-            menu->exec(contextMenuEvent->globalPos());
-            delete menu;
-            return true;
-        }
-    }
     return false;
 }
 
@@ -247,14 +232,6 @@ void MessageView::onSend(const QString& text)
         session()->sendMessage(&msg);
         receiveMessage(&msg);
     }
-}
-
-void MessageView::onAnchorClicked(const QUrl& link)
-{
-    if (link.scheme() == "query")
-        emit query(link.path());
-    else
-        QDesktopServices::openUrl(link);
 }
 
 void MessageView::applySettings(const Settings& settings)
@@ -331,7 +308,7 @@ void MessageView::receiveMessage(IrcMessage* message)
 void MessageView::inviteMessage(IrcInviteMessage* message)
 {
     QStringList params;
-    params << senderHtml(message->prefix()) << senderHtml(message->channel());
+    params << prettyUser(message->prefix()) << message->channel();
     receiveMessage(tr("! %1 invited to %3"), params);
 }
 
@@ -340,7 +317,7 @@ void MessageView::joinMessage(IrcJoinMessage* message)
     if (Application::settings().messages.value(Settings::Joins))
     {
         QStringList params;
-        params << senderHtml(message->prefix()) << message->channel();
+        params << prettyUser(message->prefix()) << message->channel();
         receiveMessage(tr("! %1 joined %2"), params);
     }
     if (Application::settings().highlights.value(Settings::Joins))
@@ -354,7 +331,7 @@ void MessageView::kickMessage(IrcKickMessage* message)
     if (Application::settings().messages.value(Settings::Kicks))
     {
         QStringList params;
-        params << senderHtml(message->prefix()) << senderHtml(message->user());
+        params << prettyUser(message->prefix()) << prettyUser(message->user());
         if (!message->reason().isEmpty())
             receiveMessage(tr("! %1 kicked %2 (%3)"), params << message->reason());
         else
@@ -371,7 +348,7 @@ void MessageView::modeMessage(IrcModeMessage* message)
     if (Application::settings().messages.value(Settings::Modes))
     {
         QStringList params;
-        params << senderHtml(message->prefix()) << message->mode() << message->argument();
+        params << prettyUser(message->prefix()) << message->mode() << message->argument();
         receiveMessage(tr("! %1 sets mode %2 %3"), params);
     }
     if (Application::settings().highlights.value(Settings::Modes))
@@ -383,7 +360,7 @@ void MessageView::nickNameMessage(IrcNickMessage* message)
     if (Application::settings().messages.value(Settings::Nicks))
     {
         QStringList params;
-        params << prefixedSender(message->prefix()) << senderHtml(message->nick());
+        params << prettyUser(message->prefix()) << prettyUser(message->nick());
         receiveMessage(tr("! %1 changed nick to %2"), params);
     }
     if (Application::settings().highlights.value(Settings::Nicks))
@@ -402,7 +379,7 @@ void MessageView::noticeMessage(IrcNoticeMessage* message)
         emit highlight(this, true);
 
     QStringList params;
-    params << senderHtml(message->prefix()) << IrcUtil::messageToHtml(message->message());
+    params << prettyUser(message->prefix()) << IrcUtil::messageToHtml(message->message());
     receiveMessage(tr("[%1] %2"), params, matches);
 }
 
@@ -424,7 +401,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
             if (isCurrent())
             {
                 QStringList list;
-                list << senderHtml(params.value(0)) << params.at(1);
+                list << prettyUser(params.value(0)) << params.at(1);
                 receiveMessage("! %1 %2", list);
             }
             return;
@@ -433,7 +410,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
             if (isCurrent())
             {
                 QStringList list;
-                list << senderHtml(params.value(0)) << params.value(1) << params.value(2) << params.value(3);
+                list << prettyUser(params.value(0)) << params.value(1) << params.value(2) << params.value(3);
                 receiveMessage(tr("! %1 is %2@%3 %4"), list);
             }
             return;
@@ -442,7 +419,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
             if (isCurrent())
             {
                 QStringList list;
-                list << senderHtml(params.value(0)) << params.value(1) << params.value(2);
+                list << prettyUser(params.value(0)) << params.value(1) << params.value(2);
                 receiveMessage(tr("! %1 online via %2 (%3)"), list);
             }
             return;
@@ -451,7 +428,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
             if (isCurrent())
             {
                 QStringList list;
-                list << senderHtml(params.value(0)) << params.value(1) << params.value(2);
+                list << prettyUser(params.value(0)) << params.value(1) << params.value(2);
                 receiveMessage(tr("! %1 %3 %2"), list);
             }
             return;
@@ -468,7 +445,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
         case Irc::RPL_WHOISIDLE:
             if (isCurrent())
             {
-                QString sender = senderHtml(params.value(0));
+                QString sender = prettyUser(params.value(0));
 
                 QTime idle = QTime().addSecs(params.value(1).toInt());
                 receiveMessage(tr("! %1 has been idle for %2"), QStringList() << sender << idle.toString());
@@ -486,7 +463,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
             if (isCurrent())
             {
                 QStringList list;
-                list << senderHtml(params.value(0)) << params.value(1);
+                list << prettyUser(params.value(0)) << params.value(1);
                 receiveMessage(tr("! %1 is on channels %2"), list);
             }
             return;
@@ -526,7 +503,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
                 if (dateTime.isValid())
                 {
                     QStringList list;
-                    list << params.value(0) << dateTime.toString() << senderHtml(params.value(1));
+                    list << params.value(0) << dateTime.toString() << prettyUser(params.value(1));
                     receiveMessage(tr("! %1 topic set %2 by %3"), list);
                 }
             }
@@ -546,17 +523,19 @@ void MessageView::numericMessage(IrcNumericMessage* message)
             if (!d.receiver.compare(params.value(1), Qt::CaseInsensitive))
             {
                 QStringList nicks = params.value(2).split(" ", QString::SkipEmptyParts);
-                QStringList nickLinks;
-                foreach (const QString& nick, nicks) {
+                foreach (const QString& nick, nicks)
                     d.model->add(Role_Names, nick);
-                    nickLinks << senderHtml(nick);
-                }
-                QString msg = QString("[ %2 ]").arg(nickLinks.join(" ] [ "));
-                receiveMessage(tr("! %1"), QStringList(msg));
             }
             return;
 
         case Irc::RPL_ENDOFNAMES:
+            if (!d.receiver.compare(params.value(0), Qt::CaseInsensitive))
+            {
+                QStringList nicks = d.model->stringList(Role_Names);
+                nicks.sort();
+                QString msg = QString("[ %2 ]").arg(nicks.join(" ] [ "));
+                receiveMessage(tr("! %1"), QStringList(msg));
+            }
             return;
 
         case Irc::RPL_TIME:
@@ -576,7 +555,7 @@ void MessageView::partMessage(IrcPartMessage* message)
     if (Application::settings().messages.value(Settings::Parts))
     {
         QStringList params;
-        params << senderHtml(message->prefix()) << message->channel();
+        params << prettyUser(message->prefix()) << message->channel();
         if (!message->reason().isEmpty())
             receiveMessage(tr("! %1 parted %2 (%3)"), params << message->reason());
         else
@@ -598,7 +577,7 @@ void MessageView::privateMessage(IrcPrivateMessage* message)
         emit highlight(this, true);
 
     QStringList params;
-    params << senderHtml(message->prefix()) << IrcUtil::messageToHtml(message->message());
+    params << prettyUser(message->prefix()) << IrcUtil::messageToHtml(message->message());
     if (message->isAction())
         receiveMessage(tr("* %1 %2"), params, matches);
     else
@@ -610,7 +589,7 @@ void MessageView::quitMessage(IrcQuitMessage* message)
     if (Application::settings().messages.value(Settings::Quits))
     {
         QStringList params;
-        params << prefixedSender(message->prefix());
+        params << prettyUser(message->prefix());
         if (!message->reason().isEmpty())
             receiveMessage(tr("! %1 has quit (%2)"), params << message->reason());
         else
@@ -627,7 +606,7 @@ void MessageView::topicMessage(IrcTopicMessage* message)
     if (Application::settings().messages.value(Settings::Topics))
     {
         QStringList params;
-        params << senderHtml(message->prefix()) << IrcUtil::messageToHtml(message->topic()) << message->channel();
+        params << prettyUser(message->prefix()) << IrcUtil::messageToHtml(message->topic()) << message->channel();
         receiveMessage(tr("! %1 sets topic \"%2\" on %3"), params);
     }
     if (Application::settings().highlights.value(Settings::Topics))
@@ -643,7 +622,7 @@ void MessageView::unknownMessage(IrcMessage* message)
 void MessageView::msgCtcpRequestReceived(const QString& origin, const QString& request)
 {
     QStringList params;
-    params << senderHtml(message->prefix()) << request.split(QRegExp("\\s")).first().toUpper();
+    params << prettyUser(message->prefix()) << request.split(QRegExp("\\s")).first().toUpper();
     receiveMessage(tr("! %1 requested CTCP-%2"), params);
 
     if (!request.compare("VERSION", Qt::CaseInsensitive))
@@ -680,24 +659,16 @@ void MessageView::msgCtcpReplyReceived(const QString& origin, const QString& rep
     }
 
     QStringList params;
-    params << senderHtml(message->prefix()) << message;
+    params << prettyUser(message->prefix()) << message;
     receiveMessage(tr("! %1 replied CTCP-%2"), params);
 }
 */
 
-QString MessageView::prefixedSender(const QString& sender) const
+QString MessageView::prettyUser(const QString& user) const
 {
-    //TODO: return d.buffer->visualMode(sender) + sender;
-    return IrcPrefix(sender).nick();
-}
-
-QString MessageView::senderHtml(const QString& sender) const
-{
-    if (sender.isEmpty())
-        return sender;
-
-    QString prefixed = prefixedSender(sender);
-    return QString("<a href='query:%1'>%2</a>").arg(sender).arg(prefixed);
+    QString nick = IrcPrefix(user).nick();
+    QString color = NICK_COLORS.at(qHash(nick) % NICK_COLORS.count());
+    return QString("<span style='color:%1'>%2</span>").arg(color).arg(nick);
 }
 
 bool MessageView::isCurrent() const

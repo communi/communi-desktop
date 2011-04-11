@@ -42,12 +42,10 @@ public:
     void setReceiver(const QString& receiver);
 
 public slots:
-    void clear();
     void showHelp(const QString& command = QString());
     void receiveMessage(const QString& format, const QStringList& params, bool highlight = false);
 
 signals:
-    void query(const QString& nick);
     void highlight(MessageView* view, bool on);
     void alert(MessageView* view, bool on);
     void rename(MessageView* view);
@@ -73,13 +71,11 @@ protected:
 private slots:
     void onEscPressed();
     void onSend(const QString& text);
-    void onAnchorClicked(const QUrl& link);
     void applySettings(const Settings& settings);
     void receiverChanged();
 
 private:
-    QString prefixedSender(const QString& sender) const;
-    QString senderHtml(const QString& sender) const;
+    QString prettyUser(const QString& user) const;
     bool isCurrent() const;
 
     struct MessageViewData : public Ui::MessageView
