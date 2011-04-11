@@ -35,6 +35,7 @@
 #include <QDebug>
 #include <QTime>
 #include <QMenu>
+#include <ircprefix.h>
 #include <ircutil.h>
 #include <irc.h>
 
@@ -259,6 +260,49 @@ void MessageView::receiverChanged()
     emit rename(this);
 }
 
+void MessageView::receiveMessage(IrcMessage* message)
+{
+    const QString lower = d.receiver.toLower();
+    if (IrcChannelMessage* chanMsg = qobject_cast<IrcChannelMessage*>(message))
+    {
+        if (chanMsg->channel() != lower)
+            return;
+    }
+    if (IrcModeMessage* modeMsg = qobject_cast<IrcModeMessage*>(message))
+    {
+        if (modeMsg->target().toLower() != lower)
+            return;
+    }
+    if (IrcSendMessage* sendMsg = qobject_cast<IrcSendMessage*>(message))
+    {
+        if (sendMsg->target().toLower() != lower)
+            return;
+    }
+    if (IrcQueryMessage* queryMsg = qobject_cast<IrcQueryMessage*>(message))
+    {
+        Q_UNUSED(queryMsg);
+        if (!isCurrent())
+            return;
+    }
+    if (IrcErrorMessage* errorMsg = qobject_cast<IrcErrorMessage*>(message))
+    {
+        Q_UNUSED(errorMsg);
+        if (!isCurrent())
+            return;
+    }
+    if (IrcQuitMessage* quitMsg = qobject_cast<IrcQuitMessage*>(message))
+    {
+        if (!d.model->stringList(Role_Names).contains(IrcPrefix(quitMsg->prefix()).nick(), Qt::CaseInsensitive))
+            return;
+    }
+    if (IrcNickMessage* nickMsg = qobject_cast<IrcNickMessage*>(message))
+    {
+        if (!d.model->stringList(Role_Names).contains(IrcPrefix(nickMsg->prefix()).nick(), Qt::CaseInsensitive))
+            return;
+    }
+    IrcReceiver::receiveMessage(message);
+}
+
 void MessageView::inviteMessage(IrcInviteMessage* message)
 {
     QStringList params;
@@ -277,7 +321,7 @@ void MessageView::joinMessage(IrcJoinMessage* message)
     if (Application::settings().highlights.value(Settings::Joins))
         emit highlight(this, true);
 
-    //TODO: d.model->setStringList(Role_Names, d.buffer->names());
+    d.model->add(Role_Names, IrcPrefix(message->prefix()).nick());
 }
 
 void MessageView::kickMessage(IrcKickMessage* message)
@@ -294,7 +338,7 @@ void MessageView::kickMessage(IrcKickMessage* message)
     if (Application::settings().highlights.value(Settings::Kicks))
         emit highlight(this, true);
 
-    //TODO: d.model->setStringList(Role_Names, d.buffer->names());
+    d.model->remove(Role_Names, message->user());
 }
 
 void MessageView::modeMessage(IrcModeMessage* message)
@@ -320,27 +364,26 @@ void MessageView::nickNameMessage(IrcNickMessage* message)
     if (Application::settings().highlights.value(Settings::Nicks))
         emit highlight(this, true);
 
-    //TODO: d.model->setStringList(Role_Names, d.buffer->names());
+    d.model->remove(Role_Names, IrcPrefix(message->prefix()).nick());
+    d.model->add(Role_Names, message->nick());
 }
 
 void MessageView::noticeMessage(IrcNoticeMessage* message)
 {
-    /* TODO:
-    bool matches = notice.contains(d.buffer->session()->nick());
+    bool matches = message->message().contains(session()->nickName());
     if (matches)
         emit alert(this, true);
     else
         emit highlight(this, true);
-    */
 
     QStringList params;
     params << senderHtml(message->prefix()) << IrcUtil::messageToHtml(message->message());
-    receiveMessage(tr("[%1] %2"), params); //TODO:, matches);
+    receiveMessage(tr("[%1] %2"), params, matches);
 }
 
 void MessageView::numericMessage(IrcNumericMessage* message)
 {
-    QStringList params = message->parameters();
+    const QStringList params = message->parameters();
     switch (message->code())
     {
         case Irc::RPL_WELCOME:
@@ -353,39 +396,44 @@ void MessageView::numericMessage(IrcNumericMessage* message)
         case 320: // "is identified to services"
         case 378: // nick is connecting from <...>
         case 671: // nick is using a secure connection
-        {
-            QStringList list;
-            list << senderHtml(params.value(1)) << QStringList(params.mid(2)).join(" ");
-            receiveMessage("! %1 %2", list);
+            if (isCurrent())
+            {
+                QStringList list;
+                list << senderHtml(params.value(0)) << params.at(1);
+                receiveMessage("! %1 %2", list);
+            }
             return;
-        }
 
         case Irc::RPL_WHOISUSER:
-        {
-            QStringList list;
-            list << senderHtml(params.value(1)) << params.value(2) << params.value(3) << QStringList(params.mid(4)).join(" ");
-            receiveMessage(tr("! %1 is %2@%3 %4"), list);
+            if (isCurrent())
+            {
+                QStringList list;
+                list << senderHtml(params.value(0)) << params.value(1) << params.value(2) << params.value(3);
+                receiveMessage(tr("! %1 is %2@%3 %4"), list);
+            }
             return;
-        }
 
         case Irc::RPL_WHOISSERVER:
-        {
-            QStringList list;
-            list << senderHtml(params.value(1)) << params.value(2) << params.value(3);
-            receiveMessage(tr("! %1 online via %2 (%3)"), list);
+            if (isCurrent())
+            {
+                QStringList list;
+                list << senderHtml(params.value(0)) << params.value(1) << params.value(2);
+                receiveMessage(tr("! %1 online via %2 (%3)"), list);
+            }
             return;
-        }
 
         case 330: // nick user is logged in as
-        {
-            QStringList list;
-            list << senderHtml(params.value(1)) << params.value(2) << QStringList(params.mid(3)).join(" ");
-            receiveMessage(tr("! %1 %3 %2"), list);
+            if (isCurrent())
+            {
+                QStringList list;
+                list << senderHtml(params.value(0)) << params.value(1) << params.value(2);
+                receiveMessage(tr("! %1 %3 %2"), list);
+            }
             return;
-        }
 
         case Irc::RPL_WHOWASUSER:
-            receiveMessage(tr("! %1 was %2@%3 %4 %5"), params.mid(1));
+            if (isCurrent())
+                receiveMessage(tr("! %1 was %2@%3 %4 %5"), params);
             return;
 
         case Irc::RPL_ENDOFWHOWAS:
@@ -393,99 +441,107 @@ void MessageView::numericMessage(IrcNumericMessage* message)
             return;
 
         case Irc::RPL_WHOISIDLE:
-        {
-            QString sender = senderHtml(params.value(1));
+            if (isCurrent())
+            {
+                QString sender = senderHtml(params.value(0));
 
-            QTime idle = QTime().addSecs(params.value(2).toInt());
-            receiveMessage(tr("! %1 has been idle for %2"), QStringList() << sender << idle.toString());
+                QTime idle = QTime().addSecs(params.value(1).toInt());
+                receiveMessage(tr("! %1 has been idle for %2"), QStringList() << sender << idle.toString());
 
-            QDateTime signon = QDateTime::fromTime_t(params.value(3).toInt());
-            receiveMessage(tr("! %1 has been online since %2"), QStringList() << sender << signon.toString());
+                QDateTime signon = QDateTime::fromTime_t(params.value(2).toInt());
+                receiveMessage(tr("! %1 has been online since %2"), QStringList() << sender << signon.toString());
+            }
             return;
-        }
 
         case Irc::RPL_ENDOFWHOIS:
             // End of /WHOIS list.
             return;
 
         case Irc::RPL_WHOISCHANNELS:
-        {
-            QStringList list;
-            list << senderHtml(params.value(1)) << params.value(2);
-            receiveMessage(tr("! %1 is on channels %2"), list);
+            if (isCurrent())
+            {
+                QStringList list;
+                list << senderHtml(params.value(0)) << params.value(1);
+                receiveMessage(tr("! %1 is on channels %2"), list);
+            }
             return;
-        }
 
         case Irc::RPL_CHANNELMODEIS:
-            receiveMessage(tr("! %1 mode is %2"), QStringList() << params.value(1) << params.value(2));
+            if (!d.receiver.compare(params.value(0), Qt::CaseInsensitive))
+                receiveMessage(tr("! %1 mode is %2"), QStringList() << params.value(0) << params.value(1));
             return;
 
         case Irc::RPL_CHANNELURL:
-            receiveMessage(tr("! %1 url is %2"), QStringList() << params.value(1) << params.value(2));
+            if (!d.receiver.compare(params.value(0), Qt::CaseInsensitive))
+                receiveMessage(tr("! %1 url is %2"), QStringList() << params.value(0) << params.value(1));
             return;
 
         case Irc::RPL_CHANNELCREATED:
-        {
-            QDateTime dateTime = QDateTime::fromTime_t(params.value(2).toInt());
-            receiveMessage(tr("! %1 was created %2"), QStringList() << params.value(1) << dateTime.toString());
+            if (!d.receiver.compare(params.value(0), Qt::CaseInsensitive))
+            {
+                QDateTime dateTime = QDateTime::fromTime_t(params.value(1).toInt());
+                receiveMessage(tr("! %1 was created %2"), QStringList() << params.value(0) << dateTime.toString());
+            }
             return;
-        }
 
         case Irc::RPL_NOTOPIC:
-            receiveMessage(tr("! %1 has no topic set"), QStringList() << params.value(1));
+            if (!d.receiver.compare(params.value(0), Qt::CaseInsensitive))
+                receiveMessage(tr("! %1 has no topic set"), QStringList() << params.value(0));
             return;
 
         case Irc::RPL_TOPIC:
-            receiveMessage(tr("! %1 topic is \"%2\""), QStringList() << params.value(1) << IrcUtil::messageToHtml(params.value(2)));
+            if (!d.receiver.compare(params.value(0), Qt::CaseInsensitive))
+                receiveMessage(tr("! %1 topic is \"%2\""), QStringList() << params.value(0) << IrcUtil::messageToHtml(params.value(1)));
             return;
 
         case Irc::RPL_TOPICSET:
-        {
-            QDateTime dateTime = QDateTime::fromTime_t(params.value(3).toInt());
-            if (dateTime.isValid())
+            if (!d.receiver.compare(params.value(0), Qt::CaseInsensitive))
             {
-                QStringList list;
-                list << params.value(1) << dateTime.toString() << senderHtml(params.value(2));
-                receiveMessage(tr("! %1 topic set %2 by %3"), list);
+                QDateTime dateTime = QDateTime::fromTime_t(params.value(2).toInt());
+                if (dateTime.isValid())
+                {
+                    QStringList list;
+                    list << params.value(0) << dateTime.toString() << senderHtml(params.value(1));
+                    receiveMessage(tr("! %1 topic set %2 by %3"), list);
+                }
             }
             return;
-        }
 
         case Irc::RPL_INVITING:
-            receiveMessage(tr("! inviting %1 to %2"), QStringList() << params.value(1) << params.value(2));
+            if (isCurrent())
+                receiveMessage(tr("! inviting %1 to %2"), QStringList() << params.value(0) << params.value(1));
             return;
 
         case Irc::RPL_VERSION:
-            receiveMessage(tr("! %1 version is %2"), QStringList() << message->prefix() << params.value(1));
+            if (isCurrent())
+                receiveMessage(tr("! %1 version is %2"), QStringList() << message->prefix() << params.value(0));
             return;
 
         case Irc::RPL_NAMREPLY:
-        {
-            QStringList list = params;
-            list.removeAll("=");
-            list.removeAll("@");
-            list.removeAll("*");
-
-            QStringList nicks = list.value(2).split(" ", QString::SkipEmptyParts);
-            QStringList nickLinks;
-            foreach (const QString& nick, nicks)
-                nickLinks << senderHtml(nick);
-            QString msg = QString("[ %2 ]").arg(nickLinks.join(" ] [ "));
-            receiveMessage(tr("! %1"), QStringList(msg));
-
-            //TODO: d.model->setStringList(Role_Names, d.buffer->names());
-        }
-        return;
+            if (!d.receiver.compare(params.value(1), Qt::CaseInsensitive))
+            {
+                QStringList nicks = params.value(2).split(" ", QString::SkipEmptyParts);
+                QStringList nickLinks;
+                foreach (const QString& nick, nicks) {
+                    d.model->add(Role_Names, nick);
+                    nickLinks << senderHtml(nick);
+                }
+                QString msg = QString("[ %2 ]").arg(nickLinks.join(" ] [ "));
+                receiveMessage(tr("! %1"), QStringList(msg));
+            }
+            return;
 
         case Irc::RPL_ENDOFNAMES:
             return;
 
         case Irc::RPL_TIME:
-            receiveMessage(tr("! %1 time is %2"), QStringList() << params.value(1) << params.value(2));
+            if (isCurrent())
+                receiveMessage(tr("! %1 time is %2"), QStringList() << params.value(0) << params.value(1));
             return;
 
         default:
-            receiveMessage(tr("[%1] %2"), QStringList() << QString::number(message->code()) << params.join(" "));
+            if (isCurrent())
+                receiveMessage(tr("[%1] %2"), QStringList() << QString::number(message->code()) << params);
             break;
     }
 }
@@ -504,24 +560,24 @@ void MessageView::partMessage(IrcPartMessage* message)
     if (Application::settings().highlights.value(Settings::Parts))
         emit highlight(this, true);
 
-    //TODO: d.model->setStringList(Role_Names, d.buffer->names());
+    d.model->remove(Role_Names, IrcPrefix(message->prefix()).nick());
 }
 
 void MessageView::privateMessage(IrcPrivateMessage* message)
 {
-    /* TODO:
-    bool matches = message.contains(d.buffer->session()->nick());
-    QString target = d.buffer->receiver();
-    bool privmsg = !Session::isChannel(target);
+    bool matches = message->message().contains(session()->nickName());
+    bool privmsg = !Session::isChannel(d.receiver);
     if (matches || privmsg)
         emit alert(this, true);
     else
         emit highlight(this, true);
-    */
 
     QStringList params;
     params << senderHtml(message->prefix()) << IrcUtil::messageToHtml(message->message());
-    receiveMessage(tr("&lt;%1&gt; %2"), params); //TODO:, matches);
+    if (message->isAction())
+        receiveMessage(tr("* %1 %2"), params, matches);
+    else
+        receiveMessage(tr("&lt;%1&gt; %2"), params, matches);
 }
 
 void MessageView::quitMessage(IrcQuitMessage* message)
@@ -538,7 +594,7 @@ void MessageView::quitMessage(IrcQuitMessage* message)
     if (Application::settings().highlights.value(Settings::Quits))
         emit highlight(this, true);
 
-    //TODO: d.model->setStringList(Role_Names, d.buffer->names());
+    d.model->remove(Role_Names, IrcPrefix(message->prefix()).nick());
 }
 
 void MessageView::topicMessage(IrcTopicMessage* message)
@@ -602,25 +658,12 @@ void MessageView::msgCtcpReplyReceived(const QString& origin, const QString& rep
     params << senderHtml(message->prefix()) << message;
     receiveMessage(tr("! %1 replied CTCP-%2"), params);
 }
-
-void MessageView::msgCtcpActionReceived(const QString& origin, const QString& action)
-{
-    bool matches = action.contains(d.buffer->session()->nick());
-    if (matches)
-        emit alert(this, true);
-    else
-        emit highlight(this, true);
-
-    QStringList params;
-    params << senderHtml(message->prefix()) << IrcUtil::messageToHtml(action);
-    receiveMessage(tr("* %1 %2"), params, matches);
-}
 */
 
 QString MessageView::prefixedSender(const QString& sender) const
 {
     //TODO: return d.buffer->visualMode(sender) + sender;
-    return sender;
+    return IrcPrefix(sender).nick();
 }
 
 QString MessageView::senderHtml(const QString& sender) const
@@ -630,4 +673,12 @@ QString MessageView::senderHtml(const QString& sender) const
 
     QString prefixed = prefixedSender(sender);
     return QString("<a href='query:%1'>%2</a>").arg(sender).arg(prefixed);
+}
+
+bool MessageView::isCurrent() const
+{
+    QTabWidget* tabWidget = 0;
+    if (parentWidget())
+        tabWidget = qobject_cast<QTabWidget*>(parentWidget()->parentWidget());
+    return tabWidget && tabWidget->currentWidget() == this;
 }

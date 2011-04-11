@@ -57,6 +57,7 @@ protected:
     bool eventFilter(QObject* receiver, QEvent* event);
 
     // IrcReceiver
+    virtual void receiveMessage(IrcMessage* message);
     virtual void inviteMessage(IrcInviteMessage*);
     virtual void joinMessage(IrcJoinMessage*);
     virtual void kickMessage(IrcKickMessage*);
@@ -80,6 +81,7 @@ private slots:
 private:
     QString prefixedSender(const QString& sender) const;
     QString senderHtml(const QString& sender) const;
+    bool isCurrent() const;
 
     struct MessageViewData : public Ui::MessageView
     {

@@ -28,6 +28,7 @@ class Session;
 class MessageView;
 class CommandEngine;
 struct Connection;
+class IrcMessage;
 
 class SessionTabWidget : public TabWidget
 {
@@ -60,8 +61,11 @@ private slots:
     void alertTab(MessageView* view, bool on);
     void highlightTab(MessageView* view, bool on);
     void applySettings();
+    void onMessageReceived(IrcMessage* message);
 
 private:
+    void createView(const QString& receiver);
+
     struct SessionTabWidgetData
     {
         int connectCounter;

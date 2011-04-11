@@ -35,19 +35,6 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     // take ownership of the session
     session->setParent(this);
 
-    // TODO: createView()
-    MessageView* view = new MessageView(session, this);
-    view->setReceiver(session->host());
-    connect(view, SIGNAL(send(QString, QString)), this, SLOT(send(QString, QString)));
-    connect(view, SIGNAL(rename(MessageView*)), this, SLOT(nameTab(MessageView*)));
-    connect(view, SIGNAL(alert(MessageView*, bool)), this, SLOT(alertTab(MessageView*, bool)));
-    connect(view, SIGNAL(highlight(MessageView*, bool)), this, SLOT(highlightTab(MessageView*, bool)));
-    connect(view, SIGNAL(query(QString)), this, SLOT(openView(QString)));
-
-    d.views.insert(session->host().toLower(), view);
-    int index = addTab(view, session->host());
-    setCurrentIndex(index);
-
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
     connect(session, SIGNAL(connected()), this, SLOT(connected()));
     connect(session, SIGNAL(connecting()), this, SLOT(connecting()));
@@ -69,6 +56,9 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     d.engine->setScriptObject("window", window());
     d.engine->setScriptObject("session", session);
     d.engine->setScriptObject("tabWidget", this);
+
+    createView(session->host());
+    connect(session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
 }
 
 Session* SessionTabWidget::session() const
@@ -89,18 +79,7 @@ void SessionTabWidget::openView(const QString& receiver)
             IrcJoinMessage msg;
             msg.setChannel(receiver);
         }
-
-        MessageView* view = new MessageView(d.session, this);
-        view->setReceiver(receiver);
-        connect(view, SIGNAL(send(QString, QString)), this, SLOT(send(QString, QString)));
-        connect(view, SIGNAL(rename(MessageView*)), this, SLOT(nameTab(MessageView*)));
-        connect(view, SIGNAL(alert(MessageView*, bool)), this, SLOT(alertTab(MessageView*, bool)));
-        connect(view, SIGNAL(highlight(MessageView*, bool)), this, SLOT(highlightTab(MessageView*, bool)));
-        connect(view, SIGNAL(query(QString)), this, SLOT(openView(QString)));
-
-        d.views.insert(receiver.toLower(), view);
-        int index = addTab(view, receiver);
-        setCurrentIndex(index);
+        createView(receiver);
     }
 }
 
@@ -288,4 +267,29 @@ void SessionTabWidget::applySettings()
     Settings settings = Application::settings();
     setAlertColor(QColor(settings.colors.value(Settings::Highlight)));
     setHighlightColor(QColor(settings.colors.value(Settings::Highlight)));
+}
+
+void SessionTabWidget::onMessageReceived(IrcMessage* message)
+{
+    IrcChannelMessage* chanmsg = qobject_cast<IrcChannelMessage*>(message);
+    if (chanmsg)
+        createView(chanmsg->channel());
+}
+
+void SessionTabWidget::createView(const QString& receiver)
+{
+    if (!d.views.contains(receiver.toLower()))
+    {
+        MessageView* view = new MessageView(d.session, this);
+        view->setReceiver(receiver);
+        connect(view, SIGNAL(send(QString, QString)), this, SLOT(send(QString, QString)));
+        connect(view, SIGNAL(rename(MessageView*)), this, SLOT(nameTab(MessageView*)));
+        connect(view, SIGNAL(alert(MessageView*, bool)), this, SLOT(alertTab(MessageView*, bool)));
+        connect(view, SIGNAL(highlight(MessageView*, bool)), this, SLOT(highlightTab(MessageView*, bool)));
+        connect(view, SIGNAL(query(QString)), this, SLOT(openView(QString)));
+
+        d.views.insert(receiver.toLower(), view);
+        int index = addTab(view, receiver);
+        setCurrentIndex(index);
+    }
 }
