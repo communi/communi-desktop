@@ -59,19 +59,19 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
 
     d.model = new StringListModel(this);
 
-    /* TODO:
-    QStringList  commands = Application::commands().keys();
+    QStringList commands = IrcMessage::availableCommands();
     QMutableStringListIterator it2(commands);
     while (it2.hasNext())
         it2.next().prepend("/");
     d.model->setStringList(Role_Commands, commands);
-    */
 
+    /* TODO:
     QStringList aliases = Application::settings().aliases.keys();
     QMutableStringListIterator it1(aliases);
     while (it1.hasNext())
         it1.next().prepend("/");
     d.model->setStringList(Role_Aliases, aliases);
+    */
 
     d.editFrame->completer()->setModel(d.model);
     connect(d.editFrame, SIGNAL(send(QString)), this, SLOT(onSend(QString)));
