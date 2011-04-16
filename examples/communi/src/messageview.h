@@ -25,7 +25,6 @@
 #include <ircreceiver.h>
 #include <ircmessage.h>
 
-class QTreeView;
 class StringListModel;
 struct Settings;
 
@@ -72,7 +71,6 @@ private slots:
     void onEscPressed();
     void onSend(const QString& text);
     void applySettings(const Settings& settings);
-    void receiverChanged();
 
 private:
     QString prettyUser(const QString& user) const;

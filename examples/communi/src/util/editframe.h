@@ -37,7 +37,6 @@ public:
 
 signals:
     void send(const QString& text);
-    void help(const QString& command = QString());
 
 protected:
     void hideEvent(QHideEvent* event);

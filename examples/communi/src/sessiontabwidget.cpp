@@ -31,6 +31,9 @@
 SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     TabWidget(parent)
 {
+    d.connectCounter = 0;
+    d.session = session;
+
     // take ownership of the session
     session->setParent(this);
 
@@ -47,9 +50,6 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
 #if QT_VERSION >= 0x040600
     registerSwipeGestures(Qt::Horizontal);
 #endif
-
-    d.connectCounter = 0;
-    d.session = session;
 
     createView(session->host());
     connect(session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
@@ -133,15 +133,6 @@ void SessionTabWidget::disconnected()
     }
 }
 
-/* TODO:
-void SessionTabWidget::bufferRemoved(Irc::Buffer* buffer)
-{
-    MessageView* view = d.views.take(buffer->receiver().toLower());
-    if (view)
-        view->deleteLater();
-}
-*/
-
 void SessionTabWidget::tabActivated(int index)
 {
     setTabAlert(index, false);
@@ -175,11 +166,11 @@ void SessionTabWidget::nameTab(MessageView* view)
     if (index != -1)
     {
         d.views.remove(tabText(index));
-        //TODO: d.views.insert(view->buffer()->receiver(), view);
+        d.views.insert(view->receiver(), view);
 
-        //TODO: setTabText(index, view->buffer()->receiver());
-        //TODO: if (index == 0)
-        //TODO:     emit titleChanged(view->buffer()->receiver());
+        setTabText(index, view->receiver());
+        if (index == 0)
+            emit titleChanged(view->receiver());
     }
 }
 
@@ -213,9 +204,9 @@ void SessionTabWidget::applySettings()
 
 void SessionTabWidget::onMessageReceived(IrcMessage* message)
 {
-    IrcChannelMessage* chanmsg = qobject_cast<IrcChannelMessage*>(message);
-    if (chanmsg)
-        createView(chanmsg->channel());
+    IrcChannelMessage* channelMessage = qobject_cast<IrcChannelMessage*>(message);
+    if (channelMessage)
+        createView(channelMessage->channel());
 }
 
 void SessionTabWidget::createView(const QString& receiver)

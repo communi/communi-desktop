@@ -24,10 +24,6 @@
 #include "completer.h"
 #include "application.h"
 #include "stringlistmodel.h"
-#include <QDesktopServices>
-#include <QStringListModel>
-#include <QScrollBar>
-#include <QTreeView>
 #include <QShortcut>
 #include <QKeyEvent>
 #include <QDebug>
@@ -79,7 +75,6 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
 
     d.editFrame->completer()->setModel(d.model);
     connect(d.editFrame, SIGNAL(send(QString)), this, SLOT(onSend(QString)));
-    connect(d.editFrame, SIGNAL(help(QString)), this, SLOT(showHelp(QString)));
 
     d.findFrame->setTextEdit(d.textBrowser);
 
@@ -259,11 +254,6 @@ void MessageView::applySettings(const Settings& settings)
          .arg(settings.colors.value((Settings::Notice)))
          .arg(settings.colors.value((Settings::Action)))
          .arg(settings.colors.value((Settings::Event))));
-}
-
-void MessageView::receiverChanged()
-{
-    emit rename(this);
 }
 
 void MessageView::receiveMessage(IrcMessage* message)
@@ -537,8 +527,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
             {
                 QStringList nicks = d.model->stringList(Role_Names);
                 nicks.sort();
-                QString msg = QString("[ %2 ]").arg(nicks.join(" ] [ "));
-                receiveMessage(tr("! %1"), QStringList(msg));
+                receiveMessage(tr("! %2 on %1"), QStringList() << params.value(0) << nicks.join(", "));
             }
             return;
 
@@ -549,7 +538,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
 
         default:
             if (isCurrent())
-                receiveMessage(tr("[%1] %2"), QStringList() << QString::number(message->code()) << params);
+                receiveMessage(tr("[%1] %2"), QStringList() << QString::number(message->code()) << params.join(" "));
             break;
     }
 }
