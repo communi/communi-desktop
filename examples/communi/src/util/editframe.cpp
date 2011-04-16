@@ -20,9 +20,7 @@
 
 #include "editframe.h"
 #include "completer.h"
-#include "application.h"
 #include <QShortcut>
-#include <QMenu>
 
 EditFrame::EditFrame(QWidget* parent) : QFrame(parent)
 {
