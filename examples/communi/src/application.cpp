@@ -19,7 +19,6 @@
 */
 
 #include "application.h"
-#include "commandxmlreader.h"
 #include "settingswizard.h"
 #include "sharedtimer.h"
 #include "session.h"
@@ -35,7 +34,6 @@
 
 Settings Application::ApplicationData::settings;
 QList<Session*> Application::ApplicationData::sessions;
-Commands Application::ApplicationData::commands;
 QStringList Application::ApplicationData::categories;
 
 Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
@@ -61,19 +59,6 @@ Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
     QSettings settings;
     ApplicationData::settings = settings.value("settings").value<Settings>();
 
-    //QDir dataDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
-    //if (!dataDir.exists())
-    //    dataDir.mkpath(dataDir.path());
-    //if (!dataDir.exists("commands.xml"))
-    //    QFile::copy(":/resources/commands.xml", dataDir.filePath("commands.xml"));
-
-    //QFile commandFile(dataDir.filePath("commands.xml"));
-    QFile commandFile(":/resources/commands.xml");
-    commandFile.open(QIODevice::ReadOnly);
-
-    CommandXmlReader commandReader;
-    setCommands(commandReader.read(&commandFile));
-
     SharedTimer::instance()->setInterval(500);
 }
 
@@ -81,9 +66,6 @@ Application::~Application()
 {
     QSettings settings;
     settings.setValue("settings", ApplicationData::settings);
-
-    //CommandXmlWriter commandWriter;
-    //...
 }
 
 QString Application::applicationSlogan()
@@ -113,45 +95,6 @@ QList<Session*> Application::sessions()
 void Application::setSessions(const QList<Session*>& sessions)
 {
     ApplicationData::sessions = sessions;
-}
-
-QStringList Application::commandCategories()
-{
-    return ApplicationData::categories;
-}
-
-Commands Application::commands(const QString& category)
-{
-    Commands result = ApplicationData::commands;
-    if (!category.isNull())
-    {
-        QMutableMapIterator<QString, Command> it(result);
-        while (it.hasNext())
-        {
-            if (!it.next().value().categories.contains(category))
-                it.remove();
-        }
-    }
-    return result;
-}
-
-void Application::setCommands(const Commands& commands)
-{
-    if (ApplicationData::commands != commands)
-    {
-        ApplicationData::commands = commands;
-
-        QSet<QString> cats;
-        foreach (const Command& command, commands)
-        {
-            foreach (const QString& category, command.categories)
-                cats.insert(category);
-        }
-        ApplicationData::categories = QStringList(cats.toList());
-        qSort(ApplicationData::categories);
-
-        QMetaObject::invokeMethod(qApp, "commandsChanged", Q_ARG(Commands, commands));
-    }
 }
 
 void Application::aboutApplication()

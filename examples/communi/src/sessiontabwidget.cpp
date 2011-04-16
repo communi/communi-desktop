@@ -19,7 +19,6 @@
 */
 
 #include "sessiontabwidget.h"
-#include "commandengine.h"
 #include "application.h"
 #include "messageview.h"
 #include "settings.h"
@@ -51,11 +50,6 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
 
     d.connectCounter = 0;
     d.session = session;
-    d.engine = new CommandEngine(this);
-    d.engine->setScriptObject("app", qApp);
-    d.engine->setScriptObject("window", window());
-    d.engine->setScriptObject("session", session);
-    d.engine->setScriptObject("tabWidget", this);
 
     createView(session->host());
     connect(session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
@@ -150,20 +144,13 @@ void SessionTabWidget::bufferRemoved(Irc::Buffer* buffer)
 
 void SessionTabWidget::tabActivated(int index)
 {
-    MessageView* view = static_cast<MessageView*>(currentWidget());
-    if (view)
-    {
-        d.engine->setScriptObject("messageView", view);
-        //TODO: d.session->setDefaultBuffer(view->buffer());
-    }
-
     setTabAlert(index, false);
     setTabHighlight(index, false);
     if (isVisible())
     {
         window()->setWindowFilePath(tabText(index));
-        if (view)
-            view->setFocus();
+        if (currentWidget())
+            currentWidget()->setFocus();
     }
 }
 

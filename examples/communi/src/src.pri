@@ -34,6 +34,5 @@ SOURCES += $$PWD/shortcutmanager.cpp
 SOURCES += $$PWD/welcomepage.cpp
 
 include(3rdparty/3rdparty.pri)
-include(command/command.pri)
 include(util/util.pri)
 include(wizard/wizard.pri)

@@ -19,7 +19,6 @@
 */
 
 #include "aliaseswizardpage.h"
-#include "command.h"
 #include <QSortFilterProxyModel>
 #include <QStandardItemModel>
 #include <QComboBox>

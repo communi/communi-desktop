@@ -26,7 +26,6 @@
 
 class Session;
 class MessageView;
-class CommandEngine;
 struct Connection;
 class IrcMessage;
 
@@ -69,7 +68,6 @@ private:
         int connectCounter;
         QList<int> delayedIndexes;
         Session* session;
-        CommandEngine* engine;
         QHash<QString, MessageView*> views;
     } d;
 };

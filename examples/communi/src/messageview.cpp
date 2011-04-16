@@ -63,11 +63,13 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
 
     d.model = new StringListModel(this);
 
+    /* TODO:
     QStringList  commands = Application::commands().keys();
     QMutableStringListIterator it2(commands);
     while (it2.hasNext())
         it2.next().prepend("/");
     d.model->setStringList(Role_Commands, commands);
+    */
 
     QStringList aliases = Application::settings().aliases.keys();
     QMutableStringListIterator it1(aliases);
@@ -104,6 +106,7 @@ void MessageView::setReceiver(const QString& receiver)
 
 void MessageView::showHelp(const QString& text)
 {
+    /* TODO:
     if (text.isNull())
     {
         QMapIterator<QString, Command> it(Application::commands());
@@ -130,6 +133,7 @@ void MessageView::showHelp(const QString& text)
             receiveMessage(tr("? %1 %2 - %3"), params);
         }
     }
+    */
 }
 
 void MessageView::receiveMessage(const QString& format, const QStringList& params, bool highlight)

@@ -23,7 +23,6 @@
 
 #include <QApplication>
 #include "settings.h"
-#include "command.h"
 
 class Session;
 
@@ -43,10 +42,6 @@ public:
     static QList<Session*> sessions();
     static void setSessions(const QList<Session*>& sessions);
 
-    static QStringList commandCategories();
-    static Commands commands(const QString& category = QString());
-    static void setCommands(const Commands& commands);
-
 public slots:
     static void aboutApplication();
     static void aboutOxygen();
@@ -54,14 +49,12 @@ public slots:
 
 signals:
     void settingsChanged(const Settings& settings);
-    void commandsChanged(const Commands& commands);
 
 private:
     struct ApplicationData
     {
         static Settings settings;
         static QList<Session*> sessions;
-        static Commands commands;
         static QStringList categories;
     };
 };
