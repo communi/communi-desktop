@@ -22,7 +22,6 @@
 #include "application.h"
 #include "connectionwizard.h"
 #include "sessiontabwidget.h"
-#include "shortcutmanager.h"
 #include "maintabwidget.h"
 #include "sharedtimer.h"
 #include "welcomepage.h"
@@ -366,10 +365,4 @@ void MainWindow::createTabbedView()
 #ifdef Q_WS_MAEMO_5
     connect(networksAction, SIGNAL(toggled(bool)), tabWidget, SLOT(setTabBarVisible(bool)));
 #endif // Q_WS_MAEMO_5
-
-    ShortcutManager* manager = ShortcutManager::instance(this);
-    connect(manager->shortcut(ShortcutManager::NavigateUp), SIGNAL(activated()), tabWidget, SLOT(moveToPrevTab()));
-    connect(manager->shortcut(ShortcutManager::NavigateDown), SIGNAL(activated()), tabWidget, SLOT(moveToNextTab()));
-    connect(manager->shortcut(ShortcutManager::NavigateLeft), SIGNAL(activated()), tabWidget, SLOT(moveToPrevSubTab()));
-    connect(manager->shortcut(ShortcutManager::NavigateRight), SIGNAL(activated()), tabWidget, SLOT(moveToNextSubTab()));
 }

@@ -28,6 +28,7 @@ class Session;
 class MessageView;
 struct Connection;
 class IrcMessage;
+struct Settings;
 
 class SessionTabWidget : public TabWidget
 {
@@ -57,7 +58,7 @@ private slots:
     void nameTab(MessageView* view);
     void alertTab(MessageView* view, bool on);
     void highlightTab(MessageView* view, bool on);
-    void applySettings();
+    void applySettings(const Settings& settings);
     void onMessageReceived(IrcMessage* message);
 
 private:

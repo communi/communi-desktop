@@ -21,6 +21,7 @@
 #include "maintabwidget.h"
 #include "application.h"
 #include "settings.h"
+#include <QShortcut>
 #include <QTabBar>
 
 MainTabWidget::MainTabWidget(QWidget* parent) : TabWidget(parent)
@@ -32,6 +33,18 @@ MainTabWidget::MainTabWidget(QWidget* parent) : TabWidget(parent)
     registerSwipeGestures(Qt::Vertical);
 #endif
 
+    d.tabUpShortcut = new QShortcut(this);
+    connect(d.tabUpShortcut, SIGNAL(activated()), this, SLOT(moveToPrevTab()));
+
+    d.tabDownShortcut = new QShortcut(this);
+    connect(d.tabDownShortcut, SIGNAL(activated()), this, SLOT(moveToNextTab()));
+
+    d.tabLeftShortcut = new QShortcut(this);
+    connect(d.tabLeftShortcut, SIGNAL(activated()), this, SLOT(moveToPrevSubTab()));
+
+    d.tabRightShortcut = new QShortcut(this);
+    connect(d.tabRightShortcut, SIGNAL(activated()), this, SLOT(moveToNextSubTab()));
+
     connect(qApp, SIGNAL(settingsChanged(Settings)), this, SLOT(applySettings(Settings)));
     applySettings(Application::settings());
 }
@@ -40,6 +53,10 @@ void MainTabWidget::applySettings(const Settings& settings)
 {
     setAlertColor(QColor(settings.colors.value(Settings::Highlight)));
     setHighlightColor(QColor(settings.colors.value(Settings::Highlight)));
+    d.tabUpShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabUp)));
+    d.tabDownShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabDown)));
+    d.tabLeftShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabLeft)));
+    d.tabRightShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabRight)));
 }
 
 void MainTabWidget::setSessionTitle(const QString& title)

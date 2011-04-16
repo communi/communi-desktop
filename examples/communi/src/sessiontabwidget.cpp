@@ -45,7 +45,7 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     QShortcut* shortcut = new QShortcut(QKeySequence::Close, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(closeCurrentView()));
 
-    applySettings();
+    applySettings(Application::settings());
 
 #if QT_VERSION >= 0x040600
     registerSwipeGestures(Qt::Horizontal);
@@ -195,9 +195,8 @@ void SessionTabWidget::highlightTab(MessageView* view, bool on)
     }
 }
 
-void SessionTabWidget::applySettings()
+void SessionTabWidget::applySettings(const Settings& settings)
 {
-    Settings settings = Application::settings();
     setAlertColor(QColor(settings.colors.value(Settings::Highlight)));
     setHighlightColor(QColor(settings.colors.value(Settings::Highlight)));
 }

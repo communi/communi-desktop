@@ -16,7 +16,6 @@ HEADERS += $$PWD/messageview.h
 HEADERS += $$PWD/session.h
 HEADERS += $$PWD/sessiontabwidget.h
 HEADERS += $$PWD/settings.h
-HEADERS += $$PWD/shortcutmanager.h
 HEADERS += $$PWD/welcomepage.h
 
 SOURCES += $$PWD/application.cpp
@@ -28,7 +27,6 @@ SOURCES += $$PWD/messageview.cpp
 SOURCES += $$PWD/session.cpp
 SOURCES += $$PWD/sessiontabwidget.cpp
 SOURCES += $$PWD/settings.cpp
-SOURCES += $$PWD/shortcutmanager.cpp
 SOURCES += $$PWD/welcomepage.cpp
 
 include(3rdparty/3rdparty.pri)

@@ -24,6 +24,7 @@
 #include "tabwidget.h"
 
 struct Settings;
+class QShortcut;
 
 class MainTabWidget : public TabWidget
 {
@@ -42,6 +43,14 @@ private slots:
 
 private:
     int senderIndex() const;
+
+    struct MainTabWidgetData
+    {
+        QShortcut* tabUpShortcut;
+        QShortcut* tabDownShortcut;
+        QShortcut* tabLeftShortcut;
+        QShortcut* tabRightShortcut;
+    } d;
 };
 
 #endif // MAINTABWIDGET_H
