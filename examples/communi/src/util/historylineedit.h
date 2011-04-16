@@ -21,7 +21,6 @@
 #ifndef HISTORYLINEEDIT_H
 #define HISTORYLINEEDIT_H
 
-#include <QStack>
 #include <QLineEdit>
 
 class HistoryLineEdit : public QLineEdit
@@ -29,7 +28,7 @@ class HistoryLineEdit : public QLineEdit
     Q_OBJECT
 
 public:
-    HistoryLineEdit(QWidget* parent = 0);
+    explicit HistoryLineEdit(QWidget* parent = 0);
 
     void cursorWordBackward(bool mark);
     void insert(const QString& text);
@@ -40,15 +39,12 @@ public slots:
     void clearHistory();
 
 protected:
-	void keyPressEvent(QKeyEvent* event);
-    bool event(QEvent* event);
+    void keyPressEvent(QKeyEvent* event);
 
 private:
     int index;
     QString input;
     QStringList history;
-
-    friend class MessageView;
 };
 
 #endif // HISTORYLINEEDIT_H

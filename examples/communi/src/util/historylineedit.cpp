@@ -19,8 +19,6 @@
 */
 
 #include "historylineedit.h"
-#include <QApplication>
-#include <QClipboard>
 #include <QKeyEvent>
 
 HistoryLineEdit::HistoryLineEdit(QWidget* parent)
@@ -81,23 +79,6 @@ void HistoryLineEdit::clearHistory()
 
 void HistoryLineEdit::keyPressEvent(QKeyEvent* event)
 {
-    if (event == QKeySequence::Paste)
-    {
-        QStringList lines = qApp->clipboard()->text().split(QRegExp("\n"), QString::SkipEmptyParts);
-        // TODO: confirm if too many lines
-        if (!lines.isEmpty())
-        {
-            for (int i = 0; i < lines.count() - 1; ++i)
-            {
-                insert(lines.at(i));
-                QKeyEvent keyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
-                keyPressEvent(&keyEvent);
-            }
-            insert(lines.last());
-        }
-        return;
-    }
-
     switch (event->key())
     {
         case Qt::Key_Return:
@@ -124,12 +105,4 @@ void HistoryLineEdit::keyPressEvent(QKeyEvent* event)
             break;
     }
     QLineEdit::keyPressEvent(event);
-}
-
-bool HistoryLineEdit::event(QEvent* event)
-{
-    bool ret = QLineEdit::event(event);
-    if (event->type() == QEvent::ShortcutOverride)
-        ret = false;
-    return ret;
 }
