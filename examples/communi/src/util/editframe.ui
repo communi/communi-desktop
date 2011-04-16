@@ -26,13 +26,6 @@
     </widget>
    </item>
    <item>
-    <widget class="QToolButton" name="helpButton">
-     <property name="text">
-      <string>?</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="HistoryLineEdit" name="lineEdit">
      <property name="inputMethodHints">
       <set>Qt::ImhNoAutoUppercase</set>

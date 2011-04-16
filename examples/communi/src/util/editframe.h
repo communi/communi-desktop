@@ -45,7 +45,6 @@ protected:
 private slots:
     void onSend();
     void updateUi();
-    void commandAction(QAction* action);
 
 private:
     struct EditFrameUi : public Ui::EditFrame

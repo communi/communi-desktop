@@ -35,28 +35,8 @@ EditFrame::EditFrame(QWidget* parent) : QFrame(parent)
     connect(shortcut, SIGNAL(activated()), ui.completer, SLOT(onTabPressed()));
 
     ui.tabButton->setFocusProxy(ui.lineEdit);
-    ui.helpButton->setFocusProxy(ui.lineEdit);
     ui.sendButton->setFocusProxy(ui.lineEdit);
 
-    static bool noHelpButton = qgetenv("COMMUNI_NO_HELP_BUTTON").toInt()
-        || Application::arguments().contains("-no-help-button")
-        || Application::arguments().contains("-nhb");
-
-    if (noHelpButton)
-        ui.helpButton->hide();
-
-    QMenu* helpMenu = new QMenu(ui.helpButton);
-    foreach (const QString& category, Application::commandCategories())
-    {
-        QMenu* categoryMenu = helpMenu->addMenu(category);
-        Commands commands = Application::commands(category);
-        foreach (const Command& command, commands)
-            categoryMenu->addAction(command.name);
-    }
-    ui.helpButton->setMenu(helpMenu);
-
-    connect(helpMenu, SIGNAL(triggered(QAction*)), this, SLOT(commandAction(QAction*)));
-    connect(ui.helpButton, SIGNAL(clicked()), this, SIGNAL(help()));
     connect(ui.tabButton, SIGNAL(clicked()), ui.completer, SLOT(onTabPressed()));
     connect(ui.sendButton, SIGNAL(clicked()), this, SLOT(onSend()));
     connect(ui.lineEdit, SIGNAL(returnPressed()), this, SLOT(onSend()));
@@ -95,13 +75,4 @@ void EditFrame::updateUi()
     QString input = ui.lineEdit->text();
     ui.tabButton->setEnabled(!input.isEmpty());
     ui.sendButton->setEnabled(!input.isEmpty());
-}
-
-void EditFrame::commandAction(QAction* action)
-{
-    QString input = QString("/%1").arg(action->text());
-    if (!ui.lineEdit->text().isEmpty())
-        input = QString("%1 %2").arg(input, ui.lineEdit->text());
-    ui.lineEdit->setText(input);
-    emit help(action->text());
 }
