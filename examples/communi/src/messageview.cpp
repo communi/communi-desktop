@@ -75,7 +75,9 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
 
     d.editFrame->completer()->setModel(d.model);
     connect(d.editFrame, SIGNAL(send(QString)), this, SLOT(onSend(QString)));
+    connect(d.editFrame, SIGNAL(typed(QString)), this, SLOT(showHelp(QString)));
 
+    d.helpLabel->hide();
     d.findFrame->setTextEdit(d.textBrowser);
 
     QShortcut* shortcut = new QShortcut(Qt::Key_Escape, this);
@@ -101,34 +103,17 @@ void MessageView::setReceiver(const QString& receiver)
 
 void MessageView::showHelp(const QString& text)
 {
-    /* TODO:
-    if (text.isNull())
+    QString syntax;
+    if (text.startsWith('/'))
     {
-        QMapIterator<QString, Command> it(Application::commands());
-        while (it.hasNext())
-        {
-            Command command = it.next().value();
-            QStringList params;
-            params << command.name.toUpper()
-                   << IrcUtil::messageToHtml(command.help)
-                   << IrcUtil::messageToHtml(command.description);
-            receiveMessage(tr("? %1 %2 - %3"), params);
-        }
+        QString command = text.mid(1).split(' ', QString::SkipEmptyParts).value(0).toUpper();
+        IrcMessage* message = IrcMessage::create(command, this);
+        if (message)
+            syntax = message->syntax();
+        delete message;
     }
-    else
-    {
-        Command command = Application::commands().value(text);
-        if (command.name.isNull()) {
-            receiveMessage(tr("? unknown command %1"), QStringList() << text);
-        } else {
-            QStringList params;
-            params << command.name.toUpper()
-                   << IrcUtil::messageToHtml(command.help)
-                   << IrcUtil::messageToHtml(command.description);
-            receiveMessage(tr("? %1 %2 - %3"), params);
-        }
-    }
-    */
+    d.helpLabel->setVisible(!syntax.isEmpty());
+    d.helpLabel->setText(syntax);
 }
 
 void MessageView::receiveMessage(const QString& format, const QStringList& params, bool highlight)
@@ -219,7 +204,7 @@ void MessageView::onSend(const QString& text)
         }
         else
         {
-            showHelp(text.mid(1));
+            showHelp(text);
         }
     }
     else if (!text.trimmed().isEmpty())

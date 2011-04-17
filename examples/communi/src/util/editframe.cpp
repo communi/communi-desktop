@@ -29,6 +29,7 @@ EditFrame::EditFrame(QWidget* parent) : QFrame(parent)
     ui.completer = new Completer(this);
     ui.completer->setWidget(this);
     ui.completer->setLineEdit(ui.lineEdit);
+
     QShortcut* shortcut = new QShortcut(Qt::Key_Tab, this);
     connect(shortcut, SIGNAL(activated()), ui.completer, SLOT(onTabPressed()));
 
@@ -39,6 +40,7 @@ EditFrame::EditFrame(QWidget* parent) : QFrame(parent)
     connect(ui.sendButton, SIGNAL(clicked()), this, SLOT(onSend()));
     connect(ui.lineEdit, SIGNAL(returnPressed()), this, SLOT(onSend()));
     connect(ui.lineEdit, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
+    connect(ui.lineEdit, SIGNAL(textChanged(QString)), this, SIGNAL(typed(QString)));
 
     updateUi();
 }
@@ -51,11 +53,6 @@ Completer* EditFrame::completer() const
 HistoryLineEdit* EditFrame::lineEdit() const
 {
     return ui.lineEdit;
-}
-
-void EditFrame::hideEvent(QHideEvent* event)
-{
-    QFrame::hideEvent(event);
 }
 
 void EditFrame::onSend()

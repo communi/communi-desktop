@@ -37,9 +37,7 @@ public:
 
 signals:
     void send(const QString& text);
-
-protected:
-    void hideEvent(QHideEvent* event);
+    void typed(const QString& text);
 
 private slots:
     void onSend();

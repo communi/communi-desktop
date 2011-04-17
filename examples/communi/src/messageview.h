@@ -41,7 +41,7 @@ public:
     void setReceiver(const QString& receiver);
 
 public slots:
-    void showHelp(const QString& command = QString());
+    void showHelp(const QString& text);
     void receiveMessage(const QString& format, const QStringList& params, bool highlight = false);
 
 signals:
