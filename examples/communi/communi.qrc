@@ -1,6 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-  <file>resources/commands.xml</file>
   <file>resources/icons/16x16/communi.png</file>
   <file>resources/icons/26x26/communi.png</file>
   <file>resources/icons/32x32/communi.png</file>
