@@ -260,13 +260,13 @@ void MessageView::receiveMessage(IrcMessage* message)
     if (IrcQueryMessage* queryMsg = qobject_cast<IrcQueryMessage*>(message))
     {
         Q_UNUSED(queryMsg);
-        if (!isCurrent())
+        if (!isCurrentView())
             return;
     }
     if (IrcErrorMessage* errorMsg = qobject_cast<IrcErrorMessage*>(message))
     {
         Q_UNUSED(errorMsg);
-        if (!isCurrent())
+        if (!isCurrentView())
             return;
     }
     if (IrcQuitMessage* quitMsg = qobject_cast<IrcQuitMessage*>(message))
@@ -375,7 +375,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
         case 320: // "is identified to services"
         case 378: // nick is connecting from <...>
         case 671: // nick is using a secure connection
-            if (isCurrent())
+            if (isCurrentView())
             {
                 QStringList list;
                 list << prettyUser(params.value(0)) << params.at(1);
@@ -384,7 +384,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
             return;
 
         case Irc::RPL_WHOISUSER:
-            if (isCurrent())
+            if (isCurrentView())
             {
                 QStringList list;
                 list << prettyUser(params.value(0)) << params.value(1) << params.value(2) << params.value(3);
@@ -393,7 +393,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
             return;
 
         case Irc::RPL_WHOISSERVER:
-            if (isCurrent())
+            if (isCurrentView())
             {
                 QStringList list;
                 list << prettyUser(params.value(0)) << params.value(1) << params.value(2);
@@ -402,7 +402,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
             return;
 
         case 330: // nick user is logged in as
-            if (isCurrent())
+            if (isCurrentView())
             {
                 QStringList list;
                 list << prettyUser(params.value(0)) << params.value(1) << params.value(2);
@@ -411,7 +411,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
             return;
 
         case Irc::RPL_WHOWASUSER:
-            if (isCurrent())
+            if (isCurrentView())
                 receiveMessage(tr("! %1 was %2@%3 %4 %5"), params);
             return;
 
@@ -420,7 +420,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
             return;
 
         case Irc::RPL_WHOISIDLE:
-            if (isCurrent())
+            if (isCurrentView())
             {
                 QString sender = prettyUser(params.value(0));
 
@@ -437,7 +437,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
             return;
 
         case Irc::RPL_WHOISCHANNELS:
-            if (isCurrent())
+            if (isCurrentView())
             {
                 QStringList list;
                 list << prettyUser(params.value(0)) << params.value(1);
@@ -487,12 +487,12 @@ void MessageView::numericMessage(IrcNumericMessage* message)
             return;
 
         case Irc::RPL_INVITING:
-            if (isCurrent())
+            if (isCurrentView())
                 receiveMessage(tr("! inviting %1 to %2"), QStringList() << params.value(0) << params.value(1));
             return;
 
         case Irc::RPL_VERSION:
-            if (isCurrent())
+            if (isCurrentView())
                 receiveMessage(tr("! %1 version is %2"), QStringList() << message->prefix() << params.value(0));
             return;
 
@@ -515,12 +515,12 @@ void MessageView::numericMessage(IrcNumericMessage* message)
             return;
 
         case Irc::RPL_TIME:
-            if (isCurrent())
+            if (isCurrentView())
                 receiveMessage(tr("! %1 time is %2"), QStringList() << params.value(0) << params.value(1));
             return;
 
         default:
-            if (isCurrent())
+            if (isCurrentView())
                 receiveMessage(tr("[%1] %2"), QStringList() << QString::number(message->code()) << params.join(" "));
             break;
     }
@@ -601,7 +601,7 @@ QString MessageView::prettyUser(const QString& user) const
     return QString("<span style='color:%1'>%2</span>").arg(color).arg(nick);
 }
 
-bool MessageView::isCurrent() const
+bool MessageView::isCurrentView() const
 {
     QTabWidget* tabWidget = 0;
     if (parentWidget())

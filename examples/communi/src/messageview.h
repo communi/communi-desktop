@@ -74,7 +74,7 @@ private slots:
 
 private:
     QString prettyUser(const QString& user) const;
-    bool isCurrent() const;
+    bool isCurrentView() const;
 
     struct MessageViewData : public Ui::MessageView
     {
