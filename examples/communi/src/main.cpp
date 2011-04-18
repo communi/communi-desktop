@@ -27,6 +27,17 @@
 #include "qtwin.h"
 #endif
 
+static void setApplicationProxy(QUrl url)
+{
+    if (!url.isEmpty())
+    {
+        if (url.port() == -1)
+            url.setPort(8080);
+        QNetworkProxy proxy(QNetworkProxy::HttpProxy, url.host(), url.port(), url.userName(), url.password());
+        QNetworkProxy::setApplicationProxy(proxy);
+    }
+}
+
 int main (int argc, char* argv[])
 {
     Application app(argc, argv);
@@ -34,25 +45,9 @@ int main (int argc, char* argv[])
     QStringList args = app.arguments();
     int index = args.indexOf("-proxy");
     if (index != -1)
-    {
-        QUrl url(args.value(index + 1));
-        if (!url.isEmpty())
-        {
-            QNetworkProxy proxy;
-            if (url.scheme() == "http")
-                proxy.setType(QNetworkProxy::HttpProxy);
-            else if (url.scheme() == "socks5")
-                proxy.setType(QNetworkProxy::Socks5Proxy);
-            proxy.setHostName(url.host());
-            if (url.port() != -1)
-                proxy.setPort(url.port());
-            if (!url.userName().isEmpty())
-                proxy.setUser(url.userName());
-            if (!url.password().isEmpty())
-                proxy.setPassword(url.password());
-            QNetworkProxy::setApplicationProxy(proxy); 
-        }
-    }
+        setApplicationProxy(QUrl(args.value(index + 1)));
+    else
+        setApplicationProxy(QUrl(qgetenv("http_proxy")));
 
     MainWindow window;
 #ifdef Q_WS_WIN
