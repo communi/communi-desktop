@@ -65,14 +65,6 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
         it2.next().prepend("/");
     d.model->setStringList(Role_Commands, commands);
 
-    /* TODO:
-    QStringList aliases = Application::settings().aliases.keys();
-    QMutableStringListIterator it1(aliases);
-    while (it1.hasNext())
-        it1.next().prepend("/");
-    d.model->setStringList(Role_Aliases, aliases);
-    */
-
     d.editFrame->completer()->setModel(d.model);
     connect(d.editFrame, SIGNAL(send(QString)), this, SLOT(onSend(QString)));
     connect(d.editFrame, SIGNAL(typed(QString)), this, SLOT(showHelp(QString)));
@@ -101,10 +93,16 @@ void MessageView::setReceiver(const QString& receiver)
     d.receiver = receiver;
 }
 
-void MessageView::showHelp(const QString& text)
+void MessageView::showHelp(const QString& text, bool error)
 {
     QString syntax;
-    if (text.startsWith('/'))
+    if (text == "/")
+    {
+        QStringList commands = IrcMessage::availableCommands();
+        commands.sort();
+        syntax = commands.join(" ");
+    }
+    else if (text.startsWith('/'))
     {
         QString command = text.mid(1).split(' ', QString::SkipEmptyParts).value(0).toUpper();
         IrcMessage* message = IrcMessage::create(command, this);
@@ -113,6 +111,10 @@ void MessageView::showHelp(const QString& text)
         delete message;
     }
     d.helpLabel->setVisible(!syntax.isEmpty());
+    QPalette pal;
+    if (error)
+        pal.setColor(QPalette::WindowText, Qt::red);
+    d.helpLabel->setPalette(pal);
     d.helpLabel->setText(syntax);
 }
 
@@ -180,11 +182,9 @@ bool MessageView::eventFilter(QObject* receiver, QEvent* event)
 
 void MessageView::onEscPressed()
 {
-    if (d.findFrame->isVisible())
-    {
-        d.findFrame->hide();
-        setFocus(Qt::OtherFocusReason);
-    }
+    d.helpLabel->hide();
+    d.findFrame->hide();
+    setFocus(Qt::OtherFocusReason);
 }
 
 void MessageView::onSend(const QString& text)
@@ -193,10 +193,8 @@ void MessageView::onSend(const QString& text)
     {
         QStringList words = text.mid(1).split(" ");
         IrcMessage* msg = IrcMessage::create(words.value(0).toUpper());
-        if (msg)
+        if (msg && msg->initFrom(session()->nickName(), words.mid(1)))
         {
-            msg->initFrom(session()->nickName(), words.mid(1));
-            qDebug() << "### CMD:" << msg->toString();
             session()->sendMessage(msg);
             if (IrcSendMessage* sendMessage = qobject_cast<IrcSendMessage*>(msg))
                 receiveMessage(sendMessage);
@@ -204,7 +202,7 @@ void MessageView::onSend(const QString& text)
         }
         else
         {
-            showHelp(text);
+            showHelp(text, true);
         }
     }
     else if (!text.trimmed().isEmpty())
@@ -595,52 +593,6 @@ void MessageView::unknownMessage(IrcMessage* message)
 {
     qWarning() << "unknown:" << message->prefix() << message->parameters();
 }
-
-/* TODO:
-void MessageView::msgCtcpRequestReceived(const QString& origin, const QString& request)
-{
-    QStringList params;
-    params << prettyUser(message->prefix()) << request.split(QRegExp("\\s")).first().toUpper();
-    receiveMessage(tr("! %1 requested CTCP-%2"), params);
-
-    if (!request.compare("VERSION", Qt::CaseInsensitive))
-        d.buffer->session()->ctcpReply(origin, QString("%1 %2 %3").arg(request).arg(qApp->applicationName()).arg(qApp->applicationVersion()));
-    else if (request.startsWith("PING", Qt::CaseInsensitive))
-        d.buffer->session()->ctcpReply(origin, request);
-    else if (request.startsWith("TIME", Qt::CaseInsensitive))
-        d.buffer->session()->ctcpReply(origin, QString("%1 %2").arg(request).arg(QDateTime::currentDateTime().toString()));
-    else
-        qWarning("MessageView::on_ctcpRequestReceived '%s' requested '%s'", qPrintable(origin), qPrintable(request));
-}
-
-void MessageView::msgCtcpReplyReceived(const QString& origin, const QString& reply)
-{
-    QString message = reply;
-    if (message.startsWith("PING", Qt::CaseInsensitive))
-    {
-        QStringList params = message.split(QRegExp("\\s"), QString::SkipEmptyParts);
-        if (!params.isEmpty())
-        {
-            QDateTime dateTime = QDateTime::fromTime_t(params.last().toInt());
-            if (dateTime.isValid())
-            {
-                QDateTime current = QDateTime::currentDateTime();
-                int msecs = dateTime.time().msecsTo(current.time());
-                if (msecs < 1000)
-                    message = QString("PING %1ms").arg(msecs);
-                else if (msecs < 60000)
-                    message = QString("PING %1s").arg(msecs / 1000.0, 0, 'f', 1);
-                else
-                    message = QString("PING %1m").arg(msecs / 60000);
-            }
-        }
-    }
-
-    QStringList params;
-    params << prettyUser(message->prefix()) << message;
-    receiveMessage(tr("! %1 replied CTCP-%2"), params);
-}
-*/
 
 QString MessageView::prettyUser(const QString& user) const
 {
