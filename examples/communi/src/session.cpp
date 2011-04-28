@@ -74,24 +74,6 @@ void Session::setAutoReconnectDelay(int seconds)
     delay = seconds;
 }
 
-bool Session::isChannel(const QString& receiver)
-{
-    if (!receiver.isEmpty())
-    {
-        switch (receiver.at(0).unicode())
-        {
-            case '#':
-            case '&':
-            case '!':
-            case '+':
-                return true;
-            default:
-                return false;
-        }
-    }
-    return false;
-}
-
 void Session::connectTo(const Connection& connection)
 {
 #ifndef QT_NO_OPENSSL

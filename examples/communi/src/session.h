@@ -40,8 +40,6 @@ public:
     int autoReconnectDelay() const;
     void setAutoReconnectDelay(int seconds);
 
-    static bool isChannel(const QString& receiver);
-
 public slots:
     void connectTo(const Connection& connection);
 
