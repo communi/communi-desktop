@@ -208,11 +208,11 @@ void MessageView::onSend(const QString& text)
     else if (!text.trimmed().isEmpty())
     {
         IrcPrivateMessage msg;
-        msg.setPrefix(session()->nickName());
+        msg.setPrefix(QString("%1!unknown@unknown").arg(session()->nickName()));
         msg.setTarget(d.receiver);
         msg.setMessage(text);
         session()->sendMessage(&msg);
-        receiveMessage(&msg);
+        privateMessage(&msg);
     }
 }
 
@@ -254,7 +254,8 @@ void MessageView::receiveMessage(IrcMessage* message)
     }
     if (IrcSendMessage* sendMsg = qobject_cast<IrcSendMessage*>(message))
     {
-        if (sendMsg->target().toLower() != lower)
+        QString target = isChannelView() ? lower : session()->nickName().toLower();
+        if (sendMsg->target().toLower() != target || isServerView())
             return;
     }
     if (IrcQueryMessage* queryMsg = qobject_cast<IrcQueryMessage*>(message))
@@ -546,8 +547,7 @@ void MessageView::partMessage(IrcPartMessage* message)
 void MessageView::privateMessage(IrcPrivateMessage* message)
 {
     bool matches = message->message().contains(session()->nickName());
-    bool privmsg = !Session::isChannel(d.receiver);
-    if (matches || privmsg)
+    if (matches || !isChannelView())
         emit alert(this, true);
     else
         emit highlight(this, true);
@@ -607,4 +607,29 @@ bool MessageView::isCurrentView() const
     if (parentWidget())
         tabWidget = qobject_cast<QTabWidget*>(parentWidget()->parentWidget());
     return tabWidget && tabWidget->currentWidget() == this;
+}
+
+bool MessageView::isServerView() const
+{
+    QTabWidget* tabWidget = 0;
+    if (parentWidget())
+        tabWidget = qobject_cast<QTabWidget*>(parentWidget()->parentWidget());
+    return tabWidget && tabWidget->indexOf(const_cast<MessageView*>(this)) == 0;
+}
+
+bool MessageView::isChannelView() const
+{
+    if (d.receiver.isEmpty())
+        return false;
+
+    switch (d.receiver.at(0).unicode())
+    {
+        case '#':
+        case '&':
+        case '!':
+        case '+':
+            return true;
+        default:
+            return false;
+    }
 }
