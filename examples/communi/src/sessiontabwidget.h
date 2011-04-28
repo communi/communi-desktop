@@ -41,7 +41,7 @@ public:
 
 public slots:
     void openView(const QString& receiver);
-    void closeCurrentView();
+    void closeView(int index = -1);
 
 signals:
     void vibraRequested(bool on);
@@ -62,8 +62,6 @@ private slots:
     void onMessageReceived(IrcMessage* message);
 
 private:
-    void createView(const QString& receiver);
-
     struct SessionTabWidgetData
     {
         int connectCounter;

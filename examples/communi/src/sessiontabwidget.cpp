@@ -24,6 +24,7 @@
 #include "settings.h"
 #include "session.h"
 #include <ircmessage.h>
+#include <ircprefix.h>
 #include <ircutil.h>
 #include <irc.h>
 #include <QtGui>
@@ -43,7 +44,7 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     connect(session, SIGNAL(disconnected()), this, SLOT(disconnected()));
 
     QShortcut* shortcut = new QShortcut(QKeySequence::Close, this);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(closeCurrentView()));
+    connect(shortcut, SIGNAL(activated()), this, SLOT(closeView()));
 
     applySettings(Application::settings());
 
@@ -51,7 +52,7 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     registerSwipeGestures(Qt::Horizontal);
 #endif
 
-    createView(session->host());
+    openView(session->host());
     connect(session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
 }
 
@@ -62,24 +63,26 @@ Session* SessionTabWidget::session() const
 
 void SessionTabWidget::openView(const QString& receiver)
 {
-    if (d.views.contains(receiver.toLower()))
+    MessageView* view = d.views.value(receiver.toLower());
+    if (!view)
     {
-        setCurrentWidget(d.views.value(receiver.toLower()));
-    }
-    else
-    {
-        if (Session::isChannel(receiver))
-        {
-            IrcJoinMessage msg;
-            msg.setChannel(receiver);
-        }
-        createView(receiver);
+        view = new MessageView(d.session, this);
+        view->setReceiver(receiver);
+        connect(view, SIGNAL(rename(MessageView*)), this, SLOT(nameTab(MessageView*)));
+        connect(view, SIGNAL(alert(MessageView*, bool)), this, SLOT(alertTab(MessageView*, bool)));
+        connect(view, SIGNAL(highlight(MessageView*, bool)), this, SLOT(highlightTab(MessageView*, bool)));
+
+        d.views.insert(receiver.toLower(), view);
+        addTab(view, receiver);
+        setCurrentWidget(view);
     }
 }
 
-void SessionTabWidget::closeCurrentView()
+void SessionTabWidget::closeView(int index)
 {
-    int index = currentIndex();
+    if (index == -1)
+        index = currentIndex();
+
     if (index != -1)
     {
         MessageView* view = d.views.take(tabText(index).toLower());
@@ -203,23 +206,13 @@ void SessionTabWidget::applySettings(const Settings& settings)
 
 void SessionTabWidget::onMessageReceived(IrcMessage* message)
 {
-    IrcChannelMessage* channelMessage = qobject_cast<IrcChannelMessage*>(message);
-    if (channelMessage)
-        createView(channelMessage->channel());
-}
-
-void SessionTabWidget::createView(const QString& receiver)
-{
-    if (!d.views.contains(receiver.toLower()))
+    if (IrcChannelMessage* channelMessage = qobject_cast<IrcChannelMessage*>(message))
     {
-        MessageView* view = new MessageView(d.session, this);
-        view->setReceiver(receiver);
-        connect(view, SIGNAL(rename(MessageView*)), this, SLOT(nameTab(MessageView*)));
-        connect(view, SIGNAL(alert(MessageView*, bool)), this, SLOT(alertTab(MessageView*, bool)));
-        connect(view, SIGNAL(highlight(MessageView*, bool)), this, SLOT(highlightTab(MessageView*, bool)));
-
-        d.views.insert(receiver.toLower(), view);
-        int index = addTab(view, receiver);
-        setCurrentIndex(index);
+        openView(channelMessage->channel());
+    }
+    else if (IrcSendMessage* sendMessage = qobject_cast<IrcSendMessage*>(message))
+    {
+        if (sendMessage->target().toLower() == session()->nickName().toLower())
+            openView(IrcPrefix(sendMessage->prefix()).nick());
     }
 }
