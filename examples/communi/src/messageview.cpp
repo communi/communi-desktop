@@ -196,8 +196,8 @@ void MessageView::onSend(const QString& text)
         if (msg && msg->initFrom(session()->nickName(), words.mid(1)))
         {
             session()->sendMessage(msg);
-            if (IrcSendMessage* sendMessage = qobject_cast<IrcSendMessage*>(msg))
-                receiveMessage(sendMessage);
+            if (IrcPrivateMessage* privMsg = qobject_cast<IrcPrivateMessage*>(msg))
+                privateMessage(privMsg);
             msg->deleteLater();
         }
         else
