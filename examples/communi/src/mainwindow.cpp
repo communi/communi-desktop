@@ -33,7 +33,7 @@
 #include <mce/dbus-names.h>
 #include <QtDBus>
 #endif // Q_WS_MAEMO_5
-#include <ircmessage.h>
+#include <irccommand.h>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), tabWidget(0)
 #ifndef Q_OS_SYMBIAN
@@ -189,9 +189,9 @@ void MainWindow::disconnectFrom(const QString& message)
         reason = tr("%1 %2 - %3").arg(Application::applicationName())
         .arg(Application::applicationVersion())
         .arg(Application::organizationDomain());
-    IrcQuitMessage msg;
-    msg.setReason(reason);
-    tab->session()->sendMessage(&msg);
+    IrcCommand* cmd = IrcCommand::createQuit(reason, this);
+    tab->session()->sendCommand(cmd);
+    delete cmd;
     tab->session()->close();
     // automatically rejoin channels when reconnected
     tab->session()->setAutoJoinChannels(tab->session()->connection().channels);
@@ -208,9 +208,9 @@ void MainWindow::quit(const QString& message)
             reason = tr("%1 %2 - %3").arg(Application::applicationName())
                                      .arg(Application::applicationVersion())
                                      .arg(Application::organizationDomain());
-        IrcQuitMessage msg;
-        msg.setReason(reason);
-        tab->session()->sendMessage(&msg);
+        IrcCommand* cmd = IrcCommand::createQuit(reason, this);
+        tab->session()->sendCommand(cmd);
+        delete cmd;
         tab->session()->close();
     }
     close();

@@ -28,6 +28,7 @@
 #include <QKeyEvent>
 #include <QDebug>
 #include <QTime>
+#include <irccommand.h>
 #include <ircprefix.h>
 #include <ircutil.h>
 #include <irc.h>
@@ -59,11 +60,12 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
 
     d.model = new StringListModel(this);
 
+    /* TODO:
     QStringList commands = IrcMessage::availableCommands();
     QMutableStringListIterator it2(commands);
     while (it2.hasNext())
         it2.next().prepend("/");
-    d.model->setStringList(Role_Commands, commands);
+    d.model->setStringList(Role_Commands, commands);*/
 
     d.editFrame->completer()->setModel(d.model);
     connect(d.editFrame, SIGNAL(send(QString)), this, SLOT(onSend(QString)));
@@ -95,6 +97,7 @@ void MessageView::setReceiver(const QString& receiver)
 
 void MessageView::showHelp(const QString& text, bool error)
 {
+    /* TODO:
     QString syntax;
     if (text == "/")
     {
@@ -115,7 +118,7 @@ void MessageView::showHelp(const QString& text, bool error)
     if (error)
         pal.setColor(QPalette::WindowText, Qt::red);
     d.helpLabel->setPalette(pal);
-    d.helpLabel->setText(syntax);
+    d.helpLabel->setText(syntax);*/
 }
 
 void MessageView::receiveMessage(const QString& format, const QStringList& params, bool highlight)
@@ -189,31 +192,30 @@ void MessageView::onEscPressed()
 
 void MessageView::onSend(const QString& text)
 {
-    if (text.startsWith('/'))
-    {
-        QStringList words = text.mid(1).split(" ");
-        IrcMessage* msg = IrcMessage::create(words.value(0).toUpper());
-        if (msg && msg->initFrom(session()->nickName(), words.mid(1)))
-        {
-            session()->sendMessage(msg);
-            if (IrcPrivateMessage* privMsg = qobject_cast<IrcPrivateMessage*>(msg))
-                privateMessage(privMsg);
-            msg->deleteLater();
-        }
-        else
-        {
-            showHelp(text, true);
-        }
-    }
-    else if (!text.trimmed().isEmpty())
-    {
-        IrcPrivateMessage msg;
-        msg.setPrefix(QString("%1!unknown@unknown").arg(session()->nickName()));
-        msg.setTarget(d.receiver);
-        msg.setMessage(text);
-        session()->sendMessage(&msg);
-        privateMessage(&msg);
-    }
+    // TODO:
+//    if (text.startsWith('/'))
+//    {
+//        QStringList words = text.mid(1).split(" ");
+//        IrcMessage* msg = IrcMessage::create(words.value(0).toUpper());
+//        if (msg && msg->initFrom(session()->nickName(), words.mid(1)))
+//        {
+//            session()->sendCommand(cmd);
+//            if (IrcPrivateMessage* privMsg = qobject_cast<IrcPrivateMessage*>(msg))
+//                privateMessage(privMsg);
+//            delete cmd;
+//        }
+//        else
+//        {
+//            showHelp(text, true);
+//        }
+//    }
+//    else if (!text.trimmed().isEmpty())
+//    {
+        IrcCommand* cmd = IrcCommand::createMessage(d.receiver, text);
+        session()->sendCommand(cmd);
+        delete cmd;
+        // TODO: privateMessage(&msg);
+//    }
 }
 
 void MessageView::applySettings(const Settings& settings)
@@ -241,45 +243,6 @@ void MessageView::applySettings(const Settings& settings)
 
 void MessageView::receiveMessage(IrcMessage* message)
 {
-    const QString lower = d.receiver.toLower();
-    if (IrcChannelMessage* chanMsg = qobject_cast<IrcChannelMessage*>(message))
-    {
-        if (chanMsg->channel() != lower)
-            return;
-    }
-    if (IrcModeMessage* modeMsg = qobject_cast<IrcModeMessage*>(message))
-    {
-        if (modeMsg->target().toLower() != lower)
-            return;
-    }
-    if (IrcSendMessage* sendMsg = qobject_cast<IrcSendMessage*>(message))
-    {
-        QString target = isChannelView() ? lower : session()->nickName().toLower();
-        if (sendMsg->target().toLower() != target || isServerView())
-            return;
-    }
-    if (IrcQueryMessage* queryMsg = qobject_cast<IrcQueryMessage*>(message))
-    {
-        Q_UNUSED(queryMsg);
-        if (!isCurrentView())
-            return;
-    }
-    if (IrcErrorMessage* errorMsg = qobject_cast<IrcErrorMessage*>(message))
-    {
-        Q_UNUSED(errorMsg);
-        if (!isCurrentView())
-            return;
-    }
-    if (IrcQuitMessage* quitMsg = qobject_cast<IrcQuitMessage*>(message))
-    {
-        if (!d.model->stringList(Role_Names).contains(IrcPrefix(quitMsg->prefix()).nick(), Qt::CaseInsensitive))
-            return;
-    }
-    if (IrcNickMessage* nickMsg = qobject_cast<IrcNickMessage*>(message))
-    {
-        if (!d.model->stringList(Role_Names).contains(IrcPrefix(nickMsg->prefix()).nick(), Qt::CaseInsensitive))
-            return;
-    }
     IrcReceiver::receiveMessage(message);
 }
 

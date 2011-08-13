@@ -206,6 +206,7 @@ void SessionTabWidget::applySettings(const Settings& settings)
 
 void SessionTabWidget::onMessageReceived(IrcMessage* message)
 {
+    /* TODO:
     if (IrcChannelMessage* channelMessage = qobject_cast<IrcChannelMessage*>(message))
     {
         openView(channelMessage->channel());
@@ -214,5 +215,5 @@ void SessionTabWidget::onMessageReceived(IrcMessage* message)
     {
         if (sendMessage->target().toLower() == session()->nickName().toLower())
             openView(IrcPrefix(sendMessage->prefix()).nick());
-    }
+    }*/
 }

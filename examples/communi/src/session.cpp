@@ -24,6 +24,7 @@
 #include <QSslSocket>
 #endif // QT_NO_OPENSSL
 #include <ircmessage.h>
+#include <irccommand.h>
 
 Session::Session(QObject* parent) : IrcSession(parent), delay(10)
 {
@@ -110,9 +111,9 @@ void Session::onMessageReceived(IrcMessage* message)
     {
         foreach (const QString& channel, channels)
         {
-            IrcJoinMessage msg;
-            msg.setChannel(channel);
-            sendMessage(&msg);
+            IrcCommand* cmd = IrcCommand::createJoin(channel, QString());
+            sendCommand(cmd);
+            delete cmd;
         }
     }
 }
