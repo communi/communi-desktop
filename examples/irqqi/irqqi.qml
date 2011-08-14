@@ -58,7 +58,7 @@ Rectangle {
         }
         onDisconnected: console.log("disconnected...")
         onMessageReceived: {
-            text.text += "<"+message.prefix+"> "+message.command+" "+message.parameters.join(" ")+"\n";
+            text.text += MessageFormatter.formatMessage(message) + "<br/>";
         }
     }
 }
