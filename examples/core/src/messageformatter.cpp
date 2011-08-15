@@ -21,7 +21,8 @@
 #include "messageformatter.h"
 #include <ircprefix.h>
 #include <ircutil.h>
-#include <qhash.h>
+#include <QHash>
+#include <QTime>
 
 static const QStringList NICK_COLORS = QStringList()
     << QLatin1String("#BF0000")
@@ -42,45 +43,48 @@ MessageFormatter::~MessageFormatter()
 
 QString MessageFormatter::formatMessage(IrcMessage* message) const
 {
+    QString formatted;
     switch (message->type())
     {
     case IrcMessage::Invite:
-        return formatInviteMessage(static_cast<IrcInviteMessage*>(message));
+        formatted = formatInviteMessage(static_cast<IrcInviteMessage*>(message));
         break;
     case IrcMessage::Join:
-        return formatJoinMessage(static_cast<IrcJoinMessage*>(message));
+        formatted = formatJoinMessage(static_cast<IrcJoinMessage*>(message));
         break;
     case IrcMessage::Kick:
-        return formatKickMessage(static_cast<IrcKickMessage*>(message));
+        formatted = formatKickMessage(static_cast<IrcKickMessage*>(message));
         break;
     case IrcMessage::Mode:
-        return formatModeMessage(static_cast<IrcModeMessage*>(message));
+        formatted = formatModeMessage(static_cast<IrcModeMessage*>(message));
         break;
     case IrcMessage::Nick:
-        return formatNickMessage(static_cast<IrcNickMessage*>(message));
+        formatted = formatNickMessage(static_cast<IrcNickMessage*>(message));
         break;
     case IrcMessage::Notice:
-        return formatNoticeMessage(static_cast<IrcNoticeMessage*>(message));
+        formatted = formatNoticeMessage(static_cast<IrcNoticeMessage*>(message));
         break;
     case IrcMessage::Numeric:
-        return formatNumericMessage(static_cast<IrcNumericMessage*>(message));
+        formatted = formatNumericMessage(static_cast<IrcNumericMessage*>(message));
         break;
     case IrcMessage::Part:
-        return formatPartMessage(static_cast<IrcPartMessage*>(message));
+        formatted = formatPartMessage(static_cast<IrcPartMessage*>(message));
         break;
     case IrcMessage::Private:
-        return formatPrivateMessage(static_cast<IrcPrivateMessage*>(message));
+        formatted = formatPrivateMessage(static_cast<IrcPrivateMessage*>(message));
         break;
     case IrcMessage::Quit:
-        return formatQuitMessage(static_cast<IrcQuitMessage*>(message));
+        formatted = formatQuitMessage(static_cast<IrcQuitMessage*>(message));
         break;
     case IrcMessage::Topic:
-        return formatTopicMessage(static_cast<IrcTopicMessage*>(message));
+        formatted = formatTopicMessage(static_cast<IrcTopicMessage*>(message));
         break;
     case IrcMessage::Unknown:
-        return formatUnknownMessage(static_cast<IrcMessage*>(message));
+        formatted = formatUnknownMessage(static_cast<IrcMessage*>(message));
         break;
     }
+    const QString time = QTime::currentTime().toString();
+    return tr("[%1] %2").arg(time).arg(formatted);
 }
 
 QString MessageFormatter::formatInviteMessage(IrcInviteMessage* message) const
