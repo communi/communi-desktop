@@ -32,6 +32,7 @@ class MessageHandler : public QObject
     Q_OBJECT
     Q_PROPERTY(IrcSession* session READ session WRITE setSession)
     Q_PROPERTY(QObject* defaultReceiver READ defaultReceiver WRITE setDefaultReceiver)
+    Q_PROPERTY(QObject* currentReceiver READ currentReceiver WRITE setCurrentReceiver)
 
 public:
     explicit MessageHandler(QObject* parent = 0);
@@ -42,6 +43,9 @@ public:
 
     QObject* defaultReceiver() const;
     void setDefaultReceiver(QObject* receiver);
+
+    QObject* currentReceiver() const;
+    void setCurrentReceiver(QObject* receiver);
 
     Q_INVOKABLE void addReceiver(const QString& name, QObject* channel);
     Q_INVOKABLE QObject* getReceiver(const QString& name) const;
@@ -69,7 +73,8 @@ protected:
     bool handleTopicMessage(IrcTopicMessage* message);
     bool handleUnknownMessage(IrcMessage* message);
 
-    void sendMessage(IrcMessage* message, const QString& receiver = QString());
+    void sendMessage(IrcMessage* message, QObject* receiver);
+    void sendMessage(IrcMessage* message, const QString& receiver);
 
 private:
     struct Private
@@ -80,6 +85,7 @@ private:
 
         IrcSession* session;
         QObject* defaultReceiver;
+        QObject* currentReceiver;
         QHash<QString, QObject*> receivers;
         QHash<QString, QSet<QString> > channelUsers;
     } d;

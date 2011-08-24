@@ -28,6 +28,7 @@ MessageHandler::MessageHandler(QObject* parent) : QObject(parent)
 {
     d.session = 0;
     d.defaultReceiver = 0;
+    d.currentReceiver = 0;
     setSession(qobject_cast<IrcSession*>(parent));
 }
 
@@ -61,6 +62,16 @@ QObject* MessageHandler::defaultReceiver() const
 void MessageHandler::setDefaultReceiver(QObject* receiver)
 {
     d.defaultReceiver = receiver;
+}
+
+QObject* MessageHandler::currentReceiver() const
+{
+    return d.currentReceiver;
+}
+
+void MessageHandler::setCurrentReceiver(QObject* receiver)
+{
+    d.currentReceiver = receiver;
 }
 
 void MessageHandler::addReceiver(const QString& name, QObject* receiver)
@@ -120,13 +131,14 @@ void MessageHandler::handleMessage(IrcMessage* message)
         handled = handleUnknownMessage(static_cast<IrcMessage*>(message));
         break;
     }
-    if (!handled && d.defaultReceiver)
-        sendMessage(message);
+    if (!handled)
+        sendMessage(message, d.defaultReceiver);
 }
 
 bool MessageHandler::handleInviteMessage(IrcInviteMessage* message)
 {
-    return false;
+    sendMessage(message, d.currentReceiver);
+    return true;
 }
 
 bool MessageHandler::handleJoinMessage(IrcJoinMessage* message)
@@ -138,13 +150,15 @@ bool MessageHandler::handleJoinMessage(IrcJoinMessage* message)
 
 bool MessageHandler::handleKickMessage(IrcKickMessage* message)
 {
+    sendMessage(message, message->channel());
     d.removeChannelUser(message->channel(), message->user());
-    return false;
+    return true;
 }
 
 bool MessageHandler::handleModeMessage(IrcModeMessage* message)
 {
-    return false;
+    sendMessage(message, message->target());
+    return true;
 }
 
 bool MessageHandler::handleNickMessage(IrcNickMessage* message)
@@ -152,15 +166,17 @@ bool MessageHandler::handleNickMessage(IrcNickMessage* message)
     QString nick = IrcPrefix(message->prefix()).nick();
     foreach (const QString& channel, d.userChannels(nick))
     {
+        sendMessage(message, channel);
         d.removeChannelUser(channel, nick);
         d.addChannelUser(channel, message->nick());
     }
-    return false;
+    return true;
 }
 
 bool MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
 {
-    return false;
+    sendMessage(message, message->target());
+    return true;
 }
 
 bool MessageHandler::handleNumericMessage(IrcNumericMessage* message)
@@ -180,8 +196,9 @@ bool MessageHandler::handleNumericMessage(IrcNumericMessage* message)
 
 bool MessageHandler::handlePartMessage(IrcPartMessage* message)
 {
+    sendMessage(message, message->channel());
     d.removeChannelUser(message->channel(), IrcPrefix(message->prefix()).nick());
-    return false;
+    return true;
 }
 
 bool MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
@@ -194,13 +211,17 @@ bool MessageHandler::handleQuitMessage(IrcQuitMessage* message)
 {
     QString nick = IrcPrefix(message->prefix()).nick();
     foreach (const QString& channel, d.userChannels(nick))
+    {
+        sendMessage(message, channel);
         d.removeChannelUser(channel, nick);
-    return false;
+    }
+    return true;
 }
 
 bool MessageHandler::handleTopicMessage(IrcTopicMessage* message)
 {
-    return false;
+    sendMessage(message, message->channel());
+    return true;
 }
 
 bool MessageHandler::handleUnknownMessage(IrcMessage* message)
@@ -208,20 +229,21 @@ bool MessageHandler::handleUnknownMessage(IrcMessage* message)
     return false;
 }
 
-void MessageHandler::sendMessage(IrcMessage* message, const QString& receiver)
+void MessageHandler::sendMessage(IrcMessage* message, QObject* receiver)
 {
-    QObject* object = d.defaultReceiver;
-    if (!receiver.isNull())
-    {
-        if (!d.receivers.contains(receiver.toLower()))
-            emit receiverToBeAdded(receiver);
-        object = getReceiver(receiver);
-    }
-    Q_ASSERT(object);
     // TODO: handle parameter type
     //       - C++: IrcMessage*
     //       - QML: QVariant
-    QMetaObject::invokeMethod(object, "receiveMessage", Q_ARG(QVariant, QVariant::fromValue((QObject*)message)));
+    QMetaObject::invokeMethod(receiver, "receiveMessage", Q_ARG(QVariant, QVariant::fromValue((QObject*)message)));
+}
+
+void MessageHandler::sendMessage(IrcMessage* message, const QString& receiver)
+{
+    if (!d.receivers.contains(receiver.toLower()))
+        emit receiverToBeAdded(receiver);
+    QObject* object = getReceiver(receiver);
+    Q_ASSERT(object);
+    sendMessage(message, object);
 }
 
 QStringList MessageHandler::Private::userChannels(const QString& user) const
