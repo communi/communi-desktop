@@ -15,7 +15,15 @@ Rectangle {
 
         MainPage {
             id: mainPage
-            title: session.host
+            title: qsTr("Home")
+            onConnect: {
+                mainPage.title = host;
+                session.host = host;
+                session.userName = name;
+                session.nickName = name;
+                session.realName = name;
+                session.open();
+            }
         }
     }
 
@@ -27,6 +35,7 @@ Rectangle {
     MessageHandler {
         id: handler
         session: session
+        defaultReceiver: mainPage
         onReceiverToBeAdded: {
             var page = pageComponent.createObject(tabFrame.stack);
             tabFrame.current = tabFrame.count - 1;
@@ -41,13 +50,6 @@ Rectangle {
 
     IrcSession {
         id: session
-
-        port: 6667
-        host: "irc.freenode.net"
-
-        userName: "jipsu"
-        nickName: "jipsukka"
-        realName: "Da Jipsuh"
 
         onConnecting: console.log("connecting...")
         onConnected: {

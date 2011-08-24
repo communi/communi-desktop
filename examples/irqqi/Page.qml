@@ -12,11 +12,18 @@ Tab {
 
     Column {
         anchors.fill: parent
-        TextEdit {
-            id: textEdit
-            readOnly: true
+        ScrollArea {
+            id: scrollArea
             width: parent.width
             height: parent.height - textField.height
+            contentHeight: textEdit.height
+            horizontalScrollBar.visible: false
+            TextEdit {
+                id: textEdit
+                readOnly: true
+                width: scrollArea.viewportWidth
+                wrapMode: Text.Wrap
+            }
         }
         TextField {
             id: textField
