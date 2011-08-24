@@ -3,4 +3,4 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS += communi core irqqi
+SUBDIRS += core irqqi # communi
