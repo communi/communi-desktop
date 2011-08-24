@@ -11,6 +11,9 @@ CONFIG += static
 
 # Input
 HEADERS += include/messageformatter.h
+HEADERS += include/messagehandler.h
+
 SOURCES += src/messageformatter.cpp
+SOURCES += src/messagehandler.cpp
 
 include(../examples.pri)
