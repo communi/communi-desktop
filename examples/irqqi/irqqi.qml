@@ -1,42 +1,42 @@
 import QtQuick 1.0
+import QtDesktop 0.1
 import org.gitorious.communi 1.0
+import org.gitorious.communi.examples 1.0
 
 Rectangle {
+    id: window
     width: 640
     height: 480
 
-    Flickable {
-        id: flickable
+    TabFrame {
+        id: tabFrame
         anchors.fill: parent
-        anchors.leftMargin: scrollbar.width
-        contentHeight: text.height
-        Text {
-            id: text
-            wrapMode: Text.WordWrap
-            width: parent.width
+        tabbar: TabBar { }
+
+        MainPage {
+            id: mainPage
+            title: session.host
         }
     }
 
-    Rectangle {
-        id: scrollbar
-        anchors.right: flickable.right
-        y: flickable.visibleArea.yPosition * flickable.height
-        width: 2
-        height: flickable.visibleArea.heightRatio * flickable.height
-        color: "black"
+    Component {
+        id: pageComponent
+        Page { }
     }
 
-    MouseArea {
-        anchors.fill: parent
-        onClicked: {
-            session.open();
-            enabled = false;
+    MessageHandler {
+        id: handler
+        session: session
+        onReceiverToBeAdded: {
+            var page = pageComponent.createObject(tabFrame.stack);
+            tabFrame.current = tabFrame.count - 1;
+            page.title = name;
+            handler.addReceiver(name, page);
         }
-        Text {
-            text: "Click!"
-            visible: parent.enabled
-            anchors.centerIn: parent
-        }
+    }
+
+    IrcCommand {
+        id: command
     }
 
     IrcSession {
@@ -52,13 +52,13 @@ Rectangle {
         onConnecting: console.log("connecting...")
         onConnected: {
             console.log("connected...");
-            var cmd = session.createJoinCommand("#communi", "");
+            var cmd = command.createJoin("#communi", "");
             session.sendCommand(cmd);
             cmd.destroy();
         }
         onDisconnected: console.log("disconnected...")
         onMessageReceived: {
-            text.text += MessageFormatter.formatMessage(message) + "<br/>";
+            console.log(MessageFormatter.formatMessage(message));
         }
     }
 }

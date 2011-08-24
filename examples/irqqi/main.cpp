@@ -20,20 +20,23 @@
 
 #include <QtGui>
 #include <QtDeclarative>
+#include <IrcSession>
 #include "messageformatter.h"
+#include "messagehandler.h"
+
+QML_DECLARE_TYPE(MessageHandler)
 
 int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
 
     QDeclarativeView view;
-    view.setSource(QUrl::fromLocalFile("irqqi.qml"));
-
     QDeclarativeContext* context = view.engine()->rootContext();
-
     MessageFormatter formatter;
     context->setContextProperty("MessageFormatter", &formatter);
+    qmlRegisterType<MessageHandler>("org.gitorious.communi.examples", 1, 0, "MessageHandler");
 
+    view.setSource(QUrl::fromLocalFile("irqqi.qml"));
     view.show();
 
     return app.exec();

@@ -13,5 +13,6 @@ LIBS += -L../core/lib -lCore
 
 # Input
 SOURCES += main.cpp
+OTHER_FILES += irqqi.qml
 
 include(../examples.pri)
