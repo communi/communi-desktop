@@ -4,7 +4,11 @@ import QtDesktop 0.1
 Tab {
     id: tab
 
-    signal connect(string host, string name)
+    property alias host: hostField.text
+    property alias name: nameField.text
+    property alias channel: channelField.text
+
+    signal connect()
 
     function receiveMessage(message) {
         if (textEdit.text.length > 0)
@@ -44,6 +48,9 @@ Tab {
 
             Text { text: qsTr("Name:") }
             TextField { id: nameField }
+
+            Text { text: qsTr("Channel:") }
+            TextField { id: channelField }
         }
 
         Button {
@@ -52,7 +59,7 @@ Tab {
             enabled: hostField.text != "" && nameField.text != ""
             anchors.right: parent.right
             onClicked: {
-                tab.connect(hostField.text, nameField.text);
+                tab.connect();
                 column.visible = false;
                 scrollArea.visible = true;
             }

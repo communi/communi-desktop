@@ -17,11 +17,11 @@ Rectangle {
             id: mainPage
             title: qsTr("Home")
             onConnect: {
-                mainPage.title = host;
-                session.host = host;
-                session.userName = name;
-                session.nickName = name;
-                session.realName = name;
+                mainPage.title = mainPage.host;
+                session.host = mainPage.host;
+                session.userName = mainPage.name;
+                session.nickName = mainPage.name;
+                session.realName = mainPage.name;
                 session.open();
             }
         }
@@ -35,6 +35,7 @@ Rectangle {
     MessageHandler {
         id: handler
         session: session
+        currentReceiver: tabFrame.count ? tabFrame.tabs[tabFrame.current] : null
         defaultReceiver: mainPage
         onReceiverToBeAdded: {
             var page = pageComponent.createObject(tabFrame.stack);
@@ -54,13 +55,15 @@ Rectangle {
         onConnecting: console.log("connecting...")
         onConnected: {
             console.log("connected...");
-            var cmd = command.createJoin("#communi", "");
+            if (mainPage.channel != "") {
+                var cmd = command.createJoin(mainPage.channel, "");
+                session.sendCommand(cmd);
+                cmd.destroy();
+            }
+            var cmd = command.createWhois(session.nickName);
             session.sendCommand(cmd);
             cmd.destroy();
         }
         onDisconnected: console.log("disconnected...")
-        onMessageReceived: {
-            console.log(MessageFormatter.formatMessage(message));
-        }
     }
 }
