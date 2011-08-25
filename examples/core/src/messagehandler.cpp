@@ -91,77 +91,73 @@ void MessageHandler::removeReceiver(const QString& name)
 
 void MessageHandler::handleMessage(IrcMessage* message)
 {
-    bool handled = false;
     switch (message->type())
     {
     case IrcMessage::Invite:
-        handled = handleInviteMessage(static_cast<IrcInviteMessage*>(message));
+        handleInviteMessage(static_cast<IrcInviteMessage*>(message));
         break;
     case IrcMessage::Join:
-        handled = handleJoinMessage(static_cast<IrcJoinMessage*>(message));
+        handleJoinMessage(static_cast<IrcJoinMessage*>(message));
         break;
     case IrcMessage::Kick:
-        handled = handleKickMessage(static_cast<IrcKickMessage*>(message));
+        handleKickMessage(static_cast<IrcKickMessage*>(message));
         break;
     case IrcMessage::Mode:
-        handled = handleModeMessage(static_cast<IrcModeMessage*>(message));
+        handleModeMessage(static_cast<IrcModeMessage*>(message));
         break;
     case IrcMessage::Nick:
-        handled = handleNickMessage(static_cast<IrcNickMessage*>(message));
+        handleNickMessage(static_cast<IrcNickMessage*>(message));
         break;
     case IrcMessage::Notice:
-        handled = handleNoticeMessage(static_cast<IrcNoticeMessage*>(message));
+        handleNoticeMessage(static_cast<IrcNoticeMessage*>(message));
         break;
     case IrcMessage::Numeric:
-        handled = handleNumericMessage(static_cast<IrcNumericMessage*>(message));
+        handleNumericMessage(static_cast<IrcNumericMessage*>(message));
         break;
     case IrcMessage::Part:
-        handled = handlePartMessage(static_cast<IrcPartMessage*>(message));
+        handlePartMessage(static_cast<IrcPartMessage*>(message));
         break;
     case IrcMessage::Private:
-        handled = handlePrivateMessage(static_cast<IrcPrivateMessage*>(message));
+        handlePrivateMessage(static_cast<IrcPrivateMessage*>(message));
         break;
     case IrcMessage::Quit:
-        handled = handleQuitMessage(static_cast<IrcQuitMessage*>(message));
+        handleQuitMessage(static_cast<IrcQuitMessage*>(message));
         break;
     case IrcMessage::Topic:
-        handled = handleTopicMessage(static_cast<IrcTopicMessage*>(message));
+        handleTopicMessage(static_cast<IrcTopicMessage*>(message));
         break;
     case IrcMessage::Unknown:
-        handled = handleUnknownMessage(static_cast<IrcMessage*>(message));
+        handleUnknownMessage(static_cast<IrcMessage*>(message));
         break;
     }
-    if (!handled)
-        sendMessage(message, d.defaultReceiver);
 }
 
-bool MessageHandler::handleInviteMessage(IrcInviteMessage* message)
+void MessageHandler::handleInviteMessage(IrcInviteMessage* message)
 {
     sendMessage(message, d.currentReceiver);
-    return true;
 }
 
-bool MessageHandler::handleJoinMessage(IrcJoinMessage* message)
+void MessageHandler::handleJoinMessage(IrcJoinMessage* message)
 {
     sendMessage(message, message->channel());
     d.addChannelUser(message->channel(), IrcPrefix(message->prefix()).nick());
-    return true;
 }
 
-bool MessageHandler::handleKickMessage(IrcKickMessage* message)
+void MessageHandler::handleKickMessage(IrcKickMessage* message)
 {
     sendMessage(message, message->channel());
     d.removeChannelUser(message->channel(), message->user());
-    return true;
 }
 
-bool MessageHandler::handleModeMessage(IrcModeMessage* message)
+void MessageHandler::handleModeMessage(IrcModeMessage* message)
 {
-    sendMessage(message, message->target());
-    return true;
+    if (message->prefix() == message->target())
+        sendMessage(message, d.defaultReceiver);
+    else
+        sendMessage(message, message->target());
 }
 
-bool MessageHandler::handleNickMessage(IrcNickMessage* message)
+void MessageHandler::handleNickMessage(IrcNickMessage* message)
 {
     QString nick = IrcPrefix(message->prefix()).nick();
     foreach (const QString& channel, d.userChannels(nick))
@@ -170,44 +166,85 @@ bool MessageHandler::handleNickMessage(IrcNickMessage* message)
         d.removeChannelUser(channel, nick);
         d.addChannelUser(channel, message->nick());
     }
-    return true;
 }
 
-bool MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
+void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
 {
-    sendMessage(message, message->target());
-    return true;
+    sendMessage(message, d.currentReceiver);
 }
 
-bool MessageHandler::handleNumericMessage(IrcNumericMessage* message)
+void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
 {
     switch (message->code())
     {
+    case Irc::RPL_AWAY:
+    case Irc::RPL_WHOISOPERATOR:
+    case 310: // "is available for help"
+    case 320: // "is identified to services"
+    case 378: // nick is connecting from <...>
+    case 671: // nick is using a secure connection
+    case Irc::RPL_WHOISUSER:
+    case Irc::RPL_WHOISSERVER:
+    case 330: // nick user is logged in as
+    case Irc::RPL_WHOWASUSER:
+    case Irc::RPL_WHOISIDLE:
+    case Irc::RPL_WHOISCHANNELS:
+    case Irc::RPL_INVITING:
+    case Irc::RPL_VERSION:
+    case Irc::RPL_TIME:
+        sendMessage(message, d.currentReceiver);
+        break;
+
+    case Irc::RPL_ENDOFBANLIST:
+    case Irc::RPL_ENDOFEXCEPTLIST:
+    case Irc::RPL_ENDOFINFO:
+    case Irc::RPL_ENDOFINVITELIST:
+    case Irc::RPL_ENDOFLINKS:
+    case Irc::RPL_ENDOFMOTD:
+    case Irc::RPL_ENDOFNAMES:
+    case Irc::RPL_ENDOFSTATS:
+    case Irc::RPL_ENDOFUSERS:
+    case Irc::RPL_ENDOFWHO:
+    case Irc::RPL_ENDOFWHOIS:
+    case Irc::RPL_ENDOFWHOWAS:
+        break; // ignore
+
+    case Irc::RPL_CHANNELMODEIS:
+    case Irc::RPL_CHANNELURL:
+    case Irc::RPL_CHANNELCREATED:
+    case Irc::RPL_NOTOPIC:
+    case Irc::RPL_TOPIC:
+    case Irc::RPL_TOPICSET:
+        sendMessage(message, message->parameters().value(1));
+        break;
+
     case Irc::RPL_NAMREPLY: {
-        QString channel = message->parameters().value(1);
-        QStringList nicks = message->parameters().value(2).split(" ", QString::SkipEmptyParts);
+        const int count = message->parameters().count();
+        const QString channel = message->parameters().value(count - 2);
+        const QStringList nicks = message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts);
         foreach (const QString& nick, nicks)
             d.addChannelUser(channel, nick);
+        sendMessage(message, channel);
+        break;
         }
+    default:
+        sendMessage(message, d.defaultReceiver);
         break;
     }
-    return false;
 }
 
-bool MessageHandler::handlePartMessage(IrcPartMessage* message)
+void MessageHandler::handlePartMessage(IrcPartMessage* message)
 {
     sendMessage(message, message->channel());
     d.removeChannelUser(message->channel(), IrcPrefix(message->prefix()).nick());
-    return true;
 }
 
-bool MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
+void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
 {
     sendMessage(message, message->target());
-    return true;
 }
 
-bool MessageHandler::handleQuitMessage(IrcQuitMessage* message)
+void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
 {
     QString nick = IrcPrefix(message->prefix()).nick();
     foreach (const QString& channel, d.userChannels(nick))
@@ -215,18 +252,16 @@ bool MessageHandler::handleQuitMessage(IrcQuitMessage* message)
         sendMessage(message, channel);
         d.removeChannelUser(channel, nick);
     }
-    return true;
 }
 
-bool MessageHandler::handleTopicMessage(IrcTopicMessage* message)
+void MessageHandler::handleTopicMessage(IrcTopicMessage* message)
 {
     sendMessage(message, message->channel());
-    return true;
 }
 
-bool MessageHandler::handleUnknownMessage(IrcMessage* message)
+void MessageHandler::handleUnknownMessage(IrcMessage* message)
 {
-    return false;
+    sendMessage(message, d.defaultReceiver);
 }
 
 void MessageHandler::sendMessage(IrcMessage* message, QObject* receiver)

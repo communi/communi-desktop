@@ -60,18 +60,18 @@ signals:
     void receiverToBeRemoved(const QString &name);
 
 protected:
-    bool handleInviteMessage(IrcInviteMessage* message);
-    bool handleJoinMessage(IrcJoinMessage* message);
-    bool handleKickMessage(IrcKickMessage* message);
-    bool handleModeMessage(IrcModeMessage* message);
-    bool handleNickMessage(IrcNickMessage* message);
-    bool handleNoticeMessage(IrcNoticeMessage* message);
-    bool handleNumericMessage(IrcNumericMessage* message);
-    bool handlePartMessage(IrcPartMessage* message);
-    bool handlePrivateMessage(IrcPrivateMessage* message);
-    bool handleQuitMessage(IrcQuitMessage* message);
-    bool handleTopicMessage(IrcTopicMessage* message);
-    bool handleUnknownMessage(IrcMessage* message);
+    void handleInviteMessage(IrcInviteMessage* message);
+    void handleJoinMessage(IrcJoinMessage* message);
+    void handleKickMessage(IrcKickMessage* message);
+    void handleModeMessage(IrcModeMessage* message);
+    void handleNickMessage(IrcNickMessage* message);
+    void handleNoticeMessage(IrcNoticeMessage* message);
+    void handleNumericMessage(IrcNumericMessage* message);
+    void handlePartMessage(IrcPartMessage* message);
+    void handlePrivateMessage(IrcPrivateMessage* message);
+    void handleQuitMessage(IrcQuitMessage* message);
+    void handleTopicMessage(IrcTopicMessage* message);
+    void handleUnknownMessage(IrcMessage* message);
 
     void sendMessage(IrcMessage* message, QObject* receiver);
     void sendMessage(IrcMessage* message, const QString& receiver);
