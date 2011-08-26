@@ -52,6 +52,11 @@ Window {
             tabFrame.current = tabFrame.count - 1;
             handler.addReceiver(name, page);
         }
+        onReceiverToBeRemoved: {
+            var page = handler.getReceiver(name);
+            tabFrame.current -= 1;
+            page.destroy();
+        }
     }
 
     IrcSession {
@@ -59,7 +64,7 @@ Window {
 
         onConnecting: console.log("connecting...")
         onConnected: console.log("connected...")
-        onDisconnected: console.log("disconnected...")
+        onDisconnected: Qt.quit();
 
         function sendMessage(receiver, message) {
             var cmd = CommandParser.parseCommand(receiver, message, session);

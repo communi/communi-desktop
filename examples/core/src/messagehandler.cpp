@@ -86,7 +86,12 @@ QObject* MessageHandler::getReceiver(const QString& name) const
 
 void MessageHandler::removeReceiver(const QString& name)
 {
-    d.receivers.remove(name.toLower());
+    const QString lower = name.toLower();
+    if (d.receivers.contains(lower))
+    {
+        emit receiverToBeRemoved(name);
+        d.receivers.remove(name.toLower());
+    }
 }
 
 void MessageHandler::handleMessage(IrcMessage* message)
@@ -237,6 +242,7 @@ void MessageHandler::handlePartMessage(IrcPartMessage* message)
 {
     sendMessage(message, message->channel());
     d.removeChannelUser(message->channel(), IrcPrefix(message->prefix()).nick());
+    removeReceiver(message->channel());
 }
 
 void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
@@ -252,6 +258,7 @@ void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
         sendMessage(message, channel);
         d.removeChannelUser(channel, nick);
     }
+    removeReceiver(nick);
 }
 
 void MessageHandler::handleTopicMessage(IrcTopicMessage* message)
