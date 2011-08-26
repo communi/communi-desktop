@@ -4,6 +4,8 @@ import QtDesktop 0.1
 Tab {
     id: tab
 
+    signal sendMessage(string receiver, string message)
+
     function receiveMessage(message) {
         if (textEdit.text.length > 0)
             textEdit.text += "\n";
@@ -29,20 +31,9 @@ Tab {
             id: textField
             width: parent.width
             Keys.onReturnPressed: {
-                var cmd = command.createMessage(tab.title, textField.text);
-                session.sendCommand(cmd);
-                cmd.destroy();
+                tab.sendMessage(tab.title, textField.text);
                 textField.text = "";
             }
         }
     }
-
-    /*Rectangle {
-        id: scrollbar
-        anchors.right: flickable.right
-        y: flickable.visibleArea.yPosition * flickable.height
-        width: 2
-        height: flickable.visibleArea.heightRatio * flickable.height
-        color: "black"
-    }*/
 }

@@ -23,6 +23,7 @@
 #include <IrcSession>
 #include "messageformatter.h"
 #include "messagehandler.h"
+#include "commandparser.h"
 
 QML_DECLARE_TYPE(MessageHandler)
 
@@ -32,7 +33,9 @@ int main(int argc, char* argv[])
 
     QDeclarativeView view;
     QDeclarativeContext* context = view.engine()->rootContext();
+    CommandParser parser;
     MessageFormatter formatter;
+    context->setContextProperty("CommandParser", &parser);
     context->setContextProperty("MessageFormatter", &formatter);
     qmlRegisterType<MessageHandler>("org.gitorious.communi.examples", 1, 0, "MessageHandler");
 

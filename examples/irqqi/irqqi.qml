@@ -3,27 +3,35 @@ import QtDesktop 0.1
 import org.gitorious.communi 1.0
 import org.gitorious.communi.examples 1.0
 
-Rectangle {
+Window {
     id: window
     width: 640
     height: 480
+
+    Dialog {
+        id: dialog
+        modal: true
+        onConnect: {
+            mainPage.title = dialog.host;
+            session.host = dialog.host;
+            session.userName = dialog.name;
+            session.nickName = dialog.name;
+            session.realName = dialog.name;
+            session.open();
+            dialog.visible = false;
+        }
+    }
+    Component.onCompleted: dialog.visible = true;
 
     TabFrame {
         id: tabFrame
         anchors.fill: parent
         tabbar: TabBar { }
 
-        MainPage {
+        Page {
             id: mainPage
             title: qsTr("Home")
-            onConnect: {
-                mainPage.title = mainPage.host;
-                session.host = mainPage.host;
-                session.userName = mainPage.name;
-                session.nickName = mainPage.name;
-                session.realName = mainPage.name;
-                session.open();
-            }
+            onSendMessage: session.sendMessage(receiver, message)
         }
     }
 
@@ -39,31 +47,24 @@ Rectangle {
         defaultReceiver: mainPage
         onReceiverToBeAdded: {
             var page = pageComponent.createObject(tabFrame.stack);
-            tabFrame.current = tabFrame.count - 1;
+            page.sendMessage.connect(session.sendMessage);
             page.title = name;
+            tabFrame.current = tabFrame.count - 1;
             handler.addReceiver(name, page);
         }
-    }
-
-    IrcCommand {
-        id: command
     }
 
     IrcSession {
         id: session
 
         onConnecting: console.log("connecting...")
-        onConnected: {
-            console.log("connected...");
-            if (mainPage.channel != "") {
-                var cmd = command.createJoin(mainPage.channel, "");
-                session.sendCommand(cmd);
-                cmd.destroy();
-            }
-            var cmd = command.createWhois(session.nickName);
+        onConnected: console.log("connected...")
+        onDisconnected: console.log("disconnected...")
+
+        function sendMessage(receiver, message) {
+            var cmd = CommandParser.parseCommand(receiver, message, session);
             session.sendCommand(cmd);
             cmd.destroy();
         }
-        onDisconnected: console.log("disconnected...")
     }
 }
