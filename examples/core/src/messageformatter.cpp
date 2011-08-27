@@ -35,15 +35,38 @@ static const QStringList NICK_COLORS = QStringList()
 
 MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 {
+    d.highlight = false;
+    d.timeStamp = false;
 }
 
 MessageFormatter::~MessageFormatter()
 {
 }
 
-QString MessageFormatter::formatMessage(IrcMessage* message)
+QStringList MessageFormatter::highlights() const
+{
+    return d.highlights;
+}
+
+void MessageFormatter::setHightlights(const QStringList& highlights)
+{
+    d.highlights = highlights;
+}
+
+bool MessageFormatter::timeStamp() const
+{
+    return d.timeStamp;
+}
+
+void MessageFormatter::setTimeStamp(bool timeStamp)
+{
+    d.timeStamp = timeStamp;
+}
+
+QString MessageFormatter::formatMessage(IrcMessage* message) const
 {
     QString formatted;
+    d.highlight = false;
     switch (message->type())
     {
     case IrcMessage::Invite:
@@ -83,23 +106,38 @@ QString MessageFormatter::formatMessage(IrcMessage* message)
         formatted = formatUnknownMessage(static_cast<IrcMessage*>(message));
         break;
     }
-    const QString time = QTime::currentTime().toString();
-    return tr("[%1] %2").arg(time).arg(formatted);
+
+    QString cls = "message";
+    if (d.highlight)
+        cls = "highlight";
+    else if (formatted.startsWith("!"))
+        cls = "event";
+    else if (formatted.startsWith("?"))
+        cls = "notice";
+    else if (formatted.startsWith("["))
+        cls = "notice";
+    else if (formatted.startsWith("*"))
+        cls = "action";
+
+    if (d.timeStamp)
+        formatted = tr("[%1] %2").arg(QTime::currentTime().toString(), formatted);
+
+    return tr("<span class='%1'>%2</span>").arg(cls, formatted);
 }
 
-QString MessageFormatter::formatInviteMessage(IrcInviteMessage* message)
+QString MessageFormatter::formatInviteMessage(IrcInviteMessage* message) const
 {
     const QString prefix = prettyUser(message->prefix());
     return tr("! %1 invited to %3").arg(prefix, message->channel());
 }
 
-QString MessageFormatter::formatJoinMessage(IrcJoinMessage* message)
+QString MessageFormatter::formatJoinMessage(IrcJoinMessage* message) const
 {
     const QString prefix = prettyUser(message->prefix());
     return tr("! %1 joined %2").arg(prefix, message->channel());
 }
 
-QString MessageFormatter::formatKickMessage(IrcKickMessage* message)
+QString MessageFormatter::formatKickMessage(IrcKickMessage* message) const
 {
     const QString prefix = prettyUser(message->prefix());
     const QString user = prettyUser(message->user());
@@ -109,21 +147,24 @@ QString MessageFormatter::formatKickMessage(IrcKickMessage* message)
         return tr("! %1 kicked %2").arg(prefix, user);
 }
 
-QString MessageFormatter::formatModeMessage(IrcModeMessage* message)
+QString MessageFormatter::formatModeMessage(IrcModeMessage* message) const
 {
     const QString prefix = prettyUser(message->prefix());
     return tr("! %1 sets mode %2 %3 %4").arg(prefix, message->mode(), message->mask(), message->argument());
 }
 
-QString MessageFormatter::formatNickMessage(IrcNickMessage* message)
+QString MessageFormatter::formatNickMessage(IrcNickMessage* message) const
 {
     const QString prefix = prettyUser(message->prefix());
     const QString nick = prettyUser(message->nick());
     return tr("! %1 changed nick to %2").arg(prefix, nick);
 }
 
-QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* message)
+QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* message) const
 {
+    foreach (const QString& hilite, d.highlights)
+        if (message->message().contains(hilite))
+            d.highlight = true;
     const QString prefix = prettyUser(message->prefix());
     const QString msg = IrcUtil::messageToHtml(message->message());
     return tr("[%1] %2").arg(prefix, msg);
@@ -131,7 +172,7 @@ QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* message)
 
 #define P_(x) message->parameters().value(x)
 
-QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message)
+QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
 {
     if (message->code() < 300)
         return tr("[INFO] %1").arg(QStringList(message->parameters().mid(1)).join(" "));
@@ -193,7 +234,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message)
     }
 }
 
-QString MessageFormatter::formatPartMessage(IrcPartMessage* message)
+QString MessageFormatter::formatPartMessage(IrcPartMessage* message) const
 {
     const QString prefix = prettyUser(message->prefix());
     if (!message->reason().isEmpty())
@@ -202,8 +243,11 @@ QString MessageFormatter::formatPartMessage(IrcPartMessage* message)
         return tr("! %1 parted %2").arg(prefix, message->channel());
 }
 
-QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* message)
+QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* message) const
 {
+    foreach (const QString& hilite, d.highlights)
+        if (message->message().contains(hilite))
+            d.highlight = true;
     const QString prefix = prettyUser(message->prefix());
     const QString msg = IrcUtil::messageToHtml(message->message());
     if (message->isAction())
@@ -212,7 +256,7 @@ QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* message)
         return tr("&lt;%1&gt; %2").arg(prefix, msg);
 }
 
-QString MessageFormatter::formatQuitMessage(IrcQuitMessage* message)
+QString MessageFormatter::formatQuitMessage(IrcQuitMessage* message) const
 {
     const QString prefix = prettyUser(message->prefix());
     if (!message->reason().isEmpty())
@@ -221,14 +265,14 @@ QString MessageFormatter::formatQuitMessage(IrcQuitMessage* message)
         return tr("! %1 has quit").arg(prefix);
 }
 
-QString MessageFormatter::formatTopicMessage(IrcTopicMessage* message)
+QString MessageFormatter::formatTopicMessage(IrcTopicMessage* message) const
 {
     const QString prefix = prettyUser(message->prefix());
     const QString topic = IrcUtil::messageToHtml(message->topic());
     return tr("! %1 sets topic \"%2\" on %3").arg(prefix, topic, message->channel());
 }
 
-QString MessageFormatter::formatUnknownMessage(IrcMessage* message)
+QString MessageFormatter::formatUnknownMessage(IrcMessage* message) const
 {
     const QString prefix = prettyUser(message->prefix());
     return tr("? %1 %2 %3").arg(prefix, message->command(), message->parameters().join(" "));

@@ -27,28 +27,44 @@
 class MessageFormatter : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QStringList highlights READ highlights WRITE setHightlights)
+    Q_PROPERTY(bool timeStamp READ timeStamp WRITE setTimeStamp)
 
 public:
     explicit MessageFormatter(QObject* parent = 0);
     virtual ~MessageFormatter();
 
-    Q_INVOKABLE static QString formatMessage(IrcMessage* message);
+    QStringList highlights() const;
+    void setHightlights(const QStringList& highlights);
+
+    bool timeStamp() const;
+    void setTimeStamp(bool timeStamp);
+
+    Q_INVOKABLE QString formatMessage(IrcMessage* message) const;
 
 protected:
-    static QString formatInviteMessage(IrcInviteMessage* message);
-    static QString formatJoinMessage(IrcJoinMessage* message);
-    static QString formatKickMessage(IrcKickMessage* message);
-    static QString formatModeMessage(IrcModeMessage* message);
-    static QString formatNickMessage(IrcNickMessage* message);
-    static QString formatNoticeMessage(IrcNoticeMessage* message);
-    static QString formatNumericMessage(IrcNumericMessage* message);
-    static QString formatPartMessage(IrcPartMessage* message);
-    static QString formatPrivateMessage(IrcPrivateMessage* message);
-    static QString formatQuitMessage(IrcQuitMessage* message);
-    static QString formatTopicMessage(IrcTopicMessage* message);
-    static QString formatUnknownMessage(IrcMessage* message);
+    QString formatInviteMessage(IrcInviteMessage* message) const;
+    QString formatJoinMessage(IrcJoinMessage* message) const;
+    QString formatKickMessage(IrcKickMessage* message) const;
+    QString formatModeMessage(IrcModeMessage* message) const;
+    QString formatNickMessage(IrcNickMessage* message) const;
+    QString formatNoticeMessage(IrcNoticeMessage* message) const;
+    QString formatNumericMessage(IrcNumericMessage* message) const;
+    QString formatPartMessage(IrcPartMessage* message) const;
+    QString formatPrivateMessage(IrcPrivateMessage* message) const;
+    QString formatQuitMessage(IrcQuitMessage* message) const;
+    QString formatTopicMessage(IrcTopicMessage* message) const;
+    QString formatUnknownMessage(IrcMessage* message) const;
 
     static QString prettyUser(const QString& user);
+
+private:
+    struct Private
+    {
+        mutable bool highlight;
+        QStringList highlights;
+        bool timeStamp;
+    } d;
 };
 
 #endif // MESSAGEFORMATTER_H
