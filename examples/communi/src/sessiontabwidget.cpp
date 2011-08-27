@@ -33,15 +33,19 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     TabWidget(parent)
 {
     d.connectCounter = 0;
-    d.session = session;
 
     // take ownership of the session
     session->setParent(this);
+    d.handler.setSession(session);
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
+
     connect(session, SIGNAL(connected()), this, SLOT(connected()));
     connect(session, SIGNAL(connecting()), this, SLOT(connecting()));
     connect(session, SIGNAL(disconnected()), this, SLOT(disconnected()));
+
+    connect(&d.handler, SIGNAL(receiverToBeAdded(QString)), this, SLOT(openView(QString)));
+    connect(&d.handler, SIGNAL(receiverToBeRemoved(QString)), this, SLOT(closeView(QString)));
 
     QShortcut* shortcut = new QShortcut(QKeySequence::Close, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(closeView()));
@@ -52,36 +56,39 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     registerSwipeGestures(Qt::Horizontal);
 #endif
 
-    openView(session->host());
-    connect(session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
+    MessageView* view = openView(d.handler.session()->host());
+    d.handler.setDefaultReceiver(view);
 }
 
 Session* SessionTabWidget::session() const
 {
-    return d.session;
+    return qobject_cast<Session*>(d.handler.session());
 }
 
-void SessionTabWidget::openView(const QString& receiver)
+MessageView* SessionTabWidget::openView(const QString& receiver)
 {
     MessageView* view = d.views.value(receiver.toLower());
     if (!view)
     {
-        view = new MessageView(d.session, this);
+        view = new MessageView(d.handler.session(), this);
         view->setReceiver(receiver);
         connect(view, SIGNAL(rename(MessageView*)), this, SLOT(nameTab(MessageView*)));
         connect(view, SIGNAL(alert(MessageView*, bool)), this, SLOT(alertTab(MessageView*, bool)));
         connect(view, SIGNAL(highlight(MessageView*, bool)), this, SLOT(highlightTab(MessageView*, bool)));
 
+        d.handler.addReceiver(receiver, view);
         d.views.insert(receiver.toLower(), view);
         addTab(view, receiver);
         setCurrentWidget(view);
     }
+    return view;
 }
 
-void SessionTabWidget::closeView(int index)
+void SessionTabWidget::closeView(const QString &receiver)
 {
-    if (index == -1)
-        index = currentIndex();
+    int index = currentIndex();
+    if (!receiver.isEmpty())
+        index = indexOf(d.views.value(receiver.toLower()));
 
     if (index != -1)
     {
@@ -104,7 +111,7 @@ void SessionTabWidget::connected()
     MessageView* view = static_cast<MessageView*>(widget(0));
     if (view)
     {
-        view->appendMessage(tr("[%1] Connected").arg(d.session->host()));
+        view->appendMessage(tr("[%1] Connected").arg(d.handler.session()->host()));
         highlightTab(view, true);
     }
     d.connectCounter = 0;
@@ -115,7 +122,7 @@ void SessionTabWidget::connecting()
     MessageView* view = static_cast<MessageView*>(widget(0));
     if (view)
     {
-        view->appendMessage(tr("[%1] Connecting... #%2").arg(d.session->host()).arg(++d.connectCounter));
+        view->appendMessage(tr("[%1] Connecting... #%2").arg(d.handler.session()->host()).arg(++d.connectCounter));
         highlightTab(view, true);
     }
 }
@@ -125,13 +132,14 @@ void SessionTabWidget::disconnected()
     MessageView* view = static_cast<MessageView*>(widget(0));
     if (view)
     {
-        view->appendMessage(tr("[%1] Disconnected").arg(d.session->host()));
+        view->appendMessage(tr("[%1] Disconnected").arg(d.handler.session()->host()));
         highlightTab(view, true);
     }
 }
 
 void SessionTabWidget::tabActivated(int index)
 {
+    d.handler.setCurrentReceiver(currentWidget());
     setTabAlert(index, false);
     setTabHighlight(index, false);
     if (isVisible())
@@ -196,18 +204,4 @@ void SessionTabWidget::applySettings(const Settings& settings)
 {
     setAlertColor(QColor(settings.colors.value(Settings::Highlight)));
     setHighlightColor(QColor(settings.colors.value(Settings::Highlight)));
-}
-
-void SessionTabWidget::onMessageReceived(IrcMessage* message)
-{
-    /* TODO:
-    if (IrcChannelMessage* channelMessage = qobject_cast<IrcChannelMessage*>(message))
-    {
-        openView(channelMessage->channel());
-    }
-    else if (IrcSendMessage* sendMessage = qobject_cast<IrcSendMessage*>(message))
-    {
-        if (sendMessage->target().toLower() == session()->nickName().toLower())
-            openView(IrcPrefix(sendMessage->prefix()).nick());
-    }*/
 }

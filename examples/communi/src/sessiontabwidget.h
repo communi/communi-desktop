@@ -22,6 +22,7 @@
 #define SESSIONTABWIDGET_H
 
 #include "tabwidget.h"
+#include "messagehandler.h"
 #include <QHash>
 
 class Session;
@@ -40,8 +41,8 @@ public:
     Session* session() const;
 
 public slots:
-    void openView(const QString& receiver);
-    void closeView(int index = -1);
+    MessageView* openView(const QString& receiver);
+    void closeView(const QString& receiver = QString());
 
 signals:
     void vibraRequested(bool on);
@@ -59,14 +60,13 @@ private slots:
     void alertTab(MessageView* view, bool on);
     void highlightTab(MessageView* view, bool on);
     void applySettings(const Settings& settings);
-    void onMessageReceived(IrcMessage* message);
 
 private:
     struct SessionTabWidgetData
     {
         int connectCounter;
         QList<int> delayedIndexes;
-        Session* session;
+        MessageHandler handler;
         QHash<QString, MessageView*> views;
     } d;
 };
