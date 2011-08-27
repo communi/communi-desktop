@@ -109,10 +109,8 @@ void SessionTabWidget::quit(const QString &message)
         reason = tr("%1 %2 - %3").arg(Application::applicationName())
                                  .arg(Application::applicationVersion())
                                  .arg(Application::organizationDomain());
-    IrcCommand* cmd = IrcCommand::createQuit(reason, this);
-    d.handler.session()->sendCommand(cmd);
+    d.handler.session()->sendCommand(IrcCommand::createQuit(reason));
     d.handler.session()->close();
-    delete cmd;
     // TODO: automatically rejoin channels when reconnected
     //d.handler.session()->setAutoJoinChannels(h.handler.session()->connection().channels);
 }

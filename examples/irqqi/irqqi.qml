@@ -68,9 +68,9 @@ Window {
         onDisconnected: Qt.quit();
 
         function sendMessage(receiver, message) {
-            var cmd = CommandParser.parseCommand(receiver, message, session);
-            session.sendCommand(cmd);
-            cmd.destroy();
+            var cmd = CommandParser.parseCommand(receiver, message);
+            if (cmd)
+                session.sendCommand(cmd);
         }
     }
 }

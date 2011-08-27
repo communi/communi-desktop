@@ -165,10 +165,9 @@ void MessageView::onEscPressed()
 void MessageView::onSend(const QString& text)
 {
     // TODO: query, help, echo privmsg, check empty txt...
-    IrcCommand* cmd = CommandParser::parseCommand(d.receiver, text, this);
+    IrcCommand* cmd = CommandParser::parseCommand(d.receiver, text);
     if (cmd)
         d.session->sendCommand(cmd);
-    delete cmd;
 }
 
 void MessageView::applySettings(const Settings& settings)
