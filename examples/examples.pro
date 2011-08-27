@@ -3,4 +3,5 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS += core irqqi # communi
+SUBDIRS += core irqqi communi
+CONFIG += ordered

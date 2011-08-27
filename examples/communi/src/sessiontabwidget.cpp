@@ -104,9 +104,7 @@ void SessionTabWidget::connected()
     MessageView* view = static_cast<MessageView*>(widget(0));
     if (view)
     {
-        QStringList params;
-        params << d.session->host() << tr("Connected");
-        view->receiveMessage(tr("[%1] %2"), params);
+        view->appendMessage(tr("[%1] Connected").arg(d.session->host()));
         highlightTab(view, true);
     }
     d.connectCounter = 0;
@@ -117,9 +115,7 @@ void SessionTabWidget::connecting()
     MessageView* view = static_cast<MessageView*>(widget(0));
     if (view)
     {
-        QStringList params;
-        params << d.session->host() << tr("Connecting... #%1").arg(++d.connectCounter);
-        view->receiveMessage(tr("[%1] %2"), params);
+        view->appendMessage(tr("[%1] Connecting... #%2").arg(d.session->host()).arg(++d.connectCounter));
         highlightTab(view, true);
     }
 }
@@ -129,9 +125,7 @@ void SessionTabWidget::disconnected()
     MessageView* view = static_cast<MessageView*>(widget(0));
     if (view)
     {
-        QStringList params;
-        params << d.session->host() << tr("Disconnected");
-        view->receiveMessage(tr("[%1] %2"), params);
+        view->appendMessage(tr("[%1] Disconnected").arg(d.session->host()));
         highlightTab(view, true);
     }
 }

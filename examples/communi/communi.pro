@@ -20,6 +20,10 @@ CONFIG(debug, debug|release) {
     QT += scripttools
 }
 
+INCLUDEPATH += ../core/include
+LIBS += -L../core/lib -lCore
+unix:PRE_TARGETDEPS += ../core/lib/libCore.a
+
 !symbian {
     OBJECTS_DIR = .tmp
     MOC_DIR = .tmp

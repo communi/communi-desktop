@@ -22,13 +22,13 @@
 #define MESSAGEVIEW_H
 
 #include "ui_messageview.h"
-#include <ircreceiver.h>
+#include <ircsession.h>
 #include <ircmessage.h>
 
 class StringListModel;
 struct Settings;
 
-class MessageView : public QWidget, public IrcReceiver
+class MessageView : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(QString receiver READ receiver WRITE setReceiver)
@@ -42,7 +42,7 @@ public:
 
 public slots:
     void showHelp(const QString& text, bool error = false);
-    void receiveMessage(const QString& format, const QStringList& params, bool highlight = false);
+    void appendMessage(const QString& message, bool highlight = false);
 
 signals:
     void highlight(MessageView* view, bool on);
@@ -52,20 +52,20 @@ signals:
 protected:
     bool eventFilter(QObject* receiver, QEvent* event);
 
-    // IrcReceiver
-    virtual void receiveMessage(IrcMessage* message);
-    virtual void inviteMessage(IrcInviteMessage*);
-    virtual void joinMessage(IrcJoinMessage*);
-    virtual void kickMessage(IrcKickMessage*);
-    virtual void modeMessage(IrcModeMessage*);
-    virtual void nickNameMessage(IrcNickMessage*);
-    virtual void noticeMessage(IrcNoticeMessage*);
-    virtual void numericMessage(IrcNumericMessage*);
-    virtual void partMessage(IrcPartMessage*);
-    virtual void privateMessage(IrcPrivateMessage*);
-    virtual void quitMessage(IrcQuitMessage*);
-    virtual void topicMessage(IrcTopicMessage*);
-    virtual void unknownMessage(IrcMessage*);
+protected slots:
+    void receiveMessage(IrcMessage* message);
+    void inviteMessage(IrcInviteMessage*);
+    void joinMessage(IrcJoinMessage*);
+    void kickMessage(IrcKickMessage*);
+    void modeMessage(IrcModeMessage*);
+    void nickMessage(IrcNickMessage*);
+    void noticeMessage(IrcNoticeMessage*);
+    void numericMessage(IrcNumericMessage*);
+    void partMessage(IrcPartMessage*);
+    void privateMessage(IrcPrivateMessage*);
+    void quitMessage(IrcQuitMessage*);
+    void topicMessage(IrcTopicMessage*);
+    void unknownMessage(IrcMessage*);
 
 private slots:
     void onEscPressed();
@@ -73,13 +73,11 @@ private slots:
     void applySettings(const Settings& settings);
 
 private:
-    QString prettyUser(const QString& user) const;
-    bool isCurrentView() const;
-    bool isServerView() const;
     bool isChannelView() const;
 
     struct MessageViewData : public Ui::MessageView
     {
+        IrcSession* session;
         StringListModel* model;
         QString receiver;
         bool timeStamp;
