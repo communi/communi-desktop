@@ -46,7 +46,6 @@ public slots:
                    const QString& nick = QString(), const QString& password = QString());
     void connectTo(const Connection& connection);
     void connectToImpl(const Connection& connection);
-    void disconnectFrom(const QString& message);
     void quit(const QString& message);
 
 protected:

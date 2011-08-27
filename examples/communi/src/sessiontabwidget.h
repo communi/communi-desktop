@@ -38,16 +38,14 @@ class SessionTabWidget : public TabWidget
 public:
     SessionTabWidget(Session* session, QWidget* parent = 0);
 
-    Session* session() const;
-
 public slots:
     MessageView* openView(const QString& receiver);
     void closeView(const QString& receiver = QString());
+    void quit(const QString& message = QString());
 
 signals:
     void vibraRequested(bool on);
     void titleChanged(const QString& title);
-    void disconnectFrom(const QString& message);
 
 private slots:
     void connected();

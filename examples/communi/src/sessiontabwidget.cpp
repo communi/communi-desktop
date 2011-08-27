@@ -23,6 +23,7 @@
 #include "messageview.h"
 #include "settings.h"
 #include "session.h"
+#include <irccommand.h>
 #include <ircmessage.h>
 #include <ircprefix.h>
 #include <ircutil.h>
@@ -60,11 +61,6 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     d.handler.setDefaultReceiver(view);
 }
 
-Session* SessionTabWidget::session() const
-{
-    return qobject_cast<Session*>(d.handler.session());
-}
-
 MessageView* SessionTabWidget::openView(const QString& receiver)
 {
     MessageView* view = d.views.value(receiver.toLower());
@@ -98,12 +94,27 @@ void SessionTabWidget::closeView(const QString &receiver)
             if (indexOf(view) == 0)
             {
                 // closing a server tab
-                emit disconnectFrom(QString());
+                quit();
                 deleteLater();
             }
             view->deleteLater();
         }
     }
+}
+
+void SessionTabWidget::quit(const QString &message)
+{
+    QString reason = message.trimmed();
+    if (reason.isEmpty())
+        reason = tr("%1 %2 - %3").arg(Application::applicationName())
+                                 .arg(Application::applicationVersion())
+                                 .arg(Application::organizationDomain());
+    IrcCommand* cmd = IrcCommand::createQuit(reason, this);
+    d.handler.session()->sendCommand(cmd);
+    d.handler.session()->close();
+    delete cmd;
+    // TODO: automatically rejoin channels when reconnected
+    //d.handler.session()->setAutoJoinChannels(h.handler.session()->connection().channels);
 }
 
 void SessionTabWidget::connected()

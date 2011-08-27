@@ -165,7 +165,6 @@ void MainWindow::connectToImpl(const Connection& connection)
     session->connectTo(connection);
 
     SessionTabWidget* tab = new SessionTabWidget(session, tabWidget);
-    connect(tab, SIGNAL(disconnectFrom(QString)), this, SLOT(disconnectFrom(QString)));
     if (connection.name.isEmpty())
         connect(tab, SIGNAL(titleChanged(QString)), tabWidget, SLOT(setSessionTitle(QString)));
     connect(tab, SIGNAL(alertStatusChanged(bool)), tabWidget, SLOT(activateAlert(bool)));
@@ -178,40 +177,14 @@ void MainWindow::connectToImpl(const Connection& connection)
     tabWidget->addTab(tab, connection.name.isEmpty() ? session->host() : connection.name);
 }
 
-void MainWindow::disconnectFrom(const QString& message)
-{
-    SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(sender());
-    if (!tab)
-        tab = qobject_cast<SessionTabWidget*>(tabWidget->currentWidget());
-    Q_ASSERT(tab);
-    QString reason = message.trimmed();
-    if (reason.isEmpty())
-        reason = tr("%1 %2 - %3").arg(Application::applicationName())
-        .arg(Application::applicationVersion())
-        .arg(Application::organizationDomain());
-    IrcCommand* cmd = IrcCommand::createQuit(reason, this);
-    tab->session()->sendCommand(cmd);
-    delete cmd;
-    tab->session()->close();
-    // automatically rejoin channels when reconnected
-    tab->session()->setAutoJoinChannels(tab->session()->connection().channels);
-}
-
 void MainWindow::quit(const QString& message)
 {
     // TODO: confirm?
     for (int i = 0; i < tabWidget->count(); ++i)
     {
         SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(tabWidget->widget(i));
-        QString reason = message.trimmed();
-        if (reason.isEmpty())
-            reason = tr("%1 %2 - %3").arg(Application::applicationName())
-                                     .arg(Application::applicationVersion())
-                                     .arg(Application::organizationDomain());
-        IrcCommand* cmd = IrcCommand::createQuit(reason, this);
-        tab->session()->sendCommand(cmd);
-        delete cmd;
-        tab->session()->close();
+        if (tab)
+            tab->quit(message);
     }
     close();
 }
