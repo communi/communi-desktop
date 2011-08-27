@@ -42,6 +42,7 @@ Window {
 
     MessageHandler {
         id: handler
+        qml: true
         session: session
         currentReceiver: tabFrame.count ? tabFrame.tabs[tabFrame.current] : null
         defaultReceiver: mainPage
