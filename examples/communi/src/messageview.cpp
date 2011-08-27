@@ -121,7 +121,8 @@ void MessageView::appendMessage(const QString& message)
 //    if (message.endsWith("</a>"))
 //        message += " ";
 
-    d.textBrowser->append(message);
+    if (!message.isEmpty())
+        d.textBrowser->append(message);
 }
 
 bool MessageView::eventFilter(QObject* receiver, QEvent* event)
@@ -303,24 +304,6 @@ void MessageView::numericMessage(IrcNumericMessage* message)
         case Irc::RPL_WELCOME:
             emit highlight(this, false);
             break;
-
-/*        case Irc::RPL_NAMREPLY:
-            if (!d.receiver.compare(params.value(1), Qt::CaseInsensitive))
-            {
-                QStringList nicks = params.value(2).split(" ", QString::SkipEmptyParts);
-                foreach (const QString& nick, nicks)
-                    d.model->add(Role_Names, nick);
-            }
-            return;
-
-        case Irc::RPL_ENDOFNAMES:
-            if (!d.receiver.compare(params.value(0), Qt::CaseInsensitive))
-            {
-                QStringList nicks = d.model->stringList(Role_Names);
-                nicks.sort();
-                receiveMessage(tr("! %2 on %1"), QStringList() << params.value(0) << nicks.join(", "));
-            }
-            return;*/
 
         default:
             appendMessage(d.formatter.formatMessage(message));

@@ -107,6 +107,9 @@ QString MessageFormatter::formatMessage(IrcMessage* message) const
         break;
     }
 
+    if (formatted.isEmpty())
+        return QString();
+
     QString cls = "message";
     if (d.highlight)
         cls = "highlight";
@@ -229,6 +232,17 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
     case Irc::RPL_TIME:
         return tr("! %1 time is %2").arg(P_(1), P_(2));
 
+    case Irc::RPL_NAMREPLY:
+        foreach (const QString& name, P_(3).split(" ", QString::SkipEmptyParts))
+            d.names.append(name);
+        return QString();
+
+    case Irc::RPL_ENDOFNAMES: {
+        QString msg = tr("! %1 users: %2").arg(P_(1), prettyNames(d.names));
+        d.names.clear();
+        return msg;
+    }
+
     default:
         return tr("[%1] %2").arg(message->code()).arg(QStringList(message->parameters().mid(1)).join(" "));
     }
@@ -276,6 +290,48 @@ QString MessageFormatter::formatUnknownMessage(IrcMessage* message) const
 {
     const QString prefix = prettyUser(message->prefix());
     return tr("? %1 %2 %3").arg(prefix, message->command(), message->parameters().join(" "));
+}
+
+static bool nameLessThan(const QString &n1, const QString &n2)
+{
+    const bool o1 = n1.startsWith("@");
+    const bool o2 = n2.startsWith("@");
+
+    if (o1 && !o2)
+        return true;
+    if (!o1 && o2)
+        return false;
+
+    const bool v1 = n1.startsWith("+");
+    const bool v2 = n2.startsWith("+");
+
+    if (v1 && !v2 && !o2)
+        return true;
+    if (!v1 && !o1 && v2)
+        return false;
+
+    return QString::localeAwareCompare(n1.toLower(), n2.toLower()) < 0;
+}
+
+QString MessageFormatter::prettyNames(QStringList names)
+{
+    qSort(names.begin(), names.end(), nameLessThan);
+
+    QString message;
+    message += "<table>";
+    for (int i = 0; i < names.count(); i += 6)
+    {
+        message += "<tr>";
+        message += "<td>" + prettyUser(names.value(i)) + "&nbsp;</td>";
+        message += "<td>" + prettyUser(names.value(i+1)) + "&nbsp;</td>";
+        message += "<td>" + prettyUser(names.value(i+2)) + "&nbsp;</td>";
+        message += "<td>" + prettyUser(names.value(i+3)) + "&nbsp;</td>";
+        message += "<td>" + prettyUser(names.value(i+4)) + "&nbsp;</td>";
+        message += "<td>" + prettyUser(names.value(i+5)) + "&nbsp;</td>";
+        message += "</tr>";
+    }
+    message += "</table>";
+    return message;
 }
 
 QString MessageFormatter::prettyUser(const QString& user)

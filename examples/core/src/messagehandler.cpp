@@ -217,7 +217,6 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
     case Irc::RPL_ENDOFINVITELIST:
     case Irc::RPL_ENDOFLINKS:
     case Irc::RPL_ENDOFMOTD:
-    case Irc::RPL_ENDOFNAMES:
     case Irc::RPL_ENDOFSTATS:
     case Irc::RPL_ENDOFUSERS:
     case Irc::RPL_ENDOFWHO:
@@ -225,6 +224,7 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
     case Irc::RPL_ENDOFWHOWAS:
         break; // ignore
 
+    case Irc::RPL_ENDOFNAMES:
     case Irc::RPL_CHANNELMODEIS:
     case Irc::RPL_CHANNELURL:
     case Irc::RPL_CHANNELCREATED:
@@ -243,6 +243,7 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
         sendMessage(message, channel);
         break;
         }
+
     default:
         sendMessage(message, d.defaultReceiver);
         break;
