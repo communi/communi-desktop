@@ -24,7 +24,6 @@
 #include "completer.h"
 #include "application.h"
 #include "stringlistmodel.h"
-#include "messageformatter.h"
 #include <QShortcut>
 #include <QKeyEvent>
 #include <QDebug>
@@ -33,6 +32,7 @@
 #include <ircprefix.h>
 #include <ircutil.h>
 #include <irc.h>
+#include "commandparser.h"
 
 enum ModelRole
 {
@@ -52,6 +52,7 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
 
     d.session = session;
     d.model = new StringListModel(this);
+    d.formatter.setHightlights(QStringList(session->nickName()));
 
     /* TODO:
     QStringList commands = IrcMessage::availableCommands();
@@ -114,25 +115,13 @@ void MessageView::showHelp(const QString& text, bool error)
     d.helpLabel->setText(syntax);*/
 }
 
-void MessageView::appendMessage(const QString& message, bool highlight)
+void MessageView::appendMessage(const QString& message)
 {
     // workaround the link activation merge char format bug
 //    if (message.endsWith("</a>"))
 //        message += " ";
 
-    QString cls = "message";
-    if (highlight)
-        cls = "highlight";
-    else if (message.startsWith("!"))
-        cls = "event";
-    else if (message.startsWith("?"))
-        cls = "notice";
-    else if (message.startsWith("["))
-        cls = "notice";
-    else if (message.startsWith("*"))
-        cls = "action";
-
-    d.textBrowser->append(QString("<span class='%1'>%2</span>").arg(cls).arg(message));
+    d.textBrowser->append(message);
 }
 
 bool MessageView::eventFilter(QObject* receiver, QEvent* event)
@@ -175,35 +164,16 @@ void MessageView::onEscPressed()
 
 void MessageView::onSend(const QString& text)
 {
-    // TODO:
-//    if (text.startsWith('/'))
-//    {
-//        QStringList words = text.mid(1).split(" ");
-//        IrcMessage* msg = IrcMessage::create(words.value(0).toUpper());
-//        if (msg && msg->initFrom(session()->nickName(), words.mid(1)))
-//        {
-//            session()->sendCommand(cmd);
-//            if (IrcPrivateMessage* privMsg = qobject_cast<IrcPrivateMessage*>(msg))
-//                privateMessage(privMsg);
-//            delete cmd;
-//        }
-//        else
-//        {
-//            showHelp(text, true);
-//        }
-//    }
-//    else if (!text.trimmed().isEmpty())
-//    {
-        IrcCommand* cmd = IrcCommand::createMessage(d.receiver, text);
+    // TODO: query, help, echo privmsg, check empty txt...
+    IrcCommand* cmd = CommandParser::parseCommand(d.receiver, text, this);
+    if (cmd)
         d.session->sendCommand(cmd);
-        delete cmd;
-        // TODO: privateMessage(&msg);
-//    }
+    delete cmd;
 }
 
 void MessageView::applySettings(const Settings& settings)
 {
-    d.timeStamp = settings.timeStamp;
+    d.formatter.setTimeStamp(settings.timeStamp);
     d.textBrowser->setFont(settings.font);
     d.textBrowser->document()->setMaximumBlockCount(settings.maxBlockCount);
 
@@ -269,13 +239,13 @@ void MessageView::receiveMessage(IrcMessage* message)
 
 void MessageView::inviteMessage(IrcInviteMessage* message)
 {
-    appendMessage(MessageFormatter::formatMessage(message));
+    appendMessage(d.formatter.formatMessage(message));
 }
 
 void MessageView::joinMessage(IrcJoinMessage* message)
 {
     if (Application::settings().messages.value(Settings::Joins))
-        appendMessage(MessageFormatter::formatMessage(message));
+        appendMessage(d.formatter.formatMessage(message));
 
     if (Application::settings().highlights.value(Settings::Joins))
         emit highlight(this, true);
@@ -286,7 +256,7 @@ void MessageView::joinMessage(IrcJoinMessage* message)
 void MessageView::kickMessage(IrcKickMessage* message)
 {
     if (Application::settings().messages.value(Settings::Kicks))
-        appendMessage(MessageFormatter::formatMessage(message));
+        appendMessage(d.formatter.formatMessage(message));
 
     if (Application::settings().highlights.value(Settings::Kicks))
         emit highlight(this, true);
@@ -297,7 +267,7 @@ void MessageView::kickMessage(IrcKickMessage* message)
 void MessageView::modeMessage(IrcModeMessage* message)
 {
     if (Application::settings().messages.value(Settings::Modes))
-        appendMessage(MessageFormatter::formatMessage(message));
+        appendMessage(d.formatter.formatMessage(message));
 
     if (Application::settings().highlights.value(Settings::Modes))
         emit highlight(this, true);
@@ -306,7 +276,7 @@ void MessageView::modeMessage(IrcModeMessage* message)
 void MessageView::nickMessage(IrcNickMessage* message)
 {
     if (Application::settings().messages.value(Settings::Nicks))
-        appendMessage(MessageFormatter::formatMessage(message));
+        appendMessage(d.formatter.formatMessage(message));
 
     if (Application::settings().highlights.value(Settings::Nicks))
         emit highlight(this, true);
@@ -323,7 +293,7 @@ void MessageView::noticeMessage(IrcNoticeMessage* message)
     else
         emit highlight(this, true);
 
-    appendMessage(MessageFormatter::formatMessage(message), matches);
+    appendMessage(d.formatter.formatMessage(message));
 }
 
 void MessageView::numericMessage(IrcNumericMessage* message)
@@ -354,7 +324,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
             return;*/
 
         default:
-            appendMessage(MessageFormatter::formatMessage(message));
+            appendMessage(d.formatter.formatMessage(message));
             break;
     }
 }
@@ -362,7 +332,7 @@ void MessageView::numericMessage(IrcNumericMessage* message)
 void MessageView::partMessage(IrcPartMessage* message)
 {
     if (Application::settings().messages.value(Settings::Parts))
-        appendMessage(MessageFormatter::formatMessage(message));
+        appendMessage(d.formatter.formatMessage(message));
 
     if (Application::settings().highlights.value(Settings::Parts))
         emit highlight(this, true);
@@ -378,13 +348,13 @@ void MessageView::privateMessage(IrcPrivateMessage* message)
     else
         emit highlight(this, true);
 
-    appendMessage(MessageFormatter::formatMessage(message), matches);
+    appendMessage(d.formatter.formatMessage(message));
 }
 
 void MessageView::quitMessage(IrcQuitMessage* message)
 {
     if (Application::settings().messages.value(Settings::Quits))
-        appendMessage(MessageFormatter::formatMessage(message));
+        appendMessage(d.formatter.formatMessage(message));
 
     if (Application::settings().highlights.value(Settings::Quits))
         emit highlight(this, true);
@@ -395,7 +365,7 @@ void MessageView::quitMessage(IrcQuitMessage* message)
 void MessageView::topicMessage(IrcTopicMessage* message)
 {
     if (Application::settings().messages.value(Settings::Topics))
-        appendMessage(MessageFormatter::formatMessage(message));
+        appendMessage(d.formatter.formatMessage(message));
 
     if (Application::settings().highlights.value(Settings::Topics))
         emit highlight(this, true);

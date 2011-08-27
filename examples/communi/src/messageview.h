@@ -24,6 +24,7 @@
 #include "ui_messageview.h"
 #include <ircsession.h>
 #include <ircmessage.h>
+#include "messageformatter.h"
 
 class StringListModel;
 struct Settings;
@@ -42,7 +43,7 @@ public:
 
 public slots:
     void showHelp(const QString& text, bool error = false);
-    void appendMessage(const QString& message, bool highlight = false);
+    void appendMessage(const QString& message);
 
 signals:
     void highlight(MessageView* view, bool on);
@@ -80,7 +81,7 @@ private:
         IrcSession* session;
         StringListModel* model;
         QString receiver;
-        bool timeStamp;
+        MessageFormatter formatter;
     } d;
 };
 
