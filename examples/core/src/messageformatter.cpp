@@ -41,7 +41,7 @@ MessageFormatter::~MessageFormatter()
 {
 }
 
-QString MessageFormatter::formatMessage(IrcMessage* message) const
+QString MessageFormatter::formatMessage(IrcMessage* message)
 {
     QString formatted;
     switch (message->type())
@@ -87,19 +87,19 @@ QString MessageFormatter::formatMessage(IrcMessage* message) const
     return tr("[%1] %2").arg(time).arg(formatted);
 }
 
-QString MessageFormatter::formatInviteMessage(IrcInviteMessage* message) const
+QString MessageFormatter::formatInviteMessage(IrcInviteMessage* message)
 {
     const QString prefix = prettyUser(message->prefix());
     return tr("! %1 invited to %3").arg(prefix, message->channel());
 }
 
-QString MessageFormatter::formatJoinMessage(IrcJoinMessage* message) const
+QString MessageFormatter::formatJoinMessage(IrcJoinMessage* message)
 {
     const QString prefix = prettyUser(message->prefix());
     return tr("! %1 joined %2").arg(prefix, message->channel());
 }
 
-QString MessageFormatter::formatKickMessage(IrcKickMessage* message) const
+QString MessageFormatter::formatKickMessage(IrcKickMessage* message)
 {
     const QString prefix = prettyUser(message->prefix());
     const QString user = prettyUser(message->user());
@@ -109,20 +109,20 @@ QString MessageFormatter::formatKickMessage(IrcKickMessage* message) const
         return tr("! %1 kicked %2").arg(prefix, user);
 }
 
-QString MessageFormatter::formatModeMessage(IrcModeMessage* message) const
+QString MessageFormatter::formatModeMessage(IrcModeMessage* message)
 {
     const QString prefix = prettyUser(message->prefix());
     return tr("! %1 sets mode %2 %3 %4").arg(prefix, message->mode(), message->mask(), message->argument());
 }
 
-QString MessageFormatter::formatNickMessage(IrcNickMessage* message) const
+QString MessageFormatter::formatNickMessage(IrcNickMessage* message)
 {
     const QString prefix = prettyUser(message->prefix());
     const QString nick = prettyUser(message->nick());
     return tr("! %1 changed nick to %2").arg(prefix, nick);
 }
 
-QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* message) const
+QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* message)
 {
     const QString prefix = prettyUser(message->prefix());
     const QString msg = IrcUtil::messageToHtml(message->message());
@@ -131,7 +131,7 @@ QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* message) const
 
 #define P_(x) message->parameters().value(x)
 
-QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
+QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message)
 {
     if (message->code() < 300)
         return tr("[INFO] %1").arg(QStringList(message->parameters().mid(1)).join(" "));
@@ -193,7 +193,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
     }
 }
 
-QString MessageFormatter::formatPartMessage(IrcPartMessage* message) const
+QString MessageFormatter::formatPartMessage(IrcPartMessage* message)
 {
     const QString prefix = prettyUser(message->prefix());
     if (!message->reason().isEmpty())
@@ -202,7 +202,7 @@ QString MessageFormatter::formatPartMessage(IrcPartMessage* message) const
         return tr("! %1 parted %2").arg(prefix, message->channel());
 }
 
-QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* message) const
+QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* message)
 {
     const QString prefix = prettyUser(message->prefix());
     const QString msg = IrcUtil::messageToHtml(message->message());
@@ -212,7 +212,7 @@ QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* message) const
         return tr("&lt;%1&gt; %2").arg(prefix, msg);
 }
 
-QString MessageFormatter::formatQuitMessage(IrcQuitMessage* message) const
+QString MessageFormatter::formatQuitMessage(IrcQuitMessage* message)
 {
     const QString prefix = prettyUser(message->prefix());
     if (!message->reason().isEmpty())
@@ -221,20 +221,20 @@ QString MessageFormatter::formatQuitMessage(IrcQuitMessage* message) const
         return tr("! %1 has quit").arg(prefix);
 }
 
-QString MessageFormatter::formatTopicMessage(IrcTopicMessage* message) const
+QString MessageFormatter::formatTopicMessage(IrcTopicMessage* message)
 {
     const QString prefix = prettyUser(message->prefix());
     const QString topic = IrcUtil::messageToHtml(message->topic());
     return tr("! %1 sets topic \"%2\" on %3").arg(prefix, topic, message->channel());
 }
 
-QString MessageFormatter::formatUnknownMessage(IrcMessage* message) const
+QString MessageFormatter::formatUnknownMessage(IrcMessage* message)
 {
     const QString prefix = prettyUser(message->prefix());
     return tr("? %1 %2 %3").arg(prefix, message->command(), message->parameters().join(" "));
 }
 
-QString MessageFormatter::prettyUser(const QString& user) const
+QString MessageFormatter::prettyUser(const QString& user)
 {
     IrcPrefix prefix(user);
     if (prefix.isValid())
