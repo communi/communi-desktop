@@ -26,6 +26,7 @@
 
 MessageHandler::MessageHandler(QObject* parent) : QObject(parent)
 {
+    d.qml = false;
     d.session = 0;
     d.defaultReceiver = 0;
     d.currentReceiver = 0;
@@ -34,6 +35,16 @@ MessageHandler::MessageHandler(QObject* parent) : QObject(parent)
 
 MessageHandler::~MessageHandler()
 {
+}
+
+bool MessageHandler::isQml() const
+{
+    return d.qml;
+}
+
+void MessageHandler::setQml(bool qml)
+{
+    d.qml = qml;
 }
 
 IrcSession* MessageHandler::session() const
@@ -273,10 +284,12 @@ void MessageHandler::handleUnknownMessage(IrcMessage* message)
 
 void MessageHandler::sendMessage(IrcMessage* message, QObject* receiver)
 {
-    // TODO: handle parameter type
-    //       - C++: IrcMessage*
-    //       - QML: QVariant
-    QMetaObject::invokeMethod(receiver, "receiveMessage", Q_ARG(QVariant, QVariant::fromValue((QObject*)message)));
+    if (d.qml)
+        // QML: QVariant(QObject*)
+        QMetaObject::invokeMethod(receiver, "receiveMessage", Q_ARG(QVariant, QVariant::fromValue((QObject*) message)));
+    else
+        // C++: IrcMessage*
+        QMetaObject::invokeMethod(receiver, "receiveMessage", Q_ARG(IrcMessage*, message));
 }
 
 void MessageHandler::sendMessage(IrcMessage* message, const QString& receiver)
