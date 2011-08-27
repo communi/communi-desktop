@@ -45,7 +45,7 @@ public slots:
 
 private slots:
     void onPassword(QString* password);
-    void onMessageReceived(IrcMessage* message);
+    void onConnected();
 
 private:
     mutable Connection conn;

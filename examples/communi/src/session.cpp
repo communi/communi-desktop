@@ -29,6 +29,7 @@
 Session::Session(QObject* parent) : IrcSession(parent), delay(10)
 {
     connect(this, SIGNAL(password(QString*)), SLOT(onPassword(QString*)));
+    connect(this, SIGNAL(connected()), SLOT(onConnected()));
     //TODO: setOptions(options() | Session::PrefixNicks);
     Application::setSessions(Application::sessions() << this);
 }
@@ -105,15 +106,8 @@ void Session::onPassword(QString* password)
     *password = conn.pass;
 }
 
-void Session::onMessageReceived(IrcMessage* message)
+void Session::onConnected()
 {
-    if (message->type() == Irc::RPL_ENDOFMOTD || message->type() == Irc::ERR_NOMOTD)
-    {
-        foreach (const QString& channel, channels)
-        {
-            IrcCommand* cmd = IrcCommand::createJoin(channel, QString());
-            sendCommand(cmd);
-            delete cmd;
-        }
-    }
+    foreach (const QString& channel, channels)
+        sendCommand(IrcCommand::createJoin(channel, QString()));
 }
