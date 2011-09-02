@@ -111,8 +111,6 @@ void SessionTabWidget::quit(const QString &message)
                                  .arg(Application::organizationDomain());
     d.handler.session()->sendCommand(IrcCommand::createQuit(reason));
     d.handler.session()->close();
-    // TODO: automatically rejoin channels when reconnected
-    //d.handler.session()->setAutoJoinChannels(h.handler.session()->connection().channels);
 }
 
 void SessionTabWidget::connected()

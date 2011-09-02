@@ -26,11 +26,9 @@
 #include <ircmessage.h>
 #include <irccommand.h>
 
-Session::Session(QObject* parent) : IrcSession(parent), delay(10)
+Session::Session(QObject* parent) : IrcSession(parent)
 {
     connect(this, SIGNAL(password(QString*)), SLOT(onPassword(QString*)));
-    connect(this, SIGNAL(connected()), SLOT(onConnected()));
-    //TODO: setOptions(options() | Session::PrefixNicks);
     Application::setSessions(Application::sessions() << this);
 }
 
@@ -43,37 +41,7 @@ Session::~Session()
 
 Connection Session::connection() const
 {
-    conn.channels.clear();
-    /* TODO:
-    QList<Irc::Buffer*> buffers = findChildren<Irc::Buffer*>();
-    foreach (Irc::Buffer* buffer, buffers)
-    {
-        QString receiver = buffer->receiver();
-        if (isChannel(receiver))
-            conn.channels += receiver;
-    }
-    */
     return conn;
-}
-
-QStringList Session::autoJoinChannels() const
-{
-    return channels;
-}
-
-void Session::setAutoJoinChannels(const QStringList& arg)
-{
-    channels = arg;
-}
-
-int Session::autoReconnectDelay() const
-{
-    return delay;
-}
-
-void Session::setAutoReconnectDelay(int seconds)
-{
-    delay = seconds;
 }
 
 void Session::connectTo(const Connection& connection)
@@ -95,7 +63,6 @@ void Session::connectTo(const Connection& connection)
     setNickName(connection.nick);
     setUserName(appName.toLower());
     setRealName(connection.real.isEmpty() ? appName : connection.real);
-    setAutoJoinChannels(connection.channels);
     open();
 
     conn = connection;
@@ -104,10 +71,4 @@ void Session::connectTo(const Connection& connection)
 void Session::onPassword(QString* password)
 {
     *password = conn.pass;
-}
-
-void Session::onConnected()
-{
-    foreach (const QString& channel, channels)
-        sendCommand(IrcCommand::createJoin(channel, QString()));
 }

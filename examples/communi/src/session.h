@@ -34,23 +34,14 @@ public:
 
     Connection connection() const;
 
-    QStringList autoJoinChannels() const;
-    void setAutoJoinChannels(const QStringList& channels);
-
-    int autoReconnectDelay() const;
-    void setAutoReconnectDelay(int seconds);
-
 public slots:
     void connectTo(const Connection& connection);
 
 private slots:
     void onPassword(QString* password);
-    void onConnected();
 
 private:
-    mutable Connection conn;
-    QStringList channels;
-    int delay;
+    Connection conn;
 };
 
 #endif // SESSION_H

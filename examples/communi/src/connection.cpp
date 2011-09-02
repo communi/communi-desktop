@@ -27,8 +27,7 @@ Connection::Connection() :
     nick(),
     real(),
     pass(),
-    secure(false),
-    channels()
+    secure(false)
 {
 }
 
