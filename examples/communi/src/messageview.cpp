@@ -23,23 +23,14 @@
 #include "settings.h"
 #include "completer.h"
 #include "application.h"
-#include "stringlistmodel.h"
 #include <QShortcut>
 #include <QKeyEvent>
 #include <QDebug>
-#include <QTime>
 #include <irccommand.h>
 #include <ircprefix.h>
 #include <ircutil.h>
 #include <irc.h>
 #include "commandparser.h"
-
-enum ModelRole
-{
-    Role_Names,
-    Role_Commands,
-    Role_Aliases
-};
 
 MessageView::MessageView(IrcSession* session, QWidget* parent) :
     QWidget(parent)
@@ -51,17 +42,9 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
     d.textBrowser->viewport()->installEventFilter(this);
 
     d.session = session;
-    d.model = new StringListModel(this);
     d.formatter.setHightlights(QStringList(session->nickName()));
 
-    /* TODO:
-    QStringList commands = IrcMessage::availableCommands();
-    QMutableStringListIterator it2(commands);
-    while (it2.hasNext())
-        it2.next().prepend("/");
-    d.model->setStringList(Role_Commands, commands);*/
-
-    d.editFrame->completer()->setModel(d.model);
+    // TODO: d.editFrame->completer()->setModel(d.model);
     connect(d.editFrame, SIGNAL(send(QString)), this, SLOT(onSend(QString)));
     connect(d.editFrame, SIGNAL(typed(QString)), this, SLOT(showHelp(QString)));
 
@@ -196,166 +179,66 @@ void MessageView::applySettings(const Settings& settings)
 
 void MessageView::receiveMessage(IrcMessage* message)
 {
+    bool append = true;
+    bool hilite = false;
+    bool matches = false;
+
     switch (message->type())
     {
-    case IrcMessage::Invite:
-        inviteMessage(static_cast<IrcInviteMessage*>(message));
-        break;
     case IrcMessage::Join:
-        joinMessage(static_cast<IrcJoinMessage*>(message));
+        append = Application::settings().messages.value(Settings::Joins);
+        hilite = Application::settings().highlights.value(Settings::Joins);
         break;
     case IrcMessage::Kick:
-        kickMessage(static_cast<IrcKickMessage*>(message));
+        append = Application::settings().messages.value(Settings::Kicks);
+        hilite = Application::settings().highlights.value(Settings::Kicks);
         break;
     case IrcMessage::Mode:
-        modeMessage(static_cast<IrcModeMessage*>(message));
+        append = Application::settings().messages.value(Settings::Modes);
+        hilite = Application::settings().highlights.value(Settings::Modes);
         break;
     case IrcMessage::Nick:
-        nickMessage(static_cast<IrcNickMessage*>(message));
+        append = Application::settings().messages.value(Settings::Nicks);
+        hilite = Application::settings().highlights.value(Settings::Nicks);
         break;
     case IrcMessage::Notice:
-        noticeMessage(static_cast<IrcNoticeMessage*>(message));
-        break;
-    case IrcMessage::Numeric:
-        numericMessage(static_cast<IrcNumericMessage*>(message));
+        matches = static_cast<IrcNoticeMessage*>(message)->message().contains(d.session->nickName());
+        hilite = true;
         break;
     case IrcMessage::Part:
-        partMessage(static_cast<IrcPartMessage*>(message));
+        append = Application::settings().messages.value(Settings::Parts);
+        hilite = Application::settings().highlights.value(Settings::Parts);
         break;
     case IrcMessage::Private:
-        privateMessage(static_cast<IrcPrivateMessage*>(message));
+        matches = !isChannelView() || static_cast<IrcPrivateMessage*>(message)->message().contains(d.session->nickName());
+        hilite = true;
         break;
     case IrcMessage::Quit:
-        quitMessage(static_cast<IrcQuitMessage*>(message));
+        append = Application::settings().messages.value(Settings::Quits);
+        hilite = Application::settings().highlights.value(Settings::Quits);
         break;
     case IrcMessage::Topic:
-        topicMessage(static_cast<IrcTopicMessage*>(message));
+        append = Application::settings().messages.value(Settings::Topics);
+        hilite = Application::settings().highlights.value(Settings::Topics);
         break;
     case IrcMessage::Unknown:
-        unknownMessage(static_cast<IrcMessage*>(message));
+        qWarning() << "unknown:" << message->prefix() << message->parameters();
+        append = false;
+        break;
+    case IrcMessage::Invite:
+    case IrcMessage::Numeric:
+    case IrcMessage::Ping:
+    case IrcMessage::Pong:
+    case IrcMessage::Error:
         break;
     }
-}
 
-void MessageView::inviteMessage(IrcInviteMessage* message)
-{
-    appendMessage(d.formatter.formatMessage(message));
-}
-
-void MessageView::joinMessage(IrcJoinMessage* message)
-{
-    if (Application::settings().messages.value(Settings::Joins))
-        appendMessage(d.formatter.formatMessage(message));
-
-    if (Application::settings().highlights.value(Settings::Joins))
-        emit highlight(this, true);
-
-    d.model->add(Role_Names, IrcPrefix(message->prefix()).nick());
-}
-
-void MessageView::kickMessage(IrcKickMessage* message)
-{
-    if (Application::settings().messages.value(Settings::Kicks))
-        appendMessage(d.formatter.formatMessage(message));
-
-    if (Application::settings().highlights.value(Settings::Kicks))
-        emit highlight(this, true);
-
-    d.model->remove(Role_Names, message->user());
-}
-
-void MessageView::modeMessage(IrcModeMessage* message)
-{
-    if (Application::settings().messages.value(Settings::Modes))
-        appendMessage(d.formatter.formatMessage(message));
-
-    if (Application::settings().highlights.value(Settings::Modes))
-        emit highlight(this, true);
-}
-
-void MessageView::nickMessage(IrcNickMessage* message)
-{
-    if (Application::settings().messages.value(Settings::Nicks))
-        appendMessage(d.formatter.formatMessage(message));
-
-    if (Application::settings().highlights.value(Settings::Nicks))
-        emit highlight(this, true);
-
-    d.model->remove(Role_Names, IrcPrefix(message->prefix()).nick());
-    d.model->add(Role_Names, message->nick());
-}
-
-void MessageView::noticeMessage(IrcNoticeMessage* message)
-{
-    bool matches = message->message().contains(d.session->nickName());
     if (matches)
         emit alert(this, true);
-    else
+    else if (hilite)
         emit highlight(this, true);
-
-    appendMessage(d.formatter.formatMessage(message));
-}
-
-void MessageView::numericMessage(IrcNumericMessage* message)
-{
-    switch (message->code())
-    {
-        // TODO: connected
-        case Irc::RPL_WELCOME:
-            emit highlight(this, false);
-            break;
-
-        default:
-            appendMessage(d.formatter.formatMessage(message));
-            break;
-    }
-}
-
-void MessageView::partMessage(IrcPartMessage* message)
-{
-    if (Application::settings().messages.value(Settings::Parts))
+    if (append)
         appendMessage(d.formatter.formatMessage(message));
-
-    if (Application::settings().highlights.value(Settings::Parts))
-        emit highlight(this, true);
-
-    d.model->remove(Role_Names, IrcPrefix(message->prefix()).nick());
-}
-
-void MessageView::privateMessage(IrcPrivateMessage* message)
-{
-    bool matches = message->message().contains(d.session->nickName());
-    if (matches || !isChannelView())
-        emit alert(this, true);
-    else
-        emit highlight(this, true);
-
-    appendMessage(d.formatter.formatMessage(message));
-}
-
-void MessageView::quitMessage(IrcQuitMessage* message)
-{
-    if (Application::settings().messages.value(Settings::Quits))
-        appendMessage(d.formatter.formatMessage(message));
-
-    if (Application::settings().highlights.value(Settings::Quits))
-        emit highlight(this, true);
-
-    d.model->remove(Role_Names, IrcPrefix(message->prefix()).nick());
-}
-
-void MessageView::topicMessage(IrcTopicMessage* message)
-{
-    if (Application::settings().messages.value(Settings::Topics))
-        appendMessage(d.formatter.formatMessage(message));
-
-    if (Application::settings().highlights.value(Settings::Topics))
-        emit highlight(this, true);
-}
-
-void MessageView::unknownMessage(IrcMessage* message)
-{
-    qWarning() << "unknown:" << message->prefix() << message->parameters();
 }
 
 bool MessageView::isChannelView() const

@@ -26,7 +26,6 @@
 #include <ircmessage.h>
 #include "messageformatter.h"
 
-class StringListModel;
 struct Settings;
 
 class MessageView : public QWidget
@@ -55,18 +54,6 @@ protected:
 
 protected slots:
     void receiveMessage(IrcMessage* message);
-    void inviteMessage(IrcInviteMessage*);
-    void joinMessage(IrcJoinMessage*);
-    void kickMessage(IrcKickMessage*);
-    void modeMessage(IrcModeMessage*);
-    void nickMessage(IrcNickMessage*);
-    void noticeMessage(IrcNoticeMessage*);
-    void numericMessage(IrcNumericMessage*);
-    void partMessage(IrcPartMessage*);
-    void privateMessage(IrcPrivateMessage*);
-    void quitMessage(IrcQuitMessage*);
-    void topicMessage(IrcTopicMessage*);
-    void unknownMessage(IrcMessage*);
 
 private slots:
     void onEscPressed();
@@ -78,9 +65,8 @@ private:
 
     struct MessageViewData : public Ui::MessageView
     {
-        IrcSession* session;
-        StringListModel* model;
         QString receiver;
+        IrcSession* session;
         MessageFormatter formatter;
     } d;
 };

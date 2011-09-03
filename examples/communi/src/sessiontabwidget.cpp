@@ -33,17 +33,11 @@
 SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     TabWidget(parent)
 {
-    d.connectCounter = 0;
-
     // take ownership of the session
     session->setParent(this);
     d.handler.setSession(session);
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
-
-    connect(session, SIGNAL(connected()), this, SLOT(connected()));
-    connect(session, SIGNAL(connecting()), this, SLOT(connecting()));
-    connect(session, SIGNAL(disconnected()), this, SLOT(disconnected()));
 
     connect(&d.handler, SIGNAL(receiverToBeAdded(QString)), this, SLOT(openView(QString)));
     connect(&d.handler, SIGNAL(receiverToBeRemoved(QString)), this, SLOT(closeView(QString)));
@@ -111,37 +105,6 @@ void SessionTabWidget::quit(const QString &message)
                                  .arg(Application::organizationDomain());
     d.handler.session()->sendCommand(IrcCommand::createQuit(reason));
     d.handler.session()->close();
-}
-
-void SessionTabWidget::connected()
-{
-    MessageView* view = static_cast<MessageView*>(widget(0));
-    if (view)
-    {
-        view->appendMessage(tr("[%1] Connected").arg(d.handler.session()->host()));
-        highlightTab(view, true);
-    }
-    d.connectCounter = 0;
-}
-
-void SessionTabWidget::connecting()
-{
-    MessageView* view = static_cast<MessageView*>(widget(0));
-    if (view)
-    {
-        view->appendMessage(tr("[%1] Connecting... #%2").arg(d.handler.session()->host()).arg(++d.connectCounter));
-        highlightTab(view, true);
-    }
-}
-
-void SessionTabWidget::disconnected()
-{
-    MessageView* view = static_cast<MessageView*>(widget(0));
-    if (view)
-    {
-        view->appendMessage(tr("[%1] Disconnected").arg(d.handler.session()->host()));
-        highlightTab(view, true);
-    }
 }
 
 void SessionTabWidget::tabActivated(int index)

@@ -48,9 +48,6 @@ signals:
     void titleChanged(const QString& title);
 
 private slots:
-    void connected();
-    void connecting();
-    void disconnected();
     void tabActivated(int index);
     void delayedTabReset();
     void delayedTabResetTimeout();
@@ -62,7 +59,6 @@ private slots:
 private:
     struct SessionTabWidgetData
     {
-        int connectCounter;
         QList<int> delayedIndexes;
         MessageHandler handler;
         QHash<QString, MessageView*> views;
