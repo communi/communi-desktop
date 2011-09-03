@@ -148,10 +148,19 @@ void MessageView::onEscPressed()
 
 void MessageView::onSend(const QString& text)
 {
-    // TODO: query, help, echo privmsg, check empty txt...
+    // TODO: query, help, check empty txt...
     IrcCommand* cmd = CommandParser::parseCommand(d.receiver, text);
     if (cmd)
+    {
         d.session->sendCommand(cmd);
+
+        if (cmd->type() == IrcCommand::Message)
+        {
+            IrcPrivateMessage msg;
+            msg.initFrom(d.session->nickName(), cmd->parameters());
+            receiveMessage(&msg);
+        }
+    }
 }
 
 void MessageView::applySettings(const Settings& settings)
