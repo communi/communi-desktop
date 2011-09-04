@@ -74,28 +74,28 @@ void MessageView::setReceiver(const QString& receiver)
 
 void MessageView::showHelp(const QString& text, bool error)
 {
-    /* TODO:
     QString syntax;
     if (text == "/")
     {
-        QStringList commands = IrcMessage::availableCommands();
-        commands.sort();
+        QStringList commands = CommandParser::availableCommands();
         syntax = commands.join(" ");
     }
     else if (text.startsWith('/'))
     {
-        QString command = text.mid(1).split(' ', QString::SkipEmptyParts).value(0).toUpper();
-        IrcMessage* message = IrcMessage::create(command, this);
-        if (message)
-            syntax = message->syntax();
-        delete message;
+        QString command = text.mid(1).split(' ', QString::SkipEmptyParts).value(0);
+        if (!error)
+            command = CommandParser::suggestedCommand(command);
+        syntax = CommandParser::syntax(command);
+        if (syntax.isEmpty() && error)
+            syntax = tr("Unknown command '%1'").arg(command.toUpper());
     }
+
     d.helpLabel->setVisible(!syntax.isEmpty());
     QPalette pal;
     if (error)
         pal.setColor(QPalette::WindowText, Qt::red);
     d.helpLabel->setPalette(pal);
-    d.helpLabel->setText(syntax);*/
+    d.helpLabel->setText(syntax);
 }
 
 void MessageView::appendMessage(const QString& message)
@@ -160,6 +160,10 @@ void MessageView::onSend(const QString& text)
             msg.initFrom(d.session->nickName(), cmd->parameters());
             receiveMessage(&msg);
         }
+    }
+    else
+    {
+        showHelp(text, true);
     }
 }
 
