@@ -23,6 +23,7 @@
 #include "settings.h"
 #include "completer.h"
 #include "application.h"
+#include <QStringListModel>
 #include <QShortcut>
 #include <QKeyEvent>
 #include <QDebug>
@@ -30,6 +31,8 @@
 #include <ircprefix.h>
 #include <ircutil.h>
 #include <irc.h>
+
+QStringListModel* MessageView::MessageViewData::commandModel = 0;
 
 MessageView::MessageView(IrcSession* session, QWidget* parent) :
     QWidget(parent)
@@ -44,7 +47,17 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
     d.formatter.setHightlights(QStringList(session->nickName()));
     connect(&d.parser, SIGNAL(queryRequested(QString)), this, SIGNAL(query(QString)));
 
-    // TODO: d.editFrame->completer()->setModel(d.model);
+    d.userModel = new QStringListModel(this);
+
+    if (!d.commandModel)
+    {
+        d.commandModel = new QStringListModel(qApp);
+        QStringList commands;
+        foreach (const QString& command, CommandParser::availableCommands())
+            commands += "/" + command;
+        d.commandModel->setStringList(commands);
+    }
+
     connect(d.editFrame, SIGNAL(send(QString)), this, SLOT(onSend(QString)));
     connect(d.editFrame, SIGNAL(typed(QString)), this, SLOT(showHelp(QString)));
 
@@ -74,6 +87,11 @@ void MessageView::setReceiver(const QString& receiver)
 
 void MessageView::showHelp(const QString& text, bool error)
 {
+    if (text.startsWith('/'))
+        d.editFrame->completer()->setModel(d.commandModel);
+    else
+        d.editFrame->completer()->setModel(d.userModel);
+
     QString syntax;
     if (text == "/")
     {

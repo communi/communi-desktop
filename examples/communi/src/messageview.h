@@ -28,6 +28,7 @@
 #include "messageformatter.h"
 
 struct Settings;
+class QStringListModel;
 
 class MessageView : public QWidget
 {
@@ -71,6 +72,8 @@ private:
         IrcSession* session;
         CommandParser parser;
         MessageFormatter formatter;
+        QStringListModel* userModel;
+        static QStringListModel* commandModel;
     } d;
 };
 
