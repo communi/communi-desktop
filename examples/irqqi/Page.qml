@@ -7,8 +7,6 @@ Tab {
     signal sendMessage(string receiver, string message)
 
     function receiveMessage(message) {
-        if (textEdit.text.length > 0)
-            textEdit.text += "\n";
         textEdit.text += MessageFormatter.formatMessage(message);
     }
 
