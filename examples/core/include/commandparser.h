@@ -22,6 +22,7 @@
 #define COMMANDPARSER_H
 
 #include <QObject>
+#include <QStringList>
 
 class IrcCommand;
 
@@ -32,6 +33,10 @@ class CommandParser : public QObject
 public:
     explicit CommandParser(QObject* parent = 0);
     virtual ~CommandParser();
+
+    static Q_INVOKABLE QStringList availableCommands();
+    static Q_INVOKABLE QString suggestedCommand(const QString& command);
+    static Q_INVOKABLE QString syntax(const QString& command);
 
     static Q_INVOKABLE IrcCommand* parseCommand(const QString& receiver, const QString& text);
 
