@@ -30,7 +30,6 @@
 #include <ircprefix.h>
 #include <ircutil.h>
 #include <irc.h>
-#include "commandparser.h"
 
 MessageView::MessageView(IrcSession* session, QWidget* parent) :
     QWidget(parent)
@@ -43,6 +42,7 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
 
     d.session = session;
     d.formatter.setHightlights(QStringList(session->nickName()));
+    connect(&d.parser, SIGNAL(queryRequested(QString)), this, SIGNAL(query(QString)));
 
     // TODO: d.editFrame->completer()->setModel(d.model);
     connect(d.editFrame, SIGNAL(send(QString)), this, SLOT(onSend(QString)));
@@ -148,8 +148,7 @@ void MessageView::onEscPressed()
 
 void MessageView::onSend(const QString& text)
 {
-    // TODO: query, help, check empty txt...
-    IrcCommand* cmd = CommandParser::parseCommand(d.receiver, text);
+    IrcCommand* cmd = d.parser.parseCommand(d.receiver, text);
     if (cmd)
     {
         d.session->sendCommand(cmd);
@@ -161,7 +160,7 @@ void MessageView::onSend(const QString& text)
             receiveMessage(&msg);
         }
     }
-    else
+    else if (d.parser.hasError())
     {
         showHelp(text, true);
     }

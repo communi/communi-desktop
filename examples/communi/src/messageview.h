@@ -24,6 +24,7 @@
 #include "ui_messageview.h"
 #include <ircsession.h>
 #include <ircmessage.h>
+#include "commandparser.h"
 #include "messageformatter.h"
 
 struct Settings;
@@ -48,6 +49,7 @@ signals:
     void highlight(MessageView* view, bool on);
     void alert(MessageView* view, bool on);
     void rename(MessageView* view);
+    void query(const QString& user);
 
 protected:
     bool eventFilter(QObject* receiver, QEvent* event);
@@ -67,6 +69,7 @@ private:
     {
         QString receiver;
         IrcSession* session;
+        CommandParser parser;
         MessageFormatter formatter;
     } d;
 };

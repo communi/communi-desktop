@@ -65,6 +65,7 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
         connect(view, SIGNAL(rename(MessageView*)), this, SLOT(nameTab(MessageView*)));
         connect(view, SIGNAL(alert(MessageView*, bool)), this, SLOT(alertTab(MessageView*, bool)));
         connect(view, SIGNAL(highlight(MessageView*, bool)), this, SLOT(highlightTab(MessageView*, bool)));
+        connect(view, SIGNAL(query(QString)), this, SLOT(openView(QString)));
 
         d.handler.addReceiver(receiver, view);
         d.views.insert(receiver.toLower(), view);
