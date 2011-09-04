@@ -29,6 +29,7 @@ class IrcCommand;
 class CommandParser : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool error READ hasError)
 
 public:
     explicit CommandParser(QObject* parent = 0);
@@ -38,7 +39,11 @@ public:
     static Q_INVOKABLE QString suggestedCommand(const QString& command);
     static Q_INVOKABLE QString syntax(const QString& command);
 
-    static Q_INVOKABLE IrcCommand* parseCommand(const QString& receiver, const QString& text);
+    bool hasError() const;
+    Q_INVOKABLE IrcCommand* parseCommand(const QString& receiver, const QString& text);
+
+signals:
+    void queryRequested(const QString& user);
 
 private:
     static IrcCommand* parseInvite(const QString& receiver, const QStringList& params);

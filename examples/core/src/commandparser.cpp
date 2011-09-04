@@ -39,6 +39,7 @@ static QMap<QString, QString> command_syntaxes()
         syntaxes.insert("NOTICE", "NOTICE <target> <message>");
         syntaxes.insert("PART", "PART (<reason>)");
         syntaxes.insert("PING", "PING <target>");
+        syntaxes.insert("QUERY" , "QUERY (<user>)");
         syntaxes.insert("QUIT" , "QUIT (<message>)");
         syntaxes.insert("TOPIC", "TOPIC (<topic>)");
         syntaxes.insert("WHO", "WHO <user>");
@@ -75,8 +76,16 @@ QString CommandParser::syntax(const QString& command)
     return command_syntaxes().value(command.toUpper());
 }
 
+Q_GLOBAL_STATIC(bool, has_error)
+
+bool CommandParser::hasError() const
+{
+    return *has_error();
+}
+
 IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& text)
 {
+    *has_error() = false;
     if (text.startsWith("/"))
     {
         typedef IrcCommand*(*ParseFunc)(const QString&, const QStringList&);
@@ -103,9 +112,16 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
         }
 
         const QStringList words = text.mid(1).split(" ", QString::SkipEmptyParts);
-        ParseFunc parseFunc = parseFunctions.value(words.value(0).toUpper());
+        const QString command = words.value(0).toUpper();
+        ParseFunc parseFunc = parseFunctions.value(command);
         if (parseFunc)
             return parseFunc(receiver, words.mid(1));
+        // special case...
+        if (command == "QUERY")
+        {
+            emit queryRequested(words.value(1));
+            return 0;
+        }
     }
     else
     {
@@ -113,6 +129,7 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
     }
 
     // unknown command
+    *has_error() = true;
     return 0;
 }
 
