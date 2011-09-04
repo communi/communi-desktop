@@ -271,6 +271,22 @@ void MessageView::receiveMessage(IrcMessage* message)
         appendMessage(d.formatter.formatMessage(message));
 }
 
+void MessageView::addUser(const QString& user)
+{
+    // TODO: this is far from optimal
+    QStringList users = d.userModel->stringList();
+    users.append(user);
+    d.userModel->setStringList(users);
+}
+
+void MessageView::removeUser(const QString& user)
+{
+    // TODO: this is far from optimal
+    QStringList users = d.userModel->stringList();
+    if (users.removeOne(user))
+        d.userModel->setStringList(users);
+}
+
 bool MessageView::isChannelView() const
 {
     if (d.receiver.isEmpty())

@@ -315,9 +315,15 @@ QStringList MessageHandler::Private::userChannels(const QString& user) const
 void MessageHandler::Private::addChannelUser(const QString& channel, const QString& user)
 {
     channelUsers[channel.toLower()].insert(user.toLower());
+    QObject* receiver = receivers.value(channel.toLower());
+    if (receiver)
+        QMetaObject::invokeMethod(receiver, "addUser", Q_ARG(QString, user));
 }
 
 void MessageHandler::Private::removeChannelUser(const QString& channel, const QString& user)
 {
     channelUsers[channel.toLower()].remove(user.toLower());
+    QObject* receiver = receivers.value(channel.toLower());
+    if (receiver)
+        QMetaObject::invokeMethod(receiver, "removeUser", Q_ARG(QString, user));
 }

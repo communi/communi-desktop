@@ -57,6 +57,8 @@ protected:
 
 protected slots:
     void receiveMessage(IrcMessage* message);
+    void addUser(const QString& user);
+    void removeUser(const QString& user);
 
 private slots:
     void onEscPressed();
