@@ -51,7 +51,7 @@ public:
     QObject* currentReceiver() const;
     void setCurrentReceiver(QObject* receiver);
 
-    Q_INVOKABLE void addReceiver(const QString& name, QObject* channel);
+    Q_INVOKABLE void addReceiver(const QString& name, QObject* receiver);
     Q_INVOKABLE QObject* getReceiver(const QString& name) const;
     Q_INVOKABLE void removeReceiver(const QString& name);
 
