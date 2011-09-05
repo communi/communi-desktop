@@ -62,13 +62,13 @@ QStringList CommandParser::availableCommands()
     return command_syntaxes().keys();
 }
 
-QString CommandParser::suggestedCommand(const QString& command)
+QStringList CommandParser::suggestedCommands(const QString& command)
 {
-    const QStringList commands = availableCommands();
-    for (int i = commands.size() - 1; i >= 0; --i)
-        if (commands.at(i).startsWith(command, Qt::CaseInsensitive))
-            return commands.at(i);
-    return QString();
+    QStringList suggestions;
+    foreach (const QString& available, availableCommands())
+        if (available.startsWith(command, Qt::CaseInsensitive))
+            suggestions += available;
+    return suggestions;
 }
 
 QString CommandParser::syntax(const QString& command)
@@ -127,7 +127,12 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
         const QString command = words.value(0).toUpper();
         ParseFunc parseFunc = parseFunctions.value(command);
         if (parseFunc)
-            return parseFunc(receiver, words.mid(1));
+        {
+            IrcCommand* cmd = parseFunc(receiver, words.mid(1));
+            if (!cmd)
+                *has_error() = true;
+            return cmd;
+        }
         if (command_syntaxes().contains(command.toUpper()))
         {
             emit customCommand(command, words.mid(1));
