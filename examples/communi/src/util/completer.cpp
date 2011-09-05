@@ -24,6 +24,8 @@
 Completer::Completer(QObject* parent) : QCompleter(parent)
 {
     d.lineEdit = 0;
+    d.defaultModel = 0;
+    d.slashModel = 0;
     setCaseSensitivity(Qt::CaseInsensitive);
     setCompletionMode(InlineCompletion);
     connect(this, SIGNAL(highlighted(QString)), this, SLOT(insertCompletion(QString)));
@@ -48,6 +50,26 @@ void Completer::setLineEdit(HistoryLineEdit* lineEdit)
     }
 }
 
+QAbstractItemModel* Completer::defaultModel() const
+{
+    return d.defaultModel;
+}
+
+void Completer::setDefaultModel(QAbstractItemModel* model)
+{
+    d.defaultModel = model;
+}
+
+QAbstractItemModel* Completer::slashModel() const
+{
+    return d.slashModel;
+}
+
+void Completer::setSlashModel(QAbstractItemModel* model)
+{
+    d.slashModel = model;
+}
+
 void Completer::onTabPressed()
 {
     if (!d.lineEdit)
@@ -62,6 +84,12 @@ void Completer::onTabPressed()
     d.lineEdit->cursorWordForward(false);
     d.lineEdit->cursorWordBackward(true);
     QString word = d.lineEdit->selectedText();
+
+    // choose model
+    if (word.startsWith('/'))
+        setModel(d.slashModel);
+    else
+        setModel(d.defaultModel);
 
     QString prefix = completionPrefix();
     if (prefix.isEmpty() || !word.startsWith(prefix, Qt::CaseInsensitive))

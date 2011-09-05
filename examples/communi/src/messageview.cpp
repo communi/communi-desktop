@@ -63,6 +63,9 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
         d.commandModel->setStringList(prefixedCommands);
     }
 
+    d.editFrame->completer()->setDefaultModel(d.userModel);
+    d.editFrame->completer()->setSlashModel(d.commandModel);
+
     connect(d.editFrame, SIGNAL(send(QString)), this, SLOT(onSend(QString)));
     connect(d.editFrame, SIGNAL(typed(QString)), this, SLOT(showHelp(QString)));
 
@@ -92,11 +95,6 @@ void MessageView::setReceiver(const QString& receiver)
 
 void MessageView::showHelp(const QString& text, bool error)
 {
-    if (text.startsWith('/'))
-        d.editFrame->completer()->setModel(d.commandModel);
-    else
-        d.editFrame->completer()->setModel(d.userModel);
-
     QString syntax;
     if (text == "/")
     {
