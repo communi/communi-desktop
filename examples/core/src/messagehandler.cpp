@@ -254,7 +254,8 @@ void MessageHandler::handlePartMessage(IrcPartMessage* message)
 {
     sendMessage(message, message->channel());
     d.removeChannelUser(message->channel(), IrcPrefix(message->prefix()).nick());
-    removeReceiver(message->channel());
+    if (IrcPrefix(message->prefix()).nick() == d.session->nickName())
+        removeReceiver(message->channel());
 }
 
 void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
