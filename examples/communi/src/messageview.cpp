@@ -106,9 +106,12 @@ void MessageView::showHelp(const QString& text, bool error)
     else if (text.startsWith('/'))
     {
         QString command = text.mid(1).split(' ', QString::SkipEmptyParts).value(0);
-        if (!error)
-            command = CommandParser::suggestedCommand(command);
-        syntax = CommandParser::syntax(command);
+        QStringList suggestions = CommandParser::suggestedCommands(command);
+        if (suggestions.count() == 1)
+            syntax = CommandParser::syntax(suggestions.first());
+        else
+            syntax = suggestions.join(" ");
+
         if (syntax.isEmpty() && error)
             syntax = tr("Unknown command '%1'").arg(command.toUpper());
     }
