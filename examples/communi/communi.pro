@@ -6,42 +6,18 @@ TEMPLATE = app
 win32|mac:TARGET = Communi
 else:TARGET = communi
 !mac:DESTDIR = bin
-DEPENDPATH += . src
-INCLUDEPATH += . src
-#CONFIG += silent
-DEFINES += VERSION=\"\\\"0.2.0\\\"\"
-QT += network script xml
+QT += network
 maemo5 {
     QT += dbus
     CONFIG += link_pkgconfig
     PKGCONFIG += mce
 }
-CONFIG(debug, debug|release) {
-    QT += scripttools
-}
 
-DEPENDPATH += ../core/include
-INCLUDEPATH += ../core/include
-LIBS += -L../core/lib -lCore
-unix:PRE_TARGETDEPS += ../core/lib/libCore.a
-
-!symbian {
-    OBJECTS_DIR = .tmp
-    MOC_DIR = .tmp
-    RCC_DIR = .tmp
-    UI_DIR = .tmp
-}
-
-lessThan(QT_MAJOR_VERSION, 4) | lessThan(QT_MINOR_VERSION, 7) {
-    error(Communi requires Qt 4.7 or newer but Qt $$[QT_VERSION] was detected.)
-}
+include(../core/core.pri)
 
 RESOURCES += communi.qrc
 win32:RC_FILE = communi.rc
-mac {
-    ICON = resources/icons/communi.icns
-    LIBS += -L/opt/local/lib -l$$qtLibraryTarget(icuuc) -l$$qtLibraryTarget(icui18n) -l$$qtLibraryTarget(icudata)
-}
+mac:ICON = resources/icons/communi.icns
 maemo5 {
     # variables
     isEmpty(PREFIX):PREFIX = /usr/local
@@ -80,5 +56,4 @@ symbian {
 }
 
 include(src/src.pri)
-include(translations/translations.pri)
 include(../examples.pri)

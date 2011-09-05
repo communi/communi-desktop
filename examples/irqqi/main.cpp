@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
     MessageFormatter formatter;
     context->setContextProperty("CommandParser", &parser);
     context->setContextProperty("MessageFormatter", &formatter);
-    qmlRegisterType<MessageHandler>("org.gitorious.communi.examples", 1, 0, "MessageHandler");
+    qmlRegisterType<MessageHandler>("Communi.examples", 1, 0, "MessageHandler");
 
     app.connect(view.engine(), SIGNAL(quit()), SLOT(quit()));
     view.setSource(QUrl::fromLocalFile("irqqi.qml"));

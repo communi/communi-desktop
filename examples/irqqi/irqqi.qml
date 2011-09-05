@@ -1,7 +1,7 @@
 import QtQuick 1.0
 import QtDesktop 0.1
-import org.gitorious.communi 1.0
-import org.gitorious.communi.examples 1.0
+import Communi 1.0
+import Communi.examples 1.0
 
 Window {
     id: window

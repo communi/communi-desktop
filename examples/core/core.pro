@@ -8,6 +8,7 @@ DESTDIR = lib
 DEPENDPATH += . include src
 INCLUDEPATH += . include
 CONFIG += static
+QT = core
 
 # Input
 HEADERS += include/commandparser.h

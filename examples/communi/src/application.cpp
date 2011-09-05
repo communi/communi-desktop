@@ -31,6 +31,7 @@
 #include <QFile>
 #include <QDir>
 #include <QSet>
+#include <Irc>
 
 Settings Application::ApplicationData::settings;
 QList<Session*> Application::ApplicationData::sessions;
@@ -39,9 +40,9 @@ QStringList Application::ApplicationData::categories;
 Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
 {
     setApplicationName("Communi");
-    setApplicationVersion(VERSION);
-    setOrganizationName("communi.bitbucket.org");
-    setOrganizationDomain("http://communi.bitbucket.org");
+    setOrganizationName("Communi");
+    setApplicationVersion(Irc::version());
+    setOrganizationDomain("http://gitorious.org/communi");
 
     QIcon icon;
     icon.addFile(":/resources/icons/16x16/communi.png");
