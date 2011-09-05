@@ -76,6 +76,18 @@ QString CommandParser::syntax(const QString& command)
     return command_syntaxes().value(command.toUpper());
 }
 
+Q_GLOBAL_STATIC(QStringList, custom_commands)
+
+QStringList CommandParser::customCommands()
+{
+    return *custom_commands();
+}
+
+void CommandParser::setCustomCommands(const QStringList& commands)
+{
+    *custom_commands() = commands;
+}
+
 Q_GLOBAL_STATIC(bool, has_error)
 
 bool CommandParser::hasError() const
@@ -116,10 +128,9 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
         ParseFunc parseFunc = parseFunctions.value(command);
         if (parseFunc)
             return parseFunc(receiver, words.mid(1));
-        // special case...
-        if (command == "QUERY")
+        if (custom_commands()->contains(command, Qt::CaseInsensitive))
         {
-            emit queryRequested(words.value(1));
+            emit customCommand(command, words.mid(1));
             return 0;
         }
     }
