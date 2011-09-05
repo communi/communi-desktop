@@ -23,28 +23,28 @@
 #include <QHash>
 #include <QMap>
 
-static QMap<QString, QString> command_syntaxes()
+static QMap<QString, QString>& command_syntaxes()
 {
     static QMap<QString, QString> syntaxes;
     if (syntaxes.isEmpty())
     {
-        syntaxes.insert("INVITE", "INVITE <user>");
-        syntaxes.insert("JOIN", "JOIN <channel> (<key>)");
-        syntaxes.insert("KICK", "KICK <user> (<reason>)");
-        syntaxes.insert("LIST", "LIST <channel> (<server>)");
-        syntaxes.insert("ME", "ME <message>");
-        syntaxes.insert("MODE", "MODE <target> <mode> (<arg>) (<mask>)");
-        syntaxes.insert("NAMES", "NAMES");
-        syntaxes.insert("NICK", "NICK <nick>");
-        syntaxes.insert("NOTICE", "NOTICE <target> <message>");
-        syntaxes.insert("PART", "PART (<reason>)");
-        syntaxes.insert("PING", "PING <target>");
-        syntaxes.insert("QUERY" , "QUERY (<user>)");
-        syntaxes.insert("QUIT" , "QUIT (<message>)");
-        syntaxes.insert("TOPIC", "TOPIC (<topic>)");
-        syntaxes.insert("WHO", "WHO <user>");
-        syntaxes.insert("WHOIS", "WHOIS <user>");
-        syntaxes.insert("WHOWAS", "WHOWAS <user>");
+        syntaxes.insert("INVITE", "<user>");
+        syntaxes.insert("JOIN", "<channel> (<key>)");
+        syntaxes.insert("KICK", "<user> (<reason>)");
+        syntaxes.insert("LIST", "<channel> (<server>)");
+        syntaxes.insert("ME", "<message>");
+        syntaxes.insert("MODE", "<target> <mode> (<arg>) (<mask>)");
+        syntaxes.insert("NAMES", "");
+        syntaxes.insert("NICK", "<nick>");
+        syntaxes.insert("NOTICE", "<target> <message>");
+        syntaxes.insert("PART", "(<reason>)");
+        syntaxes.insert("PING", "<target>");
+        syntaxes.insert("QUERY" , "(<user>)");
+        syntaxes.insert("QUIT" , "(<message>)");
+        syntaxes.insert("TOPIC", "(<topic>)");
+        syntaxes.insert("WHO", "<user>");
+        syntaxes.insert("WHOIS", "<user>");
+        syntaxes.insert("WHOWAS", "<user>");
     }
     return syntaxes;
 }
@@ -73,19 +73,19 @@ QString CommandParser::suggestedCommand(const QString& command)
 
 QString CommandParser::syntax(const QString& command)
 {
-    return command_syntaxes().value(command.toUpper());
+    if (command_syntaxes().contains(command.toUpper()))
+        return command.toUpper() + " " + command_syntaxes().value(command.toUpper());
+    return QString();
 }
 
-Q_GLOBAL_STATIC(QStringList, custom_commands)
-
-QStringList CommandParser::customCommands()
+void CommandParser::addCustomCommand(const QString& command, const QString& syntax)
 {
-    return *custom_commands();
+    command_syntaxes().insert(command.toUpper(), syntax);
 }
 
-void CommandParser::setCustomCommands(const QStringList& commands)
+void CommandParser::removeCustomCommand(const QString& command)
 {
-    *custom_commands() = commands;
+    command_syntaxes().remove(command.toUpper());
 }
 
 Q_GLOBAL_STATIC(bool, has_error)
@@ -128,7 +128,7 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
         ParseFunc parseFunc = parseFunctions.value(command);
         if (parseFunc)
             return parseFunc(receiver, words.mid(1));
-        if (custom_commands()->contains(command, Qt::CaseInsensitive))
+        if (command_syntaxes().contains(command.toUpper()))
         {
             emit customCommand(command, words.mid(1));
             return 0;

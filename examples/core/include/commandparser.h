@@ -31,7 +31,6 @@ class CommandParser : public QObject
     Q_OBJECT
     Q_PROPERTY(bool error READ hasError)
     Q_PROPERTY(QStringList availableCommands READ availableCommands)
-    Q_PROPERTY(QStringList customCommands READ customCommands WRITE setCustomCommands)
 
 public:
     explicit CommandParser(QObject* parent = 0);
@@ -41,8 +40,8 @@ public:
     static Q_INVOKABLE QString suggestedCommand(const QString& command);
     static Q_INVOKABLE QString syntax(const QString& command);
 
-    static QStringList customCommands();
-    static void setCustomCommands(const QStringList& commands);
+    static Q_INVOKABLE void addCustomCommand(const QString& command, const QString& syntax);
+    static Q_INVOKABLE void removeCustomCommand(const QString& command);
 
     bool hasError() const;
     Q_INVOKABLE IrcCommand* parseCommand(const QString& receiver, const QString& text);
