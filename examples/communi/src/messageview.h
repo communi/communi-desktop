@@ -64,6 +64,7 @@ private slots:
     void onEscPressed();
     void onSend(const QString& text);
     void applySettings(const Settings& settings);
+    void onCustomCommand(const QString& command, const QStringList& params);
 
 private:
     bool isChannelView() const;

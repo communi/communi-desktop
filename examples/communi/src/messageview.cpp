@@ -45,17 +45,22 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
 
     d.session = session;
     d.formatter.setHightlights(QStringList(session->nickName()));
-    connect(&d.parser, SIGNAL(queryRequested(QString)), this, SIGNAL(query(QString)));
+    connect(&d.parser, SIGNAL(customCommand(QString,QStringList)), this, SLOT(onCustomCommand(QString,QStringList)));
 
     d.userModel = new QStringListModel(this);
 
     if (!d.commandModel)
     {
-        d.commandModel = new QStringListModel(qApp);
-        QStringList commands;
+        CommandParser::addCustomCommand("CONNECT", "(<host> <port>)");
+        CommandParser::addCustomCommand("QUERY", "<user>");
+        CommandParser::addCustomCommand("SETTINGS", "");
+
+        QStringList prefixedCommands;
         foreach (const QString& command, CommandParser::availableCommands())
-            commands += "/" + command;
-        d.commandModel->setStringList(commands);
+            prefixedCommands += "/" + command;
+
+        d.commandModel = new QStringListModel(qApp);
+        d.commandModel->setStringList(prefixedCommands);
     }
 
     connect(d.editFrame, SIGNAL(send(QString)), this, SLOT(onSend(QString)));
@@ -285,6 +290,16 @@ void MessageView::removeUser(const QString& user)
     QStringList users = d.userModel->stringList();
     if (users.removeOne(user))
         d.userModel->setStringList(users);
+}
+
+void MessageView::onCustomCommand(const QString& command, const QStringList& params)
+{
+    if (command == "QUERY")
+        emit query(params.value(0));
+    else if (command == "SETTINGS")
+        Application::showSettings();
+    else if (command == "CONNECT")
+        QMetaObject::invokeMethod(window(), "connectTo", Q_ARG(QString, params.value(0)), params.count() > 1 ? Q_ARG(quint16, params.value(1).toInt()) : QGenericArgument());
 }
 
 bool MessageView::isChannelView() const
