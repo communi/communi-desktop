@@ -97,8 +97,9 @@ void MessageView::showHelp(const QString& text, bool error)
     }
     else if (text.startsWith('/'))
     {
-        QString command = text.mid(1).split(' ', QString::SkipEmptyParts).value(0);
-        QStringList suggestions = CommandParser::suggestedCommands(command);
+        QStringList words = text.mid(1).split(' ');
+        QString command = words.value(0);
+        QStringList suggestions = CommandParser::suggestedCommands(command, words.mid(1));
         if (suggestions.count() == 1)
             syntax = CommandParser::syntax(suggestions.first());
         else

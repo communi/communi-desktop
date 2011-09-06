@@ -31,7 +31,7 @@ public:
     virtual ~CommandParser();
 
     static QStringList availableCommands();
-    static Q_INVOKABLE QStringList suggestedCommands(const QString& command);
+    static Q_INVOKABLE QStringList suggestedCommands(const QString& command, const QStringList& params);
     static Q_INVOKABLE QString syntax(const QString& command);
 
     static Q_INVOKABLE void addCustomCommand(const QString& command, const QString& syntax);

@@ -56,11 +56,11 @@ QStringList CommandParser::availableCommands()
     return command_syntaxes().keys();
 }
 
-QStringList CommandParser::suggestedCommands(const QString& command)
+QStringList CommandParser::suggestedCommands(const QString& command, const QStringList& params)
 {
     QStringList suggestions;
     foreach (const QString& available, availableCommands())
-        if (available.startsWith(command, Qt::CaseInsensitive))
+        if (!command.compare(available, Qt::CaseInsensitive) || (params.isEmpty() && available.startsWith(command, Qt::CaseInsensitive)))
             suggestions += available;
     return suggestions;
 }
