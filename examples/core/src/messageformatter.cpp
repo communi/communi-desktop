@@ -225,6 +225,9 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
         return tr("! %1 version is %2").arg(message->prefix(), P_(1));
     case Irc::RPL_TIME:
         return tr("! %1 time is %2").arg(P_(1), P_(2));
+    case Irc::RPL_UNAWAY:
+    case Irc::RPL_NOWAWAY:
+        return tr("! %1").arg(P_(1));
 
     case Irc::RPL_NAMREPLY:
         foreach (const QString& name, P_(3).split(" ", QString::SkipEmptyParts))

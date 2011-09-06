@@ -22,6 +22,7 @@ static QMap<QString, QString>& command_syntaxes()
     static QMap<QString, QString> syntaxes;
     if (syntaxes.isEmpty())
     {
+        syntaxes.insert("AWAY", "(<reason>)");
         syntaxes.insert("INVITE", "<user>");
         syntaxes.insert("JOIN", "<channel> (<key>)");
         syntaxes.insert("KICK", "<user> (<reason>)");
@@ -98,6 +99,7 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
         static QHash<QString, ParseFunc> parseFunctions;
         if (parseFunctions.isEmpty())
         {
+            parseFunctions.insert("AWAY", &CommandParser::parseAway);
             parseFunctions.insert("INVITE", &CommandParser::parseInvite);
             parseFunctions.insert("JOIN", &CommandParser::parseJoin);
             parseFunctions.insert("KICK", &CommandParser::parseKick);
@@ -140,6 +142,12 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
     // unknown command
     *has_error() = true;
     return 0;
+}
+
+IrcCommand* CommandParser::parseAway(const QString& receiver, const QStringList& params)
+{
+    Q_UNUSED(receiver);
+    return IrcCommand::createAway(params.value(0));
 }
 
 IrcCommand* CommandParser::parseInvite(const QString& receiver, const QStringList& params)

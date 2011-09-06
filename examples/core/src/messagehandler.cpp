@@ -187,6 +187,8 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
 {
     switch (message->code())
     {
+    case Irc::RPL_UNAWAY:
+    case Irc::RPL_NOWAWAY:
     case Irc::RPL_AWAY:
     case Irc::RPL_WHOISOPERATOR:
     case 310: // "is available for help"
