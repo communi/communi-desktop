@@ -33,7 +33,6 @@ static QMap<QString, QString>& command_syntaxes()
         syntaxes.insert("NOTICE", "<target> <message>");
         syntaxes.insert("PART", "(<reason>)");
         syntaxes.insert("PING", "<target>");
-        syntaxes.insert("QUERY" , "(<user>)");
         syntaxes.insert("QUIT" , "(<message>)");
         syntaxes.insert("TOPIC", "(<topic>)");
         syntaxes.insert("WHO", "<user>");
