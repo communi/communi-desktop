@@ -21,6 +21,7 @@
 #include "editframe.h"
 #include "completer.h"
 #include <QShortcut>
+#include <QPlastiqueStyle>
 
 EditFrame::EditFrame(QWidget* parent) : QFrame(parent)
 {
@@ -29,6 +30,10 @@ EditFrame::EditFrame(QWidget* parent) : QFrame(parent)
     ui.completer = new Completer(this);
     ui.completer->setWidget(this);
     ui.completer->setLineEdit(ui.lineEdit);
+
+    // a workaround for a bug in the Oxygen style
+    if (qApp->style()->objectName() == "oxygen")
+        ui.lineEdit->setStyle(new QPlastiqueStyle);
 
     QShortcut* shortcut = new QShortcut(Qt::Key_Tab, this);
     connect(shortcut, SIGNAL(activated()), ui.completer, SLOT(onTabPressed()));
