@@ -187,6 +187,8 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
 {
     switch (message->code())
     {
+    case Irc::RPL_ENDOFWHO:
+    case Irc::RPL_WHOREPLY:
     case Irc::RPL_UNAWAY:
     case Irc::RPL_NOWAWAY:
     case Irc::RPL_AWAY:
@@ -215,7 +217,6 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
     case Irc::RPL_ENDOFMOTD:
     case Irc::RPL_ENDOFSTATS:
     case Irc::RPL_ENDOFUSERS:
-    case Irc::RPL_ENDOFWHO:
     case Irc::RPL_ENDOFWHOIS:
     case Irc::RPL_ENDOFWHOWAS:
         break; // ignore

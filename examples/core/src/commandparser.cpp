@@ -36,7 +36,7 @@ static QMap<QString, QString>& command_syntaxes()
         syntaxes.insert("PING", "<target>");
         syntaxes.insert("QUIT" , "(<message>)");
         syntaxes.insert("TOPIC", "(<topic>)");
-        syntaxes.insert("WHO", "<user>");
+        syntaxes.insert("WHO", "<mask>");
         syntaxes.insert("WHOIS", "<user>");
         syntaxes.insert("WHOWAS", "<user>");
     }

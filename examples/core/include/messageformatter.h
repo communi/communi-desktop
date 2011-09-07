@@ -50,7 +50,7 @@ protected:
     QString formatTopicMessage(IrcTopicMessage* message) const;
     QString formatUnknownMessage(IrcMessage* message) const;
 
-    static QString prettyNames(QStringList names);
+    static QString prettyNames(QStringList names, int columns);
     static QString prettyUser(const QString& user);
 
 private:
@@ -60,6 +60,7 @@ private:
         QStringList highlights;
         bool timeStamp;
         mutable QStringList names;
+        mutable QStringList who;
     } d;
 };
 

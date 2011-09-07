@@ -235,8 +235,20 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
         return QString();
 
     case Irc::RPL_ENDOFNAMES: {
-        QString msg = tr("! %1 users: %2").arg(P_(1), prettyNames(d.names));
+        QString msg = tr("! %1 users: %2").arg(P_(1), prettyNames(d.names, 6));
         d.names.clear();
+        return msg;
+    }
+
+    case Irc::RPL_WHOREPLY: {
+        QString info = QStringList(message->parameters().mid(6)).join(" ");
+        d.who.append(tr("%1!%2@%3 via %4 (%5)").arg(P_(5), P_(2), P_(3), P_(4), info));
+        return QString();
+    }
+
+    case Irc::RPL_ENDOFWHO: {
+        QString msg = tr("! '%1' users: %2").arg(P_(1), prettyNames(d.who, 1));
+        d.who.clear();
         return msg;
     }
 
@@ -310,21 +322,17 @@ static bool nameLessThan(const QString &n1, const QString &n2)
     return QString::localeAwareCompare(n1.toLower(), n2.toLower()) < 0;
 }
 
-QString MessageFormatter::prettyNames(QStringList names)
+QString MessageFormatter::prettyNames(QStringList names, int columns)
 {
     qSort(names.begin(), names.end(), nameLessThan);
 
     QString message;
     message += "<table>";
-    for (int i = 0; i < names.count(); i += 6)
+    for (int i = 0; i < names.count(); i += columns)
     {
         message += "<tr>";
-        message += "<td>" + prettyUser(names.value(i)) + "&nbsp;</td>";
-        message += "<td>" + prettyUser(names.value(i+1)) + "&nbsp;</td>";
-        message += "<td>" + prettyUser(names.value(i+2)) + "&nbsp;</td>";
-        message += "<td>" + prettyUser(names.value(i+3)) + "&nbsp;</td>";
-        message += "<td>" + prettyUser(names.value(i+4)) + "&nbsp;</td>";
-        message += "<td>" + prettyUser(names.value(i+5)) + "&nbsp;</td>";
+        for (int j = 0; j < columns; ++j)
+            message += "<td>" + prettyUser(names.value(i+j)) + "&nbsp;</td>";
         message += "</tr>";
     }
     message += "</table>";
