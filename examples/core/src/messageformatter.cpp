@@ -342,11 +342,11 @@ QString MessageFormatter::prettyNames(QStringList names, int columns)
 QString MessageFormatter::prettyUser(const QString& user)
 {
     IrcPrefix prefix(user);
-    if (prefix.isValid())
+    if (prefix.isUser())
     {
-        QString nick = prefix.nick();
-        QString color = NICK_COLORS.at(qHash(nick) % NICK_COLORS.count());
-        return QString("<span style='color:%1'>%2</span>").arg(color).arg(nick);
+        QString name = prefix.name();
+        QString color = NICK_COLORS.at(qHash(name) % NICK_COLORS.count());
+        return QString("<span style='color:%1'>%2</span>").arg(color).arg(name);
     }
     return user;
 }
