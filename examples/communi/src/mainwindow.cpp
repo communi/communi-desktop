@@ -286,7 +286,7 @@ void MainWindow::activateAlert(bool activate)
 #ifndef Q_OS_SYMBIAN
             if (trayIcon)
                 trayIcon->unalert();
-#endif Q_OS_SYMBIAN
+#endif // Q_OS_SYMBIAN
         }
     }
 }
