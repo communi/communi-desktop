@@ -81,9 +81,15 @@ void Completer::onTabPressed()
 
     // choose model
     if (word.startsWith('/'))
-        setModel(d.slashModel);
+    {
+        if (model() != d.slashModel)
+            setModel(d.slashModel);
+    }
     else
-        setModel(d.defaultModel);
+    {
+        if (model() != d.defaultModel)
+            setModel(d.defaultModel);
+    }
 
     QString prefix = completionPrefix();
     if (prefix.isEmpty() || !word.startsWith(prefix, Qt::CaseInsensitive))
