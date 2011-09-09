@@ -35,6 +35,7 @@ static QMap<QString, QString>& command_syntaxes()
         syntaxes.insert("PART", "(<reason>)");
         syntaxes.insert("PING", "<target>");
         syntaxes.insert("QUIT" , "(<message>)");
+        syntaxes.insert("QUOTE" , "<command> (<parameters>)");
         syntaxes.insert("TOPIC", "(<topic>)");
         syntaxes.insert("WHO", "<mask>");
         syntaxes.insert("WHOIS", "<user>");
@@ -112,6 +113,7 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
             parseFunctions.insert("PART", &CommandParser::parsePart);
             parseFunctions.insert("PING", &CommandParser::parsePing);
             parseFunctions.insert("QUIT", &CommandParser::parseQuit);
+            parseFunctions.insert("QUOTE", &CommandParser::parseQuote);
             parseFunctions.insert("TOPIC", &CommandParser::parseTopic);
             parseFunctions.insert("WHO", &CommandParser::parseWho);
             parseFunctions.insert("WHOIS", &CommandParser::parseWhois);
@@ -235,6 +237,12 @@ IrcCommand* CommandParser::parseQuit(const QString& receiver, const QStringList&
 {
     Q_UNUSED(receiver);
     return IrcCommand::createQuit(params.join(" "));
+}
+
+IrcCommand* CommandParser::parseQuote(const QString& receiver, const QStringList& params)
+{
+    Q_UNUSED(receiver);
+    return IrcCommand::createQuote(params);
 }
 
 IrcCommand* CommandParser::parseTopic(const QString& receiver, const QStringList& params)

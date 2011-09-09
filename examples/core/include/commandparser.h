@@ -57,6 +57,7 @@ private:
     static IrcCommand* parsePart(const QString& receiver, const QStringList& params);
     static IrcCommand* parsePing(const QString& receiver, const QStringList& params);
     static IrcCommand* parseQuit(const QString& receiver, const QStringList& params);
+    static IrcCommand* parseQuote(const QString& receiver, const QStringList& params);
     static IrcCommand* parseTopic(const QString& receiver, const QStringList& params);
     static IrcCommand* parseWho(const QString& receiver, const QStringList& params);
     static IrcCommand* parseWhois(const QString& receiver, const QStringList& params);
