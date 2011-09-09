@@ -36,7 +36,6 @@ Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
     setApplicationName("Communi");
     setOrganizationName("Communi");
     setApplicationVersion(Irc::version());
-    setOrganizationDomain("http://gitorious.org/communi");
 
     QIcon icon;
     icon.addFile(":/resources/icons/16x16/communi.png");
