@@ -150,7 +150,7 @@ void MessageHandler::handleInviteMessage(IrcInviteMessage* message)
 void MessageHandler::handleJoinMessage(IrcJoinMessage* message)
 {
     sendMessage(message, message->channel());
-    d.addChannelUser(message->channel(), IrcPrefix(message->prefix()).name());
+    d.addChannelUser(message->channel(), IrcPrefix(message->sender()).name());
 }
 
 void MessageHandler::handleKickMessage(IrcKickMessage* message)
@@ -161,7 +161,7 @@ void MessageHandler::handleKickMessage(IrcKickMessage* message)
 
 void MessageHandler::handleModeMessage(IrcModeMessage* message)
 {
-    if (message->prefix() == message->target())
+    if (message->sender() == message->target())
         sendMessage(message, d.defaultReceiver);
     else
         sendMessage(message, message->target());
@@ -169,7 +169,7 @@ void MessageHandler::handleModeMessage(IrcModeMessage* message)
 
 void MessageHandler::handleNickMessage(IrcNickMessage* message)
 {
-    QString nick = IrcPrefix(message->prefix()).name();
+    QString nick = IrcPrefix(message->sender()).name();
     foreach (const QString& channel, d.userChannels(nick))
     {
         sendMessage(message, channel);
@@ -250,8 +250,8 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
 void MessageHandler::handlePartMessage(IrcPartMessage* message)
 {
     sendMessage(message, message->channel());
-    d.removeChannelUser(message->channel(), IrcPrefix(message->prefix()).name());
-    if (IrcPrefix(message->prefix()).name() == d.session->nickName())
+    d.removeChannelUser(message->channel(), IrcPrefix(message->sender()).name());
+    if (IrcPrefix(message->sender()).name() == d.session->nickName())
         removeReceiver(message->channel());
 }
 
@@ -262,7 +262,7 @@ void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
 
 void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
 {
-    QString nick = IrcPrefix(message->prefix()).name();
+    QString nick = IrcPrefix(message->sender()).name();
     foreach (const QString& channel, d.userChannels(nick))
     {
         sendMessage(message, channel);

@@ -253,7 +253,7 @@ void MessageView::receiveMessage(IrcMessage* message)
         hilite = Application::settings().highlights.value(Settings::Topics);
         break;
     case IrcMessage::Unknown:
-        qWarning() << "unknown:" << message->prefix() << message->parameters();
+        qWarning() << "unknown:" << message;
         append = false;
         break;
     case IrcMessage::Invite:
