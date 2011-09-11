@@ -32,6 +32,7 @@ public slots:
     void connectTo(const Connection& connection);
 
 private slots:
+    void onConnected();
     void onPassword(QString* password);
 
 private:

@@ -22,15 +22,12 @@
 
 Session::Session(QObject* parent) : IrcSession(parent)
 {
+    connect(this, SIGNAL(connected()), SLOT(onConnected()));
     connect(this, SIGNAL(password(QString*)), SLOT(onPassword(QString*)));
-    Application::setSessions(Application::sessions() << this);
 }
 
 Session::~Session()
 {
-    QList<Session*> sessions = Application::sessions();
-    if (sessions.removeOne(this))
-        Application::setSessions(sessions);
 }
 
 Connection Session::connection() const
@@ -60,6 +57,12 @@ void Session::connectTo(const Connection& connection)
     open();
 
     conn = connection;
+}
+
+void Session::onConnected()
+{
+    foreach (const QString& channel, conn.channels)
+        sendCommand(IrcCommand::createJoin(channel, QString()));
 }
 
 void Session::onPassword(QString* password)

@@ -185,8 +185,17 @@ void MainWindow::closeEvent(QCloseEvent* event)
     settings.setValue("geometry", saveGeometry());
 
     Connections connections;
-    foreach (Session* session, Application::sessions())
-        connections += session->connection();
+    for (int i = 0; i < tabWidget->count(); ++i)
+    {
+        SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(tabWidget->widget(i));
+        if (tab)
+        {
+            Connection connection = tab->session()->connection();
+            connection.nick = tab->session()->nickName();
+            connection.channels = tab->channels();
+            connections += connection;
+        }
+    }
     settings.setValue("connections", QVariant::fromValue(connections));
 
     QMainWindow::closeEvent(event);
