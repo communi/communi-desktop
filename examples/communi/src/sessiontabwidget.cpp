@@ -18,10 +18,6 @@
 #include "settings.h"
 #include "session.h"
 #include <irccommand.h>
-#include <ircmessage.h>
-#include <ircprefix.h>
-#include <ircutil.h>
-#include <irc.h>
 #include <QtGui>
 
 SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :

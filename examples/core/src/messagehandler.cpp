@@ -14,7 +14,6 @@
 
 #include "messagehandler.h"
 #include <ircsession.h>
-#include <ircprefix.h>
 #include <qvariant.h>
 #include <qdebug.h>
 
@@ -150,7 +149,7 @@ void MessageHandler::handleInviteMessage(IrcInviteMessage* message)
 void MessageHandler::handleJoinMessage(IrcJoinMessage* message)
 {
     sendMessage(message, message->channel());
-    d.addChannelUser(message->channel(), IrcPrefix(message->sender()).name());
+    d.addChannelUser(message->channel(), message->sender().name());
 }
 
 void MessageHandler::handleKickMessage(IrcKickMessage* message)
@@ -169,7 +168,7 @@ void MessageHandler::handleModeMessage(IrcModeMessage* message)
 
 void MessageHandler::handleNickMessage(IrcNickMessage* message)
 {
-    QString nick = IrcPrefix(message->sender()).name();
+    QString nick = message->sender().name();
     foreach (const QString& channel, d.userChannels(nick))
     {
         sendMessage(message, channel);
@@ -250,8 +249,8 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
 void MessageHandler::handlePartMessage(IrcPartMessage* message)
 {
     sendMessage(message, message->channel());
-    d.removeChannelUser(message->channel(), IrcPrefix(message->sender()).name());
-    if (IrcPrefix(message->sender()).name() == d.session->nickName())
+    d.removeChannelUser(message->channel(), message->sender().name());
+    if (message->sender().name() == d.session->nickName())
         removeReceiver(message->channel());
 }
 
@@ -262,7 +261,7 @@ void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
 
 void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
 {
-    QString nick = IrcPrefix(message->sender()).name();
+    QString nick = message->sender().name();
     foreach (const QString& channel, d.userChannels(nick))
     {
         sendMessage(message, channel);

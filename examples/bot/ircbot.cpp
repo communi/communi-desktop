@@ -15,7 +15,7 @@
 #include "ircbot.h"
 #include <IrcCommand>
 #include <IrcMessage>
-#include <IrcPrefix>
+#include <IrcSender>
 
 IrcBot::IrcBot(QObject* parent) : IrcSession(parent)
 {

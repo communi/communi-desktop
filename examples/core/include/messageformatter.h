@@ -51,7 +51,7 @@ protected:
     QString formatUnknownMessage(IrcMessage* message) const;
 
     static QString prettyNames(QStringList names, int columns);
-    static QString prettyUser(const IrcPrefix& sender);
+    static QString prettyUser(const IrcSender& sender);
     static QString prettyUser(const QString& user);
 
 private:

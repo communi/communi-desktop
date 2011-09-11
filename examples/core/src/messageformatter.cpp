@@ -13,7 +13,7 @@
 */
 
 #include "messageformatter.h"
-#include <ircprefix.h>
+#include <ircsender.h>
 #include <ircutil.h>
 #include <QHash>
 #include <QTime>
@@ -339,10 +339,10 @@ QString MessageFormatter::prettyNames(QStringList names, int columns)
     return message;
 }
 
-QString MessageFormatter::prettyUser(const IrcPrefix& sender)
+QString MessageFormatter::prettyUser(const IrcSender& sender)
 {
     const QString name = sender.name();
-    if (sender.isUser())
+    if (sender.isValid())
     {
         QString color = NICK_COLORS.at(qHash(name) % NICK_COLORS.count());
         return QString("<span style='color:%1'>%2</span>").arg(color).arg(name);
@@ -352,5 +352,5 @@ QString MessageFormatter::prettyUser(const IrcPrefix& sender)
 
 QString MessageFormatter::prettyUser(const QString& user)
 {
-    return prettyUser(IrcPrefix(user));
+    return prettyUser(IrcSender(user));
 }

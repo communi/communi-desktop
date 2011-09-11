@@ -22,7 +22,6 @@
 #include <QKeyEvent>
 #include <QDebug>
 #include <irccommand.h>
-#include <ircprefix.h>
 #include <ircutil.h>
 #include <irc.h>
 
