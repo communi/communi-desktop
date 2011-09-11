@@ -43,7 +43,6 @@ public slots:
 signals:
     void highlight(MessageView* view, bool on);
     void alert(MessageView* view, bool on);
-    void rename(MessageView* view);
     void query(const QString& user);
 
 protected:

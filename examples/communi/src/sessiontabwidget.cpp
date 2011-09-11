@@ -31,6 +31,7 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
 
     connect(&d.handler, SIGNAL(receiverToBeAdded(QString)), this, SLOT(openView(QString)));
     connect(&d.handler, SIGNAL(receiverToBeRemoved(QString)), this, SLOT(closeView(QString)));
+    connect(&d.handler, SIGNAL(receiverToBeRenamed(QString,QString)), this, SLOT(renameView(QString,QString)));
 
     QShortcut* shortcut = new QShortcut(QKeySequence::Close, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(closeView()));
@@ -52,7 +53,6 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
     {
         view = new MessageView(d.handler.session(), this);
         view->setReceiver(receiver);
-        connect(view, SIGNAL(rename(MessageView*)), this, SLOT(nameTab(MessageView*)));
         connect(view, SIGNAL(alert(MessageView*, bool)), this, SLOT(alertTab(MessageView*, bool)));
         connect(view, SIGNAL(highlight(MessageView*, bool)), this, SLOT(highlightTab(MessageView*, bool)));
         connect(view, SIGNAL(query(QString)), this, SLOT(openView(QString)));
@@ -84,6 +84,21 @@ void SessionTabWidget::closeView(const QString &receiver)
             }
             view->deleteLater();
         }
+    }
+}
+
+void SessionTabWidget::renameView(const QString& from, const QString& to)
+{
+    MessageView* view = d.views.take(from.toLower());
+    if (view)
+    {
+        view->setReceiver(to);
+        d.views.insert(to.toLower(), view);
+        int index = indexOf(view);
+        if (index != -1)
+            setTabText(index, view->receiver());
+        if (index == 0)
+            emit titleChanged(view->receiver());
     }
 }
 
@@ -124,20 +139,6 @@ void SessionTabWidget::delayedTabResetTimeout()
 
     int index = d.delayedIndexes.takeFirst();
     tabActivated(index);
-}
-
-void SessionTabWidget::nameTab(MessageView* view)
-{
-    int index = indexOf(view);
-    if (index != -1)
-    {
-        d.views.remove(tabText(index));
-        d.views.insert(view->receiver(), view);
-
-        setTabText(index, view->receiver());
-        if (index == 0)
-            emit titleChanged(view->receiver());
-    }
 }
 
 void SessionTabWidget::alertTab(MessageView* view, bool on)

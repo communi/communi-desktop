@@ -170,12 +170,22 @@ void MessageHandler::handleModeMessage(IrcModeMessage* message)
 
 void MessageHandler::handleNickMessage(IrcNickMessage* message)
 {
-    QString nick = message->sender().name();
+    QString nick = message->sender().name().toLower();
     foreach (const QString& channel, d.userChannels(nick))
     {
         sendMessage(message, channel);
         d.removeChannelUser(channel, nick);
         d.addChannelUser(channel, message->nick());
+    }
+    foreach (const QString& receiver, d.receivers.keys())
+    {
+        if (!nick.compare(receiver, Qt::CaseInsensitive))
+        {
+            emit receiverToBeRenamed(receiver, message->nick());
+            QObject* object = d.receivers.take(nick);
+            d.receivers.insert(nick, object);
+            sendMessage(message, object);
+        }
     }
 }
 
