@@ -86,6 +86,23 @@ void MessageView::setReceiver(const QString& receiver)
     d.receiver = receiver;
 }
 
+bool MessageView::isChannelView() const
+{
+    if (d.receiver.isEmpty())
+        return false;
+
+    switch (d.receiver.at(0).unicode())
+    {
+        case '#':
+        case '&':
+        case '!':
+        case '+':
+            return true;
+        default:
+            return false;
+    }
+}
+
 void MessageView::showHelp(const QString& text, bool error)
 {
     QString syntax;
@@ -295,21 +312,4 @@ void MessageView::onCustomCommand(const QString& command, const QStringList& par
         Application::showSettings();
     else if (command == "CONNECT")
         QMetaObject::invokeMethod(window(), "connectTo", Q_ARG(QString, params.value(0)), params.count() > 1 ? Q_ARG(quint16, params.value(1).toInt()) : QGenericArgument());
-}
-
-bool MessageView::isChannelView() const
-{
-    if (d.receiver.isEmpty())
-        return false;
-
-    switch (d.receiver.at(0).unicode())
-    {
-        case '#':
-        case '&':
-        case '!':
-        case '+':
-            return true;
-        default:
-            return false;
-    }
 }

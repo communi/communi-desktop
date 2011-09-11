@@ -36,6 +36,8 @@ public:
     QString receiver() const;
     void setReceiver(const QString& receiver);
 
+    bool isChannelView() const;
+
 public slots:
     void showHelp(const QString& text, bool error = false);
     void appendMessage(const QString& message);
@@ -60,8 +62,6 @@ private slots:
     void onCustomCommand(const QString& command, const QStringList& params);
 
 private:
-    bool isChannelView() const;
-
     struct MessageViewData : public Ui::MessageView
     {
         QString receiver;
