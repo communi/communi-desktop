@@ -18,8 +18,6 @@
 #include <QApplication>
 #include "settings.h"
 
-class Session;
-
 class Application : public QApplication
 {
     Q_OBJECT
@@ -33,9 +31,6 @@ public:
     static Settings settings();
     static void setSettings(const Settings& settings);
 
-    static QList<Session*> sessions();
-    static void setSessions(const QList<Session*>& sessions);
-
 public slots:
     static void aboutApplication();
     static void aboutOxygen();
@@ -48,8 +43,6 @@ private:
     struct ApplicationData
     {
         static Settings settings;
-        static QList<Session*> sessions;
-        static QStringList categories;
     };
 };
 

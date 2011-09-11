@@ -15,21 +15,13 @@
 #include "application.h"
 #include "settingswizard.h"
 #include "sharedtimer.h"
-#include "session.h"
-#include <QMutableMapIterator>
-#include <QDesktopServices>
+#include "connection.h"
 #include <QMessageBox>
 #include <QSettings>
-#include <QDebug>
 #include <QIcon>
-#include <QFile>
-#include <QDir>
-#include <QSet>
 #include <Irc>
 
 Settings Application::ApplicationData::settings;
-QList<Session*> Application::ApplicationData::sessions;
-QStringList Application::ApplicationData::categories;
 
 Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
 {
@@ -79,16 +71,6 @@ void Application::setSettings(const Settings& settings)
         ApplicationData::settings = settings;
         QMetaObject::invokeMethod(qApp, "settingsChanged", Q_ARG(Settings, settings));
     }
-}
-
-QList<Session*> Application::sessions()
-{
-    return ApplicationData::sessions;
-}
-
-void Application::setSessions(const QList<Session*>& sessions)
-{
-    ApplicationData::sessions = sessions;
 }
 
 void Application::aboutApplication()
