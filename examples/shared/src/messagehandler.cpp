@@ -138,6 +138,8 @@ void MessageHandler::handleMessage(IrcMessage* message)
     case IrcMessage::Unknown:
         handleUnknownMessage(static_cast<IrcMessage*>(message));
         break;
+    default:
+        break;
     }
 }
 

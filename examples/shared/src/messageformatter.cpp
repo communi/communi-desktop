@@ -99,6 +99,8 @@ QString MessageFormatter::formatMessage(IrcMessage* message) const
     case IrcMessage::Unknown:
         formatted = formatUnknownMessage(static_cast<IrcMessage*>(message));
         break;
+    default:
+        break;
     }
 
     if (formatted.isEmpty())
