@@ -161,7 +161,7 @@ void MessageHandler::handleKickMessage(IrcKickMessage* message)
 
 void MessageHandler::handleModeMessage(IrcModeMessage* message)
 {
-    if (message->sender() == message->target())
+    if (message->sender().name() == message->target())
         sendMessage(message, d.defaultReceiver);
     else
         sendMessage(message, message->target());

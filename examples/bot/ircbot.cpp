@@ -44,16 +44,15 @@ void IrcBot::onMessageReceived(IrcMessage* message)
     {
         IrcPrivateMessage* msg = static_cast<IrcPrivateMessage*>(message);
 
-        QString sender = IrcPrefix(msg->prefix()).name();
         if (!msg->target().compare(nickName(), Qt::CaseInsensitive))
         {
             // private message
-            sendCommand(IrcCommand::createMessage(sender, "ack"));
+            sendCommand(IrcCommand::createMessage(msg->sender().name(), "ack"));
         }
         else if (msg->message().startsWith(nickName(), Qt::CaseInsensitive))
         {
             // channel message
-            sendCommand(IrcCommand::createMessage(m_channel, sender + ": ack"));
+            sendCommand(IrcCommand::createMessage(m_channel, msg->sender().name() + ": ack"));
         }
     }
 }

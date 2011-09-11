@@ -187,7 +187,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
     case 320: // "is identified to services"
     case 378: // nick is connecting from <...>
     case 671: // nick is using a secure connection
-        return tr("! %1 %2").arg(message->sender(), message->parameters().join(" "));
+        return tr("! %1 %2").arg(message->sender().name(), message->parameters().join(" "));
     case Irc::RPL_WHOISUSER:
         return tr("! %1 is %2@%3 %4").arg(P_(1), P_(2), P_(3), P_(4));
     case Irc::RPL_WHOISSERVER:
@@ -220,9 +220,9 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
         return tr("! %1 topic was set %2 by %3").arg(P_(1), dateTime.toString(), P_(2));
     }
     case Irc::RPL_INVITING:
-        return tr("! %1 is inviting %1 to %2").arg(message->sender(), P_(1), P_(2));
+        return tr("! %1 is inviting %1 to %2").arg(message->sender().name(), P_(1), P_(2));
     case Irc::RPL_VERSION:
-        return tr("! %1 version is %2").arg(message->sender(), P_(1));
+        return tr("! %1 version is %2").arg(message->sender().name(), P_(1));
     case Irc::RPL_TIME:
         return tr("! %1 time is %2").arg(P_(1), P_(2));
     case Irc::RPL_UNAWAY:
@@ -339,14 +339,18 @@ QString MessageFormatter::prettyNames(QStringList names, int columns)
     return message;
 }
 
-QString MessageFormatter::prettyUser(const QString& user)
+QString MessageFormatter::prettyUser(const IrcPrefix& sender)
 {
-    IrcPrefix prefix(user);
-    if (prefix.isUser())
+    const QString name = sender.name();
+    if (sender.isUser())
     {
-        QString name = prefix.name();
         QString color = NICK_COLORS.at(qHash(name) % NICK_COLORS.count());
         return QString("<span style='color:%1'>%2</span>").arg(color).arg(name);
     }
-    return user;
+    return name;
+}
+
+QString MessageFormatter::prettyUser(const QString& user)
+{
+    return prettyUser(IrcPrefix(user));
 }
