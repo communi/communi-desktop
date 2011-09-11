@@ -258,7 +258,10 @@ void MessageHandler::handlePartMessage(IrcPartMessage* message)
 
 void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
 {
-    sendMessage(message, message->target());
+    if (message->target() == d.session->nickName())
+        sendMessage(message, message->sender().name());
+    else
+        sendMessage(message, message->target());
 }
 
 void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
