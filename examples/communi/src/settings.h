@@ -61,7 +61,6 @@ struct Settings
     QHash<int, bool> messages;
     QHash<int, bool> highlights;
     QHash<int, QString> colors;
-    QMap<QString, QString> aliases;
     QHash<int, QString> shortcuts;
     QString language;
     QFont font;
@@ -74,7 +73,6 @@ inline QDataStream& operator<<(QDataStream& out, const Settings& settings)
 {
     out << settings.messages;
     out << settings.highlights;
-    out << settings.aliases;
     out << settings.language;
     out << settings.font;
     out << settings.colors;
@@ -88,7 +86,6 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
 {
     settings.messages = readStreamValue< QHash<int, bool> >(in, settings.messages);
     settings.highlights = readStreamValue< QHash<int, bool> >(in, settings.highlights);
-    settings.aliases = readStreamValue< QMap<QString, QString> >(in, settings.aliases);
     settings.language = readStreamValue<QString>(in, settings.language);
     settings.font = readStreamValue<QFont>(in, settings.font);
     settings.colors = readStreamValue< QHash<int, QString> >(in, settings.colors);

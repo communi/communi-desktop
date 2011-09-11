@@ -16,7 +16,6 @@
 #include "generalwizardpage.h"
 #include "shortcutswizardpage.h"
 #include "colorswizardpage.h"
-//#include "aliaseswizardpage.h"
 #include "messageswizardpage.h"
 
 SettingsWizard::SettingsWizard(QWidget* parent) : QWizard(parent)
@@ -26,7 +25,6 @@ SettingsWizard::SettingsWizard(QWidget* parent) : QWizard(parent)
     setPage(ShortcutsPage, new ShortcutsWizardPage(this));
     setPage(MessagesPage, new MessagesWizardPage(this));
     setPage(ColorsPage, new ColorsWizardPage(this));
-    //setPage(AliasesPage, new AliasesWizardPage(this));
 }
 
 Settings SettingsWizard::settings() const
@@ -40,7 +38,6 @@ Settings SettingsWizard::settings() const
     settings.messages = static_cast<MessagesWizardPage*>(page(MessagesPage))->messages();
     settings.highlights = static_cast<MessagesWizardPage*>(page(MessagesPage))->highlights();
     settings.colors = static_cast<ColorsWizardPage*>(page(ColorsPage))->colors();
-    //settings.aliases = static_cast<AliasesWizardPage*>(page(AliasesPage))->aliases();
     return settings;
 }
 
@@ -54,5 +51,4 @@ void SettingsWizard::setSettings(const Settings& settings)
     static_cast<MessagesWizardPage*>(page(MessagesPage))->setMessages(settings.messages);
     static_cast<MessagesWizardPage*>(page(MessagesPage))->setHighlights(settings.highlights);
     static_cast<ColorsWizardPage*>(page(ColorsPage))->setColors(settings.colors);
-    //static_cast<AliasesWizardPage*>(page(AliasesPage))->setAliases(settings.aliases);
 }

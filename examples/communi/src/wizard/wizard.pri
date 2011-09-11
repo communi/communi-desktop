@@ -6,7 +6,6 @@ DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 QMAKE_CLEAN += $$PWD/*~
 
-FORMS += $$PWD/aliaseswizardpage.ui
 FORMS += $$PWD/colorswizardpage.ui
 FORMS += $$PWD/connectionwizardpage.ui
 FORMS += $$PWD/generalwizardpage.ui
@@ -15,7 +14,6 @@ FORMS += $$PWD/messageswizardpage.ui
 FORMS += $$PWD/serverwizardpage.ui
 FORMS += $$PWD/userwizardpage.ui
 
-HEADERS += $$PWD/aliaseswizardpage.h
 HEADERS += $$PWD/colorswizardpage.h
 HEADERS += $$PWD/connectionwizard.h
 HEADERS += $$PWD/connectionwizardpage.h
@@ -27,7 +25,6 @@ HEADERS += $$PWD/settingswizard.h
 HEADERS += $$PWD/treewidget.h
 HEADERS += $$PWD/userwizardpage.h
 
-SOURCES += $$PWD/aliaseswizardpage.cpp
 SOURCES += $$PWD/colorswizardpage.cpp
 SOURCES += $$PWD/connectionwizard.cpp
 SOURCES += $$PWD/connectionwizardpage.cpp

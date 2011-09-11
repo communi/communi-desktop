@@ -30,8 +30,7 @@ public:
         GeneralPage,
         ShortcutsPage,
         MessagesPage,
-        ColorsPage,
-        AliasesPage
+        ColorsPage
     };
 
     Settings settings() const;

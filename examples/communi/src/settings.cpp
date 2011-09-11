@@ -57,16 +57,6 @@ Settings::Settings() : maxBlockCount(-1), timeStamp(true)
     colors[Notice] = "brown";
     colors[Action] = "darkmagenta";
     colors[Highlight] = "red";
-
-    aliases["j"] = "join $1 $2";
-    aliases["me"] = "action $*";
-    aliases["msg"] = "privmsg $*";
-    aliases["op"] = "mode $? +o $*";
-    aliases["deop"] = "mode $? -o $*";
-    aliases["ban"] = "mode $? +b $*";
-    aliases["unban"] = "mode $? -b $*";
-    aliases["voice"] = "mode $? +v $*";
-    aliases["devoice"] = "mode $? -v $*";
 }
 
 Settings::operator QVariant() const
@@ -77,7 +67,6 @@ Settings::operator QVariant() const
 bool Settings::operator==(const Settings& other) const
 {
     return messages == other.messages && highlights == other.highlights
-        && colors == other.colors && aliases == other.aliases
         && language == other.language && font == other.font
         && shortcuts == other.shortcuts && maxBlockCount == other.maxBlockCount
         && timeStamp == other.timeStamp;
