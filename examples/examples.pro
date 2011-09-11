@@ -3,5 +3,4 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS += bot core irqqi communi
-CONFIG += ordered
+SUBDIRS += bot communi irqqi

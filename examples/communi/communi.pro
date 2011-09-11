@@ -13,8 +13,6 @@ maemo5 {
     PKGCONFIG += mce
 }
 
-include(../core/core.pri)
-
 RESOURCES += communi.qrc
 win32:RC_FILE = communi.rc
 mac:ICON = resources/icons/communi.icns
@@ -57,3 +55,4 @@ symbian {
 
 include(src/src.pri)
 include(../examples.pri)
+include(../shared/shared.pri)

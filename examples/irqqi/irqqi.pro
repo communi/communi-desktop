@@ -13,4 +13,4 @@ SOURCES += main.cpp
 OTHER_FILES += irqqi.qml
 
 include(../examples.pri)
-include(../core/core.pri)
+include(../shared/shared.pri)
