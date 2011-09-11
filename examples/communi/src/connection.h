@@ -20,6 +20,7 @@
 #include <QVariant>
 #include <QMetaType>
 #include <QDataStream>
+#include <QStringList>
 #include "streamer.h"
 
 struct Connection
@@ -36,6 +37,7 @@ struct Connection
     QString real;
     QString pass;
     bool secure;
+    QStringList channels;
 };
 Q_DECLARE_METATYPE(Connection);
 
@@ -48,6 +50,7 @@ inline QDataStream& operator<<(QDataStream& out, const Connection& connection)
     out << connection.real;
     out << connection.pass;
     out << connection.secure;
+    out << connection.channels;
     return out;
 }
 
@@ -60,6 +63,7 @@ inline QDataStream& operator>>(QDataStream& in, Connection& connection)
     connection.real = readStreamValue<QString>(in, connection.real);
     connection.pass = readStreamValue<QString>(in, connection.pass);
     connection.secure = readStreamValue<bool>(in, connection.secure);
+    connection.channels = readStreamValue<QStringList>(in, connection.channels);
     return in;
 }
 
