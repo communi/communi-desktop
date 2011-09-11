@@ -17,7 +17,7 @@ HEADERS += $$PWD/sharedtimer.h
 HEADERS += $$PWD/streamer.h
 HEADERS += $$PWD/tabwidget.h
 HEADERS += $$PWD/textbrowser.h
-!symbian:HEADERS += $$PWD/trayicon.h
+HEADERS += $$PWD/trayicon.h
 
 SOURCES += $$PWD/completer.cpp
 SOURCES += $$PWD/editframe.cpp
@@ -26,4 +26,4 @@ SOURCES += $$PWD/historylineedit.cpp
 SOURCES += $$PWD/sharedtimer.cpp
 SOURCES += $$PWD/tabwidget.cpp
 SOURCES += $$PWD/textbrowser.cpp
-!symbian:SOURCES += $$PWD/trayicon.cpp
+SOURCES += $$PWD/trayicon.cpp

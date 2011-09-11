@@ -29,18 +29,15 @@
 #endif // Q_WS_MAEMO_5
 #include <irccommand.h>
 
-MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), tabWidget(0)
-#ifndef Q_OS_SYMBIAN
-    , trayIcon(0)
-#endif // Q_OS_SYMBIAN
+MainWindow::MainWindow(QWidget* parent) :
+    QMainWindow(parent), tabWidget(0), trayIcon(0)
 {
     createWelcomeView();
 
-#if defined(Q_OS_SYMBIAN) || defined(Q_WS_MAEMO5)
+#if defined(Q_WS_MAEMO5)
     setAttribute(Qt::WA_LockLandscapeOrientation, true);
 #endif
 
-#ifndef Q_OS_SYMBIAN
     if (QSystemTrayIcon::isSystemTrayAvailable())
     {
         trayIcon = new TrayIcon(this);
@@ -49,7 +46,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), tabWidget(0)
         connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
     }
-#endif // Q_OS_SYMBIAN
 
 #ifdef Q_WS_MAEMO_5
     interface = new QDBusInterface(MCE_SERVICE, MCE_REQUEST_PATH, MCE_REQUEST_IF,
@@ -203,10 +199,8 @@ void MainWindow::changeEvent(QEvent* event)
     {
         if (isActiveWindow())
         {
-#ifndef Q_OS_SYMBIAN
             if (trayIcon)
                 trayIcon->unalert();
-#endif // Q_OS_SYMBIAN
             if (tabWidget)
             {
                 SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(tabWidget->currentWidget());
@@ -251,7 +245,6 @@ void MainWindow::initialize()
         connectTo(Connection());
 }
 
-#ifndef Q_OS_SYMBIAN
 void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     switch (reason)
@@ -267,7 +260,6 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
             break;
     }
 }
-#endif // Q_OS_SYMBIAN
 
 void MainWindow::activateAlert(bool activate)
 {
@@ -275,18 +267,14 @@ void MainWindow::activateAlert(bool activate)
     {
         if (activate)
         {
-#ifndef Q_OS_SYMBIAN
             if (trayIcon)
                 trayIcon->alert();
-#endif // Q_OS_SYMBIAN
             QApplication::alert(this);
         }
         else
         {
-#ifndef Q_OS_SYMBIAN
             if (trayIcon)
                 trayIcon->unalert();
-#endif // Q_OS_SYMBIAN
         }
     }
 }

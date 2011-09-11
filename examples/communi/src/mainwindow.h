@@ -16,9 +16,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#ifndef Q_OS_SYMBIAN
 #include "trayicon.h"
-#endif // Q_OS_SYMBIAN
 
 class QDBusInterface;
 class MainTabWidget;
@@ -49,9 +47,7 @@ protected:
 
 private slots:
     void initialize();
-#ifndef Q_OS_SYMBIAN
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
-#endif // Q_OS_SYMBIAN
     void activateAlert(bool activate);
     void activateVibra(bool activate);
     void tabActivated(int index);
@@ -60,9 +56,7 @@ private slots:
 
 private:
     MainTabWidget* tabWidget;
-#ifndef Q_OS_SYMBIAN
     TrayIcon* trayIcon;
-#endif // Q_OS_SYMBIAN
 #ifdef Q_WS_MAEMO_5
     QDBusInterface* interface;
     QAction* networksAction;

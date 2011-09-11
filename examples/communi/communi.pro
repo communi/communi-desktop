@@ -46,12 +46,6 @@ maemo5 {
     icon64.path = $$DATADIR/icons/hicolor/64x64/apps
     icon64.files += resources/icons/64x64/$${TARGET}.png
 }
-symbian {
-    TARGET.UID3 = 0xE55E346F
-    TARGET.EPOCALLOWDLLDATA = 1
-    TARGET.EPOCHEAPSIZE = 0x20000 0x2000000
-    TARGET.CAPABILITY = ReadDeviceData WriteDeviceData
-}
 
 include(src/src.pri)
 include(../examples.pri)
