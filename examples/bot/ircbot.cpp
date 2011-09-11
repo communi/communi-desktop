@@ -15,7 +15,6 @@
 #include "ircbot.h"
 #include <IrcCommand>
 #include <IrcMessage>
-#include <IrcSender>
 
 IrcBot::IrcBot(QObject* parent) : IrcSession(parent)
 {
@@ -46,13 +45,14 @@ void IrcBot::onMessageReceived(IrcMessage* message)
 
         if (!msg->target().compare(nickName(), Qt::CaseInsensitive))
         {
-            // private message
-            sendCommand(IrcCommand::createMessage(msg->sender().name(), "ack"));
+            // echo private message
+            sendCommand(IrcCommand::createMessage(msg->sender().name(), msg->message()));
         }
         else if (msg->message().startsWith(nickName(), Qt::CaseInsensitive))
         {
-            // channel message
-            sendCommand(IrcCommand::createMessage(m_channel, msg->sender().name() + ": ack"));
+            // echo prefixed channel message
+            QString reply = msg->message().mid(msg->message().indexOf(" "));
+            sendCommand(IrcCommand::createMessage(m_channel, msg->sender().name() + ":" + reply));
         }
     }
 }

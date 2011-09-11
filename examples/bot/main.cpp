@@ -12,7 +12,8 @@
 * GNU General Public License for more details.
 */
 
-#include <QtCore>
+#include <QCoreApplication>
+#include <QSettings>
 #include "ircbot.h"
 
 int main (int argc, char* argv[])
@@ -24,7 +25,7 @@ int main (int argc, char* argv[])
     bot.setHost(settings.value("host", "irc.freenode.net").toString());
     bot.setPort(settings.value("port", 6667).toInt());
     bot.setUserName(settings.value("username", "communi").toString());
-    bot.setNickName(settings.value("nickname", "communi").toString());
+    bot.setNickName(settings.value("nickname", "communi-bot").toString());
     bot.setRealName(settings.value("realname", "communi bot").toString());
     bot.setChannel(settings.value("channel", "#communi").toString());
 
