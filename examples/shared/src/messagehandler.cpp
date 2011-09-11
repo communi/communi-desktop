@@ -16,6 +16,7 @@
 #include <ircsession.h>
 #include <qvariant.h>
 #include <qdebug.h>
+#include <irc.h>
 
 MessageHandler::MessageHandler(QObject* parent) : QObject(parent)
 {
