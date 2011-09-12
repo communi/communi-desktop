@@ -18,15 +18,7 @@
 #include <irc.h>
 #include <QHash>
 #include <QTime>
-
-static const QStringList NICK_COLORS = QStringList()
-    << QLatin1String("#BF0000")
-    << QLatin1String("#FF0000")
-    << QLatin1String("#BF7900")
-    << QLatin1String("#00BC0F")
-    << QLatin1String("#00A7BA")
-    << QLatin1String("#0F00B7")
-    << QLatin1String("#8100B5");
+#include <QColor>
 
 MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 {
@@ -347,8 +339,8 @@ QString MessageFormatter::prettyUser(const IrcSender& sender)
     const QString name = sender.name();
     if (sender.isValid())
     {
-        QString color = NICK_COLORS.at(qHash(name) % NICK_COLORS.count());
-        return QString("<span style='color:%1'>%2</span>").arg(color).arg(name);
+        QColor color = QColor::fromHsl(qHash(name) % 359, 255, 64);
+        return QString("<span style='color:%1'>%2</span>").arg(color.name()).arg(name);
     }
     return name;
 }

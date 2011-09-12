@@ -53,7 +53,7 @@ Settings::Settings() : maxBlockCount(-1), timeStamp(true)
     // TODO: the default values should respect palette
     colors[Background] = "white";
     colors[Message] = "black";
-    colors[Event] = "steelblue";
+    colors[Event] = "gray";
     colors[Notice] = "brown";
     colors[Action] = "darkmagenta";
     colors[Highlight] = "red";
