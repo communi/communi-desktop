@@ -215,7 +215,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
         return tr("! %1 topic was set %2 by %3").arg(P_(1), dateTime.toString(), P_(2));
     }
     case Irc::RPL_INVITING:
-        return tr("! %1 is inviting %1 to %2").arg(message->sender().name(), P_(1), P_(2));
+        return tr("! inviting %1 to %2").arg(prettyUser(P_(1)), P_(2));
     case Irc::RPL_VERSION:
         return tr("! %1 version is %2").arg(message->sender().name(), P_(1));
     case Irc::RPL_TIME:
