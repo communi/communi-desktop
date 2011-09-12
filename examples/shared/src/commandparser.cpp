@@ -170,7 +170,7 @@ IrcCommand* CommandParser::parseJoin(const QString& receiver, const QStringList&
 IrcCommand* CommandParser::parseKick(const QString& receiver, const QStringList& params)
 {
     if (params.count() >= 1)
-        return IrcCommand::createKick(params.at(0), receiver, QStringList(params.mid(1)).join(" "));
+        return IrcCommand::createKick(receiver, params.at(0), QStringList(params.mid(1)).join(" "));
     return 0;
 }
 
