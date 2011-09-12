@@ -92,6 +92,12 @@ void SessionTabWidget::closeView(const QString &receiver)
         MessageView* view = d.views.take(tabText(index).toLower());
         if (view)
         {
+            if (receiver.isEmpty() && view->isChannelView())
+            {
+                d.handler.removeReceiver(view->receiver());
+                d.handler.session()->sendCommand(IrcCommand::createPart(view->receiver()));
+            }
+
             if (indexOf(view) == 0)
             {
                 // closing a server tab
