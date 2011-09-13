@@ -188,11 +188,11 @@ void MessageView::onSend(const QString& text)
     {
         d.session->sendCommand(cmd);
 
-        if (cmd->type() == IrcCommand::Message)
+        if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction)
         {
-            IrcPrivateMessage msg;
-            msg.initFrom(d.session->nickName(), cmd->parameters());
-            receiveMessage(&msg);
+            IrcMessage* msg = IrcMessage::fromCommand(d.session->nickName(), cmd);
+            receiveMessage(msg);
+            delete msg;
         }
     }
     else if (d.parser.hasError())
