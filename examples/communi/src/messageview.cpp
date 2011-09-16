@@ -135,12 +135,15 @@ void MessageView::showHelp(const QString& text, bool error)
 
 void MessageView::appendMessage(const QString& message)
 {
-    // workaround the link activation merge char format bug
-//    if (message.endsWith("</a>"))
-//        message += " ";
-
     if (!message.isEmpty())
-        d.textBrowser->append(message);
+    {
+        // workaround the link activation merge char format bug
+        QString copy = message;
+        if (copy.endsWith("</a>"))
+            copy += " ";
+
+        d.textBrowser->append(copy);
+    }
 }
 
 bool MessageView::eventFilter(QObject* receiver, QEvent* event)
