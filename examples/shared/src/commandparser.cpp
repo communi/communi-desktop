@@ -228,8 +228,8 @@ IrcCommand* CommandParser::parsePart(const QString& receiver, const QStringList&
 IrcCommand* CommandParser::parsePing(const QString& receiver, const QStringList& params)
 {
     Q_UNUSED(receiver);
-    if (params.count() == 1)
-        return IrcCommand::createPing(params.at(0));
+//    if (params.count() == 1)
+//        return IrcCommand::createPing(params.at(0));
     return 0;
 }
 
