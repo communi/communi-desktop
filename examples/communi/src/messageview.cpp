@@ -278,7 +278,6 @@ void MessageView::receiveMessage(IrcMessage* message)
     case IrcMessage::Invite:
     case IrcMessage::Numeric:
     case IrcMessage::Ping:
-    case IrcMessage::Pong:
     case IrcMessage::Error:
         break;
     }
