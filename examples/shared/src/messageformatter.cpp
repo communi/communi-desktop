@@ -142,7 +142,7 @@ QString MessageFormatter::formatKickMessage(IrcKickMessage* message) const
 QString MessageFormatter::formatModeMessage(IrcModeMessage* message) const
 {
     const QString sender = prettyUser(message->sender());
-    return tr("! %1 sets mode %2 %3 %4").arg(sender, message->mode(), message->mask(), message->argument());
+    return tr("! %1 sets mode %2 %3").arg(sender, message->mode(), message->argument());
 }
 
 QString MessageFormatter::formatNickMessage(IrcNickMessage* message) const
