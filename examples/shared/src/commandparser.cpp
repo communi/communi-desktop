@@ -33,10 +33,12 @@ static QMap<QString, QString>& command_syntaxes()
         syntaxes.insert("NICK", "<nick>");
         syntaxes.insert("NOTICE", "<target> <message>");
         syntaxes.insert("PART", "(<reason>)");
-        syntaxes.insert("PING", "<target>");
+        syntaxes.insert("PING", "<user>");
         syntaxes.insert("QUIT" , "(<message>)");
         syntaxes.insert("QUOTE" , "<command> (<parameters>)");
+        syntaxes.insert("TIME", "(<target>)");
         syntaxes.insert("TOPIC", "(<topic>)");
+        syntaxes.insert("VERSION", "(<target>)");
         syntaxes.insert("WHO", "<mask>");
         syntaxes.insert("WHOIS", "<user>");
         syntaxes.insert("WHOWAS", "<user>");
@@ -114,7 +116,9 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
             parseFunctions.insert("PING", &CommandParser::parsePing);
             parseFunctions.insert("QUIT", &CommandParser::parseQuit);
             parseFunctions.insert("QUOTE", &CommandParser::parseQuote);
+            parseFunctions.insert("TIME", &CommandParser::parseTime);
             parseFunctions.insert("TOPIC", &CommandParser::parseTopic);
+            parseFunctions.insert("VERSION", &CommandParser::parseVersion);
             parseFunctions.insert("WHO", &CommandParser::parseWho);
             parseFunctions.insert("WHOIS", &CommandParser::parseWhois);
             parseFunctions.insert("WHOWAS", &CommandParser::parseWhowas);
@@ -228,8 +232,8 @@ IrcCommand* CommandParser::parsePart(const QString& receiver, const QStringList&
 IrcCommand* CommandParser::parsePing(const QString& receiver, const QStringList& params)
 {
     Q_UNUSED(receiver);
-//    if (params.count() == 1)
-//        return IrcCommand::createPing(params.at(0));
+    if (!params.isEmpty())
+        return IrcCommand::createCtcpRequest(params.at(0), "PING");
     return 0;
 }
 
@@ -245,9 +249,25 @@ IrcCommand* CommandParser::parseQuote(const QString& receiver, const QStringList
     return IrcCommand::createQuote(params);
 }
 
+IrcCommand* CommandParser::parseTime(const QString& receiver, const QStringList& params)
+{
+    Q_UNUSED(receiver);
+    if (params.isEmpty())
+        return IrcCommand::createQuote(QStringList() << "TIME");
+    return IrcCommand::createCtcpRequest(params.at(0), "TIME");
+}
+
 IrcCommand* CommandParser::parseTopic(const QString& receiver, const QStringList& params)
 {
     return IrcCommand::createTopic(receiver, params.join(" "));
+}
+
+IrcCommand* CommandParser::parseVersion(const QString& receiver, const QStringList& params)
+{
+    Q_UNUSED(receiver);
+    if (params.isEmpty())
+        return IrcCommand::createQuote(QStringList() << "VERSION");
+    return IrcCommand::createCtcpRequest(params.at(0), "VERSION");
 }
 
 IrcCommand* CommandParser::parseWho(const QString& receiver, const QStringList& params)

@@ -270,6 +270,8 @@ QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* message) const
     const QString msg = IrcUtil::messageToHtml(message->message());
     if (message->isAction())
         return tr("* %1 %2").arg(sender, msg);
+    else if (message->isRequest())
+        return tr("[%1] %2").arg(sender, msg);
     else
         return tr("&lt;%1&gt; %2").arg(sender, msg);
 }

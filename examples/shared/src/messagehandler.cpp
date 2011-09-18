@@ -269,7 +269,9 @@ void MessageHandler::handlePartMessage(IrcPartMessage* message)
 
 void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
 {
-    if (message->target() == d.session->nickName())
+    if (message->isRequest())
+        sendMessage(message, d.currentReceiver);
+    else if (message->target() == d.session->nickName())
         sendMessage(message, message->sender().name());
     else
         sendMessage(message, message->target());
