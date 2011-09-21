@@ -22,6 +22,7 @@ Tab {
 
     function receiveMessage(message) {
         textArea.text += MessageFormatter.formatMessage(message);
+        textArea.verticalValue = textArea.contentHeight;
     }
 
     function addUser(user) {
@@ -40,6 +41,7 @@ Tab {
             wrapMode: Text.Wrap
             width: parent.width
             height: parent.height - textField.height
+            horizontalScrollBar.visible: false
         }
         TextField {
             id: textField
