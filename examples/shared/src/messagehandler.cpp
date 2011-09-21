@@ -332,7 +332,12 @@ void MessageHandler::Private::addChannelUser(const QString& channel, const QStri
     channelUsers[channel.toLower()].insert(user.toLower());
     QObject* receiver = receivers.value(channel.toLower());
     if (receiver)
-        QMetaObject::invokeMethod(receiver, "addUser", Q_ARG(QString, user));
+    {
+        if (qml)
+            QMetaObject::invokeMethod(receiver, "addUser", Q_ARG(QVariant, user));
+        else
+            QMetaObject::invokeMethod(receiver, "addUser", Q_ARG(QString, user));
+    }
 }
 
 void MessageHandler::Private::removeChannelUser(const QString& channel, const QString& user)
@@ -340,5 +345,10 @@ void MessageHandler::Private::removeChannelUser(const QString& channel, const QS
     channelUsers[channel.toLower()].remove(user.toLower());
     QObject* receiver = receivers.value(channel.toLower());
     if (receiver)
-        QMetaObject::invokeMethod(receiver, "removeUser", Q_ARG(QString, user));
+    {
+        if (qml)
+            QMetaObject::invokeMethod(receiver, "removeUser", Q_ARG(QVariant, user));
+        else
+            QMetaObject::invokeMethod(receiver, "removeUser", Q_ARG(QString, user));
+    }
 }
