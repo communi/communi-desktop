@@ -26,7 +26,7 @@ Window {
     TabFrame {
         id: tabFrame
         anchors.fill: parent
-        tabbar: TabBar { }
+        tabBar: TabBar { }
 
         Page {
             id: mainPage
