@@ -7,23 +7,25 @@ Tab {
     signal sendMessage(string receiver, string message)
 
     function receiveMessage(message) {
-        textEdit.text += MessageFormatter.formatMessage(message);
+        textArea.text += MessageFormatter.formatMessage(message);
+    }
+
+    function addUser(user) {
+        // TODO
+    }
+
+    function removeUser(user) {
+        // TODO
     }
 
     Column {
         anchors.fill: parent
-        ScrollArea {
-            id: scrollArea
+        TextArea {
+            id: textArea
+            readOnly: true
+            wrapMode: Text.Wrap
             width: parent.width
             height: parent.height - textField.height
-            contentHeight: textEdit.height
-            horizontalScrollBar.visible: false
-            TextEdit {
-                id: textEdit
-                readOnly: true
-                width: scrollArea.viewportWidth
-                wrapMode: Text.Wrap
-            }
         }
         TextField {
             id: textField
