@@ -53,6 +53,7 @@ protected:
     static QString prettyNames(QStringList names, int columns);
     static QString prettyUser(const IrcSender& sender);
     static QString prettyUser(const QString& user);
+    static QString colorize(const QString& str);
 
 private:
     struct Private

@@ -163,30 +163,32 @@ QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* message) const
 }
 
 #define P_(x) message->parameters().value(x)
+#define MID_(x) QStringList(message->parameters().mid(x)).join(" ")
 
 QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
 {
     if (message->code() < 300)
-        return tr("[INFO] %1").arg(QStringList(message->parameters().mid(1)).join(" "));
+        return tr("[INFO] %1").arg(IrcUtil::messageToHtml(MID_(1)));
     if (message->code() > 399)
-        return tr("[ERROR] %1").arg(QStringList(message->parameters().mid(1)).join(" "));
+        return tr("[ERROR] %1").arg(IrcUtil::messageToHtml(MID_(1)));
 
     switch (message->code())
     {
     case Irc::RPL_MOTDSTART:
     case Irc::RPL_MOTD:
-        return tr("[MOTD] %1").arg(QStringList(message->parameters().mid(1)).join(" "));
+        return tr("[MOTD] %1").arg(IrcUtil::messageToHtml(MID_(1)));
     case Irc::RPL_AWAY:
     case Irc::RPL_WHOISOPERATOR:
     case 310: // "is available for help"
     case 320: // "is identified to services"
-    case 378: // nick is connecting from <...>
     case 671: // nick is using a secure connection
         return tr("! %1 %2").arg(message->sender().name(), message->parameters().join(" "));
+    case 378: // nick is connecting from <...>
+        return tr("! %1").arg(MID_(1));
     case Irc::RPL_WHOISUSER:
-        return tr("! %1 is %2@%3 %4").arg(P_(1), P_(2), P_(3), P_(4));
+        return tr("! %1 is %2@%3 (%4)").arg(P_(1), P_(2), P_(3), IrcUtil::messageToHtml(MID_(5)));
     case Irc::RPL_WHOISSERVER:
-        return tr("! %1 online via %2 (%3)").arg(P_(1), P_(2), P_(3));
+        return tr("! %1 is online via %2 (%3)").arg(P_(1), P_(2), P_(3));
     case 330: // nick user is logged in as
         return tr("! %1 %3 %2").arg(P_(1), P_(2), P_(3));
     case Irc::RPL_WHOWASUSER:
@@ -201,7 +203,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
     case Irc::RPL_CHANNELMODEIS:
         return tr("! %1 mode is %2").arg(P_(1), P_(2));
     case Irc::RPL_CHANNELURL:
-        return tr("! %1 url is %2").arg(P_(1), P_(2));
+        return tr("! %1 url is %2").arg(P_(1), IrcUtil::messageToHtml(P_(2)));
     case Irc::RPL_CHANNELCREATED: {
         QDateTime dateTime = QDateTime::fromTime_t(P_(2).toInt());
         return tr("! %1 was created %2").arg(P_(1), dateTime.toString());
@@ -256,7 +258,7 @@ QString MessageFormatter::formatPartMessage(IrcPartMessage* message) const
 {
     const QString sender = prettyUser(message->sender());
     if (!message->reason().isEmpty())
-        return tr("! %1 parted %2 (%3)").arg(sender, message->channel(), message->reason());
+        return tr("! %1 parted %2 (%3)").arg(sender, message->channel(), IrcUtil::messageToHtml(message->reason()));
     else
         return tr("! %1 parted %2").arg(sender, message->channel());
 }
@@ -280,7 +282,7 @@ QString MessageFormatter::formatQuitMessage(IrcQuitMessage* message) const
 {
     const QString sender = prettyUser(message->sender());
     if (!message->reason().isEmpty())
-        return tr("! %1 has quit (%2)").arg(sender, message->reason());
+        return tr("! %1 has quit (%2)").arg(sender, IrcUtil::messageToHtml(message->reason()));
     else
         return tr("! %1 has quit").arg(sender);
 }
@@ -329,7 +331,7 @@ QString MessageFormatter::prettyNames(QStringList names, int columns)
     {
         message += "<tr>";
         for (int j = 0; j < columns; ++j)
-            message += "<td>" + prettyUser(names.value(i+j)) + "&nbsp;</td>";
+            message += "<td>" + colorize(names.value(i+j)) + "&nbsp;</td>";
         message += "</tr>";
     }
     message += "</table>";
@@ -340,14 +342,17 @@ QString MessageFormatter::prettyUser(const IrcSender& sender)
 {
     const QString name = sender.name();
     if (sender.isValid())
-    {
-        QColor color = QColor::fromHsl(qHash(name) % 359, 255, 64);
-        return QString("<span style='color:%1'>%2</span>").arg(color.name()).arg(name);
-    }
+        return colorize(name);
     return name;
 }
 
 QString MessageFormatter::prettyUser(const QString& user)
 {
     return prettyUser(IrcSender(user));
+}
+
+QString MessageFormatter::colorize(const QString& str)
+{
+    QColor color = QColor::fromHsl(qHash(str) % 359, 255, 64);
+    return QString("<span style='color:%1'>%2</span>").arg(color.name()).arg(str);
 }
