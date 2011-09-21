@@ -209,7 +209,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
     case Irc::RPL_NOTOPIC:
         return tr("! %1 has no topic set").arg(P_(1));
     case Irc::RPL_TOPIC:
-        return tr("! %1 topic is \"%2\"").arg(P_(1), P_(2));
+        return tr("! %1 topic is \"%2\"").arg(P_(1), IrcUtil::messageToHtml(P_(2)));
     case Irc::RPL_TOPICSET: {
         QDateTime dateTime = QDateTime::fromTime_t(P_(3).toInt());
         return tr("! %1 topic was set %2 by %3").arg(P_(1), dateTime.toString(), P_(2));
