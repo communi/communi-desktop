@@ -261,10 +261,11 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
 
 void MessageHandler::handlePartMessage(IrcPartMessage* message)
 {
-    sendMessage(message, message->channel());
     d.removeChannelUser(message->channel(), message->sender().name());
     if (message->sender().name() == d.session->nickName())
         removeReceiver(message->channel());
+    else
+        sendMessage(message, message->channel());
 }
 
 void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
