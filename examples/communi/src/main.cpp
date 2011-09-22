@@ -17,6 +17,10 @@
 #include <QNetworkProxy>
 #include <QUrl>
 
+#ifdef Q_WS_WIN
+#include "qtwin.h"
+#endif
+
 static void setApplicationProxy(QUrl url)
 {
     if (!url.isEmpty())
@@ -40,6 +44,12 @@ int main (int argc, char* argv[])
         setApplicationProxy(QUrl(qgetenv("http_proxy")));
 
     MainWindow window;
+#ifdef Q_WS_WIN
+    if (QtWin::isCompositionEnabled()) {
+        QtWin::extendFrameIntoClientArea(&window);
+        window.setContentsMargins(0, 0, 0, 0);
+    }
+#endif
     window.show();
     return app.exec();
 }
