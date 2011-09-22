@@ -61,10 +61,10 @@ Window {
         currentReceiver: tabFrame.count ? tabFrame.tabs[tabFrame.current] : null
         defaultReceiver: mainPage
         onReceiverToBeAdded: {
-            var page = pageComponent.createObject(tabFrame.stack);
+            tabFrame.addTab(pageComponent);
+            var page = tabFrame.tabs[tabFrame.count-1];
             page.sendMessage.connect(session.sendMessage);
             page.title = name;
-            tabFrame.current = tabFrame.count - 1;
             handler.addReceiver(name, page);
         }
         onReceiverToBeRemoved: {
