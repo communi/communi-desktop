@@ -14,6 +14,7 @@
 
 import QtQuick 1.0
 import QtDesktop 0.1
+import Communi.examples 1.0
 
 Tab {
     id: tab
@@ -21,7 +22,7 @@ Tab {
     signal sendMessage(string receiver, string message)
 
     function receiveMessage(message) {
-        textArea.text += MessageFormatter.formatMessage(message);
+        textArea.text += formatter.formatMessage(message);
         textArea.verticalValue = textArea.contentHeight;
     }
 
@@ -31,6 +32,10 @@ Tab {
 
     function removeUser(user) {
         // TODO
+    }
+
+    MessageFormatter {
+        id: formatter
     }
 
     Column {

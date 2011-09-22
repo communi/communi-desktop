@@ -28,9 +28,8 @@ int main(int argc, char* argv[])
     QDeclarativeView view;
     QDeclarativeContext* context = view.engine()->rootContext();
     CommandParser parser;
-    MessageFormatter formatter;
     context->setContextProperty("CommandParser", &parser);
-    context->setContextProperty("MessageFormatter", &formatter);
+    qmlRegisterType<MessageFormatter>("Communi.examples", 1, 0, "MessageFormatter");
     qmlRegisterType<MessageHandler>("Communi.examples", 1, 0, "MessageHandler");
 
     app.connect(view.engine(), SIGNAL(quit()), SLOT(quit()));
