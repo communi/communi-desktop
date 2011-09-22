@@ -10,6 +10,7 @@ FORMS += $$PWD/messageview.ui
 
 HEADERS += $$PWD/application.h
 HEADERS += $$PWD/connection.h
+HEADERS += $$PWD/lineeditor.h
 HEADERS += $$PWD/maintabwidget.h
 HEADERS += $$PWD/mainwindow.h
 HEADERS += $$PWD/messageview.h
@@ -20,6 +21,7 @@ HEADERS += $$PWD/welcomepage.h
 
 SOURCES += $$PWD/application.cpp
 SOURCES += $$PWD/connection.cpp
+SOURCES += $$PWD/lineeditor.cpp
 SOURCES += $$PWD/main.cpp
 SOURCES += $$PWD/maintabwidget.cpp
 SOURCES += $$PWD/mainwindow.cpp
