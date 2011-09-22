@@ -54,6 +54,7 @@ public slots:
     void setTabBarVisible(bool visible);
 
 signals:
+    void newTabRequested();
     void alertStatusChanged(bool active);
     void highlightStatusChanged(bool active);
 
@@ -66,11 +67,13 @@ protected:
     void tabRemoved(int index);
 
 private slots:
+    void tabChanged(int index);
     void alertTimeout();
 
 private:
     struct TabWidgetData
     {
+        int previous;
         QColor alertColor;
         QColor highlightColor;
         QList<int> alertIndexes;

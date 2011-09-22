@@ -24,6 +24,7 @@ class TabBar : public QTabBar
 public:
     TabBar(QWidget* parent = 0) : QTabBar(parent)
     {
+        addTab(tr("+"));
     }
 
 protected:
@@ -33,9 +34,8 @@ protected:
         {
             Qt::TextElideMode mode = elideMode();
             QTabBar::changeEvent(event);
-            if (mode != elideMode()) {
+            if (mode != elideMode())
                 setElideMode(mode);
-            }
             return;
         }
         QTabBar::changeEvent(event);
@@ -46,9 +46,11 @@ TabWidget::TabWidget(QWidget* parent) : QTabWidget(parent)
 {
     setTabBar(new TabBar(this));
     setElideMode(Qt::ElideMiddle);
+    d.previous = -1;
     d.alertColor = palette().color(QPalette::Highlight);
     d.highlightColor = palette().color(QPalette::Highlight);
     d.swipeOrientation = Qt::Orientation(0);
+    connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 }
 
 QColor TabWidget::alertColor() const
@@ -149,7 +151,7 @@ void TabWidget::unregisterSwipeGestures()
 void TabWidget::moveToNextTab()
 {
     int index = currentIndex();
-    if (++index >= count())
+    if (++index >= count() - 1)
         index = 0;
     setCurrentIndex(index);
 }
@@ -158,7 +160,7 @@ void TabWidget::moveToPrevTab()
 {
     int index = currentIndex();
     if (--index < 0)
-        index = count() - 1;
+        index = count() - 2;
     setCurrentIndex(index);
 }
 
@@ -236,6 +238,20 @@ void TabWidget::tabRemoved(int index)
 {
     shiftIndexesFrom(d.alertIndexes, index, -1);
     shiftIndexesFrom(d.highlightIndexes, index, -1);
+}
+
+void TabWidget::tabChanged(int index)
+{
+    if (index == count() - 1)
+    {
+        emit newTabRequested();
+        if (d.previous != -1)
+            setCurrentIndex(d.previous);
+    }
+    else
+    {
+        d.previous = index;
+    }
 }
 
 void TabWidget::alertTimeout()
