@@ -32,7 +32,7 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
 {
     d.setupUi(this);
 
-    setFocusProxy(d.editFrame->lineEdit());
+    setFocusProxy(d.lineEditor);
     d.textBrowser->installEventFilter(this);
     d.textBrowser->viewport()->installEventFilter(this);
 
@@ -56,11 +56,11 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
         d.commandModel->setStringList(prefixedCommands);
     }
 
-    d.editFrame->completer()->setDefaultModel(d.userModel);
-    d.editFrame->completer()->setSlashModel(d.commandModel);
+    d.lineEditor->completer()->setDefaultModel(d.userModel);
+    d.lineEditor->completer()->setSlashModel(d.commandModel);
 
-    connect(d.editFrame, SIGNAL(send(QString)), this, SLOT(onSend(QString)));
-    connect(d.editFrame, SIGNAL(typed(QString)), this, SLOT(showHelp(QString)));
+    connect(d.lineEditor, SIGNAL(send(QString)), this, SLOT(onSend(QString)));
+    connect(d.lineEditor, SIGNAL(typed(QString)), this, SLOT(showHelp(QString)));
 
     d.helpLabel->hide();
     d.findFrame->setTextEdit(d.textBrowser);
@@ -167,8 +167,8 @@ bool MessageView::eventFilter(QObject* receiver, QEvent* event)
             default:
                 if (!keyEvent->matches(QKeySequence::Copy))
                 {
-                    QApplication::sendEvent(d.editFrame->lineEdit(), keyEvent);
-                    d.editFrame->lineEdit()->setFocus();
+                    QApplication::sendEvent(d.lineEditor, keyEvent);
+                    d.lineEditor->setFocus();
                     return true;
                 }
                 break;
