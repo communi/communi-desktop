@@ -24,6 +24,7 @@ MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 {
     d.highlight = false;
     d.timeStamp = false;
+    d.firstNames = true;
 }
 
 MessageFormatter::~MessageFormatter()
@@ -232,7 +233,12 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
         return QString();
 
     case Irc::RPL_ENDOFNAMES: {
-        QString msg = tr("! %1 users: %2").arg(P_(1), prettyNames(d.names, 6));
+        QString msg;
+        if (d.firstNames)
+            msg = tr("! %1 has %2 users").arg(P_(1)).arg(d.names.count());
+        else
+            msg = tr("! %1 users (%3): %2").arg(P_(1), prettyNames(d.names, 6)).arg(d.names.count());
+        d.firstNames = false;
         d.names.clear();
         return msg;
     }

@@ -56,13 +56,14 @@ protected:
     static QString colorize(const QString& str);
 
 private:
-    struct Private
+    mutable struct Private
     {
-        mutable bool highlight;
+        bool highlight;
         QStringList highlights;
         bool timeStamp;
-        mutable QStringList names;
-        mutable QStringList who;
+        bool firstNames;
+        QStringList names;
+        QStringList who;
     } d;
 };
 
