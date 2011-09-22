@@ -164,7 +164,8 @@ void MainWindow::connectToImpl(const Connection& connection)
     connect(channelsAction, SIGNAL(toggled(bool)), tab, SLOT(setTabBarVisible(bool)));
     tab->setTabBarVisible(channelsAction->isChecked());
 #endif // Q_WS_MAEMO_5
-    tabWidget->addTab(tab, connection.name.isEmpty() ? session->host() : connection.name);
+    int index = tabWidget->addTab(tab, connection.name.isEmpty() ? session->host() : connection.name);
+    tabWidget->setCurrentIndex(index);
 }
 
 void MainWindow::quit(const QString& message)
@@ -305,10 +306,14 @@ void MainWindow::tabActivated(int index)
     {
         createWelcomeView();
     }
-    else if (QTabWidget* tab = qobject_cast<QTabWidget*>(tabWidget->widget(index)))
+    else if (index < tabWidget->count() - 1)
     {
-        setWindowFilePath(tab->tabText(tab->currentIndex()));
-        QMetaObject::invokeMethod(tab, "delayedTabReset");
+        QTabWidget* tab = qobject_cast<QTabWidget*>(tabWidget->widget(index));
+        if (tab)
+        {
+            setWindowFilePath(tab->tabText(tab->currentIndex()));
+            QMetaObject::invokeMethod(tab, "delayedTabReset");
+        }
     }
 }
 
@@ -324,6 +329,7 @@ void MainWindow::createTabbedView()
 {
     tabWidget = new MainTabWidget(this);
     setCentralWidget(tabWidget);
+    connect(tabWidget, SIGNAL(newTabRequested()), this, SLOT(connectTo()));
     connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
     connect(tabWidget, SIGNAL(alertStatusChanged(bool)), this, SLOT(activateAlert(bool)));
 #ifdef Q_WS_MAEMO_5

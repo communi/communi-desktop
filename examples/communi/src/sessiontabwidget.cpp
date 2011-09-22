@@ -137,14 +137,17 @@ void SessionTabWidget::quit(const QString &message)
 
 void SessionTabWidget::tabActivated(int index)
 {
-    d.handler.setCurrentReceiver(currentWidget());
-    setTabAlert(index, false);
-    setTabHighlight(index, false);
-    if (isVisible())
+    if (index < count() - 1)
     {
-        window()->setWindowFilePath(tabText(index));
-        if (currentWidget())
-            currentWidget()->setFocus();
+        d.handler.setCurrentReceiver(currentWidget());
+        setTabAlert(index, false);
+        setTabHighlight(index, false);
+        if (isVisible())
+        {
+            window()->setWindowFilePath(tabText(index));
+            if (currentWidget())
+                currentWidget()->setFocus();
+        }
     }
 }
 
