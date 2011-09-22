@@ -33,8 +33,6 @@
 #ifndef FANCYLINEEDIT_H
 #define FANCYLINEEDIT_H
 
-#include "utils_global.h"
-
 #include <QtGui/QLineEdit>
 #include <QtGui/QAbstractButton>
 
@@ -42,7 +40,7 @@ namespace Utils {
 
 class FancyLineEditPrivate;
 
-class QTCREATOR_UTILS_EXPORT IconButton: public QAbstractButton
+class IconButton: public QAbstractButton
 {
     Q_OBJECT
     Q_PROPERTY(float iconOpacity READ iconOpacity WRITE setIconOpacity)
@@ -65,7 +63,7 @@ private:
     QPixmap m_pixmap;
 };
 
-class QTCREATOR_UTILS_EXPORT FancyLineEdit : public QLineEdit
+class FancyLineEdit : public QLineEdit
 {
     Q_OBJECT
     Q_ENUMS(Side)
