@@ -22,6 +22,7 @@
 
 MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 {
+    d.format = true;
     d.highlight = false;
     d.timeStamp = false;
     d.firstNames = true;
@@ -49,6 +50,16 @@ bool MessageFormatter::timeStamp() const
 void MessageFormatter::setTimeStamp(bool timeStamp)
 {
     d.timeStamp = timeStamp;
+}
+
+bool MessageFormatter::classFormat() const
+{
+    return d.format;
+}
+
+void MessageFormatter::setClassFormat(bool format)
+{
+    d.format = format;
 }
 
 QString MessageFormatter::formatMessage(IrcMessage* message) const
@@ -100,22 +111,30 @@ QString MessageFormatter::formatMessage(IrcMessage* message) const
     if (formatted.isEmpty())
         return QString();
 
-    QString cls = "message";
-    if (d.highlight)
-        cls = "highlight";
-    else if (formatted.startsWith("!"))
-        cls = "event";
-    else if (formatted.startsWith("?"))
-        cls = "notice";
-    else if (formatted.startsWith("["))
-        cls = "notice";
-    else if (formatted.startsWith("*"))
-        cls = "action";
+    QString cls;
+    if (d.format)
+    {
+        cls = "message";
+        if (d.highlight)
+            cls = "highlight";
+        else if (formatted.startsWith("!"))
+            cls = "event";
+        else if (formatted.startsWith("?"))
+            cls = "notice";
+        else if (formatted.startsWith("["))
+            cls = "notice";
+        else if (formatted.startsWith("*"))
+            cls = "action";
+    }
 
     if (d.timeStamp)
         formatted = tr("[%1] %2").arg(QTime::currentTime().toString(), formatted);
 
-    return tr("<span class='%1'>%2</span>").arg(cls, formatted);
+    if (!cls.isNull())
+        formatted = tr("<span class='%1'>%2</span>").arg(cls, formatted);
+
+    qDebug("%s", qPrintable(formatted));
+    return formatted;
 }
 
 QString MessageFormatter::formatInviteMessage(IrcInviteMessage* message) const

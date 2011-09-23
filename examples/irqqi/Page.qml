@@ -34,7 +34,7 @@ Tab {
     }
 
     function receiveMessage(message) {
-        textArea.text += formatter.formatMessage(message);
+        textArea.text += formatter.formatMessage(message) + "<br/>";
         textArea.verticalValue = textArea.contentHeight;
     }
 
@@ -48,6 +48,8 @@ Tab {
 
     MessageFormatter {
         id: formatter
+        timeStamp: true
+        classFormat: false // workaround extra line breaks
     }
 
     Column {

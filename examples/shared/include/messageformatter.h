@@ -23,6 +23,7 @@ class MessageFormatter : public QObject
     Q_OBJECT
     Q_PROPERTY(QStringList highlights READ highlights WRITE setHightlights)
     Q_PROPERTY(bool timeStamp READ timeStamp WRITE setTimeStamp)
+    Q_PROPERTY(bool classFormat READ classFormat WRITE setClassFormat)
 
 public:
     explicit MessageFormatter(QObject* parent = 0);
@@ -33,6 +34,11 @@ public:
 
     bool timeStamp() const;
     void setTimeStamp(bool timeStamp);
+
+    // a workaround for QML Text Element bug: (TODO: QTBUG-XXXXX)
+    // nested <span style="color:foo"/> elements cause extra line breaks
+    bool classFormat() const;
+    void setClassFormat(bool format);
 
     Q_INVOKABLE QString formatMessage(IrcMessage* message) const;
 
@@ -58,6 +64,7 @@ protected:
 private:
     mutable struct Private
     {
+        bool format;
         bool highlight;
         QStringList highlights;
         bool timeStamp;
