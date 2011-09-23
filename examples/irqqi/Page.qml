@@ -14,12 +14,24 @@
 
 import QtQuick 1.0
 import QtDesktop 0.1
+import Communi 1.0
 import Communi.examples 1.0
 
 Tab {
     id: tab
 
-    signal sendMessage(string receiver, string message)
+    function sendMessage(receiver, message) {
+        var cmd = CommandParser.parseCommand(receiver, message);
+        if (cmd) {
+            session.sendCommand(cmd);
+            if (cmd.type == IrcCommand.Message || cmd.type == IrcCommand.CtcpAction)
+            {
+                var msg = ircMessage.fromCommand(session.nickName, cmd);
+                receiveMessage(msg);
+                msg.destroy();
+            }
+        }
+    }
 
     function receiveMessage(message) {
         textArea.text += formatter.formatMessage(message);

@@ -45,7 +45,6 @@ Window {
         Page {
             id: mainPage
             title: qsTr("Home")
-            onSendMessage: session.sendMessage(receiver, message)
         }
     }
 
@@ -63,7 +62,6 @@ Window {
         onReceiverToBeAdded: {
             tabFrame.addTab(pageComponent);
             var page = tabFrame.tabs[tabFrame.count-1];
-            page.sendMessage.connect(session.sendMessage);
             page.title = name;
             handler.addReceiver(name, page);
         }
@@ -74,17 +72,17 @@ Window {
         }
     }
 
+    // TODO: how to make it possible to access both Message.Type and
+    //       Message.fromCommand() without creating a dummy instance?
+    IrcMessage {
+        id: ircMessage
+    }
+
     IrcSession {
         id: session
 
         onConnecting: console.log("connecting...")
         onConnected: console.log("connected...")
         onDisconnected: Qt.quit();
-
-        function sendMessage(receiver, message) {
-            var cmd = CommandParser.parseCommand(receiver, message);
-            if (cmd)
-                session.sendCommand(cmd);
-        }
     }
 }
