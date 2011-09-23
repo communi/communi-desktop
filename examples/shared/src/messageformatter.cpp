@@ -133,7 +133,6 @@ QString MessageFormatter::formatMessage(IrcMessage* message) const
     if (!cls.isNull())
         formatted = tr("<span class='%1'>%2</span>").arg(cls, formatted);
 
-    qDebug("%s", qPrintable(formatted));
     return formatted;
 }
 
