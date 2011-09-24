@@ -93,17 +93,22 @@ void SessionTabWidget::closeView(const QString &receiver)
         MessageView* view = d.views.take(tabText(index).toLower());
         if (view)
         {
-            if (receiver.isEmpty() && view->isChannelView())
+            if (receiver.isEmpty())
             {
-                d.handler.removeReceiver(view->receiver());
-                d.handler.session()->sendCommand(IrcCommand::createPart(view->receiver()));
+                if (view->isChannelView())
+                {
+                    d.handler.removeReceiver(view->receiver());
+                    d.handler.session()->sendCommand(IrcCommand::createPart(view->receiver()));
+                }
+                if (indexOf(view) == 0) // closing a server tab
+                    quit();
             }
 
             if (indexOf(view) == 0)
             {
-                // closing a server tab
-                quit();
-                deleteLater();
+                 // closing a server tab
+                connect(d.handler.session(), SIGNAL(disconnected()), SLOT(deleteLater()));
+                QTimer::singleShot(500, this, SLOT(deleteLater()));
             }
             view->deleteLater();
         }
