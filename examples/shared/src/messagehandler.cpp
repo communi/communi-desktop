@@ -286,7 +286,13 @@ void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
         sendMessage(message, channel);
         d.removeChannelUser(channel, nick);
     }
+
     removeReceiver(nick);
+    if (nick == d.session->nickName())
+    {
+        foreach (const QString& receiver, d.receivers.keys())
+            removeReceiver(receiver);
+    }
 }
 
 void MessageHandler::handleTopicMessage(IrcTopicMessage* message)
