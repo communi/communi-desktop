@@ -168,20 +168,15 @@ void MainWindow::connectToImpl(const Connection& connection)
     tabWidget->setCurrentIndex(index);
 }
 
-void MainWindow::quit(const QString& message)
+void MainWindow::closeEvent(QCloseEvent* event)
 {
-    // TODO: confirm?
     for (int i = 0; i < tabWidget->count(); ++i)
     {
         SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(tabWidget->widget(i));
         if (tab)
-            tab->quit(message);
+            tab->quit();
     }
-    close();
-}
 
-void MainWindow::closeEvent(QCloseEvent* event)
-{
     QSettings settings;
     settings.setValue("geometry", saveGeometry());
 
