@@ -170,18 +170,11 @@ void MainWindow::connectToImpl(const Connection& connection)
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    for (int i = 0; i < tabWidget->count(); ++i)
-    {
-        SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(tabWidget->widget(i));
-        if (tab)
-            tab->quit();
-    }
-
     QSettings settings;
     settings.setValue("geometry", saveGeometry());
 
     Connections connections;
-    for (int i = 0; i < tabWidget->count(); ++i)
+    for (int i = 0; tabWidget && i < tabWidget->count(); ++i)
     {
         SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(tabWidget->widget(i));
         if (tab)
@@ -190,6 +183,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
             connection.nick = tab->session()->nickName();
             connection.channels = tab->channels();
             connections += connection;
+            tab->quit();
         }
     }
     settings.setValue("connections", QVariant::fromValue(connections));
