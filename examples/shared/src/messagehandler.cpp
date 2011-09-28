@@ -296,7 +296,9 @@ void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
         d.removeChannelUser(channel, nick);
     }
 
-    removeReceiver(nick);
+    if (d.receivers.contains(nick.toLower()))
+        sendMessage(message, nick);
+
     if (nick == d.session->nickName())
         removeReceiver(d.session->host());
 }
