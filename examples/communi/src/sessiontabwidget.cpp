@@ -28,6 +28,7 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     d.handler.setSession(session);
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
+    connect(this, SIGNAL(newTabRequested()), this, SLOT(onNewTabRequested()));
 
     connect(&d.handler, SIGNAL(receiverToBeAdded(QString)), this, SLOT(openView(QString)));
     connect(&d.handler, SIGNAL(receiverToBeRemoved(QString)), this, SLOT(closeView(QString)));
@@ -148,6 +149,17 @@ void SessionTabWidget::tabActivated(int index)
             if (currentWidget())
                 currentWidget()->setFocus();
         }
+    }
+}
+
+void SessionTabWidget::onNewTabRequested()
+{
+    QString channel = QInputDialog::getText(this, tr("Join channel"), tr("Channel:"));
+    if (!channel.isEmpty())
+    {
+        if (channel.startsWith("#") || channel.startsWith("&"))
+            d.handler.session()->sendCommand(IrcCommand::createJoin(channel));
+        openView(channel);
     }
 }
 

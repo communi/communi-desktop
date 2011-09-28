@@ -47,6 +47,7 @@ signals:
 
 private slots:
     void tabActivated(int index);
+    void onNewTabRequested();
     void delayedTabReset();
     void delayedTabResetTimeout();
     void alertTab(MessageView* view, bool on);
