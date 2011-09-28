@@ -13,6 +13,7 @@
 */
 
 #include "messagehandler.h"
+#include <qabstractsocket.h>
 #include <ircsession.h>
 #include <qvariant.h>
 #include <qdebug.h>
@@ -29,6 +30,11 @@ MessageHandler::MessageHandler(QObject* parent) : QObject(parent)
 
 MessageHandler::~MessageHandler()
 {
+    d.defaultReceiver = 0;
+    d.currentReceiver = 0;
+    d.receivers.clear();
+    d.channelUsers.clear();
+    d.session->socket()->waitForDisconnected(500);
 }
 
 bool MessageHandler::isQml() const
@@ -54,7 +60,10 @@ void MessageHandler::setSession(IrcSession* session)
             disconnect(d.session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(handleMessage(IrcMessage*)));
 
         if (session)
+        {
+            session->setParent(this);
             connect(session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(handleMessage(IrcMessage*)));
+        }
         d.session = session;
     }
 }
@@ -289,10 +298,7 @@ void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
 
     removeReceiver(nick);
     if (nick == d.session->nickName())
-    {
-        foreach (const QString& receiver, d.receivers.keys())
-            removeReceiver(receiver);
-    }
+        removeReceiver(d.session->host());
 }
 
 void MessageHandler::handleTopicMessage(IrcTopicMessage* message)

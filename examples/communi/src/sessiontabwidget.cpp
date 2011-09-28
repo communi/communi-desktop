@@ -23,19 +23,19 @@
 SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     TabWidget(parent)
 {
-    // take ownership of the session
-    session->setParent(this);
+    d.hasQuit = false;
     d.handler.setSession(session);
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
     connect(this, SIGNAL(newTabRequested()), this, SLOT(onNewTabRequested()));
+    connect(session, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 
     connect(&d.handler, SIGNAL(receiverToBeAdded(QString)), this, SLOT(openView(QString)));
-    connect(&d.handler, SIGNAL(receiverToBeRemoved(QString)), this, SLOT(closeView(QString)));
+    connect(&d.handler, SIGNAL(receiverToBeRemoved(QString)), this, SLOT(removeView(QString)));
     connect(&d.handler, SIGNAL(receiverToBeRenamed(QString,QString)), this, SLOT(renameView(QString,QString)));
 
     QShortcut* shortcut = new QShortcut(QKeySequence::Close, this);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(closeView()));
+    connect(shortcut, SIGNAL(activated()), this, SLOT(closeCurrentView()));
 
     applySettings(Application::settings());
 
@@ -73,6 +73,7 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
         connect(view, SIGNAL(alert(MessageView*, bool)), this, SLOT(alertTab(MessageView*, bool)));
         connect(view, SIGNAL(highlight(MessageView*, bool)), this, SLOT(highlightTab(MessageView*, bool)));
         connect(view, SIGNAL(query(QString)), this, SLOT(openView(QString)));
+        connect(view, SIGNAL(aboutToQuit()), this, SLOT(onAboutToQuit()));
 
         d.handler.addReceiver(receiver, view);
         d.views.insert(receiver.toLower(), view);
@@ -82,36 +83,29 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
     return view;
 }
 
-void SessionTabWidget::closeView(const QString &receiver)
+void SessionTabWidget::removeView(const QString& receiver)
 {
-    int index = currentIndex();
-    if (!receiver.isEmpty())
-        index = indexOf(d.views.value(receiver.toLower()));
-
-    if (index != -1)
+    MessageView* view = d.views.take(receiver.toLower());
+    if (view)
     {
-        MessageView* view = d.views.take(tabText(index).toLower());
-        if (view)
-        {
-            if (receiver.isEmpty())
-            {
-                if (view->isChannelView())
-                {
-                    d.handler.removeReceiver(view->receiver());
-                    d.handler.session()->sendCommand(IrcCommand::createPart(view->receiver()));
-                }
-                if (indexOf(view) == 0) // closing a server tab
-                    quit();
-            }
-
-            if (indexOf(view) == 0)
-            {
-                 // closing a server tab
-                connect(d.handler.session(), SIGNAL(disconnected()), SLOT(deleteLater()));
-                QTimer::singleShot(500, this, SLOT(deleteLater()));
-            }
+        if (indexOf(view) == 0)
+            deleteLater();
+        else
             view->deleteLater();
-        }
+    }
+}
+
+void SessionTabWidget::closeCurrentView()
+{
+    MessageView* view = d.views.value(tabText(currentIndex()).toLower());
+    if (view)
+    {
+        if (indexOf(view) == 0)
+            quit();
+        else if (view->isChannelView())
+            d.handler.session()->sendCommand(IrcCommand::createPart(view->receiver()));
+
+        d.handler.removeReceiver(view->receiver());
     }
 }
 
@@ -134,11 +128,21 @@ void SessionTabWidget::quit(const QString &message)
 {
     QString reason = message.trimmed();
     if (reason.isEmpty())
-        reason = tr("%1 %2 - %3").arg(Application::applicationName())
-                                 .arg(Application::applicationVersion())
-                                 .arg(Application::organizationDomain());
+        reason = tr("%1 %2").arg(Application::applicationName())
+                            .arg(Application::applicationVersion());
     d.handler.session()->sendCommand(IrcCommand::createQuit(reason));
-    d.handler.session()->close();
+}
+
+void SessionTabWidget::onAboutToQuit()
+{
+    d.hasQuit = true;
+}
+
+void SessionTabWidget::onDisconnected()
+{
+    if (d.hasQuit)
+        deleteLater();
+    // TODO: else reconnect?
 }
 
 void SessionTabWidget::tabActivated(int index)

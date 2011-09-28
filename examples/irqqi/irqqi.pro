@@ -6,7 +6,7 @@ TEMPLATE = app
 TARGET = 
 DEPENDPATH += .
 INCLUDEPATH += .
-QT += declarative
+QT += declarative network
 
 # Input
 SOURCES += main.cpp

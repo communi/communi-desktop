@@ -37,7 +37,8 @@ public:
 
 public slots:
     MessageView* openView(const QString& receiver);
-    void closeView(const QString& receiver = QString());
+    void removeView(const QString& receiver);
+    void closeCurrentView();
     void renameView(const QString& from, const QString& to);
     void quit(const QString& message = QString());
 
@@ -46,6 +47,8 @@ signals:
     void titleChanged(const QString& title);
 
 private slots:
+    void onAboutToQuit();
+    void onDisconnected();
     void tabActivated(int index);
     void onNewTabRequested();
     void delayedTabReset();
@@ -57,6 +60,7 @@ private slots:
 private:
     struct SessionTabWidgetData
     {
+        bool hasQuit;
         QList<int> delayedIndexes;
         MessageHandler handler;
         QHash<QString, MessageView*> views;

@@ -295,7 +295,7 @@ void MainWindow::tabActivated(int index)
     {
         createWelcomeView();
     }
-    else if (index < tabWidget->count() - 1)
+    else if (index < tabWidget->count() - 2)
     {
         QTabWidget* tab = qobject_cast<QTabWidget*>(tabWidget->widget(index));
         if (tab)
@@ -318,10 +318,18 @@ void MainWindow::createTabbedView()
 {
     tabWidget = new MainTabWidget(this);
     setCentralWidget(tabWidget);
-    connect(tabWidget, SIGNAL(newTabRequested()), this, SLOT(connectTo()));
+    connect(tabWidget, SIGNAL(newTabRequested()), this, SLOT(onNewTabRequested()), Qt::QueuedConnection);
     connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
     connect(tabWidget, SIGNAL(alertStatusChanged(bool)), this, SLOT(activateAlert(bool)));
 #ifdef Q_WS_MAEMO_5
     connect(networksAction, SIGNAL(toggled(bool)), tabWidget, SLOT(setTabBarVisible(bool)));
 #endif // Q_WS_MAEMO_5
+}
+
+void MainWindow::onNewTabRequested()
+{
+    if (tabWidget->count() == 1)
+        createWelcomeView();
+    else
+        connectTo();
 }

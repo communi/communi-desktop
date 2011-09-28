@@ -52,6 +52,7 @@ private slots:
     void tabActivated(int index);
     void createWelcomeView();
     void createTabbedView();
+    void onNewTabRequested();
 
 private:
     MainTabWidget* tabWidget;
