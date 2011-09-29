@@ -92,6 +92,9 @@ QString MessageFormatter::formatMessage(IrcMessage* message) const
     case IrcMessage::Part:
         formatted = formatPartMessage(static_cast<IrcPartMessage*>(message));
         break;
+    case IrcMessage::Pong:
+        formatted = formatPongMessage(static_cast<IrcPongMessage*>(message));
+        break;
     case IrcMessage::Private:
         formatted = formatPrivateMessage(static_cast<IrcPrivateMessage*>(message));
         break;
@@ -173,6 +176,19 @@ QString MessageFormatter::formatNickMessage(IrcNickMessage* message) const
 
 QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* message) const
 {
+    if (message->isReply())
+    {
+        const QStringList params = message->message().split(" ", QString::SkipEmptyParts);
+        const QString cmd = params.value(0);
+        const QString arg = params.value(1);
+        if (cmd.toUpper() == "PING")
+            return formatPingReply(message->sender(), arg);
+        else if (cmd.toUpper() == "TIME")
+            return tr("! %1 time is %2").arg(prettyUser(message->sender()), QStringList(params.mid(1)).join(" "));
+        else if (cmd.toUpper() == "VERSION")
+            return tr("! %1 version is %2").arg(prettyUser(message->sender()), QStringList(params.mid(1)).join(" "));
+    }
+
     foreach (const QString& hilite, d.highlights)
         if (message->message().contains(hilite))
             d.highlight = true;
@@ -238,9 +254,9 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
     case Irc::RPL_INVITING:
         return tr("! inviting %1 to %2").arg(prettyUser(P_(1)), P_(2));
     case Irc::RPL_VERSION:
-        return tr("! %1 version is %2").arg(message->sender().name(), P_(1));
+        return tr("! %1 version is %2").arg(prettyUser(message->sender()), P_(1));
     case Irc::RPL_TIME:
-        return tr("! %1 time is %2").arg(P_(1), P_(2));
+        return tr("! %1 time is %2").arg(prettyUser(P_(1)), P_(2));
     case Irc::RPL_UNAWAY:
     case Irc::RPL_NOWAWAY:
         return tr("! %1").arg(P_(1));
@@ -287,6 +303,11 @@ QString MessageFormatter::formatPartMessage(IrcPartMessage* message) const
         return tr("! %1 parted %2").arg(sender, message->channel());
 }
 
+QString MessageFormatter::formatPongMessage(IrcPongMessage* message) const
+{
+    return formatPingReply(message->sender(), message->argument());
+}
+
 QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* message) const
 {
     foreach (const QString& hilite, d.highlights)
@@ -297,7 +318,7 @@ QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* message) const
     if (message->isAction())
         return tr("* %1 %2").arg(sender, msg);
     else if (message->isRequest())
-        return tr("[%1] %2").arg(sender, msg);
+        return tr("! %1 requested %2").arg(sender, msg.split(" ").value(0).toLower());
     else
         return tr("&lt;%1&gt; %2").arg(sender, msg);
 }
@@ -322,6 +343,19 @@ QString MessageFormatter::formatUnknownMessage(IrcMessage* message) const
 {
     const QString sender = prettyUser(message->sender());
     return tr("? %1 %2 %3").arg(sender, message->command(), message->parameters().join(" "));
+}
+
+QString MessageFormatter::formatPingReply(const IrcSender& sender, const QString& arg)
+{
+    bool ok;
+    int seconds = arg.toInt(&ok);
+    if (ok)
+    {
+        QDateTime time = QDateTime::fromTime_t(seconds);
+        QString result = QString::number(time.secsTo(QDateTime::currentDateTime()));
+        return tr("! %1 replied in %2s").arg(prettyUser(sender), result);
+    }
+    return QString();
 }
 
 static bool nameLessThan(const QString &n1, const QString &n2)

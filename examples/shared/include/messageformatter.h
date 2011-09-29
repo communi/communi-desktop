@@ -51,11 +51,13 @@ protected:
     QString formatNoticeMessage(IrcNoticeMessage* message) const;
     QString formatNumericMessage(IrcNumericMessage* message) const;
     QString formatPartMessage(IrcPartMessage* message) const;
+    QString formatPongMessage(IrcPongMessage* message) const;
     QString formatPrivateMessage(IrcPrivateMessage* message) const;
     QString formatQuitMessage(IrcQuitMessage* message) const;
     QString formatTopicMessage(IrcTopicMessage* message) const;
     QString formatUnknownMessage(IrcMessage* message) const;
 
+    static QString formatPingReply(const IrcSender& sender, const QString& arg);
     static QString prettyNames(QStringList names, int columns);
     static QString prettyUser(const IrcSender& sender);
     static QString prettyUser(const QString& user);

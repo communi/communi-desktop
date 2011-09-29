@@ -66,6 +66,7 @@ protected:
     void handleNoticeMessage(IrcNoticeMessage* message);
     void handleNumericMessage(IrcNumericMessage* message);
     void handlePartMessage(IrcPartMessage* message);
+    void handlePongMessage(IrcPongMessage* message);
     void handlePrivateMessage(IrcPrivateMessage* message);
     void handleQuitMessage(IrcQuitMessage* message);
     void handleTopicMessage(IrcTopicMessage* message);

@@ -14,6 +14,7 @@
 
 #include "commandparser.h"
 #include <IrcCommand>
+#include <QDateTime>
 #include <QHash>
 #include <QMap>
 
@@ -28,17 +29,17 @@ static QMap<QString, QString>& command_syntaxes()
         syntaxes.insert("KICK", "<user> (<reason>)");
         syntaxes.insert("LIST", "<channel> (<server>)");
         syntaxes.insert("ME", "<message>");
-        syntaxes.insert("MODE", "<target> <mode> (<arg>) (<mask>)");
+        syntaxes.insert("MODE", "<channel/user> <mode> (<arg>)");
         syntaxes.insert("NAMES", "");
         syntaxes.insert("NICK", "<nick>");
-        syntaxes.insert("NOTICE", "<target> <message>");
+        syntaxes.insert("NOTICE", "<channel/user> <message>");
         syntaxes.insert("PART", "(<reason>)");
-        syntaxes.insert("PING", "<user>");
+        syntaxes.insert("PING", "(<user>)");
         syntaxes.insert("QUIT" , "(<message>)");
         syntaxes.insert("QUOTE" , "<command> (<parameters>)");
-        syntaxes.insert("TIME", "(<target>)");
+        syntaxes.insert("TIME", "(<user>)");
         syntaxes.insert("TOPIC", "(<topic>)");
-        syntaxes.insert("VERSION", "(<target>)");
+        syntaxes.insert("VERSION", "(<user>)");
         syntaxes.insert("WHO", "<mask>");
         syntaxes.insert("WHOIS", "<user>");
         syntaxes.insert("WHOWAS", "<user>");
@@ -197,7 +198,7 @@ IrcCommand* CommandParser::parseMode(const QString& receiver, const QStringList&
 {
     Q_UNUSED(receiver);
     if (params.count() >= 2 && params.count() <= 4)
-        return IrcCommand::createMode(params.at(0), params.at(1), params.value(2), params.value(3));
+        return IrcCommand::createMode(params.at(0), params.at(1), params.value(2));
     return 0;
 }
 
@@ -232,9 +233,10 @@ IrcCommand* CommandParser::parsePart(const QString& receiver, const QStringList&
 IrcCommand* CommandParser::parsePing(const QString& receiver, const QStringList& params)
 {
     Q_UNUSED(receiver);
-    if (!params.isEmpty())
-        return IrcCommand::createCtcpRequest(params.at(0), "PING");
-    return 0;
+    QString time = QString::number(QDateTime::currentDateTime().toTime_t());
+    if (params.isEmpty())
+        return IrcCommand::createQuote(QStringList() << "PING" << time);
+    return IrcCommand::createCtcpRequest(params.at(0), "PING " + time);
 }
 
 IrcCommand* CommandParser::parseQuit(const QString& receiver, const QStringList& params)

@@ -136,6 +136,9 @@ void MessageHandler::handleMessage(IrcMessage* message)
     case IrcMessage::Part:
         handlePartMessage(static_cast<IrcPartMessage*>(message));
         break;
+    case IrcMessage::Pong:
+        handlePongMessage(static_cast<IrcPongMessage*>(message));
+        break;
     case IrcMessage::Private:
         handlePrivateMessage(static_cast<IrcPrivateMessage*>(message));
         break;
@@ -275,6 +278,11 @@ void MessageHandler::handlePartMessage(IrcPartMessage* message)
         removeReceiver(message->channel());
     else
         sendMessage(message, message->channel());
+}
+
+void MessageHandler::handlePongMessage(IrcPongMessage* message)
+{
+    sendMessage(message, d.currentReceiver);
 }
 
 void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
