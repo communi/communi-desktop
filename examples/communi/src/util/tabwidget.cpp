@@ -25,7 +25,7 @@ public:
     TabBar(QWidget* parent = 0) : QTabBar(parent)
     {
         addTab(tr("+"));
-        setSelectionBehaviorOnRemove(SelectPreviousTab);
+        setSelectionBehaviorOnRemove(SelectLeftTab);
     }
 
 protected:
