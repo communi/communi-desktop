@@ -295,7 +295,7 @@ void MainWindow::tabActivated(int index)
     {
         createWelcomeView();
     }
-    else if (index < tabWidget->count() - 2)
+    else if (index < tabWidget->count() - 1)
     {
         QTabWidget* tab = qobject_cast<QTabWidget*>(tabWidget->widget(index));
         if (tab)
