@@ -34,8 +34,7 @@ Tab {
     }
 
     function receiveMessage(message) {
-        textArea.text += formatter.formatMessage(message) + "<br/>";
-        textArea.verticalValue = textArea.contentHeight;
+        textArea.append(formatter.formatMessage(message));
     }
 
     function addUser(user) {

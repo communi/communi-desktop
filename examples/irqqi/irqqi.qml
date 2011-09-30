@@ -22,10 +22,10 @@ Window {
     width: 640
     height: 480
 
-    Dialog {
+    ConnectDialog {
         id: dialog
         modal: true
-        onConnect: {
+        onAccepted: {
             mainPage.title = dialog.host;
             session.host = dialog.host;
             session.userName = dialog.name;

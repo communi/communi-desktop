@@ -15,7 +15,7 @@
 import QtQuick 1.0
 import QtDesktop 0.1
 
-Window {
+Dialog {
     id: dialog
 
     width: 1.5 * column.width
@@ -24,7 +24,7 @@ Window {
     property alias host: hostField.text
     property alias name: nameField.text
 
-    signal connect()
+    buttons: host.length && name.length ? (ok | cancel) : cancel
 
     Column {
         id: column
@@ -43,14 +43,6 @@ Window {
 
             Text { text: qsTr("Name:") }
             TextField { id: nameField }
-        }
-
-        Button {
-            id: button
-            text: qsTr("Connect")
-            enabled: dialog.host.length && dialog.name.length
-            anchors.right: parent.right
-            onClicked: dialog.connect()
         }
     }
 }
