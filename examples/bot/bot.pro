@@ -8,7 +8,7 @@ DEPENDPATH += .
 INCLUDEPATH += .
 CONFIG += console
 CONFIG -= app_bundle
-QT = core
+QT = core network
 
 # Input
 HEADERS += ircbot.h
