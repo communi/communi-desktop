@@ -2,7 +2,7 @@
 # Communi
 ######################################################################
 
-!symbian:CONFIG += silent
+!verbose:!symbian:CONFIG += silent
 
 INCLUDEPATH += $$PWD/../include
 DEPENDPATH += $$PWD/../include
