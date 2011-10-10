@@ -43,6 +43,10 @@ int main (int argc, char* argv[])
     else
         setApplicationProxy(QUrl(qgetenv("http_proxy")));
 
+    index = args.indexOf("-encoding");
+    if (index != -1)
+        Application::setEncoding(args.value(index + 1).toLocal8Bit());
+
     MainWindow window;
 #ifdef Q_WS_WIN
     if (QtWin::isCompositionEnabled()) {

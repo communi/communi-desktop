@@ -28,6 +28,9 @@ public:
 
     static QString applicationSlogan();
 
+    static QByteArray encoding();
+    static void setEncoding(const QByteArray& encoding);
+
     static Settings settings();
     static void setSettings(const Settings& settings);
 
@@ -42,6 +45,7 @@ signals:
 private:
     struct ApplicationData
     {
+        static QByteArray encoding;
         static Settings settings;
     };
 };

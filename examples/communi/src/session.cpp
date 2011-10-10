@@ -54,6 +54,7 @@ void Session::connectTo(const Connection& connection)
     setNickName(connection.nick);
     setUserName(appName.toLower());
     setRealName(connection.real.isEmpty() ? appName : connection.real);
+    setEncoding(Application::encoding());
     open();
 
     conn = connection;

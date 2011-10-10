@@ -21,6 +21,7 @@
 #include <QIcon>
 #include <Irc>
 
+QByteArray Application::ApplicationData::encoding;
 Settings Application::ApplicationData::settings;
 
 Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
@@ -57,6 +58,16 @@ Application::~Application()
 QString Application::applicationSlogan()
 {
     return tr("%1 is a simple and light-weight cross-platform IRC client.").arg(applicationName());
+}
+
+QByteArray Application::encoding()
+{
+    return ApplicationData::encoding;
+}
+
+void Application::setEncoding(const QByteArray& encoding)
+{
+    ApplicationData::encoding = encoding;
 }
 
 Settings Application::settings()
