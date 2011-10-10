@@ -41,6 +41,15 @@ protected:
         }
         QTabBar::changeEvent(event);
     }
+
+    void wheelEvent(QWheelEvent* event)
+    {
+        if (event->delta() > 0)
+            QMetaObject::invokeMethod(parent(), "moveToPrevTab");
+        else
+            QMetaObject::invokeMethod(parent(), "moveToNextTab");
+        QWidget::wheelEvent(event);
+    }
 };
 
 TabWidget::TabWidget(QWidget* parent) : QTabWidget(parent)
