@@ -17,12 +17,7 @@
 
 Settings::Settings() : maxBlockCount(-1), timeStamp(true)
 {
-#if defined(Q_WS_MAEMO_5)
-    shortcuts[TabUp] = QApplication::translate("Shortcuts", "Shift+Backspace");
-    shortcuts[TabDown] = QApplication::translate("Shortcuts", "Shift+Enter");
-    shortcuts[TabLeft] = QApplication::translate("Shortcuts", "Shift+Left");
-    shortcuts[TabRight] = QApplication::translate("Shortcuts", "Shift+Right");
-#elif defined(Q_WS_MAC)
+#if defined(Q_WS_MAC)
     shortcuts[TabUp] = QApplication::translate("Shortcuts", "Ctrl+Alt+Up");
     shortcuts[TabDown] = QApplication::translate("Shortcuts", "Ctrl+Alt+Down");
     shortcuts[TabLeft] = QApplication::translate("Shortcuts", "Ctrl+Alt+Left");

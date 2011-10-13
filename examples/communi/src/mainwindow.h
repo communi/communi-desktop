@@ -42,13 +42,11 @@ public slots:
 protected:
     void closeEvent(QCloseEvent* event);
     void changeEvent(QEvent* event);
-    bool event(QEvent* event);
 
 private slots:
     void initialize();
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void activateAlert(bool activate);
-    void activateVibra(bool activate);
     void tabActivated(int index);
     void createWelcomeView();
     void createTabbedView();
@@ -57,11 +55,6 @@ private slots:
 private:
     MainTabWidget* tabWidget;
     TrayIcon* trayIcon;
-#ifdef Q_WS_MAEMO_5
-    QDBusInterface* interface;
-    QAction* networksAction;
-    QAction* channelsAction;
-#endif // Q_WS_MAEMO_5
 };
 
 #endif // MAINWINDOW_H

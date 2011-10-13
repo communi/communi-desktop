@@ -22,21 +22,12 @@
 #include "connection.h"
 #include "session.h"
 #include <QtGui>
-
-#ifdef Q_WS_MAEMO_5
-#include <mce/dbus-names.h>
-#include <QtDBus>
-#endif // Q_WS_MAEMO_5
 #include <irccommand.h>
 
 MainWindow::MainWindow(QWidget* parent) :
     QMainWindow(parent), tabWidget(0), trayIcon(0)
 {
     createWelcomeView();
-
-#if defined(Q_WS_MAEMO5)
-    setAttribute(Qt::WA_LockLandscapeOrientation, true);
-#endif
 
     if (QSystemTrayIcon::isSystemTrayAvailable())
     {
@@ -47,19 +38,10 @@ MainWindow::MainWindow(QWidget* parent) :
             this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
     }
 
-#ifdef Q_WS_MAEMO_5
-    interface = new QDBusInterface(MCE_SERVICE, MCE_REQUEST_PATH, MCE_REQUEST_IF,
-                                   QDBusConnection::systemBus(), this);
-
-    QDBusMessage reply = interface->call(MCE_ENABLE_VIBRATOR);
-    if (reply.type() == QDBusMessage::ErrorMessage)
-        qDebug() << reply.errorMessage();
-#endif // Q_WS_MAEMO_5
-
     QShortcut* shortcut = new QShortcut(QKeySequence(tr("Ctrl+Q")), this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(close()));
 
-#if defined(Q_WS_MAC) || defined(Q_WS_MAEMO_5)
+#ifdef Q_WS_MAC
     QMenu* menu = new QMenu(this);
     menuBar()->addMenu(menu);
 
@@ -72,37 +54,16 @@ MainWindow::MainWindow(QWidget* parent) :
     connect(action, SIGNAL(triggered()), qApp, SLOT(showSettings()));
     menu->addAction(action);
 
-#ifdef Q_WS_MAEMO_5
-    QMenu* tabsMenu = new QMenu(tr("Tabs"), this);
-    menu->addMenu(tabsMenu);
-
-    networksAction = new QAction(tr("Networks"), this);
-    networksAction->setCheckable(true);
-    networksAction->setChecked(true);
-    tabsMenu->addAction(networksAction);
-
-    channelsAction = new QAction(tr("Channels"), this);
-    channelsAction->setCheckable(true);
-    channelsAction->setChecked(true);
-    tabsMenu->addAction(channelsAction);
-#endif // Q_WS_MAEMO_5
-
     action = new QAction(tr("About %1").arg(Application::applicationName()), this);
     action->setMenuRole(QAction::AboutRole);
     connect(action, SIGNAL(triggered()), qApp, SLOT(aboutApplication()));
     menu->addAction(action);
 
-#ifdef Q_WS_MAEMO_5
-    action = new QAction(tr("About Oxygen"), this);
-    connect(action, SIGNAL(triggered()), qApp, SLOT(aboutOxygen()));
-    menu->addAction(action);
-#endif // Q_WS_MAEMO_5
-
     action = new QAction(tr("About Qt"), this);
     action->setMenuRole(QAction::AboutQtRole);
     connect(action, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     menu->addAction(action);
-#endif // Q_WS_MAC || Q_WS_MAEMO_5
+#endif // Q_WS_MAC
 
     QSettings settings;
     if (settings.contains("geometry"))
@@ -113,11 +74,6 @@ MainWindow::MainWindow(QWidget* parent) :
 
 MainWindow::~MainWindow()
 {
-#ifdef Q_WS_MAEMO_5
-    QDBusMessage reply = interface->call(MCE_DISABLE_VIBRATOR);
-    if (reply.type() == QDBusMessage::ErrorMessage)
-        qDebug() << reply.errorMessage();
-#endif // Q_WS_MAEMO_5
 }
 
 QSize MainWindow::sizeHint() const
@@ -159,11 +115,7 @@ void MainWindow::connectToImpl(const Connection& connection)
         connect(tab, SIGNAL(titleChanged(QString)), tabWidget, SLOT(setSessionTitle(QString)));
     connect(tab, SIGNAL(alertStatusChanged(bool)), tabWidget, SLOT(activateAlert(bool)));
     connect(tab, SIGNAL(highlightStatusChanged(bool)), tabWidget, SLOT(activateHighlight(bool)));
-    connect(tab, SIGNAL(vibraRequested(bool)), this, SLOT(activateVibra(bool)));
-#ifdef Q_WS_MAEMO_5
-    connect(channelsAction, SIGNAL(toggled(bool)), tab, SLOT(setTabBarVisible(bool)));
-    tab->setTabBarVisible(channelsAction->isChecked());
-#endif // Q_WS_MAEMO_5
+
     int index = tabWidget->addTab(tab, connection.name.isEmpty() ? session->host() : connection.name);
     tabWidget->setCurrentIndex(index);
 }
@@ -208,28 +160,6 @@ void MainWindow::changeEvent(QEvent* event)
             }
         }
     }
-}
-
-bool MainWindow::event(QEvent* event)
-{
-#ifdef Q_WS_MAEMO_5
-    switch (event->type())
-    {
-        case QEvent::Show:
-        case QEvent::Enter: // needed by Maemo
-        case QEvent::WindowActivate: // needed by Symbian
-            SharedTimer::instance()->resume();
-            break;
-        case QEvent::Hide:
-        case QEvent::Leave: // needed by Maemo
-        case QEvent::WindowDeactivate: // needed by Symbian
-            SharedTimer::instance()->pause();
-            break;
-        default:
-            break;
-    }
-#endif // Q_WS_MAEMO_5
-    return QMainWindow::event(event);
 }
 
 void MainWindow::initialize()
@@ -278,17 +208,6 @@ void MainWindow::activateAlert(bool activate)
     }
 }
 
-void MainWindow::activateVibra(bool activate)
-{
-    Q_UNUSED(activate);
-#ifdef Q_WS_MAEMO_5
-    QDBusMessage reply = interface->call(activate ? MCE_ACTIVATE_VIBRATOR_PATTERN : MCE_DEACTIVATE_VIBRATOR_PATTERN,
-                                         QLatin1String("PatternChatAndEmail"));
-    if (reply.type() == QDBusMessage::ErrorMessage)
-        qDebug() << reply.errorMessage();
-#endif // Q_WS_MAEMO_5
-}
-
 void MainWindow::tabActivated(int index)
 {
     if (index == -1)
@@ -321,9 +240,6 @@ void MainWindow::createTabbedView()
     connect(tabWidget, SIGNAL(newTabRequested()), this, SLOT(onNewTabRequested()), Qt::QueuedConnection);
     connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
     connect(tabWidget, SIGNAL(alertStatusChanged(bool)), this, SLOT(activateAlert(bool)));
-#ifdef Q_WS_MAEMO_5
-    connect(networksAction, SIGNAL(toggled(bool)), tabWidget, SLOT(setTabBarVisible(bool)));
-#endif // Q_WS_MAEMO_5
 }
 
 void MainWindow::onNewTabRequested()

@@ -43,7 +43,6 @@ public slots:
     void quit(const QString& message = QString());
 
 signals:
-    void vibraRequested(bool on);
     void titleChanged(const QString& title);
 
 private slots:

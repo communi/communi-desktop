@@ -37,17 +37,7 @@ FindFrame::FindFrame(QWidget* parent) : QFrame(parent)
     connect(ui.toolClose, SIGNAL(clicked()), this, SLOT(hide()));
 
     setVisible(false);
-
-#ifdef Q_WS_MAEMO_5
-    delete ui.checkCase;
-    ui.checkCase = 0;
-    delete ui.checkWholeWords;
-    ui.checkWholeWords = 0;
-    delete ui.labelWrapped;
-    ui.labelWrapped = 0;
-#else
     ui.labelWrapped->setVisible(false);
-#endif // Q_WS_MAEMO_5
 }
 
 QTextEdit* FindFrame::textEdit() const

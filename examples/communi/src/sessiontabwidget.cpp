@@ -195,7 +195,6 @@ void SessionTabWidget::alertTab(MessageView* view, bool on)
     {
         if (!isVisible() || !isActiveWindow() || index != currentIndex())
             setTabAlert(index, on);
-        emit vibraRequested(on);
     }
 }
 
