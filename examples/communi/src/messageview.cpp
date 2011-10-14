@@ -63,7 +63,7 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
     connect(d.lineEditor, SIGNAL(typed(QString)), this, SLOT(showHelp(QString)));
 
     d.helpLabel->hide();
-    d.findFrame->setTextEdit(d.textBrowser);
+    d.searchEditor->setTextEdit(d.textBrowser);
 
     QShortcut* shortcut = new QShortcut(Qt::Key_Escape, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(onEscPressed()));
@@ -180,7 +180,7 @@ bool MessageView::eventFilter(QObject* receiver, QEvent* event)
 void MessageView::onEscPressed()
 {
     d.helpLabel->hide();
-    d.findFrame->hide();
+    d.searchEditor->hide();
     setFocus(Qt::OtherFocusReason);
 }
 

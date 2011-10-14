@@ -26,17 +26,7 @@
     </widget>
    </item>
    <item>
-    <widget class="FindFrame" name="findFrame">
-     <property name="autoFillBackground">
-      <bool>true</bool>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-    </widget>
+    <widget class="SearchEditor" name="searchEditor"/>
    </item>
    <item>
     <widget class="QLabel" name="helpLabel">
@@ -64,10 +54,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>FindFrame</class>
-   <extends>QFrame</extends>
-   <header>findframe.h</header>
-   <container>1</container>
+   <class>SearchEditor</class>
+   <extends>QLineEdit</extends>
+   <header>searcheditor.h</header>
   </customwidget>
   <customwidget>
    <class>TextBrowser</class>

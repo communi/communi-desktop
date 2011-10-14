@@ -12,18 +12,18 @@
 * GNU General Public License for more details.
 */
 
-#ifndef FINDFRAME_H
-#define FINDFRAME_H
+#ifndef SEARCHEDITOR_H
+#define SEARCHEDITOR_H
 
-#include "ui_findframe.h"
+#include "historylineedit.h"
 class QTextEdit;
 
-class FindFrame : public QFrame
+class SearchEditor : public HistoryLineEdit
 {
     Q_OBJECT
 
 public:
-    FindFrame(QWidget* parent = 0);
+    SearchEditor(QWidget* parent = 0);
 
     QTextEdit* textEdit() const;
     void setTextEdit(QTextEdit* textEdit);
@@ -37,10 +37,10 @@ protected slots:
     void find(const QString& text, bool forward = false, bool backward = false);
 
 private:
-    struct FindFrameUi : public Ui::FindFrame
+    struct Private
     {
         QTextEdit* textEdit;
-    } ui;
+    } d;
 };
 
-#endif // FINDFRAME_H
+#endif // SEARCHEDITOR_H

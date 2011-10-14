@@ -33,6 +33,7 @@ LineEditor::LineEditor(QWidget* parent) : HistoryLineEdit(parent)
     connect(shortcut, SIGNAL(activated()), d.completer, SLOT(onTabPressed()));
 
     setButtonVisible(Left, true);
+    setAutoHideButton(Left, true);
     setButtonPixmap(Left, QPixmap(":/resources/icons/buttons/tab.png"));
     connect(this, SIGNAL(leftButtonClicked()), d.completer, SLOT(onTabPressed()));
 

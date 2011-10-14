@@ -12,72 +12,76 @@
 * GNU General Public License for more details.
 */
 
-#include "findframe.h"
+#include "searcheditor.h"
 #include <QTextBrowser>
 #include <QShortcut>
 
-FindFrame::FindFrame(QWidget* parent) : QFrame(parent)
+SearchEditor::SearchEditor(QWidget* parent) : HistoryLineEdit(parent)
 {
-    ui.setupUi(this);
-
     Q_ASSERT(parent);
     QShortcut* shortcut = new QShortcut(QKeySequence::Find, parent);
     connect(shortcut, SIGNAL(activated()), this, SLOT(find()));
 
     shortcut = new QShortcut(QKeySequence::FindNext, parent);
     connect(shortcut, SIGNAL(activated()), this, SLOT(findNext()));
-    connect(ui.toolNext, SIGNAL(clicked()), this, SLOT(findNext()));
-    connect(ui.editFind, SIGNAL(returnPressed()), this, SLOT(findNext()));
-    connect(ui.editFind, SIGNAL(textEdited(QString)), this, SLOT(find(QString)));
 
     shortcut = new QShortcut(QKeySequence::FindPrevious, parent);
     connect(shortcut, SIGNAL(activated()), this, SLOT(findPrevious()));
-    connect(ui.toolPrevious, SIGNAL(clicked()), this, SLOT(findPrevious()));
 
-    connect(ui.toolClose, SIGNAL(clicked()), this, SLOT(hide()));
+    setButtonVisible(Left, true);
+    setAutoHideButton(Left, true);
+    setButtonPixmap(Left, QPixmap(":/resources/icons/buttons/prev.png"));
+    connect(this, SIGNAL(leftButtonClicked()), this, SLOT(findPrevious()));
+
+    setButtonVisible(Right, true);
+    setAutoHideButton(Right, true);
+    setButtonPixmap(Right, QPixmap(":/resources/icons/buttons/next.png"));
+    connect(this, SIGNAL(rightButtonClicked()), this, SLOT(findNext()));
+
+    connect(this, SIGNAL(returnPressed()), this, SLOT(findNext()));
+    connect(this, SIGNAL(textEdited(QString)), this, SLOT(find(QString)));
 
     setVisible(false);
-    ui.labelWrapped->setVisible(false);
 }
 
-QTextEdit* FindFrame::textEdit() const
+QTextEdit* SearchEditor::textEdit() const
 {
-    return ui.textEdit;
+    return d.textEdit;
 }
 
-void FindFrame::setTextEdit(QTextEdit* textEdit)
+void SearchEditor::setTextEdit(QTextEdit* textEdit)
 {
-    ui.textEdit = textEdit;
+    d.textEdit = textEdit;
 }
 
-void FindFrame::findNext()
+void SearchEditor::findNext()
 {
-    find(ui.editFind->text(), true, false);
+    find(text(), true, false);
 }
 
-void FindFrame::findPrevious()
+void SearchEditor::findPrevious()
 {
-    find(ui.editFind->text(), false, true);
+    find(text(), false, true);
 }
 
-void FindFrame::find()
+void SearchEditor::find()
 {
     show();
-    ui.editFind->setFocus(Qt::ShortcutFocusReason);
-    ui.editFind->selectAll();
+    setFocus(Qt::ShortcutFocusReason);
+    selectAll();
 }
 
-void FindFrame::find(const QString& text, bool forward, bool backward)
+void SearchEditor::find(const QString& text, bool forward, bool backward)
 {
-    if (!ui.textEdit)
+    if (!d.textEdit)
         return;
 
-    QTextDocument* doc = ui.textEdit->document();
-    QTextCursor cursor = ui.textEdit->textCursor();
-    QString oldText = ui.editFind->text();
+    QTextDocument* doc = d.textEdit->document();
+    QTextCursor cursor = d.textEdit->textCursor();
+    QString oldText = QLineEdit::text();
 
     QTextDocument::FindFlags options;
-    QPalette pal = ui.editFind->palette();
+    QPalette pal = palette();
     pal.setColor(QPalette::Active, QPalette::Base, Qt::white);
 
     if (cursor.hasSelection())
@@ -89,15 +93,7 @@ void FindFrame::find(const QString& text, bool forward, bool backward)
         if (backward)
             options |= QTextDocument::FindBackward;
 
-        if (ui.checkCase && ui.checkCase->isChecked())
-            options |= QTextDocument::FindCaseSensitively;
-
-        if (ui.checkWholeWords && ui.checkWholeWords->isChecked())
-            options |= QTextDocument::FindWholeWords;
-
         newCursor = doc->find(text, cursor, options);
-        if (ui.labelWrapped)
-            ui.labelWrapped->hide();
 
         if (newCursor.isNull()) {
             QTextCursor ac(doc);
@@ -107,13 +103,12 @@ void FindFrame::find(const QString& text, bool forward, bool backward)
             if (newCursor.isNull()) {
                 pal.setColor(QPalette::Active, QPalette::Base, QColor(255, 102, 102));
                 newCursor = cursor;
-            } else if (ui.labelWrapped)
-                ui.labelWrapped->show();
+            }
         }
     }
 
     if (!isVisible())
         show();
-    ui.textEdit->setTextCursor(newCursor);
-    ui.editFind->setPalette(pal);
+    d.textEdit->setTextCursor(newCursor);
+    setPalette(pal);
 }
