@@ -3,4 +3,5 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS += bot communi irqqi
+contains(MEEGO_EDITION,harmattan):SUBDIRS += meego/communi.pro
+else:SUBDIRS += bot communi
