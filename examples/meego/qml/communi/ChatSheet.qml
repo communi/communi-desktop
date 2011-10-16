@@ -32,6 +32,7 @@ CommonSheet {
         Label { id: description }
         TextField {
             id: valueField
+            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
             width: parent.width
         }
     }

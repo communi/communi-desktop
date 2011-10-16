@@ -73,6 +73,7 @@ CommonPage {
     TextField {
         id: textField
         height: 0
+        inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
 
         anchors {
             left: parent.left

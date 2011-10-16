@@ -28,6 +28,7 @@ CommonSheet {
                 TextField {
                     id: hostField
                     text: "irc.freenode.net"
+                    inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhUrlCharactersOnly
                     width: parent.width
                 }
             }
@@ -73,8 +74,9 @@ CommonSheet {
                 Label { text: qsTr("Name") }
                 TextField {
                     id: nameField
-                    width: parent.width
                     text: "Guest" + Math.floor(Math.random() * 12345)
+                    inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+                    width: parent.width
                 }
             }
             Column {
@@ -83,6 +85,7 @@ CommonSheet {
                 TextField {
                     id: chanField
                     text: "#communi"
+                    inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                     width: parent.width
                 }
             }
