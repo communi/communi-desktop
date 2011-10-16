@@ -13,6 +13,12 @@ Page {
 
         anchors.fill: parent
         color: "#e0e1e2"
+
+        Image {
+            source: "background.png"
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+        }
     }
 
     Item {
@@ -26,12 +32,19 @@ Page {
         }
     }
 
-    Rectangle {
+    BorderImage {
         id: header
 
         width: parent.width
         height: screen.currentOrientation == Screen.Landscape ? 46 : 72
-        color: "#4591ff"
+        source: "image://theme/meegotouch-sheet-header-background"
+
+        border {
+            top: 10
+            left: 10
+            right: 10
+            bottom: 2
+        }
 
         Label {
             id: label
@@ -43,7 +56,6 @@ Page {
                 rightMargin: UI.PAGE_MARGIN
             }
 
-            color: "white"
             elide: Text.ElideRight
             font.pixelSize: 32
             font.family: "Nokia Pure Text Light"
