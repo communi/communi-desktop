@@ -7,6 +7,7 @@ Page {
 
     property alias title: label.text
     default property alias content: content.data
+    property alias busy: indicator.running
 
     Rectangle {
         id: background
@@ -46,20 +47,29 @@ Page {
             bottom: 2
         }
 
-        Label {
-            id: label
-
+        Row {
+            spacing: UI.DEFAULT_SPACING
             anchors {
-                left: parent.left
-                right: parent.right
+                fill: parent
                 leftMargin: UI.PAGE_MARGIN
                 rightMargin: UI.PAGE_MARGIN
             }
 
-            elide: Text.ElideRight
-            font.pixelSize: 32
-            font.family: "Nokia Pure Text Light"
-            anchors.verticalCenter: parent.verticalCenter
+            Label {
+                id: label
+
+                elide: Text.ElideRight
+                font.pixelSize: 32
+                font.family: "Nokia Pure Text Light"
+                anchors.verticalCenter: parent.verticalCenter
+                width: parent.width - indicator.width - UI.DEFAULT_SPACING
+            }
+
+            BusyIndicator {
+                id: indicator
+                visible: running
+                anchors.verticalCenter: parent.verticalCenter
+            }
         }
     }
 }

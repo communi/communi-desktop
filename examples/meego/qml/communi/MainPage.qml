@@ -12,6 +12,7 @@ CommonPage {
         delegate: Column {
             width: parent.width
             ListItem {
+                busy: modelData.busy
                 title: modelData.title
                 subtitle: modelData.subtitle
                 highlighted: modelData.highlighted
@@ -48,6 +49,8 @@ CommonPage {
             model = modelData.messages;
             session = modelData.session;
             root.pageStack.push(chatPage);
+            if (modelData.busy !== undefined)
+                chatPage.busy = modelData.busy;
         }
         onStatusChanged: modelData.current = (status == PageStatus.Active)
     }

@@ -8,6 +8,7 @@ Item {
     property alias title: title.text
     property alias subtitle: subtitle.text
     property bool highlighted: false
+    property alias busy: indicator.running
 
     signal clicked
 
@@ -52,9 +53,17 @@ Item {
         }
     }
 
+    BusyIndicator {
+        id: indicator
+        visible: running
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: icon.horizontalCenter
+    }
+
     ToolIcon {
         id: icon
         iconId: "toolbar-next"
+        visible: !indicator.visible
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
     }

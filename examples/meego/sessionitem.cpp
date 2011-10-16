@@ -11,6 +11,9 @@ SessionItem::SessionItem(IrcSession* session) : AbstractSessionItem(session)
     connect(session, SIGNAL(hostChanged(QString)), this, SIGNAL(titleChanged()));
     connect(session, SIGNAL(nickNameChanged(QString)), this, SIGNAL(subtitleChanged()));
 
+    connect(session, SIGNAL(activeChanged(bool)), this, SIGNAL(busyChanged()));
+    connect(session, SIGNAL(connectedChanged(bool)), this, SIGNAL(busyChanged()));
+
     setSession(session);
     m_handler.setSession(session);
     m_handler.setCurrentReceiver(this);
@@ -18,6 +21,12 @@ SessionItem::SessionItem(IrcSession* session) : AbstractSessionItem(session)
     connect(&m_handler, SIGNAL(receiverToBeAdded(QString)), SLOT(addChild(QString)));
     connect(&m_handler, SIGNAL(receiverToBeRenamed(QString,QString)), SLOT(renameChild(QString,QString)));
     connect(&m_handler, SIGNAL(receiverToBeRemoved(QString)), SLOT(removeChild(QString)));
+}
+
+bool SessionItem::isBusy() const
+{
+    const IrcSession* session = m_handler.session();
+    return session && session->isActive() && !session->isConnected();
 }
 
 QObjectList SessionItem::childItems() const
