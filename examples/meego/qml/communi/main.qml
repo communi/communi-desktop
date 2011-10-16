@@ -64,7 +64,7 @@ PageStackWindow {
                 session.host = connectionSheet.host;
                 session.port = connectionSheet.port;
                 session.channel = connectionSheet.channel;
-                SessionManager.addSession(session, connectionSheet.password); // TODO: passwd!
+                SessionManager.addSession(session, connectionSheet.password);
                 session.open();
             }
         }

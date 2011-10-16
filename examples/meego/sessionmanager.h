@@ -13,13 +13,17 @@ class SessionManager : public QObject
 public:
     SessionManager(QDeclarativeContext* context);
 
-    Q_INVOKABLE void addSession(IrcSession* session);
+    Q_INVOKABLE void addSession(IrcSession* session, const QString& password);
     Q_INVOKABLE void removeSession(IrcSession* session);
+
+private slots:
+    void onPassword(QString* password);
 
 private:
     void updateModel();
     QObjectList m_items;
     QDeclarativeContext* m_context;
+    QHash<IrcSession*, QString> m_passwords;
 };
 
 #endif // SESSIONMANAGER_H
