@@ -65,6 +65,7 @@ Item {
         iconId: "toolbar-next"
         visible: !indicator.visible
         anchors.right: parent.right
+        anchors.rightMargin: -UI.DEFAULT_SPACING / 2
         anchors.verticalCenter: parent.verticalCenter
     }
 

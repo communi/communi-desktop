@@ -28,7 +28,7 @@ CommonPage {
                 }
             }
             Rectangle {
-                color: "#505050"
+                color: "#b2b2b4"
                 height: 1
                 visible: index < listView.count - 1
                 anchors {

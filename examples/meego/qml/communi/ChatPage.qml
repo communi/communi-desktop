@@ -83,6 +83,10 @@ CommonPage {
 
         onActiveFocusChanged: {
             textField.height = activeFocus ? textField.implicitHeight : 0;
+            if (!activeFocus) {
+                textField.visible = false;
+                textField.text = "";
+            }
             timer.start();
         }
 
