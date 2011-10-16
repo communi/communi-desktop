@@ -8,8 +8,8 @@ SessionItem::SessionItem(IrcSession* session) : AbstractSessionItem(session)
     setTitle(session->host());
     setSubtitle(session->nickName());
 
-    connect(session, SIGNAL(hostChanged(QString)), this, SIGNAL(titleChanged()));
-    connect(session, SIGNAL(nickNameChanged(QString)), this, SIGNAL(subtitleChanged()));
+    connect(session, SIGNAL(hostChanged(QString)), this, SLOT(setTitle(QString)));
+    connect(session, SIGNAL(nickNameChanged(QString)), this, SLOT(setSubtitle(QString)));
 
     connect(session, SIGNAL(activeChanged(bool)), this, SIGNAL(busyChanged()));
     connect(session, SIGNAL(connectedChanged(bool)), this, SIGNAL(busyChanged()));

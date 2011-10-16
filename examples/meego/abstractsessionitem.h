@@ -25,19 +25,18 @@ public:
     IrcSession* session() const;
 
     QString title() const;
-    void setTitle(const QString& title);
-
     QString subtitle() const;
-    void setSubtitle(const QString& subtitle);
-
     bool isCurrent() const;
-    void setCurrent(bool current);
-
     bool isHighlighted() const;
-    void setHighlighted(bool highlighted);
 
     QStringList users() const;
     QObject* messages() const;
+
+public slots:
+    void setTitle(const QString& title);
+    void setSubtitle(const QString& subtitle);
+    void setCurrent(bool current);
+    void setHighlighted(bool highlighted);
 
 signals:
     void titleChanged();
