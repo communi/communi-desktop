@@ -37,7 +37,7 @@ QStringList MessageFormatter::highlights() const
     return d.highlights;
 }
 
-void MessageFormatter::setHightlights(const QStringList& highlights)
+void MessageFormatter::setHighlights(const QStringList& highlights)
 {
     d.highlights = highlights;
 }

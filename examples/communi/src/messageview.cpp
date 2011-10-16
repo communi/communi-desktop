@@ -37,7 +37,7 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
     d.textBrowser->viewport()->installEventFilter(this);
 
     d.session = session;
-    d.formatter.setHightlights(QStringList(session->nickName()));
+    d.formatter.setHighlights(QStringList(session->nickName()));
     connect(&d.parser, SIGNAL(customCommand(QString,QStringList)), this, SLOT(onCustomCommand(QString,QStringList)));
 
     d.userModel = new QStringListModel(this);

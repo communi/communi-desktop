@@ -21,7 +21,7 @@
 class MessageFormatter : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QStringList highlights READ highlights WRITE setHightlights)
+    Q_PROPERTY(QStringList highlights READ highlights WRITE setHighlights)
     Q_PROPERTY(bool timeStamp READ timeStamp WRITE setTimeStamp)
     Q_PROPERTY(bool classFormat READ classFormat WRITE setClassFormat)
 
@@ -30,7 +30,7 @@ public:
     virtual ~MessageFormatter();
 
     QStringList highlights() const;
-    void setHightlights(const QStringList& highlights);
+    void setHighlights(const QStringList& highlights);
 
     bool timeStamp() const;
     void setTimeStamp(bool timeStamp);
