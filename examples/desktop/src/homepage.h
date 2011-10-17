@@ -12,21 +12,24 @@
 * GNU General Public License for more details.
 */
 
-#ifndef WELCOMEPAGE_H
-#define WELCOMEPAGE_H
+#ifndef HOMEPAGE_H
+#define HOMEPAGE_H
 
 #include <QWidget>
 class QLabel;
 
-class WelcomePage : public QWidget
+class HomePage : public QWidget
 {
     Q_OBJECT
 
 public:
-    WelcomePage(QWidget* parent = 0);
+    HomePage(QWidget* parent = 0);
 
 signals:
     void connectRequested();
+
+protected:
+    void paintEvent(QPaintEvent* event);
 
 private slots:
     void updateHtml();
@@ -36,6 +39,7 @@ private:
 
     QLabel* header;
     QLabel* footer;
+    QPixmap bg;
 };
 
-#endif // WELCOMEPAGE_H
+#endif // HOMEPAGE_H

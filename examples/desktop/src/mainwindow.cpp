@@ -18,8 +18,8 @@
 #include "sessiontabwidget.h"
 #include "maintabwidget.h"
 #include "sharedtimer.h"
-#include "welcomepage.h"
 #include "connection.h"
+#include "homepage.h"
 #include "session.h"
 #include <QtGui>
 #include <irccommand.h>
@@ -27,7 +27,15 @@
 MainWindow::MainWindow(QWidget* parent) :
     QMainWindow(parent), tabWidget(0), trayIcon(0)
 {
-    createWelcomeView();
+    tabWidget = new MainTabWidget(this);
+    setCentralWidget(tabWidget);
+    connect(tabWidget, SIGNAL(newTabRequested()), this, SLOT(connectTo()), Qt::QueuedConnection);
+    connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
+    connect(tabWidget, SIGNAL(alertStatusChanged(bool)), this, SLOT(activateAlert(bool)));
+
+    HomePage* homePage = new HomePage(this);
+    connect(homePage, SIGNAL(connectRequested()), this, SLOT(connectTo()));
+    tabWidget->addTab(homePage, tr("Home"));
 
     if (QSystemTrayIcon::isSystemTrayAvailable())
     {
@@ -104,9 +112,6 @@ void MainWindow::connectTo(const Connection& connection)
 
 void MainWindow::connectToImpl(const Connection& connection)
 {
-    if (!tabWidget)
-        createTabbedView();
-
     Session* session = new Session(this);
     session->connectTo(connection);
 
@@ -210,11 +215,7 @@ void MainWindow::activateAlert(bool activate)
 
 void MainWindow::tabActivated(int index)
 {
-    if (index == -1)
-    {
-        createWelcomeView();
-    }
-    else if (index < tabWidget->count() - 1)
+    if (index > 0 && index < tabWidget->count() - 1)
     {
         QTabWidget* tab = qobject_cast<QTabWidget*>(tabWidget->widget(index));
         if (tab)
@@ -223,29 +224,4 @@ void MainWindow::tabActivated(int index)
             QMetaObject::invokeMethod(tab, "delayedTabReset");
         }
     }
-}
-
-void MainWindow::createWelcomeView()
-{
-    WelcomePage* welcomePage = new WelcomePage(this);
-    connect(welcomePage, SIGNAL(connectRequested()), this, SLOT(connectTo()));
-    setCentralWidget(welcomePage);
-    tabWidget = 0;
-}
-
-void MainWindow::createTabbedView()
-{
-    tabWidget = new MainTabWidget(this);
-    setCentralWidget(tabWidget);
-    connect(tabWidget, SIGNAL(newTabRequested()), this, SLOT(onNewTabRequested()), Qt::QueuedConnection);
-    connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
-    connect(tabWidget, SIGNAL(alertStatusChanged(bool)), this, SLOT(activateAlert(bool)));
-}
-
-void MainWindow::onNewTabRequested()
-{
-    if (tabWidget->count() == 1)
-        createWelcomeView();
-    else
-        connectTo();
 }

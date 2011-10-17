@@ -48,9 +48,6 @@ private slots:
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void activateAlert(bool activate);
     void tabActivated(int index);
-    void createWelcomeView();
-    void createTabbedView();
-    void onNewTabRequested();
 
 private:
     MainTabWidget* tabWidget;

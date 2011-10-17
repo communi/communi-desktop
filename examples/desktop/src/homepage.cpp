@@ -12,17 +12,20 @@
 * GNU General Public License for more details.
 */
 
-#include "welcomepage.h"
+#include "homepage.h"
 #include "application.h"
 #include <QCommandLinkButton>
 #include <QGridLayout>
 #include <QVBoxLayout>
+#include <QPainter>
 #include <QLabel>
 #include <QMenu>
 #include <QFile>
 
-WelcomePage::WelcomePage(QWidget* parent) : QWidget(parent)
+HomePage::HomePage(QWidget* parent) : QWidget(parent)
 {
+    bg.load(":/resources/background.png");
+
     header = new QLabel(this);
     header->setOpenExternalLinks(true);
     header->setWordWrap(true);
@@ -38,6 +41,13 @@ WelcomePage::WelcomePage(QWidget* parent) : QWidget(parent)
     setLayout(layout);
 }
 
+void HomePage::paintEvent(QPaintEvent* event)
+{
+    QWidget::paintEvent(event);
+    QPainter painter(this);
+    painter.drawPixmap(width() - bg.width(), height() - bg.height(), bg);
+}
+
 static QString readHtmlFile(const QString& filePath)
 {
     QFile file(filePath);
@@ -45,7 +55,7 @@ static QString readHtmlFile(const QString& filePath)
     return QString::fromUtf8(file.readAll());
 }
 
-void WelcomePage::updateHtml()
+void HomePage::updateHtml()
 {
     QString headerHtml = readHtmlFile(":/resources/welcome_header.html");
     headerHtml = headerHtml.arg(Application::applicationName())
@@ -54,7 +64,7 @@ void WelcomePage::updateHtml()
     footer->setText(readHtmlFile(":/resources/welcome_footer.html"));
 }
 
-QWidget* WelcomePage::createBody(QWidget* parent) const
+QWidget* HomePage::createBody(QWidget* parent) const
 {
     QWidget* body = new QWidget(parent);
 

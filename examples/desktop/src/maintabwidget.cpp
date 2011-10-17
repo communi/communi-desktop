@@ -43,6 +43,18 @@ MainTabWidget::MainTabWidget(QWidget* parent) : TabWidget(parent)
     applySettings(Application::settings());
 }
 
+void MainTabWidget::tabInserted(int index)
+{
+    TabWidget::tabInserted(index);
+    tabBar()->setVisible(count() > 2);
+}
+
+void MainTabWidget::tabRemoved(int index)
+{
+    TabWidget::tabRemoved(index);
+    tabBar()->setVisible(count() > 2);
+}
+
 void MainTabWidget::applySettings(const Settings& settings)
 {
     setAlertColor(QColor(settings.colors.value(Settings::Highlight)));

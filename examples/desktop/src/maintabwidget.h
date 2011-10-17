@@ -27,6 +27,10 @@ class MainTabWidget : public TabWidget
 public:
     MainTabWidget(QWidget* parent = 0);
 
+protected:
+    void tabInserted(int index);
+    void tabRemoved(int index);
+
 private slots:
     void applySettings(const Settings& settings);
     void setSessionTitle(const QString& title);

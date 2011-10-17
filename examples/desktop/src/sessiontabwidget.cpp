@@ -27,7 +27,7 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     d.handler.setSession(session);
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
-    connect(this, SIGNAL(newTabRequested()), this, SLOT(onNewTabRequested()));
+    connect(this, SIGNAL(newTabRequested()), this, SLOT(onNewTabRequested()), Qt::QueuedConnection);
     connect(session, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 
     connect(&d.handler, SIGNAL(receiverToBeAdded(QString)), this, SLOT(openView(QString)));
