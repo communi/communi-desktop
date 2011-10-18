@@ -21,7 +21,6 @@
 
 MessageHandler::MessageHandler(QObject* parent) : QObject(parent)
 {
-    d.qml = false;
     d.session = 0;
     d.defaultReceiver = 0;
     d.currentReceiver = 0;
@@ -35,16 +34,6 @@ MessageHandler::~MessageHandler()
     d.receivers.clear();
     d.channelUsers.clear();
     d.session->socket()->waitForDisconnected(500);
-}
-
-bool MessageHandler::isQml() const
-{
-    return d.qml;
-}
-
-void MessageHandler::setQml(bool qml)
-{
-    d.qml = qml;
 }
 
 IrcSession* MessageHandler::session() const
@@ -323,12 +312,10 @@ void MessageHandler::handleUnknownMessage(IrcMessage* message)
 
 void MessageHandler::sendMessage(IrcMessage* message, QObject* receiver)
 {
-    if (d.qml)
-        // QML: QVariant(QObject*)
-        QMetaObject::invokeMethod(receiver, "receiveMessage", Q_ARG(QVariant, QVariant::fromValue((QObject*) message)));
-    else
-        // C++: IrcMessage*
-        QMetaObject::invokeMethod(receiver, "receiveMessage", Q_ARG(IrcMessage*, message));
+    QMetaObject::invokeMethod(receiver, "receiveMessage", Q_ARG(IrcMessage*, message));
+
+    // if the receiver was a QML element, argument type would be QVariant(QObject*):
+    // QMetaObject::invokeMethod(receiver, "receiveMessage", Q_ARG(QVariant, QVariant::fromValue((QObject*) message)));
 }
 
 void MessageHandler::sendMessage(IrcMessage* message, const QString& receiver)
@@ -355,12 +342,7 @@ void MessageHandler::Private::addChannelUser(const QString& channel, const QStri
     channelUsers[channel.toLower()].insert(user.toLower());
     QObject* receiver = receivers.value(channel.toLower());
     if (receiver)
-    {
-        if (qml)
-            QMetaObject::invokeMethod(receiver, "addUser", Q_ARG(QVariant, user));
-        else
-            QMetaObject::invokeMethod(receiver, "addUser", Q_ARG(QString, user));
-    }
+        QMetaObject::invokeMethod(receiver, "addUser", Q_ARG(QString, user));
 }
 
 void MessageHandler::Private::removeChannelUser(const QString& channel, const QString& user)
@@ -368,10 +350,5 @@ void MessageHandler::Private::removeChannelUser(const QString& channel, const QS
     channelUsers[channel.toLower()].remove(user.toLower());
     QObject* receiver = receivers.value(channel.toLower());
     if (receiver)
-    {
-        if (qml)
-            QMetaObject::invokeMethod(receiver, "removeUser", Q_ARG(QVariant, user));
-        else
-            QMetaObject::invokeMethod(receiver, "removeUser", Q_ARG(QString, user));
-    }
+        QMetaObject::invokeMethod(receiver, "removeUser", Q_ARG(QString, user));
 }

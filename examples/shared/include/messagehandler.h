@@ -24,7 +24,6 @@ class IrcSession;
 class MessageHandler : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(bool qml READ isQml WRITE setQml)
     Q_PROPERTY(IrcSession* session READ session WRITE setSession)
     Q_PROPERTY(QObject* defaultReceiver READ defaultReceiver WRITE setDefaultReceiver)
     Q_PROPERTY(QObject* currentReceiver READ currentReceiver WRITE setCurrentReceiver)
@@ -32,9 +31,6 @@ class MessageHandler : public QObject
 public:
     explicit MessageHandler(QObject* parent = 0);
     virtual ~MessageHandler();
-
-    bool isQml() const;
-    void setQml(bool qml);
 
     IrcSession* session() const;
     void setSession(IrcSession* session);
@@ -82,7 +78,6 @@ private:
         void addChannelUser(const QString& channel, const QString& user);
         void removeChannelUser(const QString& channel, const QString& user);
 
-        bool qml;
         IrcSession* session;
         QObject* defaultReceiver;
         QObject* currentReceiver;
