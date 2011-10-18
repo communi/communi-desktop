@@ -58,6 +58,7 @@ CommonPage {
             text: display
             width: listView.width
             wrapMode: Text.Wrap
+            onLinkActivated: Qt.openUrlExternally(link)
         }
 
         onHeightChanged: listView.positionViewAtEnd()
