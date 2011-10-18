@@ -16,6 +16,7 @@ CommonPage {
                 title: modelData.title
                 subtitle: modelData.subtitle
                 highlighted: modelData.highlighted
+                unread: modelData.unread
                 onClicked: chatPage.push(modelData)
             }
             Repeater {
@@ -24,6 +25,7 @@ CommonPage {
                     title: modelData.title
                     subtitle: modelData.subtitle
                     highlighted: modelData.highlighted
+                    unread: modelData.unread
                     onClicked: chatPage.push(modelData)
                 }
             }

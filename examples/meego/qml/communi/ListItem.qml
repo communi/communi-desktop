@@ -8,7 +8,8 @@ Item {
     property alias title: title.text
     property alias subtitle: subtitle.text
     property bool highlighted: false
-    property alias busy: indicator.running
+    property bool busy: false
+    property int unread: 0
 
     signal clicked
 
@@ -25,9 +26,9 @@ Item {
     Column {
         anchors {
             left: parent.left
-            right: parent.right
+            right: loader.left
             leftMargin: UI.PAGE_MARGIN
-            rightMargin: UI.PAGE_MARGIN
+            rightMargin: UI.DEFAULT_SPACING
             verticalCenter: parent.verticalCenter
         }
 
@@ -37,8 +38,7 @@ Item {
             font.pixelSize: 26
             font.family: "Nokia Pure Text"
             color: highlighted ? "red" : "#282828"
-            visible: text != ""
-            width: root.width - UI.DEFAULT_SPACING - icon.width
+            width: parent.width
             elide: Text.ElideRight
         }
 
@@ -47,26 +47,46 @@ Item {
             font.pixelSize: 22
             font.family: "Nokia Pure Text Light"
             color: "#505050"
-            visible: text != ""
-            width: root.width - UI.DEFAULT_SPACING - icon.width
+            width: parent.width
             elide: Text.ElideRight
         }
     }
 
-    BusyIndicator {
-        id: indicator
-        visible: running
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: icon.horizontalCenter
-    }
-
-    ToolIcon {
-        id: icon
-        iconId: "toolbar-next"
-        visible: !indicator.visible
+    Loader {
+        id: loader
+        width: 32
+        height: 32
         anchors.right: parent.right
-        anchors.rightMargin: -UI.DEFAULT_SPACING / 2
+        anchors.rightMargin: UI.PAGE_MARGIN
         anchors.verticalCenter: parent.verticalCenter
+
+        sourceComponent: root.busy ? indicator : root.unread ? badge : icon
+
+        Component {
+            id: indicator
+            BusyIndicator { running: root.busy }
+        }
+
+        Component {
+            id: badge
+            Image {
+                source: "squircle.png"
+                Label {
+                    id: unread
+                    color: "white"
+                    text: root.unread
+                    anchors.fill: parent
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+        }
+
+        Component {
+            id: icon
+            ToolIcon { iconId: "toolbar-next" }
+        }
     }
 
     MouseArea {

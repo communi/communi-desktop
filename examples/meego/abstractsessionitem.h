@@ -16,6 +16,7 @@ class AbstractSessionItem : public QObject
     Q_PROPERTY(QString subtitle READ subtitle WRITE setSubtitle NOTIFY subtitleChanged)
     Q_PROPERTY(bool current READ isCurrent WRITE setCurrent NOTIFY currentChanged)
     Q_PROPERTY(bool highlighted READ isHighlighted WRITE setHighlighted NOTIFY highlightedChanged)
+    Q_PROPERTY(int unread READ unread WRITE setUnread NOTIFY unreadChanged)
     Q_PROPERTY(QStringList users READ users NOTIFY usersChanged)
     Q_PROPERTY(QObject* messages READ messages)
 
@@ -28,6 +29,7 @@ public:
     QString subtitle() const;
     bool isCurrent() const;
     bool isHighlighted() const;
+    int unread() const;
 
     QStringList users() const;
     QObject* messages() const;
@@ -37,12 +39,14 @@ public slots:
     void setSubtitle(const QString& subtitle);
     void setCurrent(bool current);
     void setHighlighted(bool highlighted);
+    void setUnread(int unread);
 
 signals:
     void titleChanged();
     void subtitleChanged();
     void currentChanged();
     void highlightedChanged();
+    void unreadChanged();
     void usersChanged();
 
 protected slots:
@@ -62,6 +66,7 @@ private:
     QStringList m_users;
     QStringListModel* m_messages;
     MessageFormatter m_formatter;
+    int m_unread;
 };
 
 #endif // ABSTRACTSESSIONITEM_H

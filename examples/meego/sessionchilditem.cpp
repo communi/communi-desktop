@@ -1,13 +1,12 @@
 #include "sessionchilditem.h"
 #include "sessionitem.h"
 #include <IrcSession>
+#include <Irc>
 
 SessionChildItem::SessionChildItem(SessionItem* parent) :
-    AbstractSessionItem(parent), m_parent(parent), m_unread(0)
+    AbstractSessionItem(parent), m_parent(parent)
 {
     setSession(parent->session());
-    connect(this, SIGNAL(currentChanged()), this, SLOT(updateSubtitle()));
-    updateSubtitle();
 }
 
 void SessionChildItem::receiveMessage(IrcMessage* message)
@@ -20,20 +19,12 @@ void SessionChildItem::receiveMessage(IrcMessage* message)
             setHighlighted(true);
 
         if (!isCurrent())
-        {
-            ++m_unread;
-            updateSubtitle();
-        }
+            setUnread(unread() + 1);
     }
-}
-
-void SessionChildItem::updateSubtitle()
-{
-    if (isCurrent())
-        m_unread = 0;
-
-    if (m_unread == 0)
-        setSubtitle(" ");
-    else
-        setSubtitle(tr("%1 unread message(s)").arg(m_unread));
+    else if (message->type() == IrcMessage::Numeric)
+    {
+        IrcNumericMessage* numMsg = static_cast<IrcNumericMessage*>(message);
+        if (numMsg->code() == Irc::RPL_TOPIC)
+            setSubtitle(numMsg->parameters().value(2));
+    }
 }

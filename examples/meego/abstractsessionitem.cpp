@@ -2,7 +2,7 @@
 #include <IrcSession>
 
 AbstractSessionItem::AbstractSessionItem(QObject *parent) :
-    QObject(parent), m_session(0), m_current(false), m_highlighted(false)
+    QObject(parent), m_session(0), m_current(false), m_highlighted(false), m_unread(false)
 {
     m_messages = new QStringListModel(this);
     m_formatter.setTimeStamp(true);
@@ -75,6 +75,20 @@ void AbstractSessionItem::setHighlighted(bool highlighted)
     {
         m_highlighted = highlighted;
         emit highlightedChanged();
+    }
+}
+
+int AbstractSessionItem::unread() const
+{
+    return m_unread;
+}
+
+void AbstractSessionItem::setUnread(int unread)
+{
+    if (m_unread != unread)
+    {
+        m_unread = unread;
+        emit unreadChanged();
     }
 }
 

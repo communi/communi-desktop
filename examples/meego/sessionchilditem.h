@@ -16,12 +16,8 @@ public:
 protected slots:
     void receiveMessage(IrcMessage* message);
 
-private slots:
-    void updateSubtitle();
-
 private:
     SessionItem* m_parent;
-    int m_unread;
 };
 
 #endif // SESSIONCHILDITEM_H
