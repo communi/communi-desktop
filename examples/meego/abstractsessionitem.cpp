@@ -6,6 +6,11 @@ AbstractSessionItem::AbstractSessionItem(QObject *parent) :
 {
     m_messages = new QStringListModel(this);
     m_formatter.setTimeStamp(true);
+    m_formatter.setEventFormat("style='color:gray'");
+    m_formatter.setNoticeFormat("style='color:brown'");
+    m_formatter.setActionFormat("style='color:darkmagenta'");
+    m_formatter.setUnknownFormat("style='color:brown'");
+    m_formatter.setHighlightFormat("style='color:red'");
 }
 
 IrcSession* AbstractSessionItem::session() const
