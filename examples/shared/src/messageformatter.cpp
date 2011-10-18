@@ -22,7 +22,6 @@
 
 MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 {
-    d.format = true;
     d.highlight = false;
     d.timeStamp = false;
     d.firstNames = true;
@@ -52,14 +51,64 @@ void MessageFormatter::setTimeStamp(bool timeStamp)
     d.timeStamp = timeStamp;
 }
 
-bool MessageFormatter::classFormat() const
+QString MessageFormatter::messageFormat() const
 {
-    return d.format;
+    return d.messageFormat;
 }
 
-void MessageFormatter::setClassFormat(bool format)
+void MessageFormatter::setMessageFormat(const QString& format)
 {
-    d.format = format;
+    d.messageFormat = format;
+}
+
+QString MessageFormatter::eventFormat() const
+{
+    return d.prefixedFormats.value("!");
+}
+
+void MessageFormatter::setEventFormat(const QString& format)
+{
+    d.prefixedFormats.insert("!", format);
+}
+
+QString MessageFormatter::noticeFormat() const
+{
+    return d.prefixedFormats.value("[");
+}
+
+void MessageFormatter::setNoticeFormat(const QString& format)
+{
+    d.prefixedFormats.insert("[", format);
+}
+
+QString MessageFormatter::actionFormat() const
+{
+    return d.prefixedFormats.value("*");
+}
+
+void MessageFormatter::setActionFormat(const QString& format)
+{
+    d.prefixedFormats.insert("*", format);
+}
+
+QString MessageFormatter::unknownFormat() const
+{
+    return d.prefixedFormats.value("?");
+}
+
+void MessageFormatter::setUnknownFormat(const QString& format)
+{
+    d.prefixedFormats.insert("?", format);
+}
+
+QString MessageFormatter::highlightFormat() const
+{
+    return d.highlightFormat;
+}
+
+void MessageFormatter::setHighlightFormat(const QString& format)
+{
+    d.highlightFormat = format;
 }
 
 QString MessageFormatter::formatMessage(IrcMessage* message) const
@@ -114,27 +163,17 @@ QString MessageFormatter::formatMessage(IrcMessage* message) const
     if (formatted.isEmpty())
         return QString();
 
-    QString cls;
-    if (d.format)
-    {
-        cls = "message";
-        if (d.highlight)
-            cls = "highlight";
-        else if (formatted.startsWith("!"))
-            cls = "event";
-        else if (formatted.startsWith("?"))
-            cls = "notice";
-        else if (formatted.startsWith("["))
-            cls = "notice";
-        else if (formatted.startsWith("*"))
-            cls = "action";
-    }
+    QString format = d.messageFormat;
+    if (d.highlight && !d.highlightFormat.isEmpty())
+        format = d.highlightFormat;
+    else
+        format = d.prefixedFormats.value(formatted.left(1));
 
     if (d.timeStamp)
         formatted = tr("[%1] %2").arg(QTime::currentTime().toString(), formatted);
 
-    if (!cls.isNull())
-        formatted = tr("<span class='%1'>%2</span>").arg(cls, formatted);
+    if (!format.isNull())
+        formatted = tr("<span %1>%2</span>").arg(format, formatted);
 
     return formatted;
 }

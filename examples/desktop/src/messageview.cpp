@@ -36,11 +36,17 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
     d.textBrowser->installEventFilter(this);
     d.textBrowser->viewport()->installEventFilter(this);
 
-    d.session = session;
     d.formatter.setHighlights(QStringList(session->nickName()));
-    connect(&d.parser, SIGNAL(customCommand(QString,QStringList)), this, SLOT(onCustomCommand(QString,QStringList)));
+    d.formatter.setMessageFormat("class='message'");
+    d.formatter.setEventFormat("class='event'");
+    d.formatter.setNoticeFormat("class='notice'");
+    d.formatter.setActionFormat("class='action'");
+    d.formatter.setUnknownFormat("class='unknown'");
+    d.formatter.setHighlightFormat("class='highlight'");
 
+    d.session = session;
     d.userModel = new QStringListModel(this);
+    connect(&d.parser, SIGNAL(customCommand(QString,QStringList)), this, SLOT(onCustomCommand(QString,QStringList)));
 
     if (!d.commandModel)
     {
