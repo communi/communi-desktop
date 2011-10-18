@@ -55,7 +55,10 @@ bool AbstractSessionItem::isCurrent() const
 void AbstractSessionItem::setCurrent(bool current)
 {
     if (current)
+    {
         setHighlighted(false);
+        setUnread(0);
+    }
 
     if (m_current != current)
     {
@@ -85,7 +88,7 @@ int AbstractSessionItem::unread() const
 
 void AbstractSessionItem::setUnread(int unread)
 {
-    if (m_unread != unread)
+    if (!m_current && m_unread != unread)
     {
         m_unread = unread;
         emit unreadChanged();
