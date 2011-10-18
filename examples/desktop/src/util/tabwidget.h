@@ -18,9 +18,7 @@
 #include <QTabWidget>
 #include <QColor>
 #include <QList>
-#if QT_VERSION >= 0x040600
 #include <QSwipeGesture>
-#endif // QT_VERSION
 
 class TabWidget : public QTabWidget
 {
@@ -43,10 +41,8 @@ public:
     bool hasTabHighlight(int index) const;
     void setTabHighlight(int index, bool highlight);
 
-#if QT_VERSION >= 0x040600
     void registerSwipeGestures(Qt::Orientation orientation);
     void unregisterSwipeGestures();
-#endif // QT_VERSION
 
 public slots:
     void moveToNextTab();
@@ -59,10 +55,8 @@ signals:
     void highlightStatusChanged(bool active);
 
 protected:
-#if QT_VERSION >= 0x040600
     bool event(QEvent* event);
     bool handleSwipeGesture(QSwipeGesture* gesture, QSwipeGesture::SwipeDirection direction);
-#endif // QT_VERSION
     void tabInserted(int index);
     void tabRemoved(int index);
 

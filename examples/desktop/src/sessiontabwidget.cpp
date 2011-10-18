@@ -39,9 +39,7 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
 
     applySettings(Application::settings());
 
-#if QT_VERSION >= 0x040600
     registerSwipeGestures(Qt::Horizontal);
-#endif
 
     MessageView* view = openView(d.handler.session()->host());
     d.handler.setDefaultReceiver(view);

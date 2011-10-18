@@ -15,9 +15,7 @@
 #include "tabwidget.h"
 #include "sharedtimer.h"
 #include <QTabBar>
-#if QT_VERSION >= 0x040600
 #include <QGestureEvent>
-#endif // QT_VERSION
 
 class TabBar : public QTabBar
 {
@@ -179,7 +177,6 @@ void TabWidget::setTabBarVisible(bool visible)
     tabBar()->setVisible(visible);
 }
 
-#if QT_VERSION >= 0x040600
 bool TabWidget::event(QEvent* event)
 {
     if (event->type() == QEvent::Gesture)
@@ -226,7 +223,6 @@ bool TabWidget::handleSwipeGesture(QSwipeGesture* gesture, QSwipeGesture::SwipeD
             return false;
     }
 }
-#endif // QT_VERSION
 
 static void shiftIndexesFrom(QList<int>& indexes, int from, int delta)
 {
