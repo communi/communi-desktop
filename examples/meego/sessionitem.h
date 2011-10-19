@@ -17,6 +17,8 @@ public:
     bool isBusy() const;
     QObjectList childItems() const;
 
+    void updateCurrent(AbstractSessionItem* item);
+
 public slots:
     void addChild(const QString& name);
     void renameChild(const QString& from, const QString& to);

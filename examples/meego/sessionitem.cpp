@@ -16,11 +16,11 @@ SessionItem::SessionItem(IrcSession* session) : AbstractSessionItem(session)
 
     setSession(session);
     m_handler.setSession(session);
-    m_handler.setCurrentReceiver(this);
     m_handler.setDefaultReceiver(this);
     connect(&m_handler, SIGNAL(receiverToBeAdded(QString)), SLOT(addChild(QString)));
     connect(&m_handler, SIGNAL(receiverToBeRenamed(QString,QString)), SLOT(renameChild(QString,QString)));
     connect(&m_handler, SIGNAL(receiverToBeRemoved(QString)), SLOT(removeChild(QString)));
+    updateCurrent(this);
 }
 
 bool SessionItem::isBusy() const
@@ -32,6 +32,11 @@ bool SessionItem::isBusy() const
 QObjectList SessionItem::childItems() const
 {
     return m_children;
+}
+
+void SessionItem::updateCurrent(AbstractSessionItem* item)
+{
+    m_handler.setCurrentReceiver(item);
 }
 
 void SessionItem::addChild(const QString& name)

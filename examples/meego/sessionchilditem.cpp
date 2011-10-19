@@ -9,6 +9,11 @@ SessionChildItem::SessionChildItem(SessionItem* parent) :
     setSession(parent->session());
 }
 
+void SessionChildItem::updateCurrent(AbstractSessionItem* item)
+{
+    m_parent->updateCurrent(item);
+}
+
 void SessionChildItem::receiveMessage(IrcMessage* message)
 {
     AbstractSessionItem::receiveMessage(message);

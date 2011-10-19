@@ -13,6 +13,8 @@ class SessionChildItem : public AbstractSessionItem
 public:
     explicit SessionChildItem(SessionItem* parent);
 
+    void updateCurrent(AbstractSessionItem* item);
+
 protected slots:
     void receiveMessage(IrcMessage* message);
 

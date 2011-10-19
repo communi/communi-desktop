@@ -63,6 +63,7 @@ void AbstractSessionItem::setCurrent(bool current)
     {
         setHighlighted(false);
         setUnread(0);
+        updateCurrent(this);
     }
 
     if (m_current != current)

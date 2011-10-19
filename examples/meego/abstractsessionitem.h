@@ -34,6 +34,8 @@ public:
     QStringList users() const;
     QObject* messages() const;
 
+    virtual void updateCurrent(AbstractSessionItem* item) = 0;
+
 public slots:
     void setTitle(const QString& title);
     void setSubtitle(const QString& subtitle);
