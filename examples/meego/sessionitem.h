@@ -8,13 +8,11 @@ class IrcSession;
 class SessionItem : public AbstractSessionItem
 {
     Q_OBJECT
-    Q_PROPERTY(bool busy READ isBusy NOTIFY busyChanged)
     Q_PROPERTY(QObjectList childItems READ childItems NOTIFY childItemsChanged)
 
 public:
     explicit SessionItem(IrcSession* session);
 
-    bool isBusy() const;
     QObjectList childItems() const;
 
     void updateCurrent(AbstractSessionItem* item);
@@ -25,8 +23,10 @@ public slots:
     void removeChild(const QString& name);
 
 signals:
-    void busyChanged();
     void childItemsChanged();
+
+private slots:
+    void updateBusy();
 
 private:
     QObjectList m_children;

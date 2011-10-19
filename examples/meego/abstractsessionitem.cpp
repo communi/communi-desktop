@@ -52,6 +52,20 @@ void AbstractSessionItem::setSubtitle(const QString& subtitle)
     }
 }
 
+bool AbstractSessionItem::isBusy() const
+{
+    return m_busy;
+}
+
+void AbstractSessionItem::setBusy(bool busy)
+{
+    if (m_busy != busy)
+    {
+        m_busy = busy;
+        emit busyChanged();
+    }
+}
+
 bool AbstractSessionItem::isCurrent() const
 {
     return m_current;

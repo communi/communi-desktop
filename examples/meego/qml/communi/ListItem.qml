@@ -5,12 +5,6 @@ import "UIConstants.js" as UI
 Item {
     id: root
 
-    property alias title: title.text
-    property alias subtitle: subtitle.text
-    property bool highlighted: false
-    property bool busy: false
-    property int unread: 0
-
     signal clicked
 
     width: listView.width
@@ -37,9 +31,10 @@ Item {
             font.bold: true
             font.pixelSize: 26
             font.family: "Nokia Pure Text"
-            color: highlighted ? "red" : "#282828"
+            color: modelData.highlighted ? "red" : "#282828"
             width: parent.width
             elide: Text.ElideRight
+            text: modelData.title
         }
 
         Label {
@@ -49,6 +44,7 @@ Item {
             color: "#505050"
             width: parent.width
             elide: Text.ElideRight
+            text: modelData.subtitle
         }
     }
 
@@ -60,11 +56,11 @@ Item {
         anchors.rightMargin: UI.PAGE_MARGIN
         anchors.verticalCenter: parent.verticalCenter
 
-        sourceComponent: root.busy ? indicator : root.unread ? badge : icon
+        sourceComponent: modelData.busy ? indicator : modelData.unread ? badge : icon
 
         Component {
             id: indicator
-            BusyIndicator { running: root.busy }
+            BusyIndicator { running: modelData.busy }
         }
 
         Component {
@@ -74,7 +70,7 @@ Item {
                 Label {
                     id: unread
                     color: "white"
-                    text: root.unread
+                    text: modelData.unread
                     anchors.fill: parent
                     elide: Text.ElideRight
                     horizontalAlignment: Text.AlignHCenter

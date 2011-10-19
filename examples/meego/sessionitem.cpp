@@ -11,8 +11,8 @@ SessionItem::SessionItem(IrcSession* session) : AbstractSessionItem(session)
     connect(session, SIGNAL(hostChanged(QString)), this, SLOT(setTitle(QString)));
     connect(session, SIGNAL(nickNameChanged(QString)), this, SLOT(setSubtitle(QString)));
 
-    connect(session, SIGNAL(activeChanged(bool)), this, SIGNAL(busyChanged()));
-    connect(session, SIGNAL(connectedChanged(bool)), this, SIGNAL(busyChanged()));
+    connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateBusy()));
+    connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateBusy()));
 
     setSession(session);
     m_handler.setSession(session);
@@ -21,12 +21,6 @@ SessionItem::SessionItem(IrcSession* session) : AbstractSessionItem(session)
     connect(&m_handler, SIGNAL(receiverToBeRenamed(QString,QString)), SLOT(renameChild(QString,QString)));
     connect(&m_handler, SIGNAL(receiverToBeRemoved(QString)), SLOT(removeChild(QString)));
     updateCurrent(this);
-}
-
-bool SessionItem::isBusy() const
-{
-    const IrcSession* session = m_handler.session();
-    return session && session->isActive() && !session->isConnected();
 }
 
 QObjectList SessionItem::childItems() const
@@ -74,4 +68,10 @@ void SessionItem::removeChild(const QString& name)
             break;
         }
     }
+}
+
+void SessionItem::updateBusy()
+{
+    const IrcSession* session = m_handler.session();
+    setBusy(session && session->isActive() && !session->isConnected());
 }
