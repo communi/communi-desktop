@@ -65,6 +65,11 @@ CommonPage {
         onCountChanged: if (!moving) listView.positionViewAtEnd()
     }
 
+    ScrollDecorator {
+        flickableItem: listView
+        anchors.rightMargin: -UI.PAGE_MARGIN
+    }
+
     Timer {
         id: timer
         interval: 50

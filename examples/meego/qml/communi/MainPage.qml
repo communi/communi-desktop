@@ -43,6 +43,10 @@ CommonPage {
         }
     }
 
+    ScrollDecorator {
+        flickableItem: listView
+    }
+
     ChatPage {
         id: chatPage
         function push(data) {
