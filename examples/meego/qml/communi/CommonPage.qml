@@ -7,7 +7,6 @@ Page {
 
     property alias title: label.text
     default property alias content: content.data
-    property alias busy: indicator.running
 
     Rectangle {
         id: background
@@ -65,10 +64,27 @@ Page {
                 width: parent.width - indicator.width - UI.DEFAULT_SPACING
             }
 
-            BusyIndicator {
+            Image {
                 id: indicator
-                visible: running
+                width: 32
+                height: 32
+                visible: SessionModel.length > 0
+                source: mouseArea.pressed ? "image://theme/icon-m-common-gray"
+                      : SessionManager.online ? "image://theme/icon-m-presence-online"
+                      : SessionManager.offline ? "image://theme/icon-m-presence-offline"
+                      : "image://theme/icon-m-presence-unknown"
                 anchors.verticalCenter: parent.verticalCenter
+
+                MouseArea {
+                    id: mouseArea
+                    width: parent.width * 2
+                    height: header.height
+                    anchors.centerIn: parent
+                    onClicked: {
+                        if (SessionManager.offline)
+                            SessionManager.ensureNetwork();
+                    }
+                }
             }
         }
     }

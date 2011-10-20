@@ -9,6 +9,16 @@ SessionManager::SessionManager(QDeclarativeContext* context) :
     updateModel();
 }
 
+bool SessionManager::isOnline() const
+{
+    return m_network && m_network->state() == QNetworkSession::Connected;
+}
+
+bool SessionManager::isOffline() const
+{
+    return !m_network || m_network->state() != QNetworkSession::Connected;
+}
+
 void SessionManager::addSession(Session* session)
 {
     SessionItem* item = new SessionItem(session);
@@ -32,6 +42,27 @@ void SessionManager::removeSession(Session* session)
     }
 }
 
+bool SessionManager::ensureNetwork()
+{
+    if (!m_network || !m_network->isOpen())
+    {
+        QNetworkConfigurationManager manager;
+        if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired)
+        {
+            QNetworkConfiguration config = manager.defaultConfiguration();
+            if (!m_network)
+            {
+                m_network = new QNetworkSession(config, this);
+                connect(m_network, SIGNAL(stateChanged(QNetworkSession::State)), this, SLOT(onNetworkStateChanged(QNetworkSession::State)));
+                connect(m_network, SIGNAL(stateChanged(QNetworkSession::State)), this, SIGNAL(onlineStateChanged()));
+                connect(m_network, SIGNAL(stateChanged(QNetworkSession::State)), this, SIGNAL(offlineStateChanged()));
+            }
+            m_network->open();
+        }
+    }
+    return m_network->isOpen();
+}
+
 void SessionManager::onNetworkStateChanged(QNetworkSession::State state)
 {
     if (state == QNetworkSession::Connected)
@@ -52,25 +83,6 @@ void SessionManager::onNetworkStateChanged(QNetworkSession::State state)
                 session->close();
         }
     }
-}
-
-bool SessionManager::ensureNetwork()
-{
-    if (!m_network || !m_network->isOpen())
-    {
-        QNetworkConfigurationManager manager;
-        if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired)
-        {
-            QNetworkConfiguration config = manager.defaultConfiguration();
-            if (!m_network)
-            {
-                m_network = new QNetworkSession(config, this);
-                connect(m_network, SIGNAL(stateChanged(QNetworkSession::State)), this, SLOT(onNetworkStateChanged(QNetworkSession::State)));
-            }
-            m_network->open();
-        }
-    }
-    return m_network->isOpen();
 }
 
 void SessionManager::updateModel()
