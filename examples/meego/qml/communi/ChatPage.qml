@@ -43,6 +43,16 @@ CommonPage {
         id: ircMessage
     }
 
+    onModelDataChanged: {
+        listView.currentIndex = -1;
+        if (modelData) {
+            title = modelData.title;
+            model = modelData.messages;
+            session = modelData.session;
+            listView.currentIndex = listView.count - modelData.unseen - 1;
+        }
+    }
+
     ListView {
         id: listView
 
@@ -62,7 +72,22 @@ CommonPage {
         }
 
         onHeightChanged: listView.positionViewAtEnd()
-        onCountChanged: if (!moving) listView.positionViewAtEnd()
+        onCountChanged: {
+            if (!moving) listView.positionViewAtEnd();
+            if (currentIndex == -1) currentIndex = count - 2;
+        }
+
+        highlight: Item {
+            y: listView.currentItem !== null ? listView.currentItem.y : 0
+            visible: listView.currentItem !== null && listView.currentIndex < listView.count - 1
+            Rectangle {
+                width: listView.width
+                height: 1
+                color: "red"
+                anchors.bottom: parent.bottom
+            }
+        }
+        highlightFollowsCurrentItem: true
     }
 
     ScrollDecorator {

@@ -2,7 +2,8 @@
 #include <IrcSession>
 
 AbstractSessionItem::AbstractSessionItem(QObject *parent) :
-    QObject(parent), m_session(0), m_current(false), m_highlighted(false), m_unread(false)
+    QObject(parent), m_session(0), m_busy(false), m_current(false),
+    m_highlighted(false), m_unread(false), m_unseen(false)
 {
     m_messages = new QStringListModel(this);
     m_formatter.setTimeStamp(true);
@@ -79,6 +80,10 @@ void AbstractSessionItem::setCurrent(bool current)
         setUnread(0);
         updateCurrent(this);
     }
+    else
+    {
+        setUnseen(0);
+    }
 
     if (m_current != current)
     {
@@ -115,6 +120,20 @@ void AbstractSessionItem::setUnread(int unread)
     }
 }
 
+int AbstractSessionItem::unseen() const
+{
+    return m_unseen;
+}
+
+void AbstractSessionItem::setUnseen(int unseen)
+{
+    if (!m_current && m_unseen != unseen)
+    {
+        m_unseen = unseen;
+        emit unseenChanged();
+    }
+}
+
 QStringList AbstractSessionItem::users() const
 {
     return m_users;
@@ -139,7 +158,14 @@ void AbstractSessionItem::removeUser(const QString& user)
 
 void AbstractSessionItem::receiveMessage(IrcMessage* message)
 {
-    const int index = m_messages->rowCount();
-    m_messages->insertRow(index);
-    m_messages->setData(m_messages->index(index), m_formatter.formatMessage(message));
+    const QString formatted = m_formatter.formatMessage(message);
+    if (!formatted.isEmpty())
+    {
+        const int index = m_messages->rowCount();
+        m_messages->insertRow(index);
+        m_messages->setData(m_messages->index(index), formatted);
+
+        if (!m_current)
+            setUnseen(m_unseen + 1);
+    }
 }

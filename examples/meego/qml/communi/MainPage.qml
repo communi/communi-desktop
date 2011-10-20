@@ -42,11 +42,11 @@ CommonPage {
         id: chatPage
         function push(data) {
             modelData = data;
-            title = modelData.title;
-            model = modelData.messages;
-            session = modelData.session;
             root.pageStack.push(chatPage);
         }
-        onStatusChanged: modelData.current = (status == PageStatus.Active)
+        onStatusChanged: {
+            modelData.current = (status == PageStatus.Active);
+            if (status == PageStatus.Inactive) modelData = null;
+        }
     }
 }
