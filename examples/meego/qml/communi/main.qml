@@ -67,7 +67,6 @@ PageStackWindow {
                 session.password = connectionSheet.password;
                 session.secure = connectionSheet.secure;
                 SessionManager.addSession(session);
-                session.open();
             }
         }
 
