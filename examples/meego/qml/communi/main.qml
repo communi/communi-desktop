@@ -44,7 +44,7 @@ PageStackWindow {
 
             Component {
                 id: sessionComponent
-                IrcSession {
+                Session {
                     id: session
                     property string channel
                     onConnected: {
@@ -64,7 +64,9 @@ PageStackWindow {
                 session.host = connectionSheet.host;
                 session.port = connectionSheet.port;
                 session.channel = connectionSheet.channel;
-                SessionManager.addSession(session, connectionSheet.password);
+                session.password = connectionSheet.password;
+                session.secure = connectionSheet.secure;
+                SessionManager.addSession(session);
                 session.open();
             }
         }

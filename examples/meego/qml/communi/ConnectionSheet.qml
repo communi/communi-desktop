@@ -10,6 +10,7 @@ CommonSheet {
     property alias password: passField.text
     property alias name: nameField.text
     property alias channel: chanField.text
+    property alias secure: secureBox.checked
 
     acceptable: name != "" && host != ""
     titleText: qsTr("Add connection")
@@ -58,8 +59,7 @@ CommonSheet {
                 }
             }
             CheckBox {
-                id: ssl
-                enabled: false
+                id: secureBox
                 text: qsTr("SSL")
                 anchors.bottom: passColumn.bottom
                 width: portField.width

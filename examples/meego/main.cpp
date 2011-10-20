@@ -7,6 +7,7 @@
 #include "commandparser.h"
 #include "sessionmanager.h"
 #include "sessionitem.h"
+#include "session.h"
 
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
@@ -22,6 +23,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     SessionManager manager(viewer->rootContext());
     viewer->rootContext()->setContextProperty("SessionManager", &manager);
     qmlRegisterUncreatableType<SessionItem>("Communi", 1, 0, "SessionItem", "");
+    qmlRegisterType<Session>("Communi", 1, 0, "Session");
 
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
     viewer->setMainQmlFile(QLatin1String("qml/communi/main.qml"));
