@@ -17,6 +17,7 @@ SessionItem::SessionItem(IrcSession* session) : AbstractSessionItem(session)
     setSession(session);
     m_handler.setSession(session);
     m_handler.setDefaultReceiver(this);
+    m_handler.setCurrentReceiver(this);
     connect(&m_handler, SIGNAL(receiverToBeAdded(QString)), SLOT(addChild(QString)));
     connect(&m_handler, SIGNAL(receiverToBeRenamed(QString,QString)), SLOT(renameChild(QString,QString)));
     connect(&m_handler, SIGNAL(receiverToBeRemoved(QString)), SLOT(removeChild(QString)));
@@ -30,7 +31,7 @@ QObjectList SessionItem::childItems() const
 
 void SessionItem::updateCurrent(AbstractSessionItem* item)
 {
-    m_handler.setCurrentReceiver(item);
+    m_handler.setCurrentReceiver(item->isCurrent() ? item : this);
 }
 
 void SessionItem::addChild(const QString& name)

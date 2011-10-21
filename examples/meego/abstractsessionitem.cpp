@@ -78,7 +78,6 @@ void AbstractSessionItem::setCurrent(bool current)
     {
         setHighlighted(false);
         setUnread(0);
-        updateCurrent(this);
     }
     else
     {
@@ -89,6 +88,7 @@ void AbstractSessionItem::setCurrent(bool current)
     {
         m_current = current;
         emit currentChanged();
+        updateCurrent(this);
     }
 }
 
