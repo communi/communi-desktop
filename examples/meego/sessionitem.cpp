@@ -37,6 +37,7 @@ void SessionItem::updateCurrent(AbstractSessionItem* item)
 void SessionItem::addChild(const QString& name)
 {
     SessionChildItem* child = new SessionChildItem(this);
+    connect(child, SIGNAL(alert(QString)), SIGNAL(alert(QString)));
     child->setTitle(name);
     m_handler.addReceiver(name, child);
     m_children.append(child);

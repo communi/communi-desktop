@@ -25,6 +25,7 @@ public:
 signals:
     void onlineStateChanged();
     void offlineStateChanged();
+    void alert(const QString& info);
 
 private slots:
     void onNetworkStateChanged(QNetworkSession::State state);

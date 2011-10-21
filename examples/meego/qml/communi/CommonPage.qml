@@ -1,11 +1,13 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
+import com.nokia.extras 1.0
 import "UIConstants.js" as UI
 
 Page {
     id: page
 
     property alias title: label.text
+    property alias banner: banner
     default property alias content: content.data
 
     Rectangle {
@@ -86,6 +88,10 @@ Page {
                     }
                 }
             }
+        }
+
+        InfoBanner {
+            id: banner
         }
     }
 }

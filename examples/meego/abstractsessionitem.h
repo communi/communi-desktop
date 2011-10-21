@@ -58,6 +58,7 @@ signals:
     void unreadChanged();
     void unseenChanged();
     void usersChanged();
+    void alert(const QString& info);
 
 protected slots:
     virtual void addUser(const QString& user);

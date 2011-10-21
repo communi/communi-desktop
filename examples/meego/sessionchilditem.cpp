@@ -20,8 +20,26 @@ void SessionChildItem::receiveMessage(IrcMessage* message)
     if (message->type() == IrcMessage::Private)
     {
         IrcPrivateMessage* privMsg = static_cast<IrcPrivateMessage*>(message);
-        if (privMsg->message().contains(m_parent->session()->nickName()))
+
+        QString info;
+        if (title().startsWith('#') || title().startsWith('&'))
+        {
+            if (privMsg->message().contains(m_parent->session()->nickName(), Qt::CaseInsensitive))
+            {
+                setHighlighted(true);
+                if (!isCurrent())
+                    info = tr("%1 on %2:\n%3").arg(privMsg->sender().name()).arg(title()).arg(privMsg->message());
+            }
+        }
+        else
+        {
             setHighlighted(true);
+            if (!isCurrent())
+                info = tr("%1 in private:\n%2").arg(privMsg->sender().name()).arg(privMsg->message());
+        }
+
+        if (!info.isEmpty())
+            emit alert(info);
 
         if (!isCurrent())
             setUnread(unread() + 1);

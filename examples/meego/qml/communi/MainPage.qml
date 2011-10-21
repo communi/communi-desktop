@@ -1,5 +1,6 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
+import com.nokia.extras 1.0
 import "UIConstants.js" as UI
 
 CommonPage {
@@ -36,6 +37,17 @@ CommonPage {
 
     ScrollDecorator {
         flickableItem: listView
+    }
+
+    Connections {
+        target: SessionManager
+        onAlert: {
+            var banner = root.banner;
+            if (chatPage.status == PageStatus.Active)
+                banner = chatPage.banner;
+            banner.text = info;
+            banner.show();
+        }
     }
 
     ChatPage {
