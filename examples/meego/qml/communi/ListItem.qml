@@ -1,5 +1,6 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
+import com.nokia.extras 1.0
 import "UIConstants.js" as UI
 
 Item {
@@ -56,32 +57,21 @@ Item {
         anchors.rightMargin: UI.PAGE_MARGIN
         anchors.verticalCenter: parent.verticalCenter
 
-        sourceComponent: modelData.busy ? indicator : modelData.unread ? badge : icon
+        sourceComponent: modelData.busy ? busyIndicator : modelData.unread ? countBubble : moreIndicator
 
         Component {
-            id: indicator
+            id: busyIndicator
             BusyIndicator { running: modelData.busy }
         }
 
         Component {
-            id: badge
-            Image {
-                source: "squircle.png"
-                Label {
-                    id: unread
-                    color: "white"
-                    text: modelData.unread
-                    anchors.fill: parent
-                    elide: Text.ElideRight
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
+            id: countBubble
+            CountBubble { value: modelData.unread }
         }
 
         Component {
-            id: icon
-            ToolIcon { iconId: "toolbar-next" }
+            id: moreIndicator
+            MoreIndicator { }
         }
     }
 
