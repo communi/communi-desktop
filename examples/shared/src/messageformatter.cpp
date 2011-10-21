@@ -243,7 +243,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
 {
     if (message->code() < 300)
         return tr("[INFO] %1").arg(IrcUtil::messageToHtml(MID_(1)));
-    if (message->code() > 399)
+    if (message->code() > 399 && message->code() < 600)
         return tr("[ERROR] %1").arg(IrcUtil::messageToHtml(MID_(1)));
 
     switch (message->code())
