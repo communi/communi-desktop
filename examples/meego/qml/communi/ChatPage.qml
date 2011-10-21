@@ -104,7 +104,9 @@ CommonPage {
     TextField {
         id: textField
         height: 0
+        visible: false
         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+        platformSipAttributes: SipAttributes { actionKeyHighlighted: true }
 
         anchors {
             left: parent.left
@@ -117,6 +119,7 @@ CommonPage {
             textField.height = activeFocus ? textField.implicitHeight : 0;
             if (!activeFocus) {
                 textField.visible = false;
+                inputContext.reset();
                 textField.text = "";
             }
             timer.start();
@@ -127,6 +130,21 @@ CommonPage {
                 page.sendMessage(page.title, textField.text);
                 parent.forceActiveFocus();
                 textField.text = "";
+            }
+        }
+
+        style: TextFieldStyle { paddingRight: clearButton.width }
+        Image {
+            id: clearButton
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            source: "image://theme/icon-m-input-clear"
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    inputContext.reset();
+                    textField.text = "";
+                }
             }
         }
     }
