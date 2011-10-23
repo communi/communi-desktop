@@ -56,6 +56,14 @@ PageStackWindow {
         ConnectionSheet {
             id: connectionSheet
 
+            Component.onCompleted: {
+                connectionSheet.host = Settings.host;
+                connectionSheet.port = Settings.port;
+                connectionSheet.name = Settings.name;
+                connectionSheet.channel = Settings.channel;
+                connectionSheet.secure = Settings.secure;
+            }
+
             Component {
                 id: sessionComponent
                 Session {
@@ -81,6 +89,13 @@ PageStackWindow {
                 session.password = connectionSheet.password;
                 session.secure = connectionSheet.secure;
                 SessionManager.addSession(session);
+
+                connectionSheet.password = "";
+                Settings.host = connectionSheet.host;
+                Settings.port = connectionSheet.port;
+                Settings.name = connectionSheet.name;
+                Settings.channel = connectionSheet.channel;
+                Settings.secure = connectionSheet.secure;
             }
         }
 

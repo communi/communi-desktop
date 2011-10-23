@@ -23,14 +23,23 @@
 #include "sessionmanager.h"
 #include "sessionitem.h"
 #include "session.h"
+#include "settings.h"
+#include <irc.h>
 
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
+    QApplication::setApplicationName("Communi");
+    QApplication::setOrganizationName("Communi");
+    QApplication::setApplicationVersion(Irc::version());
+
     QScopedPointer<QApplication> app(createApplication(argc, argv));
     QScopedPointer<QmlApplicationViewer> viewer(QmlApplicationViewer::create());
 
     qmlRegisterType<MessageFormatter>("Communi", 1, 0, "MessageFormatter");
     qmlRegisterType<MessageHandler>("Communi", 1, 0, "MessageHandler");
+
+    Settings settings;
+    viewer->rootContext()->setContextProperty("Settings", &settings);
 
     CommandParser parser;
     viewer->rootContext()->setContextProperty("CommandParser", &parser);

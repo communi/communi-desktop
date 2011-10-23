@@ -39,6 +39,7 @@ HEADERS += session.h
 HEADERS += sessionchilditem.h
 HEADERS += sessionitem.h
 HEADERS += sessionmanager.h
+HEADERS += settings.h
 
 SOURCES += abstractsessionitem.cpp
 SOURCES += completer.cpp
@@ -47,6 +48,7 @@ SOURCES += session.cpp
 SOURCES += sessionchilditem.cpp
 SOURCES += sessionitem.cpp
 SOURCES += sessionmanager.cpp
+SOURCES += settings.cpp
 
 # Communi
 QT += network
