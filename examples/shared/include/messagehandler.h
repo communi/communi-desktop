@@ -71,6 +71,9 @@ protected:
     void sendMessage(IrcMessage* message, QObject* receiver);
     void sendMessage(IrcMessage* message, const QString& receiver);
 
+private slots:
+    void onSessionDestroyed();
+
 private:
     struct Private
     {

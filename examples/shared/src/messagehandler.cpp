@@ -33,7 +33,8 @@ MessageHandler::~MessageHandler()
     d.currentReceiver = 0;
     d.receivers.clear();
     d.channelUsers.clear();
-    d.session->socket()->waitForDisconnected(500);
+    if (d.session && d.session->isActive())
+        d.session->socket()->waitForDisconnected(500);
 }
 
 IrcSession* MessageHandler::session() const
@@ -49,10 +50,8 @@ void MessageHandler::setSession(IrcSession* session)
             disconnect(d.session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(handleMessage(IrcMessage*)));
 
         if (session)
-        {
-            session->setParent(this);
             connect(session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(handleMessage(IrcMessage*)));
-        }
+
         d.session = session;
     }
 }
@@ -92,8 +91,8 @@ void MessageHandler::removeReceiver(const QString& name)
     const QString lower = name.toLower();
     if (d.receivers.contains(lower))
     {
-        emit receiverToBeRemoved(name);
         d.receivers.remove(name.toLower());
+        emit receiverToBeRemoved(name);
     }
 }
 
@@ -329,6 +328,11 @@ void MessageHandler::sendMessage(IrcMessage* message, const QString& receiver)
     QObject* object = getReceiver(receiver);
     Q_ASSERT(object);
     sendMessage(message, object);
+}
+
+void MessageHandler::onSessionDestroyed()
+{
+    setSession(0);
 }
 
 QStringList MessageHandler::Private::userChannels(const QString& user) const
