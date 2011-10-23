@@ -23,11 +23,17 @@ class IrcMessage;
 class SessionChildItem : public AbstractSessionItem
 {
     Q_OBJECT
+    Q_PROPERTY(bool channel READ isChannel)
 
 public:
     explicit SessionChildItem(SessionItem* parent);
 
+    bool isChannel() const;
+
     void updateCurrent(AbstractSessionItem* item);
+
+public slots:
+    void close();
 
 protected slots:
     void receiveMessage(IrcMessage* message);

@@ -28,11 +28,13 @@ CommonPage {
             width: parent.width
             ListItem {
                 onClicked: chatPage.push(modelData)
+                onPressAndHold: sessionMenu.popup(modelData.session)
             }
             Repeater {
                 model: modelData.childItems
                 ListItem {
                     onClicked: chatPage.push(modelData)
+                    onPressAndHold: chatMenu.popup(modelData)
                 }
             }
             Rectangle {
@@ -71,8 +73,40 @@ CommonPage {
             root.pageStack.push(chatPage);
         }
         onStatusChanged: {
-            modelData.current = (status == PageStatus.Active);
-            if (status == PageStatus.Inactive) modelData = null;
+            if (modelData)
+                modelData.current = (status == PageStatus.Active);
+            if (status == PageStatus.Inactive)
+                modelData = null;
+        }
+    }
+
+    ContextMenu {
+        id: sessionMenu
+        property QtObject session
+        function popup(session) {
+            sessionMenu.session = session;
+            open();
+        }
+        MenuLayout {
+            MenuItem {
+                text: qsTr("Quit")
+                onClicked: SessionManager.removeSession(sessionMenu.session)
+            }
+        }
+    }
+
+    ContextMenu {
+        id: chatMenu
+        property QtObject chatItem
+        function popup(item) {
+            chatItem = item;
+            open();
+        }
+        MenuLayout {
+            MenuItem {
+                text: qsTr("Close")
+                onClicked: chatMenu.chatItem.close()
+            }
         }
     }
 }

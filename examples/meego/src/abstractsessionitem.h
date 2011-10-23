@@ -39,6 +39,7 @@ class AbstractSessionItem : public QObject
 
 public:
     explicit AbstractSessionItem(QObject *parent = 0);
+    ~AbstractSessionItem();
 
     IrcSession* session() const;
 
@@ -54,7 +55,7 @@ public:
     QStringList users() const;
     QObject* messages() const;
 
-    virtual void updateCurrent(AbstractSessionItem* item) = 0;
+    virtual void updateCurrent(AbstractSessionItem* item) { Q_UNUSED(item) };
 
 public slots:
     void setIcon(const QString& icon);
@@ -77,6 +78,7 @@ signals:
     void unseenChanged();
     void usersChanged();
     void alert(const QString& info);
+    void removed();
 
 protected slots:
     virtual void addUser(const QString& user);

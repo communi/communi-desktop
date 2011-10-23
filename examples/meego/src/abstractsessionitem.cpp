@@ -28,6 +28,11 @@ AbstractSessionItem::AbstractSessionItem(QObject *parent) :
     m_formatter.setHighlightFormat("style='color:red'");
 }
 
+AbstractSessionItem::~AbstractSessionItem()
+{
+    emit removed();
+}
+
 IrcSession* AbstractSessionItem::session() const
 {
     return m_session;

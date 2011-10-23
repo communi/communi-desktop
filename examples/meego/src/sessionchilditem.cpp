@@ -15,6 +15,7 @@
 #include "sessionchilditem.h"
 #include "sessionitem.h"
 #include <IrcSession>
+#include <IrcCommand>
 #include <Irc>
 
 SessionChildItem::SessionChildItem(SessionItem* parent) :
@@ -22,6 +23,11 @@ SessionChildItem::SessionChildItem(SessionItem* parent) :
 {
     setSession(parent->session());
     connect(this, SIGNAL(titleChanged()), SLOT(updateIcon()));
+}
+
+bool SessionChildItem::isChannel() const
+{
+    return title().startsWith('#') || title().startsWith('&');
 }
 
 void SessionChildItem::updateCurrent(AbstractSessionItem* item)
@@ -37,7 +43,7 @@ void SessionChildItem::receiveMessage(IrcMessage* message)
         IrcPrivateMessage* privMsg = static_cast<IrcPrivateMessage*>(message);
 
         QString info;
-        if (title().startsWith('#') || title().startsWith('&'))
+        if (isChannel())
         {
             if (privMsg->message().contains(m_parent->session()->nickName(), Qt::CaseInsensitive))
             {
@@ -67,9 +73,16 @@ void SessionChildItem::receiveMessage(IrcMessage* message)
     }
 }
 
+void SessionChildItem::close()
+{
+    if (isChannel())
+        m_parent->session()->sendCommand(IrcCommand::createPart(title(), "Communi 1.0.0 for MeeGo"));
+    m_parent->removeChild(title());
+}
+
 void SessionChildItem::updateIcon()
 {
-    if (title().startsWith('#') || title().startsWith('&'))
+    if (isChannel())
         setIcon("icon-m-conversation-group-chat");
     else
         setIcon("icon-m-content-avatar-placeholder");

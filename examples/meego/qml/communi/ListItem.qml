@@ -21,6 +21,7 @@ Item {
     id: root
 
     signal clicked
+    signal pressAndHold
 
     width: listView.width
     height: 88
@@ -101,5 +102,6 @@ Item {
         id: mouseArea
         anchors.fill: parent
         onClicked: root.clicked()
+        onPressAndHold: root.pressAndHold()
     }
 }

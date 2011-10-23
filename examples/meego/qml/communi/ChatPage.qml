@@ -21,7 +21,6 @@ CommonPage {
     id: page
 
     property IrcSession session: null
-    property alias model: listView.model
     property QtObject modelData: null
 
     function sendMessage(receiver, message) {
@@ -37,10 +36,11 @@ CommonPage {
         }
     }
 
+    title: modelData ? modelData.title : ""
     tools: ToolBarLayout {
         ToolIcon {
             iconId: "toolbar-back"
-            onClicked: pageStack.pop()
+            onClicked: root.pageStack.pop()
         }
         ToolIcon {
             iconId: "toolbar-new-message"
@@ -60,12 +60,16 @@ CommonPage {
     onModelDataChanged: {
         listView.currentIndex = -1;
         if (modelData) {
-            title = modelData.title;
-            model = modelData.messages;
             session = modelData.session;
+            listView.model = modelData.messages;
             listView.currentIndex = listView.count - modelData.unseen - 1;
             Completer.modelItem = modelData;
         }
+    }
+
+    Connections {
+        target: modelData
+        onRemoved: page.pageStack.pop()
     }
 
     ListView {
@@ -140,11 +144,9 @@ CommonPage {
         }
 
         Keys.onReturnPressed: {
-            if (model) {
-                page.sendMessage(page.title, textField.text);
-                parent.forceActiveFocus();
-                textField.text = "";
-            }
+            page.sendMessage(page.title, textField.text);
+            parent.forceActiveFocus();
+            textField.text = "";
         }
 
         Connections {

@@ -16,6 +16,7 @@
 #include "sessionchilditem.h"
 #include <IrcSession>
 #include <IrcMessage>
+#include <IrcCommand>
 
 SessionItem::SessionItem(IrcSession* session) : AbstractSessionItem(session)
 {
@@ -75,16 +76,29 @@ void SessionItem::renameChild(const QString& from, const QString& to)
 
 void SessionItem::removeChild(const QString& name)
 {
-    for (int i = 0; i < m_children.count(); ++i)
+    m_handler.removeReceiver(name);
+    if (title() == name)
     {
-        SessionChildItem* child = static_cast<SessionChildItem*>(m_children.at(i));
-        if (child->title() == name)
+        quit();
+    }
+    else
+    {
+        for (int i = 0; i < m_children.count(); ++i)
         {
-            m_children.removeAt(i);
-            emit childItemsChanged();
-            break;
+            SessionChildItem* child = static_cast<SessionChildItem*>(m_children.at(i));
+            if (child->title() == name)
+            {
+                m_children.takeAt(i)->deleteLater();
+                emit childItemsChanged();
+                break;
+            }
         }
     }
+}
+
+void SessionItem::quit()
+{
+    session()->sendCommand(IrcCommand::createQuit(tr("Communi 1.0.0 for MeeGo")));
 }
 
 void SessionItem::updateBusy()

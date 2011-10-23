@@ -16,6 +16,7 @@
 #include "sessionitem.h"
 #include "session.h"
 #include <QNetworkConfigurationManager>
+#include <IrcCommand>
 
 SessionManager::SessionManager(QDeclarativeContext* context) :
     m_context(context), m_network(0)
@@ -48,9 +49,12 @@ void SessionManager::removeSession(Session* session)
 {
     for (int i = 0; i < m_items.count(); ++i)
     {
-        if (static_cast<SessionItem*>(m_items.at(i))->session() == session)
+        SessionItem* item = static_cast<SessionItem*>(m_items.at(i));
+        if (item->session() == session)
         {
+            item->quit();
             m_items.removeAt(i);
+            item->deleteLater();
             updateModel();
             break;
         }
