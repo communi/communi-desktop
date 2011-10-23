@@ -37,7 +37,7 @@ bool SessionManager::isOffline() const
 void SessionManager::addSession(Session* session)
 {
     SessionItem* item = new SessionItem(session);
-    connect(item, SIGNAL(alert(QString)), SIGNAL(alert(QString)));
+    connect(item, SIGNAL(alert(QObject*)), SIGNAL(alert(QObject*)));
     m_items.append(item);
     updateModel();
 

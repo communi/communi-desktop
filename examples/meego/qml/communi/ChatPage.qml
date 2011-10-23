@@ -71,6 +71,7 @@ CommonPage {
         target: modelData
         onRemoved: page.pageStack.pop()
     }
+    onBannerClicked: pageStack.pop()
 
     ListView {
         id: listView

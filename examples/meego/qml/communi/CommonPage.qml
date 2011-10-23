@@ -24,6 +24,8 @@ Page {
     property alias banner: banner
     default property alias content: content.data
 
+    signal bannerClicked
+
     Rectangle {
         id: background
 
@@ -106,6 +108,15 @@ Page {
 
         InfoBanner {
             id: banner
+            timerShowTime: 5000
+            property QtObject item: null
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    page.bannerClicked();
+                    banner.hide();
+                }
+            }
         }
     }
 }

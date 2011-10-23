@@ -57,6 +57,7 @@ void AbstractSessionItem::setIcon(const QString& icon)
         emit iconChanged();
     }
 }
+
 QString AbstractSessionItem::title() const
 {
     return m_title;
@@ -163,6 +164,20 @@ void AbstractSessionItem::setUnseen(int unseen)
     {
         m_unseen = unseen;
         emit unseenChanged();
+    }
+}
+
+QString AbstractSessionItem::alertText() const
+{
+    return m_alertText;
+}
+
+void AbstractSessionItem::setAlertText(const QString& text)
+{
+    if (m_alertText != text)
+    {
+        m_alertText = text;
+        emit alert(this);
     }
 }
 

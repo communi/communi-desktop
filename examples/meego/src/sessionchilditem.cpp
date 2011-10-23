@@ -42,25 +42,25 @@ void SessionChildItem::receiveMessage(IrcMessage* message)
     {
         IrcPrivateMessage* privMsg = static_cast<IrcPrivateMessage*>(message);
 
-        QString info;
+        QString alertText;
         if (isChannel())
         {
             if (privMsg->message().contains(m_parent->session()->nickName(), Qt::CaseInsensitive))
             {
                 setHighlighted(true);
                 if (!isCurrent())
-                    info = tr("%1 on %2:\n%3").arg(privMsg->sender().name()).arg(title()).arg(privMsg->message());
+                    alertText = tr("%1 on %2:\n%3").arg(privMsg->sender().name()).arg(title()).arg(privMsg->message());
             }
         }
         else
         {
             setHighlighted(true);
             if (!isCurrent())
-                info = tr("%1 in private:\n%2").arg(privMsg->sender().name()).arg(privMsg->message());
+                alertText = tr("%1 in private:\n%2").arg(privMsg->sender().name()).arg(privMsg->message());
         }
 
-        if (!info.isEmpty())
-            emit alert(info);
+        if (!alertText.isEmpty())
+            setAlertText(alertText);
 
         if (!isCurrent())
             setUnread(unread() + 1);

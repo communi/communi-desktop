@@ -55,28 +55,46 @@ CommonPage {
         flickableItem: listView
     }
 
+    property QtObject bounceItem: null
+
     Connections {
         target: SessionManager
         onAlert: {
             var banner = root.banner;
             if (chatPage.status == PageStatus.Active)
                 banner = chatPage.banner;
-            banner.text = info;
+            bounceItem = item;
+            banner.text = item.alertText;
             banner.show();
         }
     }
+
+    onBannerClicked: chatPage.push(bounceItem)
 
     ChatPage {
         id: chatPage
         function push(data) {
             modelData = data;
             root.pageStack.push(chatPage);
+            root.bounceItem = null;
         }
         onStatusChanged: {
             if (modelData)
                 modelData.current = (status == PageStatus.Active);
-            if (status == PageStatus.Inactive)
+            if (status == PageStatus.Inactive) {
                 modelData = null;
+                if (bounceItem)
+                    bounceTimer.running = true;
+            }
+        }
+    }
+
+    Timer {
+        id: bounceTimer
+        interval: 50
+        onTriggered: {
+            if (bounceItem)
+                chatPage.push(bounceItem);
         }
     }
 
