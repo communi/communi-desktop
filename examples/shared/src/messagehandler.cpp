@@ -341,18 +341,26 @@ QStringList MessageHandler::Private::userChannels(const QString& user) const
     return channels;
 }
 
-void MessageHandler::Private::addChannelUser(const QString& channel, const QString& user)
+void MessageHandler::Private::addChannelUser(QString channel, const QString& user)
 {
-    channelUsers[channel.toLower()].insert(user.toLower());
-    QObject* receiver = receivers.value(channel.toLower());
-    if (receiver)
-        QMetaObject::invokeMethod(receiver, "addUser", Q_ARG(QString, user));
+    channel = channel.toLower();
+    if (!channelUsers.value(channel).contains(user.toLower()))
+    {
+        channelUsers[channel].insert(user.toLower());
+        QObject* receiver = receivers.value(channel);
+        if (receiver)
+            QMetaObject::invokeMethod(receiver, "addUser", Q_ARG(QString, user));
+    }
 }
 
-void MessageHandler::Private::removeChannelUser(const QString& channel, const QString& user)
+void MessageHandler::Private::removeChannelUser(QString channel, const QString& user)
 {
-    channelUsers[channel.toLower()].remove(user.toLower());
-    QObject* receiver = receivers.value(channel.toLower());
-    if (receiver)
-        QMetaObject::invokeMethod(receiver, "removeUser", Q_ARG(QString, user));
+    channel = channel.toLower();
+    if (channelUsers.value(channel).contains(user.toLower()))
+    {
+        channelUsers[channel].remove(user.toLower());
+        QObject* receiver = receivers.value(channel);
+        if (receiver)
+            QMetaObject::invokeMethod(receiver, "removeUser", Q_ARG(QString, user));
+    }
 }

@@ -75,8 +75,8 @@ private:
     struct Private
     {
         QStringList userChannels(const QString& user) const;
-        void addChannelUser(const QString& channel, const QString& user);
-        void removeChannelUser(const QString& channel, const QString& user);
+        void addChannelUser(QString channel, const QString& user);
+        void removeChannelUser(QString channel, const QString& user);
 
         IrcSession* session;
         QObject* defaultReceiver;
