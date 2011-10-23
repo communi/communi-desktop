@@ -30,10 +30,11 @@ CommonSheet {
         anchors.fill: parent
         spacing: UI.DEFAULT_SPACING
 
-        Label { text: qsTr("Connection") }
+        Label { text: qsTr("Connection"); visible: SessionModel.length > 1 }
         ButtonColumn {
             id: buttons
             width: parent.width
+            visible: SessionModel.length > 1
             Repeater {
                 model: SessionModel
                 Button {
