@@ -40,6 +40,9 @@ public slots:
 signals:
     void childItemsChanged();
 
+protected slots:
+    virtual void receiveMessage(IrcMessage* message);
+
 private slots:
     void updateBusy();
 

@@ -17,6 +17,7 @@
 #include <IrcSession>
 #include <IrcMessage>
 #include <IrcCommand>
+#include <Irc>
 
 SessionItem::SessionItem(IrcSession* session) : AbstractSessionItem(session)
 {
@@ -99,6 +100,17 @@ void SessionItem::removeChild(const QString& name)
 void SessionItem::quit()
 {
     session()->sendCommand(IrcCommand::createQuit(tr("Communi 1.0.0 for MeeGo")));
+}
+
+void SessionItem::receiveMessage(IrcMessage* message)
+{
+    AbstractSessionItem::receiveMessage(message);
+    if (message->type() == IrcMessage::Numeric)
+    {
+        IrcNumericMessage* numeric = static_cast<IrcNumericMessage*>(message);
+        if (numeric->code() == Irc::ERR_NICKNAMEINUSE)
+            session()->setNickName(session()->nickName() + "_");
+    }
 }
 
 void SessionItem::updateBusy()
