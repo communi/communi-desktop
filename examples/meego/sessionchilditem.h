@@ -18,6 +18,9 @@ public:
 protected slots:
     void receiveMessage(IrcMessage* message);
 
+private slots:
+    void updateIcon();
+
 private:
     SessionItem* m_parent;
 };

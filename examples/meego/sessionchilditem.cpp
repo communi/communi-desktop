@@ -7,6 +7,7 @@ SessionChildItem::SessionChildItem(SessionItem* parent) :
     AbstractSessionItem(parent), m_parent(parent)
 {
     setSession(parent->session());
+    connect(this, SIGNAL(titleChanged()), SLOT(updateIcon()));
 }
 
 void SessionChildItem::updateCurrent(AbstractSessionItem* item)
@@ -50,4 +51,12 @@ void SessionChildItem::receiveMessage(IrcMessage* message)
         if (numMsg->code() == Irc::RPL_TOPIC)
             setSubtitle(numMsg->parameters().value(2));
     }
+}
+
+void SessionChildItem::updateIcon()
+{
+    if (title().startsWith('#') || title().startsWith('&'))
+        setIcon("icon-m-conversation-group-chat");
+    else
+        setIcon("icon-m-content-avatar-placeholder");
 }

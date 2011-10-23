@@ -18,11 +18,19 @@ Item {
         source: "image://theme/meegotouch-list-background-pressed-center"
     }
 
+    Image {
+        id: icon
+        source: "image://theme/" + modelData.icon
+        anchors.left: parent.left
+        anchors.leftMargin: UI.PAGE_MARGIN
+        anchors.verticalCenter: parent.verticalCenter
+    }
+
     Column {
         anchors {
-            left: parent.left
+            left: icon.right
             right: loader.left
-            leftMargin: UI.PAGE_MARGIN
+            leftMargin: UI.DEFAULT_SPACING
             rightMargin: UI.DEFAULT_SPACING
             verticalCenter: parent.verticalCenter
         }

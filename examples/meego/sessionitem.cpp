@@ -5,6 +5,7 @@
 
 SessionItem::SessionItem(IrcSession* session) : AbstractSessionItem(session)
 {
+    setIcon("icon-m-content-description");
     setTitle(session->host());
     setSubtitle(session->nickName());
 
