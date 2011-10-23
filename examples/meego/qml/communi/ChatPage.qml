@@ -50,6 +50,7 @@ CommonPage {
             model = modelData.messages;
             session = modelData.session;
             listView.currentIndex = listView.count - modelData.unseen - 1;
+            Completer.modelItem = modelData;
         }
     }
 
@@ -112,7 +113,6 @@ CommonPage {
             left: parent.left
             right: parent.right
             bottom: parent.bottom
-            margins: UI.PAGE_MARGIN
         }
 
         onActiveFocusChanged: {
@@ -133,7 +133,30 @@ CommonPage {
             }
         }
 
-        style: TextFieldStyle { paddingRight: clearButton.width }
+        Connections {
+            target: Completer
+            onCompleted: {
+                textField.text = text;
+                textField.select(selStart, selEnd);
+            }
+        }
+
+        style: TextFieldStyle {
+            paddingLeft: tabButton.width
+            paddingRight: clearButton.width
+        }
+
+        Image {
+            id: tabButton
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            source: "icon-m-input-tab.png"
+            MouseArea {
+                anchors.fill: parent
+                onClicked: Completer.complete(textField.text, textField.selectionStart, textField.selectionEnd)
+            }
+        }
+
         Image {
             id: clearButton
             anchors.right: parent.right

@@ -31,12 +31,14 @@ symbian:TARGET.CAPABILITY += NetworkServices
 
 # Sources
 HEADERS += abstractsessionitem.h
+HEADERS += completer.h
 HEADERS += session.h
 HEADERS += sessionchilditem.h
 HEADERS += sessionitem.h
 HEADERS += sessionmanager.h
 
 SOURCES += abstractsessionitem.cpp
+SOURCES += completer.cpp
 SOURCES += main.cpp
 SOURCES += session.cpp
 SOURCES += sessionchilditem.cpp

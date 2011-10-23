@@ -5,6 +5,7 @@
 #include "messageformatter.h"
 #include "messagehandler.h"
 #include "commandparser.h"
+#include "completer.h"
 #include "sessionmanager.h"
 #include "sessionitem.h"
 #include "session.h"
@@ -19,6 +20,9 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 
     CommandParser parser;
     viewer->rootContext()->setContextProperty("CommandParser", &parser);
+
+    Completer completer;
+    viewer->rootContext()->setContextProperty("Completer", &completer);
 
     SessionManager manager(viewer->rootContext());
     viewer->rootContext()->setContextProperty("SessionManager", &manager);
