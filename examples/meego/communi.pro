@@ -29,6 +29,9 @@ symbian:TARGET.CAPABILITY += NetworkServices
 # Add dependency to Symbian components
 # CONFIG += qt-components
 
+INCLUDEPATH += src
+DEPENDPATH += src
+
 # Sources
 HEADERS += abstractsessionitem.h
 HEADERS += completer.h
