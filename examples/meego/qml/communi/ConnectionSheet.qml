@@ -12,7 +12,7 @@ CommonSheet {
     property alias channel: chanField.text
     property alias secure: secureBox.checked
 
-    acceptable: name != "" && host != ""
+    acceptable: name != "" && host != "" && port != ""
     titleText: qsTr("Add connection")
 
     Column {
@@ -31,6 +31,7 @@ CommonSheet {
                     text: "irc.freenode.net"
                     inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhUrlCharactersOnly
                     width: parent.width
+                    errorHighlight: !text.length
                 }
             }
             Column {
@@ -41,6 +42,7 @@ CommonSheet {
                     text: "6667"
                     inputMethodHints: Qt.ImhDigitsOnly
                     width: parent.width
+                    errorHighlight: !text.length
                 }
             }
         }
@@ -77,6 +79,7 @@ CommonSheet {
                     text: "Guest" + Math.floor(Math.random() * 12345)
                     inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                     width: parent.width
+                    errorHighlight: !text.length
                 }
             }
             Column {
