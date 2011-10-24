@@ -20,11 +20,31 @@
 #include <QTime>
 #include <QColor>
 
+static bool nameLessThan(const QString &n1, const QString &n2)
+{
+    const bool o1 = n1.startsWith("@");
+    const bool o2 = n2.startsWith("@");
+
+    if (o1 && !o2)
+        return true;
+    if (!o1 && o2)
+        return false;
+
+    const bool v1 = n1.startsWith("+");
+    const bool v2 = n2.startsWith("+");
+
+    if (v1 && !v2 && !o2)
+        return true;
+    if (!v1 && !o1 && v2)
+        return false;
+
+    return QString::localeAwareCompare(n1.toLower(), n2.toLower()) < 0;
+}
+
 MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 {
     d.highlight = false;
     d.timeStamp = false;
-    d.firstNames = true;
 }
 
 MessageFormatter::~MessageFormatter()
@@ -109,6 +129,12 @@ QString MessageFormatter::highlightFormat() const
 void MessageFormatter::setHighlightFormat(const QString& format)
 {
     d.highlightFormat = format;
+}
+
+QStringList MessageFormatter::currentNames() const
+{
+    qSort(d.names.begin(), d.names.end(), nameLessThan);
+    return d.names;
 }
 
 QString MessageFormatter::formatMessage(IrcMessage* message) const
@@ -306,25 +332,8 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
         return QString();
 
     case Irc::RPL_ENDOFNAMES: {
-        QString msg;
-        if (d.firstNames)
-            msg = tr("! %1 has %2 users").arg(P_(1)).arg(d.names.count());
-        else
-            msg = tr("! %1 users (%3): %2").arg(P_(1), prettyNames(d.names, 6)).arg(d.names.count());
-        d.firstNames = false;
+        QString msg = tr("! %1 has %2 users").arg(P_(1)).arg(d.names.count());
         d.names.clear();
-        return msg;
-    }
-
-    case Irc::RPL_WHOREPLY: {
-        QString info = QStringList(message->parameters().mid(6)).join(" ");
-        d.who.append(tr("%1!%2@%3 via %4 (%5)").arg(P_(5), P_(2), P_(3), P_(4), info));
-        return QString();
-    }
-
-    case Irc::RPL_ENDOFWHO: {
-        QString msg = tr("! '%1' users: %2").arg(P_(1), prettyNames(d.who, 1));
-        d.who.clear();
         return msg;
     }
 
@@ -395,27 +404,6 @@ QString MessageFormatter::formatPingReply(const IrcSender& sender, const QString
         return tr("! %1 replied in %2s").arg(prettyUser(sender), result);
     }
     return QString();
-}
-
-static bool nameLessThan(const QString &n1, const QString &n2)
-{
-    const bool o1 = n1.startsWith("@");
-    const bool o2 = n2.startsWith("@");
-
-    if (o1 && !o2)
-        return true;
-    if (!o1 && o2)
-        return false;
-
-    const bool v1 = n1.startsWith("+");
-    const bool v2 = n2.startsWith("+");
-
-    if (v1 && !v2 && !o2)
-        return true;
-    if (!v1 && !o1 && v2)
-        return false;
-
-    return QString::localeAwareCompare(n1.toLower(), n2.toLower()) < 0;
 }
 
 QString MessageFormatter::prettyNames(QStringList names, int columns)

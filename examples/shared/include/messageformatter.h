@@ -60,6 +60,8 @@ public:
     QString highlightFormat() const;
     void setHighlightFormat(const QString& format);
 
+    QStringList currentNames() const;
+
     Q_INVOKABLE QString formatMessage(IrcMessage* message) const;
 
 protected:
@@ -89,9 +91,7 @@ private:
         bool highlight;
         QStringList highlights;
         bool timeStamp;
-        bool firstNames;
         QStringList names;
-        QStringList who;
         QString messageFormat;
         QString highlightFormat;
         QHash<QString, QString> prefixedFormats;
