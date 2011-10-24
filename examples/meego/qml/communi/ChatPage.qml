@@ -107,7 +107,6 @@ CommonPage {
                 anchors.bottom: parent.bottom
             }
         }
-        highlightFollowsCurrentItem: true
     }
 
     ScrollDecorator {
