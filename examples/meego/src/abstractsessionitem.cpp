@@ -14,6 +14,8 @@
 
 #include "abstractsessionitem.h"
 #include <IrcSession>
+#include <IrcMessage>
+#include <Irc>
 
 AbstractSessionItem::AbstractSessionItem(QObject *parent) :
     QObject(parent), m_session(0), m_busy(false), m_current(false),
@@ -203,8 +205,32 @@ void AbstractSessionItem::removeUser(const QString& user)
     emit usersChanged();
 }
 
+void AbstractSessionItem::sendCommand(IrcCommand *command)
+{
+    m_sent.insert(command->type());
+    m_session->sendCommand(command);
+    if (command->type() == IrcCommand::Message || command->type() == IrcCommand::CtcpAction)
+    {
+        IrcMessage* message = IrcMessage::fromCommand(m_session->nickName(), command);
+        receiveMessage(message);
+        message->deleteLater();
+    }
+}
+
 void AbstractSessionItem::receiveMessage(IrcMessage* message)
 {
+    if (message->type() == IrcMessage::Numeric)
+    {
+        IrcNumericMessage* numeric = static_cast<IrcNumericMessage*>(message);
+        if (numeric->code() == Irc::RPL_ENDOFNAMES && m_sent.contains(IrcCommand::Names))
+        {
+            emit namesReceived(m_formatter.currentNames());
+            m_sent.remove(IrcCommand::Names);
+            m_formatter.formatMessage(message);
+            return;
+        }
+    }
+
     const QString formatted = m_formatter.formatMessage(message);
     if (!formatted.isEmpty())
     {

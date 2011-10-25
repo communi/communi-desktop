@@ -18,6 +18,7 @@
 #include <QObject>
 #include <QStringListModel>
 #include "messageformatter.h"
+#include <IrcCommand>
 
 class IrcMessage;
 class IrcSession;
@@ -69,6 +70,7 @@ public slots:
     void setUnread(int unread);
     void setUnseen(int unseen);
     void setAlertText(const QString& text);
+    void sendCommand(IrcCommand* command);
 
 signals:
     void iconChanged();
@@ -82,6 +84,7 @@ signals:
     void usersChanged();
     void alert(QObject* item);
     void removed();
+    void namesReceived(const QStringList& names);
 
 protected slots:
     virtual void addUser(const QString& user);
@@ -105,6 +108,7 @@ private:
     int m_unread;
     int m_unseen;
     QString m_alertText;
+    QSet<IrcCommand::Type> m_sent;
 };
 
 #endif // ABSTRACTSESSIONITEM_H

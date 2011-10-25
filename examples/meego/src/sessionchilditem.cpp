@@ -30,6 +30,11 @@ bool SessionChildItem::isChannel() const
     return title().startsWith('#') || title().startsWith('&');
 }
 
+SessionItem* SessionChildItem::sessionItem() const
+{
+    return m_parent;
+}
+
 void SessionChildItem::updateCurrent(AbstractSessionItem* item)
 {
     m_parent->updateCurrent(item);

@@ -24,11 +24,13 @@ class SessionChildItem : public AbstractSessionItem
 {
     Q_OBJECT
     Q_PROPERTY(bool channel READ isChannel)
+    Q_PROPERTY(SessionItem* sessionItem READ sessionItem)
 
 public:
     explicit SessionChildItem(SessionItem* parent);
 
     bool isChannel() const;
+    SessionItem* sessionItem() const;
 
     void updateCurrent(AbstractSessionItem* item);
 

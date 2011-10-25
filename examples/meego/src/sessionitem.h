@@ -32,7 +32,7 @@ public:
     void updateCurrent(AbstractSessionItem* item);
 
 public slots:
-    void addChild(const QString& name);
+    QObject* addChild(const QString& name);
     void renameChild(const QString& from, const QString& to);
     void removeChild(const QString& name);
     void quit();

@@ -25,15 +25,8 @@ CommonPage {
 
     function sendMessage(receiver, message) {
         var cmd = CommandParser.parseCommand(receiver, message);
-        if (cmd && modelData) {
-            session.sendCommand(cmd);
-            if (cmd.type == IrcCommand.Message || cmd.type == IrcCommand.CtcpAction)
-            {
-                var msg = ircMessage.fromCommand(session.nickName, cmd);
-                modelData.receiveMessage(msg);
-                msg.destroy();
-            }
-        }
+        if (cmd && modelData)
+            modelData.sendCommand(cmd);
     }
 
     title: modelData ? modelData.title : ""
@@ -49,12 +42,6 @@ CommonPage {
                 textField.forceActiveFocus();
             }
         }
-    }
-
-    // TODO: how to make it possible to access both Message.Type and
-    //       Message.fromCommand() without creating a dummy instance?
-    IrcMessage {
-        id: ircMessage
     }
 
     onModelDataChanged: {

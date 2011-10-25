@@ -51,7 +51,7 @@ void SessionItem::updateCurrent(AbstractSessionItem* item)
     m_handler.setCurrentReceiver(item->isCurrent() ? item : this);
 }
 
-void SessionItem::addChild(const QString& name)
+QObject* SessionItem::addChild(const QString& name)
 {
     SessionChildItem* child = new SessionChildItem(this);
     connect(child, SIGNAL(alert(QObject*)), SIGNAL(alert(QObject*)));
@@ -59,6 +59,7 @@ void SessionItem::addChild(const QString& name)
     m_handler.addReceiver(name, child);
     m_children.append(child);
     emit childItemsChanged();
+    return child;
 }
 
 void SessionItem::renameChild(const QString& from, const QString& to)
