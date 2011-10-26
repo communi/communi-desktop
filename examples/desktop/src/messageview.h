@@ -18,6 +18,7 @@
 #include "ui_messageview.h"
 #include <ircsession.h>
 #include <ircmessage.h>
+#include <irccommand.h>
 #include "commandparser.h"
 #include "messageformatter.h"
 
@@ -63,6 +64,8 @@ private slots:
     void onCustomCommand(const QString& command, const QStringList& params);
 
 private:
+    static QString prettyNames(const QStringList& names, int columns);
+
     struct MessageViewData : public Ui::MessageView
     {
         QString receiver;
@@ -71,6 +74,7 @@ private:
         MessageFormatter formatter;
         QStringListModel* userModel;
         static QStringListModel* commandModel;
+        QSet<IrcCommand::Type> sentCommands;
     } d;
 };
 

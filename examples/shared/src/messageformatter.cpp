@@ -406,23 +406,6 @@ QString MessageFormatter::formatPingReply(const IrcSender& sender, const QString
     return QString();
 }
 
-QString MessageFormatter::prettyNames(QStringList names, int columns)
-{
-    qSort(names.begin(), names.end(), nameLessThan);
-
-    QString message;
-    message += "<table>";
-    for (int i = 0; i < names.count(); i += columns)
-    {
-        message += "<tr>";
-        for (int j = 0; j < columns; ++j)
-            message += "<td>" + colorize(names.value(i+j)) + "&nbsp;</td>";
-        message += "</tr>";
-    }
-    message += "</table>";
-    return message;
-}
-
 QString MessageFormatter::prettyUser(const IrcSender& sender)
 {
     const QString name = sender.name();

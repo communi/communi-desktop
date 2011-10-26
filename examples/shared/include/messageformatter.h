@@ -64,6 +64,10 @@ public:
 
     Q_INVOKABLE QString formatMessage(IrcMessage* message) const;
 
+    static QString prettyUser(const IrcSender& sender);
+    static QString prettyUser(const QString& user);
+    static QString colorize(const QString& str);
+
 protected:
     QString formatInviteMessage(IrcInviteMessage* message) const;
     QString formatJoinMessage(IrcJoinMessage* message) const;
@@ -80,10 +84,6 @@ protected:
     QString formatUnknownMessage(IrcMessage* message) const;
 
     static QString formatPingReply(const IrcSender& sender, const QString& arg);
-    static QString prettyNames(QStringList names, int columns);
-    static QString prettyUser(const IrcSender& sender);
-    static QString prettyUser(const QString& user);
-    static QString colorize(const QString& str);
 
 private:
     mutable struct Private

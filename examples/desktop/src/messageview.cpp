@@ -21,7 +21,6 @@
 #include <QShortcut>
 #include <QKeyEvent>
 #include <QDebug>
-#include <irccommand.h>
 #include <ircutil.h>
 #include <irc.h>
 
@@ -196,6 +195,7 @@ void MessageView::onSend(const QString& text)
     if (cmd)
     {
         d.session->sendCommand(cmd);
+        d.sentCommands.insert(cmd->type());
 
         if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction)
         {
@@ -286,11 +286,22 @@ void MessageView::receiveMessage(IrcMessage* message)
         append = false;
         break;
     case IrcMessage::Invite:
-    case IrcMessage::Numeric:
     case IrcMessage::Ping:
     case IrcMessage::Pong:
     case IrcMessage::Error:
         break;
+    case IrcMessage::Numeric: {
+            IrcNumericMessage* numeric = static_cast<IrcNumericMessage*>(message);
+            if (numeric->code() == Irc::RPL_ENDOFNAMES && d.sentCommands.contains(IrcCommand::Names))
+            {
+                QString names = prettyNames(d.formatter.currentNames(), 6);
+                appendMessage(d.formatter.formatMessage(message));
+                appendMessage(names);
+                d.sentCommands.remove(IrcCommand::Names);
+                return;
+            }
+            break;
+        }
     }
 
     if (matches)
@@ -325,4 +336,19 @@ void MessageView::onCustomCommand(const QString& command, const QStringList& par
         Application::showSettings();
     else if (command == "CONNECT")
         QMetaObject::invokeMethod(window(), "connectTo", Q_ARG(QString, params.value(0)), params.count() > 1 ? Q_ARG(quint16, params.value(1).toInt()) : QGenericArgument());
+}
+
+QString MessageView::prettyNames(const QStringList& names, int columns)
+{
+    QString message;
+    message += "<table>";
+    for (int i = 0; i < names.count(); i += columns)
+    {
+        message += "<tr>";
+        for (int j = 0; j < columns; ++j)
+            message += "<td>" + MessageFormatter::colorize(names.value(i+j)) + "&nbsp;</td>";
+        message += "</tr>";
+    }
+    message += "</table>";
+    return message;
 }
