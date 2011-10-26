@@ -53,12 +53,16 @@ void SessionItem::updateCurrent(AbstractSessionItem* item)
 
 QObject* SessionItem::addChild(const QString& name)
 {
-    SessionChildItem* child = new SessionChildItem(this);
-    connect(child, SIGNAL(alert(QObject*)), SIGNAL(alert(QObject*)));
-    child->setTitle(name);
-    m_handler.addReceiver(name, child);
-    m_children.append(child);
-    emit childItemsChanged();
+    SessionChildItem* child = qobject_cast<SessionChildItem*>(m_handler.getReceiver(name));
+    if (!child)
+    {
+        child = new SessionChildItem(this);
+        connect(child, SIGNAL(alert(QObject*)), SIGNAL(alert(QObject*)));
+        child->setTitle(name);
+        m_handler.addReceiver(name, child);
+        m_children.append(child);
+        emit childItemsChanged();
+    }
     return child;
 }
 

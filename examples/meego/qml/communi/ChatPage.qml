@@ -54,9 +54,27 @@ CommonPage {
         }
     }
 
+    SelectionDialog {
+        id: dialog
+        titleText: modelData ? modelData.title : ""
+        onAccepted: {
+            var name = model.get(selectedIndex).name;
+            while (name.length && name[0] == "@" || name[0] == "+")
+                name = name.slice(1);
+            bounceItem = modelData.sessionItem.addChild(name);
+            pageStack.pop();
+        }
+    }
+
     Connections {
         target: modelData
         onRemoved: page.pageStack.pop()
+        onNamesReceived: {
+            dialog.model.clear();
+            for (var i = 0; i < names.length; ++i)
+                dialog.model.append({"name": names[i]});
+            dialog.open();
+        }
     }
     onBannerClicked: pageStack.pop()
 
