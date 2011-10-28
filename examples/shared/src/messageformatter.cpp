@@ -269,7 +269,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
 {
     if (message->code() < 300)
         return tr("[INFO] %1").arg(IrcUtil::messageToHtml(MID_(1)));
-    if (message->code() > 399 && message->code() < 600)
+    if (QByteArray(Irc::toString(message->code())).startsWith("ERR_"))
         return tr("[ERROR] %1").arg(IrcUtil::messageToHtml(MID_(1)));
 
     switch (message->code())
@@ -279,17 +279,17 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
         return tr("[MOTD] %1").arg(IrcUtil::messageToHtml(MID_(1)));
     case Irc::RPL_AWAY:
     case Irc::RPL_WHOISOPERATOR:
-    case 310: // "is available for help"
-    case 320: // "is identified to services"
-    case 671: // nick is using a secure connection
+    case Irc::RPL_WHOISHELPOP: // "is available for help"
+    case Irc::RPL_WHOISSPECIAL: // "is identified to services"
+    case Irc::RPL_WHOISSECURE: // nick is using a secure connection
         return tr("! %1 %2").arg(message->sender().name(), message->parameters().join(" "));
-    case 378: // nick is connecting from <...>
+    case Irc::RPL_WHOISHOST: // nick is connecting from <...>
         return tr("! %1").arg(MID_(1));
     case Irc::RPL_WHOISUSER:
         return tr("! %1 is %2@%3 (%4)").arg(P_(1), P_(2), P_(3), IrcUtil::messageToHtml(MID_(5)));
     case Irc::RPL_WHOISSERVER:
         return tr("! %1 is online via %2 (%3)").arg(P_(1), P_(2), P_(3));
-    case 330: // nick user is logged in as
+    case Irc::RPL_WHOISACCOUNT: // nick user is logged in as
         return tr("! %1 %3 %2").arg(P_(1), P_(2), P_(3));
     case Irc::RPL_WHOWASUSER:
         return tr("! %1 was %2@%3 %4 %5").arg(P_(1), P_(2), P_(3), P_(4), P_(5));
@@ -302,9 +302,9 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
         return tr("! %1 is on channels %2").arg(P_(1), P_(2));
     case Irc::RPL_CHANNELMODEIS:
         return tr("! %1 mode is %2").arg(P_(1), P_(2));
-    case Irc::RPL_CHANNELURL:
+    case Irc::RPL_CHANNEL_URL:
         return tr("! %1 url is %2").arg(P_(1), IrcUtil::messageToHtml(P_(2)));
-    case Irc::RPL_CHANNELCREATED: {
+    case Irc::RPL_CREATIONTIME: {
         QDateTime dateTime = QDateTime::fromTime_t(P_(2).toInt());
         return tr("! %1 was created %2").arg(P_(1), dateTime.toString());
     }
@@ -312,7 +312,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
         return tr("! %1 has no topic set").arg(P_(1));
     case Irc::RPL_TOPIC:
         return tr("! %1 topic is \"%2\"").arg(P_(1), IrcUtil::messageToHtml(P_(2)));
-    case Irc::RPL_TOPICSET: {
+    case Irc::RPL_TOPICWHOTIME: {
         QDateTime dateTime = QDateTime::fromTime_t(P_(3).toInt());
         return tr("! %1 topic was set %2 by %3").arg(P_(1), dateTime.toString(), P_(2));
     }

@@ -205,13 +205,13 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
     case Irc::RPL_NOWAWAY:
     case Irc::RPL_AWAY:
     case Irc::RPL_WHOISOPERATOR:
-    case 310: // "is available for help"
-    case 320: // "is identified to services"
-    case 378: // nick is connecting from <...>
-    case 671: // nick is using a secure connection
+    case Irc::RPL_WHOISHELPOP: // "is available for help"
+    case Irc::RPL_WHOISSPECIAL: // "is identified to services"
+    case Irc::RPL_WHOISHOST: // nick is connecting from <...>
+    case Irc::RPL_WHOISSECURE: // nick is using a secure connection
     case Irc::RPL_WHOISUSER:
     case Irc::RPL_WHOISSERVER:
-    case 330: // nick user is logged in as
+    case Irc::RPL_WHOISACCOUNT: // nick user is logged in as
     case Irc::RPL_WHOWASUSER:
     case Irc::RPL_WHOISIDLE:
     case Irc::RPL_WHOISCHANNELS:
@@ -235,11 +235,11 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
 
     case Irc::RPL_ENDOFNAMES:
     case Irc::RPL_CHANNELMODEIS:
-    case Irc::RPL_CHANNELURL:
-    case Irc::RPL_CHANNELCREATED:
+    case Irc::RPL_CHANNEL_URL:
+    case Irc::RPL_CREATIONTIME:
     case Irc::RPL_NOTOPIC:
     case Irc::RPL_TOPIC:
-    case Irc::RPL_TOPICSET:
+    case Irc::RPL_TOPICWHOTIME:
         sendMessage(message, message->parameters().value(1));
         break;
 
