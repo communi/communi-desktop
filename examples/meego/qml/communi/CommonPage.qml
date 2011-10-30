@@ -79,31 +79,31 @@ Page {
                 font.pixelSize: 32
                 font.family: "Nokia Pure Text Light"
                 anchors.verticalCenter: parent.verticalCenter
-                width: parent.width - indicator.width - UI.DEFAULT_SPACING
+                width: parent.width // - indicator.width - UI.DEFAULT_SPACING
             }
 
-            Image {
-                id: indicator
-                width: 32
-                height: 32
-                visible: SessionModel.length > 0
-                source: mouseArea.pressed ? "image://theme/icon-m-common-gray"
-                      : SessionManager.online ? "image://theme/icon-m-presence-online"
-                      : SessionManager.offline ? "image://theme/icon-m-presence-offline"
-                      : "image://theme/icon-m-presence-unknown"
-                anchors.verticalCenter: parent.verticalCenter
+//            Image {
+//                id: indicator
+//                width: 32
+//                height: 32
+//                visible: SessionModel.length > 0
+//                source: mouseArea.pressed ? "image://theme/icon-m-common-gray"
+//                      : SessionManager.online ? "image://theme/icon-m-presence-online"
+//                      : SessionManager.offline ? "image://theme/icon-m-presence-offline"
+//                      : "image://theme/icon-m-presence-unknown"
+//                anchors.verticalCenter: parent.verticalCenter
 
-                MouseArea {
-                    id: mouseArea
-                    width: parent.width * 2
-                    height: header.height
-                    anchors.centerIn: parent
-                    onClicked: {
-                        if (SessionManager.offline)
-                            SessionManager.ensureNetwork();
-                    }
-                }
-            }
+//                MouseArea {
+//                    id: mouseArea
+//                    width: parent.width * 2
+//                    height: header.height
+//                    anchors.centerIn: parent
+//                    onClicked: {
+//                        if (SessionManager.offline)
+//                            SessionManager.ensureNetwork();
+//                    }
+//                }
+//            }
         }
 
         InfoBanner {

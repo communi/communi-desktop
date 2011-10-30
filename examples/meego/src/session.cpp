@@ -18,6 +18,20 @@
 Session::Session(QObject *parent) : IrcSession(parent)
 {
     connect(this, SIGNAL(password(QString*)), this, SLOT(onPassword(QString*)));
+    connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), &m_timer, SLOT(start()));
+    connect(this, SIGNAL(connecting()), &m_timer, SLOT(stop()));
+    connect(&m_timer, SIGNAL(timeout()), this, SLOT(open()));
+    setAutoReconnectDelay(15);
+}
+
+int Session::autoReconnectDelay() const
+{
+    return m_timer.interval();
+}
+
+void Session::setAutoReconnectDelay(int delay)
+{
+    m_timer.setInterval(delay * 1000);
 }
 
 bool Session::isSecure() const

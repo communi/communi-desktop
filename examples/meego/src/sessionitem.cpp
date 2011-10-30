@@ -21,15 +21,15 @@
 
 SessionItem::SessionItem(IrcSession* session) : AbstractSessionItem(session)
 {
-    setIcon("icon-m-content-description");
     setTitle(session->host());
     setSubtitle(session->nickName());
 
     connect(session, SIGNAL(hostChanged(QString)), this, SLOT(setTitle(QString)));
     connect(session, SIGNAL(nickNameChanged(QString)), this, SLOT(setSubtitle(QString)));
 
-    connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateBusy()));
-    connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateBusy()));
+    connect(session, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(updateState()));
+    connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateState()));
+    connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateState()));
 
     setSession(session);
     m_handler.setSession(session);
@@ -38,7 +38,9 @@ SessionItem::SessionItem(IrcSession* session) : AbstractSessionItem(session)
     connect(&m_handler, SIGNAL(receiverToBeAdded(QString)), SLOT(addChild(QString)));
     connect(&m_handler, SIGNAL(receiverToBeRenamed(QString,QString)), SLOT(renameChild(QString,QString)));
     connect(&m_handler, SIGNAL(receiverToBeRemoved(QString)), SLOT(removeChild(QString)));
+
     updateCurrent(this);
+    updateState();
 }
 
 QObjectList SessionItem::childItems() const
@@ -118,8 +120,18 @@ void SessionItem::receiveMessage(IrcMessage* message)
     }
 }
 
-void SessionItem::updateBusy()
+void SessionItem::updateState()
 {
     const IrcSession* session = m_handler.session();
-    setBusy(session && session->isActive() && !session->isConnected());
+    if (session->socket()->error() != QAbstractSocket::UnknownSocketError)
+        setIcon("icon-m-transfer-error");
+    else if (!session->isConnected() && !session->isActive())
+        setIcon("icon-m-common-presence-offline");
+    else
+        setIcon("icon-m-content-description");
+
+    setBusy(session->isActive() && !session->isConnected());
+
+    if (session->socket()->error() != QAbstractSocket::UnknownSocketError)
+        setAlertText(QString("%1\n%2").arg(session->host()).arg(session->socket()->errorString()));
 }

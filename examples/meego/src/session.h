@@ -15,7 +15,9 @@
 #ifndef SESSION_H
 #define SESSION_H
 
+#include <QTimer>
 #include <IrcSession>
+#include <QAbstractSocket>
 
 class Session : public IrcSession
 {
@@ -25,6 +27,9 @@ class Session : public IrcSession
 
 public:
     explicit Session(QObject *parent = 0);
+
+    int autoReconnectDelay() const;
+    void setAutoReconnectDelay(int delay);
 
     bool isSecure() const;
     void setSecure(bool secure);
@@ -36,6 +41,7 @@ private slots:
     void onPassword(QString* password);
 
 private:
+    QTimer m_timer;
     QString m_password;
 };
 
