@@ -9,7 +9,6 @@ QMAKE_CLEAN += $$PWD/*~
 HEADERS += $$PWD/completer.h
 HEADERS += $$PWD/historylineedit.h
 HEADERS += $$PWD/sharedtimer.h
-HEADERS += $$PWD/streamer.h
 HEADERS += $$PWD/tabwidget.h
 HEADERS += $$PWD/textbrowser.h
 HEADERS += $$PWD/trayicon.h
