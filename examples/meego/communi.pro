@@ -35,7 +35,6 @@ DEPENDPATH += src
 # Sources
 HEADERS += abstractsessionitem.h
 HEADERS += completer.h
-HEADERS += session.h
 HEADERS += sessionchilditem.h
 HEADERS += sessionitem.h
 HEADERS += sessionmanager.h
@@ -44,7 +43,6 @@ HEADERS += settings.h
 SOURCES += abstractsessionitem.cpp
 SOURCES += completer.cpp
 SOURCES += main.cpp
-SOURCES += session.cpp
 SOURCES += sessionchilditem.cpp
 SOURCES += sessionitem.cpp
 SOURCES += sessionmanager.cpp

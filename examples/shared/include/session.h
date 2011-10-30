@@ -17,32 +17,45 @@
 
 #include <QTimer>
 #include <IrcSession>
+#include <QStringList>
 #include <QAbstractSocket>
 
 class Session : public IrcSession
 {
     Q_OBJECT
+    Q_PROPERTY(QString name READ name WRITE setName)
+    Q_PROPERTY(int autoReconnectDelay READ autoReconnectDelay WRITE setAutoReconnectDelay)
+    Q_PROPERTY(QStringList autoJoinChannels READ autoJoinChannels WRITE setAutoJoinChannels)
     Q_PROPERTY(bool secure READ isSecure WRITE setSecure)
-    Q_PROPERTY(QString password READ getPassword WRITE setPassword)
+    Q_PROPERTY(QString password READ password WRITE setPassword)
 
 public:
     explicit Session(QObject *parent = 0);
 
+    QString name() const;
+    void setName(const QString& name);
+
     int autoReconnectDelay() const;
     void setAutoReconnectDelay(int delay);
+
+    QStringList autoJoinChannels() const;
+    void setAutoJoinChannels(const QStringList& channels);
 
     bool isSecure() const;
     void setSecure(bool secure);
 
-    QString getPassword() const;
+    QString password() const;
     void setPassword(const QString& password);
 
 private slots:
+    void onConnected();
     void onPassword(QString* password);
 
 private:
+    QString m_name;
     QTimer m_timer;
     QString m_password;
+    QStringList m_channels;
 };
 
 #endif // SESSION_H
