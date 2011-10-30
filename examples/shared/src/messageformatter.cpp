@@ -278,11 +278,11 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
     case Irc::RPL_MOTD:
         return tr("[MOTD] %1").arg(IrcUtil::messageToHtml(MID_(1)));
     case Irc::RPL_AWAY:
+        return tr("! %1 is away (%2)").arg(P_(1), MID_(2));
     case Irc::RPL_WHOISOPERATOR:
     case Irc::RPL_WHOISHELPOP: // "is available for help"
     case Irc::RPL_WHOISSPECIAL: // "is identified to services"
     case Irc::RPL_WHOISSECURE: // nick is using a secure connection
-        return tr("! %1 %2").arg(message->sender().name(), message->parameters().join(" "));
     case Irc::RPL_WHOISHOST: // nick is connecting from <...>
         return tr("! %1").arg(MID_(1));
     case Irc::RPL_WHOISUSER:
