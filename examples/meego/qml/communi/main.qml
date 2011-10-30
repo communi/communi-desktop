@@ -66,16 +66,7 @@ PageStackWindow {
 
             Component {
                 id: sessionComponent
-                Session {
-                    id: session
-                    property string channel
-                    onConnected: {
-                        if (channel.length) {
-                            var cmd = ircCommand.createJoin(channel);
-                            session.sendCommand(cmd);
-                        }
-                    }
-                }
+                Session { }
             }
 
             onAccepted: {
@@ -85,9 +76,9 @@ PageStackWindow {
                 session.realName = connectionSheet.name;
                 session.host = connectionSheet.host;
                 session.port = connectionSheet.port;
-                session.channel = connectionSheet.channel;
                 session.password = connectionSheet.password;
                 session.secure = connectionSheet.secure;
+                session.autoJoinChannels = connectionSheet.channel;
                 SessionManager.addSession(session);
 
                 connectionSheet.password = "";
