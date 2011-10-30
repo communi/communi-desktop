@@ -13,6 +13,7 @@
 */
 
 #include "session.h"
+#include <QApplication>
 #include <QSslSocket>
 #include <IrcCommand>
 
@@ -85,6 +86,35 @@ QString Session::password() const
 void Session::setPassword(const QString& password)
 {
     m_password = password;
+}
+
+Connection Session::toConnection() const
+{
+    Connection connection;
+    connection.name = name();
+    connection.secure = isSecure();
+    connection.host = host();
+    connection.port = port();
+    connection.nick = nickName();
+    connection.real = realName();
+    connection.pass = password();
+    return connection;
+}
+
+Session* Session::fromConnection(const Connection& connection, QObject* parent)
+{
+    Session* session = new Session(parent);
+    session->setName(connection.name);
+    session->setSecure(connection.secure);
+    session->setPassword(connection.pass);
+    QString appName = QApplication::applicationName();
+    session->setHost(connection.host);
+    session->setPort(connection.port);
+    session->setNickName(connection.nick);
+    session->setUserName(appName.toLower());
+    session->setRealName(connection.real.isEmpty() ? appName : connection.real);
+    session->setAutoJoinChannels(connection.channels);
+    return session;
 }
 
 void Session::onConnected()

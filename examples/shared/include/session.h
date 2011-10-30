@@ -19,6 +19,7 @@
 #include <IrcSession>
 #include <QStringList>
 #include <QAbstractSocket>
+#include "connection.h"
 
 class Session : public IrcSession
 {
@@ -46,6 +47,9 @@ public:
 
     QString password() const;
     void setPassword(const QString& password);
+
+    Connection toConnection() const;
+    static Session* fromConnection(const Connection& connection, QObject* parent = 0);
 
 private slots:
     void onConnected();
