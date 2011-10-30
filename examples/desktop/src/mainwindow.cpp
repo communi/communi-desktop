@@ -112,17 +112,7 @@ void MainWindow::connectTo(const Connection& connection)
 
 void MainWindow::connectToImpl(const Connection& connection)
 {
-    Session* session = new Session(this);
-    session->setName(connection.name);
-    session->setSecure(connection.secure);
-    session->setPassword(connection.pass);
-    QString appName = QApplication::applicationName();
-    session->setHost(connection.host);
-    session->setPort(connection.port);
-    session->setNickName(connection.nick);
-    session->setUserName(appName.toLower());
-    session->setRealName(connection.real.isEmpty() ? appName : connection.real);
-    session->setAutoJoinChannels(connection.channels);
+    Session* session = Session::fromConnection(connection);
     session->setEncoding(Application::encoding());
     session->open();
 
@@ -147,14 +137,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
         SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(tabWidget->widget(i));
         if (tab)
         {
-            Connection connection;
-            connection.name = tab->session()->name();
-            connection.secure = tab->session()->isSecure();
-            connection.host = tab->session()->host();
-            connection.port = tab->session()->port();
-            connection.nick = tab->session()->nickName();
-            connection.real = tab->session()->realName();
-            connection.pass = tab->session()->password();
+            Connection connection = tab->session()->toConnection();
             connection.channels = tab->channels();
             connections += connection;
             tab->quit();
