@@ -19,7 +19,7 @@
 #include <IrcCommand>
 #include <Irc>
 
-SessionItem::SessionItem(IrcSession* session) : AbstractSessionItem(session)
+SessionItem::SessionItem(Session* session) : AbstractSessionItem(session)
 {
     setTitle(session->host());
     setSubtitle(session->nickName());
@@ -46,6 +46,18 @@ SessionItem::SessionItem(IrcSession* session) : AbstractSessionItem(session)
 QObjectList SessionItem::childItems() const
 {
     return m_children;
+}
+
+QStringList SessionItem::channels() const
+{
+    QStringList chans;
+    for (int i = 0; i < m_children.count(); ++i)
+    {
+        SessionChildItem* child = static_cast<SessionChildItem*>(m_children.at(i));
+        if (child->isChannel())
+            chans += child->title();
+    }
+    return chans;
 }
 
 void SessionItem::updateCurrent(AbstractSessionItem* item)

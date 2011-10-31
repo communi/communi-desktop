@@ -71,7 +71,6 @@ PageStackWindow {
 
             onAccepted: {
                 var session = sessionComponent.createObject(window);
-                session.userName = "communi";
                 session.nickName = connectionSheet.name;
                 session.realName = connectionSheet.name;
                 session.host = connectionSheet.host;
@@ -115,4 +114,7 @@ PageStackWindow {
             }
         }
     }
+
+    Component.onCompleted: SessionManager.restore()
+    Component.onDestruction: SessionManager.save()
 }

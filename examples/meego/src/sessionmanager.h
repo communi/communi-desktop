@@ -36,6 +36,10 @@ public:
     Q_INVOKABLE void removeSession(Session* session);
     Q_INVOKABLE bool ensureNetwork();
 
+public slots:
+    void restore();
+    void save();
+
 signals:
     void onlineStateChanged();
     void offlineStateChanged();

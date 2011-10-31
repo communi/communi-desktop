@@ -16,6 +16,7 @@
 #define SETTINGS_H
 
 #include <QObject>
+#include "connection.h"
 
 class Settings : public QObject
 {
@@ -25,6 +26,7 @@ class Settings : public QObject
     Q_PROPERTY(bool secure READ isSecure WRITE setSecure)
     Q_PROPERTY(QString name READ name WRITE setName)
     Q_PROPERTY(QString channel READ channel WRITE setChannel)
+    Q_PROPERTY(Connections connections READ connections WRITE setConnections)
 
 public:
     explicit Settings(QObject *parent = 0);
@@ -43,6 +45,9 @@ public:
 
     QString channel() const;
     void setChannel(const QString& channel);
+
+    Connections connections() const;
+    void setConnections(const Connections& connections);
 };
 
 #endif // SETTINGS_H

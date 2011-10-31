@@ -19,6 +19,8 @@
 Settings::Settings(QObject *parent) : QObject(parent)
 {
     qsrand(QTime::currentTime().msec());
+    qRegisterMetaTypeStreamOperators<Connection>("Connection");
+    qRegisterMetaTypeStreamOperators<Connections>("Connections");
 }
 
 QString Settings::host() const
@@ -50,3 +52,9 @@ QString Settings::channel() const
 
 void Settings::setChannel(const QString& channel)
 { QSettings().setValue("channel", channel); }
+
+Connections Settings::connections() const
+{ return QSettings().value("connections").value<Connections>(); }
+
+void Settings::setConnections(const Connections& connections)
+{ QSettings().setValue("connections", QVariant::fromValue(connections)); }

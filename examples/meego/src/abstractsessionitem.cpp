@@ -35,12 +35,12 @@ AbstractSessionItem::~AbstractSessionItem()
     emit removed();
 }
 
-IrcSession* AbstractSessionItem::session() const
+Session* AbstractSessionItem::session() const
 {
     return m_session;
 }
 
-void AbstractSessionItem::setSession(IrcSession *session)
+void AbstractSessionItem::setSession(Session *session)
 {
     m_session = session;
     m_formatter.setHighlights(QStringList() << session->nickName());

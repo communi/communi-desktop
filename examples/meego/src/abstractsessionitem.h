@@ -19,14 +19,14 @@
 #include <QStringListModel>
 #include "messageformatter.h"
 #include <IrcCommand>
+#include "session.h"
 
 class IrcMessage;
-class IrcSession;
 
 class AbstractSessionItem : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(IrcSession* session READ session)
+    Q_PROPERTY(Session* session READ session)
     Q_PROPERTY(QString icon READ icon WRITE setIcon NOTIFY iconChanged)
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
     Q_PROPERTY(QString subtitle READ subtitle WRITE setSubtitle NOTIFY subtitleChanged)
@@ -43,7 +43,7 @@ public:
     explicit AbstractSessionItem(QObject *parent = 0);
     ~AbstractSessionItem();
 
-    IrcSession* session() const;
+    Session* session() const;
 
     QString icon() const;
     QString title() const;
@@ -92,10 +92,10 @@ protected slots:
     virtual void receiveMessage(IrcMessage* message);
 
 protected:
-    void setSession(IrcSession* session);
+    void setSession(Session* session);
 
 private:
-    IrcSession* m_session;
+    Session* m_session;
     QString m_icon;
     QString m_title;
     QString m_subtitle;

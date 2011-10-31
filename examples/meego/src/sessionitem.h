@@ -25,9 +25,10 @@ class SessionItem : public AbstractSessionItem
     Q_PROPERTY(QObjectList childItems READ childItems NOTIFY childItemsChanged)
 
 public:
-    explicit SessionItem(IrcSession* session);
+    explicit SessionItem(Session* session);
 
     QObjectList childItems() const;
+    QStringList channels() const;
 
     void updateCurrent(AbstractSessionItem* item);
 

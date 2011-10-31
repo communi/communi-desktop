@@ -14,6 +14,8 @@
 
 #include "sessionmanager.h"
 #include "sessionitem.h"
+#include "connection.h"
+#include "settings.h"
 #include "session.h"
 #include <QNetworkConfigurationManager>
 #include <IrcCommand>
@@ -41,6 +43,7 @@ void SessionManager::addSession(Session* session)
     m_items.append(item);
     updateModel();
 
+    session->setUserName("communi");
     if (ensureNetwork())
         session->open();
 }
@@ -80,6 +83,33 @@ bool SessionManager::ensureNetwork()
         }
     }
     return m_network->isOpen();
+}
+
+void SessionManager::restore()
+{
+    Settings* settings = static_cast<Settings*>(m_context->contextProperty("Settings").value<QObject*>());
+    if (settings)
+    {
+        foreach (const Connection& connection, settings->connections())
+            addSession(Session::fromConnection(connection));
+    }
+}
+
+void SessionManager::save()
+{
+    Settings* settings = static_cast<Settings*>(m_context->contextProperty("Settings").value<QObject*>());
+    if (settings)
+    {
+        Connections connections;
+        foreach (QObject* item, m_items)
+        {
+            SessionItem* sessionItem = static_cast<SessionItem*>(item);
+            Connection connection = sessionItem->session()->toConnection();
+            connection.channels = sessionItem->channels();
+            connections += connection;
+        }
+        settings->setConnections(connections);
+    }
 }
 
 void SessionManager::onNetworkStateChanged(QNetworkSession::State state)
