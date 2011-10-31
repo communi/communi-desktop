@@ -38,17 +38,17 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     qmlRegisterType<MessageFormatter>("Communi", 1, 0, "MessageFormatter");
     qmlRegisterType<MessageHandler>("Communi", 1, 0, "MessageHandler");
 
-    Settings settings;
-    viewer->rootContext()->setContextProperty("Settings", &settings);
+    Settings* settings = new Settings(viewer->rootContext());
+    viewer->rootContext()->setContextProperty("Settings", settings);
 
-    CommandParser parser;
-    viewer->rootContext()->setContextProperty("CommandParser", &parser);
+    CommandParser* parser = new CommandParser(viewer->rootContext());
+    viewer->rootContext()->setContextProperty("CommandParser", parser);
 
-    Completer completer;
-    viewer->rootContext()->setContextProperty("Completer", &completer);
+    Completer* completer = new Completer(viewer->rootContext());
+    viewer->rootContext()->setContextProperty("Completer", completer);
 
-    SessionManager manager(viewer->rootContext());
-    viewer->rootContext()->setContextProperty("SessionManager", &manager);
+    SessionManager* manager = new SessionManager(viewer->rootContext());
+    viewer->rootContext()->setContextProperty("SessionManager", manager);
     qmlRegisterUncreatableType<SessionItem>("Communi", 1, 0, "SessionItem", "");
     qmlRegisterType<Session>("Communi", 1, 0, "Session");
 
