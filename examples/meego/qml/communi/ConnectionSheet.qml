@@ -29,6 +29,8 @@ CommonSheet {
     acceptable: name != "" && host != "" && port != ""
     titleText: qsTr("Add connection")
 
+    onStatusChanged: if (status == DialogStatus.Open) hostField.forceActiveFocus()
+
     Column {
         id: column
         anchors.fill: parent

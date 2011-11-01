@@ -94,6 +94,9 @@ PageStackWindow {
             value: "#"
             titleText: qsTr("Join channel")
             description: qsTr("Channel")
+            onValueChanged: {
+                acceptable = value.length > 1 && (value[0] == "#" || value[0] == "&");
+            }
             onAccepted: {
                 var item = SessionModel[channelSheet.session];
                 if (item) {
@@ -107,6 +110,9 @@ PageStackWindow {
             id: querySheet
             titleText: qsTr("Open query")
             description: qsTr("User")
+            onValueChanged: {
+                acceptable = value.length;
+            }
             onAccepted: {
                 var item = SessionModel[querySheet.session];
                 if (item)

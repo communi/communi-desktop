@@ -23,7 +23,8 @@ CommonSheet {
     property alias description: description.text
     property int session: buttons.checkedButton ? buttons.checkedButton.idx : -1
 
-    acceptable: session != -1 && value != ""
+    acceptable: false
+    onStatusChanged: if (status == DialogStatus.Open) valueField.forceActiveFocus()
 
     Column {
         id: column
@@ -48,6 +49,7 @@ CommonSheet {
         TextField {
             id: valueField
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+            errorHighlight: !sheet.acceptable
             width: parent.width
         }
     }
