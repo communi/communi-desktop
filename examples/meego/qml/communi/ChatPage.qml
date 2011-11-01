@@ -81,6 +81,8 @@ CommonPage {
     ListView {
         id: listView
 
+        cacheBuffer: listView.height * 2
+
         anchors {
             top: parent.top
             left: parent.left
@@ -96,9 +98,9 @@ CommonPage {
             onLinkActivated: Qt.openUrlExternally(link)
         }
 
-        onHeightChanged: listView.positionViewAtEnd()
+        onHeightChanged: if (!positioner.running) positioner.start()
         onCountChanged: {
-            if (!moving) listView.positionViewAtEnd();
+            if (!positioner.running) positioner.start();
             if (currentIndex == -1) currentIndex = count - 2;
         }
 
@@ -120,9 +122,9 @@ CommonPage {
     }
 
     Timer {
-        id: timer
-        interval: 50
-        onTriggered: listView.positionViewAtEnd()
+        id: positioner
+        interval: 100
+        onTriggered: if (!listView.moving) listView.positionViewAtEnd()
     }
 
     TextField {
@@ -136,16 +138,14 @@ CommonPage {
             left: parent.left
             right: parent.right
             bottom: parent.bottom
+            margins: UI.PAGE_MARGIN
         }
 
         onActiveFocusChanged: {
             textField.height = activeFocus ? textField.implicitHeight : 0;
-            if (!activeFocus) {
+            if (!activeFocus)
                 textField.visible = false;
-                inputContext.reset();
-                textField.text = "";
-            }
-            timer.start();
+            if (!positioner.running) positioner.start();
         }
 
         Keys.onReturnPressed: {

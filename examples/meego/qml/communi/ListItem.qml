@@ -89,7 +89,7 @@ Item {
 
         Component {
             id: countBubble
-            CountBubble { value: modelData.unread }
+            CountBubble { value: modelData.unread; largeSized: true }
         }
 
         Component {

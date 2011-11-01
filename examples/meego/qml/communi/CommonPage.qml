@@ -64,6 +64,10 @@ Page {
             bottom: 2
         }
 
+        MouseArea {
+            anchors.fill: parent
+        }
+
         Row {
             spacing: UI.DEFAULT_SPACING
             anchors {
