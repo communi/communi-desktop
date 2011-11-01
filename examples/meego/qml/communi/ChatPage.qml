@@ -20,7 +20,6 @@ import "UIConstants.js" as UI
 CommonPage {
     id: page
 
-    property IrcSession session: null
     property QtObject modelData: null
 
     function sendMessage(receiver, message) {
@@ -47,7 +46,6 @@ CommonPage {
     onModelDataChanged: {
         listView.currentIndex = -1;
         if (modelData) {
-            session = modelData.session;
             listView.model = modelData.messages;
             listView.currentIndex = listView.count - modelData.unseen - 1;
             Completer.modelItem = modelData;
