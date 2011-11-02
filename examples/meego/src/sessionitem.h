@@ -48,6 +48,7 @@ private slots:
     void updateState();
 
 private:
+    bool m_closing;
     QObjectList m_children;
     MessageHandler m_handler;
 };

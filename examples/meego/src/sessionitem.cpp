@@ -19,7 +19,7 @@
 #include <IrcCommand>
 #include <Irc>
 
-SessionItem::SessionItem(Session* session) : AbstractSessionItem(session)
+SessionItem::SessionItem(Session* session) : AbstractSessionItem(session), m_closing(false)
 {
     setTitle(session->host());
     setSubtitle(session->nickName());
@@ -118,7 +118,7 @@ void SessionItem::removeChild(const QString& name)
 
 void SessionItem::quit()
 {
-    session()->sendCommand(IrcCommand::createQuit(tr("Communi 1.0.0 for MeeGo")));
+    m_closing = session()->sendCommand(IrcCommand::createQuit(tr("Communi 1.0.0 for MeeGo")));
 }
 
 void SessionItem::receiveMessage(IrcMessage* message)
@@ -134,7 +134,7 @@ void SessionItem::receiveMessage(IrcMessage* message)
 
 void SessionItem::updateState()
 {
-    const IrcSession* session = m_handler.session();
+    IrcSession* session = m_handler.session();
     if (session->socket()->error() != QAbstractSocket::UnknownSocketError)
         setIcon("icon-m-transfer-error");
     else if (!session->isConnected() && !session->isActive())
@@ -144,6 +144,10 @@ void SessionItem::updateState()
 
     setBusy(session->isActive() && !session->isConnected());
 
-    if (session->socket()->error() != QAbstractSocket::UnknownSocketError)
+    bool hasError = session->socket()->error() != QAbstractSocket::UnknownSocketError;
+    if (!m_closing && hasError)
         setAlertText(QString("%1\n%2").arg(session->host()).arg(session->socket()->errorString()));
+
+    if (m_closing && (hasError || !session->isConnected()))
+        session->deleteLater();
 }
