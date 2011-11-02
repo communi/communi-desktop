@@ -18,7 +18,11 @@
 #include "settings.h"
 #include "session.h"
 #include <irccommand.h>
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#include <QtWidgets>
+#else
 #include <QtGui>
+#endif
 
 SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     TabWidget(parent)

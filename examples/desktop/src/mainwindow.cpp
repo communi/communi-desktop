@@ -21,7 +21,11 @@
 #include "connection.h"
 #include "homepage.h"
 #include "session.h"
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#include <QtWidgets>
+#else
 #include <QtGui>
+#endif
 #include <irccommand.h>
 
 MainWindow::MainWindow(QWidget* parent) :
