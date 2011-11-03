@@ -23,7 +23,7 @@ class IrcMessage;
 class SessionChildItem : public AbstractSessionItem
 {
     Q_OBJECT
-    Q_PROPERTY(bool channel READ isChannel)
+    Q_PROPERTY(bool channel READ isChannel CONSTANT)
     Q_PROPERTY(SessionItem* sessionItem READ sessionItem)
 
 public:

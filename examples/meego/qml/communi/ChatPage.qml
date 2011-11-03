@@ -35,6 +35,15 @@ CommonPage {
             onClicked: root.pageStack.pop()
         }
         ToolIcon {
+            visible: modelData !== null && modelData.channel !== undefined
+            iconId: "toolbar-list"
+            onClicked: {
+                var cmd = modelData.channel ? ircCommand.createNames(modelData.title)
+                                            : ircCommand.createWhois(modelData.title);
+                modelData.sendCommand(cmd);
+            }
+        }
+        ToolIcon {
             iconId: "toolbar-new-message"
             onClicked: {
                 textField.visible = true;
