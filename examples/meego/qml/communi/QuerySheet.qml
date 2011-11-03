@@ -24,7 +24,7 @@ CommonSheet {
 
     titleText: qsTr("Open query")
     acceptable: !nameField.errorHighlight
-    onStatusChanged: if (status == DialogStatus.Open) userField.forceActiveFocus()
+    onStatusChanged: if (status == DialogStatus.Open) nameField.forceActiveFocus()
 
     Column {
         id: column
