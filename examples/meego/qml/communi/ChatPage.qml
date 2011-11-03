@@ -129,7 +129,7 @@ CommonPage {
         id: textField
         height: 0
         visible: false
-        inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+        inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhUrlCharactersOnly
         platformSipAttributes: SipAttributes { actionKeyHighlighted: true }
 
         anchors {
