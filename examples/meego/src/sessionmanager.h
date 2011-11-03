@@ -44,6 +44,7 @@ signals:
     void onlineStateChanged();
     void offlineStateChanged();
     void alert(QObject* item);
+    void channelKeyRequired(const QString& channel);
 
 private slots:
     void onNetworkStateChanged(QNetworkSession::State state);

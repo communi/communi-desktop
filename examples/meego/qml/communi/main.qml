@@ -89,34 +89,32 @@ PageStackWindow {
             }
         }
 
-        ChatSheet {
-            id: channelSheet
-            value: "#"
-            titleText: qsTr("Join channel")
-            description: qsTr("Channel")
-            onValueChanged: {
-                acceptable = value.length > 1 && (value[0] == "#" || value[0] == "&");
+        Connections {
+            target: SessionManager
+            onChannelKeyRequired: {
+                channelSheet.channel = channel;
+                channelSheet.passwordRequired = true;
+                channelSheet.open();
             }
+        }
+
+        ChannelSheet {
+            id: channelSheet
             onAccepted: {
-                var item = SessionModel[channelSheet.session];
+                var item = SessionModel[channelSheet.sessionIndex];
                 if (item) {
-                    var cmd = ircCommand.createJoin(channelSheet.value);
+                    var cmd = ircCommand.createJoin(channelSheet.channel, channelSheet.password);
                     item.session.sendCommand(cmd);
                 }
             }
         }
 
-        ChatSheet {
+        QuerySheet {
             id: querySheet
-            titleText: qsTr("Open query")
-            description: qsTr("User")
-            onValueChanged: {
-                acceptable = value.length;
-            }
             onAccepted: {
-                var item = SessionModel[querySheet.session];
+                var item = SessionModel[querySheet.sessionIndex];
                 if (item)
-                    item.addChild(querySheet.value);
+                    item.addChild(querySheet.name);
             }
         }
     }

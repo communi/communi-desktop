@@ -19,12 +19,12 @@ import "UIConstants.js" as UI
 CommonSheet {
     id: sheet
 
-    property alias value: valueField.text
-    property alias description: description.text
-    property int session: buttons.checkedButton ? buttons.checkedButton.idx : -1
+    property alias name: nameField.text
+    property int sessionIndex: buttons.checkedButton ? buttons.checkedButton.idx : -1
 
-    acceptable: false
-    onStatusChanged: if (status == DialogStatus.Open) valueField.forceActiveFocus()
+    titleText: qsTr("Open query")
+    acceptable: !nameField.errorHighlight
+    onStatusChanged: if (status == DialogStatus.Open) userField.forceActiveFocus()
 
     Column {
         id: column
@@ -45,11 +45,11 @@ CommonSheet {
             }
         }
 
-        Label { id: description }
         TextField {
-            id: valueField
+            id: nameField
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-            errorHighlight: !sheet.acceptable
+            placeholderText: qsTr("Name")
+            errorHighlight: !text.length
             width: parent.width
         }
     }

@@ -40,6 +40,7 @@ void SessionManager::addSession(Session* session)
 {
     SessionItem* item = new SessionItem(session);
     connect(item, SIGNAL(alert(QObject*)), SIGNAL(alert(QObject*)));
+    connect(item, SIGNAL(channelKeyRequired(QString)), SIGNAL(channelKeyRequired(QString)));
     m_items.append(item);
     updateModel();
 

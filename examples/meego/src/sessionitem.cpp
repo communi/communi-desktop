@@ -129,6 +129,8 @@ void SessionItem::receiveMessage(IrcMessage* message)
         IrcNumericMessage* numeric = static_cast<IrcNumericMessage*>(message);
         if (numeric->code() == Irc::ERR_NICKNAMEINUSE)
             session()->setNickName(session()->nickName() + "_");
+        else if (numeric->code() == Irc::ERR_BADCHANNELKEY)
+            emit channelKeyRequired(message->parameters().value(1));
     }
 }
 
