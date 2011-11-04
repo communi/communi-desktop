@@ -139,7 +139,10 @@ CommonPage {
         height: 0
         visible: false
         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhUrlCharactersOnly
-        platformSipAttributes: SipAttributes { actionKeyHighlighted: true }
+        platformSipAttributes: SipAttributes {
+            actionKeyHighlighted: true
+            actionKeyLabel: qsTr("Send")
+        }
 
         anchors {
             left: parent.left
