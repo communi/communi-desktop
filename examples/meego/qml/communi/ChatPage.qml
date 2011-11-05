@@ -53,10 +53,10 @@ CommonPage {
     }
 
     onModelDataChanged: {
-        listView.currentIndex = -1;
+        //listView.currentIndex = -1;
         if (modelData) {
             listView.model = modelData.messages;
-            listView.currentIndex = listView.count - modelData.unseen - 1;
+            //listView.currentIndex = listView.count - modelData.unseen - 1;
             Completer.modelItem = modelData;
         }
     }
@@ -106,19 +106,19 @@ CommonPage {
         onHeightChanged: if (!positioner.running) positioner.start()
         onCountChanged: {
             if (!positioner.running) positioner.start();
-            if (currentIndex == -1) currentIndex = count - 2;
+            //if (currentIndex == -1) currentIndex = count - 2;
         }
 
-        highlight: Item {
-            y: listView.currentItem !== null ? listView.currentItem.y : 0
-            visible: listView.currentItem !== null && listView.currentIndex < listView.count - 1
-            Rectangle {
-                width: listView.width
-                height: 1
-                color: "red"
-                anchors.bottom: parent.bottom
-            }
-        }
+//        highlight: Item {
+//            y: listView.currentItem !== null ? listView.currentItem.y : 0
+//            visible: listView.currentItem !== null && listView.currentIndex < listView.count - 1
+//            Rectangle {
+//                width: listView.width
+//                height: 1
+//                color: "red"
+//                anchors.bottom: parent.bottom
+//            }
+//        }
     }
 
     ScrollDecorator {
