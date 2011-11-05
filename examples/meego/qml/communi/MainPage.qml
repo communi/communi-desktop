@@ -72,6 +72,10 @@ CommonPage {
                 target: root.pageStack
                 onCurrentPageChanged: banner.hide()
             }
+            onVisibleChanged: {
+                if (!banner.visible)
+                    banner.destroy();
+            }
         }
     }
 
