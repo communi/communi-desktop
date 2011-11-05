@@ -65,7 +65,10 @@ void SessionChildItem::receiveMessage(IrcMessage* message)
         }
 
         if (!alertText.isEmpty())
+        {
             setAlertText(alertText);
+            emit alert(this);
+        }
 
         if (!isCurrent())
             setUnread(unread() + 1);

@@ -68,8 +68,7 @@ CommonPage {
             var name = model.get(selectedIndex).name;
             while (name.length && name[0] == "@" || name[0] == "+")
                 name = name.slice(1);
-            bounceItem = modelData.sessionItem.addChild(name);
-            pageStack.pop();
+            bouncer.bounce(modelData.sessionItem.addChild(name));
         }
     }
 
@@ -83,7 +82,6 @@ CommonPage {
             dialog.open();
         }
     }
-    onBannerClicked: pageStack.pop()
 
     ListView {
         id: listView

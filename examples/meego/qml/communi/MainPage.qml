@@ -55,46 +55,67 @@ CommonPage {
         flickableItem: listView
     }
 
-    property QtObject bounceItem: null
+    Component {
+        id: bannerComponent
+        InfoBanner {
+            id: banner
+            timerShowTime: 5000
+            property QtObject item
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    bouncer.bounce(item);
+                    banner.hide();
+                }
+            }
+            Connections {
+                target: root.pageStack
+                onCurrentPageChanged: banner.hide()
+            }
+        }
+    }
 
     Connections {
         target: SessionManager
         onAlert: {
-            var banner = root.banner;
-            if (chatPage.status == PageStatus.Active)
-                banner = chatPage.banner;
-            bounceItem = item;
+            var banner = bannerComponent.createObject(pageStack.currentPage.header);
             banner.text = item.alertText;
+            banner.item = item;
             banner.show();
         }
     }
-
-    onBannerClicked: chatPage.push(bounceItem)
 
     ChatPage {
         id: chatPage
         function push(data) {
             modelData = data;
             root.pageStack.push(chatPage);
-            root.bounceItem = null;
         }
         onStatusChanged: {
             if (modelData)
-                modelData.current = (status == PageStatus.Active);
-            if (status == PageStatus.Inactive) {
+                modelData.current = (status !== PageStatus.Inactive);
+            if (status == PageStatus.Inactive)
                 modelData = null;
-                if (bounceItem)
-                    bounceTimer.running = true;
-            }
+            if (status == PageStatus.Inactive && bouncer.item)
+                bouncer.start();
         }
     }
 
     Timer {
-        id: bounceTimer
+        id: bouncer
         interval: 50
+        property QtObject item
+        function bounce(item) {
+            if (root.status === PageStatus.Active) {
+                chatPage.push(item);
+            } else {
+                bouncer.item = item;
+                pageStack.pop();
+            }
+        }
         onTriggered: {
-            if (bounceItem)
-                chatPage.push(bounceItem);
+            chatPage.push(bouncer.item)
+            bouncer.item = null;
         }
     }
 

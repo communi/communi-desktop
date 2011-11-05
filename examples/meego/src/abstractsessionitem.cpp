@@ -176,11 +176,7 @@ QString AbstractSessionItem::alertText() const
 
 void AbstractSessionItem::setAlertText(const QString& text)
 {
-    if (m_alertText != text)
-    {
-        m_alertText = text;
-        emit alert(this);
-    }
+    m_alertText = text;
 }
 
 QStringList AbstractSessionItem::users() const
