@@ -113,7 +113,18 @@ CommonPage {
             text: display
             width: listView.width
             wrapMode: Text.Wrap
-            onLinkActivated: Qt.openUrlExternally(link)
+            onLinkActivated: {
+                page.busy = true;
+                Qt.openUrlExternally(link);
+            }
+        }
+
+        Connections {
+            target: Qt.application
+            onActiveChanged: {
+                if (!Qt.application.active)
+                    page.busy = false;
+            }
         }
 
         onHeightChanged: if (!positioner.running) positioner.start()

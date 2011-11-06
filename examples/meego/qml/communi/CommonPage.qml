@@ -22,6 +22,7 @@ Page {
 
     property alias title: label.text
     property alias header: header
+    property alias busy: indicator.running
     default property alias content: content.data
 
     Rectangle {
@@ -81,7 +82,17 @@ Page {
                 font.pixelSize: 32
                 font.family: "Nokia Pure Text Light"
                 anchors.verticalCenter: parent.verticalCenter
-                width: parent.width // - indicator.width - UI.DEFAULT_SPACING
+                width: parent.width - indicator.width - UI.DEFAULT_SPACING
+            }
+
+            BusyIndicator {
+                id: indicator
+                visible: running
+                anchors.verticalCenter: parent.verticalCenter
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: indicator.busy = false
+                }
             }
 
 //            Image {
