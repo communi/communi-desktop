@@ -85,6 +85,7 @@ signals:
     void alert(QObject* item);
     void removed();
     void namesReceived(const QStringList& names);
+    void whoisReceived(const QStringList& whois);
 
 protected slots:
     virtual void addUser(const QString& user);
@@ -102,6 +103,7 @@ private:
     bool m_busy;
     bool m_current;
     bool m_highlighted;
+    QStringList m_whois;
     QStringList m_users;
     QStringListModel* m_messages;
     MessageFormatter m_formatter;

@@ -13,6 +13,7 @@
 */
 
 #include "abstractsessionitem.h"
+#include <QDateTime>
 #include <IrcSession>
 #include <IrcMessage>
 #include <Irc>
@@ -218,12 +219,61 @@ void AbstractSessionItem::receiveMessage(IrcMessage* message)
     if (message->type() == IrcMessage::Numeric)
     {
         IrcNumericMessage* numeric = static_cast<IrcNumericMessage*>(message);
-        if (numeric->code() == Irc::RPL_ENDOFNAMES && m_sent.contains(IrcCommand::Names))
+        switch (numeric->code())
         {
-            emit namesReceived(m_formatter.currentNames());
-            m_sent.remove(IrcCommand::Names);
-            m_formatter.formatMessage(message);
+        case Irc::RPL_ENDOFNAMES:
+            if (m_sent.contains(IrcCommand::Names))
+            {
+                emit namesReceived(m_formatter.currentNames());
+                m_sent.remove(IrcCommand::Names);
+                m_formatter.formatMessage(message);
+                return;
+            }
+            break;
+        case Irc::RPL_WHOISUSER:
+            if (m_sent.contains(IrcCommand::Whois))
+            {
+                m_whois.append(tr("Ident: %1").arg(message->parameters().value(2)));
+                m_whois.append(tr("Host: %1").arg(message->parameters().value(3)));
+                m_whois.append(tr("Name: %1").arg(message->parameters().value(5)));
+                return;
+            }
+            break;
+        case Irc::RPL_WHOISSERVER:
+            if (m_sent.contains(IrcCommand::Whois))
+            {
+                m_whois.append(tr("Server: %1 (%2)").arg(message->parameters().value(2), message->parameters().value(3)));
+                return;
+            }
+            break;
+        case Irc::RPL_WHOISIDLE:
+            if (m_sent.contains(IrcCommand::Whois))
+            {
+                QDateTime signon = QDateTime::fromTime_t(message->parameters().value(3).toInt());
+                QTime idle = QTime().addSecs(message->parameters().value(2).toInt());
+                m_whois.append(tr("Connected: %1").arg(signon.toString()));
+                m_whois.append(tr("Idle: %1").arg(idle.toString()));
+                return;
+            }
+            break;
+        case Irc::RPL_WHOISCHANNELS:
+            if (m_sent.contains(IrcCommand::Whois))
+            {
+                m_whois.append(tr("Channels: %1").arg(message->parameters().value(2)));
+                return;
+            }
+            break;
+        case Irc::RPL_ENDOFWHOIS:
+            emit whoisReceived(m_whois);
+            m_whois.clear();
+        case Irc::RPL_WHOISOPERATOR:
+        case Irc::RPL_WHOISHELPOP:
+        case Irc::RPL_WHOISSPECIAL:
+        case Irc::RPL_WHOISSECURE:
+        case Irc::RPL_WHOISACCOUNT:
             return;
+        default:
+            break;
         }
     }
 

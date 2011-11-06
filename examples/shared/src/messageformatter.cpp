@@ -279,6 +279,8 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
         return tr("[MOTD] %1").arg(IrcUtil::messageToHtml(MID_(1)));
     case Irc::RPL_AWAY:
         return tr("! %1 is away (%2)").arg(P_(1), MID_(2));
+    case Irc::RPL_ENDOFWHOIS:
+        return QString();
     case Irc::RPL_WHOISOPERATOR:
     case Irc::RPL_WHOISHELPOP: // "is available for help"
     case Irc::RPL_WHOISSPECIAL: // "is identified to services"

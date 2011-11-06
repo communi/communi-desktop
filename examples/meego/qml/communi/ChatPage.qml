@@ -35,6 +35,7 @@ CommonPage {
             onClicked: root.pageStack.pop()
         }
         ToolIcon {
+            anchors.verticalCenter: parent.verticalCenter
             visible: modelData !== null && modelData.channel !== undefined
             iconId: "toolbar-list"
             onClicked: {
@@ -63,12 +64,20 @@ CommonPage {
 
     SelectionDialog {
         id: dialog
+        property bool names: false
+        function setContent(content) {
+            dialog.model.clear();
+            for (var i = 0; i < content.length; ++i)
+                dialog.model.append({"name": content[i]});
+        }
         titleText: modelData ? modelData.title : ""
         onAccepted: {
-            var name = model.get(selectedIndex).name;
-            while (name.length && name[0] == "@" || name[0] == "+")
-                name = name.slice(1);
-            bouncer.bounce(modelData.sessionItem.addChild(name));
+            if (names) {
+                var name = model.get(selectedIndex).name;
+                while (name.length && name[0] == "@" || name[0] == "+")
+                    name = name.slice(1);
+                bouncer.bounce(modelData.sessionItem.addChild(name));
+            }
         }
     }
 
@@ -76,9 +85,13 @@ CommonPage {
         target: modelData
         onRemoved: page.pageStack.pop()
         onNamesReceived: {
-            dialog.model.clear();
-            for (var i = 0; i < names.length; ++i)
-                dialog.model.append({"name": names[i]});
+            dialog.setContent(names);
+            dialog.names = true;
+            dialog.open();
+        }
+        onWhoisReceived: {
+            dialog.setContent(whois);
+            dialog.names = false;
             dialog.open();
         }
     }

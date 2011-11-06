@@ -229,10 +229,10 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
     case Irc::RPL_ENDOFMOTD:
     case Irc::RPL_ENDOFSTATS:
     case Irc::RPL_ENDOFUSERS:
-    case Irc::RPL_ENDOFWHOIS:
     case Irc::RPL_ENDOFWHOWAS:
         break; // ignore
 
+    case Irc::RPL_ENDOFWHOIS:
     case Irc::RPL_ENDOFNAMES:
     case Irc::RPL_CHANNELMODEIS:
     case Irc::RPL_CHANNEL_URL:
