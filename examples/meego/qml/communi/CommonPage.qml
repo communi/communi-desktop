@@ -20,6 +20,7 @@ import "UIConstants.js" as UI
 Page {
     id: page
 
+    property bool obscured: false
     property alias title: label.text
     property alias header: header
     property alias busy: indicator.running
@@ -53,8 +54,10 @@ Page {
         id: header
 
         width: parent.width
-        height: screen.currentOrientation == Screen.Landscape ? 46 : 72
+        height: screen.currentOrientation == Screen.Landscape || page.obscured ? 46 : 72
         source: "image://theme/meegotouch-sheet-header-background"
+
+        Behavior on height { NumberAnimation { } }
 
         border {
             top: 10

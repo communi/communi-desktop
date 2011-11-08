@@ -32,6 +32,9 @@ PageStackWindow {
                 onClicked: SessionModel.length ? menu.open() : connectionSheet.open()
             }
         }
+        obscured: connectionSheet.status == DialogStatus.Open || connectionSheet.status == DialogStatus.Opening
+                  || channelSheet.status !== DialogStatus.Closed || channelSheet.status == DialogStatus.Opening
+                  || querySheet.status !== DialogStatus.Closed || querySheet.status == DialogStatus.Opening
 
         Menu {
             id: menu
