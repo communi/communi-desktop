@@ -178,6 +178,7 @@ CommonPage {
         platformSipAttributes: SipAttributes {
             actionKeyHighlighted: true
             actionKeyLabel: qsTr("Send")
+            actionKeyEnabled: textField.text.length
         }
 
         anchors {
