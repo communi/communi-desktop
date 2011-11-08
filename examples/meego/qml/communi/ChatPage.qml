@@ -24,8 +24,20 @@ CommonPage {
 
     function sendMessage(receiver, message) {
         var cmd = CommandParser.parseCommand(receiver, message);
-        if (cmd && modelData)
-            modelData.sendCommand(cmd);
+        if (cmd && modelData) {
+            modelData.session.sendCommand(cmd);
+            if (cmd.type == IrcCommand.Message || cmd.type == IrcCommand.CtcpAction) {
+                var msg = ircMessage.fromCommand(modelData.session.nickName, cmd);
+                modelData.receiveMessage(msg);
+                msg.destroy();
+            }
+        }
+    }
+
+    // TODO: how to make it possible to access both Message.Type and
+    //       Message.fromCommand() without creating a dummy instance?
+    IrcMessage {
+        id: ircMessage
     }
 
     title: modelData ? modelData.title : ""
@@ -41,7 +53,7 @@ CommonPage {
             onClicked: {
                 var cmd = modelData.channel ? ircCommand.createNames(modelData.title)
                                             : ircCommand.createWhois(modelData.title);
-                modelData.sendCommand(cmd);
+                modelData.sendUiCommand(cmd);
             }
         }
         ToolIcon {
@@ -64,9 +76,11 @@ CommonPage {
 
     SelectionDialog {
         id: dialog
+        model: ListModel { }
         property bool names: false
         function setContent(content) {
             dialog.model.clear();
+            dialog.selectedIndex = -1;
             for (var i = 0; i < content.length; ++i)
                 dialog.model.append({"name": content[i]});
         }

@@ -215,6 +215,7 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
     case Irc::RPL_WHOWASUSER:
     case Irc::RPL_WHOISIDLE:
     case Irc::RPL_WHOISCHANNELS:
+    case Irc::RPL_ENDOFWHOIS:
     case Irc::RPL_INVITING:
     case Irc::RPL_VERSION:
     case Irc::RPL_TIME:
@@ -232,7 +233,6 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
     case Irc::RPL_ENDOFWHOWAS:
         break; // ignore
 
-    case Irc::RPL_ENDOFWHOIS:
     case Irc::RPL_ENDOFNAMES:
     case Irc::RPL_CHANNELMODEIS:
     case Irc::RPL_CHANNEL_URL:

@@ -70,7 +70,7 @@ public slots:
     void setUnread(int unread);
 //    void setUnseen(int unseen);
     void setAlertText(const QString& text);
-    void sendCommand(IrcCommand* command);
+    void sendUiCommand(IrcCommand* command);
 
 signals:
     void iconChanged();

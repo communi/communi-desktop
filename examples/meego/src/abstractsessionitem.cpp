@@ -202,16 +202,10 @@ void AbstractSessionItem::removeUser(const QString& user)
     emit usersChanged();
 }
 
-void AbstractSessionItem::sendCommand(IrcCommand *command)
+void AbstractSessionItem::sendUiCommand(IrcCommand *command)
 {
     m_sent.insert(command->type());
     m_session->sendCommand(command);
-    if (command->type() == IrcCommand::Message || command->type() == IrcCommand::CtcpAction)
-    {
-        IrcMessage* message = IrcMessage::fromCommand(m_session->nickName(), command);
-        receiveMessage(message);
-        message->deleteLater();
-    }
 }
 
 void AbstractSessionItem::receiveMessage(IrcMessage* message)
@@ -264,8 +258,12 @@ void AbstractSessionItem::receiveMessage(IrcMessage* message)
             }
             break;
         case Irc::RPL_ENDOFWHOIS:
-            emit whoisReceived(m_whois);
-            m_whois.clear();
+            if (m_sent.contains(IrcCommand::Whois))
+            {
+                emit whoisReceived(m_whois);
+                m_sent.remove(IrcCommand::Whois);
+                m_whois.clear();
+            }
         case Irc::RPL_WHOISOPERATOR:
         case Irc::RPL_WHOISHELPOP:
         case Irc::RPL_WHOISSPECIAL:
