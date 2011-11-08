@@ -20,6 +20,8 @@ PageStackWindow {
     id: window
 
     initialPage: MainPage {
+        id: page
+
         title: qsTr("Communi")
         tools: ToolBarLayout {
             id: tools
@@ -103,8 +105,8 @@ PageStackWindow {
             onAccepted: {
                 var item = SessionModel[channelSheet.sessionIndex];
                 if (item) {
-                    var cmd = ircCommand.createJoin(channelSheet.channel, channelSheet.password);
-                    item.session.sendCommand(cmd);
+                    page.bouncer.bounce(item.addChild(channelSheet.channel));
+                    item.session.sendCommand(ircCommand.createJoin(channelSheet.channel, channelSheet.password));
                 }
             }
         }
@@ -113,8 +115,10 @@ PageStackWindow {
             id: querySheet
             onAccepted: {
                 var item = SessionModel[querySheet.sessionIndex];
-                if (item)
-                    item.addChild(querySheet.name);
+                if (item) {
+                    page.bouncer.bounce(item.addChild(querySheet.name));
+                    item.session.sendCommand(ircCommand.createWhois(querySheet.name));
+                }
             }
         }
     }

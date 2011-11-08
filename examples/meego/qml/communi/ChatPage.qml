@@ -91,6 +91,7 @@ CommonPage {
                 while (name.length && name[0] == "@" || name[0] == "+")
                     name = name.slice(1);
                 bouncer.bounce(modelData.sessionItem.addChild(name));
+                modelData.session.sendCommand(ircCommand.createWhois(name));
             }
         }
     }

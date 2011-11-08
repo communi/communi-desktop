@@ -20,6 +20,8 @@ import "UIConstants.js" as UI
 CommonPage {
     id: root
 
+    property alias bouncer: bouncer
+
     ListView {
         id: listView
         anchors.fill: parent
