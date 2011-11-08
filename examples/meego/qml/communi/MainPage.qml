@@ -111,17 +111,23 @@ CommonPage {
         id: bouncer
         interval: 50
         property QtObject item
-        function bounce(item) {
+        property QtObject cmd;
+        function bounce(item, cmd) {
             if (root.status === PageStatus.Active) {
                 chatPage.push(item);
+                item.session.sendCommand(cmd);
             } else {
                 bouncer.item = item;
+                bouncer.cmd = cmd;
                 pageStack.pop();
             }
         }
         onTriggered: {
             chatPage.push(bouncer.item)
+            if (bouncer.cmd !== null)
+                item.session.sendCommand(bouncer.cmd);
             bouncer.item = null;
+            bouncer.cmd = null;
         }
     }
 

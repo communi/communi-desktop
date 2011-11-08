@@ -105,8 +105,9 @@ PageStackWindow {
             onAccepted: {
                 var item = SessionModel[channelSheet.sessionIndex];
                 if (item) {
-                    page.bouncer.bounce(item.addChild(channelSheet.channel));
-                    item.session.sendCommand(ircCommand.createJoin(channelSheet.channel, channelSheet.password));
+                    var child = item.addChild(channelSheet.channel);
+                    var cmd = ircCommand.createJoin(channelSheet.channel, channelSheet.password);
+                    page.bouncer.bounce(child, cmd);
                 }
             }
         }
@@ -116,8 +117,9 @@ PageStackWindow {
             onAccepted: {
                 var item = SessionModel[querySheet.sessionIndex];
                 if (item) {
-                    page.bouncer.bounce(item.addChild(querySheet.name));
-                    item.session.sendCommand(ircCommand.createWhois(querySheet.name));
+                    var child = item.addChild(querySheet.name);
+                    var cmd = ircCommand.createWhois(querySheet.name);
+                    page.bouncer.bounce(child, cmd);
                 }
             }
         }

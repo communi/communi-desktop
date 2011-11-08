@@ -98,8 +98,10 @@ CommonPage {
                 var name = model.get(selectedIndex).name;
                 while (name.length && name[0] == "@" || name[0] == "+")
                     name = name.slice(1);
-                bouncer.bounce(modelData.sessionItem.addChild(name));
-                modelData.session.sendCommand(ircCommand.createWhois(name));
+
+                var child = modelData.sessionItem.addChild(name);
+                var cmd = ircCommand.createWhois(name);
+                bouncer.bounce(child, cmd);
             }
         }
     }
