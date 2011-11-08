@@ -48,13 +48,20 @@ CommonPage {
         }
         ToolIcon {
             anchors.verticalCenter: parent.verticalCenter
-            visible: modelData !== null && modelData.channel !== undefined
+            visible: modelData !== null && modelData.channel !== undefined && !indicator.visible
             iconId: "toolbar-list"
             onClicked: {
                 var cmd = modelData.channel ? ircCommand.createNames(modelData.title)
                                             : ircCommand.createWhois(modelData.title);
                 modelData.sendUiCommand(cmd);
+                indicator.visible = true;
             }
+        }
+        BusyIndicator {
+            id: indicator
+            visible: false
+            running: visible
+            anchors.verticalCenter: parent.verticalCenter
         }
         ToolIcon {
             iconId: "toolbar-new-message"
@@ -83,6 +90,7 @@ CommonPage {
             dialog.selectedIndex = -1;
             for (var i = 0; i < content.length; ++i)
                 dialog.model.append({"name": content[i]});
+            indicator.visible = false;
         }
         titleText: modelData ? modelData.title : ""
         onAccepted: {
