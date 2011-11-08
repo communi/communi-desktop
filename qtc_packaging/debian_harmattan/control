@@ -1,7 +1,7 @@
 Source: communi
 Section: user/other
 Priority: optional
-Maintainer: J-P Nurmi <jpnurmi@gmail.com>
+Maintainer: J-P Nurmi <j-p.nurmi@nokia.com>
 Build-Depends: debhelper (>= 5), libqt4-dev
 Standards-Version: 3.7.3
 Homepage: http://communi.github.com
@@ -9,8 +9,9 @@ Homepage: http://communi.github.com
 Package: communi
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Communi for Nokia MeeGo.
- A simple IRC client.
+Description: Communi for Nokia N9.
+ Communi is an IRC (Internet Relay Chat) client used to
+ communicate with others on IRC networks around the world.
  .
  Data charges may apply.
 XSBC-Maemo-Display-Name: Communi
