@@ -21,7 +21,6 @@ Sheet {
 
     property bool acceptable: false
     default property alias content: contentItem.data
-    property alias titleText: label.text
 
     acceptButtonText: acceptable ? qsTr("Ok") : ""
     rejectButtonText: qsTr("Cancel")
@@ -35,23 +34,12 @@ Sheet {
             id: flickable
             anchors.fill: parent
             anchors.margins: UI.PAGE_MARGIN
-            contentHeight: column.height
+            contentHeight: contentItem.height
 
-            Column {
-                id: column
-                spacing: UI.DEFAULT_SPACING
-                Label {
-                    id: label
-                    width: flickable.width
-                    font.pixelSize: 32
-                    font.family: "Nokia Pure Text Light"
-                    horizontalAlignment: Text.AlignHCenter
-                }
-                Item {
-                    id: contentItem
-                    width: flickable.width
-                    height: childrenRect.height
-                }
+            Item {
+                id: contentItem
+                width: flickable.width
+                height: childrenRect.height
             }
         }
     }

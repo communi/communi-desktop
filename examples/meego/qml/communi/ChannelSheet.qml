@@ -24,7 +24,6 @@ CommonSheet {
     property bool passwordRequired: false
     property int sessionIndex: buttons.checkedButton ? buttons.checkedButton.idx : -1
 
-    titleText: qsTr("Join channel")
     acceptable: !channelField.errorHighlight && !passwordField.errorHighlight
     onStatusChanged: {
         if (status == DialogStatus.Open) channelField.forceActiveFocus();

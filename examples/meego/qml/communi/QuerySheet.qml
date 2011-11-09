@@ -22,7 +22,6 @@ CommonSheet {
     property alias name: nameField.text
     property int sessionIndex: buttons.checkedButton ? buttons.checkedButton.idx : -1
 
-    titleText: qsTr("Open query")
     acceptable: !nameField.errorHighlight
     onStatusChanged: if (status == DialogStatus.Open) nameField.forceActiveFocus()
 

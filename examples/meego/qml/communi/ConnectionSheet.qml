@@ -27,7 +27,6 @@ CommonSheet {
     property alias secure: secureBox.checked
 
     acceptable: name != "" && host != "" && port != ""
-    titleText: qsTr("Add connection")
 
     onStatusChanged: if (status == DialogStatus.Open) hostField.forceActiveFocus()
 

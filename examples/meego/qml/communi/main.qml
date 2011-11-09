@@ -22,7 +22,16 @@ PageStackWindow {
     initialPage: MainPage {
         id: page
 
-        title: qsTr("Communi")
+        title: {
+            if (connectionSheet.status === DialogStatus.Open)
+                return qsTr("Add connection");
+            if (channelSheet.status === DialogStatus.Open)
+                return qsTr("Join channel");
+            if (querySheet.status === DialogStatus.Open)
+                return qsTr("Open query");
+            return qsTr("Communi");
+        }
+
         tools: ToolBarLayout {
             id: tools
             visible: sheet.status == DialogStatus.Closed
