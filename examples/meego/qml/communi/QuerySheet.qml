@@ -51,6 +51,11 @@ CommonSheet {
             placeholderText: qsTr("Name")
             errorHighlight: !text.length
             width: parent.width
+            platformSipAttributes: SipAttributes {
+                actionKeyEnabled: false
+                actionKeyHighlighted: true
+                actionKeyLabel: qsTr("Next")
+            }
         }
     }
 }

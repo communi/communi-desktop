@@ -31,6 +31,12 @@ CommonSheet {
         else if (status == DialogStatus.Closed) passwordRequired = false;
     }
 
+    SipAttributes {
+        id: sipAttributes
+        actionKeyHighlighted: true
+        actionKeyLabel: qsTr("Next")
+    }
+
     Column {
         id: column
         width: parent.width
@@ -58,6 +64,8 @@ CommonSheet {
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
             errorHighlight: text.length < 2 || (text[0] !== "#" && text[0] !== "&")
             width: parent.width
+            platformSipAttributes: sipAttributes
+            Keys.onReturnPressed: passworld.forceActiveFocus()
         }
 
         TextField {
@@ -67,6 +75,8 @@ CommonSheet {
             errorHighlight: sheet.passwordRequired ? !text.length : false
             visible: placeholderText.length
             width: parent.width
+            platformSipAttributes: sipAttributes
+            Keys.onReturnPressed: channelField.forceActiveFocus()
         }
     }
 }

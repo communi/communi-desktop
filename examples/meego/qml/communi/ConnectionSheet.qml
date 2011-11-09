@@ -31,6 +31,12 @@ CommonSheet {
 
     onStatusChanged: if (status == DialogStatus.Open) hostField.forceActiveFocus()
 
+    SipAttributes {
+        id: sipAttributes
+        actionKeyHighlighted: true
+        actionKeyLabel: qsTr("Next")
+    }
+
     Column {
         id: column
         width: parent.width
@@ -48,6 +54,8 @@ CommonSheet {
                     inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhUrlCharactersOnly
                     width: parent.width
                     errorHighlight: !text.length
+                    platformSipAttributes: sipAttributes
+                    Keys.onReturnPressed: portField.forceActiveFocus()
                 }
             }
             Column {
@@ -59,6 +67,8 @@ CommonSheet {
                     inputMethodHints: Qt.ImhDigitsOnly
                     width: parent.width
                     errorHighlight: !text.length
+                    platformSipAttributes: sipAttributes
+                    Keys.onReturnPressed: passField.forceActiveFocus()
                 }
             }
         }
@@ -74,6 +84,8 @@ CommonSheet {
                     id: passField
                     echoMode: TextInput.PasswordEchoOnEdit
                     width: parent.width
+                    platformSipAttributes: sipAttributes
+                    Keys.onReturnPressed: nameField.forceActiveFocus()
                 }
             }
             CheckBox {
@@ -96,6 +108,8 @@ CommonSheet {
                     inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                     width: parent.width
                     errorHighlight: !text.length
+                    platformSipAttributes: sipAttributes
+                    Keys.onReturnPressed: chanField.forceActiveFocus()
                 }
             }
             Column {
@@ -106,6 +120,8 @@ CommonSheet {
                     text: "#communi"
                     inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                     width: parent.width
+                    platformSipAttributes: sipAttributes
+                    Keys.onReturnPressed: hostField.forceActiveFocus()
                 }
             }
         }
