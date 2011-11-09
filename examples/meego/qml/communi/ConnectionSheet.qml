@@ -33,7 +33,7 @@ CommonSheet {
 
     Column {
         id: column
-        anchors.fill: parent
+        width: parent.width
         spacing: UI.DEFAULT_SPACING
 
         Row {

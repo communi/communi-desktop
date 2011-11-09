@@ -31,21 +31,27 @@ Sheet {
         anchors.fill: parent
         color: "#e0e1e2"
 
-        Column {
+        Flickable {
+            id: flickable
             anchors.fill: parent
             anchors.margins: UI.PAGE_MARGIN
-            spacing: UI.DEFAULT_SPACING
-            Label {
-                id: label
-                width: parent.width
-                font.pixelSize: 32
-                font.family: "Nokia Pure Text Light"
-                horizontalAlignment: Text.AlignHCenter
-            }
-            Item {
-                id: contentItem
-                width: parent.width
-                height: parent.height - label.height - UI.DEFAULT_SPACING
+            contentHeight: column.height
+
+            Column {
+                id: column
+                spacing: UI.DEFAULT_SPACING
+                Label {
+                    id: label
+                    width: flickable.width
+                    font.pixelSize: 32
+                    font.family: "Nokia Pure Text Light"
+                    horizontalAlignment: Text.AlignHCenter
+                }
+                Item {
+                    id: contentItem
+                    width: flickable.width
+                    height: childrenRect.height
+                }
             }
         }
     }

@@ -33,7 +33,7 @@ CommonSheet {
 
     Column {
         id: column
-        anchors.fill: parent
+        width: parent.width
         spacing: UI.DEFAULT_SPACING
 
         Label { text: qsTr("Connection"); visible: SessionModel.length > 1 }
