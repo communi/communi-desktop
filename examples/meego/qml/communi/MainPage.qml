@@ -66,7 +66,7 @@ CommonPage {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    bouncer.bounce(item);
+                    bouncer.bounce(item, null);
                     banner.hide();
                 }
             }
@@ -115,7 +115,8 @@ CommonPage {
         function bounce(item, cmd) {
             if (root.status === PageStatus.Active) {
                 chatPage.push(item);
-                item.session.sendCommand(cmd);
+                if (cmd !== null)
+                    item.session.sendCommand(cmd);
             } else {
                 bouncer.item = item;
                 bouncer.cmd = cmd;
