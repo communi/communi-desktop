@@ -35,7 +35,10 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     connect(&d.handler, SIGNAL(receiverToBeRemoved(QString)), this, SLOT(removeView(QString)));
     connect(&d.handler, SIGNAL(receiverToBeRenamed(QString,QString)), this, SLOT(renameView(QString,QString)));
 
-    QShortcut* shortcut = new QShortcut(QKeySequence::Close, this);
+    QShortcut* shortcut = new QShortcut(QKeySequence::AddTab, this);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(onNewTabRequested()));
+
+    shortcut = new QShortcut(QKeySequence::Close, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(closeCurrentView()));
 
     applySettings(Application::settings());

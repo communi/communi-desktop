@@ -37,6 +37,9 @@ MainTabWidget::MainTabWidget(QWidget* parent) : TabWidget(parent)
     d.tabRightShortcut = new QShortcut(this);
     connect(d.tabRightShortcut, SIGNAL(activated()), this, SLOT(moveToNextSubTab()));
 
+    QShortcut* shortcut = new QShortcut(QKeySequence::New, this);
+    connect(shortcut, SIGNAL(activated()), this, SIGNAL(newTabRequested()));
+
     connect(qApp, SIGNAL(settingsChanged(Settings)), this, SLOT(applySettings(Settings)));
     applySettings(Application::settings());
 }
