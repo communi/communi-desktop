@@ -15,6 +15,7 @@ HEADERS += $$PWD/maintabwidget.h
 HEADERS += $$PWD/mainwindow.h
 HEADERS += $$PWD/messageview.h
 HEADERS += $$PWD/searcheditor.h
+HEADERS += $$PWD/sessionmanager.h
 HEADERS += $$PWD/sessiontabwidget.h
 HEADERS += $$PWD/settings.h
 
@@ -26,6 +27,7 @@ SOURCES += $$PWD/maintabwidget.cpp
 SOURCES += $$PWD/mainwindow.cpp
 SOURCES += $$PWD/messageview.cpp
 SOURCES += $$PWD/searcheditor.cpp
+SOURCES += $$PWD/sessionmanager.cpp
 SOURCES += $$PWD/sessiontabwidget.cpp
 SOURCES += $$PWD/settings.cpp
 

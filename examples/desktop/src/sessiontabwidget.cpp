@@ -51,17 +51,6 @@ Session* SessionTabWidget::session() const
     return qobject_cast<Session*>(d.handler.session());
 }
 
-QStringList SessionTabWidget::channels() const
-{
-    QStringList chans;
-    foreach (MessageView* view, d.views)
-    {
-        if (view->isChannelView())
-            chans += view->receiver();
-    }
-    return chans;
-}
-
 MessageView* SessionTabWidget::openView(const QString& receiver)
 {
     MessageView* view = d.views.value(receiver.toLower());

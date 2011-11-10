@@ -33,7 +33,6 @@ public:
     SessionTabWidget(Session* session, QWidget* parent = 0);
 
     Session* session() const;
-    QStringList channels() const;
 
 public slots:
     MessageView* openView(const QString& receiver);
