@@ -15,6 +15,7 @@
 #ifndef SESSION_H
 #define SESSION_H
 
+#include <QSet>
 #include <QTimer>
 #include <IrcSession>
 #include <QStringList>
@@ -26,7 +27,7 @@ class Session : public IrcSession
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName)
     Q_PROPERTY(int autoReconnectDelay READ autoReconnectDelay WRITE setAutoReconnectDelay)
-    Q_PROPERTY(QStringList autoJoinChannels READ autoJoinChannels WRITE setAutoJoinChannels)
+    Q_PROPERTY(QStringList channels READ channels WRITE setChannels)
     Q_PROPERTY(bool secure READ isSecure WRITE setSecure)
     Q_PROPERTY(QString password READ password WRITE setPassword)
 
@@ -39,8 +40,8 @@ public:
     int autoReconnectDelay() const;
     void setAutoReconnectDelay(int delay);
 
-    QStringList autoJoinChannels() const;
-    void setAutoJoinChannels(const QStringList& channels);
+    QStringList channels() const;
+    void setChannels(const QStringList& channels);
 
     bool isSecure() const;
     void setSecure(bool secure);
@@ -54,12 +55,13 @@ public:
 private slots:
     void onConnected();
     void onPassword(QString* password);
+    void handleMessage(IrcMessage* message);
 
 private:
     QString m_name;
     QTimer m_timer;
     QString m_password;
-    QStringList m_channels;
+    QSet<QString> m_channels;
 };
 
 #endif // SESSION_H

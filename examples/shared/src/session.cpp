@@ -16,6 +16,7 @@
 #include <QApplication>
 #include <QSslSocket>
 #include <IrcCommand>
+#include <IrcMessage>
 
 Session::Session(QObject *parent) : IrcSession(parent)
 {
@@ -23,6 +24,8 @@ Session::Session(QObject *parent) : IrcSession(parent)
     connect(this, SIGNAL(password(QString*)), this, SLOT(onPassword(QString*)));
     connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), &m_timer, SLOT(start()));
     connect(this, SIGNAL(connecting()), &m_timer, SLOT(stop()));
+    connect(this, SIGNAL(messageReceived(IrcMessage*)), SLOT(handleMessage(IrcMessage*)));
+
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(open()));
     setAutoReconnectDelay(15);
 }
@@ -47,14 +50,14 @@ void Session::setAutoReconnectDelay(int delay)
     m_timer.setInterval(delay * 1000);
 }
 
-QStringList Session::autoJoinChannels() const
+QStringList Session::channels() const
 {
-    return m_channels;
+    return m_channels.toList();
 }
 
-void Session::setAutoJoinChannels(const QStringList& channels)
+void Session::setChannels(const QStringList& channels)
 {
-    m_channels = channels;
+    m_channels = QSet<QString>::fromList(channels);
 }
 
 bool Session::isSecure() const
@@ -98,6 +101,7 @@ Connection Session::toConnection() const
     connection.nick = nickName();
     connection.real = realName();
     connection.pass = password();
+    connection.channels = channels();
     return connection;
 }
 
@@ -113,12 +117,13 @@ Session* Session::fromConnection(const Connection& connection, QObject* parent)
     session->setNickName(connection.nick);
     session->setUserName(appName.toLower());
     session->setRealName(connection.real.isEmpty() ? appName : connection.real);
-    session->setAutoJoinChannels(connection.channels);
+    session->setChannels(connection.channels);
     return session;
 }
 
 void Session::onConnected()
 {
+    qDebug() << m_password << m_channels;
     foreach (const QString& channel, m_channels)
         sendCommand(IrcCommand::createJoin(channel, QString()));
 }
@@ -126,4 +131,18 @@ void Session::onConnected()
 void Session::onPassword(QString* password)
 {
     *password = m_password;
+}
+
+void Session::handleMessage(IrcMessage* message)
+{
+    if (message->type() == IrcMessage::Join)
+    {
+        if (message->sender().name() == nickName())
+            m_channels.insert(static_cast<IrcJoinMessage*>(message)->channel());
+    }
+    else if (message->type() == IrcMessage::Part)
+    {
+        if (message->sender().name() == nickName())
+            m_channels.remove(static_cast<IrcPartMessage*>(message)->channel());
+    }
 }
