@@ -123,7 +123,6 @@ Session* Session::fromConnection(const Connection& connection, QObject* parent)
 
 void Session::onConnected()
 {
-    qDebug() << m_password << m_channels;
     foreach (const QString& channel, m_channels)
         sendCommand(IrcCommand::createJoin(channel, QString()));
 }
