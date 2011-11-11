@@ -18,23 +18,29 @@
 
 SessionManager::SessionManager(QObject* parent) : QObject(parent)
 {
+    QNetworkConfigurationManager manager;
+    d.network = new QNetworkSession(manager.defaultConfiguration(), this);
+    connect(d.network, SIGNAL(stateChanged(QNetworkSession::State)), this, SLOT(onNetworkStateChanged(QNetworkSession::State)));
+    connect(d.network, SIGNAL(stateChanged(QNetworkSession::State)), this, SIGNAL(onlineStateChanged()));
+    connect(d.network, SIGNAL(stateChanged(QNetworkSession::State)), this, SIGNAL(offlineStateChanged()));
 }
 
 bool SessionManager::isOnline() const
 {
-    return d.network && d.network->state() == QNetworkSession::Connected;
+    return d.network->state() == QNetworkSession::Connected;
 }
 
 bool SessionManager::isOffline() const
 {
-    return !d.network || d.network->state() != QNetworkSession::Connected;
+    return d.network->state() != QNetworkSession::Connected;
 }
 
 void SessionManager::addSession(Session* session)
 {
     session->setUserName("communi");
     d.sessions.append(session);
-    ensureNetwork();
+    if (!d.network->isOpen())
+        d.network->open();
     session->open();
     emit sessionAdded(session);
 }
@@ -43,23 +49,6 @@ void SessionManager::removeSession(Session* session)
 {
     if (d.sessions.removeOne(session))
         emit sessionRemoved(session);
-}
-
-bool SessionManager::ensureNetwork()
-{
-    if (!d.network || !d.network->isOpen())
-    {
-        QNetworkConfigurationManager manager;
-
-        d.network = new QNetworkSession(manager.defaultConfiguration(), this);
-        connect(d.network, SIGNAL(stateChanged(QNetworkSession::State)), this, SLOT(onNetworkStateChanged(QNetworkSession::State)));
-        connect(d.network, SIGNAL(stateChanged(QNetworkSession::State)), this, SIGNAL(onlineStateChanged()));
-        connect(d.network, SIGNAL(stateChanged(QNetworkSession::State)), this, SIGNAL(offlineStateChanged()));
-
-        if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired)
-            d.network->open();
-    }
-    return d.network->isOpen();
 }
 
 void SessionManager::onNetworkStateChanged(QNetworkSession::State state)
