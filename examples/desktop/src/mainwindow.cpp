@@ -125,7 +125,7 @@ void MainWindow::connectToImpl(const Connection& connection)
 
     int index = tabWidget->addTab(tab, connection.name.isEmpty() ? session->host() : connection.name);
     tabWidget->setCurrentIndex(index);
-    tabWidget->setTabInactive(index, true);
+    tabWidget->setTabInactive(index, !session->isActive());
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
