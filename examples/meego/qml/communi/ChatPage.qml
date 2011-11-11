@@ -79,6 +79,7 @@ CommonPage {
             //listView.currentIndex = listView.count - modelData.unseen - 1;
             Completer.modelItem = modelData;
         }
+        indicator.visible = false;
     }
 
     SelectionDialog {
