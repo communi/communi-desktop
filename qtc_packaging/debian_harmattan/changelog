@@ -1,3 +1,9 @@
+communi (1.0.0-1) unstable; urgency=low
+
+  * New application icon - thanks Jens!!! ;)
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Fri, 11 Nov 2011 23:35:53 +0200
+
 communi (1.0.0) unstable; urgency=low
 
   * Initial Release.
