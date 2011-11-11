@@ -34,8 +34,9 @@ protected:
 private slots:
     void applySettings(const Settings& settings);
     void setSessionTitle(const QString& title);
-    void activateAlert(bool active);
-    void activateHighlight(bool active);
+    void setInactive(bool inactive);
+    void setAlerted(bool alerted);
+    void setHighlighted(bool highlighted);
     void moveToNextSubTab();
     void moveToPrevSubTab();
 

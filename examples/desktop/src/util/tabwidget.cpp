@@ -55,10 +55,21 @@ TabWidget::TabWidget(QWidget* parent) : QTabWidget(parent)
     setTabBar(new TabBar(this));
     setElideMode(Qt::ElideMiddle);
     d.previous = -1;
+    d.inactiveColor = palette().color(QPalette::Disabled, QPalette::Highlight);
     d.alertColor = palette().color(QPalette::Highlight);
     d.highlightColor = palette().color(QPalette::Highlight);
     d.swipeOrientation = Qt::Orientation(0);
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
+}
+
+QColor TabWidget::inactiveColor() const
+{
+    return d.inactiveColor;
+}
+
+void TabWidget::setInactiveColor(const QColor& color)
+{
+    d.inactiveColor = color;
 }
 
 QColor TabWidget::alertColor() const
@@ -81,6 +92,29 @@ void TabWidget::setHighlightColor(const QColor& color)
     d.highlightColor = color;
 }
 
+bool TabWidget::isTabInactive(int index)
+{
+    return d.inactiveIndexes.contains(index);
+}
+
+void TabWidget::setTabInactive(int index, bool inactive)
+{
+    if (!inactive)
+    {
+        int count = d.inactiveIndexes.removeAll(index);
+        if (count > 0 && d.inactiveIndexes.isEmpty())
+            emit inactiveStatusChanged(false);
+    }
+    else
+    {
+        if (d.inactiveIndexes.isEmpty())
+            emit inactiveStatusChanged(true);
+        if (!d.inactiveIndexes.contains(index))
+            d.inactiveIndexes.append(index);
+    }
+    colorizeTab(index);
+}
+
 bool TabWidget::hasTabAlert(int index)
 {
     return d.alertIndexes.contains(index);
@@ -95,7 +129,6 @@ void TabWidget::setTabAlert(int index, bool alert)
         {
             emit alertStatusChanged(false);
             SharedTimer::instance()->unregisterReceiver(this, "alertTimeout");
-            setTabHighlight(index, hasTabHighlight(index));
         }
     }
     else
@@ -108,6 +141,7 @@ void TabWidget::setTabAlert(int index, bool alert)
         if (!d.alertIndexes.contains(index))
             d.alertIndexes.append(index);
     }
+    colorizeTab(index);
 }
 
 bool TabWidget::hasTabHighlight(int index) const
@@ -122,7 +156,6 @@ void TabWidget::setTabHighlight(int index, bool highlight)
         int count = d.highlightIndexes.removeAll(index);
         if (count > 0 && d.highlightIndexes.isEmpty())
             emit highlightStatusChanged(false);
-        tabBar()->setTabTextColor(index, QColor());
     }
     else
     {
@@ -130,8 +163,8 @@ void TabWidget::setTabHighlight(int index, bool highlight)
             emit highlightStatusChanged(true);
         if (!d.highlightIndexes.contains(index))
             d.highlightIndexes.append(index);
-        tabBar()->setTabTextColor(index, d.highlightColor);
     }
+    colorizeTab(index);
 }
 
 void TabWidget::registerSwipeGestures(Qt::Orientation orientation)
@@ -236,12 +269,14 @@ static void shiftIndexesFrom(QList<int>& indexes, int from, int delta)
 
 void TabWidget::tabInserted(int index)
 {
+    shiftIndexesFrom(d.inactiveIndexes, index, 1);
     shiftIndexesFrom(d.alertIndexes, index, 1);
     shiftIndexesFrom(d.highlightIndexes, index, 1);
 }
 
 void TabWidget::tabRemoved(int index)
 {
+    shiftIndexesFrom(d.inactiveIndexes, index, -1);
     shiftIndexesFrom(d.alertIndexes, index, -1);
     shiftIndexesFrom(d.highlightIndexes, index, -1);
 }
@@ -262,14 +297,23 @@ void TabWidget::tabChanged(int index)
 
 void TabWidget::alertTimeout()
 {
-    QColor color;
-    if (!d.alertIndexes.isEmpty())
-    {
-        QColor tabColor = tabBar()->tabTextColor(d.alertIndexes.first());
-        if (tabColor != d.alertColor)
-            color = d.alertColor;
-    }
+    if (d.currentAlertColor == d.alertColor)
+        d.currentAlertColor = QColor();
+    else
+        d.currentAlertColor = d.alertColor;
 
     foreach (int index, d.alertIndexes)
-        tabBar()->setTabTextColor(index, color);
+        colorizeTab(index);
+}
+
+void TabWidget::colorizeTab(int index)
+{
+    if (isTabInactive(index))
+        tabBar()->setTabTextColor(index, d.inactiveColor);
+    else if (hasTabAlert(index))
+        tabBar()->setTabTextColor(index, d.currentAlertColor);
+    else if (hasTabHighlight(index))
+        tabBar()->setTabTextColor(index, d.highlightColor);
+    else
+        tabBar()->setTabTextColor(index, QColor());
 }

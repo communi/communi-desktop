@@ -119,11 +119,13 @@ void MainWindow::connectToImpl(const Connection& connection)
     SessionTabWidget* tab = new SessionTabWidget(session, tabWidget);
     if (connection.name.isEmpty())
         connect(tab, SIGNAL(titleChanged(QString)), tabWidget, SLOT(setSessionTitle(QString)));
-    connect(tab, SIGNAL(alertStatusChanged(bool)), tabWidget, SLOT(activateAlert(bool)));
-    connect(tab, SIGNAL(highlightStatusChanged(bool)), tabWidget, SLOT(activateHighlight(bool)));
+    connect(tab, SIGNAL(inactiveStatusChanged(bool)), tabWidget, SLOT(setInactive(bool)));
+    connect(tab, SIGNAL(alertStatusChanged(bool)), tabWidget, SLOT(setAlerted(bool)));
+    connect(tab, SIGNAL(highlightStatusChanged(bool)), tabWidget, SLOT(setHighlighted(bool)));
 
     int index = tabWidget->addTab(tab, connection.name.isEmpty() ? session->host() : connection.name);
     tabWidget->setCurrentIndex(index);
+    tabWidget->setTabInactive(index, true);
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)

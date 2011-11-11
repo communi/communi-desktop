@@ -46,6 +46,7 @@ signals:
 
 private slots:
     void onAboutToQuit();
+    void onActiveChanged(bool active);
     void onDisconnected();
     void tabActivated(int index);
     void onNewTabRequested();

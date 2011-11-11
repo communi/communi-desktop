@@ -29,6 +29,8 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
     connect(this, SIGNAL(newTabRequested()), this, SLOT(onNewTabRequested()), Qt::QueuedConnection);
+
+    connect(session, SIGNAL(activeChanged(bool)), this, SLOT(onActiveChanged(bool)));
     connect(session, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 
     connect(&d.handler, SIGNAL(receiverToBeAdded(QString)), this, SLOT(openView(QString)));
@@ -47,6 +49,7 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
 
     MessageView* view = openView(d.handler.session()->host());
     d.handler.setDefaultReceiver(view);
+    setTabInactive(0, true);
 }
 
 Session* SessionTabWidget::session() const
@@ -128,6 +131,11 @@ void SessionTabWidget::quit(const QString &message)
 void SessionTabWidget::onAboutToQuit()
 {
     d.hasQuit = true;
+}
+
+void SessionTabWidget::onActiveChanged(bool active)
+{
+    setTabInactive(0, !active);
 }
 
 void SessionTabWidget::onDisconnected()

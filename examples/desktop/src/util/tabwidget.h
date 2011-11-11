@@ -23,17 +23,24 @@
 class TabWidget : public QTabWidget
 {
     Q_OBJECT
+    Q_PROPERTY(QColor inactiveColor READ inactiveColor WRITE setInactiveColor)
     Q_PROPERTY(QColor alertColor READ alertColor WRITE setAlertColor)
     Q_PROPERTY(QColor highlightColor READ highlightColor WRITE setHighlightColor)
 
 public:
     TabWidget(QWidget* parent = 0);
 
+    QColor inactiveColor() const;
+    void setInactiveColor(const QColor& color);
+
     QColor alertColor() const;
     void setAlertColor(const QColor& color);
 
     QColor highlightColor() const;
     void setHighlightColor(const QColor& color);
+
+    bool isTabInactive(int index);
+    void setTabInactive(int index, bool inactive);
 
     bool hasTabAlert(int index);
     void setTabAlert(int index, bool alert);
@@ -51,8 +58,9 @@ public slots:
 
 signals:
     void newTabRequested();
-    void alertStatusChanged(bool active);
-    void highlightStatusChanged(bool active);
+    void inactiveStatusChanged(bool inactive);
+    void alertStatusChanged(bool alerted);
+    void highlightStatusChanged(bool highlighted);
 
 protected:
     bool event(QEvent* event);
@@ -63,13 +71,17 @@ protected:
 private slots:
     void tabChanged(int index);
     void alertTimeout();
+    void colorizeTab(int index);
 
 private:
     struct TabWidgetData
     {
         int previous;
+        QColor inactiveColor;
         QColor alertColor;
         QColor highlightColor;
+        QColor currentAlertColor;
+        QList<int> inactiveIndexes;
         QList<int> alertIndexes;
         QList<int> highlightIndexes;
         Qt::Orientation swipeOrientation;

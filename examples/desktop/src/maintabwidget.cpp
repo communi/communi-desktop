@@ -73,18 +73,25 @@ void MainTabWidget::setSessionTitle(const QString& title)
         setTabText(index, title);
 }
 
-void MainTabWidget::activateAlert(bool active)
+void MainTabWidget::setInactive(bool inactive)
 {
     int index = senderIndex();
     if (index != -1)
-        setTabAlert(index, active);
+        setTabInactive(index, inactive);
 }
 
-void MainTabWidget::activateHighlight(bool active)
+void MainTabWidget::setAlerted(bool alerted)
 {
     int index = senderIndex();
     if (index != -1)
-        setTabHighlight(index, active);
+        setTabAlert(index, alerted);
+}
+
+void MainTabWidget::setHighlighted(bool highlighted)
+{
+    int index = senderIndex();
+    if (index != -1)
+        setTabHighlight(index, highlighted);
 }
 
 int MainTabWidget::senderIndex() const
