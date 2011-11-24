@@ -113,7 +113,7 @@ void AbstractSessionItem::setCurrent(bool current)
     if (current)
     {
         setHighlighted(false);
-        setUnread(0);
+        setUnreadCount(0);
     }
     else
     {
@@ -142,17 +142,17 @@ void AbstractSessionItem::setHighlighted(bool highlighted)
     }
 }
 
-int AbstractSessionItem::unread() const
+int AbstractSessionItem::unreadCount() const
 {
     return m_unread;
 }
 
-void AbstractSessionItem::setUnread(int unread)
+void AbstractSessionItem::setUnreadCount(int count)
 {
-    if (!m_current && m_unread != unread)
+    if (!m_current && m_unread != count)
     {
-        m_unread = unread;
-        emit unreadChanged();
+        m_unread = count;
+        emit unreadCountChanged();
     }
 }
 

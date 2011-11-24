@@ -80,7 +80,7 @@ Item {
         anchors.rightMargin: UI.PAGE_MARGIN
         anchors.verticalCenter: parent.verticalCenter
 
-        sourceComponent: modelData.busy ? busyIndicator : modelData.unread ? countBubble : moreIndicator
+        sourceComponent: modelData.busy ? busyIndicator : modelData.unreadCount ? countBubble : moreIndicator
 
         Component {
             id: busyIndicator
@@ -89,7 +89,7 @@ Item {
 
         Component {
             id: countBubble
-            CountBubble { value: modelData.unread; largeSized: true }
+            CountBubble { value: modelData.unreadCount; largeSized: true }
         }
 
         Component {

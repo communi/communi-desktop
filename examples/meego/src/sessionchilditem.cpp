@@ -71,7 +71,7 @@ void SessionChildItem::receiveMessage(IrcMessage* message)
         }
 
         if (!isCurrent())
-            setUnread(unread() + 1);
+            setUnreadCount(unreadCount() + 1);
     }
     else if (message->type() == IrcMessage::Numeric)
     {
