@@ -20,7 +20,7 @@
 
 AbstractSessionItem::AbstractSessionItem(QObject *parent) :
     QObject(parent), m_session(0), m_busy(false), m_current(false),
-    m_highlighted(false), m_unread(false) //, m_unseen(false)
+    m_highlighted(false), m_unread(0), m_unseen(0)
 {
     m_messages = new QStringListModel(this);
     m_formatter.setTimeStamp(true);
@@ -115,10 +115,10 @@ void AbstractSessionItem::setCurrent(bool current)
         setHighlighted(false);
         setUnread(0);
     }
-//    else
-//    {
-//        setUnseen(0);
-//    }
+    else
+    {
+        setUnseenIndex(m_messages->rowCount() - 1);
+    }
 
     if (m_current != current)
     {
@@ -156,19 +156,19 @@ void AbstractSessionItem::setUnread(int unread)
     }
 }
 
-//int AbstractSessionItem::unseen() const
-//{
-//    return m_unseen;
-//}
+int AbstractSessionItem::unseenIndex() const
+{
+    return m_unseen;
+}
 
-//void AbstractSessionItem::setUnseen(int unseen)
-//{
-//    if (!m_current && m_unseen != unseen)
-//    {
-//        m_unseen = unseen;
-//        emit unseenChanged();
-//    }
-//}
+void AbstractSessionItem::setUnseenIndex(int index)
+{
+    if (m_unseen != index)
+    {
+        m_unseen = index;
+        emit unseenIndexChanged();
+    }
+}
 
 QString AbstractSessionItem::alertText() const
 {
@@ -281,8 +281,5 @@ void AbstractSessionItem::receiveMessage(IrcMessage* message)
         const int index = m_messages->rowCount();
         m_messages->insertRow(index);
         m_messages->setData(m_messages->index(index), formatted);
-
-//        if (!m_current)
-//            setUnseen(m_unseen + 1);
     }
 }

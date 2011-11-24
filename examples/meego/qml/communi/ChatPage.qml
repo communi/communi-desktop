@@ -73,10 +73,8 @@ CommonPage {
     }
 
     onModelDataChanged: {
-        //listView.currentIndex = -1;
         if (modelData) {
             listView.model = modelData.messages;
-            //listView.currentIndex = listView.count - modelData.unseen - 1;
             Completer.modelItem = modelData;
         }
         indicator.visible = false;
@@ -153,22 +151,19 @@ CommonPage {
             }
         }
 
+        onCountChanged: if (!positioner.running) positioner.start()
         onHeightChanged: if (!positioner.running) positioner.start()
-        onCountChanged: {
-            if (!positioner.running) positioner.start();
-            //if (currentIndex == -1) currentIndex = count - 2;
-        }
 
-//        highlight: Item {
-//            y: listView.currentItem !== null ? listView.currentItem.y : 0
-//            visible: listView.currentItem !== null && listView.currentIndex < listView.count - 1
-//            Rectangle {
-//                width: listView.width
-//                height: 1
-//                color: "red"
-//                anchors.bottom: parent.bottom
-//            }
-//        }
+        currentIndex: modelData ? modelData.unseenIndex : -1
+        highlight: Item {
+            visible: listView.currentIndex > 0 && listView.currentIndex < listView.count - 1
+            Rectangle {
+                width: listView.width
+                height: 1
+                color: "red"
+                anchors.bottom: parent.bottom
+            }
+        }
     }
 
     ScrollDecorator {
