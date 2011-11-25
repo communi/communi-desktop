@@ -72,6 +72,11 @@ CommonPage {
         }
     }
 
+    Keys.onReturnPressed: {
+        textField.visible = true;
+        textField.forceActiveFocus();
+    }
+
     onModelDataChanged: {
         if (modelData) {
             listView.model = modelData.messages;
