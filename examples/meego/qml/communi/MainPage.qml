@@ -99,7 +99,7 @@ CommonPage {
         }
         onStatusChanged: {
             if (modelData)
-                modelData.current = (status !== PageStatus.Inactive);
+                modelData.current = (status === PageStatus.Active);
             if (status == PageStatus.Inactive)
                 modelData = null;
             if (status == PageStatus.Inactive && bouncer.item)
