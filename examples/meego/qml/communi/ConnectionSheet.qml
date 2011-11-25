@@ -103,7 +103,7 @@ CommonSheet {
                 spacing: UI.DEFAULT_SPACING
                 Column {
                     width: parent.width / 2 - UI.DEFAULT_SPACING/2
-                    Label { text: qsTr("Nickname") }
+                    Label { text: qsTr("Nick name") }
                     TextField {
                         id: nameField
                         text: "Guest" + Math.floor(Math.random() * 12345)
@@ -150,7 +150,7 @@ CommonSheet {
 
                     Column {
                         width: parent.width
-                        Label { text: qsTr("Username") }
+                        Label { text: qsTr("User name") }
                         TextField {
                             id: userField
                             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
