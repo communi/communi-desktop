@@ -1,3 +1,12 @@
+communi (1.0.0-2) unstable; urgency=low
+
+  * Added an indicator for "unseen" messages
+  * Made it possible to specify user name (ident) and real name
+  * Show text entry upon return key pressed (for n950)
+  * Fix: stop whois/names busy indicator at latest when the model changes
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Fri, 25 Nov 2011 08:38:36 +0200
+
 communi (1.0.0-1) unstable; urgency=low
 
   * New application icon - thanks Jens!!! ;)
