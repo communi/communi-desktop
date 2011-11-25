@@ -86,18 +86,21 @@ PageStackWindow {
             onAccepted: {
                 var session = sessionComponent.createObject(window);
                 session.nickName = connectionSheet.name;
-                session.realName = connectionSheet.name;
+                session.userName = connectionSheet.user.length ? connectionSheet.user : "communi";
+                session.realName = connectionSheet.real.length ? connectionSheet.real : connectionSheet.name;
                 session.host = connectionSheet.host;
                 session.port = connectionSheet.port;
                 session.password = connectionSheet.password;
                 session.secure = connectionSheet.secure;
-                session.autoJoinChannels = connectionSheet.channel;
+                session.channels = connectionSheet.channel;
                 SessionManager.addSession(session);
 
                 connectionSheet.password = "";
                 Settings.host = connectionSheet.host;
                 Settings.port = connectionSheet.port;
                 Settings.name = connectionSheet.name;
+                Settings.user = connectionSheet.user;
+                Settings.real = connectionSheet.real;
                 Settings.channel = connectionSheet.channel;
                 Settings.secure = connectionSheet.secure;
             }

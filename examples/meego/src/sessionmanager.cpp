@@ -44,7 +44,6 @@ void SessionManager::addSession(Session* session)
     m_items.append(item);
     updateModel();
 
-    session->setUserName("communi");
     if (ensureNetwork())
         session->open();
 }
