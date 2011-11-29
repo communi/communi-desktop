@@ -135,7 +135,7 @@ CommonPage {
             top: parent.top
             left: parent.left
             right: parent.right
-            bottom: textField.top
+            bottom: textField.visible ? textField.top : parent.bottom
             margins: UI.PAGE_MARGIN
         }
 
