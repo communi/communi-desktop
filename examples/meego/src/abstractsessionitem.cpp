@@ -115,10 +115,6 @@ void AbstractSessionItem::setCurrent(bool current)
         setHighlighted(false);
         setUnreadCount(0);
     }
-    else
-    {
-        setUnseenIndex(m_messages->rowCount() - 1);
-    }
 
     if (m_current != current)
     {

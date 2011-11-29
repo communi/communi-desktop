@@ -98,11 +98,14 @@ CommonPage {
             root.pageStack.push(chatPage);
         }
         onStatusChanged: {
-            if (modelData)
-                modelData.current = (status === PageStatus.Active);
-            if (status == PageStatus.Inactive)
-                modelData = null;
-            if (status == PageStatus.Inactive && bouncer.item)
+            if (modelData) {
+                modelData.current = (chatPage.status === PageStatus.Active);
+                if (status === PageStatus.Inactive) {
+                    modelData.unseenIndex = chatPage.count - 1;
+                    modelData = null;
+                }
+            }
+            if (status === PageStatus.Inactive && bouncer.item)
                 bouncer.start();
         }
     }

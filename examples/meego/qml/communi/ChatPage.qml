@@ -20,6 +20,7 @@ import "UIConstants.js" as UI
 CommonPage {
     id: page
 
+    property alias count: listView.count
     property QtObject modelData: null
 
     function sendMessage(receiver, message) {
