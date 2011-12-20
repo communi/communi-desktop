@@ -75,7 +75,9 @@ void MainTabWidget::setSessionTitle(const QString& title)
 
 void MainTabWidget::setInactive(bool inactive)
 {
-    setTabInactive(0, inactive);
+    int index = senderIndex();
+    if (index != -1)
+        setTabInactive(index, inactive);
 }
 
 void MainTabWidget::setAlerted(bool alerted)
