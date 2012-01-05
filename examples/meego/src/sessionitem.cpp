@@ -118,7 +118,7 @@ void SessionItem::removeChild(const QString& name)
 
 void SessionItem::quit()
 {
-    m_closing = session()->sendCommand(IrcCommand::createQuit(tr("Communi 1.0.0 for N9")));
+    m_closing = session()->sendCommand(IrcCommand::createQuit(tr("Communi 1.1.0 for N9")));
 }
 
 void SessionItem::receiveMessage(IrcMessage* message)

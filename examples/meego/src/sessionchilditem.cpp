@@ -86,7 +86,7 @@ void SessionChildItem::receiveMessage(IrcMessage* message)
 void SessionChildItem::close()
 {
     if (isChannel())
-        m_parent->session()->sendCommand(IrcCommand::createPart(title(), "Communi 1.0.0 for N9"));
+        m_parent->session()->sendCommand(IrcCommand::createPart(title(), "Communi 1.1.0 for N9"));
     m_parent->removeChild(title());
 }
 
