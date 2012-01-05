@@ -210,7 +210,6 @@ CommonPage {
 
         Keys.onReturnPressed: {
             page.sendMessage(page.title, textField.text);
-            parent.forceActiveFocus();
             textField.text = "";
         }
 
