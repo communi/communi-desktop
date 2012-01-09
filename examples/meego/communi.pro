@@ -52,6 +52,7 @@ SOURCES += settings.cpp
 QT += network
 include(../examples.pri)
 include(../shared/shared.pri)
+QMAKE_RPATHDIR += /opt/communi/lib
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)

@@ -35,6 +35,8 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     QScopedPointer<QApplication> app(createApplication(argc, argv));
     QScopedPointer<QmlApplicationViewer> viewer(QmlApplicationViewer::create());
 
+    viewer->engine()->addImportPath("/opt/communi/imports");
+
     qmlRegisterType<MessageFormatter>("Communi", 1, 0, "MessageFormatter");
     qmlRegisterType<MessageHandler>("Communi", 1, 0, "MessageHandler");
 
