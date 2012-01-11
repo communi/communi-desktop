@@ -1,3 +1,9 @@
+communi (1.1.0-2) unstable; urgency=low
+
+  * Removed changelog & copyright files from the .deb package
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Wed, 11 Jan 2012 22:07:13 +0200
+
 communi (1.1.0-1) unstable; urgency=low
 
   * Fixed .deb packaging issues
