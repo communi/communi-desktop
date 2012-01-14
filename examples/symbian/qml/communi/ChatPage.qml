@@ -44,13 +44,13 @@ CommonPage {
     title: modelData ? modelData.title : ""
     tools: ToolBarLayout {
         ToolButton {
-            iconId: "toolbar-back"
+            iconSource: "toolbar-back"
             onClicked: root.pageStack.pop()
         }
         ToolButton {
             anchors.verticalCenter: parent.verticalCenter
             visible: modelData !== null && modelData.channel !== undefined && !indicator.visible
-            iconId: "toolbar-list"
+            iconSource: "toolbar-list"
             onClicked: {
                 var cmd = modelData.channel ? ircCommand.createNames(modelData.title)
                                             : ircCommand.createWhois(modelData.title);
@@ -65,7 +65,7 @@ CommonPage {
             anchors.verticalCenter: parent.verticalCenter
         }
         ToolButton {
-            iconId: "toolbar-new-message"
+            iconSource: "toolbar-new-message"
             onClicked: {
                 textField.visible = true;
                 textField.forceActiveFocus();
