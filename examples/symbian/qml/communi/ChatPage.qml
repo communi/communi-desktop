@@ -188,11 +188,11 @@ CommonPage {
         height: 0
         visible: false
         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhUrlCharactersOnly
-        platformSipAttributes: SipAttributes {
-            actionKeyHighlighted: true
-            actionKeyLabel: qsTr("Send")
-            actionKeyEnabled: textField.text.length
-        }
+//        platformSipAttributes: SipAttributes {
+//            actionKeyHighlighted: true
+//            actionKeyLabel: qsTr("Send")
+//            actionKeyEnabled: textField.text.length
+//        }
 
         anchors {
             left: parent.left
@@ -222,10 +222,10 @@ CommonPage {
             }
         }
 
-        style: TextFieldStyle {
-            paddingLeft: tabButton.width
-            paddingRight: clearButton.width
-        }
+//        style: TextFieldStyle {
+//            paddingLeft: tabButton.width
+//            paddingRight: clearButton.width
+//        }
 
         Image {
             id: tabButton
