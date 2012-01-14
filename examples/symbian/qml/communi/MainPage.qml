@@ -13,8 +13,8 @@
 */
 
 import QtQuick 1.1
-import QtMultimediaKit 1.1
-import QtMobility.feedback 1.1
+//import QtMultimediaKit 1.1
+//import QtMobility.feedback 1.1
 import com.nokia.symbian 1.1
 import com.nokia.extras 1.1
 import "UIConstants.js" as UI
@@ -83,15 +83,15 @@ CommonPage {
         }
     }
 
-    FileEffect {
-        id: vibraEffect
-        source: "file:///usr/share/sounds/vibra/tct_chat.ivt"
-    }
+//    FileEffect {
+//        id: vibraEffect
+//        source: "file:///usr/share/sounds/vibra/tct_chat.ivt"
+//    }
 
-    SoundEffect {
-        id: soundEffect
-        source: "file:///usr/share/sounds/ui-tones/snd_chat_fg.wav"
-    }
+//    SoundEffect {
+//        id: soundEffect
+//        source: "file:///usr/share/sounds/ui-tones/snd_chat_fg.wav"
+//    }
 
     Connections {
         target: SessionManager
@@ -100,10 +100,10 @@ CommonPage {
             banner.text = item.alertText;
             banner.item = item;
             banner.show();
-            if (Qt.application.active)
-                soundEffect.play();
-            else
-                vibraEffect.start();
+//            if (Qt.application.active)
+//                soundEffect.play();
+//            else
+//                vibraEffect.start();
         }
     }
 
