@@ -35,7 +35,7 @@ PageStackWindow {
         tools: ToolBarLayout {
             id: tools
             visible: sheet.status == DialogStatus.Closed
-            ToolIcon {
+            ToolButton {
                 iconId: "toolbar-add"
                 anchors.right: parent.right
                 onClicked: SessionModel.length ? menu.open() : connectionSheet.open()

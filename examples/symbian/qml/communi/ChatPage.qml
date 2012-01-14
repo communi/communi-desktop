@@ -43,11 +43,11 @@ CommonPage {
 
     title: modelData ? modelData.title : ""
     tools: ToolBarLayout {
-        ToolIcon {
+        ToolButton {
             iconId: "toolbar-back"
             onClicked: root.pageStack.pop()
         }
-        ToolIcon {
+        ToolButton {
             anchors.verticalCenter: parent.verticalCenter
             visible: modelData !== null && modelData.channel !== undefined && !indicator.visible
             iconId: "toolbar-list"
@@ -64,7 +64,7 @@ CommonPage {
             running: visible
             anchors.verticalCenter: parent.verticalCenter
         }
-        ToolIcon {
+        ToolButton {
             iconId: "toolbar-new-message"
             onClicked: {
                 textField.visible = true;

@@ -175,7 +175,7 @@ CommonSheet {
             }
         }
 
-        ToolIcon {
+        ToolButton {
             anchors.horizontalCenter: parent.horizontalCenter
             iconId: advancedColumn.collapsed ? "icon-m-common-expand" : "icon-m-common-collapse"
             onClicked: advancedColumn.collapsed = !advancedColumn.collapsed
