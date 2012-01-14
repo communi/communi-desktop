@@ -74,6 +74,8 @@ PageStackWindow {
                 connectionSheet.host = Settings.host;
                 connectionSheet.port = Settings.port;
                 connectionSheet.name = Settings.name;
+                connectionSheet.user = Settings.user;
+                connectionSheet.real = Settings.real;
                 connectionSheet.channel = Settings.channel;
                 connectionSheet.secure = Settings.secure;
             }
