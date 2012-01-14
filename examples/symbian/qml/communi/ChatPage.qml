@@ -14,7 +14,7 @@
 
 import QtQuick 1.1
 import Communi 1.0
-import com.nokia.symbian 1.0
+import com.nokia.symbian 1.1
 import "UIConstants.js" as UI
 
 CommonPage {
