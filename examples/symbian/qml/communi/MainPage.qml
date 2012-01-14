@@ -30,56 +30,51 @@ CommonPage {
         model: SessionModel
         delegate: Column {
             width: parent.width
-            ListItem {
+            ListDelegate {
                 onClicked: chatPage.push(modelData)
                 onPressAndHold: sessionMenu.popup(modelData.session)
             }
             Repeater {
                 model: modelData.childItems
-                ListItem {
+                ListDelegate {
                     onClicked: chatPage.push(modelData)
                     onPressAndHold: chatMenu.popup(modelData)
                 }
             }
-            Rectangle {
-                color: "#b2b2b4"
-                height: 1
+            ListHeading {
+                height: 2
                 visible: index < listView.count - 1
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    leftMargin: UI.PAGE_MARGIN
-                    rightMargin: UI.PAGE_MARGIN
-                }
             }
         }
     }
 
     ScrollDecorator {
         flickableItem: listView
+        platformInverted: true
     }
 
     Component {
         id: bannerComponent
         InfoBanner {
             id: banner
-            timerShowTime: 5000
+            timeout: 5000
             property QtObject item
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
                     bouncer.bounce(item, null);
-                    banner.hide();
+                    banner.close();
                 }
             }
             Connections {
                 target: root.pageStack
-                onCurrentPageChanged: banner.hide()
+                onCurrentPageChanged: banner.close()
             }
             onVisibleChanged: {
                 if (!banner.visible)
                     banner.destroy();
             }
+            platformInverted: true
         }
     }
 
@@ -99,7 +94,7 @@ CommonPage {
             var banner = bannerComponent.createObject(pageStack.currentPage.header);
             banner.text = item.alertText;
             banner.item = item;
-            banner.show();
+            banner.open();
 //            if (Qt.application.active)
 //                soundEffect.play();
 //            else
@@ -143,7 +138,7 @@ CommonPage {
             }
         }
         onTriggered: {
-            chatPage.push(bouncer.item)
+            chatPage.push(bouncer.item);
             if (bouncer.cmd !== null)
                 item.session.sendCommand(bouncer.cmd);
             bouncer.item = null;
@@ -162,8 +157,10 @@ CommonPage {
             MenuItem {
                 text: qsTr("Quit")
                 onClicked: SessionManager.removeSession(sessionMenu.session)
+                platformInverted: true
             }
         }
+        platformInverted: true
     }
 
     ContextMenu {
@@ -177,7 +174,9 @@ CommonPage {
             MenuItem {
                 text: qsTr("Close")
                 onClicked: chatMenu.chatItem.close()
+                platformInverted: true
             }
         }
+        platformInverted: true
     }
 }

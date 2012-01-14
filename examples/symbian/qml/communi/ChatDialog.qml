@@ -16,13 +16,14 @@ import QtQuick 1.1
 import com.nokia.symbian 1.1
 import "UIConstants.js" as UI
 
-CommonSheet {
-    id: sheet
+BaseDialog {
+    id: dialog
 
     property alias name: nameField.text
-    property int sessionIndex: buttons.checkedButton ? buttons.checkedButton.idx : -1
+    property alias sessionIndex: selectionDialog.selectedIndex
 
-    acceptable: !nameField.errorHighlight
+    titleText: qsTr("Open query")
+
     onStatusChanged: if (status == DialogStatus.Open) nameField.forceActiveFocus()
 
     Column {
@@ -30,16 +31,28 @@ CommonSheet {
         width: parent.width
         spacing: UI.DEFAULT_SPACING
 
-        Label { text: qsTr("Connection"); visible: SessionModel.length > 1 }
-        ButtonColumn {
-            id: buttons
+        SelectionListItem {
+            property QtObject sessionItem: SessionModel[Math.max(0, selectionDialog.selectedIndex)]
+            title: sessionItem ? (sessionItem.title + " ("+ sessionItem.subtitle +")") : ""
             width: parent.width
+            platformInverted: true
             visible: SessionModel.length > 1
-            Repeater {
+
+            onClicked: selectionDialog.open()
+
+            SelectionDialog {
+                id: selectionDialog
+                titleText: qsTr("Select connection")
+                platformInverted: true
                 model: SessionModel
-                Button {
-                    property int idx: index
+                delegate: MenuItem {
+                    platformInverted: true
                     text: modelData.title + " ("+ modelData.subtitle +")"
+                    privateSelectionIndicator: selectedIndex === index
+                    onClicked: {
+                        selectedIndex = index;
+                        root.accept();
+                    }
                 }
             }
         }
@@ -50,11 +63,7 @@ CommonSheet {
             placeholderText: qsTr("Name")
             errorHighlight: !text.length
             width: parent.width
-            platformSipAttributes: SipAttributes {
-                actionKeyEnabled: false
-                actionKeyHighlighted: true
-                actionKeyLabel: qsTr("Next")
-            }
+            platformInverted: true
         }
     }
 }

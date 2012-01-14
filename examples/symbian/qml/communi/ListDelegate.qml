@@ -17,25 +17,15 @@ import com.nokia.symbian 1.1
 import com.nokia.extras 1.1
 import "UIConstants.js" as UI
 
-Item {
+ListItem {
     id: root
 
-    signal clicked
-    signal pressAndHold
-
-    width: listView.width
-    height: 88
-
-    BorderImage {
-        id: background
-        anchors.fill: parent
-        visible: mouseArea.pressed
-        source: "image://theme/meegotouch-list-background-pressed-center"
-    }
+    platformInverted: true
+    subItemIndicator: !loader.sourceComponent
 
     Image {
         id: icon
-        source: "image://theme/" + modelData.icon
+        source: modelData.icon + ".png"
         anchors.left: parent.left
         anchors.leftMargin: UI.PAGE_MARGIN
         anchors.verticalCenter: parent.verticalCenter
@@ -50,24 +40,22 @@ Item {
             verticalCenter: parent.verticalCenter
         }
 
-        Label {
+        ListItemText {
             id: title
-            font.bold: true
-            font.pixelSize: 26
-            font.family: "Nokia Pure Text"
-            color: modelData.highlighted ? "red" : "#282828"
+            role: "Title"
+            mode: root.mode
+            platformInverted: root.platformInverted
+            color: modelData.highlighted ? "red" : platformStyle.colorNormalLightInverted
             width: parent.width
-            elide: Text.ElideRight
             text: modelData.title
         }
 
-        Label {
+        ListItemText {
             id: subtitle
-            font.pixelSize: 22
-            font.family: "Nokia Pure Text Light"
-            color: "#505050"
+            role: "SubTitle"
+            mode: root.mode
+            platformInverted: root.platformInverted
             width: parent.width
-            elide: Text.ElideRight
             text: modelData.subtitle
         }
     }
@@ -80,22 +68,17 @@ Item {
         anchors.rightMargin: UI.PAGE_MARGIN
         anchors.verticalCenter: parent.verticalCenter
 
-        sourceComponent: modelData.busy ? busyIndicator : modelData.unreadCount ? countBubble : moreIndicator
+        sourceComponent: modelData.busy ? busyIndicator : null //modelData.unreadCount ? countBubble : moreIndicator
 
         Component {
             id: busyIndicator
             BusyIndicator { running: modelData.busy }
         }
 
-        Component {
-            id: countBubble
-            CountBubble { value: modelData.unreadCount; largeSized: true }
-        }
-
-        Component {
-            id: moreIndicator
-            MoreIndicator { }
-        }
+//        Component {
+//            id: countBubble
+//            CountBubble { value: modelData.unreadCount; largeSized: true }
+//        }
     }
 
     MouseArea {

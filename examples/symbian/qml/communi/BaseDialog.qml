@@ -16,18 +16,26 @@ import QtQuick 1.1
 import com.nokia.symbian 1.1
 import "UIConstants.js" as UI
 
-Sheet {
-    id: sheet
+CommonDialog {
+    id: dialog
 
-    property bool acceptable: false
     default property alias content: contentItem.data
 
-    acceptButtonText: acceptable ? qsTr("Ok") : ""
-    rejectButtonText: qsTr("Cancel")
+    buttonTexts: [qsTr("Ok"), qsTr("Cancel")]
+    platformInverted: true
+    privateCloseIcon: true
+
+    onButtonClicked: {
+        if (index === 0)
+            dialog.accept();
+        else
+            dialog.reject();
+    }
 
     content: Rectangle {
         id: background
-        anchors.fill: parent
+        width: parent.width
+        height: flickable.contentHeight + 2 * UI.PAGE_MARGIN
         color: "#e0e1e2"
 
         Flickable {

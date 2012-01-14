@@ -14,26 +14,22 @@
 
 import QtQuick 1.1
 import com.nokia.symbian 1.1
+import Qt.labs.components 1.1
 import "UIConstants.js" as UI
 
-CommonSheet {
-    id: sheet
+BaseDialog {
+    id: dialog
 
     property alias channel: channelField.text
     property alias password: passwordField.text
     property bool passwordRequired: false
-    property int sessionIndex: buttons.checkedButton ? buttons.checkedButton.idx : -1
+    property alias sessionIndex: selectionDialog.selectedIndex
 
-    acceptable: !channelField.errorHighlight && !passwordField.errorHighlight
+    titleText: qsTr("Join channel")
+
     onStatusChanged: {
         if (status == DialogStatus.Open) channelField.forceActiveFocus();
         else if (status == DialogStatus.Closed) passwordRequired = false;
-    }
-
-    SipAttributes {
-        id: sipAttributes
-        actionKeyHighlighted: true
-        actionKeyLabel: qsTr("Next")
     }
 
     Column {
@@ -41,16 +37,28 @@ CommonSheet {
         width: parent.width
         spacing: UI.DEFAULT_SPACING
 
-        Label { text: qsTr("Connection"); visible: SessionModel.length > 1 }
-        ButtonColumn {
-            id: buttons
+        SelectionListItem {
+            property QtObject sessionItem: SessionModel[Math.max(0, selectionDialog.selectedIndex)]
+            title: sessionItem ? (sessionItem.title + " ("+ sessionItem.subtitle +")") : ""
             width: parent.width
+            platformInverted: true
             visible: SessionModel.length > 1
-            Repeater {
+
+            onClicked: selectionDialog.open()
+
+            SelectionDialog {
+                id: selectionDialog
+                titleText: qsTr("Select connection")
+                platformInverted: true
                 model: SessionModel
-                Button {
-                    property int idx: index
+                delegate: MenuItem {
+                    platformInverted: true
                     text: modelData.title + " ("+ modelData.subtitle +")"
+                    privateSelectionIndicator: selectedIndex === index
+                    onClicked: {
+                        selectedIndex = index;
+                        root.accept();
+                    }
                 }
             }
         }
@@ -63,19 +71,19 @@ CommonSheet {
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
             errorHighlight: text.length < 2 || (text[0] !== "#" && text[0] !== "&")
             width: parent.width
-            platformSipAttributes: sipAttributes
             Keys.onReturnPressed: passworld.forceActiveFocus()
+            platformInverted: true
         }
 
         TextField {
             id: passwordField
             echoMode: TextInput.PasswordEchoOnEdit
-            placeholderText: sheet.passwordRequired ? qsTr("Password required") : qsTr("Optional password")
-            errorHighlight: sheet.passwordRequired ? !text.length : false
+            placeholderText: dialog.passwordRequired ? qsTr("Password required") : qsTr("Optional password")
+            errorHighlight: dialog.passwordRequired ? !text.length : false
             visible: placeholderText.length
             width: parent.width
-            platformSipAttributes: sipAttributes
             Keys.onReturnPressed: channelField.forceActiveFocus()
+            platformInverted: true
         }
     }
 }

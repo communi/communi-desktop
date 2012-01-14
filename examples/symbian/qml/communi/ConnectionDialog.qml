@@ -16,27 +16,19 @@ import QtQuick 1.1
 import com.nokia.symbian 1.1
 import "UIConstants.js" as UI
 
-CommonSheet {
-    id: sheet
+BaseDialog {
+    id: dialog
 
     property alias host: hostField.text
     property alias port: portField.text
     property alias password: passField.text
     property alias name: nameField.text
-    property alias user: userField.text
-    property alias real: realField.text
     property alias channel: chanField.text
     property alias secure: secureBox.checked
 
-    acceptable: name != "" && host != "" && port != ""
+    titleText: qsTr("Add connection")
 
     onStatusChanged: if (status == DialogStatus.Open) hostField.forceActiveFocus()
-
-    SipAttributes {
-        id: sipAttributes
-        actionKeyHighlighted: true
-        actionKeyLabel: qsTr("Next")
-    }
 
     Column {
         width: parent.width
@@ -48,29 +40,29 @@ CommonSheet {
                 width: parent.width
                 spacing: UI.DEFAULT_SPACING
                 Column {
-                    width: parent.width * 3/4 - UI.DEFAULT_SPACING/2
-                    Label { text: qsTr("Host") }
+                    width: parent.width * 3/5 - UI.DEFAULT_SPACING/2
+                    Label { text: qsTr("Host"); platformInverted: true }
                     TextField {
                         id: hostField
                         text: "irc.freenode.net"
                         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhUrlCharactersOnly
                         width: parent.width
                         errorHighlight: !text.length
-                        platformSipAttributes: sipAttributes
                         Keys.onReturnPressed: portField.forceActiveFocus()
+                        platformInverted: true
                     }
                 }
                 Column {
-                    width: parent.width * 1/4 - UI.DEFAULT_SPACING/2
-                    Label { text: qsTr("Port") }
+                    width: parent.width * 2/5 - UI.DEFAULT_SPACING/2
+                    Label { text: qsTr("Port"); platformInverted: true }
                     TextField {
                         id: portField
                         text: "6667"
                         inputMethodHints: Qt.ImhDigitsOnly
                         width: parent.width
                         errorHighlight: !text.length
-                        platformSipAttributes: sipAttributes
                         Keys.onReturnPressed: passField.forceActiveFocus()
+                        platformInverted: true
                     }
                 }
             }
@@ -81,13 +73,13 @@ CommonSheet {
                 Column {
                     id: passColumn
                     width: hostField.width
-                    Label { text: qsTr("Password") }
+                    Label { text: qsTr("Password"); platformInverted: true }
                     TextField {
                         id: passField
                         echoMode: TextInput.PasswordEchoOnEdit
                         width: parent.width
-                        platformSipAttributes: sipAttributes
                         Keys.onReturnPressed: nameField.forceActiveFocus()
+                        platformInverted: true
                     }
                 }
                 CheckBox {
@@ -95,6 +87,7 @@ CommonSheet {
                     text: qsTr("SSL")
                     anchors.bottom: passColumn.bottom
                     width: portField.width
+                    platformInverted: true
                 }
             }
 
@@ -103,82 +96,30 @@ CommonSheet {
                 spacing: UI.DEFAULT_SPACING
                 Column {
                     width: parent.width / 2 - UI.DEFAULT_SPACING/2
-                    Label { text: qsTr("Nick name") }
+                    Label { text: qsTr("Nick name"); platformInverted: true }
                     TextField {
                         id: nameField
                         text: "Guest" + Math.floor(Math.random() * 12345)
                         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                         width: parent.width
                         errorHighlight: !text.length
-                        platformSipAttributes: sipAttributes
                         Keys.onReturnPressed: chanField.forceActiveFocus()
+                        platformInverted: true
                     }
                 }
                 Column {
                     width: parent.width / 2 - UI.DEFAULT_SPACING/2
-                    Label { text: qsTr("Channel") }
+                    Label { text: qsTr("Channel"); platformInverted: true }
                     TextField {
                         id: chanField
                         text: "#communi"
                         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                         width: parent.width
-                        platformSipAttributes: sipAttributes
-                        Keys.onReturnPressed: advancedColumn.collapsed ? hostField.forceActiveFocus() : userField.forceActiveFocus()
+                        Keys.onReturnPressed: hostField.forceActiveFocus()
+                        platformInverted: true
                     }
                 }
             }
-
-            Item {
-                clip: true
-                width: parent.width
-                height: advancedColumn.collapsed ? 0 : (advancedColumn.implicitHeight + UI.DEFAULT_SPACING)
-                Behavior on height { NumberAnimation { } }
-
-                Rectangle {
-                    color: "#b2b2b4"
-                    height: 1
-                    width: parent.width
-                }
-
-                Column {
-                    id: advancedColumn
-                    width: parent.width
-                    y: UI.DEFAULT_SPACING
-                    spacing: UI.DEFAULT_SPACING
-
-                    property bool collapsed: true
-
-                    Column {
-                        width: parent.width
-                        Label { text: qsTr("User name") }
-                        TextField {
-                            id: userField
-                            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-                            width: parent.width
-                            platformSipAttributes: sipAttributes
-                            Keys.onReturnPressed: realField.forceActiveFocus()
-                        }
-                    }
-
-                    Column {
-                        width: parent.width
-                        Label { text: qsTr("Real name") }
-                        TextField {
-                            id: realField
-                            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-                            width: parent.width
-                            platformSipAttributes: sipAttributes
-                            Keys.onReturnPressed: hostField.forceActiveFocus()
-                        }
-                    }
-                }
-            }
-        }
-
-        ToolButton {
-            anchors.horizontalCenter: parent.horizontalCenter
-            iconSource: advancedColumn.collapsed ? "icon-m-common-expand" : "icon-m-common-collapse"
-            onClicked: advancedColumn.collapsed = !advancedColumn.collapsed
         }
     }
 }

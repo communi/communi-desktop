@@ -19,18 +19,10 @@ import com.nokia.symbian 1.1
 PageStackWindow {
     id: window
 
+    platformInverted: true
+
     initialPage: MainPage {
         id: page
-
-        title: {
-            if (connectionSheet.status === DialogStatus.Open)
-                return qsTr("Add connection");
-            if (channelSheet.status === DialogStatus.Open)
-                return qsTr("Join channel");
-            if (querySheet.status === DialogStatus.Open)
-                return qsTr("Open query");
-            return qsTr("Communi");
-        }
 
         tools: ToolBarLayout {
             id: tools
@@ -38,27 +30,29 @@ PageStackWindow {
             ToolButton {
                 iconSource: "toolbar-add"
                 anchors.right: parent.right
-                onClicked: SessionModel.length ? menu.open() : connectionSheet.open()
+                onClicked: SessionModel.length ? menu.open() : connectionDialog.open()
+                platformInverted: true
             }
         }
-        obscured: connectionSheet.status == DialogStatus.Open || connectionSheet.status == DialogStatus.Opening
-                  || channelSheet.status !== DialogStatus.Closed || channelSheet.status == DialogStatus.Opening
-                  || querySheet.status !== DialogStatus.Closed || querySheet.status == DialogStatus.Opening
 
         Menu {
             id: menu
+            platformInverted: true
             MenuLayout {
                 MenuItem {
                     text: qsTr("Add connection")
-                    onClicked: connectionSheet.open()
+                    onClicked: connectionDialog.open()
+                    platformInverted: true
                 }
                 MenuItem {
                     text: qsTr("Join channel")
-                    onClicked: channelSheet.open()
+                    onClicked: channelDialog.open()
+                    platformInverted: true
                 }
                 MenuItem {
                     text: qsTr("Open query")
-                    onClicked: querySheet.open()
+                    onClicked: chatDialog.open()
+                    platformInverted: true
                 }
             }
         }
@@ -67,15 +61,15 @@ PageStackWindow {
             id: ircCommand
         }
 
-        ConnectionSheet {
-            id: connectionSheet
+        ConnectionDialog {
+            id: connectionDialog
 
             Component.onCompleted: {
-                connectionSheet.host = Settings.host;
-                connectionSheet.port = Settings.port;
-                connectionSheet.name = Settings.name;
-                connectionSheet.channel = Settings.channel;
-                connectionSheet.secure = Settings.secure;
+                connectionDialog.host = Settings.host;
+                connectionDialog.port = Settings.port;
+                connectionDialog.name = Settings.name;
+                connectionDialog.channel = Settings.channel;
+                connectionDialog.secure = Settings.secure;
             }
 
             Component {
@@ -85,55 +79,53 @@ PageStackWindow {
 
             onAccepted: {
                 var session = sessionComponent.createObject(window);
-                session.nickName = connectionSheet.name;
-                session.userName = connectionSheet.user.length ? connectionSheet.user : "communi";
-                session.realName = connectionSheet.real.length ? connectionSheet.real : connectionSheet.name;
-                session.host = connectionSheet.host;
-                session.port = connectionSheet.port;
-                session.password = connectionSheet.password;
-                session.secure = connectionSheet.secure;
-                session.channels = connectionSheet.channel;
+                session.nickName = connectionDialog.name;
+                session.userName = connectionDialog.name;
+                session.realName = connectionDialog.name;
+                session.host = connectionDialog.host;
+                session.port = connectionDialog.port;
+                session.password = connectionDialog.password;
+                session.secure = connectionDialog.secure;
+                session.channels = connectionDialog.channel;
                 SessionManager.addSession(session);
 
-                connectionSheet.password = "";
-                Settings.host = connectionSheet.host;
-                Settings.port = connectionSheet.port;
-                Settings.name = connectionSheet.name;
-                Settings.user = connectionSheet.user;
-                Settings.real = connectionSheet.real;
-                Settings.channel = connectionSheet.channel;
-                Settings.secure = connectionSheet.secure;
+                connectionDialog.password = "";
+                Settings.host = connectionDialog.host;
+                Settings.port = connectionDialog.port;
+                Settings.name = connectionDialog.name;
+                Settings.channel = connectionDialog.channel;
+                Settings.secure = connectionDialog.secure;
             }
         }
 
         Connections {
             target: SessionManager
             onChannelKeyRequired: {
-                channelSheet.channel = channel;
-                channelSheet.passwordRequired = true;
-                channelSheet.open();
+                channelDialog.channel = channel;
+                channelDialog.passwordRequired = true;
+                channelDialog.open();
             }
         }
 
-        ChannelSheet {
-            id: channelSheet
+        ChannelDialog {
+            id: channelDialog
             onAccepted: {
-                var item = SessionModel[channelSheet.sessionIndex];
+                var item = SessionModel[channelDialog.sessionIndex];
                 if (item) {
-                    var child = item.addChild(channelSheet.channel);
-                    var cmd = ircCommand.createJoin(channelSheet.channel, channelSheet.password);
+                    var child = item.addChild(channelDialog.channel);
+                    var cmd = ircCommand.createJoin(channelDialog.channel, channelDialog.password);
                     page.bouncer.bounce(child, cmd);
                 }
             }
         }
 
-        QuerySheet {
-            id: querySheet
+        ChatDialog {
+            id: chatDialog
             onAccepted: {
-                var item = SessionModel[querySheet.sessionIndex];
+                var item = SessionModel[chatDialog.sessionIndex];
                 if (item) {
-                    var child = item.addChild(querySheet.name);
-                    var cmd = ircCommand.createWhois(querySheet.name);
+                    var child = item.addChild(chatDialog.name);
+                    var cmd = ircCommand.createWhois(chatDialog.name);
                     page.bouncer.bounce(child, cmd);
                 }
             }

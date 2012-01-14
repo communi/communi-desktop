@@ -20,10 +20,6 @@ import "UIConstants.js" as UI
 Page {
     id: page
 
-    property bool obscured: false
-    property alias title: label.text
-    property alias header: header
-    property alias busy: indicator.running
     default property alias content: content.data
 
     Rectangle {
@@ -41,85 +37,6 @@ Page {
 
     Item {
         id: content
-
-        anchors {
-            top: header.bottom
-            left: parent.left
-            right: parent.right
-            bottom: parent.bottom
-        }
-    }
-
-    BorderImage {
-        id: header
-
-        width: parent.width
-        height: screen.currentOrientation == Screen.Landscape || page.obscured ? 46 : 72
-        source: "image://theme/meegotouch-sheet-header-background"
-
-        Behavior on height { NumberAnimation { } }
-
-        border {
-            top: 10
-            left: 10
-            right: 10
-            bottom: 2
-        }
-
-        MouseArea {
-            anchors.fill: parent
-        }
-
-        Row {
-            spacing: UI.DEFAULT_SPACING
-            anchors {
-                fill: parent
-                leftMargin: UI.PAGE_MARGIN
-                rightMargin: UI.PAGE_MARGIN
-            }
-
-            Label {
-                id: label
-
-                elide: Text.ElideRight
-                font.pixelSize: 32
-                font.family: "Nokia Pure Text Light"
-                anchors.verticalCenter: parent.verticalCenter
-                width: parent.width - indicator.width - UI.DEFAULT_SPACING
-            }
-
-            BusyIndicator {
-                id: indicator
-                visible: running
-                anchors.verticalCenter: parent.verticalCenter
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: indicator.busy = false
-                }
-            }
-
-//            Image {
-//                id: indicator
-//                width: 32
-//                height: 32
-//                visible: SessionModel.length > 0
-//                source: mouseArea.pressed ? "image://theme/icon-m-common-gray"
-//                      : SessionManager.online ? "image://theme/icon-m-presence-online"
-//                      : SessionManager.offline ? "image://theme/icon-m-presence-offline"
-//                      : "image://theme/icon-m-presence-unknown"
-//                anchors.verticalCenter: parent.verticalCenter
-
-//                MouseArea {
-//                    id: mouseArea
-//                    width: parent.width * 2
-//                    height: header.height
-//                    anchors.centerIn: parent
-//                    onClicked: {
-//                        if (SessionManager.offline)
-//                            SessionManager.ensureNetwork();
-//                    }
-//                }
-//            }
-        }
+        anchors.fill: parent
     }
 }

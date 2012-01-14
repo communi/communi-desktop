@@ -24,9 +24,11 @@ CommonPage {
     property QtObject modelData: null
 
     function sendMessage(receiver, message) {
+        console.log("### " + receiver + " -> " + message)
         var cmd = CommandParser.parseCommand(receiver, message);
         if (cmd && modelData) {
-            modelData.session.sendCommand(cmd);
+            var ret = modelData.session.sendCommand(cmd);
+            console.log("RET: " + ret);
             if (cmd.type == IrcCommand.Message || cmd.type == IrcCommand.CtcpAction) {
                 var msg = ircMessage.fromCommand(modelData.session.nickName, cmd);
                 modelData.receiveMessage(msg);
@@ -41,35 +43,37 @@ CommonPage {
         id: ircMessage
     }
 
-    title: modelData ? modelData.title : ""
     tools: ToolBarLayout {
         ToolButton {
             iconSource: "toolbar-back"
             onClicked: root.pageStack.pop()
+            platformInverted: true
         }
         ToolButton {
             anchors.verticalCenter: parent.verticalCenter
-            visible: modelData !== null && modelData.channel !== undefined && !indicator.visible
+            visible: modelData !== null && modelData.channel !== undefined // && !indicator.visible
             iconSource: "toolbar-list"
             onClicked: {
                 var cmd = modelData.channel ? ircCommand.createNames(modelData.title)
                                             : ircCommand.createWhois(modelData.title);
                 modelData.sendUiCommand(cmd);
-                indicator.visible = true;
+//                indicator.visible = true;
             }
+            platformInverted: true
         }
-        BusyIndicator {
-            id: indicator
-            visible: false
-            running: visible
-            anchors.verticalCenter: parent.verticalCenter
-        }
+//        BusyIndicator {
+//            id: indicator
+//            visible: false
+//            running: visible
+//            anchors.verticalCenter: parent.verticalCenter
+//        }
         ToolButton {
-            iconSource: "toolbar-new-message"
+            iconSource: "toolbar-add"
             onClicked: {
                 textField.visible = true;
                 textField.forceActiveFocus();
             }
+            platformInverted: true
         }
     }
 
@@ -83,7 +87,7 @@ CommonPage {
             listView.model = modelData.messages;
             Completer.modelItem = modelData;
         }
-        indicator.visible = false;
+        //indicator.visible = false;
     }
 
     SelectionDialog {
@@ -95,7 +99,7 @@ CommonPage {
             dialog.selectedIndex = -1;
             for (var i = 0; i < content.length; ++i)
                 dialog.model.append({"name": content[i]});
-            indicator.visible = false;
+            //indicator.visible = false;
         }
         titleText: modelData ? modelData.title : ""
         onAccepted: {
@@ -109,6 +113,7 @@ CommonPage {
                 bouncer.bounce(child, cmd);
             }
         }
+        platformInverted: true
     }
 
     Connections {
@@ -144,17 +149,10 @@ CommonPage {
             width: listView.width
             wrapMode: Text.Wrap
             onLinkActivated: {
-                page.busy = true;
+//                page.busy = true;
                 Qt.openUrlExternally(link);
             }
-        }
-
-        Connections {
-            target: Qt.application
-            onActiveChanged: {
-                if (!Qt.application.active)
-                    page.busy = false;
-            }
+            platformInverted: true
         }
 
         onCountChanged: if (!positioner.running) positioner.start()
@@ -175,6 +173,7 @@ CommonPage {
     ScrollDecorator {
         flickableItem: listView
         anchors.rightMargin: -UI.PAGE_MARGIN
+        platformInverted: true
     }
 
     Timer {
@@ -183,16 +182,18 @@ CommonPage {
         onTriggered: if (!listView.moving) listView.positionViewAtEnd()
     }
 
+    MouseArea {
+        enabled: textField.visible
+        anchors.fill: parent
+        onClicked: textField.visible = false
+    }
+
     TextField {
         id: textField
         height: 0
         visible: false
         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhUrlCharactersOnly
-//        platformSipAttributes: SipAttributes {
-//            actionKeyHighlighted: true
-//            actionKeyLabel: qsTr("Send")
-//            actionKeyEnabled: textField.text.length
-//        }
+        platformInverted: true
 
         anchors {
             left: parent.left
@@ -209,7 +210,8 @@ CommonPage {
         }
 
         Keys.onReturnPressed: {
-            page.sendMessage(page.title, textField.text);
+            if (modelData)
+                page.sendMessage(modelData.title, textField.text);
             parent.forceActiveFocus();
             textField.text = "";
         }
@@ -222,10 +224,8 @@ CommonPage {
             }
         }
 
-//        style: TextFieldStyle {
-//            paddingLeft: tabButton.width
-//            paddingRight: clearButton.width
-//        }
+        platformLeftMargin: tabButton.width
+        platformRightMargin: clearButton.width
 
         Image {
             id: tabButton
@@ -242,13 +242,10 @@ CommonPage {
             id: clearButton
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            source: "image://theme/icon-m-input-clear"
+            source: "icon-m-input-clear.png"
             MouseArea {
                 anchors.fill: parent
-                onClicked: {
-                    inputContext.reset();
-                    textField.text = "";
-                }
+                onClicked: textField.text = ""
             }
         }
     }
