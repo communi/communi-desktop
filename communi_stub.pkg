@@ -1,0 +1,42 @@
+; Language
+&EN
+
+; SIS header: name, uid, version
+#{"Communi"},(0xE6A548E4),1,1,0
+
+; Default localized vendor name
+%{"Communi"}
+
+; Default unique vendor name
+:"Communi"
+
+; DEPLOYMENT
+"" - "z:\sys\bin\Communi.dll"
+"" - "z:\sys\bin\communiplugin.dll"
+
+"" - "z:\resource\qt\imports\Communi\qmldir"
+"" - "z:\resource\qt\imports\Communi\communiplugin.qtplugin"
+
+"" - "z:\sys\bin\communi.exe"
+"" - "z:\resource\apps\communi.rsc"
+"" - "z:\resource\apps\communi.mif"
+"" - "z:\private\10003a3f\import\apps\communi_reg.rsc"
+
+"" - "z:\private\e6a548e4\qml\communi\background.png"
+"" - "z:\private\e6a548e4\qml\communi\BaseDialog.qml"
+"" - "z:\private\e6a548e4\qml\communi\ChannelDialog.qml"
+"" - "z:\private\e6a548e4\qml\communi\ChatDialog.qml"
+"" - "z:\private\e6a548e4\qml\communi\ChatPage.qml"
+"" - "z:\private\e6a548e4\qml\communi\CommonPage.qml"
+"" - "z:\private\e6a548e4\qml\communi\ConnectionDialog.qml"
+"" - "z:\private\e6a548e4\qml\communi\icon-m-common-presence-offline.png"
+"" - "z:\private\e6a548e4\qml\communi\icon-m-content-avatar-placeholder.png"
+"" - "z:\private\e6a548e4\qml\communi\icon-m-content-description.png"
+"" - "z:\private\e6a548e4\qml\communi\icon-m-conversation-group-chat.png"
+"" - "z:\private\e6a548e4\qml\communi\icon-m-input-clear.png"
+"" - "z:\private\e6a548e4\qml\communi\icon-m-input-tab.png"
+"" - "z:\private\e6a548e4\qml\communi\icon-m-transfer-error.png"
+"" - "z:\private\e6a548e4\qml\communi\ListDelegate.qml"
+"" - "z:\private\e6a548e4\qml\communi\main.qml"
+"" - "z:\private\e6a548e4\qml\communi\MainPage.qml"
+"" - "z:\private\e6a548e4\qml\communi\UIConstants.js"
