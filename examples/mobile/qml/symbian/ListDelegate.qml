@@ -68,16 +68,27 @@ ListItem {
         anchors.rightMargin: UI.PAGE_MARGIN
         anchors.verticalCenter: parent.verticalCenter
 
-        sourceComponent: modelData.busy ? busyIndicator : null //modelData.unreadCount ? countBubble : moreIndicator
+        sourceComponent: modelData.busy ? busyIndicator : modelData.unreadCount ? countBubble : null
 
         Component {
             id: busyIndicator
             BusyIndicator { running: modelData.busy }
         }
 
-//        Component {
-//            id: countBubble
-//            CountBubble { value: modelData.unreadCount; largeSized: true }
-//        }
+        Component {
+            id: countBubble
+            Image {
+                source: "squircle.png"
+                Label {
+                    id: unread
+                    color: "white"
+                    text: modelData.unreadCount
+                    anchors.fill: parent
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+        }
     }
 }
