@@ -80,11 +80,4 @@ ListItem {
 //            CountBubble { value: modelData.unreadCount; largeSized: true }
 //        }
     }
-
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        onClicked: root.clicked()
-        onPressAndHold: root.pressAndHold()
-    }
 }
