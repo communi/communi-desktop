@@ -35,7 +35,7 @@ CommonDialog {
     content: Rectangle {
         id: background
         width: parent.width
-        height: flickable.contentHeight + 2 * UI.PAGE_MARGIN
+        height: Math.min(dialog.platformContentMaximumHeight, flickable.contentHeight) + 2 * UI.PAGE_MARGIN
         color: "#e0e1e2"
 
         Flickable {

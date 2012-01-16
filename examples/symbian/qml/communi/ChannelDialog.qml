@@ -14,7 +14,6 @@
 
 import QtQuick 1.1
 import com.nokia.symbian 1.1
-import Qt.labs.components 1.1
 import "UIConstants.js" as UI
 
 BaseDialog {
@@ -54,7 +53,6 @@ BaseDialog {
                 delegate: MenuItem {
                     platformInverted: true
                     text: modelData.title + " ("+ modelData.subtitle +")"
-                    privateSelectionIndicator: selectedIndex === index
                     onClicked: {
                         selectedIndex = index;
                         root.accept();

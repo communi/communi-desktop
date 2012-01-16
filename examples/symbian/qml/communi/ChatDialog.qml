@@ -48,7 +48,6 @@ BaseDialog {
                 delegate: MenuItem {
                     platformInverted: true
                     text: modelData.title + " ("+ modelData.subtitle +")"
-                    privateSelectionIndicator: selectedIndex === index
                     onClicked: {
                         selectedIndex = index;
                         root.accept();
