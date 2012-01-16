@@ -71,6 +71,7 @@ CommonPage {
             iconSource: "toolbar-add"
             onClicked: {
                 textField.visible = true;
+                textField.openSoftwareInputPanel();
                 textField.forceActiveFocus();
             }
             platformInverted: true
@@ -79,6 +80,7 @@ CommonPage {
 
     Keys.onReturnPressed: {
         textField.visible = true;
+        textField.openSoftwareInputPanel();
         textField.forceActiveFocus();
     }
 
