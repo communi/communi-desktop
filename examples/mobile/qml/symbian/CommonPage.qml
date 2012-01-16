@@ -37,6 +37,9 @@ Page {
 
     Item {
         id: content
-        anchors.fill: parent
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: inputContext.visible ? parent.height - inputContext.height : parent.height
     }
 }
