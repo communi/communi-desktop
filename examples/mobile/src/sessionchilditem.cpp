@@ -14,6 +14,7 @@
 
 #include "sessionchilditem.h"
 #include "sessionitem.h"
+#include <QApplication>
 #include <IrcSession>
 #include <IrcCommand>
 #include <Irc>
@@ -86,7 +87,17 @@ void SessionChildItem::receiveMessage(IrcMessage* message)
 void SessionChildItem::close()
 {
     if (isChannel())
-        m_parent->session()->sendCommand(IrcCommand::createPart(title(), "Communi 1.1.0 for Symbian"));
+    {
+        static const QString msg = tr("%s %s for %s")
+                .arg(QApplication::applicationName())
+                .arg(QApplication::applicationVersion())
+#ifdef Q_OS_SYMBIAN
+                .arg(tr("Symbian"));
+#else
+                .arg(tr("N9"));
+#endif
+        m_parent->session()->sendCommand(IrcCommand::createPart(title(), msg));
+    }
     m_parent->removeChild(title());
 }
 

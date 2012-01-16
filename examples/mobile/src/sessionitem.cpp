@@ -14,6 +14,7 @@
 
 #include "sessionitem.h"
 #include "sessionchilditem.h"
+#include <QApplication>
 #include <IrcSession>
 #include <IrcMessage>
 #include <IrcCommand>
@@ -118,7 +119,15 @@ void SessionItem::removeChild(const QString& name)
 
 void SessionItem::quit()
 {
-    m_closing = session()->sendCommand(IrcCommand::createQuit(tr("Communi 1.1.0 for N9")));
+    static const QString msg = tr("%s %s for %s")
+            .arg(QApplication::applicationName())
+            .arg(QApplication::applicationVersion())
+#ifdef Q_OS_SYMBIAN
+            .arg(tr("Symbian"));
+#else
+            .arg(tr("N9"));
+#endif
+    m_closing = session()->sendCommand(IrcCommand::createQuit(msg));
 }
 
 void SessionItem::receiveMessage(IrcMessage* message)

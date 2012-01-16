@@ -35,6 +35,10 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     QScopedPointer<QApplication> app(createApplication(argc, argv));
     QScopedPointer<QmlApplicationViewer> viewer(QmlApplicationViewer::create());
 
+#ifndef Q_OS_SYMBIAN
+    viewer->engine()->addImportPath("/opt/communi/imports");
+#endif
+
     qmlRegisterType<MessageFormatter>("Communi", 1, 0, "MessageFormatter");
     qmlRegisterType<MessageHandler>("Communi", 1, 0, "MessageHandler");
 
@@ -53,7 +57,11 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     qmlRegisterType<Session>("Communi", 1, 0, "Session");
 
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
-    viewer->setMainQmlFile(QLatin1String("qml/communi/main.qml"));
+#ifdef Q_OS_SYMBIAN
+    viewer->setMainQmlFile(QLatin1String("qml/symbian/main.qml"));
+#else
+    viewer->setMainQmlFile(QLatin1String("qml/meego/main.qml"));
+#endif
     viewer->showExpanded();
 
     return app->exec();

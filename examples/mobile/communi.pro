@@ -1,7 +1,8 @@
 # Add more folders to ship with the application, here
-folder_01.source = qml/communi
-folder_01.target = qml
-DEPLOYMENTFOLDERS = folder_01
+symbian:qml_files.source = qml/symbian
+else:qml_files.source = qml/meego
+qml_files.target = qml
+DEPLOYMENTFOLDERS = qml_files
 
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =
@@ -27,7 +28,7 @@ symbian:TARGET.CAPABILITY += NetworkServices
 # CONFIG += qdeclarative-boostable
 
 # Add dependency to Symbian components
-# CONFIG += qt-components
+CONFIG += qt-components
 
 INCLUDEPATH += src
 DEPENDPATH += src
