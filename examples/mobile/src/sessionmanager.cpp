@@ -82,7 +82,7 @@ bool SessionManager::ensureNetwork()
             m_network->open();
         }
     }
-    return m_network->isOpen();
+    return !m_network || m_network->isOpen();
 }
 
 void SessionManager::restore()
