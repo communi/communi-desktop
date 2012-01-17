@@ -230,7 +230,7 @@ CommonPage {
             id: tabButton
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            source: "icon-m-input-tab.png"
+            source: "../images/tab.png"
             MouseArea {
                 anchors.fill: parent
                 onClicked: Completer.complete(textField.text, textField.selectionStart, textField.selectionEnd)
@@ -241,7 +241,7 @@ CommonPage {
             id: clearButton
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            source: "image://theme/icon-m-input-clear"
+            source: "../images/clear.png"
             MouseArea {
                 anchors.fill: parent
                 onClicked: {

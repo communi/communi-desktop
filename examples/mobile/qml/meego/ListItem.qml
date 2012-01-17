@@ -20,6 +20,13 @@ import "UIConstants.js" as UI
 Item {
     id: root
 
+    property alias title: title.text
+    property alias subtitle: subtitle.text
+    property alias iconSource: icon.source
+    property bool highlighted: false
+    property int unreadCount: 0
+    property bool busy: false
+
     signal clicked
     signal pressAndHold
 
@@ -35,7 +42,6 @@ Item {
 
     Image {
         id: icon
-        source: "image://theme/" + modelData.icon
         anchors.left: parent.left
         anchors.leftMargin: UI.PAGE_MARGIN
         anchors.verticalCenter: parent.verticalCenter
@@ -55,10 +61,9 @@ Item {
             font.bold: true
             font.pixelSize: 26
             font.family: "Nokia Pure Text"
-            color: modelData.highlighted ? "red" : "#282828"
+            color: root.highlighted ? "red" : "#282828"
             width: parent.width
             elide: Text.ElideRight
-            text: modelData.title
         }
 
         Label {
@@ -68,7 +73,6 @@ Item {
             color: "#505050"
             width: parent.width
             elide: Text.ElideRight
-            text: modelData.subtitle
         }
     }
 
@@ -80,16 +84,16 @@ Item {
         anchors.rightMargin: UI.PAGE_MARGIN
         anchors.verticalCenter: parent.verticalCenter
 
-        sourceComponent: modelData.busy ? busyIndicator : modelData.unreadCount ? countBubble : moreIndicator
+        sourceComponent: root.busy ? busyIndicator : root.unreadCount ? countBubble : moreIndicator
 
         Component {
             id: busyIndicator
-            BusyIndicator { running: modelData.busy }
+            BusyIndicator { running: root.busy }
         }
 
         Component {
             id: countBubble
-            CountBubble { value: modelData.unreadCount; largeSized: true }
+            CountBubble { value: root.unreadCount; largeSized: true }
         }
 
         Component {

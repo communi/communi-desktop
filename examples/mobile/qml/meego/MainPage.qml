@@ -31,12 +31,27 @@ CommonPage {
         delegate: Column {
             width: parent.width
             ListItem {
+                title: modelData.title
+                subtitle: modelData.subtitle
+                iconSource: modelData.error ? "../images/error.png" :
+                           !modelData.session.connected &&
+                           !modelData.session.active ? "../images/offline.png" :
+                           "../images/server.png"
+                highlighted: modelData.highlighted
+                unreadCount: modelData.unreadCount
+                busy: modelData.busy
                 onClicked: chatPage.push(modelData)
                 onPressAndHold: sessionMenu.popup(modelData.session)
             }
             Repeater {
                 model: modelData.childItems
                 ListItem {
+                    title: modelData.title
+                    subtitle: modelData.subtitle
+                    iconSource: modelData.channel ? "../images/channel.png" : "../images/query.png"
+                    highlighted: modelData.highlighted
+                    unreadCount: modelData.unreadCount
+                    busy: modelData.busy
                     onClicked: chatPage.push(modelData)
                     onPressAndHold: chatMenu.popup(modelData)
                 }
