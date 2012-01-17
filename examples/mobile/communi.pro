@@ -2,7 +2,9 @@
 symbian:qml_files.source = qml/symbian
 else:qml_files.source = qml/meego
 qml_files.target = qml
-DEPLOYMENTFOLDERS = qml_files
+qml_images.source = qml/images
+qml_images.target = qml
+DEPLOYMENTFOLDERS = qml_files qml_images
 
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =

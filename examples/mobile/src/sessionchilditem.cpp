@@ -23,7 +23,7 @@ SessionChildItem::SessionChildItem(SessionItem* parent) :
     AbstractSessionItem(parent), m_parent(parent)
 {
     setSession(parent->session());
-    connect(this, SIGNAL(titleChanged()), SLOT(updateIcon()));
+    connect(this, SIGNAL(titleChanged()), SIGNAL(channelChanged()));
 }
 
 bool SessionChildItem::isChannel() const
@@ -99,12 +99,4 @@ void SessionChildItem::close()
         m_parent->session()->sendCommand(IrcCommand::createPart(title(), msg));
     }
     m_parent->removeChild(title());
-}
-
-void SessionChildItem::updateIcon()
-{
-    if (isChannel())
-        setIcon("icon-m-conversation-group-chat");
-    else
-        setIcon("icon-m-content-avatar-placeholder");
 }

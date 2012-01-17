@@ -26,8 +26,7 @@ class IrcMessage;
 class AbstractSessionItem : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(Session* session READ session)
-    Q_PROPERTY(QString icon READ icon WRITE setIcon NOTIFY iconChanged)
+    Q_PROPERTY(Session* session READ session CONSTANT)
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
     Q_PROPERTY(QString subtitle READ subtitle WRITE setSubtitle NOTIFY subtitleChanged)
     Q_PROPERTY(bool busy READ isBusy WRITE setBusy NOTIFY busyChanged)
@@ -36,8 +35,8 @@ class AbstractSessionItem : public QObject
     Q_PROPERTY(int unreadCount READ unreadCount WRITE setUnreadCount NOTIFY unreadCountChanged)
     Q_PROPERTY(int unseenIndex READ unseenIndex WRITE setUnseenIndex NOTIFY unseenIndexChanged)
     Q_PROPERTY(QStringList users READ users NOTIFY usersChanged)
-    Q_PROPERTY(QString alertText READ alertText)
-    Q_PROPERTY(QObject* messages READ messages)
+    Q_PROPERTY(QString alertText READ alertText CONSTANT)
+    Q_PROPERTY(QObject* messages READ messages CONSTANT)
 
 public:
     explicit AbstractSessionItem(QObject *parent = 0);
@@ -45,7 +44,6 @@ public:
 
     Session* session() const;
 
-    QString icon() const;
     QString title() const;
     QString subtitle() const;
     bool isBusy() const;
@@ -61,7 +59,6 @@ public:
     virtual void updateCurrent(AbstractSessionItem* item) { Q_UNUSED(item) };
 
 public slots:
-    void setIcon(const QString& icon);
     void setTitle(const QString& title);
     void setSubtitle(const QString& subtitle);
     void setBusy(bool busy);
@@ -97,7 +94,6 @@ protected:
 
 private:
     Session* m_session;
-    QString m_icon;
     QString m_title;
     QString m_subtitle;
     bool m_busy;

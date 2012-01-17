@@ -29,7 +29,7 @@ Page {
         color: "#e0e1e2"
 
         Image {
-            source: "background.png"
+            source: "../images/background.png"
             anchors.right: parent.right
             anchors.bottom: parent.bottom
         }

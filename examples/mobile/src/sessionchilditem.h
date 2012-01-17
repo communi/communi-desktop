@@ -23,7 +23,7 @@ class IrcMessage;
 class SessionChildItem : public AbstractSessionItem
 {
     Q_OBJECT
-    Q_PROPERTY(bool channel READ isChannel CONSTANT)
+    Q_PROPERTY(bool channel READ isChannel NOTIFY channelChanged)
     Q_PROPERTY(SessionItem* sessionItem READ sessionItem)
 
 public:
@@ -37,11 +37,11 @@ public:
 public slots:
     void close();
 
+signals:
+    void channelChanged();
+
 protected slots:
     void receiveMessage(IrcMessage* message);
-
-private slots:
-    void updateIcon();
 
 private:
     SessionItem* m_parent;

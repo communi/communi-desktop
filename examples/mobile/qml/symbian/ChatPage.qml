@@ -24,11 +24,9 @@ CommonPage {
     property QtObject modelData: null
 
     function sendMessage(receiver, message) {
-        console.log("### " + receiver + " -> " + message)
         var cmd = CommandParser.parseCommand(receiver, message);
         if (cmd && modelData) {
             var ret = modelData.session.sendCommand(cmd);
-            console.log("RET: " + ret);
             if (cmd.type == IrcCommand.Message || cmd.type == IrcCommand.CtcpAction) {
                 var msg = ircMessage.fromCommand(modelData.session.nickName, cmd);
                 modelData.receiveMessage(msg);
@@ -233,7 +231,7 @@ CommonPage {
             id: tabButton
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            source: "icon-m-input-tab.png"
+            source: "../images/tab.png"
             MouseArea {
                 anchors.fill: parent
                 onClicked: Completer.complete(textField.text, textField.selectionStart, textField.selectionEnd)
@@ -244,7 +242,7 @@ CommonPage {
             id: clearButton
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            source: "icon-m-input-clear.png"
+            source: "../images/clear.png"
             MouseArea {
                 anchors.fill: parent
                 onClicked: textField.text = ""

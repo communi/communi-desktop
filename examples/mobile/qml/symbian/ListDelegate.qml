@@ -20,12 +20,18 @@ import "UIConstants.js" as UI
 ListItem {
     id: root
 
+    property alias title: title.text
+    property alias subtitle: subtitle.text
+    property alias iconSource: icon.source
+    property bool highlighted: false
+    property int unreadCount: 0
+    property bool busy: false
+
     platformInverted: true
     subItemIndicator: !loader.sourceComponent
 
     Image {
         id: icon
-        source: modelData.icon + ".png"
         anchors.left: parent.left
         anchors.leftMargin: UI.PAGE_MARGIN
         anchors.verticalCenter: parent.verticalCenter
@@ -45,9 +51,8 @@ ListItem {
             role: "Title"
             mode: root.mode
             platformInverted: root.platformInverted
-            color: modelData.highlighted ? "red" : platformStyle.colorNormalLightInverted
+            color: root.highlighted ? "red" : platformStyle.colorNormalLightInverted
             width: parent.width
-            text: modelData.title
         }
 
         ListItemText {
@@ -56,7 +61,6 @@ ListItem {
             mode: root.mode
             platformInverted: root.platformInverted
             width: parent.width
-            text: modelData.subtitle
         }
     }
 
@@ -68,21 +72,21 @@ ListItem {
         anchors.rightMargin: UI.PAGE_MARGIN
         anchors.verticalCenter: parent.verticalCenter
 
-        sourceComponent: modelData.busy ? busyIndicator : modelData.unreadCount ? countBubble : null
+        sourceComponent: root.busy ? busyIndicator : root.unreadCount ? countBubble : null
 
         Component {
             id: busyIndicator
-            BusyIndicator { running: modelData.busy }
+            BusyIndicator { running: root.busy }
         }
 
         Component {
             id: countBubble
             Image {
-                source: "squircle.png"
+                source: "../images/squircle.png"
                 Label {
                     id: unread
                     color: "white"
-                    text: modelData.unreadCount
+                    text: root.unreadCount
                     anchors.fill: parent
                     elide: Text.ElideRight
                     horizontalAlignment: Text.AlignHCenter

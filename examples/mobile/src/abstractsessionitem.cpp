@@ -47,20 +47,6 @@ void AbstractSessionItem::setSession(Session *session)
     m_formatter.setHighlights(QStringList() << session->nickName());
 }
 
-QString AbstractSessionItem::icon() const
-{
-    return m_icon;
-}
-
-void AbstractSessionItem::setIcon(const QString& icon)
-{
-    if (m_icon != icon)
-    {
-        m_icon = icon;
-        emit iconChanged();
-    }
-}
-
 QString AbstractSessionItem::title() const
 {
     return m_title;

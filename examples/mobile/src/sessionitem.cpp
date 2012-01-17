@@ -44,6 +44,11 @@ SessionItem::SessionItem(Session* session) : AbstractSessionItem(session), m_clo
     updateState();
 }
 
+bool SessionItem::hasError() const
+{
+    return session()->socket()->error() != QAbstractSocket::UnknownSocketError;
+}
+
 QObjectList SessionItem::childItems() const
 {
     return m_children;
@@ -146,19 +151,11 @@ void SessionItem::receiveMessage(IrcMessage* message)
 void SessionItem::updateState()
 {
     IrcSession* session = m_handler.session();
-    if (session->socket()->error() != QAbstractSocket::UnknownSocketError)
-        setIcon("icon-m-transfer-error");
-    else if (!session->isConnected() && !session->isActive())
-        setIcon("icon-m-common-presence-offline");
-    else
-        setIcon("icon-m-content-description");
-
     setBusy(session->isActive() && !session->isConnected());
 
-    bool hasError = session->socket()->error() != QAbstractSocket::UnknownSocketError;
-    if (!m_closing && hasError)
+    if (!m_closing && hasError())
         setAlertText(QString("%1\n%2").arg(session->host()).arg(session->socket()->errorString()));
 
-    if (m_closing && (hasError || !session->isConnected()))
+    if (m_closing && (hasError() || !session->isConnected()))
         session->deleteLater();
 }
