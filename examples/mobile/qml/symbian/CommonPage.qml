@@ -20,7 +20,17 @@ import "UIConstants.js" as UI
 Page {
     id: page
 
+    property alias busy: indicator.running
+    property alias title: title.text
     default property alias content: content.data
+
+    Connections {
+        target: Qt.application
+        onActiveChanged: {
+            if (!Qt.application.active)
+            page.busy = false;
+        }
+    }
 
     Rectangle {
         id: background
@@ -35,11 +45,45 @@ Page {
         }
     }
 
-    Item {
-        id: content
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        height: inputContext.visible ? parent.height - inputContext.height : parent.height
+    Column {
+        anchors.fill: parent
+        ToolBar {
+            id: header
+            Row {
+                spacing: UI.DEFAULT_SPACING
+                anchors {
+                    fill: parent
+                    leftMargin: UI.PAGE_MARGIN
+                    rightMargin: UI.PAGE_MARGIN
+                }
+
+                ListItemText {
+                    id: title
+                    role: "Title"
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width - indicator.width - UI.DEFAULT_SPACING
+                    platformInverted: true
+                }
+
+                BusyIndicator {
+                    id: indicator
+                    visible: running
+                    anchors.verticalCenter: parent.verticalCenter
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: indicator.running = false
+                    }
+                    platformInverted: true
+                }
+            }
+            platformInverted: true
+        }
+
+        Item {
+            id: content
+            clip: true
+            width: parent.width
+            height: inputContext.visible ? parent.height - inputContext.height : parent.height - header.height
+        }
     }
 }

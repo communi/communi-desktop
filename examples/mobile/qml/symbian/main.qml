@@ -24,6 +24,8 @@ PageStackWindow {
     initialPage: MainPage {
         id: page
 
+        title: qsTr("Communi")
+
         tools: ToolBarLayout {
             id: tools
             visible: sheet.status == DialogStatus.Closed

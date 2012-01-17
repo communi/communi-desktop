@@ -41,6 +41,8 @@ CommonPage {
         id: ircMessage
     }
 
+    title: modelData ? modelData.title : ""
+
     tools: ToolBarLayout {
         ToolButton {
             iconSource: "toolbar-back"
@@ -149,8 +151,8 @@ CommonPage {
             width: listView.width
             wrapMode: Text.Wrap
             onLinkActivated: {
-//                page.busy = true;
-                Qt.openUrlExternally(link);
+                page.busy = true;
+                //Qt.openUrlExternally(link);
             }
             platformInverted: true
         }
