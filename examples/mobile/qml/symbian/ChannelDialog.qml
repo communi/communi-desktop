@@ -36,52 +36,63 @@ BaseDialog {
         width: parent.width
         spacing: UI.DEFAULT_SPACING
 
-        SelectionListItem {
-            property QtObject sessionItem: SessionModel[Math.max(0, selectionDialog.selectedIndex)]
-            title: sessionItem ? (sessionItem.title + " ("+ sessionItem.subtitle +")") : ""
+        Column {
             width: parent.width
-            platformInverted: true
-            visible: SessionModel.length > 1
-
-            onClicked: selectionDialog.open()
-
-            SelectionDialog {
-                id: selectionDialog
-                titleText: qsTr("Select connection")
+            Label { text: qsTr("Connection"); platformInverted: true }
+            SelectionListItem {
+                property QtObject sessionItem: SessionModel[Math.max(0, selectionDialog.selectedIndex)]
+                title: sessionItem ? (sessionItem.title + " ("+ sessionItem.subtitle +")") : ""
+                width: parent.width
                 platformInverted: true
-                model: SessionModel
-                delegate: MenuItem {
+                visible: SessionModel.length > 1
+
+                onClicked: selectionDialog.open()
+
+                SelectionDialog {
+                    id: selectionDialog
+                    titleText: qsTr("Select connection")
                     platformInverted: true
-                    text: modelData.title + " ("+ modelData.subtitle +")"
-                    onClicked: {
-                        selectedIndex = index;
-                        root.accept();
+                    model: SessionModel
+                    delegate: MenuItem {
+                        platformInverted: true
+                        text: modelData.title + " ("+ modelData.subtitle +")"
+                        onClicked: {
+                            selectedIndex = index;
+                            root.accept();
+                        }
                     }
                 }
             }
         }
 
-        TextField {
-            id: channelField
-            text: qsTr("#")
-            enabled: !passwordRequired
-            placeholderText: qsTr("Channel")
-            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-            errorHighlight: text.length < 2 || (text[0] !== "#" && text[0] !== "&")
+        Column {
             width: parent.width
-            Keys.onReturnPressed: passworld.forceActiveFocus()
-            platformInverted: true
+            Label { text: qsTr("Channel"); platformInverted: true }
+            TextField {
+                id: channelField
+                text: qsTr("#")
+                enabled: !passwordRequired
+                inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+                errorHighlight: text.length < 2 || (text[0] !== "#" && text[0] !== "&")
+                width: parent.width
+                Keys.onReturnPressed: passworld.forceActiveFocus()
+                platformInverted: true
+            }
         }
 
-        TextField {
-            id: passwordField
-            echoMode: TextInput.PasswordEchoOnEdit
-            placeholderText: dialog.passwordRequired ? qsTr("Password required") : qsTr("Optional password")
-            errorHighlight: dialog.passwordRequired ? !text.length : false
-            visible: placeholderText.length
+        Column {
             width: parent.width
-            Keys.onReturnPressed: channelField.forceActiveFocus()
-            platformInverted: true
+            Label { text: qsTr("Password"); platformInverted: true }
+            TextField {
+                id: passwordField
+                echoMode: TextInput.PasswordEchoOnEdit
+                placeholderText: dialog.passwordRequired ? qsTr("Required") : qsTr("Optional")
+                errorHighlight: dialog.passwordRequired ? !text.length : false
+                visible: placeholderText.length
+                width: parent.width
+                Keys.onReturnPressed: channelField.forceActiveFocus()
+                platformInverted: true
+            }
         }
     }
 }

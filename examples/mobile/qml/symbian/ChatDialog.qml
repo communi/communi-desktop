@@ -31,38 +31,45 @@ BaseDialog {
         width: parent.width
         spacing: UI.DEFAULT_SPACING
 
-        SelectionListItem {
-            property QtObject sessionItem: SessionModel[Math.max(0, selectionDialog.selectedIndex)]
-            title: sessionItem ? (sessionItem.title + " ("+ sessionItem.subtitle +")") : ""
+        Column {
             width: parent.width
-            platformInverted: true
-            visible: SessionModel.length > 1
-
-            onClicked: selectionDialog.open()
-
-            SelectionDialog {
-                id: selectionDialog
-                titleText: qsTr("Select connection")
+            Label { text: qsTr("Connection"); platformInverted: true }
+            SelectionListItem {
+                property QtObject sessionItem: SessionModel[Math.max(0, selectionDialog.selectedIndex)]
+                title: sessionItem ? (sessionItem.title + " ("+ sessionItem.subtitle +")") : ""
+                width: parent.width
                 platformInverted: true
-                model: SessionModel
-                delegate: MenuItem {
+                visible: SessionModel.length > 1
+
+                onClicked: selectionDialog.open()
+
+                SelectionDialog {
+                    id: selectionDialog
+                    titleText: qsTr("Select connection")
                     platformInverted: true
-                    text: modelData.title + " ("+ modelData.subtitle +")"
-                    onClicked: {
-                        selectedIndex = index;
-                        root.accept();
+                    model: SessionModel
+                    delegate: MenuItem {
+                        platformInverted: true
+                        text: modelData.title + " ("+ modelData.subtitle +")"
+                        onClicked: {
+                            selectedIndex = index;
+                            root.accept();
+                        }
                     }
                 }
             }
         }
 
-        TextField {
-            id: nameField
-            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-            placeholderText: qsTr("Name")
-            errorHighlight: !text.length
+        Column {
             width: parent.width
-            platformInverted: true
+            Label { text: qsTr("Name"); platformInverted: true }
+            TextField {
+                id: nameField
+                inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+                errorHighlight: !text.length
+                width: parent.width
+                platformInverted: true
+            }
         }
     }
 }
