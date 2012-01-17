@@ -149,14 +149,6 @@ CommonPage {
             }
         }
 
-        Connections {
-            target: Qt.application
-            onActiveChanged: {
-                if (!Qt.application.active)
-                    page.busy = false;
-            }
-        }
-
         onCountChanged: if (!positioner.running) positioner.start()
         onHeightChanged: if (!positioner.running) positioner.start()
 

@@ -28,7 +28,7 @@ Page {
         target: Qt.application
         onActiveChanged: {
             if (!Qt.application.active)
-            page.busy = false;
+                page.busy = false;
         }
     }
 

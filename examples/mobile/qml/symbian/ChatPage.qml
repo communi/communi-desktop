@@ -26,7 +26,7 @@ CommonPage {
     function sendMessage(receiver, message) {
         var cmd = CommandParser.parseCommand(receiver, message);
         if (cmd && modelData) {
-            var ret = modelData.session.sendCommand(cmd);
+            modelData.session.sendCommand(cmd);
             if (cmd.type == IrcCommand.Message || cmd.type == IrcCommand.CtcpAction) {
                 var msg = ircMessage.fromCommand(modelData.session.nickName, cmd);
                 modelData.receiveMessage(msg);
@@ -42,7 +42,6 @@ CommonPage {
     }
 
     title: modelData ? modelData.title : ""
-
     tools: ToolBarLayout {
         ToolButton {
             id: backButton

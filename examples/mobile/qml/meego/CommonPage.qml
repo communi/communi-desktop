@@ -26,6 +26,14 @@ Page {
     property alias busy: indicator.running
     default property alias content: content.data
 
+    Connections {
+        target: Qt.application
+        onActiveChanged: {
+            if (!Qt.application.active)
+                page.busy = false;
+        }
+    }
+
     Rectangle {
         id: background
 
