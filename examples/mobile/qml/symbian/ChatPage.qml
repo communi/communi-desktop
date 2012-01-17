@@ -45,28 +45,43 @@ CommonPage {
 
     tools: ToolBarLayout {
         ToolButton {
+            id: backButton
             iconSource: "toolbar-back"
             onClicked: root.pageStack.pop()
             platformInverted: true
         }
-        ToolButton {
+        Loader {
+            id: lister
+            property bool busy: false
+            width: backButton.width
+            height: backButton.height
             anchors.verticalCenter: parent.verticalCenter
-            visible: modelData !== null && modelData.channel !== undefined // && !indicator.visible
-            iconSource: "toolbar-list"
-            onClicked: {
-                var cmd = modelData.channel ? ircCommand.createNames(modelData.title)
-                                            : ircCommand.createWhois(modelData.title);
-                modelData.sendUiCommand(cmd);
-//                indicator.visible = true;
+            sourceComponent: busy ? indicatorComponent : listButtonComponent
+            Component {
+                id: listButtonComponent
+                ToolButton {
+                    visible: modelData !== null && modelData.channel !== undefined
+                    iconSource: "toolbar-list"
+                    onClicked: {
+                        var cmd = modelData.channel ? ircCommand.createNames(modelData.title)
+                                                    : ircCommand.createWhois(modelData.title);
+                        modelData.sendUiCommand(cmd);
+                        lister.busy = true;
+                    }
+                    platformInverted: true
+                }
             }
-            platformInverted: true
+            Component {
+                id: indicatorComponent
+                Item {
+                    BusyIndicator {
+                        running: true
+                        anchors.centerIn: parent
+                    }
+                }
+            }
         }
-//        BusyIndicator {
-//            id: indicator
-//            visible: false
-//            running: visible
-//            anchors.verticalCenter: parent.verticalCenter
-//        }
+
         ToolButton {
             iconSource: "toolbar-add"
             onClicked: {
@@ -89,7 +104,7 @@ CommonPage {
             listView.model = modelData.messages;
             Completer.modelItem = modelData;
         }
-        //indicator.visible = false;
+        lister.busy = false;
     }
 
     SelectionDialog {
@@ -101,7 +116,7 @@ CommonPage {
             dialog.selectedIndex = -1;
             for (var i = 0; i < content.length; ++i)
                 dialog.model.append({"name": content[i]});
-            //indicator.visible = false;
+            lister.busy = false;
         }
         titleText: modelData ? modelData.title : ""
         onAccepted: {
@@ -152,7 +167,7 @@ CommonPage {
             wrapMode: Text.Wrap
             onLinkActivated: {
                 page.busy = true;
-                //Qt.openUrlExternally(link);
+                Qt.openUrlExternally(link);
             }
             platformInverted: true
         }
