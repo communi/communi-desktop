@@ -93,7 +93,18 @@ Item {
 
         Component {
             id: countBubble
-            CountBubble { value: root.unreadCount; largeSized: true }
+            Image {
+                source: "../images/squircle.png"
+                Label {
+                    id: unread
+                    color: "white"
+                    text: root.unreadCount
+                    anchors.fill: parent
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
         }
 
         Component {
