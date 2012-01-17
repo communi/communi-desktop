@@ -225,12 +225,15 @@ CommonPage {
             if (!positioner.running) positioner.start();
         }
 
-        Keys.onReturnPressed: {
+        function send() {
             if (modelData)
-                page.sendMessage(modelData.title, textField.text);
+                page.sendMessage(modelData.title, text);
             parent.forceActiveFocus();
-            textField.text = "";
+            text = "";
         }
+
+        Keys.onEnterPressed: send()
+        Keys.onReturnPressed: send()
 
         Connections {
             target: Completer
