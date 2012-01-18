@@ -78,8 +78,6 @@ Item {
 
     Loader {
         id: loader
-        width: 32
-        height: 32
         anchors.right: parent.right
         anchors.rightMargin: UI.PAGE_MARGIN
         anchors.verticalCenter: parent.verticalCenter
