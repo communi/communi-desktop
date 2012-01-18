@@ -1,3 +1,5 @@
+TARGET = Communi
+
 # Add more folders to ship with the application, here
 symbian:qml_files.source = qml/symbian
 else:qml_files.source = qml/meego
