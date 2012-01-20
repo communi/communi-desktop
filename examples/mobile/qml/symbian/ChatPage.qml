@@ -202,16 +202,18 @@ CommonPage {
         onTriggered: if (!listView.moving) listView.positionViewAtEnd()
     }
 
-    MouseArea {
-        enabled: textField.visible
-        anchors.fill: parent
-        onClicked: textField.visible = false
+    Rectangle {
+        anchors.fill: textField
+        anchors.leftMargin: -UI.PAGE_MARGIN
+        anchors.rightMargin: -UI.PAGE_MARGIN
+        anchors.bottomMargin: -UI.PAGE_MARGIN
+        color: platformStyle.colorBackgroundInverted
     }
 
     TextField {
         id: textField
-        height: 0
         visible: false
+        height: visible ? implicitHeight : 0
         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhUrlCharactersOnly
         platformInverted: true
 
@@ -222,19 +224,14 @@ CommonPage {
             margins: UI.PAGE_MARGIN
         }
 
-        onActiveFocusChanged: {
-            textField.height = activeFocus ? textField.implicitHeight : 0;
-            if (!activeFocus)
-                textField.visible = false;
-            if (!positioner.running) positioner.start();
-        }
-
         function send() {
             if (modelData)
                 page.sendMessage(modelData.title, text);
-            parent.forceActiveFocus();
+            closeSoftwareInputPanel();
             text = "";
         }
+
+        onVisibleChanged: if (!positioner.running) positioner.start()
 
         Keys.onEnterPressed: send()
         Keys.onReturnPressed: send()
@@ -257,6 +254,8 @@ CommonPage {
             source: "../images/tab.png"
             MouseArea {
                 anchors.fill: parent
+                anchors.leftMargin: -UI.PAGE_MARGIN
+                anchors.bottomMargin: -UI.PAGE_MARGIN
                 onClicked: Completer.complete(textField.text, textField.selectionStart, textField.selectionEnd)
             }
         }
@@ -268,7 +267,13 @@ CommonPage {
             source: "../images/clear.png"
             MouseArea {
                 anchors.fill: parent
-                onClicked: textField.text = ""
+                anchors.rightMargin: -UI.PAGE_MARGIN
+                anchors.bottomMargin: -UI.PAGE_MARGIN
+                onClicked: {
+                    textField.visible = false;
+                    textField.closeSoftwareInputPanel();
+                    textField.text = "";
+                }
             }
         }
     }
