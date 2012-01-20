@@ -36,7 +36,7 @@ Page {
         id: background
 
         anchors.fill: parent
-        color: "#e0e1e2"
+        color: platformStyle.colorBackgroundInverted
 
         Image {
             source: "../images/background.png"

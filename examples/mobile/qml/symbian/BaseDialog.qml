@@ -35,8 +35,8 @@ CommonDialog {
     content: Rectangle {
         id: background
         width: parent.width
-        height: Math.min(dialog.platformContentMaximumHeight, flickable.contentHeight)
-        color: "#e0e1e2"
+        height: Math.min(dialog.platformContentMaximumHeight, flickable.contentHeight + 2 * UI.PAGE_MARGIN)
+        color: platformStyle.colorBackgroundInverted
 
         Flickable {
             id: flickable
@@ -49,6 +49,16 @@ CommonDialog {
                 width: flickable.width
                 height: childrenRect.height
             }
+        }
+
+        ScrollBar {
+            id: scrollBar
+            height: flickable.height
+            anchors { top: flickable.top; right: flickable.right; rightMargin: -UI.PAGE_MARGIN }
+            flickableItem: flickable
+            interactive: false
+            orientation: Qt.Vertical
+            platformInverted: true
         }
     }
 }

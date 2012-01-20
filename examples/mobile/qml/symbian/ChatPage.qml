@@ -186,9 +186,13 @@ CommonPage {
         }
     }
 
-    ScrollDecorator {
+    ScrollBar {
+        id: scrollBar
+        height: listView.height
+        anchors { top: listView.top; right: listView.right; rightMargin: -UI.PAGE_MARGIN }
         flickableItem: listView
-        anchors.rightMargin: -UI.PAGE_MARGIN
+        interactive: false
+        orientation: Qt.Vertical
         platformInverted: true
     }
 
