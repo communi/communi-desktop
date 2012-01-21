@@ -267,9 +267,14 @@ void MessageHandler::handlePartMessage(IrcPartMessage* message)
 {
     d.removeChannelUser(message->channel(), message->sender().name());
     if (message->sender().name() == d.session->nickName())
+    {
         removeReceiver(message->channel());
+        d.channelUsers.remove(message->channel().toLower());
+    }
     else
+    {
         sendMessage(message, message->channel());
+    }
 }
 
 void MessageHandler::handlePongMessage(IrcPongMessage* message)
