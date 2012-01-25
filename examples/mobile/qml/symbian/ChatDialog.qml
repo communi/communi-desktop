@@ -20,7 +20,7 @@ BaseDialog {
     id: dialog
 
     property alias name: nameField.text
-    property alias sessionIndex: selectionDialog.selectedIndex
+    property int sessionIndex: Math.max(0, selectionDialog.selectedIndex)
 
     titleText: qsTr("Open query")
 
@@ -36,7 +36,7 @@ BaseDialog {
             visible: SessionModel.length > 1
             Label { text: qsTr("Connection"); platformInverted: true }
             SelectionListItem {
-                property QtObject sessionItem: SessionModel[Math.max(0, selectionDialog.selectedIndex)]
+                property variant sessionItem: SessionModel[Math.max(0, selectionDialog.selectedIndex)]
                 title: sessionItem ? (sessionItem.title + " ("+ sessionItem.subtitle +")") : ""
                 width: parent.width
                 platformInverted: true

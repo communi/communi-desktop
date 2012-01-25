@@ -22,7 +22,7 @@ BaseDialog {
     property alias channel: channelField.text
     property alias password: passwordField.text
     property bool passwordRequired: false
-    property alias sessionIndex: selectionDialog.selectedIndex
+    property int sessionIndex: Math.max(0, selectionDialog.selectedIndex)
 
     titleText: qsTr("Join channel")
 
@@ -41,7 +41,7 @@ BaseDialog {
             visible: SessionModel.length > 1
             Label { text: qsTr("Connection"); platformInverted: true }
             SelectionListItem {
-                property QtObject sessionItem: SessionModel[Math.max(0, selectionDialog.selectedIndex)]
+                property variant sessionItem: SessionModel[Math.max(0, selectionDialog.selectedIndex)]
                 title: sessionItem ? (sessionItem.title + " ("+ sessionItem.subtitle +")") : ""
                 width: parent.width
                 platformInverted: true
