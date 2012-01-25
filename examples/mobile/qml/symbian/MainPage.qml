@@ -100,7 +100,7 @@ CommonPage {
     Connections {
         target: SessionManager
         onAlert: {
-            var banner = bannerComponent.createObject(pageStack.currentPage.header);
+            var banner = bannerComponent.createObject(pageStack.currentPage);
             banner.text = item.alertText;
             banner.item = item;
             banner.open();
