@@ -2,13 +2,13 @@
 &EN
 
 ; SIS header: name, uid, version
-#{"Communi"},(0xE6A548E4),1,1,0
+#{"Communi"},(0x20035714),1,1,0
 
 ; Default localized vendor name
-%{"Communi"}
+%{"J-P Nurmi"}
 
 ; Default unique vendor name
-:"Communi"
+:"J-P Nurmi"
 
 ; DEPLOYMENT
 "" - "z:\sys\bin\Communi.dll"
@@ -22,23 +22,23 @@
 "" - "z:\resource\apps\communi.mif"
 "" - "z:\private\10003a3f\import\apps\communi_reg.rsc"
 
-"" - "z:\private\e6a548e4\qml\symbian\BaseDialog.qml"
-"" - "z:\private\e6a548e4\qml\symbian\ChannelDialog.qml"
-"" - "z:\private\e6a548e4\qml\symbian\ChatDialog.qml"
-"" - "z:\private\e6a548e4\qml\symbian\ChatPage.qml"
-"" - "z:\private\e6a548e4\qml\symbian\CommonPage.qml"
-"" - "z:\private\e6a548e4\qml\symbian\ConnectionDialog.qml"
-"" - "z:\private\e6a548e4\qml\symbian\ListDelegate.qml"
-"" - "z:\private\e6a548e4\qml\symbian\main.qml"
-"" - "z:\private\e6a548e4\qml\symbian\MainPage.qml"
-"" - "z:\private\e6a548e4\qml\symbian\UIConstants.js"
+"" - "z:\private\20035714\qml\symbian\BaseDialog.qml"
+"" - "z:\private\20035714\qml\symbian\ChannelDialog.qml"
+"" - "z:\private\20035714\qml\symbian\ChatDialog.qml"
+"" - "z:\private\20035714\qml\symbian\ChatPage.qml"
+"" - "z:\private\20035714\qml\symbian\CommonPage.qml"
+"" - "z:\private\20035714\qml\symbian\ConnectionDialog.qml"
+"" - "z:\private\20035714\qml\symbian\ListDelegate.qml"
+"" - "z:\private\20035714\qml\symbian\main.qml"
+"" - "z:\private\20035714\qml\symbian\MainPage.qml"
+"" - "z:\private\20035714\qml\symbian\UIConstants.js"
 
-"" - "z:\private\e6a548e4\qml\images\background.png"
-"" - "z:\private\e6a548e4\qml\images\channel.png"
-"" - "z:\private\e6a548e4\qml\images\clear.png"
-"" - "z:\private\e6a548e4\qml\images\error.png"
-"" - "z:\private\e6a548e4\qml\images\offline.png"
-"" - "z:\private\e6a548e4\qml\images\query.png"
-"" - "z:\private\e6a548e4\qml\images\server.png"
-"" - "z:\private\e6a548e4\qml\images\squircle.png"
-"" - "z:\private\e6a548e4\qml\images\tab.png"
+"" - "z:\private\20035714\qml\images\background.png"
+"" - "z:\private\20035714\qml\images\channel.png"
+"" - "z:\private\20035714\qml\images\clear.png"
+"" - "z:\private\20035714\qml\images\error.png"
+"" - "z:\private\20035714\qml\images\offline.png"
+"" - "z:\private\20035714\qml\images\query.png"
+"" - "z:\private\20035714\qml\images\server.png"
+"" - "z:\private\20035714\qml\images\squircle.png"
+"" - "z:\private\20035714\qml\images\tab.png"

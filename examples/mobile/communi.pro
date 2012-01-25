@@ -11,7 +11,7 @@ DEPLOYMENTFOLDERS = qml_files qml_images
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =
 
-symbian:TARGET.UID3 = 0xE6A548E4
+symbian:TARGET.UID3 = 0x20035714
 
 # Smart Installer package's UID
 # This UID is from the protected range and therefore the package will
