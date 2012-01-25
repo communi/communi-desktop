@@ -47,10 +47,16 @@ void MessageHandler::setSession(IrcSession* session)
     if (d.session != session)
     {
         if (d.session)
+        {
+            disconnect(d.session, SIGNAL(destroyed()), this, SLOT(onSessionDestroyed()));
             disconnect(d.session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(handleMessage(IrcMessage*)));
+        }
 
         if (session)
+        {
+            connect(session, SIGNAL(destroyed()), this, SLOT(onSessionDestroyed()));
             connect(session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(handleMessage(IrcMessage*)));
+        }
 
         d.session = session;
     }
