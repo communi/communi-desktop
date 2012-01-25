@@ -124,7 +124,7 @@ void SessionItem::removeChild(const QString& name)
 
 void SessionItem::quit()
 {
-    static const QString msg = tr("%s %s for %s")
+    static const QString msg = tr("%1 %2 for %3")
             .arg(QApplication::applicationName())
             .arg(QApplication::applicationVersion())
 #ifdef Q_OS_SYMBIAN

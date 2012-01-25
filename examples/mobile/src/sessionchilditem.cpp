@@ -88,7 +88,7 @@ void SessionChildItem::close()
 {
     if (isChannel())
     {
-        static const QString msg = tr("%s %s for %s")
+        static const QString msg = tr("%1 %2 for %2")
                 .arg(QApplication::applicationName())
                 .arg(QApplication::applicationVersion())
 #ifdef Q_OS_SYMBIAN
