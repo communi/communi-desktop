@@ -98,13 +98,13 @@ PageStackWindow {
                 SessionManager.addSession(session);
 
                 connectionSheet.password = "";
-                Settings.host = connectionSheet.host;
-                Settings.port = connectionSheet.port;
-                Settings.name = connectionSheet.name;
-                Settings.user = connectionSheet.user;
-                Settings.real = connectionSheet.real;
+                Settings.host = session.host;
+                Settings.port = session.port;
+                Settings.name = session.nickName;
+                Settings.user = session.userName;
+                Settings.real = session.realName;
                 Settings.channel = connectionSheet.channel;
-                Settings.secure = connectionSheet.secure;
+                Settings.secure = session.secure;
             }
         }
 
