@@ -1,3 +1,13 @@
+communi (1.1.0-3) unstable; urgency=low
+
+  * Fixed a rare crash on application closing
+  * Cleanup channel specific users list upon parting
+  * Fixed part & quit messages
+  * Improved unread count indicator
+  * Store user & real names to settings
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Tue, 31 Jan 2012 20:55:41 +0200
+
 communi (1.1.0-2) unstable; urgency=low
 
   * Removed changelog & copyright files from the .deb package
