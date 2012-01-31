@@ -22,7 +22,8 @@ Connection::Connection() :
     real(),
     pass(),
     secure(false),
-    channels()
+    channels(),
+    user()
 {
 }
 

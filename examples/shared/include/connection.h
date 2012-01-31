@@ -38,6 +38,7 @@ struct Connection
     QString pass;
     bool secure;
     QStringList channels;
+    QString user;
 };
 Q_DECLARE_METATYPE(Connection);
 
@@ -51,6 +52,7 @@ inline QDataStream& operator<<(QDataStream& out, const Connection& connection)
     out << connection.pass;
     out << connection.secure;
     out << connection.channels;
+    out << connection.user;
     return out;
 }
 
@@ -64,6 +66,7 @@ inline QDataStream& operator>>(QDataStream& in, Connection& connection)
     connection.pass = readStreamValue<QString>(in, connection.pass);
     connection.secure = readStreamValue<bool>(in, connection.secure);
     connection.channels = readStreamValue<QStringList>(in, connection.channels);
+    connection.user = readStreamValue<QString>(in, connection.user);
     return in;
 }
 

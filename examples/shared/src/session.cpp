@@ -98,6 +98,7 @@ Connection Session::toConnection() const
     connection.secure = isSecure();
     connection.host = host();
     connection.port = port();
+    connection.user = userName();
     connection.nick = nickName();
     connection.real = realName();
     connection.pass = password();
@@ -115,7 +116,7 @@ Session* Session::fromConnection(const Connection& connection, QObject* parent)
     session->setHost(connection.host);
     session->setPort(connection.port);
     session->setNickName(connection.nick);
-    session->setUserName(appName.toLower());
+    session->setUserName(connection.user.isEmpty() ? appName : connection.user);
     session->setRealName(connection.real.isEmpty() ? appName : connection.real);
     session->setChannels(connection.channels);
     return session;
