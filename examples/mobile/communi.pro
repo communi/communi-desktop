@@ -1,5 +1,3 @@
-TARGET = Communi
-
 # Add more folders to ship with the application, here
 symbian:qml_files.source = qml/symbian
 else:qml_files.source = qml/meego
@@ -11,6 +9,7 @@ DEPLOYMENTFOLDERS = qml_files qml_images
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =
 
+symbian:TARGET = Communi
 symbian:TARGET.UID3 = 0x20035714
 
 # Smart Installer package's UID
