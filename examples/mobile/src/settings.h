@@ -25,6 +25,8 @@ class Settings : public QObject
     Q_PROPERTY(int port READ port WRITE setPort)
     Q_PROPERTY(bool secure READ isSecure WRITE setSecure)
     Q_PROPERTY(QString name READ name WRITE setName)
+    Q_PROPERTY(QString user READ user WRITE setUser)
+    Q_PROPERTY(QString real READ real WRITE setReal)
     Q_PROPERTY(QString channel READ channel WRITE setChannel)
     Q_PROPERTY(Connections connections READ connections WRITE setConnections)
 
@@ -42,6 +44,12 @@ public:
 
     QString name() const;
     void setName(const QString& name);
+
+    QString user() const;
+    void setUser(const QString& name);
+
+    QString real() const;
+    void setReal(const QString& name);
 
     QString channel() const;
     void setChannel(const QString& channel);

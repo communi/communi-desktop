@@ -47,6 +47,18 @@ QString Settings::name() const
 void Settings::setName(const QString& name)
 { QSettings().setValue("name", name); }
 
+QString Settings::user() const
+{ return QSettings().value("user").toString(); }
+
+void Settings::setUser(const QString& name)
+{ QSettings().setValue("user", name); }
+
+QString Settings::real() const
+{ return QSettings().value("real").toString(); }
+
+void Settings::setReal(const QString& name)
+{ QSettings().setValue("real", name); }
+
 QString Settings::channel() const
 { return QSettings().value("channel", QString("#communi")).toString(); }
 
