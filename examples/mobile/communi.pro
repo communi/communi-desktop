@@ -10,7 +10,7 @@ DEPLOYMENTFOLDERS = qml_files qml_images
 QML_IMPORT_PATH =
 
 symbian:TARGET = Communi
-symbian:TARGET.UID3 = 0x20035714
+symbian:TARGET.UID3 = 0x20035734
 
 # Smart Installer package's UID
 # This UID is from the protected range and therefore the package will
