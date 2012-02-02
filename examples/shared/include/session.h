@@ -19,6 +19,7 @@
 #include <QTimer>
 #include <IrcSession>
 #include <QStringList>
+#include <QElapsedTimer>
 #include <QAbstractSocket>
 #include "connection.h"
 
@@ -30,6 +31,9 @@ class Session : public IrcSession
     Q_PROPERTY(QStringList channels READ channels WRITE setChannels)
     Q_PROPERTY(bool secure READ isSecure WRITE setSecure)
     Q_PROPERTY(QString password READ password WRITE setPassword)
+    Q_PROPERTY(int pingInterval READ pingInterval WRITE setPingInterval)
+    Q_PROPERTY(int currentLag READ currentLag NOTIFY currentLagChanged)
+    Q_PROPERTY(int maximumLag READ maximumLag WRITE setMaximumLag)
 
 public:
     explicit Session(QObject *parent = 0);
@@ -52,16 +56,34 @@ public:
     Connection toConnection() const;
     static Session* fromConnection(const Connection& connection, QObject* parent = 0);
 
+    int pingInterval() const;
+    void setPingInterval(int interval);
+
+    int currentLag() const;
+    int maximumLag() const;
+    void setMaximumLag(int lag);
+
+signals:
+    void currentLagChanged(int lag);
+
 private slots:
     void onConnected();
     void onPassword(QString* password);
     void handleMessage(IrcMessage* message);
+    void togglePingTimer(bool enabled);
+    void pingServer();
 
 private:
+    void updateLag(int lag);
+
     QString m_name;
-    QTimer m_timer;
+    QTimer m_reconnectTimer;
     QString m_password;
     QSet<QString> m_channels;
+    QElapsedTimer m_lagTimer;
+    QTimer m_pingTimer;
+    int m_currentLag;
+    int m_maxLag;
 };
 
 #endif // SESSION_H

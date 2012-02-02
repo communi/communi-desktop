@@ -18,16 +18,19 @@
 #include <IrcCommand>
 #include <IrcMessage>
 
-Session::Session(QObject *parent) : IrcSession(parent)
+Session::Session(QObject *parent) : IrcSession(parent), m_currentLag(-1), m_maxLag(120000)
 {
     connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(this, SIGNAL(password(QString*)), this, SLOT(onPassword(QString*)));
-    connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), &m_timer, SLOT(start()));
-    connect(this, SIGNAL(connecting()), &m_timer, SLOT(stop()));
     connect(this, SIGNAL(messageReceived(IrcMessage*)), SLOT(handleMessage(IrcMessage*)));
 
-    connect(&m_timer, SIGNAL(timeout()), this, SLOT(open()));
     setAutoReconnectDelay(15);
+    connect(&m_reconnectTimer, SIGNAL(timeout()), this, SLOT(open()));
+    connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), &m_reconnectTimer, SLOT(start()));
+    connect(this, SIGNAL(connecting()), &m_reconnectTimer, SLOT(stop()));
+
+    connect(&m_pingTimer, SIGNAL(timeout()), this, SLOT(pingServer()));
+    connect(this, SIGNAL(connectedChanged(bool)), SLOT(togglePingTimer(bool)));
 }
 
 QString Session::name() const
@@ -42,12 +45,12 @@ void Session::setName(const QString& name)
 
 int Session::autoReconnectDelay() const
 {
-    return m_timer.interval();
+    return m_reconnectTimer.interval() / 1000;
 }
 
 void Session::setAutoReconnectDelay(int delay)
 {
-    m_timer.setInterval(delay * 1000);
+    m_reconnectTimer.setInterval(delay * 1000);
 }
 
 QStringList Session::channels() const
@@ -122,6 +125,31 @@ Session* Session::fromConnection(const Connection& connection, QObject* parent)
     return session;
 }
 
+int Session::pingInterval() const
+{
+    return m_pingTimer.interval() / 1000;
+}
+
+void Session::setPingInterval(int interval)
+{
+    m_pingTimer.start(interval * 1000);
+}
+
+int Session::currentLag() const
+{
+    return m_currentLag;
+}
+
+int Session::maximumLag() const
+{
+    return m_maxLag;
+}
+
+void Session::setMaximumLag(int lag)
+{
+    m_maxLag = lag;
+}
+
 void Session::onConnected()
 {
     foreach (const QString& channel, m_channels)
@@ -135,6 +163,9 @@ void Session::onPassword(QString* password)
 
 void Session::handleMessage(IrcMessage* message)
 {
+    // 20s delay since the last message was received
+    setPingInterval(20);
+
     if (message->type() == IrcMessage::Join)
     {
         if (message->sender().name() == nickName())
@@ -144,5 +175,66 @@ void Session::handleMessage(IrcMessage* message)
     {
         if (message->sender().name() == nickName())
             m_channels.remove(static_cast<IrcPartMessage*>(message)->channel());
+    }
+    else if (message->type() == IrcMessage::Pong)
+    {
+        if (message->parameters().contains("_C_o_m_m_u_n_i_"))
+        {
+            // slow down to 60s intervals
+            setPingInterval(60);
+
+            updateLag(static_cast<int>(m_lagTimer.elapsed()));
+            m_lagTimer.invalidate();
+        }
+    }
+}
+
+void Session::pingServer()
+{
+    if (m_lagTimer.isValid())
+    {
+        // still lagging (no response since last PING)
+        updateLag(static_cast<int>(m_lagTimer.elapsed()));
+
+        // decrease the interval (60s => 20s => 6s => 2s)
+        int interval = pingInterval();
+        if (interval >= 6)
+            setPingInterval(interval / 3);
+    }
+    else
+    {
+        // (re-)PING!
+        m_lagTimer.start();
+        sendRaw("PING _C_o_m_m_u_n_i_");
+    }
+}
+
+void Session::updateLag(int lag)
+{
+    if (m_currentLag != lag)
+    {
+        m_currentLag = lag;
+        emit currentLagChanged(lag);
+
+        if (lag > m_maxLag)
+        {
+            IrcSession::close();
+            IrcSession::open();
+        }
+    }
+}
+
+void Session::togglePingTimer(bool enabled)
+{
+    if (enabled)
+    {
+        m_lagTimer.invalidate();
+        m_pingTimer.start();
+        pingServer();
+    }
+    else
+    {
+        m_pingTimer.stop();
+        updateLag(-1);
     }
 }
