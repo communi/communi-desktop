@@ -33,15 +33,17 @@ CommonPage {
             ListItem {
                 title: modelData.title
                 subtitle: modelData.subtitle
-                iconSource: modelData.error ? "../images/error.png" :
+                iconSource: "../images/server.png"
+                           /* modelData.error ? "../images/error.png" :
                            !modelData.session.connected &&
                            !modelData.session.active ? "../images/offline.png" :
-                           "../images/server.png"
+                           "../images/server.png" */
                 highlighted: modelData.highlighted
                 unreadCount: modelData.unreadCount
                 busy: modelData.busy
                 onClicked: chatPage.push(modelData)
                 onPressAndHold: sessionMenu.popup(modelData.session)
+                lag: modelData.session.currentLag
             }
             Repeater {
                 model: modelData.childItems

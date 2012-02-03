@@ -22,6 +22,7 @@ Item {
 
     property alias title: title.text
     property alias subtitle: subtitle.text
+    property int lag: -1
     property alias iconSource: icon.source
     property bool highlighted: false
     property int unreadCount: 0
@@ -45,9 +46,24 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: UI.PAGE_MARGIN
         anchors.verticalCenter: parent.verticalCenter
+
+        Label {
+            visible: root.lag >= 0
+            text: {
+                if (root.lag < 100) return root.lag + qsTr("ms");
+                if (root.lag < 10000) return (root.lag / 1000).toFixed(1) + qsTr("s");
+                return Math.ceil(root.lag / 1000) + qsTr("s");
+            }
+            anchors.centerIn: parent
+            font.pixelSize: 18
+            font.family: "Nokia Pure Text Light"
+            color: root.lag < 10000 ? "black" : "red"
+        }
     }
 
     Column {
+        id: column
+
         anchors {
             left: icon.right
             right: loader.left
@@ -78,6 +94,7 @@ Item {
 
     Loader {
         id: loader
+
         anchors.right: parent.right
         anchors.rightMargin: UI.PAGE_MARGIN
         anchors.verticalCenter: parent.verticalCenter
@@ -96,6 +113,7 @@ Item {
                 Label {
                     id: unread
                     color: "white"
+                    font.pixelSize: 18
                     text: root.unreadCount
                     anchors.fill: parent
                     elide: Text.ElideRight
