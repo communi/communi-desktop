@@ -238,7 +238,10 @@ CommonPage {
                 anchors.fill: parent
                 onClicked: {
                     inputContext.reset();
-                    textField.text = "";
+                    if (textField.text.length)
+                        textField.text = "";
+                    else
+                        page.forceActiveFocus();
                 }
             }
         }
