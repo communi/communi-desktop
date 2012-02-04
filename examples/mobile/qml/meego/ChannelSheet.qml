@@ -30,52 +30,63 @@ CommonSheet {
         else if (status == DialogStatus.Closed) passwordRequired = false;
     }
 
-    SipAttributes {
-        id: sipAttributes
-        actionKeyHighlighted: true
-        actionKeyLabel: qsTr("Next")
-    }
-
     Column {
         id: column
         width: parent.width
         spacing: UI.DEFAULT_SPACING
 
-        Label { text: qsTr("Connection"); visible: SessionModel.length > 1 }
-        ButtonColumn {
-            id: buttons
+        Column {
             width: parent.width
             visible: SessionModel.length > 1
-            Repeater {
-                model: SessionModel
-                Button {
-                    property int idx: index
-                    text: modelData.title + " ("+ modelData.subtitle +")"
+            Label { text: qsTr("Connection") }
+            ButtonColumn {
+                id: buttons
+                width: parent.width
+                Repeater {
+                    model: SessionModel
+                    Button {
+                        property int idx: index
+                        text: modelData.title + " ("+ modelData.subtitle +")"
+                    }
                 }
             }
         }
 
-        TextField {
-            id: channelField
-            text: qsTr("#")
-            enabled: !passwordRequired
-            placeholderText: qsTr("Channel")
-            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-            errorHighlight: text.length < 2 || (text[0] !== "#" && text[0] !== "&")
+        Column {
             width: parent.width
-            platformSipAttributes: sipAttributes
-            Keys.onReturnPressed: passworld.forceActiveFocus()
+            Label { text: qsTr("Channel") }
+            TextField {
+                id: channelField
+                text: qsTr("#")
+                enabled: !passwordRequired
+                inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+                errorHighlight: text.length < 2 || (text[0] !== "#" && text[0] !== "&")
+                width: parent.width
+                platformSipAttributes: SipAttributes {
+                    actionKeyHighlighted: true
+                    actionKeyLabel: qsTr("Next")
+                }
+                Keys.onReturnPressed: passwordField.forceActiveFocus()
+            }
         }
 
-        TextField {
-            id: passwordField
-            echoMode: TextInput.PasswordEchoOnEdit
-            placeholderText: sheet.passwordRequired ? qsTr("Password required") : qsTr("Optional password")
-            errorHighlight: sheet.passwordRequired ? !text.length : false
-            visible: placeholderText.length
+        Column {
             width: parent.width
-            platformSipAttributes: sipAttributes
-            Keys.onReturnPressed: channelField.forceActiveFocus()
+            Label { text: qsTr("Password") }
+            TextField {
+                id: passwordField
+                echoMode: TextInput.PasswordEchoOnEdit
+                placeholderText: sheet.passwordRequired ? qsTr("Required!") : qsTr("Optional...")
+                errorHighlight: sheet.passwordRequired ? !text.length : false
+                visible: placeholderText.length
+                width: parent.width
+                platformSipAttributes: SipAttributes {
+                    actionKeyEnabled: sheet.acceptable
+                    actionKeyHighlighted: true
+                    actionKeyLabel: qsTr("Ok")
+                }
+                Keys.onReturnPressed: sheet.accept()
+            }
         }
     }
 }
