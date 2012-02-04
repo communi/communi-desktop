@@ -142,9 +142,21 @@ void SessionItem::receiveMessage(IrcMessage* message)
     {
         IrcNumericMessage* numeric = static_cast<IrcNumericMessage*>(message);
         if (numeric->code() == Irc::ERR_NICKNAMEINUSE)
-            session()->setNickName(session()->nickName() + "_");
+        {
+            if (m_alternateNicks.isEmpty())
+            {
+                QString currentNick = session()->nickName();
+                m_alternateNicks << (currentNick + "_")
+                                 <<  currentNick
+                                 << (currentNick + "__")
+                                 <<  currentNick;
+            }
+            session()->setNickName(m_alternateNicks.takeFirst());
+        }
         else if (numeric->code() == Irc::ERR_BADCHANNELKEY)
+        {
             emit channelKeyRequired(message->parameters().value(1));
+        }
     }
 }
 
