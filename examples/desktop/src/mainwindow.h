@@ -16,7 +16,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "sessionmanager.h"
 #include "trayicon.h"
 
 class QDBusInterface;
@@ -51,7 +50,6 @@ private slots:
     void tabActivated(int index);
 
 private:
-    SessionManager sessionManager;
     MainTabWidget* tabWidget;
     TrayIcon* trayIcon;
 };

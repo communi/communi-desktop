@@ -114,7 +114,9 @@ void MainWindow::connectToImpl(const Connection& connection)
 {
     Session* session = Session::fromConnection(connection);
     session->setEncoding(Application::encoding());
-    sessionManager.addSession(session);
+    session->setUserName("communi");
+    if (session->ensureNetwork())
+        session->open();
 
     SessionTabWidget* tab = new SessionTabWidget(session, tabWidget);
     if (connection.name.isEmpty())
