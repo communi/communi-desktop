@@ -56,8 +56,7 @@ Item {
                 return Math.ceil(root.lag / 1000) + qsTr("s");
             }
             anchors.centerIn: parent
-            font.pixelSize: 18
-            font.family: "Nokia Pure Text Light"
+            font.pixelSize: UI.FONT_SMALL
             font.bold: true
             color: "red"
         }
@@ -77,8 +76,7 @@ Item {
         Label {
             id: title
             font.bold: true
-            font.pixelSize: 26
-            font.family: "Nokia Pure Text"
+            font.pixelSize: UI.FONT_MEDIUM
             color: root.highlighted ? "red" : root.active ? "#282828" : "#b2b2b4"
             width: parent.width
             elide: Text.ElideRight
@@ -86,8 +84,7 @@ Item {
 
         Label {
             id: subtitle
-            font.pixelSize: 22
-            font.family: "Nokia Pure Text"
+            font.pixelSize: UI.FONT_SMALL
             font.weight: Font.Light
             color: root.active ? "#505050" : "#b2b2b4"
             width: parent.width
@@ -116,7 +113,7 @@ Item {
                 Label {
                     id: unread
                     color: "white"
-                    font.pixelSize: 18
+                    font.pixelSize: UI.FONT_SMALL
                     text: root.unreadCount
                     anchors.fill: parent
                     elide: Text.ElideRight

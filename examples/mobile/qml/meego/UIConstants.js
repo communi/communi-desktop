@@ -16,3 +16,7 @@
 
 var PAGE_MARGIN = 16;
 var DEFAULT_SPACING = 16;
+
+var FONT_LARGE = 32;
+var FONT_MEDIUM = 26;
+var FONT_SMALL = 18;

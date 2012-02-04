@@ -42,7 +42,7 @@ Sheet {
                 spacing: UI.DEFAULT_SPACING
                 Label {
                     id: title
-                    font.pixelSize: 32
+                    font.pixelSize: UI.FONT_LARGE
                 }
                 Rectangle {
                     color: "#b2b2b4"

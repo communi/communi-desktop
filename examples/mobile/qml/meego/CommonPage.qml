@@ -87,7 +87,7 @@ Page {
                 id: label
 
                 elide: Text.ElideRight
-                font.pixelSize: 32
+                font.pixelSize: UI.FONT_LARGE
                 anchors.verticalCenter: parent.verticalCenter
                 width: parent.width - indicator.width - UI.DEFAULT_SPACING
             }
