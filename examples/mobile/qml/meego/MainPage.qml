@@ -171,15 +171,40 @@ CommonPage {
     ContextMenu {
         id: sessionMenu
         property QtObject session
+        property bool active: session && session.active
         function popup(session) {
             sessionMenu.session = session;
             open();
         }
         MenuLayout {
             MenuItem {
+                text: !sessionMenu.active ? qsTr("Connect") : qsTr("Disconnect")
+                onClicked: {
+                    if (!sessionMenu.active) {
+                        if (sessionMenu.session.ensureNetwork())
+                            sessionMenu.session.open();
+                    } else {
+                        sessionMenu.session.close();
+                    }
+                }
+            }
+            MenuItem {
+                text: qsTr("Set nick")
+                enabled: sessionMenu.session.connected
+                onClicked: nickSheet.open()
+            }
+            MenuItem {
                 text: qsTr("Quit")
                 onClicked: SessionManager.removeSession(sessionMenu.session)
             }
+        }
+    }
+
+    NameSheet {
+        id: nickSheet
+        showSessions: false
+        onAccepted: {
+            sessionMenu.session.nickName = name;
         }
     }
 
