@@ -21,6 +21,7 @@ CommonSheet {
 
     property alias name: nameField.text
     property int sessionIndex: buttons.checkedButton ? buttons.checkedButton.idx : -1
+    property bool showSessions: SessionModel.length > 1
 
     acceptable: !nameField.errorHighlight
     onStatusChanged: if (status == DialogStatus.Open) nameField.forceActiveFocus()
@@ -30,30 +31,37 @@ CommonSheet {
         width: parent.width
         spacing: UI.DEFAULT_SPACING
 
-        Label { text: qsTr("Connection"); visible: SessionModel.length > 1 }
-        ButtonColumn {
-            id: buttons
+        Column {
             width: parent.width
-            visible: SessionModel.length > 1
-            Repeater {
-                model: SessionModel
-                Button {
-                    property int idx: index
-                    text: modelData.title + " ("+ modelData.subtitle +")"
+            visible: sheet.showSessions
+            Label { text: qsTr("Connection") }
+            ButtonColumn {
+                id: buttons
+                width: parent.width
+                Repeater {
+                    model: SessionModel
+                    Button {
+                        property int idx: index
+                        text: modelData.title + " ("+ modelData.subtitle +")"
+                    }
                 }
             }
         }
 
-        TextField {
-            id: nameField
-            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-            placeholderText: qsTr("Name")
-            errorHighlight: !text.length
+        Column {
             width: parent.width
-            platformSipAttributes: SipAttributes {
-                actionKeyEnabled: false
-                actionKeyHighlighted: true
-                actionKeyLabel: qsTr("Next")
+            Label { text: qsTr("Nick name") }
+            TextField {
+                id: nameField
+                inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+                errorHighlight: !text.length
+                width: parent.width
+                platformSipAttributes: SipAttributes {
+                    actionKeyEnabled: sheet.acceptable
+                    actionKeyHighlighted: true
+                    actionKeyLabel: qsTr("Ok")
+                }
+                Keys.onReturnPressed: sheet.accept()
             }
         }
     }

@@ -129,7 +129,7 @@ PageStackWindow {
             }
         }
 
-        QuerySheet {
+        NameSheet {
             id: querySheet
             onAccepted: {
                 var item = SessionModel[querySheet.sessionIndex];
