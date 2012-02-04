@@ -25,6 +25,7 @@ Item {
     property int lag: -1
     property alias iconSource: icon.source
     property bool highlighted: false
+    property bool active: true
     property int unreadCount: 0
     property bool busy: false
 
@@ -57,7 +58,8 @@ Item {
             anchors.centerIn: parent
             font.pixelSize: 18
             font.family: "Nokia Pure Text Light"
-            color: root.lag < 10000 ? "black" : "red"
+            font.bold: true
+            color: "red"
         }
     }
 
@@ -77,7 +79,7 @@ Item {
             font.bold: true
             font.pixelSize: 26
             font.family: "Nokia Pure Text"
-            color: root.highlighted ? "red" : "#282828"
+            color: root.highlighted ? "red" : root.active ? "#282828" : "#b2b2b4"
             width: parent.width
             elide: Text.ElideRight
         }
@@ -85,8 +87,9 @@ Item {
         Label {
             id: subtitle
             font.pixelSize: 22
-            font.family: "Nokia Pure Text Light"
-            color: "#505050"
+            font.family: "Nokia Pure Text"
+            font.weight: Font.Light
+            color: root.active ? "#505050" : "#b2b2b4"
             width: parent.width
             elide: Text.ElideRight
         }
