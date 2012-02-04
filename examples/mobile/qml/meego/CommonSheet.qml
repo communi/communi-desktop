@@ -29,7 +29,7 @@ Sheet {
     content: Rectangle {
         id: background
         anchors.fill: parent
-        color: "#e0e1e2"
+        color: UI.BACKGROUND_COLOR
 
         Flickable {
             id: flickable
@@ -45,7 +45,7 @@ Sheet {
                     font.pixelSize: UI.FONT_LARGE
                 }
                 Rectangle {
-                    color: "#b2b2b4"
+                    color: UI.SEPARATOR_COLOR
                     height: 1
                     width: flickable.width
                 }

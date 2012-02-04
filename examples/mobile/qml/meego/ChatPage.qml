@@ -158,7 +158,7 @@ CommonPage {
             Rectangle {
                 width: listView.width
                 height: 1
-                color: "red"
+                color: UI.HIGHLIGHT_COLOR
                 anchors.bottom: parent.bottom
             }
         }

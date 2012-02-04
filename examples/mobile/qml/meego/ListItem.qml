@@ -58,7 +58,7 @@ Item {
             anchors.centerIn: parent
             font.pixelSize: UI.FONT_SMALL
             font.bold: true
-            color: "red"
+            color: UI.HIGHLIGHT_COLOR
         }
     }
 
@@ -77,7 +77,7 @@ Item {
             id: title
             font.bold: true
             font.pixelSize: UI.FONT_MEDIUM
-            color: root.highlighted ? "red" : root.active ? "#282828" : "#b2b2b4"
+            color: root.highlighted ? UI.HIGHLIGHT_COLOR : root.active ? "#282828" : UI.INACTIVE_COLOR
             width: parent.width
             elide: Text.ElideRight
         }
@@ -86,7 +86,7 @@ Item {
             id: subtitle
             font.pixelSize: UI.FONT_SMALL
             font.weight: Font.Light
-            color: root.active ? "#505050" : "#b2b2b4"
+            color: root.active ? "#505050" : UI.INACTIVE_COLOR
             width: parent.width
             elide: Text.ElideRight
         }

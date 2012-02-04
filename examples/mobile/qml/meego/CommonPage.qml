@@ -37,7 +37,7 @@ Page {
         id: background
 
         anchors.fill: parent
-        color: "#e0e1e2"
+        color: UI.BACKGROUND_COLOR
 
         Image {
             source: "../images/background.png"

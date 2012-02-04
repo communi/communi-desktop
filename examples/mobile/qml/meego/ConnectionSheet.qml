@@ -135,7 +135,7 @@ CommonSheet {
                 Behavior on height { NumberAnimation { } }
 
                 Rectangle {
-                    color: "#b2b2b4"
+                    color: UI.SEPARATOR_COLOR
                     height: 1
                     width: parent.width
                 }

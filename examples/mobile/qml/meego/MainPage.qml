@@ -69,7 +69,7 @@ CommonPage {
                 }
             }
             Rectangle {
-                color: "#b2b2b4"
+                color: UI.SEPARATOR_COLOR
                 height: 1
                 visible: index < listView.count - 1
                 anchors {
