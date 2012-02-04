@@ -26,16 +26,6 @@ SessionManager::SessionManager(QDeclarativeContext* context) :
     updateModel();
 }
 
-bool SessionManager::isOnline() const
-{
-    return m_network && m_network->state() == QNetworkSession::Connected;
-}
-
-bool SessionManager::isOffline() const
-{
-    return !m_network || m_network->state() != QNetworkSession::Connected;
-}
-
 void SessionManager::addSession(Session* session)
 {
     SessionItem* item = new SessionItem(session);
@@ -66,23 +56,15 @@ void SessionManager::removeSession(Session* session)
 
 bool SessionManager::ensureNetwork()
 {
-    if (!m_network || !m_network->isOpen())
+    QNetworkConfigurationManager manager;
+    if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired)
     {
-        QNetworkConfigurationManager manager;
-        if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired)
-        {
-            QNetworkConfiguration config = manager.defaultConfiguration();
-            if (!m_network)
-            {
-                m_network = new QNetworkSession(config, this);
-                connect(m_network, SIGNAL(stateChanged(QNetworkSession::State)), this, SLOT(onNetworkStateChanged(QNetworkSession::State)));
-                connect(m_network, SIGNAL(stateChanged(QNetworkSession::State)), this, SIGNAL(onlineStateChanged()));
-                connect(m_network, SIGNAL(stateChanged(QNetworkSession::State)), this, SIGNAL(offlineStateChanged()));
-            }
-            m_network->open();
-        }
+        if (!m_network)
+            m_network = new QNetworkSession(manager.defaultConfiguration(), this);
+        m_network->open();
     }
-    return !m_network || m_network->isOpen();
+    // TODO: return value?
+    return true;
 }
 
 void SessionManager::restore()
@@ -109,28 +91,6 @@ void SessionManager::save()
             connections += connection;
         }
         settings->setConnections(connections);
-    }
-}
-
-void SessionManager::onNetworkStateChanged(QNetworkSession::State state)
-{
-    if (state == QNetworkSession::Connected)
-    {
-        foreach (QObject* item, m_items)
-        {
-            IrcSession* session = static_cast<SessionItem*>(item)->session();
-            if (!session->isActive())
-                session->open();
-        }
-    }
-    else if (state == QNetworkSession::Closing)
-    {
-        foreach (QObject* item, m_items)
-        {
-            IrcSession* session = static_cast<SessionItem*>(item)->session();
-            if (session->isActive())
-                session->close();
-        }
     }
 }
 

@@ -23,14 +23,9 @@ class Session;
 class SessionManager : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(bool online READ isOnline NOTIFY onlineStateChanged)
-    Q_PROPERTY(bool offline READ isOffline NOTIFY offlineStateChanged)
 
 public:
     SessionManager(QDeclarativeContext* context);
-
-    bool isOnline() const;
-    bool isOffline() const;
 
     Q_INVOKABLE void addSession(Session* session);
     Q_INVOKABLE void removeSession(Session* session);
@@ -41,13 +36,8 @@ public slots:
     void save();
 
 signals:
-    void onlineStateChanged();
-    void offlineStateChanged();
     void alert(QObject* item);
     void channelKeyRequired(const QString& channel);
-
-private slots:
-    void onNetworkStateChanged(QNetworkSession::State state);
 
 private:
     void updateModel();
