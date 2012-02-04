@@ -21,6 +21,7 @@
 #include <QStringList>
 #include <QElapsedTimer>
 #include <QAbstractSocket>
+#include <QNetworkSession>
 #include "connection.h"
 
 class Session : public IrcSession
@@ -63,6 +64,8 @@ public:
     int maximumLag() const;
     void setMaximumLag(int lag);
 
+    Q_INVOKABLE bool ensureNetwork();
+
 signals:
     void currentLagChanged(int lag);
 
@@ -84,6 +87,7 @@ private:
     QTimer m_pingTimer;
     int m_currentLag;
     int m_maxLag;
+    static QNetworkSession* s_network;
 };
 
 #endif // SESSION_H

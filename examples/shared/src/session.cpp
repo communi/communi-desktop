@@ -17,8 +17,12 @@
 #include <QSslSocket>
 #include <IrcCommand>
 #include <IrcMessage>
+#include <QNetworkConfigurationManager>
 
-Session::Session(QObject *parent) : IrcSession(parent), m_currentLag(-1), m_maxLag(120000)
+QNetworkSession* Session::s_network = 0;
+
+Session::Session(QObject *parent) : IrcSession(parent),
+    m_currentLag(-1), m_maxLag(120000)
 {
     connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(this, SIGNAL(password(QString*)), this, SLOT(onPassword(QString*)));
@@ -150,6 +154,19 @@ void Session::setMaximumLag(int lag)
     m_maxLag = lag;
 }
 
+bool Session::ensureNetwork()
+{
+    QNetworkConfigurationManager manager;
+    if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired)
+    {
+        if (!s_network)
+            s_network = new QNetworkSession(manager.defaultConfiguration(), qApp);
+        s_network->open();
+    }
+    // TODO: return value?
+    return true;
+}
+
 void Session::onConnected()
 {
     foreach (const QString& channel, m_channels)
@@ -218,8 +235,9 @@ void Session::updateLag(int lag)
 
         if (lag > m_maxLag)
         {
-            IrcSession::close();
-            IrcSession::open();
+            close();
+            if (ensureNetwork())
+                open();
         }
     }
 }

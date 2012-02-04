@@ -17,11 +17,9 @@
 #include "connection.h"
 #include "settings.h"
 #include "session.h"
-#include <QNetworkConfigurationManager>
 #include <IrcCommand>
 
-SessionManager::SessionManager(QDeclarativeContext* context) :
-    m_context(context), m_network(0)
+SessionManager::SessionManager(QDeclarativeContext* context) : m_context(context)
 {
     updateModel();
 }
@@ -33,8 +31,7 @@ void SessionManager::addSession(Session* session)
     connect(item, SIGNAL(channelKeyRequired(QString)), SIGNAL(channelKeyRequired(QString)));
     m_items.append(item);
     updateModel();
-
-    if (ensureNetwork())
+    if (session->ensureNetwork())
         session->open();
 }
 
@@ -52,19 +49,6 @@ void SessionManager::removeSession(Session* session)
             break;
         }
     }
-}
-
-bool SessionManager::ensureNetwork()
-{
-    QNetworkConfigurationManager manager;
-    if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired)
-    {
-        if (!m_network)
-            m_network = new QNetworkSession(manager.defaultConfiguration(), this);
-        m_network->open();
-    }
-    // TODO: return value?
-    return true;
 }
 
 void SessionManager::restore()
