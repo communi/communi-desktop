@@ -20,49 +20,26 @@ CommonSheet {
     id: sheet
 
     property alias name: nameField.text
-    property int sessionIndex: buttons.checkedButton ? buttons.checkedButton.idx : -1
-    property bool showSessions: SessionModel.length > 1
 
     acceptable: !nameField.errorHighlight
-    onStatusChanged: if (status == DialogStatus.Open) nameField.forceActiveFocus()
+    onStatusChanged: if (status === DialogStatus.Open) nameField.forceActiveFocus()
 
     Column {
         id: column
         width: parent.width
-        spacing: UI.DEFAULT_SPACING
 
-        Column {
+        Label { text: qsTr("Nick name") }
+        TextField {
+            id: nameField
+            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+            errorHighlight: !text.length
             width: parent.width
-            visible: sheet.showSessions
-            Label { text: qsTr("Connection") }
-            ButtonColumn {
-                id: buttons
-                width: parent.width
-                Repeater {
-                    model: SessionModel
-                    Button {
-                        property int idx: index
-                        text: modelData.title + " ("+ modelData.subtitle +")"
-                    }
-                }
+            platformSipAttributes: SipAttributes {
+                actionKeyEnabled: sheet.acceptable
+                actionKeyHighlighted: true
+                actionKeyLabel: qsTr("Ok")
             }
-        }
-
-        Column {
-            width: parent.width
-            Label { text: qsTr("Nick name") }
-            TextField {
-                id: nameField
-                inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-                errorHighlight: !text.length
-                width: parent.width
-                platformSipAttributes: SipAttributes {
-                    actionKeyEnabled: sheet.acceptable
-                    actionKeyHighlighted: true
-                    actionKeyLabel: qsTr("Ok")
-                }
-                Keys.onReturnPressed: sheet.accept()
-            }
+            Keys.onReturnPressed: sheet.accept()
         }
     }
 }

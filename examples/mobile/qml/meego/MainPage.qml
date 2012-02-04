@@ -13,6 +13,7 @@
 */
 
 import QtQuick 1.1
+import Communi 1.0
 import QtMultimediaKit 1.1
 import QtMobility.feedback 1.1
 import com.nokia.meego 1.0
@@ -23,6 +24,15 @@ CommonPage {
     id: root
 
     property alias bouncer: bouncer
+
+    title: qsTr("Communi")
+    tools: ToolBarLayout {
+        ToolIcon {
+            iconId: "toolbar-add"
+            anchors.right: parent.right
+            onClicked: connectionSheet.open()
+        }
+    }
 
     ListView {
         id: listView
@@ -41,7 +51,7 @@ CommonPage {
                 unreadCount: modelData.unreadCount
                 busy: modelData.busy
                 onClicked: chatPage.push(modelData)
-                onPressAndHold: sessionMenu.popup(modelData.session)
+                onPressAndHold: sessionMenu.popup(modelData)
                 lag: modelData.session.currentLag
             }
             Repeater {
@@ -170,10 +180,10 @@ CommonPage {
 
     ContextMenu {
         id: sessionMenu
-        property QtObject session
-        property bool active: session && session.active
-        function popup(session) {
-            sessionMenu.session = session;
+        property QtObject sessionItem
+        property bool active: sessionItem && sessionItem.session.active
+        function popup(sessionItem) {
+            sessionMenu.sessionItem = sessionItem;
             open();
         }
         MenuLayout {
@@ -181,30 +191,117 @@ CommonPage {
                 text: !sessionMenu.active ? qsTr("Connect") : qsTr("Disconnect")
                 onClicked: {
                     if (!sessionMenu.active) {
-                        if (sessionMenu.session.ensureNetwork())
-                            sessionMenu.session.open();
+                        if (sessionMenu.sessionItem.session.ensureNetwork())
+                            sessionMenu.sessionItem.session.open();
                     } else {
-                        sessionMenu.session.close();
+                        sessionMenu.sessionItem.session.close();
                     }
                 }
             }
             MenuItem {
-                text: qsTr("Set nick")
-                enabled: sessionMenu.session.connected
-                onClicked: nickSheet.open()
+                text: qsTr("Join channel")
+                enabled: sessionMenu.sessionItem.session.connected
+                onClicked: channelSheet.open()
             }
             MenuItem {
-                text: qsTr("Quit")
+                text: qsTr("Open query")
+                enabled: sessionMenu.sessionItem.session.connected
+                onClicked: querySheet.open()
+            }
+            MenuItem {
+                text: qsTr("Set nick")
+                enabled: sessionMenu.sessionItem.session.connected
+                onClicked: {
+                    nickSheet.name = sessionMenu.sessionItem.session.nickName;
+                    nickSheet.open();
+                }
+            }
+            MenuItem {
+                text: qsTr("Close")
                 onClicked: SessionManager.removeSession(sessionMenu.session)
             }
         }
     }
 
+    ConnectionSheet {
+        id: connectionSheet
+        title: qsTr("Add connection")
+
+        Component.onCompleted: {
+            connectionSheet.host = Settings.host;
+            connectionSheet.port = Settings.port;
+            connectionSheet.name = Settings.name;
+            connectionSheet.user = Settings.user;
+            connectionSheet.real = Settings.real;
+            connectionSheet.channel = Settings.channel;
+            connectionSheet.secure = Settings.secure;
+        }
+
+        Component {
+            id: sessionComponent
+            Session { }
+        }
+
+        onAccepted: {
+            var session = sessionComponent.createObject(window);
+            session.nickName = connectionSheet.name;
+            session.userName = connectionSheet.user.length ? connectionSheet.user : "communi";
+            session.realName = connectionSheet.real.length ? connectionSheet.real : connectionSheet.name;
+            session.host = connectionSheet.host;
+            session.port = connectionSheet.port;
+            session.password = connectionSheet.password;
+            session.secure = connectionSheet.secure;
+            session.channels = connectionSheet.channel;
+            SessionManager.addSession(session);
+
+            connectionSheet.password = "";
+            Settings.host = session.host;
+            Settings.port = session.port;
+            Settings.name = session.nickName;
+            Settings.user = session.userName;
+            Settings.real = session.realName;
+            Settings.channel = connectionSheet.channel;
+            Settings.secure = session.secure;
+        }
+    }
+
+    IrcCommand {
+        id: ircCommand
+    }
+
+    ChannelSheet {
+        id: channelSheet
+        title: qsTr("Join channel")
+        onAccepted: {
+            var child = sessionMenu.sessionItem.addChild(channel);
+            var cmd = ircCommand.createJoin(channel, password);
+            bouncer.bounce(child, cmd);
+        }
+        Connections {
+            target: SessionManager
+            onChannelKeyRequired: {
+                channelSheet.channel = channel;
+                channelSheet.passwordRequired = true;
+                channelSheet.open();
+            }
+        }
+    }
+
+    NameSheet {
+        id: querySheet
+        title: qsTr("Open query")
+        onAccepted: {
+            var child = sessionMenu.sessionItem.addChild(name);
+            var cmd = ircCommand.createWhois(name);
+            bouncer.bounce(child, cmd);
+        }
+    }
+
     NameSheet {
         id: nickSheet
-        showSessions: false
+        title: qsTr("Set nick")
         onAccepted: {
-            sessionMenu.session.nickName = name;
+            sessionMenu.sessionItem.session.nickName = name;
         }
     }
 

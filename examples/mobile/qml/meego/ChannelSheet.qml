@@ -22,7 +22,6 @@ CommonSheet {
     property alias channel: channelField.text
     property alias password: passwordField.text
     property bool passwordRequired: false
-    property int sessionIndex: buttons.checkedButton ? buttons.checkedButton.idx : -1
 
     acceptable: !channelField.errorHighlight && !passwordField.errorHighlight
     onStatusChanged: {
@@ -34,23 +33,6 @@ CommonSheet {
         id: column
         width: parent.width
         spacing: UI.DEFAULT_SPACING
-
-        Column {
-            width: parent.width
-            visible: SessionModel.length > 1
-            Label { text: qsTr("Connection") }
-            ButtonColumn {
-                id: buttons
-                width: parent.width
-                Repeater {
-                    model: SessionModel
-                    Button {
-                        property int idx: index
-                        text: modelData.title + " ("+ modelData.subtitle +")"
-                    }
-                }
-            }
-        }
 
         Column {
             width: parent.width
