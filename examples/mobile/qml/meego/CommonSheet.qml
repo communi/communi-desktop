@@ -42,7 +42,8 @@ Sheet {
                 spacing: UI.DEFAULT_SPACING
                 Label {
                     id: title
-                    font.pixelSize: UI.FONT_LARGE
+                    color: UI.TITLE_COLOR
+                    font.pixelSize: UI.LARGE_FONT
                 }
                 Rectangle {
                     color: UI.SEPARATOR_COLOR

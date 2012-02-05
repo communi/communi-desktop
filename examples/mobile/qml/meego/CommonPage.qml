@@ -23,6 +23,7 @@ Page {
     property alias title: label.text
     property alias header: header
     property alias busy: indicator.running
+    property bool active: true
     default property alias content: content.data
 
     Connections {
@@ -87,7 +88,8 @@ Page {
                 id: label
 
                 elide: Text.ElideRight
-                font.pixelSize: UI.FONT_LARGE
+                font.pixelSize: UI.LARGE_FONT
+                color: page.active ? UI.TITLE_COLOR : UI.INACTIVE_COLOR
                 anchors.verticalCenter: parent.verticalCenter
                 width: parent.width - indicator.width - UI.DEFAULT_SPACING
             }

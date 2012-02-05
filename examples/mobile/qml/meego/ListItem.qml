@@ -35,11 +35,12 @@ Item {
     width: listView.width
     height: 88
 
-    BorderImage {
+    Rectangle {
         id: background
         anchors.fill: parent
         visible: mouseArea.pressed
-        source: "image://theme/meegotouch-list-background-pressed-center"
+        color: UI.SEPARATOR_COLOR
+        opacity: 0.25
     }
 
     Image {
@@ -56,7 +57,7 @@ Item {
                 return Math.ceil(root.lag / 1000) + qsTr("s");
             }
             anchors.centerIn: parent
-            font.pixelSize: UI.FONT_SMALL
+            font.pixelSize: UI.SMALL_FONT
             font.bold: true
             color: UI.HIGHLIGHT_COLOR
         }
@@ -77,17 +78,17 @@ Item {
         Label {
             id: title
             font.bold: true
-            font.pixelSize: UI.FONT_MEDIUM
-            color: root.highlighted ? UI.HIGHLIGHT_COLOR : root.active ? "#282828" : UI.INACTIVE_COLOR
+            font.pixelSize: UI.MEDIUM_FONT
+            color: root.highlighted ? UI.HIGHLIGHT_COLOR : root.active ? UI.TITLE_COLOR : UI.INACTIVE_COLOR
             width: parent.width
             elide: Text.ElideRight
         }
 
         Label {
             id: subtitle
-            font.pixelSize: UI.FONT_SMALL
+            font.pixelSize: UI.SMALL_FONT
             font.weight: Font.Light
-            color: root.active ? "#505050" : UI.INACTIVE_COLOR
+            color: root.active ? UI.SUBTITLE_COLOR : UI.INACTIVE_COLOR
             width: parent.width
             elide: Text.ElideRight
         }
@@ -114,7 +115,7 @@ Item {
                 Label {
                     id: unread
                     color: "white"
-                    font.pixelSize: UI.FONT_SMALL
+                    font.pixelSize: UI.SMALL_FONT
                     text: root.unreadCount
                     anchors.fill: parent
                     elide: Text.ElideRight
