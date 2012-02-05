@@ -40,7 +40,7 @@ Item {
         anchors.fill: parent
         visible: mouseArea.pressed
         color: UI.SEPARATOR_COLOR
-        opacity: 0.25
+        opacity: UI.DISABLED_OPACITY
     }
 
     Image {

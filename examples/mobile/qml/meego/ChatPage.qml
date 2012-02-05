@@ -50,6 +50,8 @@ CommonPage {
         }
         ToolIcon {
             anchors.verticalCenter: parent.verticalCenter
+            opacity: enabled ? 1.0 : UI.DISABLED_OPACITY
+            enabled: modelData !== null && modelData.session.active
             visible: modelData !== null && modelData.channel !== undefined && !indicator.visible
             iconId: "toolbar-list"
             onClicked: {
@@ -67,6 +69,8 @@ CommonPage {
         }
         ToolIcon {
             iconId: "toolbar-new-message"
+            opacity: enabled ? 1.0 : UI.DISABLED_OPACITY
+            enabled: modelData !== null && modelData.session.active
             onClicked: {
                 textField.visible = true;
                 textField.forceActiveFocus();
