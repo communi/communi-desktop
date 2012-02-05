@@ -147,6 +147,10 @@ CommonPage {
                     modelData.unseenIndex = chatPage.count - 1;
                     modelData = null;
                 }
+                else if (status === PageStatus.Active && bouncer.cmd) {
+                    modelData.session.sendCommand(bouncer.cmd);
+                    bouncer.cmd = null;
+                }
             }
             if (status === PageStatus.Inactive && bouncer.item)
                 bouncer.start();
@@ -157,24 +161,20 @@ CommonPage {
         id: bouncer
         interval: 50
         property QtObject item
-        property QtObject cmd;
+        property QtObject cmd
         function bounce(item, cmd) {
+            bouncer.cmd = cmd;
             if (root.status === PageStatus.Active) {
+                bouncer.item = null;
                 chatPage.push(item);
-                if (cmd !== null)
-                    item.session.sendCommand(cmd);
             } else {
                 bouncer.item = item;
-                bouncer.cmd = cmd;
                 pageStack.pop();
             }
         }
         onTriggered: {
-            chatPage.push(bouncer.item)
-            if (bouncer.cmd !== null)
-                item.session.sendCommand(bouncer.cmd);
+            chatPage.push(bouncer.item);
             bouncer.item = null;
-            bouncer.cmd = null;
         }
     }
 
@@ -275,7 +275,8 @@ CommonPage {
         onAccepted: {
             var child = sessionMenu.sessionItem.addChild(channel);
             var cmd = ircCommand.createJoin(channel, password);
-            bouncer.bounce(child, cmd);
+            sessionMenu.sessionItem.session.sendCommand(cmd);
+            bouncer.bounce(child, null);
         }
         Connections {
             target: SessionManager
