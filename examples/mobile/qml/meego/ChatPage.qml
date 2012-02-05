@@ -155,11 +155,17 @@ CommonPage {
         currentIndex: modelData ? modelData.unseenIndex : -1
         highlight: Item {
             visible: listView.currentIndex > 0 && listView.currentIndex < listView.count - 1
-            Rectangle {
-                width: listView.width
-                height: 1
-                color: UI.HIGHLIGHT_COLOR
-                anchors.bottom: parent.bottom
+            Image {
+                source: "../images/right-arrow.png"
+                anchors.left: parent.left
+                anchors.leftMargin: -UI.PAGE_MARGIN
+                anchors.verticalCenter: parent.bottom
+            }
+            Image {
+                source: "../images/left-arrow.png"
+                anchors.right: parent.right
+                anchors.rightMargin: -UI.PAGE_MARGIN
+                anchors.verticalCenter: parent.bottom
             }
         }
     }
