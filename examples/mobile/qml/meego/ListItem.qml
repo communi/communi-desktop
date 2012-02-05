@@ -64,6 +64,7 @@ Item {
 
     Column {
         id: column
+        spacing: 2
 
         anchors {
             left: icon.right
