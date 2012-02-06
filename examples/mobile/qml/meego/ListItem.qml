@@ -22,7 +22,6 @@ Item {
 
     property alias title: title.text
     property alias subtitle: subtitle.text
-    property int lag: -1
     property alias iconSource: icon.source
     property bool highlighted: false
     property bool active: true
@@ -48,19 +47,6 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: UI.PAGE_MARGIN
         anchors.verticalCenter: parent.verticalCenter
-
-        Label {
-            visible: root.lag >= 0
-            text: {
-                if (root.lag < 100) return root.lag + qsTr("ms");
-                if (root.lag < 10000) return (root.lag / 1000).toFixed(1) + qsTr("s");
-                return Math.ceil(root.lag / 1000) + qsTr("s");
-            }
-            anchors.centerIn: parent
-            font.pixelSize: UI.SMALL_FONT
-            font.bold: true
-            color: UI.HIGHLIGHT_COLOR
-        }
     }
 
     Column {

@@ -55,7 +55,6 @@ CommonPage {
                 active: modelData.session.active
                 unreadCount: modelData.unreadCount
                 busy: modelData.busy
-                lag: modelData.session.currentLag
                 onClicked: chatPage.push(modelData)
                 onPressAndHold: {
                     listView.currentSessionItem = modelData;
