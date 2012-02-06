@@ -30,8 +30,6 @@ Session::Session(QObject *parent) : IrcSession(parent),
 
     setAutoReconnectDelay(15);
     connect(&m_reconnectTimer, SIGNAL(timeout()), this, SLOT(open()));
-    connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), &m_reconnectTimer, SLOT(start()));
-    connect(this, SIGNAL(connecting()), &m_reconnectTimer, SLOT(stop()));
 
     connect(&m_pingTimer, SIGNAL(timeout()), this, SLOT(pingServer()));
     connect(this, SIGNAL(connectedChanged(bool)), SLOT(togglePingTimer(bool)));
@@ -165,6 +163,40 @@ bool Session::ensureNetwork()
     }
     // TODO: return value?
     return true;
+}
+
+void Session::reconnect()
+{
+    connect(this, SIGNAL(connecting()), &m_reconnectTimer, SLOT(stop()));
+    connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), &m_reconnectTimer, SLOT(start()));
+
+    if (ensureNetwork())
+        open();
+}
+
+void Session::quit(const QString& message)
+{
+    disconnect(this, SIGNAL(connecting()), &m_reconnectTimer, SLOT(stop()));
+    disconnect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), &m_reconnectTimer, SLOT(start()));
+
+    if (isConnected())
+        sendCommand(IrcCommand::createQuit(message));
+    else
+        close();
+}
+
+void Session::destructLater()
+{
+    if (isConnected())
+    {
+        connect(this, SIGNAL(disconnected()), SLOT(deleteLater()));
+        connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), SLOT(deleteLater()));
+        QTimer::singleShot(1000, this, SLOT(deleteLater()));
+    }
+    else
+    {
+        deleteLater();
+    }
 }
 
 void Session::onConnected()

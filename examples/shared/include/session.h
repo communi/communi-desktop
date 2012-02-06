@@ -66,6 +66,11 @@ public:
 
     Q_INVOKABLE bool ensureNetwork();
 
+public slots:
+    void reconnect();
+    void quit(const QString& message);
+    void destructLater();
+
 signals:
     void currentLagChanged(int lag);
 
