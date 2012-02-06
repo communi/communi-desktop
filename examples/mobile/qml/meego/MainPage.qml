@@ -36,6 +36,11 @@ CommonPage {
 
     ListView {
         id: listView
+
+        property QtObject currentSessionItem
+        property QtObject currentSession: currentSessionItem ? currentSessionItem.session : null
+        property QtObject currentChildItem
+
         anchors.fill: parent
         model: SessionModel
         delegate: Column {
@@ -50,11 +55,18 @@ CommonPage {
                 active: modelData.session.active
                 unreadCount: modelData.unreadCount
                 busy: modelData.busy
-                onClicked: chatPage.push(modelData)
-                onPressAndHold: sessionMenu.popup(modelData)
                 lag: modelData.session.currentLag
+                onClicked: chatPage.push(modelData)
+                onPressAndHold: {
+                    listView.currentSessionItem = modelData;
+                    if (modelData.session.active)
+                        activeSessionMenu.open();
+                    else
+                        inactiveSessionMenu.open();
+                }
             }
             Repeater {
+                id: repeater
                 model: modelData.childItems
                 ListItem {
                     title: modelData.title
@@ -65,7 +77,10 @@ CommonPage {
                     unreadCount: modelData.unreadCount
                     busy: modelData.busy
                     onClicked: chatPage.push(modelData)
-                    onPressAndHold: chatMenu.popup(modelData)
+                    onPressAndHold: {
+                        listView.currentChildItem = modelData;
+                        childMenu.open();
+                    }
                 }
             }
             Rectangle {
@@ -179,47 +194,48 @@ CommonPage {
     }
 
     ContextMenu {
-        id: sessionMenu
-        property QtObject sessionItem
-        property bool active: sessionItem && sessionItem.session.active
-        function popup(sessionItem) {
-            sessionMenu.sessionItem = sessionItem;
-            open();
-        }
+        id: activeSessionMenu
+
         MenuLayout {
             MenuItem {
-                text: !sessionMenu.active ? qsTr("Connect") : qsTr("Disconnect")
-                onClicked: {
-                    if (!sessionMenu.active)
-                        sessionMenu.sessionItem.session.reconnect();
-                    else
-                        sessionMenu.sessionItem.session.quit(qsTr("Communi 1.1 for MeeGo"));
-                }
-            }
-            MenuItem {
                 text: qsTr("Join channel")
-                enabled: sessionMenu.sessionItem.session.connected
                 onClicked: channelSheet.open()
             }
             MenuItem {
                 text: qsTr("Open query")
-                enabled: sessionMenu.sessionItem.session.connected
                 onClicked: querySheet.open()
             }
             MenuItem {
                 text: qsTr("Set nick")
-                enabled: sessionMenu.sessionItem.session.connected
                 onClicked: {
-                    nickSheet.name = sessionMenu.sessionItem.session.nickName;
+                    nickSheet.name = listView.currentSession.nickName;
                     nickSheet.open();
+                }
+            }
+            MenuItem {
+                text: qsTr("Disconnect")
+                onClicked: {
+                    listView.currentSession.quit(qsTr("Communi 1.1 for MeeGo"));
+                }
+            }
+        }
+    }
+
+    ContextMenu {
+        id: inactiveSessionMenu
+
+        MenuLayout {
+            MenuItem {
+                text: qsTr("Reconnect")
+                onClicked: {
+                    listView.currentSession.reconnect();
                 }
             }
             MenuItem {
                 text: qsTr("Close")
                 onClicked: {
-                    sessionMenu.sessionItem.session.quit(qsTr("Communi 1.1 for MeeGo"));
-                    SessionManager.removeSession(sessionMenu.sessionItem.session);
-                    sessionMenu.sessionItem.session.destructLater();
+                    SessionManager.removeSession(listView.currentSession);
+                    listView.currentSession.destructLater();
                 }
             }
         }
@@ -277,9 +293,9 @@ CommonPage {
         id: channelSheet
         title: qsTr("Join channel")
         onAccepted: {
-            var child = sessionMenu.sessionItem.addChild(channel);
+            var child = listView.currentSessionItem.addChild(channel);
             var cmd = ircCommand.createJoin(channel, password);
-            sessionMenu.sessionItem.session.sendCommand(cmd);
+            listView.currentSession.sendCommand(cmd);
             bouncer.bounce(child, null);
         }
         Connections {
@@ -296,7 +312,7 @@ CommonPage {
         id: querySheet
         title: qsTr("Open query")
         onAccepted: {
-            var child = sessionMenu.sessionItem.addChild(name);
+            var child = listView.currentSessionItem.addChild(name);
             var cmd = ircCommand.createWhois(name);
             bouncer.bounce(child, cmd);
         }
@@ -306,26 +322,23 @@ CommonPage {
         id: nickSheet
         title: qsTr("Set nick")
         onAccepted: {
-            sessionMenu.sessionItem.session.nickName = name;
+            listView.currentSession.nickName = name;
         }
     }
 
     ContextMenu {
-        id: chatMenu
-        property QtObject chatItem
-        function popup(item) {
-            chatItem = item;
-            open();
-        }
+        id: childMenu
+
         MenuLayout {
             MenuItem {
-                text: qsTr("Close")
+                text: listView.currentChildItem && listView.currentChildItem.channel ? qsTr("Part") : qsTr("Close")
                 onClicked: {
-                    if (chatMenu.chatItem.channel) {
-                        var cmd = ircCommand.createPart(chatMenu.chatItem.title, qsTr("Communi 1.1 for MeeGo"));
-                        chatMenu.chatItem.session.sendCommand(cmd);
+                    var item = listView.currentChildItem;
+                    if (item.channel) {
+                        var cmd = ircCommand.createPart(item.title, qsTr("Communi 1.1 for MeeGo"));
+                        item.session.sendCommand(cmd);
                     }
-                    chatMenu.chatItem.sessionItem.removeChild(chatMenu.chatItem.title);
+                    item.sessionItem.removeChild(item.title);
                 }
             }
         }
