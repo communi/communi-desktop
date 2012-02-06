@@ -320,7 +320,13 @@ CommonPage {
         MenuLayout {
             MenuItem {
                 text: qsTr("Close")
-                onClicked: chatMenu.chatItem.close()
+                onClicked: {
+                    if (chatMenu.chatItem.channel) {
+                        var cmd = ircCommand.createPart(chatMenu.chatItem.title, qsTr("Communi 1.1 for MeeGo"));
+                        chatMenu.chatItem.session.sendCommand(cmd);
+                    }
+                    chatMenu.chatItem.sessionItem.removeChild(chatMenu.chatItem.title);
+                }
             }
         }
     }

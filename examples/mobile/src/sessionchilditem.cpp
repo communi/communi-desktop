@@ -83,20 +83,3 @@ void SessionChildItem::receiveMessage(IrcMessage* message)
             setSubtitle(numMsg->parameters().value(5));
     }
 }
-
-void SessionChildItem::close()
-{
-    if (isChannel())
-    {
-        static const QString msg = tr("%1 %2 for %3")
-                .arg(QApplication::applicationName())
-                .arg(QApplication::applicationVersion())
-#ifdef Q_OS_SYMBIAN
-                .arg(tr("Symbian"));
-#else
-                .arg(tr("MeeGo"));
-#endif
-        m_parent->session()->sendCommand(IrcCommand::createPart(title(), msg));
-    }
-    m_parent->removeChild(title());
-}
