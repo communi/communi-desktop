@@ -1,3 +1,14 @@
+communi (1.1.0-4) unstable; urgency=low
+
+  * Improved connection state detection & error handling
+  * Updated server/connection state icons
+  * Added disconnect/reconnect functionality
+  * Made it possible to change nick & clear view
+  * Improved alternate nick handling
+  * Various minor UI improvements & fixes
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Tue, 7 Feb 2012 00:35:29 +0200
+
 communi (1.1.0-3) unstable; urgency=low
 
   * Fixed a rare crash on application closing
