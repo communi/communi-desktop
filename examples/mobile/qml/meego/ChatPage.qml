@@ -51,6 +51,7 @@ CommonPage {
         ToolIcon {
             anchors.verticalCenter: parent.verticalCenter
             opacity: enabled ? 1.0 : UI.DISABLED_OPACITY
+            enabled: clearItem.enabled || infoItem.enabled
             visible: modelData !== null && !indicator.visible
             iconId: "toolbar-view-menu"
             onClicked: contextMenu.open()
@@ -256,11 +257,13 @@ CommonPage {
         id: contextMenu
         MenuLayout {
             MenuItem {
+                id: clearItem
                 text: qsTr("Clear")
-                enabled: modelData
+                enabled: modelData && listView.count
                 onClicked: modelData.clear();
             }
             MenuItem {
+                id: infoItem
                 property bool chat: modelData && modelData.channel !== undefined
                 text: chat && modelData.channel ? qsTr("Names") : chat ? qsTr("Whois") : qsTr("Info")
                 enabled: modelData && modelData.channel !== undefined && modelData.session.active
