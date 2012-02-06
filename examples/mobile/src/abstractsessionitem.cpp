@@ -190,6 +190,11 @@ void AbstractSessionItem::sendUiCommand(IrcCommand *command)
     m_session->sendCommand(command);
 }
 
+void AbstractSessionItem::clear()
+{
+    m_messages->setStringList(QStringList());
+}
+
 void AbstractSessionItem::receiveMessage(IrcMessage* message)
 {
     if (message->type() == IrcMessage::Numeric)
