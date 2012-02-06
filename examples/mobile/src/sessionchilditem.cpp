@@ -88,13 +88,13 @@ void SessionChildItem::close()
 {
     if (isChannel())
     {
-        static const QString msg = tr("%1 %2 for %2")
+        static const QString msg = tr("%1 %2 for %3")
                 .arg(QApplication::applicationName())
                 .arg(QApplication::applicationVersion())
 #ifdef Q_OS_SYMBIAN
                 .arg(tr("Symbian"));
 #else
-                .arg(tr("N9"));
+                .arg(tr("MeeGo"));
 #endif
         m_parent->session()->sendCommand(IrcCommand::createPart(title(), msg));
     }
