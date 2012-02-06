@@ -30,6 +30,6 @@ PageStackWindow {
     Component.onDestruction: {
         SessionManager.save();
         for (var i = 0; i < SessionModel.length; ++i)
-            SessionModel[i].session.quit(qsTr("Communi 1.1 for MeeGo"));
+            SessionModel[i].session.quit(ApplicationName);
     }
 }

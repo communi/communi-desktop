@@ -215,7 +215,7 @@ CommonPage {
             MenuItem {
                 text: qsTr("Disconnect")
                 onClicked: {
-                    listView.currentSession.quit(qsTr("Communi 1.1 for MeeGo"));
+                    listView.currentSession.quit(ApplicationName);
                 }
             }
         }
@@ -335,7 +335,7 @@ CommonPage {
                 onClicked: {
                     var item = listView.currentChildItem;
                     if (item.channel) {
-                        var cmd = ircCommand.createPart(item.title, qsTr("Communi 1.1 for MeeGo"));
+                        var cmd = ircCommand.createPart(item.title, ApplicationName);
                         item.session.sendCommand(cmd);
                     }
                     item.sessionItem.removeChild(item.title);
