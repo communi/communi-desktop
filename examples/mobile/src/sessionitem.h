@@ -22,13 +22,11 @@ class IrcSession;
 class SessionItem : public AbstractSessionItem
 {
     Q_OBJECT
-    Q_PROPERTY(bool error READ hasError NOTIFY errorChanged)
     Q_PROPERTY(QObjectList childItems READ childItems NOTIFY childItemsChanged)
 
 public:
     explicit SessionItem(Session* session);
 
-    bool hasError() const;
     QObjectList childItems() const;
     QStringList channels() const;
 
@@ -38,7 +36,6 @@ public slots:
     QObject* addChild(const QString& name);
     void renameChild(const QString& from, const QString& to);
     void removeChild(const QString& name);
-    void quit();
 
 signals:
     void errorChanged();
@@ -52,7 +49,6 @@ private slots:
     void updateState();
 
 private:
-    bool m_closing;
     QObjectList m_children;
     MessageHandler m_handler;
     QStringList m_alternateNicks;

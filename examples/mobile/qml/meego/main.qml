@@ -21,6 +21,15 @@ PageStackWindow {
 
     initialPage: MainPage { }
 
-    Component.onCompleted: SessionManager.restore()
-    Component.onDestruction: SessionManager.save()
+    Component.onCompleted: {
+        SessionManager.restore();
+        for (var i = 0; i < SessionModel.length; ++i)
+            SessionModel[i].session.reconnect();
+    }
+
+    Component.onDestruction: {
+        SessionManager.save();
+        for (var i = 0; i < SessionModel.length; ++i)
+            SessionModel[i].session.quit(qsTr("Communi 1.1 for MeeGo"));
+    }
 }

@@ -31,8 +31,6 @@ void SessionManager::addSession(Session* session)
     connect(item, SIGNAL(channelKeyRequired(QString)), SIGNAL(channelKeyRequired(QString)));
     m_items.append(item);
     updateModel();
-    if (session->ensureNetwork())
-        session->open();
 }
 
 void SessionManager::removeSession(Session* session)
@@ -42,7 +40,6 @@ void SessionManager::removeSession(Session* session)
         SessionItem* item = static_cast<SessionItem*>(m_items.at(i));
         if (item->session() == session)
         {
-            item->quit();
             m_items.removeAt(i);
             item->deleteLater();
             updateModel();

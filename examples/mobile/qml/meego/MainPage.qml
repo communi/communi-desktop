@@ -190,12 +190,10 @@ CommonPage {
             MenuItem {
                 text: !sessionMenu.active ? qsTr("Connect") : qsTr("Disconnect")
                 onClicked: {
-                    if (!sessionMenu.active) {
-                        if (sessionMenu.sessionItem.session.ensureNetwork())
-                            sessionMenu.sessionItem.session.open();
-                    } else {
-                        sessionMenu.sessionItem.session.close();
-                    }
+                    if (!sessionMenu.active)
+                        sessionMenu.sessionItem.session.reconnect();
+                    else
+                        sessionMenu.sessionItem.session.quit(qsTr("Communi 1.1 for MeeGo"));
                 }
             }
             MenuItem {
@@ -218,7 +216,11 @@ CommonPage {
             }
             MenuItem {
                 text: qsTr("Close")
-                onClicked: SessionManager.removeSession(sessionMenu.session)
+                onClicked: {
+                    sessionMenu.sessionItem.session.quit(qsTr("Communi 1.1 for MeeGo"));
+                    SessionManager.removeSession(sessionMenu.sessionItem.session);
+                    sessionMenu.sessionItem.session.destructLater();
+                }
             }
         }
     }
@@ -243,7 +245,7 @@ CommonPage {
         }
 
         onAccepted: {
-            var session = sessionComponent.createObject(window);
+            var session = sessionComponent.createObject(root);
             session.nickName = connectionSheet.name;
             session.userName = connectionSheet.user.length ? connectionSheet.user : "communi";
             session.realName = connectionSheet.real.length ? connectionSheet.real : connectionSheet.name;
@@ -252,7 +254,9 @@ CommonPage {
             session.password = connectionSheet.password;
             session.secure = connectionSheet.secure;
             session.channels = connectionSheet.channel;
+
             SessionManager.addSession(session);
+            session.reconnect();
 
             connectionSheet.password = "";
             Settings.host = session.host;
