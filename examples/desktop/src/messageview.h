@@ -47,7 +47,6 @@ signals:
     void highlight(MessageView* view, bool on);
     void alert(MessageView* view, bool on);
     void query(const QString& user);
-    void aboutToQuit();
 
 protected:
     bool eventFilter(QObject* receiver, QEvent* event);

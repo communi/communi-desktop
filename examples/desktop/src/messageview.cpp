@@ -203,10 +203,6 @@ void MessageView::onSend(const QString& text)
             receiveMessage(msg);
             delete msg;
         }
-        else if (cmd->type() == IrcCommand::Quit)
-        {
-            emit aboutToQuit();
-        }
     }
     else if (d.parser.hasError())
     {
