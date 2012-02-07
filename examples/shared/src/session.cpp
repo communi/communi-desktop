@@ -57,12 +57,12 @@ void Session::setAutoReconnectDelay(int delay)
 
 QStringList Session::channels() const
 {
-    return m_channels.toList();
+    return m_channels;
 }
 
 void Session::setChannels(const QStringList& channels)
 {
-    m_channels = QSet<QString>::fromList(channels);
+    m_channels = channels;
 }
 
 bool Session::isSecure() const
@@ -223,12 +223,17 @@ void Session::handleMessage(IrcMessage* message)
     if (message->type() == IrcMessage::Join)
     {
         if (message->sender().name() == nickName())
-            m_channels.insert(static_cast<IrcJoinMessage*>(message)->channel());
+            m_channels.append(static_cast<IrcJoinMessage*>(message)->channel());
     }
     else if (message->type() == IrcMessage::Part)
     {
         if (message->sender().name() == nickName())
-            m_channels.remove(static_cast<IrcPartMessage*>(message)->channel());
+        {
+            QString channel = static_cast<IrcPartMessage*>(message)->channel();
+            int idx = m_channels.indexOf(QRegExp(channel, Qt::CaseInsensitive));
+            if (idx != -1)
+                m_channels.removeAt(idx);
+        }
     }
     else if (message->type() == IrcMessage::Pong)
     {

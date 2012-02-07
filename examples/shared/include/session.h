@@ -87,7 +87,7 @@ private:
     QString m_name;
     QTimer m_reconnectTimer;
     QString m_password;
-    QSet<QString> m_channels;
+    QStringList m_channels;
     QElapsedTimer m_lagTimer;
     QTimer m_pingTimer;
     int m_currentLag;
