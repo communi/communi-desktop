@@ -58,6 +58,7 @@ public slots:
 
 signals:
     void newTabRequested();
+    void tabMenuRequested(int index, const QPoint& pos);
     void inactiveStatusChanged(bool inactive);
     void alertStatusChanged(bool alerted);
     void highlightStatusChanged(bool highlighted);

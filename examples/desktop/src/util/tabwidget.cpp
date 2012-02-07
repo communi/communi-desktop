@@ -13,42 +13,51 @@
 */
 
 #include "tabwidget.h"
+#include "tabwidget_p.h"
 #include "sharedtimer.h"
-#include <QTabBar>
 #include <QGestureEvent>
+#include <QContextMenuEvent>
+#include <QtDebug>
 
-class TabBar : public QTabBar
+TabBar::TabBar(QWidget* parent) : QTabBar(parent)
 {
-public:
-    TabBar(QWidget* parent = 0) : QTabBar(parent)
-    {
-        addTab(tr("+"));
-        setSelectionBehaviorOnRemove(SelectLeftTab);
-    }
+    addTab(tr("+"));
+    setSelectionBehaviorOnRemove(SelectLeftTab);
+}
 
-protected:
-    void changeEvent(QEvent* event)
+void TabBar::changeEvent(QEvent* event)
+{
+    if (event->type() == QEvent::StyleChange)
     {
-        if (event->type() == QEvent::StyleChange)
-        {
-            Qt::TextElideMode mode = elideMode();
-            QTabBar::changeEvent(event);
-            if (mode != elideMode())
-                setElideMode(mode);
-            return;
-        }
+        Qt::TextElideMode mode = elideMode();
         QTabBar::changeEvent(event);
+        if (mode != elideMode())
+            setElideMode(mode);
+        return;
     }
+    QTabBar::changeEvent(event);
+}
 
-    void wheelEvent(QWheelEvent* event)
+void TabBar::contextMenuEvent(QContextMenuEvent* event)
+{
+    for (int i = 0; i < count() - 1; ++i)
     {
-        if (event->delta() > 0)
-            QMetaObject::invokeMethod(parent(), "moveToPrevTab");
-        else
-            QMetaObject::invokeMethod(parent(), "moveToNextTab");
-        QWidget::wheelEvent(event);
+        if (tabRect(i).contains(event->pos()))
+        {
+            emit menuRequested(i, event->globalPos());
+            break;
+        }
     }
-};
+}
+
+void TabBar::wheelEvent(QWheelEvent* event)
+{
+    if (event->delta() > 0)
+        QMetaObject::invokeMethod(parent(), "moveToPrevTab");
+    else
+        QMetaObject::invokeMethod(parent(), "moveToNextTab");
+    QWidget::wheelEvent(event);
+}
 
 TabWidget::TabWidget(QWidget* parent) : QTabWidget(parent)
 {
@@ -60,6 +69,7 @@ TabWidget::TabWidget(QWidget* parent) : QTabWidget(parent)
     d.highlightColor = palette().color(QPalette::Highlight);
     d.swipeOrientation = Qt::Orientation(0);
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
+    connect(tabBar(), SIGNAL(menuRequested(int,QPoint)), this, SIGNAL(tabMenuRequested(int,QPoint)));
 }
 
 QColor TabWidget::inactiveColor() const

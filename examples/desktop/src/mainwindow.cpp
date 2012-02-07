@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget* parent) :
     tabWidget = new MainTabWidget(this);
     setCentralWidget(tabWidget);
     connect(tabWidget, SIGNAL(newTabRequested()), this, SLOT(connectTo()), Qt::QueuedConnection);
+    connect(tabWidget, SIGNAL(tabMenuRequested(int,QPoint)), this, SLOT(onTabMenuRequested(int,QPoint)));
     connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
     connect(tabWidget, SIGNAL(alertStatusChanged(bool)), this, SLOT(activateAlert(bool)));
 
@@ -225,5 +226,15 @@ void MainWindow::tabActivated(int index)
             setWindowFilePath(tab->tabText(tab->currentIndex()));
             QMetaObject::invokeMethod(tab, "delayedTabReset");
         }
+    }
+}
+
+void MainWindow::onTabMenuRequested(int index, const QPoint& pos)
+{
+    if (index > 0 && index < tabWidget->count() - 1)
+    {
+        SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(tabWidget->widget(index));
+        if (tab)
+            QMetaObject::invokeMethod(tab, "onTabMenuRequested", Q_ARG(int, 0), Q_ARG(QPoint, pos));
     }
 }

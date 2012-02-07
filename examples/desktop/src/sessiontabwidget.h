@@ -38,6 +38,7 @@ public slots:
     MessageView* openView(const QString& receiver);
     void removeView(const QString& receiver);
     void closeCurrentView();
+    void closeView(int index);
     void renameView(const QString& from, const QString& to);
 
 signals:
@@ -47,6 +48,8 @@ private slots:
     void updateStatus();
     void tabActivated(int index);
     void onNewTabRequested();
+    void onTabMenuRequested(int index, const QPoint& pos);
+    void onTabCloseRequested();
     void delayedTabReset();
     void delayedTabResetTimeout();
     void alertTab(MessageView* view, bool on);

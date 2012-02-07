@@ -27,6 +27,7 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
     connect(this, SIGNAL(newTabRequested()), this, SLOT(onNewTabRequested()), Qt::QueuedConnection);
+    connect(this, SIGNAL(tabMenuRequested(int,QPoint)), this, SLOT(onTabMenuRequested(int,QPoint)));
 
     connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateStatus()));
     connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateStatus()));
@@ -90,7 +91,12 @@ void SessionTabWidget::removeView(const QString& receiver)
 
 void SessionTabWidget::closeCurrentView()
 {
-    MessageView* view = d.views.value(tabText(currentIndex()).toLower());
+    closeView(currentIndex());
+}
+
+void SessionTabWidget::closeView(int index)
+{
+    MessageView* view = d.views.value(tabText(index).toLower());
     if (view)
     {
         QString reason = tr("%1 %2").arg(Application::applicationName())
@@ -149,6 +155,30 @@ void SessionTabWidget::onNewTabRequested()
             d.handler.session()->sendCommand(IrcCommand::createJoin(channel));
         openView(channel);
     }
+}
+
+void SessionTabWidget::onTabMenuRequested(int index, const QPoint& pos)
+{
+    QMenu menu;
+    if (index == 0)
+    {
+        if (session()->isActive())
+            menu.addAction(tr("Disconnect"), session(), SLOT(quit()));
+        else
+            menu.addAction(tr("Reconnect"), session(), SLOT(reconnect()));
+    }
+    if (static_cast<MessageView*>(widget(index))->isChannelView())
+        menu.addAction(tr("Part"), this, SLOT(onTabCloseRequested()))->setData(index);
+    else
+        menu.addAction(tr("Close"), this, SLOT(onTabCloseRequested()))->setData(index);
+    menu.exec(pos);
+}
+
+void SessionTabWidget::onTabCloseRequested()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action)
+        closeView(action->data().toInt());
 }
 
 void SessionTabWidget::delayedTabReset()
