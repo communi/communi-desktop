@@ -49,9 +49,7 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
 
     if (!d.commandModel)
     {
-        CommandParser::addCustomCommand("CONNECT", "(<host> <port>)");
         CommandParser::addCustomCommand("QUERY", "<user>");
-        CommandParser::addCustomCommand("SETTINGS", "");
 
         QStringList prefixedCommands;
         foreach (const QString& command, CommandParser::availableCommands())
@@ -328,10 +326,6 @@ void MessageView::onCustomCommand(const QString& command, const QStringList& par
 {
     if (command == "QUERY")
         emit query(params.value(0));
-    else if (command == "SETTINGS")
-        Application::showSettings();
-    else if (command == "CONNECT")
-        QMetaObject::invokeMethod(window(), "connectTo", Q_ARG(QString, params.value(0)), params.count() > 1 ? Q_ARG(quint16, params.value(1).toInt()) : QGenericArgument());
 }
 
 QString MessageView::prettyNames(const QStringList& names, int columns)
