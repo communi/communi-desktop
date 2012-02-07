@@ -174,10 +174,15 @@ void Session::reconnect()
         open();
 }
 
-void Session::quit(const QString& message)
+void Session::quit(const QString& reason)
 {
     disconnect(this, SIGNAL(connecting()), &m_reconnectTimer, SLOT(stop()));
     disconnect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), &m_reconnectTimer, SLOT(start()));
+
+    QString message = reason;
+    if (message.isEmpty())
+        message = tr("%1 %2").arg(QApplication::applicationName())
+                             .arg(QApplication::applicationVersion());
 
     if (isConnected())
         sendCommand(IrcCommand::createQuit(message));

@@ -68,7 +68,7 @@ public:
 
 public slots:
     void reconnect();
-    void quit(const QString& message);
+    void quit(const QString& reason = QString());
     void destructLater();
 
 signals:

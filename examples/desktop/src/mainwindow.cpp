@@ -112,7 +112,7 @@ void MainWindow::connectTo(const Connection& connection)
 
 void MainWindow::connectToImpl(const Connection& connection)
 {
-    Session* session = Session::fromConnection(connection);
+    Session* session = Session::fromConnection(connection, this);
     session->setEncoding(Application::encoding());
     session->setUserName("communi");
     if (session->ensureNetwork())
@@ -142,7 +142,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
         if (tab)
         {
             connections += tab->session()->toConnection();
-            tab->quit();
+            tab->session()->quit();
         }
     }
     settings.setValue("connections", QVariant::fromValue(connections));
