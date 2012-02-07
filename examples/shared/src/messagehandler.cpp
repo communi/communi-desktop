@@ -337,8 +337,8 @@ void MessageHandler::sendMessage(IrcMessage* message, const QString& receiver)
     if (!d.receivers.contains(receiver.toLower()))
         emit receiverToBeAdded(receiver);
     QObject* object = getReceiver(receiver);
-    Q_ASSERT(object);
-    sendMessage(message, object);
+    if (object)
+        sendMessage(message, object);
 }
 
 void MessageHandler::onSessionDestroyed()
