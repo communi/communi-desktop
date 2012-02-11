@@ -309,9 +309,6 @@ void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
 
     if (d.receivers.contains(nick.toLower()))
         sendMessage(message, nick);
-
-    if (nick == d.session->nickName())
-        removeReceiver(d.session->host());
 }
 
 void MessageHandler::handleTopicMessage(IrcTopicMessage* message)
