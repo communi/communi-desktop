@@ -268,7 +268,8 @@ CommonPage {
             session.port = connectionSheet.port;
             session.password = connectionSheet.password;
             session.secure = connectionSheet.secure;
-            session.channels = connectionSheet.channel;
+            if (connectionSheet.channel.length)
+                session.channels = connectionSheet.channel;
 
             SessionManager.addSession(session);
             session.reconnect();

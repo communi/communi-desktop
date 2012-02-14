@@ -67,9 +67,7 @@ void SessionManager::save()
         foreach (QObject* item, m_items)
         {
             SessionItem* sessionItem = static_cast<SessionItem*>(item);
-            Connection connection = sessionItem->session()->toConnection();
-            connection.channels = sessionItem->channels();
-            connections += connection;
+            connections += sessionItem->session()->toConnection();
         }
         settings->setConnections(connections);
     }

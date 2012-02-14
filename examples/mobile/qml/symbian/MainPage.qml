@@ -260,7 +260,8 @@ CommonPage {
             session.port = connectionDialog.port;
             session.password = connectionDialog.password;
             session.secure = connectionDialog.secure;
-            session.channels = connectionDialog.channel;
+            if (connectionDialog.channel.length)
+                session.channels = connectionDialog.channel;
 
             SessionManager.addSession(session);
             session.reconnect();

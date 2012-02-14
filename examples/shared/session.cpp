@@ -207,7 +207,10 @@ void Session::destructLater()
 void Session::onConnected()
 {
     foreach (const QString& channel, m_channels)
-        sendCommand(IrcCommand::createJoin(channel, QString()));
+    {
+        if (!channel.isEmpty())
+            sendCommand(IrcCommand::createJoin(channel, QString()));
+    }
 }
 
 void Session::onPassword(QString* password)
@@ -223,7 +226,12 @@ void Session::handleMessage(IrcMessage* message)
     if (message->type() == IrcMessage::Join)
     {
         if (message->sender().name() == nickName())
-            m_channels.append(static_cast<IrcJoinMessage*>(message)->channel());
+        {
+            QString channel = static_cast<IrcPartMessage*>(message)->channel();
+            int idx = m_channels.indexOf(QRegExp(channel, Qt::CaseInsensitive));
+            if (idx == -1)
+                m_channels.append(channel);
+        }
     }
     else if (message->type() == IrcMessage::Part)
     {
