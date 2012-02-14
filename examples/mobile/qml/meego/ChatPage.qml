@@ -41,7 +41,7 @@ CommonPage {
         id: ircMessage
     }
 
-    active: modelData && modelData.session.active
+    active: modelData !== null && modelData.session.active
     title: modelData ? modelData.title : ""
     tools: ToolBarLayout {
         ToolIcon {
@@ -68,6 +68,7 @@ CommonPage {
             enabled: modelData !== null && modelData.session.active
             onClicked: {
                 textField.visible = true;
+                textField.openSoftwareInputPanel();
                 textField.forceActiveFocus();
             }
         }
@@ -75,6 +76,7 @@ CommonPage {
 
     Keys.onReturnPressed: {
         textField.visible = true;
+        textField.openSoftwareInputPanel();
         textField.forceActiveFocus();
     }
 
