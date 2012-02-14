@@ -24,6 +24,7 @@ ListItem {
     property alias subtitle: subtitle.text
     property alias iconSource: icon.source
     property bool highlighted: false
+    property bool active: true
     property int unreadCount: 0
     property bool busy: false
 
@@ -49,7 +50,7 @@ ListItem {
         ListItemText {
             id: title
             role: "Title"
-            mode: root.mode
+            mode: root.active ? root.mode : "disabled"
             platformInverted: root.platformInverted
             color: root.highlighted ? "red" : platformStyle.colorNormalLightInverted
             width: parent.width
@@ -58,7 +59,7 @@ ListItem {
         ListItemText {
             id: subtitle
             role: "SubTitle"
-            mode: root.mode
+            mode: root.active ? root.mode : "disabled"
             platformInverted: root.platformInverted
             width: parent.width
         }

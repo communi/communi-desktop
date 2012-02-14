@@ -41,6 +41,7 @@ CommonPage {
         id: ircMessage
     }
 
+    active: modelData !== null && modelData.session.active
     title: modelData ? modelData.title : ""
     tools: ToolBarLayout {
         ToolButton {

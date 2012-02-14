@@ -22,9 +22,6 @@ BaseDialog {
     property alias channel: channelField.text
     property alias password: passwordField.text
     property bool passwordRequired: false
-    property int sessionIndex: Math.max(0, selectionDialog.selectedIndex)
-
-    titleText: qsTr("Join channel")
 
     onStatusChanged: {
         if (status == DialogStatus.Open) channelField.forceActiveFocus();
@@ -35,35 +32,6 @@ BaseDialog {
         id: column
         width: parent.width
         spacing: UI.DEFAULT_SPACING
-
-        Column {
-            width: parent.width
-            visible: SessionModel.length > 1
-            Label { text: qsTr("Connection"); platformInverted: true }
-            SelectionListItem {
-                property variant sessionItem: SessionModel[Math.max(0, selectionDialog.selectedIndex)]
-                title: sessionItem ? (sessionItem.title + " ("+ sessionItem.subtitle +")") : ""
-                width: parent.width
-                platformInverted: true
-
-                onClicked: selectionDialog.open()
-
-                SelectionDialog {
-                    id: selectionDialog
-                    titleText: qsTr("Select connection")
-                    platformInverted: true
-                    model: SessionModel
-                    delegate: MenuItem {
-                        platformInverted: true
-                        text: modelData.title + " ("+ modelData.subtitle +")"
-                        onClicked: {
-                            selectedIndex = index;
-                            root.accept();
-                        }
-                    }
-                }
-            }
-        }
 
         Column {
             width: parent.width
@@ -86,7 +54,7 @@ BaseDialog {
             TextField {
                 id: passwordField
                 echoMode: TextInput.PasswordEchoOnEdit
-                placeholderText: dialog.passwordRequired ? qsTr("Required") : qsTr("Optional")
+                placeholderText: dialog.passwordRequired ? qsTr("Required!") : qsTr("Optional...")
                 errorHighlight: dialog.passwordRequired ? !text.length : false
                 visible: placeholderText.length
                 width: parent.width

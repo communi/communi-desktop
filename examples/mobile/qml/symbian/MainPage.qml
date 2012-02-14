@@ -13,7 +13,8 @@
 */
 
 import QtQuick 1.1
-import QtMobility.feedback 1.1
+import Communi 1.0
+//import QtMobility.feedback 1.1
 import com.nokia.symbian 1.1
 import com.nokia.extras 1.1
 import "UIConstants.js" as UI
@@ -23,8 +24,23 @@ CommonPage {
 
     property alias bouncer: bouncer
 
+    title: qsTr("Communi")
+    tools: ToolBarLayout {
+        ToolButton {
+            iconSource: "toolbar-add"
+            anchors.right: parent.right
+            onClicked: connectionDialog.open()
+            platformInverted: true
+        }
+    }
+
     ListView {
         id: listView
+
+        property QtObject currentSessionItem
+        property QtObject currentSession: currentSessionItem ? currentSessionItem.session : null
+        property QtObject currentChildItem
+
         anchors.fill: parent
         model: SessionModel
         delegate: Column {
@@ -32,27 +48,38 @@ CommonPage {
             ListDelegate {
                 title: modelData.title
                 subtitle: modelData.subtitle
-                iconSource: modelData.error ? "../images/error.png" :
-                           !modelData.session.connected &&
-                           !modelData.session.active ? "../images/offline.png" :
-                           "../images/server.png"
+                iconSource: modelData.session.currentLag > 10000 ? "../images/unknown.png" :
+                            modelData.session.active && !modelData.session.connected ? "../images/server.png" :
+                            modelData.session.connected ? "../images/connected.png" : "../images/disconnected.png"
                 highlighted: modelData.highlighted
+                active: modelData.session.active
                 unreadCount: modelData.unreadCount
                 busy: modelData.busy
                 onClicked: chatPage.push(modelData)
-                onPressAndHold: sessionMenu.popup(modelData.session)
+                onPressAndHold: {
+                    listView.currentSessionItem = modelData;
+                    if (modelData.session.active)
+                        activeSessionMenu.open();
+                    else
+                        inactiveSessionMenu.open();
+                }
             }
             Repeater {
+                id: repeater
                 model: modelData.childItems
                 ListDelegate {
                     title: modelData.title
                     subtitle: modelData.subtitle
                     iconSource: modelData.channel ? "../images/channel.png" : "../images/query.png"
                     highlighted: modelData.highlighted
+                    active: modelData.session.active
                     unreadCount: modelData.unreadCount
                     busy: modelData.busy
                     onClicked: chatPage.push(modelData)
-                    onPressAndHold: chatMenu.popup(modelData)
+                    onPressAndHold: {
+                        listView.currentChildItem = modelData;
+                        childMenu.open();
+                    }
                 }
             }
             ListHeading {
@@ -92,10 +119,10 @@ CommonPage {
         }
     }
 
-    ThemeEffect {
-        id: effect
-        effect: ThemeEffect.Basic
-    }
+//    ThemeEffect {
+//        id: effect
+//        effect: ThemeEffect.Basic
+//    }
 
     Connections {
         target: SessionManager
@@ -104,7 +131,7 @@ CommonPage {
             banner.text = item.alertText;
             banner.item = item;
             banner.open();
-            effect.play();
+            //effect.play();
         }
     }
 
@@ -121,6 +148,10 @@ CommonPage {
                     modelData.unseenIndex = chatPage.count - 1;
                     modelData = null;
                 }
+                else if (status === PageStatus.Active && bouncer.cmd) {
+                    modelData.session.sendCommand(bouncer.cmd);
+                    bouncer.cmd = null;
+                }
             }
             if (status === PageStatus.Inactive && bouncer.item)
                 bouncer.start();
@@ -131,38 +162,50 @@ CommonPage {
         id: bouncer
         interval: 50
         property QtObject item
-        property QtObject cmd;
+        property QtObject cmd
         function bounce(item, cmd) {
+            bouncer.cmd = cmd;
             if (root.status === PageStatus.Active) {
+                bouncer.item = null;
                 chatPage.push(item);
-                if (cmd !== null)
-                    item.session.sendCommand(cmd);
             } else {
                 bouncer.item = item;
-                bouncer.cmd = cmd;
                 pageStack.pop();
             }
         }
         onTriggered: {
             chatPage.push(bouncer.item);
-            if (bouncer.cmd !== null)
-                item.session.sendCommand(bouncer.cmd);
             bouncer.item = null;
-            bouncer.cmd = null;
         }
     }
 
     ContextMenu {
-        id: sessionMenu
-        property QtObject session
-        function popup(session) {
-            sessionMenu.session = session;
-            open();
-        }
+        id: activeSessionMenu
+
         MenuLayout {
             MenuItem {
-                text: qsTr("Quit")
-                onClicked: SessionManager.removeSession(sessionMenu.session)
+                text: qsTr("Join channel")
+                onClicked: channelDialog.open()
+                platformInverted: true
+            }
+            MenuItem {
+                text: qsTr("Open query")
+                onClicked: queryDialog.open()
+                platformInverted: true
+            }
+            MenuItem {
+                text: qsTr("Set nick")
+                onClicked: {
+                    nickDialog.name = listView.currentSession.nickName;
+                    nickDialog.open();
+                }
+                platformInverted: true
+            }
+            MenuItem {
+                text: qsTr("Disconnect")
+                onClicked: {
+                    listView.currentSession.quit(ApplicationName);
+                }
                 platformInverted: true
             }
         }
@@ -170,16 +213,122 @@ CommonPage {
     }
 
     ContextMenu {
-        id: chatMenu
-        property QtObject chatItem
-        function popup(item) {
-            chatItem = item;
-            open();
-        }
+        id: inactiveSessionMenu
+
         MenuLayout {
             MenuItem {
+                text: qsTr("Reconnect")
+                onClicked: {
+                    listView.currentSession.reconnect();
+                }
+                platformInverted: true
+            }
+            MenuItem {
                 text: qsTr("Close")
-                onClicked: chatMenu.chatItem.close()
+                onClicked: {
+                    SessionManager.removeSession(listView.currentSession);
+                    listView.currentSession.destructLater();
+                }
+                platformInverted: true
+            }
+        }
+        platformInverted: true
+    }
+
+    ConnectionDialog {
+        id: connectionDialog
+
+        Component.onCompleted: {
+            connectionDialog.host = Settings.host;
+            connectionDialog.port = Settings.port;
+            connectionDialog.name = Settings.name;
+            connectionDialog.channel = Settings.channel;
+            connectionDialog.secure = Settings.secure;
+        }
+
+        Component {
+            id: sessionComponent
+            Session { }
+        }
+
+        onAccepted: {
+            var session = sessionComponent.createObject(root);
+            session.nickName = connectionDialog.name;
+            session.userName = connectionDialog.name;
+            session.realName = connectionDialog.name;
+            session.host = connectionDialog.host;
+            session.port = connectionDialog.port;
+            session.password = connectionDialog.password;
+            session.secure = connectionDialog.secure;
+            session.channels = connectionDialog.channel;
+
+            SessionManager.addSession(session);
+            session.reconnect();
+
+            connectionDialog.password = "";
+            Settings.host = connectionDialog.host;
+            Settings.port = connectionDialog.port;
+            Settings.name = connectionDialog.name;
+            Settings.channel = connectionDialog.channel;
+            Settings.secure = connectionDialog.secure;
+        }
+    }
+
+    IrcCommand {
+        id: ircCommand
+    }
+
+    ChannelDialog {
+        id: channelDialog
+        titleText: qsTr("Join channel")
+        onAccepted: {
+            var child = listView.currentSessionItem.addChild(channel);
+            var cmd = ircCommand.createJoin(channel, password);
+            listView.currentSession.sendCommand(cmd);
+            bouncer.bounce(child, null);
+        }
+        Connections {
+            target: SessionManager
+            onChannelKeyRequired: {
+                channelDialog.channel = channel;
+                channelDialog.passwordRequired = true;
+                channelDialog.open();
+            }
+        }
+    }
+
+    NameDialog {
+        id: queryDialog
+        titleText: qsTr("Open query")
+        onAccepted: {
+            var child = listView.currentSessionItem.addChild(name);
+            var cmd = ircCommand.createWhois(name);
+            bouncer.bounce(child, cmd);
+        }
+    }
+
+    NameDialog {
+        id: nickDialog
+        titleText: qsTr("Set nick")
+        onAccepted: {
+            listView.currentSession.nickName = name;
+        }
+    }
+
+    ContextMenu {
+        id: childMenu
+
+        MenuLayout {
+            MenuItem {
+                text: listView.currentChildItem && listView.currentChildItem.channel ? qsTr("Part") : qsTr("Close")
+                onClicked: {
+                    var item = listView.currentChildItem;
+                    if (item.channel) {
+                        var cmd = ircCommand.createPart(item.title, ApplicationName);
+                        item.session.sendCommand(cmd);
+                    }
+                    item.sessionItem.removeChild(item.title);
+                }
                 platformInverted: true
             }
         }
