@@ -283,12 +283,13 @@ void Session::updateLag(int lag)
         m_currentLag = lag;
         emit currentLagChanged(lag);
 
-        if (lag > m_maxLag)
-        {
-            close();
-            if (ensureNetwork())
-                open();
-        }
+        // TODO: https://github.com/communi/communi/issues/6
+//        if (lag > m_maxLag)
+//        {
+//            close();
+//            if (ensureNetwork())
+//                open();
+//        }
     }
 }
 
