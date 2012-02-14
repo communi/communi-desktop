@@ -1,3 +1,14 @@
+communi (1.1.0-5) unstable; urgency=low
+
+  * Stability improvements
+  * Handle mIRC background colors - thanks Mark Johnson!
+  * Fix issue #5: The virtual keyboard does not appear on tapping
+    the speech bubble on Harmattan PR1.2
+  * Temporarily disabled automatic reconnection due to issue #6:
+    Communi reconnects to the psyBNC server every 2 minutes
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Tue, 14 Feb 2012 22:45:27 +0200
+
 communi (1.1.0-4) unstable; urgency=low
 
   * Improved connection state detection & error handling
