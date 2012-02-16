@@ -48,7 +48,7 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
 
     MessageView* view = openView(d.handler.session()->host());
     d.handler.setDefaultReceiver(view);
-    setTabInactive(0, !session->isActive());
+    updateStatus();
 }
 
 Session* SessionTabWidget::session() const
