@@ -105,18 +105,9 @@ bool TabWidget::isTabInactive(int index)
 void TabWidget::setTabInactive(int index, bool inactive)
 {
     if (!inactive)
-    {
-        int count = d.inactiveIndexes.removeAll(index);
-        if (count > 0 && d.inactiveIndexes.isEmpty())
-            emit inactiveStatusChanged(false);
-    }
-    else
-    {
-        if (d.inactiveIndexes.isEmpty())
-            emit inactiveStatusChanged(true);
-        if (!d.inactiveIndexes.contains(index))
-            d.inactiveIndexes.append(index);
-    }
+        d.inactiveIndexes.removeAll(index);
+    else if (!d.inactiveIndexes.contains(index))
+        d.inactiveIndexes.append(index);
     colorizeTab(index);
 }
 
@@ -281,6 +272,9 @@ void TabWidget::tabInserted(int index)
 
 void TabWidget::tabRemoved(int index)
 {
+    d.inactiveIndexes.removeAll(index);
+    d.alertIndexes.removeAll(index);
+    d.highlightIndexes.removeAll(index);
     shiftIndexesFrom(d.inactiveIndexes, index, -1);
     shiftIndexesFrom(d.alertIndexes, index, -1);
     shiftIndexesFrom(d.highlightIndexes, index, -1);

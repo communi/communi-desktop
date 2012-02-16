@@ -127,7 +127,9 @@ void SessionTabWidget::renameView(const QString& from, const QString& to)
 
 void SessionTabWidget::updateStatus()
 {
-    setTabInactive(0, !session()->isActive() && !session()->isConnected());
+    bool inactive = !session()->isActive() && !session()->isConnected();
+    setTabInactive(0, inactive);
+    emit inactiveStatusChanged(inactive);
 }
 
 void SessionTabWidget::tabActivated(int index)

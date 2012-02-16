@@ -43,6 +43,7 @@ public slots:
 
 signals:
     void titleChanged(const QString& title);
+    void inactiveStatusChanged(bool inactive);
 
 private slots:
     void updateStatus();
