@@ -56,18 +56,15 @@ CommonPage {
             width: backButton.width
             height: backButton.height
             anchors.verticalCenter: parent.verticalCenter
-            sourceComponent: busy ? indicatorComponent : listButtonComponent
+            sourceComponent: busy ? indicatorComponent : menuComponent
             Component {
-                id: listButtonComponent
+                id: menuComponent
                 ToolButton {
-                    visible: modelData !== null && modelData.channel !== undefined
-                    iconSource: "toolbar-list"
-                    onClicked: {
-                        var cmd = modelData.channel ? ircCommand.createNames(modelData.title)
-                                                    : ircCommand.createWhois(modelData.title);
-                        modelData.sendUiCommand(cmd);
-                        lister.busy = true;
-                    }
+                    visible: modelData !== null
+                    opacity: enabled ? 1.0 : UI.DISABLED_OPACITY
+                    enabled: clearItem.active || infoItem.active
+                    iconSource: "toolbar-menu"
+                    onClicked: contextMenu.open()
                     platformInverted: true
                 }
             }
@@ -84,6 +81,8 @@ CommonPage {
 
         ToolButton {
             iconSource: "toolbar-add"
+            opacity: enabled ? 1.0 : UI.DISABLED_OPACITY
+            enabled: modelData !== null && modelData.session.active
             onClicked: {
                 textField.visible = true;
                 textField.openSoftwareInputPanel();
@@ -178,11 +177,17 @@ CommonPage {
         currentIndex: modelData ? modelData.unseenIndex : -1
         highlight: Item {
             visible: listView.currentIndex > 0 && listView.currentIndex < listView.count - 1
-            Rectangle {
-                width: listView.width
-                height: 1
-                color: "red"
-                anchors.bottom: parent.bottom
+            Image {
+                source: "../images/right-arrow.png"
+                anchors.left: parent.left
+                anchors.leftMargin: -UI.PAGE_MARGIN
+                anchors.verticalCenter: parent.bottom
+            }
+            Image {
+                source: "../images/left-arrow.png"
+                anchors.right: parent.right
+                anchors.rightMargin: -UI.PAGE_MARGIN
+                anchors.verticalCenter: parent.bottom
             }
         }
     }
@@ -277,5 +282,34 @@ CommonPage {
                 }
             }
         }
+    }
+
+    ContextMenu {
+        id: contextMenu
+        MenuLayout {
+            MenuItem {
+                id: clearItem
+                text: qsTr("Clear")
+                property bool active: modelData !== null && listView.count
+                enabled: active
+                onClicked: modelData.clear();
+                platformInverted: true
+            }
+            MenuItem {
+                id: infoItem
+                property bool chat: modelData !== null && modelData.channel !== undefined
+                text: chat && modelData.channel ? qsTr("Names") : chat ? qsTr("Whois") : qsTr("Info")
+                property bool active: modelData !== null && modelData.channel !== undefined && modelData.session.active
+                enabled: active
+                onClicked: {
+                    var cmd = modelData.channel ? ircCommand.createNames(modelData.title)
+                                                : ircCommand.createWhois(modelData.title);
+                    modelData.sendUiCommand(cmd);
+                    lister.busy = true;
+                }
+                platformInverted: true
+            }
+        }
+        platformInverted: true
     }
 }

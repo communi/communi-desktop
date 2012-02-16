@@ -261,14 +261,14 @@ CommonPage {
             MenuItem {
                 id: clearItem
                 text: qsTr("Clear")
-                enabled: modelData && listView.count
+                enabled: modelData !== null && listView.count
                 onClicked: modelData.clear();
             }
             MenuItem {
                 id: infoItem
-                property bool chat: modelData && modelData.channel !== undefined
+                property bool chat: modelData !== null && modelData.channel !== undefined
                 text: chat && modelData.channel ? qsTr("Names") : chat ? qsTr("Whois") : qsTr("Info")
-                enabled: modelData && modelData.channel !== undefined && modelData.session.active
+                enabled: modelData !== null && modelData.channel !== undefined && modelData.session.active
                 onClicked: {
                     var cmd = modelData.channel ? ircCommand.createNames(modelData.title)
                                                 : ircCommand.createWhois(modelData.title);
