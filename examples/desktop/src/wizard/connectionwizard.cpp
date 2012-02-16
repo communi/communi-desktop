@@ -23,6 +23,7 @@ ConnectionWizard::ConnectionWizard(QWidget* parent) : QWizard(parent)
     setPage(UserPage, new UserWizardPage(this));
     setPage(ServerPage, new ServerWizardPage(this));
     setPage(ConnectionPage, new ConnectionWizardPage(this));
+    setOption(NoDefaultButton, false);
 }
 
 Connection ConnectionWizard::connection() const

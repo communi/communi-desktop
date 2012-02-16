@@ -25,6 +25,7 @@ SettingsWizard::SettingsWizard(QWidget* parent) : QWizard(parent)
     setPage(ShortcutsPage, new ShortcutsWizardPage(this));
     setPage(MessagesPage, new MessagesWizardPage(this));
     setPage(ColorsPage, new ColorsWizardPage(this));
+    setOption(NoDefaultButton, false);
 }
 
 Settings SettingsWizard::settings() const
