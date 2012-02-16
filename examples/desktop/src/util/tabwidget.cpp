@@ -40,14 +40,9 @@ void TabBar::changeEvent(QEvent* event)
 
 void TabBar::contextMenuEvent(QContextMenuEvent* event)
 {
-    for (int i = 0; i < count() - 1; ++i)
-    {
-        if (tabRect(i).contains(event->pos()))
-        {
-            emit menuRequested(i, event->globalPos());
-            break;
-        }
-    }
+    int index = tabAt(event->pos());
+    if (index != -1)
+        emit menuRequested(index, event->globalPos());
 }
 
 void TabBar::wheelEvent(QWheelEvent* event)
