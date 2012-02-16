@@ -27,8 +27,12 @@ CommonPage {
     title: qsTr("Communi")
     tools: ToolBarLayout {
         ToolButton {
+            iconSource: "toolbar-back"
+            onClicked: Qt.quit()
+            platformInverted: true
+        }
+        ToolButton {
             iconSource: "toolbar-add"
-            anchors.right: parent.right
             onClicked: connectionDialog.open()
             platformInverted: true
         }
