@@ -186,8 +186,8 @@ void Session::quit(const QString& reason)
 
     if (isConnected())
         sendCommand(IrcCommand::createQuit(message));
-    else
-        close();
+    socket()->waitForDisconnected(1000);
+    close();
 }
 
 void Session::destructLater()

@@ -1,3 +1,9 @@
+communi (1.1.6) unstable; urgency=low
+
+  * Ovi Store demands to change the version numbering scheme...
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Thu, 16 Feb 2012 19:58:49 +0200
+
 communi (1.1.0-5) unstable; urgency=low
 
   * Stability improvements
