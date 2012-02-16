@@ -14,7 +14,7 @@
 
 import QtQuick 1.1
 import Communi 1.0
-//import QtMobility.feedback 1.1
+import QtMobility.feedback 1.1
 import com.nokia.symbian 1.1
 import com.nokia.extras 1.1
 import "UIConstants.js" as UI
@@ -123,10 +123,10 @@ CommonPage {
         }
     }
 
-//    ThemeEffect {
-//        id: effect
-//        effect: ThemeEffect.Basic
-//    }
+    ThemeEffect {
+        id: effect
+        effect: ThemeEffect.Basic
+    }
 
     Connections {
         target: SessionManager
@@ -135,7 +135,7 @@ CommonPage {
             banner.text = item.alertText;
             banner.item = item;
             banner.open();
-            //effect.play();
+            effect.play();
         }
     }
 
