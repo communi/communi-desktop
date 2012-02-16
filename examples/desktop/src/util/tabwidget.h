@@ -18,7 +18,6 @@
 #include <QTabWidget>
 #include <QColor>
 #include <QList>
-#include <QSwipeGesture>
 
 class TabWidget : public QTabWidget
 {
@@ -48,9 +47,6 @@ public:
     bool hasTabHighlight(int index) const;
     void setTabHighlight(int index, bool highlight);
 
-    void registerSwipeGestures(Qt::Orientation orientation);
-    void unregisterSwipeGestures();
-
 public slots:
     void moveToNextTab();
     void moveToPrevTab();
@@ -63,8 +59,6 @@ signals:
     void highlightStatusChanged(bool highlighted);
 
 protected:
-    bool event(QEvent* event);
-    bool handleSwipeGesture(QSwipeGesture* gesture, QSwipeGesture::SwipeDirection direction);
     void tabInserted(int index);
     void tabRemoved(int index);
 
@@ -84,7 +78,6 @@ private:
         QList<int> inactiveIndexes;
         QList<int> alertIndexes;
         QList<int> highlightIndexes;
-        Qt::Orientation swipeOrientation;
     } d;
 };
 

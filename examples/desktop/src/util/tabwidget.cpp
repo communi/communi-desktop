@@ -15,9 +15,7 @@
 #include "tabwidget.h"
 #include "tabwidget_p.h"
 #include "sharedtimer.h"
-#include <QGestureEvent>
 #include <QContextMenuEvent>
-#include <QtDebug>
 
 TabBar::TabBar(QWidget* parent) : QTabBar(parent)
 {
@@ -62,7 +60,6 @@ TabWidget::TabWidget(QWidget* parent) : QTabWidget(parent)
     d.inactiveColor = palette().color(QPalette::Disabled, QPalette::Highlight);
     d.alertColor = palette().color(QPalette::Highlight);
     d.highlightColor = palette().color(QPalette::Highlight);
-    d.swipeOrientation = Qt::Orientation(0);
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
     connect(tabBar(), SIGNAL(menuRequested(int,QPoint)), this, SIGNAL(tabMenuRequested(int,QPoint)));
 }
@@ -163,28 +160,6 @@ void TabWidget::setTabHighlight(int index, bool highlight)
     colorizeTab(index);
 }
 
-void TabWidget::registerSwipeGestures(Qt::Orientation orientation)
-{
-    if (d.swipeOrientation != 0) {
-        qWarning("TabWidget::registerSwipeGestures: already registered");
-        return;
-    }
-
-    d.swipeOrientation = orientation;
-    grabGesture(Qt::SwipeGesture);
-}
-
-void TabWidget::unregisterSwipeGestures()
-{
-    if (d.swipeOrientation == 0) {
-        qWarning("TabWidget::unregisterSwipeGestures: not registered");
-        return;
-    }
-
-    d.swipeOrientation = Qt::Orientation(0);
-    ungrabGesture(Qt::SwipeGesture);
-}
-
 void TabWidget::moveToNextTab()
 {
     int index = currentIndex();
@@ -204,53 +179,6 @@ void TabWidget::moveToPrevTab()
 void TabWidget::setTabBarVisible(bool visible)
 {
     tabBar()->setVisible(visible);
-}
-
-bool TabWidget::event(QEvent* event)
-{
-    if (event->type() == QEvent::Gesture)
-    {
-        QGestureEvent* gestureEvent = static_cast<QGestureEvent*>(event);
-        QGesture* gesture = gestureEvent->gesture(Qt::SwipeGesture);
-        QSwipeGesture* swipeGesture = static_cast<QSwipeGesture*>(gesture);
-        if (swipeGesture)
-        {
-            bool accepted = false;
-            switch (d.swipeOrientation)
-            {
-                case Qt::Horizontal:
-                    accepted = handleSwipeGesture(swipeGesture, swipeGesture->horizontalDirection());
-                    break;
-                case Qt::Vertical:
-                    accepted = handleSwipeGesture(swipeGesture, swipeGesture->verticalDirection());
-                    break;
-                default:
-                    Q_ASSERT(false);
-                    break;
-            }
-            gestureEvent->setAccepted(swipeGesture, accepted);
-        }
-    }
-    return QTabWidget::event(event);
-}
-
-bool TabWidget::handleSwipeGesture(QSwipeGesture* gesture, QSwipeGesture::SwipeDirection direction)
-{
-    switch (direction)
-    {
-        case QSwipeGesture::Up:
-        case QSwipeGesture::Left:
-            if (gesture->state() == Qt::GestureFinished)
-                moveToPrevTab();
-            return true;
-        case QSwipeGesture::Down:
-        case QSwipeGesture::Right:
-            if (gesture->state() == Qt::GestureFinished)
-                moveToNextTab();
-            return true;
-        default:
-            return false;
-    }
 }
 
 static void shiftIndexesFrom(QList<int>& indexes, int from, int delta)
