@@ -185,7 +185,6 @@ CommonPage {
 
     TextField {
         id: textField
-        height: 0
         visible: false
         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhUrlCharactersOnly
         platformSipAttributes: SipAttributes {
@@ -202,7 +201,6 @@ CommonPage {
         }
 
         onActiveFocusChanged: {
-            textField.height = activeFocus ? textField.implicitHeight : 0;
             if (!activeFocus)
                 textField.visible = false;
             if (!positioner.running) positioner.start();
