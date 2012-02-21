@@ -18,6 +18,7 @@
 #include <IrcCommand>
 #include <IrcMessage>
 #include <QNetworkConfigurationManager>
+#include <Irc>
 
 QNetworkSession* Session::s_network = 0;
 
@@ -42,7 +43,16 @@ QString Session::name() const
 
 void Session::setName(const QString& name)
 {
-    m_name = name;
+    if (m_name != name)
+    {
+        m_name = name;
+        emit nameChanged(name);
+    }
+}
+
+QString Session::network() const
+{
+    return m_info.value("NETWORK");
 }
 
 int Session::autoReconnectDelay() const
@@ -227,7 +237,7 @@ void Session::handleMessage(IrcMessage* message)
     {
         if (message->sender().name() == nickName())
         {
-            QString channel = static_cast<IrcPartMessage*>(message)->channel();
+            QString channel = static_cast<IrcJoinMessage*>(message)->channel();
             int idx = m_channels.indexOf(QRegExp(channel, Qt::CaseInsensitive));
             if (idx == -1)
                 m_channels.append(channel);
@@ -252,6 +262,19 @@ void Session::handleMessage(IrcMessage* message)
 
             updateLag(static_cast<int>(m_lagTimer.elapsed()));
             m_lagTimer.invalidate();
+        }
+    }
+    else if (message->type() == IrcMessage::Numeric)
+    {
+        if (static_cast<IrcNumericMessage*>(message)->code() == Irc::RPL_ISUPPORT)
+        {
+            foreach (const QString& param, message->parameters().mid(1))
+            {
+                QStringList keyValue = param.split("=", QString::SkipEmptyParts);
+                m_info.insert(keyValue.value(0), keyValue.value(1));
+            }
+            if (m_info.contains("NETWORK"))
+                emit networkChanged(m_info.value("NETWORK"));
         }
     }
 }

@@ -31,6 +31,7 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
 
     connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateStatus()));
     connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateStatus()));
+    connect(session, SIGNAL(networkChanged(QString)), this, SIGNAL(titleChanged(QString)));
 
     connect(&d.handler, SIGNAL(receiverToBeAdded(QString)), this, SLOT(openView(QString)));
     connect(&d.handler, SIGNAL(receiverToBeRemoved(QString)), this, SLOT(removeView(QString)));
@@ -118,8 +119,6 @@ void SessionTabWidget::renameView(const QString& from, const QString& to)
         int index = indexOf(view);
         if (index != -1)
             setTabText(index, view->receiver());
-        if (index == 0)
-            emit titleChanged(view->receiver());
     }
 }
 

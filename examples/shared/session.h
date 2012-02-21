@@ -27,7 +27,8 @@
 class Session : public IrcSession
 {
     Q_OBJECT
-    Q_PROPERTY(QString name READ name WRITE setName)
+    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
+    Q_PROPERTY(QString network READ network NOTIFY networkChanged)
     Q_PROPERTY(int autoReconnectDelay READ autoReconnectDelay WRITE setAutoReconnectDelay)
     Q_PROPERTY(QStringList channels READ channels WRITE setChannels)
     Q_PROPERTY(bool secure READ isSecure WRITE setSecure)
@@ -41,6 +42,8 @@ public:
 
     QString name() const;
     void setName(const QString& name);
+
+    QString network() const;
 
     int autoReconnectDelay() const;
     void setAutoReconnectDelay(int delay);
@@ -72,6 +75,8 @@ public slots:
     void destructLater();
 
 signals:
+    void nameChanged(const QString& name);
+    void networkChanged(const QString& network);
     void currentLagChanged(int lag);
 
 private slots:
@@ -92,6 +97,7 @@ private:
     QTimer m_pingTimer;
     int m_currentLag;
     int m_maxLag;
+    QHash<QString,QString> m_info;
     static QNetworkSession* s_network;
 };
 
