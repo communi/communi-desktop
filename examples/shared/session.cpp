@@ -73,6 +73,7 @@ QStringList Session::channels() const
 void Session::setChannels(const QStringList& channels)
 {
     m_channels = channels;
+    m_channels.removeDuplicates();
 }
 
 bool Session::isSecure() const
