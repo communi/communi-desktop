@@ -74,6 +74,8 @@ QObject* SessionItem::addChild(const QString& name)
         child = new SessionChildItem(this);
         connect(child, SIGNAL(alert(QObject*)), SIGNAL(alert(QObject*)));
         child->setTitle(name);
+        if (child->isChannel())
+            session()->addChannel(name);
         m_handler.addReceiver(name, child);
         m_children.append(child);
         emit childItemsChanged();
@@ -103,6 +105,8 @@ void SessionItem::removeChild(const QString& name)
         SessionChildItem* child = static_cast<SessionChildItem*>(m_children.at(i));
         if (child->title().toLower() == name.toLower())
         {
+            if (child->isChannel())
+                session()->removeChannel(name);
             m_children.takeAt(i)->deleteLater();
             emit childItemsChanged();
             break;
