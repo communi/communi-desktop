@@ -42,7 +42,7 @@ CommonPage {
         id: listView
 
         property QtObject currentSessionItem
-        property QtObject currentSession: currentSessionItem ? currentSessionItem.session : null
+        property QtObject currentSession
         property QtObject currentChildItem
 
         anchors.fill: parent
@@ -62,6 +62,7 @@ CommonPage {
                 onClicked: chatPage.push(modelData)
                 onPressAndHold: {
                     listView.currentSessionItem = modelData;
+                    listView.currentSession = modelData.session;
                     if (modelData.session.active)
                         activeSessionMenu.open();
                     else
@@ -82,6 +83,7 @@ CommonPage {
                     onClicked: chatPage.push(modelData)
                     onPressAndHold: {
                         listView.currentChildItem = modelData;
+                        listView.currentSession = modelData.session;
                         childMenu.open();
                     }
                 }
