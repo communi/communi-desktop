@@ -68,16 +68,16 @@ CommonPage {
             enabled: modelData !== null && modelData.session.active
             onClicked: {
                 textField.visible = true;
-                textField.openSoftwareInputPanel();
                 textField.forceActiveFocus();
+                textField.openSoftwareInputPanel();
             }
         }
     }
 
     Keys.onReturnPressed: {
         textField.visible = true;
-        textField.openSoftwareInputPanel();
         textField.forceActiveFocus();
+        textField.openSoftwareInputPanel();
     }
 
     onModelDataChanged: {
@@ -201,14 +201,23 @@ CommonPage {
         }
 
         onActiveFocusChanged: {
-            if (!activeFocus)
-                textField.visible = false;
+            if (!activeFocus) textField.visible = false;
             if (!positioner.running) positioner.start();
         }
 
         Keys.onReturnPressed: {
             page.sendMessage(page.title, textField.text);
             textField.text = "";
+        }
+
+        Connections {
+            target: Qt.application
+            onActiveChanged: {
+                if (Qt.application.active && textField.activeFocus) {
+                    textField.visible = true;
+                    textField.openSoftwareInputPanel();
+                }
+            }
         }
 
         Connections {
