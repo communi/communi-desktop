@@ -49,6 +49,8 @@ public:
     void setAutoReconnectDelay(int delay);
 
     QStringList channels() const;
+    void addChannel(const QString& channel);
+    void removeChannel(const QString& channel);
     void setChannels(const QStringList& channels);
 
     bool isSecure() const;

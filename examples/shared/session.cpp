@@ -70,6 +70,20 @@ QStringList Session::channels() const
     return m_channels;
 }
 
+void Session::addChannel(const QString& channel)
+{
+    int idx = m_channels.indexOf(QRegExp(channel, Qt::CaseInsensitive));
+    if (idx == -1)
+        m_channels.append(channel);
+}
+
+void Session::removeChannel(const QString& channel)
+{
+    int idx = m_channels.indexOf(QRegExp(channel, Qt::CaseInsensitive));
+    if (idx != -1)
+        m_channels.removeAt(idx);
+}
+
 void Session::setChannels(const QStringList& channels)
 {
     m_channels = channels;
@@ -237,22 +251,12 @@ void Session::handleMessage(IrcMessage* message)
     if (message->type() == IrcMessage::Join)
     {
         if (message->sender().name() == nickName())
-        {
-            QString channel = static_cast<IrcJoinMessage*>(message)->channel();
-            int idx = m_channels.indexOf(QRegExp(channel, Qt::CaseInsensitive));
-            if (idx == -1)
-                m_channels.append(channel);
-        }
+            addChannel(static_cast<IrcJoinMessage*>(message)->channel());
     }
     else if (message->type() == IrcMessage::Part)
     {
         if (message->sender().name() == nickName())
-        {
-            QString channel = static_cast<IrcPartMessage*>(message)->channel();
-            int idx = m_channels.indexOf(QRegExp(channel, Qt::CaseInsensitive));
-            if (idx != -1)
-                m_channels.removeAt(idx);
-        }
+            removeChannel(static_cast<IrcPartMessage*>(message)->channel());
     }
     else if (message->type() == IrcMessage::Pong)
     {
