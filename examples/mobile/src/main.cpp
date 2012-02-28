@@ -30,7 +30,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 {
     QApplication::setApplicationName("Communi");
     QApplication::setOrganizationName("Communi");
-    QApplication::setApplicationVersion(Irc::version());
+    QApplication::setApplicationVersion(COMMUNI_EXAMPLE_VERSION);
 
     QScopedPointer<QApplication> app(createApplication(argc, argv));
     QScopedPointer<QmlApplicationViewer> viewer(QmlApplicationViewer::create());
