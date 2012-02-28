@@ -1,3 +1,11 @@
+communi (1.1.7) unstable; urgency=low
+
+  * Fixed not to rejoin channels that have been removed while disconnected
+  * Fixed the version number in quit/part messages
+  * PR1.2: Workaround issue #5 (the vkb does not appear)
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Tue, 28 Feb 2012 21:40:13 +0200
+
 communi (1.1.6) unstable; urgency=low
 
   * Ovi Store demands to change the version numbering scheme...
