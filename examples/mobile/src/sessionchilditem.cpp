@@ -28,7 +28,7 @@ SessionChildItem::SessionChildItem(SessionItem* parent) :
 
 bool SessionChildItem::isChannel() const
 {
-    return title().startsWith('#') || title().startsWith('&');
+    return session()->isChannel(title());
 }
 
 SessionItem* SessionChildItem::sessionItem() const

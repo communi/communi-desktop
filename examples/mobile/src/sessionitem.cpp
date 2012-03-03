@@ -134,7 +134,7 @@ void SessionItem::receiveMessage(IrcMessage* message)
         }
         else if (numeric->code() == Irc::ERR_BADCHANNELKEY)
         {
-            emit channelKeyRequired(message->parameters().value(1));
+            emit channelKeyRequired(session(), message->parameters().value(1));
         }
     }
 }

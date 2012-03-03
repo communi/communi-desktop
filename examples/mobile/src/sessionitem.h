@@ -40,7 +40,7 @@ public slots:
 signals:
     void errorChanged();
     void childItemsChanged();
-    void channelKeyRequired(const QString& channel);
+    void channelKeyRequired(Session* session, const QString& channel);
 
 protected slots:
     virtual void receiveMessage(IrcMessage* message);

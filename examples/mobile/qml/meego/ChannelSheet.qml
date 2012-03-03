@@ -22,6 +22,7 @@ CommonSheet {
     property alias channel: channelField.text
     property alias password: passwordField.text
     property bool passwordRequired: false
+    property QtObject session: null
 
     acceptable: !channelField.errorHighlight && !passwordField.errorHighlight
     onStatusChanged: {
@@ -39,16 +40,25 @@ CommonSheet {
             Label { text: qsTr("Channel") }
             TextField {
                 id: channelField
-                text: qsTr("#")
+                text: session ? session.channelTypes[0] : qsTr("#")
                 enabled: !passwordRequired
                 inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-                errorHighlight: text.length < 2 || (text[0] !== "#" && text[0] !== "&")
+                errorHighlight: !session || !session.isChannel(text)
                 width: parent.width
                 platformSipAttributes: SipAttributes {
                     actionKeyHighlighted: true
                     actionKeyLabel: qsTr("Next")
                 }
                 Keys.onReturnPressed: passwordField.forceActiveFocus()
+            }
+            Label {
+                text: qsTr("%1 supports channel types: %2").arg(session.network).arg(session.channelTypes)
+                font.pixelSize: UI.SMALL_FONT
+                font.weight: Font.Light
+                color: UI.SUBTITLE_COLOR
+                width: parent.width
+                elide: Text.ElideRight
+                horizontalAlignment: Text.AlignRight
             }
         }
 

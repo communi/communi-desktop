@@ -22,6 +22,7 @@ BaseDialog {
     property alias channel: channelField.text
     property alias password: passwordField.text
     property bool passwordRequired: false
+    property QtObject session: null
 
     onStatusChanged: {
         if (status == DialogStatus.Open) channelField.forceActiveFocus();
@@ -38,10 +39,10 @@ BaseDialog {
             Label { text: qsTr("Channel"); platformInverted: true }
             TextField {
                 id: channelField
-                text: qsTr("#")
+                text: session ? session.channelTypes[0] : qsTr("#")
                 enabled: !passwordRequired
                 inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-                errorHighlight: text.length < 2 || (text[0] !== "#" && text[0] !== "&")
+                errorHighlight: !session || !session.isChannel(text)
                 width: parent.width
                 Keys.onReturnPressed: passworld.forceActiveFocus()
                 platformInverted: true

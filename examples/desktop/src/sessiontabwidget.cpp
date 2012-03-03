@@ -150,7 +150,7 @@ void SessionTabWidget::onNewTabRequested()
     QString channel = QInputDialog::getText(this, tr("Join channel"), tr("Channel:"));
     if (!channel.isEmpty())
     {
-        if (channel.startsWith("#") || channel.startsWith("&"))
+        if (session()->isChannel(channel))
             d.handler.session()->sendCommand(IrcCommand::createJoin(channel));
         openView(channel);
     }

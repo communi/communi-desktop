@@ -61,6 +61,7 @@ CommonPage {
                 busy: modelData.busy
                 onClicked: chatPage.push(modelData)
                 onPressAndHold: {
+                    channelDialog.session = modelData.session;
                     listView.currentSessionItem = modelData;
                     listView.currentSession = modelData.session;
                     if (modelData.session.active)
@@ -297,6 +298,7 @@ CommonPage {
         Connections {
             target: SessionManager
             onChannelKeyRequired: {
+                channelDialog.session = session;
                 channelDialog.channel = channel;
                 channelDialog.passwordRequired = true;
                 channelDialog.open();

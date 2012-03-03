@@ -35,7 +35,7 @@ public slots:
 
 signals:
     void alert(QObject* item);
-    void channelKeyRequired(const QString& channel);
+    void channelKeyRequired(Session* session, const QString& channel);
 
 private:
     void updateModel();
