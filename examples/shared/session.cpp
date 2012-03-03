@@ -90,6 +90,16 @@ void Session::setChannels(const QStringList& channels)
     m_channels.removeDuplicates();
 }
 
+QString Session::channelTypes() const
+{
+    return m_info.value("CHANTYPES", "#&");
+}
+
+bool Session::isChannel(const QString& receiver) const
+{
+    return receiver.length() > 1 && channelTypes().contains(receiver.at(0));
+}
+
 bool Session::isSecure() const
 {
     return qobject_cast<QSslSocket*>(socket());
@@ -279,7 +289,9 @@ void Session::handleMessage(IrcMessage* message)
                 m_info.insert(keyValue.value(0), keyValue.value(1));
             }
             if (m_info.contains("NETWORK"))
-                emit networkChanged(m_info.value("NETWORK"));
+                emit networkChanged(network());
+            if (m_info.contains("CHANTYPES"))
+                emit channelTypesChanged(channelTypes());
         }
     }
 }
