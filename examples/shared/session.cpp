@@ -238,7 +238,18 @@ bool Session::sendUiCommand(IrcCommand* command)
         if (!key.isEmpty())
             setChannelKey(command->parameters().value(0), key);
     }
+    m_sent.insert(command->type());
     return sendCommand(command);
+}
+
+bool Session::hasSent(IrcCommand::Type command)
+{
+    return m_sent.contains(command);
+}
+
+void Session::clearSent(IrcCommand::Type command)
+{
+    m_sent.remove(command);
 }
 
 void Session::reconnect()
