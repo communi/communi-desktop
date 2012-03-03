@@ -203,13 +203,19 @@ void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
 
 void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
 {
+    IrcCommand::Type command = IrcCommand::Custom;
+
     switch (message->code())
     {
     case Irc::RPL_ENDOFWHO:
+        command = IrcCommand::Who; // flow through
     case Irc::RPL_WHOREPLY:
-    case Irc::RPL_UNAWAY:
-    case Irc::RPL_NOWAWAY:
-    case Irc::RPL_AWAY:
+        if (d.session->hasSent(IrcCommand::Who))
+            sendMessage(message, d.currentReceiver);
+        break;
+
+    case Irc::RPL_ENDOFWHOIS:
+        command = IrcCommand::Whois; // flow through
     case Irc::RPL_WHOISOPERATOR:
     case Irc::RPL_WHOISHELPOP: // "is available for help"
     case Irc::RPL_WHOISSPECIAL: // "is identified to services"
@@ -218,10 +224,22 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
     case Irc::RPL_WHOISUSER:
     case Irc::RPL_WHOISSERVER:
     case Irc::RPL_WHOISACCOUNT: // nick user is logged in as
-    case Irc::RPL_WHOWASUSER:
     case Irc::RPL_WHOISIDLE:
     case Irc::RPL_WHOISCHANNELS:
-    case Irc::RPL_ENDOFWHOIS:
+        if (d.session->hasSent(IrcCommand::Whois))
+            sendMessage(message, d.currentReceiver);
+        break;
+
+    case Irc::RPL_ENDOFWHOWAS:
+        command = IrcCommand::Whowas; // flow through
+    case Irc::RPL_WHOWASUSER:
+        if (d.session->hasSent(IrcCommand::Whowas))
+            sendMessage(message, d.currentReceiver);
+        break;
+
+    case Irc::RPL_UNAWAY:
+    case Irc::RPL_NOWAWAY:
+    case Irc::RPL_AWAY:
     case Irc::RPL_INVITING:
     case Irc::RPL_VERSION:
     case Irc::RPL_TIME:
@@ -236,10 +254,14 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
     case Irc::RPL_ENDOFMOTD:
     case Irc::RPL_ENDOFSTATS:
     case Irc::RPL_ENDOFUSERS:
-    case Irc::RPL_ENDOFWHOWAS:
         break; // ignore
 
     case Irc::RPL_ENDOFNAMES:
+        command = IrcCommand::Names;
+        if (d.session->hasSent(IrcCommand::Names))
+            sendMessage(message, message->parameters().value(1));
+        break;
+
     case Irc::RPL_CHANNELMODEIS:
     case Irc::RPL_CHANNEL_URL:
     case Irc::RPL_CREATIONTIME:
@@ -249,24 +271,29 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
         sendMessage(message, message->parameters().value(1));
         break;
 
-    case Irc::RPL_NAMREPLY: {
-        const int count = message->parameters().count();
-        const QString channel = message->parameters().value(count - 2);
-        const QStringList names = message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts);
-        foreach (QString name, names)
+    case Irc::RPL_NAMREPLY:
+        if (d.session->hasSent(IrcCommand::Names))
         {
-            if (name.startsWith("@") || name.startsWith("+"))
-                name.remove(0, 1);
-            d.addChannelUser(channel, name);
+            const int count = message->parameters().count();
+            const QString channel = message->parameters().value(count - 2);
+            const QStringList names = message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts);
+            foreach (QString name, names)
+            {
+                if (name.startsWith("@") || name.startsWith("+"))
+                    name.remove(0, 1);
+                d.addChannelUser(channel, name);
+            }
+            sendMessage(message, channel);
         }
-        sendMessage(message, channel);
         break;
-        }
 
     default:
         sendMessage(message, d.defaultReceiver);
         break;
     }
+
+    if (d.session->hasSent(command))
+        d.session->clearSent(command);
 }
 
 void MessageHandler::handlePartMessage(IrcPartMessage* message)
