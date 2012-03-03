@@ -29,21 +29,6 @@ struct ConnectionInfo
     {
     }
 
-    operator QVariant() const
-    {
-        return QVariant::fromValue(*this);
-    }
-
-    bool operator==(const ConnectionInfo& other) const
-    {
-        return name == other.name;
-    }
-
-    bool operator!=(const ConnectionInfo& other) const
-    {
-        return name != other.name;
-    }
-
     QString name;
     QString host;
     quint16 port;
