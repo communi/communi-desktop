@@ -149,6 +149,10 @@ CommonPage {
                 page.busy = true;
                 Qt.openUrlExternally(link);
             }
+            Component.onCompleted: {
+                if (hasOwnProperty("platformSelectable"))
+                    platformSelectable = true;
+            }
         }
 
         onCountChanged: if (!positioner.running) positioner.start()
