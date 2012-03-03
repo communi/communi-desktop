@@ -21,6 +21,11 @@ PageStackWindow {
 
     initialPage: MainPage { }
 
+    style: PageStackWindowStyle {
+        background: "../images/meego-background-portrait.png"
+        landscapeBackground: "../images/meego-background-landscape.png"
+    }
+
     Component.onCompleted: {
         SessionManager.restore();
         for (var i = 0; i < SessionModel.length; ++i)

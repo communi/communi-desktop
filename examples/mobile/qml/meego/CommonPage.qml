@@ -34,19 +34,6 @@ Page {
         }
     }
 
-    Rectangle {
-        id: background
-
-        anchors.fill: parent
-        color: UI.BACKGROUND_COLOR
-
-        Image {
-            source: "../images/background.png"
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-        }
-    }
-
     Item {
         id: content
 
