@@ -20,7 +20,7 @@
 
 class QDBusInterface;
 class MainTabWidget;
-struct Connection;
+struct ConnectionInfo;
 class QAction;
 
 class MainWindow : public QMainWindow
@@ -36,8 +36,8 @@ public:
 public slots:
     void connectTo(const QString& host = QString(), quint16 port = 6667,
                    const QString& nick = QString(), const QString& password = QString());
-    void connectTo(const Connection& connection);
-    void connectToImpl(const Connection& connection);
+    void connectTo(const ConnectionInfo& connection);
+    void connectToImpl(const ConnectionInfo& connection);
 
 protected:
     void closeEvent(QCloseEvent* event);

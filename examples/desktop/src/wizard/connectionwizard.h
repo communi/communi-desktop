@@ -16,7 +16,7 @@
 #define CONNECTIONWIZARD_H
 
 #include <QWizard>
-#include "connection.h"
+#include "connectioninfo.h"
 
 class ConnectionWizard : public QWizard
 {
@@ -32,8 +32,8 @@ public:
         ConnectionPage
     };
 
-    Connection connection() const;
-    void setConnection(const Connection& connection);
+    ConnectionInfo connection() const;
+    void setConnection(const ConnectionInfo& connection);
 };
 
 #endif // CONNECTIONWIZARD_H

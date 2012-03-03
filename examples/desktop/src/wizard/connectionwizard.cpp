@@ -26,9 +26,9 @@ ConnectionWizard::ConnectionWizard(QWidget* parent) : QWizard(parent)
     setOption(NoDefaultButton, false);
 }
 
-Connection ConnectionWizard::connection() const
+ConnectionInfo ConnectionWizard::connection() const
 {
-    Connection conn;
+    ConnectionInfo conn;
     conn.nick = static_cast<UserWizardPage*>(page(UserPage))->nickName();
     conn.real = static_cast<UserWizardPage*>(page(UserPage))->realName();
     conn.host = static_cast<ServerWizardPage*>(page(ServerPage))->hostName();
@@ -39,7 +39,7 @@ Connection ConnectionWizard::connection() const
     return conn;
 }
 
-void ConnectionWizard::setConnection(const Connection& conn)
+void ConnectionWizard::setConnection(const ConnectionInfo& conn)
 {
     static_cast<UserWizardPage*>(page(UserPage))->setNickName(conn.nick);
     static_cast<UserWizardPage*>(page(UserPage))->setRealName(conn.real);
