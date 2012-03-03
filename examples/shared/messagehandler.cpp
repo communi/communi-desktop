@@ -13,8 +13,8 @@
 */
 
 #include "messagehandler.h"
+#include "session.h"
 #include <qabstractsocket.h>
-#include <ircsession.h>
 #include <qvariant.h>
 #include <qdebug.h>
 #include <irc.h>
@@ -24,7 +24,7 @@ MessageHandler::MessageHandler(QObject* parent) : QObject(parent)
     d.session = 0;
     d.defaultReceiver = 0;
     d.currentReceiver = 0;
-    setSession(qobject_cast<IrcSession*>(parent));
+    setSession(qobject_cast<Session*>(parent));
 }
 
 MessageHandler::~MessageHandler()
@@ -37,12 +37,12 @@ MessageHandler::~MessageHandler()
         d.session->socket()->waitForDisconnected(500);
 }
 
-IrcSession* MessageHandler::session() const
+Session* MessageHandler::session() const
 {
     return d.session;
 }
 
-void MessageHandler::setSession(IrcSession* session)
+void MessageHandler::setSession(Session* session)
 {
     if (d.session != session)
     {
