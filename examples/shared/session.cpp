@@ -23,7 +23,7 @@
 QNetworkSession* Session::s_network = 0;
 
 Session::Session(QObject *parent) : IrcSession(parent),
-    m_currentLag(-1), m_maxLag(120000)
+    m_currentLag(-1), m_maxLag(120000), m_quit(false)
 {
     connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(this, SIGNAL(password(QString*)), this, SLOT(onPassword(QString*)));
@@ -65,29 +65,52 @@ void Session::setAutoReconnectDelay(int delay)
     m_reconnectTimer.setInterval(delay * 1000);
 }
 
-QStringList Session::channels() const
+ChannelInfos Session::channels() const
 {
     return m_channels;
 }
 
 void Session::addChannel(const QString& channel)
 {
-    int idx = m_channels.indexOf(QRegExp(channel, Qt::CaseInsensitive));
-    if (idx == -1)
-        m_channels.append(channel);
+    const QString lower = channel.toLower();
+    foreach (const ChannelInfo& info, m_channels)
+        if (info.channel.toLower() == lower)
+            return;
+
+    ChannelInfo info;
+    info.channel = channel;
+    m_channels.append(info);
+}
+
+void Session::setChannelKey(const QString& channel, const QString& key)
+{
+    int idx = -1;
+    const QString lower = channel.toLower();
+    for (int i = 0; idx == -1 && i < m_channels.count(); ++i)
+        if (m_channels.at(i).channel.toLower() == lower)
+            idx = i;
+    if (idx != -1)
+    {
+        ChannelInfo info = m_channels.at(idx);
+        info.key = key;
+        m_channels.replace(idx, info);
+    }
 }
 
 void Session::removeChannel(const QString& channel)
 {
-    int idx = m_channels.indexOf(QRegExp(channel, Qt::CaseInsensitive));
+    int idx = -1;
+    const QString lower = channel.toLower();
+    for (int i = 0; idx == -1 && i < m_channels.count(); ++i)
+        if (m_channels.at(i).channel.toLower() == lower)
+            idx = i;
     if (idx != -1)
         m_channels.removeAt(idx);
 }
 
-void Session::setChannels(const QStringList& channels)
+void Session::setChannels(const ChannelInfos& channels)
 {
     m_channels = channels;
-    m_channels.removeDuplicates();
 }
 
 QString Session::channelTypes() const
@@ -131,9 +154,9 @@ void Session::setPassword(const QString& password)
     m_password = password;
 }
 
-Connection Session::toConnection() const
+ConnectionInfo Session::toConnection() const
 {
-    Connection connection;
+    ConnectionInfo connection;
     connection.name = name();
     connection.secure = isSecure();
     connection.host = host();
@@ -143,10 +166,11 @@ Connection Session::toConnection() const
     connection.real = realName();
     connection.pass = password();
     connection.channels = channels();
+    connection.quit = m_quit;
     return connection;
 }
 
-Session* Session::fromConnection(const Connection& connection, QObject* parent)
+Session* Session::fromConnection(const ConnectionInfo& connection, QObject* parent)
 {
     Session* session = new Session(parent);
     session->setName(connection.name);
@@ -159,6 +183,7 @@ Session* Session::fromConnection(const Connection& connection, QObject* parent)
     session->setUserName(connection.user.isEmpty() ? appName : connection.user);
     session->setRealName(connection.real.isEmpty() ? appName : connection.real);
     session->setChannels(connection.channels);
+    session->m_quit = connection.quit;
     return session;
 }
 
@@ -187,6 +212,11 @@ void Session::setMaximumLag(int lag)
     m_maxLag = lag;
 }
 
+bool Session::hasQuit() const
+{
+    return m_quit;
+}
+
 bool Session::ensureNetwork()
 {
     QNetworkConfigurationManager manager;
@@ -198,6 +228,17 @@ bool Session::ensureNetwork()
     }
     // TODO: return value?
     return true;
+}
+
+bool Session::sendUiCommand(IrcCommand* command)
+{
+    if (command->type() == IrcCommand::Join)
+    {
+        QString key = command->parameters().value(1);
+        if (!key.isEmpty())
+            setChannelKey(command->parameters().value(0), key);
+    }
+    return sendCommand(command);
 }
 
 void Session::reconnect()
@@ -223,6 +264,7 @@ void Session::quit(const QString& reason)
         sendCommand(IrcCommand::createQuit(message));
     socket()->waitForDisconnected(1000);
     close();
+    m_quit = true;
 }
 
 void Session::destructLater()
@@ -241,11 +283,12 @@ void Session::destructLater()
 
 void Session::onConnected()
 {
-    foreach (const QString& channel, m_channels)
+    foreach (const ChannelInfo& channel, m_channels)
     {
-        if (!channel.isEmpty())
-            sendCommand(IrcCommand::createJoin(channel, QString()));
+        if (!channel.channel.isEmpty())
+            sendCommand(IrcCommand::createJoin(channel.channel, channel.key));
     }
+    m_quit = false;
 }
 
 void Session::onPassword(QString* password)

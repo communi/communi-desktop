@@ -22,7 +22,7 @@
 #include <QElapsedTimer>
 #include <QAbstractSocket>
 #include <QNetworkSession>
-#include "connection.h"
+#include "connectioninfo.h"
 
 class Session : public IrcSession
 {
@@ -30,13 +30,14 @@ class Session : public IrcSession
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString network READ network NOTIFY networkChanged)
     Q_PROPERTY(int autoReconnectDelay READ autoReconnectDelay WRITE setAutoReconnectDelay)
-    Q_PROPERTY(QStringList channels READ channels WRITE setChannels)
+    Q_PROPERTY(ChannelInfos channels READ channels WRITE setChannels)
     Q_PROPERTY(QString channelTypes READ channelTypes NOTIFY channelTypesChanged)
     Q_PROPERTY(bool secure READ isSecure WRITE setSecure)
     Q_PROPERTY(QString password READ password WRITE setPassword)
     Q_PROPERTY(int pingInterval READ pingInterval WRITE setPingInterval)
     Q_PROPERTY(int currentLag READ currentLag NOTIFY currentLagChanged)
     Q_PROPERTY(int maximumLag READ maximumLag WRITE setMaximumLag)
+    Q_PROPERTY(bool hasQuit READ hasQuit)
 
 public:
     explicit Session(QObject *parent = 0);
@@ -49,10 +50,11 @@ public:
     int autoReconnectDelay() const;
     void setAutoReconnectDelay(int delay);
 
-    QStringList channels() const;
-    void addChannel(const QString& channel);
-    void removeChannel(const QString& channel);
-    void setChannels(const QStringList& channels);
+    ChannelInfos channels() const;
+    Q_INVOKABLE void addChannel(const QString& channel);
+    Q_INVOKABLE void setChannelKey(const QString& channel, const QString& key);
+    Q_INVOKABLE void removeChannel(const QString& channel);
+    void setChannels(const ChannelInfos& channels);
 
     QString channelTypes() const;
     Q_INVOKABLE bool isChannel(const QString& receiver) const;
@@ -63,8 +65,8 @@ public:
     QString password() const;
     void setPassword(const QString& password);
 
-    Connection toConnection() const;
-    static Session* fromConnection(const Connection& connection, QObject* parent = 0);
+    ConnectionInfo toConnection() const;
+    static Session* fromConnection(const ConnectionInfo& connection, QObject* parent = 0);
 
     int pingInterval() const;
     void setPingInterval(int interval);
@@ -73,7 +75,9 @@ public:
     int maximumLag() const;
     void setMaximumLag(int lag);
 
+    bool hasQuit() const;
     Q_INVOKABLE bool ensureNetwork();
+    Q_INVOKABLE bool sendUiCommand(IrcCommand* command);
 
 public slots:
     void reconnect();
@@ -99,12 +103,13 @@ private:
     QString m_name;
     QTimer m_reconnectTimer;
     QString m_password;
-    QStringList m_channels;
+    ChannelInfos m_channels;
     QElapsedTimer m_lagTimer;
     QTimer m_pingTimer;
     int m_currentLag;
     int m_maxLag;
     QHash<QString,QString> m_info;
+    bool m_quit;
     static QNetworkSession* s_network;
 };
 
