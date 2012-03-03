@@ -14,7 +14,7 @@
 
 #include "sessionmanager.h"
 #include "sessionitem.h"
-#include "connection.h"
+#include "connectioninfo.h"
 #include "settings.h"
 #include "session.h"
 #include <IrcCommand>
@@ -53,7 +53,7 @@ void SessionManager::restore()
     Settings* settings = static_cast<Settings*>(m_context->contextProperty("Settings").value<QObject*>());
     if (settings)
     {
-        foreach (const Connection& connection, settings->connections())
+        foreach (const ConnectionInfo& connection, settings->connections())
             addSession(Session::fromConnection(connection));
     }
 }
@@ -63,7 +63,7 @@ void SessionManager::save()
     Settings* settings = static_cast<Settings*>(m_context->contextProperty("Settings").value<QObject*>());
     if (settings)
     {
-        Connections connections;
+        ConnectionInfos connections;
         foreach (QObject* item, m_items)
         {
             SessionItem* sessionItem = static_cast<SessionItem*>(item);

@@ -165,7 +165,7 @@ CommonPage {
                     modelData = null;
                 }
                 else if (status === PageStatus.Active && bouncer.cmd) {
-                    modelData.session.sendCommand(bouncer.cmd);
+                    modelData.session.sendUiCommand(bouncer.cmd);
                     bouncer.cmd = null;
                 }
             }
@@ -272,7 +272,7 @@ CommonPage {
             session.password = connectionSheet.password;
             session.secure = connectionSheet.secure;
             if (connectionSheet.channel.length)
-                session.channels = connectionSheet.channel;
+                session.addChannel(connectionSheet.channel);
 
             SessionManager.addSession(session);
             session.reconnect();
@@ -298,7 +298,7 @@ CommonPage {
         onAccepted: {
             var child = listView.currentSessionItem.addChild(channel);
             var cmd = ircCommand.createJoin(channel, password);
-            listView.currentSession.sendCommand(cmd);
+            listView.currentSession.sendUiCommand(cmd);
             bouncer.bounce(child, null);
         }
         Connections {
@@ -340,7 +340,7 @@ CommonPage {
                     var item = listView.currentChildItem;
                     if (item.channel) {
                         var cmd = ircCommand.createPart(item.title, ApplicationName);
-                        item.session.sendCommand(cmd);
+                        item.session.sendUiCommand(cmd);
                     }
                     item.sessionItem.removeChild(item.title);
                 }

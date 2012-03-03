@@ -26,7 +26,8 @@ PageStackWindow {
     Component.onCompleted: {
         SessionManager.restore();
         for (var i = 0; i < SessionModel.length; ++i)
-            SessionModel[i].session.reconnect();
+            if (!SessionModel[i].session.hasQuit)
+                SessionModel[i].session.reconnect();
     }
 
     Component.onDestruction: {
