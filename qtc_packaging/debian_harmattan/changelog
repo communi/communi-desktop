@@ -1,3 +1,23 @@
+communi (1.1.8) unstable; urgency=low
+
+  * Fixed issue #11: Copy and paste is not supported
+  * Fixed issue #10: Hardcoded channel types. The channel types/prefixes
+    are no more hardcoded to "#" and "&" but appropriate channel types
+    supported by the network are parsed from the RPL_ISUPPORT message
+  * Remember entered channel passwords so that they don't have to be
+    entered all over again every time upon connection
+  * Fixed issue #9: Background image moves together with VKB
+  * Fixed issue #8: Communi prints the WHO list output in the current
+    window if some other client connected to the same psyBNC instance
+    requests it
+  * Fixed issue #7: Option to disable auto-connect on application start
+  * Refactored (versioned) the settings system. NOTE: this version
+    is incompatible with previous versions -> connections must be
+    re-entered. This is no more necessary in the future when stored
+    settings change, thanks to the versioning...
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Sun, 4 Mar 2012 17:00:44 +0200
+
 communi (1.1.7) unstable; urgency=low
 
   * Fixed not to rejoin channels that have been removed while disconnected

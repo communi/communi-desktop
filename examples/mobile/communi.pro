@@ -14,7 +14,7 @@ symbian {
     TARGET.UID3 = 0x20035734
     DEFINES += COMMUNI_EXAMPLE_VERSION=\\\"1.1.1\\\"
 } else {
-    DEFINES += COMMUNI_EXAMPLE_VERSION=\\\"1.1.7\\\"
+    DEFINES += COMMUNI_EXAMPLE_VERSION=\\\"1.1.8\\\"
 }
 
 # Smart Installer package's UID
