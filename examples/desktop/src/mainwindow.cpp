@@ -18,7 +18,7 @@
 #include "sessiontabwidget.h"
 #include "maintabwidget.h"
 #include "sharedtimer.h"
-#include "connection.h"
+#include "connectioninfo.h"
 #include "homepage.h"
 #include "session.h"
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget* parent) :
     tabWidget = new MainTabWidget(this);
     setCentralWidget(tabWidget);
     connect(tabWidget, SIGNAL(newTabRequested()), this, SLOT(connectTo()), Qt::QueuedConnection);
+    connect(tabWidget, SIGNAL(tabMenuRequested(int,QPoint)), this, SLOT(onTabMenuRequested(int,QPoint)));
     connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
     connect(tabWidget, SIGNAL(alertStatusChanged(bool)), this, SLOT(activateAlert(bool)));
 
@@ -95,7 +96,7 @@ QSize MainWindow::sizeHint() const
 
 void MainWindow::connectTo(const QString& host, quint16 port, const QString& nick, const QString& password)
 {
-    Connection conn;
+    ConnectionInfo conn;
     conn.host = host;
     conn.port = port;
     conn.nick = nick;
@@ -103,7 +104,7 @@ void MainWindow::connectTo(const QString& host, quint16 port, const QString& nic
     connectTo(conn);
 }
 
-void MainWindow::connectTo(const Connection& connection)
+void MainWindow::connectTo(const ConnectionInfo& connection)
 {
     ConnectionWizard wizard;
     wizard.setConnection(connection);
@@ -114,11 +115,13 @@ void MainWindow::connectTo(const Connection& connection)
         connectToImpl(wizard.connection());
 }
 
-void MainWindow::connectToImpl(const Connection& connection)
+void MainWindow::connectToImpl(const ConnectionInfo& connection)
 {
-    Session* session = Session::fromConnection(connection);
+    Session* session = Session::fromConnection(connection, this);
     session->setEncoding(Application::encoding());
-    sessionManager.addSession(session);
+    session->setUserName("communi");
+    if (session->ensureNetwork())
+        session->open();
 
     SessionTabWidget* tab = new SessionTabWidget(session, tabWidget);
     if (connection.name.isEmpty())
@@ -137,14 +140,14 @@ void MainWindow::closeEvent(QCloseEvent* event)
     QSettings settings;
     settings.setValue("geometry", saveGeometry());
 
-    Connections connections;
+    ConnectionInfos connections;
     for (int i = 0; tabWidget && i < tabWidget->count(); ++i)
     {
         SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(tabWidget->widget(i));
         if (tab)
         {
             connections += tab->session()->toConnection();
-            tab->quit();
+            tab->session()->quit();
         }
     }
     settings.setValue("connections", QVariant::fromValue(connections));
@@ -174,13 +177,13 @@ void MainWindow::changeEvent(QEvent* event)
 void MainWindow::initialize()
 {
     QSettings settings;
-    Connections connections = settings.value("connections").value<Connections>();
+    ConnectionInfos connections = settings.value("connections").value<ConnectionInfos>();
 
-    foreach (const Connection& connection, connections)
+    foreach (const ConnectionInfo& connection, connections)
         connectToImpl(connection);
 
     if (connections.isEmpty())
-        connectTo(Connection());
+        connectTo(ConnectionInfo());
 }
 
 void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -227,5 +230,15 @@ void MainWindow::tabActivated(int index)
             setWindowFilePath(tab->tabText(tab->currentIndex()));
             QMetaObject::invokeMethod(tab, "delayedTabReset");
         }
+    }
+}
+
+void MainWindow::onTabMenuRequested(int index, const QPoint& pos)
+{
+    if (index > 0 && index < tabWidget->count() - 1)
+    {
+        SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(tabWidget->widget(index));
+        if (tab)
+            QMetaObject::invokeMethod(tab, "onTabMenuRequested", Q_ARG(int, 0), Q_ARG(QPoint, pos));
     }
 }

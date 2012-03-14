@@ -14,38 +14,23 @@
 
 #include "sessionmanager.h"
 #include "sessionitem.h"
-#include "connection.h"
+#include "connectioninfo.h"
 #include "settings.h"
 #include "session.h"
-#include <QNetworkConfigurationManager>
 #include <IrcCommand>
 
-SessionManager::SessionManager(QDeclarativeContext* context) :
-    m_context(context), m_network(0)
+SessionManager::SessionManager(QDeclarativeContext* context) : m_context(context)
 {
     updateModel();
-}
-
-bool SessionManager::isOnline() const
-{
-    return m_network && m_network->state() == QNetworkSession::Connected;
-}
-
-bool SessionManager::isOffline() const
-{
-    return !m_network || m_network->state() != QNetworkSession::Connected;
 }
 
 void SessionManager::addSession(Session* session)
 {
     SessionItem* item = new SessionItem(session);
     connect(item, SIGNAL(alert(QObject*)), SIGNAL(alert(QObject*)));
-    connect(item, SIGNAL(channelKeyRequired(QString)), SIGNAL(channelKeyRequired(QString)));
+    connect(item, SIGNAL(channelKeyRequired(Session*,QString)), SIGNAL(channelKeyRequired(Session*,QString)));
     m_items.append(item);
     updateModel();
-
-    if (ensureNetwork())
-        session->open();
 }
 
 void SessionManager::removeSession(Session* session)
@@ -55,7 +40,6 @@ void SessionManager::removeSession(Session* session)
         SessionItem* item = static_cast<SessionItem*>(m_items.at(i));
         if (item->session() == session)
         {
-            item->quit();
             m_items.removeAt(i);
             item->deleteLater();
             updateModel();
@@ -64,33 +48,12 @@ void SessionManager::removeSession(Session* session)
     }
 }
 
-bool SessionManager::ensureNetwork()
-{
-    if (!m_network || !m_network->isOpen())
-    {
-        QNetworkConfigurationManager manager;
-        if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired)
-        {
-            QNetworkConfiguration config = manager.defaultConfiguration();
-            if (!m_network)
-            {
-                m_network = new QNetworkSession(config, this);
-                connect(m_network, SIGNAL(stateChanged(QNetworkSession::State)), this, SLOT(onNetworkStateChanged(QNetworkSession::State)));
-                connect(m_network, SIGNAL(stateChanged(QNetworkSession::State)), this, SIGNAL(onlineStateChanged()));
-                connect(m_network, SIGNAL(stateChanged(QNetworkSession::State)), this, SIGNAL(offlineStateChanged()));
-            }
-            m_network->open();
-        }
-    }
-    return !m_network || m_network->isOpen();
-}
-
 void SessionManager::restore()
 {
     Settings* settings = static_cast<Settings*>(m_context->contextProperty("Settings").value<QObject*>());
     if (settings)
     {
-        foreach (const Connection& connection, settings->connections())
+        foreach (const ConnectionInfo& connection, settings->connections())
             addSession(Session::fromConnection(connection));
     }
 }
@@ -100,37 +63,13 @@ void SessionManager::save()
     Settings* settings = static_cast<Settings*>(m_context->contextProperty("Settings").value<QObject*>());
     if (settings)
     {
-        Connections connections;
+        ConnectionInfos connections;
         foreach (QObject* item, m_items)
         {
             SessionItem* sessionItem = static_cast<SessionItem*>(item);
-            Connection connection = sessionItem->session()->toConnection();
-            connection.channels = sessionItem->channels();
-            connections += connection;
+            connections += sessionItem->session()->toConnection();
         }
         settings->setConnections(connections);
-    }
-}
-
-void SessionManager::onNetworkStateChanged(QNetworkSession::State state)
-{
-    if (state == QNetworkSession::Connected)
-    {
-        foreach (QObject* item, m_items)
-        {
-            IrcSession* session = static_cast<SessionItem*>(item)->session();
-            if (!session->isActive())
-                session->open();
-        }
-    }
-    else if (state == QNetworkSession::Closing)
-    {
-        foreach (QObject* item, m_items)
-        {
-            IrcSession* session = static_cast<SessionItem*>(item)->session();
-            if (session->isActive())
-                session->close();
-        }
     }
 }
 

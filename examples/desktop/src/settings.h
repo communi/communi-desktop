@@ -71,6 +71,7 @@ Q_DECLARE_METATYPE(Settings);
 
 inline QDataStream& operator<<(QDataStream& out, const Settings& settings)
 {
+    out << quint32(123); // version
     out << settings.messages;
     out << settings.highlights;
     out << settings.language;
@@ -84,6 +85,7 @@ inline QDataStream& operator<<(QDataStream& out, const Settings& settings)
 
 inline QDataStream& operator>>(QDataStream& in, Settings& settings)
 {
+    quint32 version = readStreamValue<quint32>(in, 0);
     settings.messages = readStreamValue< QHash<int, bool> >(in, settings.messages);
     settings.highlights = readStreamValue< QHash<int, bool> >(in, settings.highlights);
     settings.language = readStreamValue<QString>(in, settings.language);
@@ -92,6 +94,7 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
     settings.shortcuts = readStreamValue< QHash<int, QString> >(in, settings.shortcuts);
     settings.maxBlockCount = readStreamValue<int>(in, settings.maxBlockCount);
     settings.timeStamp = readStreamValue<bool>(in, settings.timeStamp);
+    Q_UNUSED(version);
     return in;
 }
 

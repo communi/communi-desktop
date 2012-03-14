@@ -21,6 +21,7 @@ Sheet {
 
     property bool acceptable: false
     default property alias content: contentItem.data
+    property alias title: title.text
 
     acceptButtonText: acceptable ? qsTr("Ok") : ""
     rejectButtonText: qsTr("Cancel")
@@ -28,18 +29,32 @@ Sheet {
     content: Rectangle {
         id: background
         anchors.fill: parent
-        color: "#e0e1e2"
+        color: UI.BACKGROUND_COLOR
 
         Flickable {
             id: flickable
             anchors.fill: parent
             anchors.margins: UI.PAGE_MARGIN
-            contentHeight: contentItem.height
+            contentHeight: contentColumn.height
 
-            Item {
-                id: contentItem
-                width: flickable.width
-                height: childrenRect.height
+            Column {
+                id: contentColumn
+                spacing: UI.DEFAULT_SPACING
+                Label {
+                    id: title
+                    color: UI.TITLE_COLOR
+                    font.pixelSize: UI.LARGE_FONT
+                }
+                Rectangle {
+                    color: UI.SEPARATOR_COLOR
+                    height: 1
+                    width: flickable.width
+                }
+                Item {
+                    id: contentItem
+                    width: flickable.width
+                    height: childrenRect.height
+                }
             }
         }
     }

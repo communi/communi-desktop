@@ -15,7 +15,7 @@
 #include "application.h"
 #include "settingswizard.h"
 #include "sharedtimer.h"
-#include "connection.h"
+#include "connectioninfo.h"
 #include <QMessageBox>
 #include <QSettings>
 #include <QIcon>
@@ -40,8 +40,8 @@ Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
     setWindowIcon(icon);
 
     qRegisterMetaTypeStreamOperators<Settings>("Settings");
-    qRegisterMetaTypeStreamOperators<Connection>("Connection");
-    qRegisterMetaTypeStreamOperators<Connections>("Connections");
+    qRegisterMetaTypeStreamOperators<ConnectionInfo>("ConnectionInfo");
+    qRegisterMetaTypeStreamOperators<ConnectionInfos>("ConnectionInfos");
 
     QSettings settings;
     ApplicationData::settings = settings.value("settings").value<Settings>();

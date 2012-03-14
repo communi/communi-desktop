@@ -2,18 +2,19 @@
 # Communi
 ######################################################################
 
-DEPENDPATH += $$PWD/include
-INCLUDEPATH += $$PWD/include
+DEPENDPATH += $$PWD
+INCLUDEPATH += $$PWD
+QMAKE_CLEAN += $$PWD/*~
 
-HEADERS += $$PWD/include/commandparser.h
-HEADERS += $$PWD/include/connection.h
-HEADERS += $$PWD/include/messageformatter.h
-HEADERS += $$PWD/include/messagehandler.h
-HEADERS += $$PWD/include/session.h
-HEADERS += $$PWD/include/streamer.h
+HEADERS += $$PWD/channelinfo.h
+HEADERS += $$PWD/commandparser.h
+HEADERS += $$PWD/connectioninfo.h
+HEADERS += $$PWD/messageformatter.h
+HEADERS += $$PWD/messagehandler.h
+HEADERS += $$PWD/session.h
+HEADERS += $$PWD/streamer.h
 
-SOURCES += $$PWD/src/commandparser.cpp
-SOURCES += $$PWD/src/connection.cpp
-SOURCES += $$PWD/src/messageformatter.cpp
-SOURCES += $$PWD/src/messagehandler.cpp
-SOURCES += $$PWD/src/session.cpp
+SOURCES += $$PWD/commandparser.cpp
+SOURCES += $$PWD/messageformatter.cpp
+SOURCES += $$PWD/messagehandler.cpp
+SOURCES += $$PWD/session.cpp

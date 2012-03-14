@@ -12,31 +12,25 @@
 * GNU General Public License for more details.
 */
 
-#include "connection.h"
+#ifndef TABWIDGET_P_H
+#define TABWIDGET_P_H
 
-Connection::Connection() :
-    name(),
-    host(),
-    port(6667),
-    nick(),
-    real(),
-    pass(),
-    secure(false),
-    channels()
-{
-}
+#include <QTabBar>
 
-Connection::operator QVariant() const
+class TabBar : public QTabBar
 {
-    return QVariant::fromValue(*this);
-}
+    Q_OBJECT
 
-bool Connection::operator==(const Connection& other) const
-{
-    return name == other.name;
-}
+public:
+    TabBar(QWidget* parent = 0);
 
-bool Connection::operator!=(const Connection& other) const
-{
-    return name != other.name;
-}
+signals:
+    void menuRequested(int index, const QPoint& pos);
+
+protected:
+    void changeEvent(QEvent* event);
+    void contextMenuEvent(QContextMenuEvent* event);
+    void wheelEvent(QWheelEvent* event);
+};
+
+#endif // TABWIDGET_P_H

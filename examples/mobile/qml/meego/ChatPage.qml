@@ -26,7 +26,7 @@ CommonPage {
     function sendMessage(receiver, message) {
         var cmd = CommandParser.parseCommand(receiver, message);
         if (cmd && modelData) {
-            modelData.session.sendCommand(cmd);
+            modelData.session.sendUiCommand(cmd);
             if (cmd.type == IrcCommand.Message || cmd.type == IrcCommand.CtcpAction) {
                 var msg = ircMessage.fromCommand(modelData.session.nickName, cmd);
                 modelData.receiveMessage(msg);
@@ -41,6 +41,7 @@ CommonPage {
         id: ircMessage
     }
 
+    active: modelData !== null && modelData.session.active
     title: modelData ? modelData.title : ""
     tools: ToolBarLayout {
         ToolIcon {
@@ -49,14 +50,11 @@ CommonPage {
         }
         ToolIcon {
             anchors.verticalCenter: parent.verticalCenter
-            visible: modelData !== null && modelData.channel !== undefined && !indicator.visible
-            iconId: "toolbar-list"
-            onClicked: {
-                var cmd = modelData.channel ? ircCommand.createNames(modelData.title)
-                                            : ircCommand.createWhois(modelData.title);
-                modelData.sendUiCommand(cmd);
-                indicator.visible = true;
-            }
+            opacity: enabled ? 1.0 : UI.DISABLED_OPACITY
+            enabled: clearItem.enabled || infoItem.enabled
+            visible: modelData !== null && !indicator.visible
+            iconId: "toolbar-view-menu"
+            onClicked: contextMenu.open()
         }
         BusyIndicator {
             id: indicator
@@ -66,9 +64,12 @@ CommonPage {
         }
         ToolIcon {
             iconId: "toolbar-new-message"
+            opacity: enabled ? 1.0 : UI.DISABLED_OPACITY
+            enabled: modelData !== null && modelData.session.active
             onClicked: {
                 textField.visible = true;
                 textField.forceActiveFocus();
+                textField.openSoftwareInputPanel();
             }
         }
     }
@@ -76,6 +77,7 @@ CommonPage {
     Keys.onReturnPressed: {
         textField.visible = true;
         textField.forceActiveFocus();
+        textField.openSoftwareInputPanel();
     }
 
     onModelDataChanged: {
@@ -147,6 +149,10 @@ CommonPage {
                 page.busy = true;
                 Qt.openUrlExternally(link);
             }
+            Component.onCompleted: {
+                if (hasOwnProperty("platformSelectable"))
+                    platformSelectable = true;
+            }
         }
 
         onCountChanged: if (!positioner.running) positioner.start()
@@ -155,11 +161,17 @@ CommonPage {
         currentIndex: modelData ? modelData.unseenIndex : -1
         highlight: Item {
             visible: listView.currentIndex > 0 && listView.currentIndex < listView.count - 1
-            Rectangle {
-                width: listView.width
-                height: 1
-                color: "red"
-                anchors.bottom: parent.bottom
+            Image {
+                source: "../images/right-arrow.png"
+                anchors.left: parent.left
+                anchors.leftMargin: -UI.PAGE_MARGIN
+                anchors.verticalCenter: parent.bottom
+            }
+            Image {
+                source: "../images/left-arrow.png"
+                anchors.right: parent.right
+                anchors.rightMargin: -UI.PAGE_MARGIN
+                anchors.verticalCenter: parent.bottom
             }
         }
     }
@@ -177,7 +189,6 @@ CommonPage {
 
     TextField {
         id: textField
-        height: 0
         visible: false
         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhUrlCharactersOnly
         platformSipAttributes: SipAttributes {
@@ -194,15 +205,23 @@ CommonPage {
         }
 
         onActiveFocusChanged: {
-            textField.height = activeFocus ? textField.implicitHeight : 0;
-            if (!activeFocus)
-                textField.visible = false;
+            if (!activeFocus) textField.visible = false;
             if (!positioner.running) positioner.start();
         }
 
         Keys.onReturnPressed: {
             page.sendMessage(page.title, textField.text);
             textField.text = "";
+        }
+
+        Connections {
+            target: Qt.application
+            onActiveChanged: {
+                if (Qt.application.active && textField.activeFocus) {
+                    textField.visible = true;
+                    textField.openSoftwareInputPanel();
+                }
+            }
         }
 
         Connections {
@@ -238,7 +257,34 @@ CommonPage {
                 anchors.fill: parent
                 onClicked: {
                     inputContext.reset();
-                    textField.text = "";
+                    if (textField.text.length)
+                        textField.text = "";
+                    else
+                        page.forceActiveFocus();
+                }
+            }
+        }
+    }
+
+    ContextMenu {
+        id: contextMenu
+        MenuLayout {
+            MenuItem {
+                id: clearItem
+                text: qsTr("Clear")
+                enabled: modelData !== null && listView.count
+                onClicked: modelData.clear();
+            }
+            MenuItem {
+                id: infoItem
+                property bool chat: modelData !== null && modelData.channel !== undefined
+                text: chat && modelData.channel ? qsTr("Names") : chat ? qsTr("Whois") : qsTr("Info")
+                enabled: modelData !== null && modelData.channel !== undefined && modelData.session.active
+                onClicked: {
+                    var cmd = modelData.channel ? ircCommand.createNames(modelData.title)
+                                                : ircCommand.createWhois(modelData.title);
+                    modelData.sendUiCommand(cmd);
+                    indicator.visible = true;
                 }
             }
         }

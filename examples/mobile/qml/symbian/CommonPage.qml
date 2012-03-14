@@ -20,8 +20,9 @@ import "UIConstants.js" as UI
 Page {
     id: page
 
-    property alias busy: indicator.running
     property alias title: title.text
+    property alias busy: indicator.running
+    property bool active: true
     default property alias content: content.data
 
     Connections {
@@ -62,6 +63,7 @@ Page {
                     role: "Title"
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width - indicator.width - UI.DEFAULT_SPACING
+                    mode: page.active ? "normal" : "disabled"
                     platformInverted: true
                 }
 

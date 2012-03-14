@@ -20,7 +20,7 @@
 #include <IrcCommand>
 #include <Irc>
 
-SessionItem::SessionItem(Session* session) : AbstractSessionItem(session), m_closing(false)
+SessionItem::SessionItem(Session* session) : AbstractSessionItem(session)
 {
     setTitle(session->host());
     setSubtitle(session->nickName());
@@ -42,11 +42,6 @@ SessionItem::SessionItem(Session* session) : AbstractSessionItem(session), m_clo
 
     updateCurrent(this);
     updateState();
-}
-
-bool SessionItem::hasError() const
-{
-    return session()->socket()->error() != QAbstractSocket::UnknownSocketError;
 }
 
 QObjectList SessionItem::childItems() const
@@ -79,6 +74,8 @@ QObject* SessionItem::addChild(const QString& name)
         child = new SessionChildItem(this);
         connect(child, SIGNAL(alert(QObject*)), SIGNAL(alert(QObject*)));
         child->setTitle(name);
+        if (child->isChannel())
+            session()->addChannel(name);
         m_handler.addReceiver(name, child);
         m_children.append(child);
         emit childItemsChanged();
@@ -103,36 +100,18 @@ void SessionItem::renameChild(const QString& from, const QString& to)
 void SessionItem::removeChild(const QString& name)
 {
     m_handler.removeReceiver(name);
-    if (title() == name)
+    for (int i = 0; i < m_children.count(); ++i)
     {
-        quit();
-    }
-    else
-    {
-        for (int i = 0; i < m_children.count(); ++i)
+        SessionChildItem* child = static_cast<SessionChildItem*>(m_children.at(i));
+        if (child->title().toLower() == name.toLower())
         {
-            SessionChildItem* child = static_cast<SessionChildItem*>(m_children.at(i));
-            if (child->title() == name)
-            {
-                m_children.takeAt(i)->deleteLater();
-                emit childItemsChanged();
-                break;
-            }
+            if (child->isChannel())
+                session()->removeChannel(name);
+            m_children.takeAt(i)->deleteLater();
+            emit childItemsChanged();
+            break;
         }
     }
-}
-
-void SessionItem::quit()
-{
-    static const QString msg = tr("%1 %2 for %3")
-            .arg(QApplication::applicationName())
-            .arg(QApplication::applicationVersion())
-#ifdef Q_OS_SYMBIAN
-            .arg(tr("Symbian"));
-#else
-            .arg(tr("N9"));
-#endif
-    m_closing = session()->sendCommand(IrcCommand::createQuit(msg));
 }
 
 void SessionItem::receiveMessage(IrcMessage* message)
@@ -142,9 +121,21 @@ void SessionItem::receiveMessage(IrcMessage* message)
     {
         IrcNumericMessage* numeric = static_cast<IrcNumericMessage*>(message);
         if (numeric->code() == Irc::ERR_NICKNAMEINUSE)
-            session()->setNickName(session()->nickName() + "_");
+        {
+            if (m_alternateNicks.isEmpty())
+            {
+                QString currentNick = session()->nickName();
+                m_alternateNicks << (currentNick + "_")
+                                 <<  currentNick
+                                 << (currentNick + "__")
+                                 <<  currentNick;
+            }
+            session()->setNickName(m_alternateNicks.takeFirst());
+        }
         else if (numeric->code() == Irc::ERR_BADCHANNELKEY)
-            emit channelKeyRequired(message->parameters().value(1));
+        {
+            emit channelKeyRequired(session(), message->parameters().value(1));
+        }
     }
 }
 
@@ -152,10 +143,4 @@ void SessionItem::updateState()
 {
     IrcSession* session = m_handler.session();
     setBusy(session->isActive() && !session->isConnected());
-
-    if (!m_closing && hasError())
-        setAlertText(QString("%1\n%2").arg(session->host()).arg(session->socket()->errorString()));
-
-    if (m_closing && (hasError() || !session->isConnected()))
-        session->deleteLater();
 }

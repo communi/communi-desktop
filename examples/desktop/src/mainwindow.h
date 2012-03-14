@@ -16,12 +16,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "sessionmanager.h"
 #include "trayicon.h"
 
 class QDBusInterface;
 class MainTabWidget;
-struct Connection;
+struct ConnectionInfo;
 class QAction;
 
 class MainWindow : public QMainWindow
@@ -37,8 +36,8 @@ public:
 public slots:
     void connectTo(const QString& host = QString(), quint16 port = 6667,
                    const QString& nick = QString(), const QString& password = QString());
-    void connectTo(const Connection& connection);
-    void connectToImpl(const Connection& connection);
+    void connectTo(const ConnectionInfo& connection);
+    void connectToImpl(const ConnectionInfo& connection);
 
 protected:
     void closeEvent(QCloseEvent* event);
@@ -49,9 +48,9 @@ private slots:
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void activateAlert(bool activate);
     void tabActivated(int index);
+    void onTabMenuRequested(int index, const QPoint& pos);
 
 private:
-    SessionManager sessionManager;
     MainTabWidget* tabWidget;
     TrayIcon* trayIcon;
 };

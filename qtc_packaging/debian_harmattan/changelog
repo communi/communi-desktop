@@ -1,3 +1,69 @@
+communi (1.1.8) unstable; urgency=low
+
+  * Fixed issue #11: Copy and paste is not supported
+  * Fixed issue #10: Hardcoded channel types. The channel types/prefixes
+    are no more hardcoded to "#" and "&" but appropriate channel types
+    supported by the network are parsed from the RPL_ISUPPORT message
+  * Remember entered channel passwords so that they don't have to be
+    entered all over again every time upon connection
+  * Fixed issue #9: Background image moves together with VKB
+  * Fixed issue #8: Communi prints the WHO list output in the current
+    window if some other client connected to the same psyBNC instance
+    requests it
+  * Fixed issue #7: Option to disable auto-connect on application start
+  * Refactored (versioned) the settings system. NOTE: this version
+    is incompatible with previous versions -> connections must be
+    re-entered. This is no more necessary in the future when stored
+    settings change, thanks to the versioning...
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Sun, 4 Mar 2012 17:00:44 +0200
+
+communi (1.1.7) unstable; urgency=low
+
+  * Fixed not to rejoin channels that have been removed while disconnected
+  * Fixed the version number in quit/part messages
+  * PR1.2: Workaround issue #5 (the vkb does not appear)
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Tue, 28 Feb 2012 21:40:13 +0200
+
+communi (1.1.6) unstable; urgency=low
+
+  * Ovi Store demands to change the version numbering scheme...
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Thu, 16 Feb 2012 19:58:49 +0200
+
+communi (1.1.0-5) unstable; urgency=low
+
+  * Stability improvements
+  * Handle mIRC background colors - thanks Mark Johnson!
+  * Fix issue #5: The virtual keyboard does not appear on tapping
+    the speech bubble on Harmattan PR1.2
+  * Temporarily disabled automatic reconnection due to issue #6:
+    Communi reconnects to the psyBNC server every 2 minutes
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Tue, 14 Feb 2012 22:45:27 +0200
+
+communi (1.1.0-4) unstable; urgency=low
+
+  * Improved connection state detection & error handling
+  * Updated server/connection state icons
+  * Added disconnect/reconnect functionality
+  * Made it possible to change nick & clear view
+  * Improved alternate nick handling
+  * Various minor UI improvements & fixes
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Tue, 7 Feb 2012 00:35:29 +0200
+
+communi (1.1.0-3) unstable; urgency=low
+
+  * Fixed a rare crash on application closing
+  * Cleanup channel specific users list upon parting
+  * Fixed part & quit messages
+  * Improved unread count indicator
+  * Store user & real names to settings
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Tue, 31 Jan 2012 20:55:41 +0200
+
 communi (1.1.0-2) unstable; urgency=low
 
   * Removed changelog & copyright files from the .deb package

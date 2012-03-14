@@ -20,10 +20,10 @@ import "UIConstants.js" as UI
 Page {
     id: page
 
-    property bool obscured: false
     property alias title: label.text
     property alias header: header
     property alias busy: indicator.running
+    property bool active: true
     default property alias content: content.data
 
     Connections {
@@ -31,19 +31,6 @@ Page {
         onActiveChanged: {
             if (!Qt.application.active)
                 page.busy = false;
-        }
-    }
-
-    Rectangle {
-        id: background
-
-        anchors.fill: parent
-        color: "#e0e1e2"
-
-        Image {
-            source: "../images/background.png"
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
         }
     }
 
@@ -62,10 +49,8 @@ Page {
         id: header
 
         width: parent.width
-        height: screen.currentOrientation == Screen.Landscape || page.obscured ? 46 : 72
+        height: screen.currentOrientation === Screen.Landscape ? 46 : 72
         source: "image://theme/meegotouch-sheet-header-background"
-
-        Behavior on height { NumberAnimation { } }
 
         border {
             top: 10
@@ -90,8 +75,8 @@ Page {
                 id: label
 
                 elide: Text.ElideRight
-                font.pixelSize: 32
-                font.family: "Nokia Pure Text Light"
+                font.pixelSize: UI.LARGE_FONT
+                color: page.active ? UI.TITLE_COLOR : UI.INACTIVE_COLOR
                 anchors.verticalCenter: parent.verticalCenter
                 width: parent.width - indicator.width - UI.DEFAULT_SPACING
             }

@@ -13,42 +13,44 @@
 */
 
 #include "tabwidget.h"
+#include "tabwidget_p.h"
 #include "sharedtimer.h"
-#include <QTabBar>
-#include <QGestureEvent>
+#include <QContextMenuEvent>
 
-class TabBar : public QTabBar
+TabBar::TabBar(QWidget* parent) : QTabBar(parent)
 {
-public:
-    TabBar(QWidget* parent = 0) : QTabBar(parent)
-    {
-        addTab(tr("+"));
-        setSelectionBehaviorOnRemove(SelectLeftTab);
-    }
+    addTab(tr("+"));
+    setSelectionBehaviorOnRemove(SelectLeftTab);
+}
 
-protected:
-    void changeEvent(QEvent* event)
+void TabBar::changeEvent(QEvent* event)
+{
+    if (event->type() == QEvent::StyleChange)
     {
-        if (event->type() == QEvent::StyleChange)
-        {
-            Qt::TextElideMode mode = elideMode();
-            QTabBar::changeEvent(event);
-            if (mode != elideMode())
-                setElideMode(mode);
-            return;
-        }
+        Qt::TextElideMode mode = elideMode();
         QTabBar::changeEvent(event);
+        if (mode != elideMode())
+            setElideMode(mode);
+        return;
     }
+    QTabBar::changeEvent(event);
+}
 
-    void wheelEvent(QWheelEvent* event)
-    {
-        if (event->delta() > 0)
-            QMetaObject::invokeMethod(parent(), "moveToPrevTab");
-        else
-            QMetaObject::invokeMethod(parent(), "moveToNextTab");
-        QWidget::wheelEvent(event);
-    }
-};
+void TabBar::contextMenuEvent(QContextMenuEvent* event)
+{
+    int index = tabAt(event->pos());
+    if (index != -1)
+        emit menuRequested(index, event->globalPos());
+}
+
+void TabBar::wheelEvent(QWheelEvent* event)
+{
+    if (event->delta() > 0)
+        QMetaObject::invokeMethod(parent(), "moveToPrevTab");
+    else
+        QMetaObject::invokeMethod(parent(), "moveToNextTab");
+    QWidget::wheelEvent(event);
+}
 
 TabWidget::TabWidget(QWidget* parent) : QTabWidget(parent)
 {
@@ -58,8 +60,8 @@ TabWidget::TabWidget(QWidget* parent) : QTabWidget(parent)
     d.inactiveColor = palette().color(QPalette::Disabled, QPalette::Highlight);
     d.alertColor = palette().color(QPalette::Highlight);
     d.highlightColor = palette().color(QPalette::Highlight);
-    d.swipeOrientation = Qt::Orientation(0);
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
+    connect(tabBar(), SIGNAL(menuRequested(int,QPoint)), this, SIGNAL(tabMenuRequested(int,QPoint)));
 }
 
 QColor TabWidget::inactiveColor() const
@@ -100,18 +102,9 @@ bool TabWidget::isTabInactive(int index)
 void TabWidget::setTabInactive(int index, bool inactive)
 {
     if (!inactive)
-    {
-        int count = d.inactiveIndexes.removeAll(index);
-        if (count > 0 && d.inactiveIndexes.isEmpty())
-            emit inactiveStatusChanged(false);
-    }
-    else
-    {
-        if (d.inactiveIndexes.isEmpty())
-            emit inactiveStatusChanged(true);
-        if (!d.inactiveIndexes.contains(index))
-            d.inactiveIndexes.append(index);
-    }
+        d.inactiveIndexes.removeAll(index);
+    else if (!d.inactiveIndexes.contains(index))
+        d.inactiveIndexes.append(index);
     colorizeTab(index);
 }
 
@@ -167,28 +160,6 @@ void TabWidget::setTabHighlight(int index, bool highlight)
     colorizeTab(index);
 }
 
-void TabWidget::registerSwipeGestures(Qt::Orientation orientation)
-{
-    if (d.swipeOrientation != 0) {
-        qWarning("TabWidget::registerSwipeGestures: already registered");
-        return;
-    }
-
-    d.swipeOrientation = orientation;
-    grabGesture(Qt::SwipeGesture);
-}
-
-void TabWidget::unregisterSwipeGestures()
-{
-    if (d.swipeOrientation == 0) {
-        qWarning("TabWidget::unregisterSwipeGestures: not registered");
-        return;
-    }
-
-    d.swipeOrientation = Qt::Orientation(0);
-    ungrabGesture(Qt::SwipeGesture);
-}
-
 void TabWidget::moveToNextTab()
 {
     int index = currentIndex();
@@ -210,53 +181,6 @@ void TabWidget::setTabBarVisible(bool visible)
     tabBar()->setVisible(visible);
 }
 
-bool TabWidget::event(QEvent* event)
-{
-    if (event->type() == QEvent::Gesture)
-    {
-        QGestureEvent* gestureEvent = static_cast<QGestureEvent*>(event);
-        QGesture* gesture = gestureEvent->gesture(Qt::SwipeGesture);
-        QSwipeGesture* swipeGesture = static_cast<QSwipeGesture*>(gesture);
-        if (swipeGesture)
-        {
-            bool accepted = false;
-            switch (d.swipeOrientation)
-            {
-                case Qt::Horizontal:
-                    accepted = handleSwipeGesture(swipeGesture, swipeGesture->horizontalDirection());
-                    break;
-                case Qt::Vertical:
-                    accepted = handleSwipeGesture(swipeGesture, swipeGesture->verticalDirection());
-                    break;
-                default:
-                    Q_ASSERT(false);
-                    break;
-            }
-            gestureEvent->setAccepted(swipeGesture, accepted);
-        }
-    }
-    return QTabWidget::event(event);
-}
-
-bool TabWidget::handleSwipeGesture(QSwipeGesture* gesture, QSwipeGesture::SwipeDirection direction)
-{
-    switch (direction)
-    {
-        case QSwipeGesture::Up:
-        case QSwipeGesture::Left:
-            if (gesture->state() == Qt::GestureFinished)
-                moveToPrevTab();
-            return true;
-        case QSwipeGesture::Down:
-        case QSwipeGesture::Right:
-            if (gesture->state() == Qt::GestureFinished)
-                moveToNextTab();
-            return true;
-        default:
-            return false;
-    }
-}
-
 static void shiftIndexesFrom(QList<int>& indexes, int from, int delta)
 {
     QMutableListIterator<int> it(indexes);
@@ -276,6 +200,9 @@ void TabWidget::tabInserted(int index)
 
 void TabWidget::tabRemoved(int index)
 {
+    d.inactiveIndexes.removeAll(index);
+    d.alertIndexes.removeAll(index);
+    d.highlightIndexes.removeAll(index);
     shiftIndexesFrom(d.inactiveIndexes, index, -1);
     shiftIndexesFrom(d.alertIndexes, index, -1);
     shiftIndexesFrom(d.highlightIndexes, index, -1);

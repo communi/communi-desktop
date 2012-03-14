@@ -34,9 +34,6 @@ public:
 
     void updateCurrent(AbstractSessionItem* item);
 
-public slots:
-    void close();
-
 signals:
     void channelChanged();
 

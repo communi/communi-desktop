@@ -24,6 +24,7 @@ Item {
     property alias subtitle: subtitle.text
     property alias iconSource: icon.source
     property bool highlighted: false
+    property bool active: true
     property int unreadCount: 0
     property bool busy: false
 
@@ -33,11 +34,12 @@ Item {
     width: listView.width
     height: 88
 
-    BorderImage {
+    Rectangle {
         id: background
         anchors.fill: parent
         visible: mouseArea.pressed
-        source: "image://theme/meegotouch-list-background-pressed-center"
+        color: UI.SEPARATOR_COLOR
+        opacity: UI.DISABLED_OPACITY
     }
 
     Image {
@@ -48,6 +50,9 @@ Item {
     }
 
     Column {
+        id: column
+        spacing: 2
+
         anchors {
             left: icon.right
             right: loader.left
@@ -59,18 +64,17 @@ Item {
         Label {
             id: title
             font.bold: true
-            font.pixelSize: 26
-            font.family: "Nokia Pure Text"
-            color: root.highlighted ? "red" : "#282828"
+            font.pixelSize: UI.MEDIUM_FONT
+            color: root.highlighted ? UI.HIGHLIGHT_COLOR : root.active ? UI.TITLE_COLOR : UI.INACTIVE_COLOR
             width: parent.width
             elide: Text.ElideRight
         }
 
         Label {
             id: subtitle
-            font.pixelSize: 22
-            font.family: "Nokia Pure Text Light"
-            color: "#505050"
+            font.pixelSize: UI.SMALL_FONT
+            font.weight: Font.Light
+            color: root.active ? UI.SUBTITLE_COLOR : UI.INACTIVE_COLOR
             width: parent.width
             elide: Text.ElideRight
         }
@@ -78,6 +82,7 @@ Item {
 
     Loader {
         id: loader
+
         anchors.right: parent.right
         anchors.rightMargin: UI.PAGE_MARGIN
         anchors.verticalCenter: parent.verticalCenter
@@ -96,6 +101,7 @@ Item {
                 Label {
                     id: unread
                     color: "white"
+                    font.pixelSize: UI.SMALL_FONT
                     text: root.unreadCount
                     anchors.fill: parent
                     elide: Text.ElideRight

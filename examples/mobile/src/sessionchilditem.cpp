@@ -28,7 +28,7 @@ SessionChildItem::SessionChildItem(SessionItem* parent) :
 
 bool SessionChildItem::isChannel() const
 {
-    return title().startsWith('#') || title().startsWith('&');
+    return session()->isChannel(title());
 }
 
 SessionItem* SessionChildItem::sessionItem() const
@@ -82,21 +82,4 @@ void SessionChildItem::receiveMessage(IrcMessage* message)
         else if (!isChannel() && numMsg->code() == Irc::RPL_WHOISUSER)
             setSubtitle(numMsg->parameters().value(5));
     }
-}
-
-void SessionChildItem::close()
-{
-    if (isChannel())
-    {
-        static const QString msg = tr("%1 %2 for %2")
-                .arg(QApplication::applicationName())
-                .arg(QApplication::applicationVersion())
-#ifdef Q_OS_SYMBIAN
-                .arg(tr("Symbian"));
-#else
-                .arg(tr("N9"));
-#endif
-        m_parent->session()->sendCommand(IrcCommand::createPart(title(), msg));
-    }
-    m_parent->removeChild(title());
 }

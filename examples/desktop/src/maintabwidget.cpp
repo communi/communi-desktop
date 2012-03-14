@@ -23,8 +23,6 @@ MainTabWidget::MainTabWidget(QWidget* parent) : TabWidget(parent)
     setTabPosition(QTabWidget::West);
     setStyleSheet(".MainTabWidget::pane { border: 0px; }");
 
-    registerSwipeGestures(Qt::Vertical);
-
     d.tabUpShortcut = new QShortcut(this);
     connect(d.tabUpShortcut, SIGNAL(activated()), this, SLOT(moveToPrevTab()));
 

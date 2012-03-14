@@ -30,12 +30,17 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 {
     QApplication::setApplicationName("Communi");
     QApplication::setOrganizationName("Communi");
-    QApplication::setApplicationVersion(Irc::version());
+    QApplication::setApplicationVersion(COMMUNI_EXAMPLE_VERSION);
 
     QScopedPointer<QApplication> app(createApplication(argc, argv));
     QScopedPointer<QmlApplicationViewer> viewer(QmlApplicationViewer::create());
 
-#ifndef Q_OS_SYMBIAN
+    QString appName = QObject::tr("%1 %2 for %3").arg(QApplication::applicationName())
+                                                 .arg(QApplication::applicationVersion());
+#ifdef Q_OS_SYMBIAN
+    viewer->rootContext()->setContextProperty("ApplicationName", appName.arg(QObject::tr("Symbian")));
+#else
+    viewer->rootContext()->setContextProperty("ApplicationName", appName.arg(QObject::tr("MeeGo")));
     viewer->engine()->addImportPath("/opt/communi/imports");
 #endif
 

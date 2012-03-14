@@ -12,23 +12,22 @@
 * GNU General Public License for more details.
 */
 
-#ifndef CONNECTION_H
-#define CONNECTION_H
+#ifndef CONNECTIONINFO_H
+#define CONNECTIONINFO_H
 
 #include <QList>
 #include <QString>
 #include <QVariant>
 #include <QMetaType>
 #include <QDataStream>
-#include <QStringList>
+#include "channelinfo.h"
 #include "streamer.h"
 
-struct Connection
+struct ConnectionInfo
 {
-    Connection();
-    operator QVariant() const;
-    bool operator==(const Connection& other) const;
-    bool operator!=(const Connection& other) const;
+    ConnectionInfo() : port(6667), secure(false), quit(false)
+    {
+    }
 
     QString name;
     QString host;
@@ -37,12 +36,15 @@ struct Connection
     QString real;
     QString pass;
     bool secure;
-    QStringList channels;
+    ChannelInfos channels;
+    QString user;
+    bool quit;
 };
-Q_DECLARE_METATYPE(Connection);
+Q_DECLARE_METATYPE(ConnectionInfo);
 
-inline QDataStream& operator<<(QDataStream& out, const Connection& connection)
+inline QDataStream& operator<<(QDataStream& out, const ConnectionInfo& connection)
 {
+    out << quint32(123); // version
     out << connection.name;
     out << connection.host;
     out << connection.port;
@@ -51,11 +53,14 @@ inline QDataStream& operator<<(QDataStream& out, const Connection& connection)
     out << connection.pass;
     out << connection.secure;
     out << connection.channels;
+    out << connection.user;
+    out << connection.quit;
     return out;
 }
 
-inline QDataStream& operator>>(QDataStream& in, Connection& connection)
+inline QDataStream& operator>>(QDataStream& in, ConnectionInfo& connection)
 {
+    quint32 version = readStreamValue<quint32>(in, 0);
     connection.name = readStreamValue<QString>(in, connection.name);
     connection.host = readStreamValue<QString>(in, connection.host);
     connection.port = readStreamValue<quint16>(in, connection.port);
@@ -63,11 +68,14 @@ inline QDataStream& operator>>(QDataStream& in, Connection& connection)
     connection.real = readStreamValue<QString>(in, connection.real);
     connection.pass = readStreamValue<QString>(in, connection.pass);
     connection.secure = readStreamValue<bool>(in, connection.secure);
-    connection.channels = readStreamValue<QStringList>(in, connection.channels);
+    connection.channels = readStreamValue<ChannelInfos>(in, connection.channels);
+    connection.user = readStreamValue<QString>(in, connection.user);
+    connection.quit = readStreamValue<bool>(in, connection.quit);
+    Q_UNUSED(version);
     return in;
 }
 
-typedef QList<Connection> Connections;
-Q_DECLARE_METATYPE(Connections);
+typedef QList<ConnectionInfo> ConnectionInfos;
+Q_DECLARE_METATYPE(ConnectionInfos);
 
-#endif // CONNECTION_H
+#endif // CONNECTIONINFO_H

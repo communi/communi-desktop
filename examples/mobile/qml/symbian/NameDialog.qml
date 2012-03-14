@@ -13,26 +13,28 @@
 */
 
 import QtQuick 1.1
-import Communi 1.0
 import com.nokia.symbian 1.1
+import "UIConstants.js" as UI
 
-PageStackWindow {
-    id: window
+BaseDialog {
+    id: dialog
 
-    platformInverted: true
+    property alias name: nameField.text
 
-    initialPage: MainPage { }
+    onStatusChanged: if (status === DialogStatus.Open) nameField.forceActiveFocus()
 
-    Component.onCompleted: {
-        SessionManager.restore();
-        for (var i = 0; i < SessionModel.length; ++i)
-            if (!SessionModel[i].session.hasQuit)
-                SessionModel[i].session.reconnect();
-    }
+    Column {
+        id: column
+        width: parent.width
 
-    Component.onDestruction: {
-        SessionManager.save();
-        for (var i = 0; i < SessionModel.length; ++i)
-            SessionModel[i].session.quit(ApplicationName);
+        Label { text: qsTr("Nick name"); platformInverted: true }
+        TextField {
+            id: nameField
+            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+            errorHighlight: !text.length
+            width: parent.width
+            platformInverted: true
+            Keys.onReturnPressed: dialog.accept()
+        }
     }
 }

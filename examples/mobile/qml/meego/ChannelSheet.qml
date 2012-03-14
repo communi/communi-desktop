@@ -22,7 +22,7 @@ CommonSheet {
     property alias channel: channelField.text
     property alias password: passwordField.text
     property bool passwordRequired: false
-    property int sessionIndex: buttons.checkedButton ? buttons.checkedButton.idx : -1
+    property QtObject session: null
 
     acceptable: !channelField.errorHighlight && !passwordField.errorHighlight
     onStatusChanged: {
@@ -30,52 +30,55 @@ CommonSheet {
         else if (status == DialogStatus.Closed) passwordRequired = false;
     }
 
-    SipAttributes {
-        id: sipAttributes
-        actionKeyHighlighted: true
-        actionKeyLabel: qsTr("Next")
-    }
-
     Column {
         id: column
         width: parent.width
         spacing: UI.DEFAULT_SPACING
 
-        Label { text: qsTr("Connection"); visible: SessionModel.length > 1 }
-        ButtonColumn {
-            id: buttons
+        Column {
             width: parent.width
-            visible: SessionModel.length > 1
-            Repeater {
-                model: SessionModel
-                Button {
-                    property int idx: index
-                    text: modelData.title + " ("+ modelData.subtitle +")"
+            Label { text: qsTr("Channel") }
+            TextField {
+                id: channelField
+                text: session ? session.channelTypes[0] : qsTr("#")
+                enabled: !passwordRequired
+                inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+                errorHighlight: !session || !session.isChannel(text)
+                width: parent.width
+                platformSipAttributes: SipAttributes {
+                    actionKeyHighlighted: true
+                    actionKeyLabel: qsTr("Next")
                 }
+                Keys.onReturnPressed: passwordField.forceActiveFocus()
+            }
+            Label {
+                text: qsTr("%1 supports channel types: %2").arg(session.network).arg(session.channelTypes)
+                font.pixelSize: UI.SMALL_FONT
+                font.weight: Font.Light
+                color: UI.SUBTITLE_COLOR
+                width: parent.width
+                elide: Text.ElideRight
+                horizontalAlignment: Text.AlignRight
             }
         }
 
-        TextField {
-            id: channelField
-            text: qsTr("#")
-            enabled: !passwordRequired
-            placeholderText: qsTr("Channel")
-            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-            errorHighlight: text.length < 2 || (text[0] !== "#" && text[0] !== "&")
+        Column {
             width: parent.width
-            platformSipAttributes: sipAttributes
-            Keys.onReturnPressed: passworld.forceActiveFocus()
-        }
-
-        TextField {
-            id: passwordField
-            echoMode: TextInput.PasswordEchoOnEdit
-            placeholderText: sheet.passwordRequired ? qsTr("Password required") : qsTr("Optional password")
-            errorHighlight: sheet.passwordRequired ? !text.length : false
-            visible: placeholderText.length
-            width: parent.width
-            platformSipAttributes: sipAttributes
-            Keys.onReturnPressed: channelField.forceActiveFocus()
+            Label { text: qsTr("Password") }
+            TextField {
+                id: passwordField
+                echoMode: TextInput.PasswordEchoOnEdit
+                placeholderText: sheet.passwordRequired ? qsTr("Required!") : qsTr("Optional...")
+                errorHighlight: sheet.passwordRequired ? !text.length : false
+                visible: placeholderText.length
+                width: parent.width
+                platformSipAttributes: SipAttributes {
+                    actionKeyEnabled: sheet.acceptable
+                    actionKeyHighlighted: true
+                    actionKeyLabel: qsTr("Ok")
+                }
+                Keys.onReturnPressed: sheet.accept()
+            }
         }
     }
 }

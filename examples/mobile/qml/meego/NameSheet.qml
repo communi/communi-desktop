@@ -20,41 +20,26 @@ CommonSheet {
     id: sheet
 
     property alias name: nameField.text
-    property int sessionIndex: buttons.checkedButton ? buttons.checkedButton.idx : -1
 
     acceptable: !nameField.errorHighlight
-    onStatusChanged: if (status == DialogStatus.Open) nameField.forceActiveFocus()
+    onStatusChanged: if (status === DialogStatus.Open) nameField.forceActiveFocus()
 
     Column {
         id: column
         width: parent.width
-        spacing: UI.DEFAULT_SPACING
 
-        Label { text: qsTr("Connection"); visible: SessionModel.length > 1 }
-        ButtonColumn {
-            id: buttons
-            width: parent.width
-            visible: SessionModel.length > 1
-            Repeater {
-                model: SessionModel
-                Button {
-                    property int idx: index
-                    text: modelData.title + " ("+ modelData.subtitle +")"
-                }
-            }
-        }
-
+        Label { text: qsTr("Nick name") }
         TextField {
             id: nameField
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-            placeholderText: qsTr("Name")
             errorHighlight: !text.length
             width: parent.width
             platformSipAttributes: SipAttributes {
-                actionKeyEnabled: false
+                actionKeyEnabled: sheet.acceptable
                 actionKeyHighlighted: true
-                actionKeyLabel: qsTr("Next")
+                actionKeyLabel: qsTr("Ok")
             }
+            Keys.onReturnPressed: sheet.accept()
         }
     }
 }

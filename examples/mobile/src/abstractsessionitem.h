@@ -68,6 +68,7 @@ public slots:
     void setUnseenIndex(int index);
     void setAlertText(const QString& text);
     void sendUiCommand(IrcCommand* command);
+    void clear();
 
 signals:
     void iconChanged();

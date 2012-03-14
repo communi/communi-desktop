@@ -1,0 +1,17 @@
+; Language
+&EN
+
+; SIS header: name, uid, version
+#{"Communi installer"},(0x2002CCCF),1,1,1
+
+; Default localized vendor name
+%{"J-P Nurmi"}
+
+; Default unique vendor name
+:"J-P Nurmi"
+
+; Default HW/platform dependencies
+[0x2003A678],0,0,0,{"S60ProductID"}
+
+"Communi.sis" - "!:\private\2002CCCE\import\Communi.sis"
+@"$(EPOCROOT)/smartinstaller.sis",(0x2002CCCD)

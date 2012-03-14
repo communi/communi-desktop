@@ -13,6 +13,7 @@
 */
 
 import QtQuick 1.1
+import Communi 1.0
 import QtMultimediaKit 1.1
 import QtMobility.feedback 1.1
 import com.nokia.meego 1.0
@@ -24,8 +25,22 @@ CommonPage {
 
     property alias bouncer: bouncer
 
+    title: qsTr("Communi")
+    tools: ToolBarLayout {
+        ToolIcon {
+            iconId: "toolbar-add"
+            anchors.right: parent.right
+            onClicked: connectionSheet.open()
+        }
+    }
+
     ListView {
         id: listView
+
+        property QtObject currentSessionItem
+        property QtObject currentSession
+        property QtObject currentChildItem
+
         anchors.fill: parent
         model: SessionModel
         delegate: Column {
@@ -33,31 +48,45 @@ CommonPage {
             ListItem {
                 title: modelData.title
                 subtitle: modelData.subtitle
-                iconSource: modelData.error ? "../images/error.png" :
-                           !modelData.session.connected &&
-                           !modelData.session.active ? "../images/offline.png" :
-                           "../images/server.png"
+                iconSource: modelData.session.currentLag > 10000 ? "../images/unknown.png" :
+                            modelData.session.active && !modelData.session.connected ? "../images/server.png" :
+                            modelData.session.connected ? "../images/connected.png" : "../images/disconnected.png"
                 highlighted: modelData.highlighted
+                active: modelData.session.active
                 unreadCount: modelData.unreadCount
                 busy: modelData.busy
                 onClicked: chatPage.push(modelData)
-                onPressAndHold: sessionMenu.popup(modelData.session)
+                onPressAndHold: {
+                    channelSheet.session = modelData.session;
+                    listView.currentSessionItem = modelData;
+                    listView.currentSession = modelData.session;
+                    if (modelData.session.active)
+                        activeSessionMenu.open();
+                    else
+                        inactiveSessionMenu.open();
+                }
             }
             Repeater {
+                id: repeater
                 model: modelData.childItems
                 ListItem {
                     title: modelData.title
                     subtitle: modelData.subtitle
                     iconSource: modelData.channel ? "../images/channel.png" : "../images/query.png"
                     highlighted: modelData.highlighted
+                    active: modelData.session.active
                     unreadCount: modelData.unreadCount
                     busy: modelData.busy
                     onClicked: chatPage.push(modelData)
-                    onPressAndHold: chatMenu.popup(modelData)
+                    onPressAndHold: {
+                        listView.currentChildItem = modelData;
+                        listView.currentSession = modelData.session;
+                        childMenu.open();
+                    }
                 }
             }
             Rectangle {
-                color: "#b2b2b4"
+                color: UI.SEPARATOR_COLOR
                 height: 1
                 visible: index < listView.count - 1
                 anchors {
@@ -135,6 +164,10 @@ CommonPage {
                     modelData.unseenIndex = chatPage.count - 1;
                     modelData = null;
                 }
+                else if (status === PageStatus.Active && bouncer.cmd) {
+                    modelData.session.sendUiCommand(bouncer.cmd);
+                    bouncer.cmd = null;
+                }
             }
             if (status === PageStatus.Inactive && bouncer.item)
                 bouncer.start();
@@ -145,53 +178,172 @@ CommonPage {
         id: bouncer
         interval: 50
         property QtObject item
-        property QtObject cmd;
+        property QtObject cmd
         function bounce(item, cmd) {
+            bouncer.cmd = cmd;
             if (root.status === PageStatus.Active) {
+                bouncer.item = null;
                 chatPage.push(item);
-                if (cmd !== null)
-                    item.session.sendCommand(cmd);
             } else {
                 bouncer.item = item;
-                bouncer.cmd = cmd;
                 pageStack.pop();
             }
         }
         onTriggered: {
-            chatPage.push(bouncer.item)
-            if (bouncer.cmd !== null)
-                item.session.sendCommand(bouncer.cmd);
+            chatPage.push(bouncer.item);
             bouncer.item = null;
-            bouncer.cmd = null;
         }
     }
 
     ContextMenu {
-        id: sessionMenu
-        property QtObject session
-        function popup(session) {
-            sessionMenu.session = session;
-            open();
-        }
+        id: activeSessionMenu
+
         MenuLayout {
             MenuItem {
-                text: qsTr("Quit")
-                onClicked: SessionManager.removeSession(sessionMenu.session)
+                text: qsTr("Join channel")
+                onClicked: channelSheet.open()
+            }
+            MenuItem {
+                text: qsTr("Open query")
+                onClicked: querySheet.open()
+            }
+            MenuItem {
+                text: qsTr("Set nick")
+                onClicked: {
+                    nickSheet.name = listView.currentSession.nickName;
+                    nickSheet.open();
+                }
+            }
+            MenuItem {
+                text: qsTr("Disconnect")
+                onClicked: {
+                    listView.currentSession.quit(ApplicationName);
+                }
             }
         }
     }
 
     ContextMenu {
-        id: chatMenu
-        property QtObject chatItem
-        function popup(item) {
-            chatItem = item;
-            open();
-        }
+        id: inactiveSessionMenu
+
         MenuLayout {
             MenuItem {
+                text: qsTr("Reconnect")
+                onClicked: {
+                    listView.currentSession.reconnect();
+                }
+            }
+            MenuItem {
                 text: qsTr("Close")
-                onClicked: chatMenu.chatItem.close()
+                onClicked: {
+                    SessionManager.removeSession(listView.currentSession);
+                    listView.currentSession.destructLater();
+                }
+            }
+        }
+    }
+
+    ConnectionSheet {
+        id: connectionSheet
+        title: qsTr("Add connection")
+
+        Component.onCompleted: {
+            connectionSheet.host = Settings.host;
+            connectionSheet.port = Settings.port;
+            connectionSheet.name = Settings.name;
+            connectionSheet.user = Settings.user;
+            connectionSheet.real = Settings.real;
+            connectionSheet.channel = Settings.channel;
+            connectionSheet.secure = Settings.secure;
+        }
+
+        Component {
+            id: sessionComponent
+            Session { }
+        }
+
+        onAccepted: {
+            var session = sessionComponent.createObject(root);
+            session.nickName = connectionSheet.name;
+            session.userName = connectionSheet.user.length ? connectionSheet.user : "communi";
+            session.realName = connectionSheet.real.length ? connectionSheet.real : connectionSheet.name;
+            session.host = connectionSheet.host;
+            session.port = connectionSheet.port;
+            session.password = connectionSheet.password;
+            session.secure = connectionSheet.secure;
+            if (connectionSheet.channel.length)
+                session.addChannel(connectionSheet.channel);
+
+            SessionManager.addSession(session);
+            session.reconnect();
+
+            connectionSheet.password = "";
+            Settings.host = session.host;
+            Settings.port = session.port;
+            Settings.name = session.nickName;
+            Settings.user = session.userName;
+            Settings.real = session.realName;
+            Settings.channel = connectionSheet.channel;
+            Settings.secure = session.secure;
+        }
+    }
+
+    IrcCommand {
+        id: ircCommand
+    }
+
+    ChannelSheet {
+        id: channelSheet
+        title: qsTr("Join channel")
+        onAccepted: {
+            var child = listView.currentSessionItem.addChild(channel);
+            var cmd = ircCommand.createJoin(channel, password);
+            listView.currentSession.sendUiCommand(cmd);
+            bouncer.bounce(child, null);
+        }
+        Connections {
+            target: SessionManager
+            onChannelKeyRequired: {
+                channelSheet.session = session;
+                channelSheet.channel = channel;
+                channelSheet.passwordRequired = true;
+                channelSheet.open();
+            }
+        }
+    }
+
+    NameSheet {
+        id: querySheet
+        title: qsTr("Open query")
+        onAccepted: {
+            var child = listView.currentSessionItem.addChild(name);
+            var cmd = ircCommand.createWhois(name);
+            bouncer.bounce(child, cmd);
+        }
+    }
+
+    NameSheet {
+        id: nickSheet
+        title: qsTr("Set nick")
+        onAccepted: {
+            listView.currentSession.nickName = name;
+        }
+    }
+
+    ContextMenu {
+        id: childMenu
+
+        MenuLayout {
+            MenuItem {
+                text: listView.currentChildItem !== null && listView.currentChildItem.channel && listView.currentSession.connected ? qsTr("Part") : qsTr("Close")
+                onClicked: {
+                    var item = listView.currentChildItem;
+                    if (item.channel) {
+                        var cmd = ircCommand.createPart(item.title, ApplicationName);
+                        item.session.sendUiCommand(cmd);
+                    }
+                    item.sessionItem.removeChild(item.title);
+                }
             }
         }
     }

@@ -27,15 +27,15 @@
 SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     TabWidget(parent)
 {
-    d.hasQuit = false;
     d.handler.setSession(session);
-    session->setParent(&d.handler);
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
     connect(this, SIGNAL(newTabRequested()), this, SLOT(onNewTabRequested()), Qt::QueuedConnection);
+    connect(this, SIGNAL(tabMenuRequested(int,QPoint)), this, SLOT(onTabMenuRequested(int,QPoint)));
 
-    connect(session, SIGNAL(activeChanged(bool)), this, SLOT(onActiveChanged(bool)));
-    connect(session, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+    connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateStatus()));
+    connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateStatus()));
+    connect(session, SIGNAL(networkChanged(QString)), this, SIGNAL(titleChanged(QString)));
 
     connect(&d.handler, SIGNAL(receiverToBeAdded(QString)), this, SLOT(openView(QString)));
     connect(&d.handler, SIGNAL(receiverToBeRemoved(QString)), this, SLOT(removeView(QString)));
@@ -49,11 +49,9 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
 
     applySettings(Application::settings());
 
-    registerSwipeGestures(Qt::Horizontal);
-
     MessageView* view = openView(d.handler.session()->host());
     d.handler.setDefaultReceiver(view);
-    setTabInactive(0, !session->isActive());
+    updateStatus();
 }
 
 Session* SessionTabWidget::session() const
@@ -71,14 +69,12 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
         connect(view, SIGNAL(alert(MessageView*, bool)), this, SLOT(alertTab(MessageView*, bool)));
         connect(view, SIGNAL(highlight(MessageView*, bool)), this, SLOT(highlightTab(MessageView*, bool)));
         connect(view, SIGNAL(query(QString)), this, SLOT(openView(QString)));
-        connect(view, SIGNAL(aboutToQuit()), this, SLOT(onAboutToQuit()));
 
         d.handler.addReceiver(receiver, view);
         d.views.insert(receiver.toLower(), view);
         addTab(view, receiver);
     }
-    if (view)
-        setCurrentWidget(view);
+    setCurrentWidget(view);
     return view;
 }
 
@@ -87,22 +83,31 @@ void SessionTabWidget::removeView(const QString& receiver)
     MessageView* view = d.views.take(receiver.toLower());
     if (view)
     {
+        view->deleteLater();
         if (indexOf(view) == 0)
+        {
             deleteLater();
-        else
-            view->deleteLater();
+            session()->destructLater();
+        }
     }
 }
 
 void SessionTabWidget::closeCurrentView()
 {
-    MessageView* view = d.views.value(tabText(currentIndex()).toLower());
+    closeView(currentIndex());
+}
+
+void SessionTabWidget::closeView(int index)
+{
+    MessageView* view = d.views.value(tabText(index).toLower());
     if (view)
     {
+        QString reason = tr("%1 %2").arg(Application::applicationName())
+                                    .arg(Application::applicationVersion());
         if (indexOf(view) == 0)
-            quit();
+            session()->quit(reason);
         else if (view->isChannelView())
-            d.handler.session()->sendCommand(IrcCommand::createPart(view->receiver()));
+            d.handler.session()->sendCommand(IrcCommand::createPart(view->receiver(), reason));
 
         d.handler.removeReceiver(view->receiver());
     }
@@ -118,35 +123,14 @@ void SessionTabWidget::renameView(const QString& from, const QString& to)
         int index = indexOf(view);
         if (index != -1)
             setTabText(index, view->receiver());
-        if (index == 0)
-            emit titleChanged(view->receiver());
     }
 }
 
-void SessionTabWidget::quit(const QString &message)
+void SessionTabWidget::updateStatus()
 {
-    QString reason = message.trimmed();
-    if (reason.isEmpty())
-        reason = tr("%1 %2").arg(Application::applicationName())
-                            .arg(Application::applicationVersion());
-    d.handler.session()->sendCommand(IrcCommand::createQuit(reason));
-}
-
-void SessionTabWidget::onAboutToQuit()
-{
-    d.hasQuit = true;
-}
-
-void SessionTabWidget::onActiveChanged(bool active)
-{
-    setTabInactive(0, !active);
-}
-
-void SessionTabWidget::onDisconnected()
-{
-    if (d.hasQuit)
-        deleteLater();
-    // TODO: else reconnect?
+    bool inactive = !session()->isActive() && !session()->isConnected();
+    setTabInactive(0, inactive);
+    emit inactiveStatusChanged(inactive);
 }
 
 void SessionTabWidget::tabActivated(int index)
@@ -170,10 +154,34 @@ void SessionTabWidget::onNewTabRequested()
     QString channel = QInputDialog::getText(this, tr("Join channel"), tr("Channel:"));
     if (!channel.isEmpty())
     {
-        if (channel.startsWith("#") || channel.startsWith("&"))
+        if (session()->isChannel(channel))
             d.handler.session()->sendCommand(IrcCommand::createJoin(channel));
         openView(channel);
     }
+}
+
+void SessionTabWidget::onTabMenuRequested(int index, const QPoint& pos)
+{
+    QMenu menu;
+    if (index == 0)
+    {
+        if (session()->isActive())
+            menu.addAction(tr("Disconnect"), session(), SLOT(quit()));
+        else
+            menu.addAction(tr("Reconnect"), session(), SLOT(reconnect()));
+    }
+    if (static_cast<MessageView*>(widget(index))->isChannelView())
+        menu.addAction(tr("Part"), this, SLOT(onTabCloseRequested()))->setData(index);
+    else
+        menu.addAction(tr("Close"), this, SLOT(onTabCloseRequested()))->setData(index);
+    menu.exec(pos);
+}
+
+void SessionTabWidget::onTabCloseRequested()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action)
+        closeView(action->data().toInt());
 }
 
 void SessionTabWidget::delayedTabReset()

@@ -187,7 +187,12 @@ void AbstractSessionItem::removeUser(const QString& user)
 void AbstractSessionItem::sendUiCommand(IrcCommand *command)
 {
     m_sent.insert(command->type());
-    m_session->sendCommand(command);
+    m_session->sendUiCommand(command);
+}
+
+void AbstractSessionItem::clear()
+{
+    m_messages->setStringList(QStringList());
 }
 
 void AbstractSessionItem::receiveMessage(IrcMessage* message)
