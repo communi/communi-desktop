@@ -1,6 +1,17 @@
+anna|belle|symbian {
+    qml_files.source = qml/symbian
+    DEFINES += COMMUNI_PLATFORM=\\\"Symbian\\\"
+    DEFINES += COMMUNI_EXAMPLE_VERSION=\\\"1.1.1\\\"
+    DEFINES += COMMUNI_MAIN_QML=\\\"qml/symbian/main.qml\\\"
+} else {
+    qml_files.source = qml/meego
+    DEFINES += COMMUNI_PLATFORM=\\\"MeeGo\\\"
+    DEFINES += COMMUNI_EXAMPLE_VERSION=\\\"1.1.8\\\"
+    DEFINES += COMMUNI_MAIN_QML=\\\"qml/meego/main.qml\\\"
+    DEFINES += COMMUNI_IMPORT_PATH=\\\"/opt/communi/imports\\\"
+}
+
 # Add more folders to ship with the application, here
-symbian:qml_files.source = qml/symbian
-else:qml_files.source = qml/meego
 qml_files.target = qml
 qml_images.source = qml/images
 qml_images.target = qml
@@ -9,14 +20,6 @@ DEPLOYMENTFOLDERS = qml_files qml_images
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =
 
-symbian {
-    TARGET = Communi
-    TARGET.UID3 = 0x20035734
-    DEFINES += COMMUNI_EXAMPLE_VERSION=\\\"1.1.1\\\"
-} else {
-    DEFINES += COMMUNI_EXAMPLE_VERSION=\\\"1.1.8\\\"
-}
-
 # Smart Installer package's UID
 # This UID is from the protected range and therefore the package will
 # fail to install if self-signed. By default qmake uses the unprotected
@@ -24,8 +27,12 @@ symbian {
 # 0x2002CCCF value if protected UID is given to the application
 #symbian:DEPLOYMENT.installer_header = 0x2002CCCF
 
-# Allow network access on Symbian
-symbian:TARGET.CAPABILITY += NetworkServices
+symbian {
+    TARGET = Communi
+    TARGET.UID3 = 0x20035734
+    # Allow network access on Symbian
+    TARGET.CAPABILITY += NetworkServices
+}
 
 # If your application uses the Qt Mobility libraries, uncomment the following
 # lines and add the respective components to the MOBILITY variable.
