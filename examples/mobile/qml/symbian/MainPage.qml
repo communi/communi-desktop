@@ -14,7 +14,6 @@
 
 import QtQuick 1.1
 import Communi 1.0
-import QtMobility.feedback 1.1
 import com.nokia.symbian 1.1
 import com.nokia.extras 1.1
 import "UIConstants.js" as UI
@@ -126,9 +125,11 @@ CommonPage {
         }
     }
 
-    ThemeEffect {
-        id: effect
-        effect: ThemeEffect.Basic
+    property variant effect: null
+    Component.onCompleted: {
+        var component = Qt.createComponent("Feedback.qml");
+        if (component.status === Component.Ready)
+            effect = component.createObject(root);
     }
 
     Connections {
@@ -138,7 +139,8 @@ CommonPage {
             banner.text = item.alertText;
             banner.item = item;
             banner.open();
-            effect.play();
+            if (root.effect)
+                root.effect.play();
         }
     }
 
