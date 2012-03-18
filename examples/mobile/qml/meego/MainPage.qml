@@ -317,8 +317,7 @@ CommonPage {
         title: qsTr("Open query")
         onAccepted: {
             var child = listView.currentSessionItem.addChild(name);
-            var cmd = ircCommand.createWhois(name);
-            bouncer.bounce(child, cmd);
+            bouncer.bounce(child, null);
         }
     }
 
