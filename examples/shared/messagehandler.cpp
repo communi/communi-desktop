@@ -255,7 +255,7 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
         const QStringList names = message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts);
         foreach (QString name, names)
         {
-            if (name.startsWith("@") || name.startsWith("+"))
+            if (name.startsWith("~") || name.startsWith("&") || name.startsWith("@") || name.startsWith("%") || name.startsWith("+"))
                 name.remove(0, 1);
             d.addChannelUser(channel, name);
         }
