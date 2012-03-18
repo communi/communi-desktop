@@ -306,10 +306,12 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
     case Irc::RPL_ENDOFWHOIS:
         return QString();
     case Irc::RPL_WHOISOPERATOR:
+    case Irc::RPL_WHOISMODES: // "is using modes"
+    case Irc::RPL_WHOISREGNICK: // "is a registered nick"
     case Irc::RPL_WHOISHELPOP: // "is available for help"
     case Irc::RPL_WHOISSPECIAL: // "is identified to services"
-    case Irc::RPL_WHOISSECURE: // nick is using a secure connection
     case Irc::RPL_WHOISHOST: // nick is connecting from <...>
+    case Irc::RPL_WHOISSECURE: // nick is using a secure connection
         return tr("! %1").arg(MID_(1));
     case Irc::RPL_WHOISUSER:
         return tr("! %1 is %2@%3 (%4)").arg(P_(1), P_(2), P_(3), IrcUtil::messageToHtml(MID_(5)));
