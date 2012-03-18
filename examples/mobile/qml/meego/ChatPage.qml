@@ -103,12 +103,11 @@ CommonPage {
         onAccepted: {
             if (names) {
                 var name = model.get(selectedIndex).name;
-                while (name.length && name[0] == "@" || name[0] == "+")
+                while (name.length && name[0] == "~" || name[0] == "&" || name[0] == "@" || name[0] == "%" || name[0] == "+")
                     name = name.slice(1);
 
                 var child = modelData.sessionItem.addChild(name);
-                var cmd = ircCommand.createWhois(name);
-                bouncer.bounce(child, cmd);
+                bouncer.bounce(child, null);
             }
         }
     }
