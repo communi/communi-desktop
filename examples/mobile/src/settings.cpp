@@ -48,16 +48,16 @@ void Settings::setName(const QString& name)
 { QSettings().setValue("name", name); }
 
 QString Settings::user() const
-{ return QSettings().value("user").toString(); }
+{ return QSettings().value("user", QString("communi")).toString(); }
 
-void Settings::setUser(const QString& name)
-{ QSettings().setValue("user", name); }
+void Settings::setUser(const QString& user)
+{ QSettings().setValue("user", user); }
 
 QString Settings::real() const
-{ return QSettings().value("real").toString(); }
+{ return QSettings().value("real", QString("Communi user")).toString(); }
 
-void Settings::setReal(const QString& name)
-{ QSettings().setValue("real", name); }
+void Settings::setReal(const QString& real)
+{ QSettings().setValue("real", real); }
 
 QString Settings::channel() const
 { return QSettings().value("channel", QString("#communi")).toString(); }

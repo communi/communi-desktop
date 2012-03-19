@@ -251,6 +251,8 @@ CommonPage {
             connectionDialog.host = Settings.host;
             connectionDialog.port = Settings.port;
             connectionDialog.name = Settings.name;
+            connectionDialog.user = Settings.user;
+            connectionDialog.real = Settings.real;
             connectionDialog.channel = Settings.channel;
             connectionDialog.secure = Settings.secure;
         }
@@ -263,8 +265,8 @@ CommonPage {
         onAccepted: {
             var session = sessionComponent.createObject(root);
             session.nickName = connectionDialog.name;
-            session.userName = connectionDialog.name;
-            session.realName = connectionDialog.name;
+            session.userName = connectionDialog.user;
+            session.realName = connectionDialog.real;
             session.host = connectionDialog.host;
             session.port = connectionDialog.port;
             session.password = connectionDialog.password;
@@ -279,6 +281,8 @@ CommonPage {
             Settings.host = connectionDialog.host;
             Settings.port = connectionDialog.port;
             Settings.name = connectionDialog.name;
+            Settings.user = connectionDialog.user;
+            Settings.real = connectionDialog.real;
             Settings.channel = connectionDialog.channel;
             Settings.secure = connectionDialog.secure;
         }
