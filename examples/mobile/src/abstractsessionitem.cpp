@@ -227,6 +227,34 @@ void AbstractSessionItem::receiveMessage(IrcMessage* message)
                 return;
             }
             break;
+        case Irc::RPL_WHOISOPERATOR:
+            if (m_sent.contains(IrcCommand::Whois))
+            {
+                m_whois.append(tr("IRC operator"));
+                return;
+            }
+            break;
+        case Irc::RPL_WHOISACCOUNT:
+            if (m_sent.contains(IrcCommand::Whois))
+            {
+                m_whois.append(tr("Logged in as: %1").arg(message->parameters().value(2)));
+                return;
+            }
+            break;
+        case Irc::RPL_WHOISREGNICK:
+            if (m_sent.contains(IrcCommand::Whois))
+            {
+                m_whois.append(tr("Registered nick"));
+                return;
+            }
+            break;
+        case Irc::RPL_WHOISSECURE:
+            if (m_sent.contains(IrcCommand::Whois))
+            {
+                m_whois.append(tr("Secure connection"));
+                return;
+            }
+            break;
         case Irc::RPL_WHOISIDLE:
             if (m_sent.contains(IrcCommand::Whois))
             {
@@ -244,6 +272,13 @@ void AbstractSessionItem::receiveMessage(IrcMessage* message)
                 return;
             }
             break;
+        case Irc::RPL_WHOISHOST:
+        case Irc::RPL_WHOISMODES:
+            if (m_sent.contains(IrcCommand::Whois))
+            {
+                return;
+            }
+            break;
         case Irc::RPL_ENDOFWHOIS:
             if (m_sent.contains(IrcCommand::Whois))
             {
@@ -251,11 +286,8 @@ void AbstractSessionItem::receiveMessage(IrcMessage* message)
                 m_sent.remove(IrcCommand::Whois);
                 m_whois.clear();
             }
-        case Irc::RPL_WHOISOPERATOR:
         case Irc::RPL_WHOISHELPOP:
         case Irc::RPL_WHOISSPECIAL:
-        case Irc::RPL_WHOISSECURE:
-        case Irc::RPL_WHOISACCOUNT:
             return;
         default:
             break;

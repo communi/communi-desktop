@@ -211,6 +211,8 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
     case Irc::RPL_NOWAWAY:
     case Irc::RPL_AWAY:
     case Irc::RPL_WHOISOPERATOR:
+    case Irc::RPL_WHOISMODES: // "is using modes"
+    case Irc::RPL_WHOISREGNICK: // "is a registered nick"
     case Irc::RPL_WHOISHELPOP: // "is available for help"
     case Irc::RPL_WHOISSPECIAL: // "is identified to services"
     case Irc::RPL_WHOISHOST: // nick is connecting from <...>
@@ -255,7 +257,7 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
         const QStringList names = message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts);
         foreach (QString name, names)
         {
-            if (name.startsWith("@") || name.startsWith("+"))
+            if (name.startsWith("~") || name.startsWith("&") || name.startsWith("@") || name.startsWith("%") || name.startsWith("+"))
                 name.remove(0, 1);
             d.addChannelUser(channel, name);
         }

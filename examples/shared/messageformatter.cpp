@@ -22,20 +22,44 @@
 
 static bool nameLessThan(const QString &n1, const QString &n2)
 {
+    const bool q1 = n1.startsWith("~");
+    const bool q2 = n2.startsWith("~");
+
+    if (q1 && !q2)
+        return true;
+    if (!q1 && q2)
+        return false;
+
+    const bool a1 = n1.startsWith("&");
+    const bool a2 = n2.startsWith("&");
+
+    if (a1 && !a2 && !q2)
+        return true;
+    if (!a1 && !q1 && a2)
+        return false;
+
     const bool o1 = n1.startsWith("@");
     const bool o2 = n2.startsWith("@");
 
-    if (o1 && !o2)
+    if (o1 && !o2 && !a2 && !q2)
         return true;
-    if (!o1 && o2)
+    if (!o1 && !a1 && !q1 && o2)
+        return false;
+
+    const bool h1 = n1.startsWith("%");
+    const bool h2 = n2.startsWith("%");
+
+    if (h1 && !h2 && !o2 && !a2 && !q2)
+        return true;
+    if (!h1 && !o1 && !a1 && !q1 && h2)
         return false;
 
     const bool v1 = n1.startsWith("+");
     const bool v2 = n2.startsWith("+");
 
-    if (v1 && !v2 && !o2)
+    if (v1 && !v2 && !h2 && !o2 && !a2 && !q2)
         return true;
-    if (!v1 && !o1 && v2)
+    if (!v1 && !h1 && !o1 && !a1 && !q1 && v2)
         return false;
 
     return QString::localeAwareCompare(n1.toLower(), n2.toLower()) < 0;
@@ -282,10 +306,12 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
     case Irc::RPL_ENDOFWHOIS:
         return QString();
     case Irc::RPL_WHOISOPERATOR:
+    case Irc::RPL_WHOISMODES: // "is using modes"
+    case Irc::RPL_WHOISREGNICK: // "is a registered nick"
     case Irc::RPL_WHOISHELPOP: // "is available for help"
     case Irc::RPL_WHOISSPECIAL: // "is identified to services"
-    case Irc::RPL_WHOISSECURE: // nick is using a secure connection
     case Irc::RPL_WHOISHOST: // nick is connecting from <...>
+    case Irc::RPL_WHOISSECURE: // nick is using a secure connection
         return tr("! %1").arg(MID_(1));
     case Irc::RPL_WHOISUSER:
         return tr("! %1 is %2@%3 (%4)").arg(P_(1), P_(2), P_(3), IrcUtil::messageToHtml(MID_(5)));
