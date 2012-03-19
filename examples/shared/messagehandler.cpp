@@ -255,12 +255,8 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
         const int count = message->parameters().count();
         const QString channel = message->parameters().value(count - 2);
         const QStringList names = message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts);
-        foreach (QString name, names)
-        {
-            if (name.startsWith("~") || name.startsWith("&") || name.startsWith("@") || name.startsWith("%") || name.startsWith("+"))
-                name.remove(0, 1);
-            d.addChannelUser(channel, name);
-        }
+        foreach (const QString& name, names)
+            d.addChannelUser(channel, d.session->unprefixedUser(name));
         sendMessage(message, channel);
         break;
         }
