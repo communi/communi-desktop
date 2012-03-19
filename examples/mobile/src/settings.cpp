@@ -48,13 +48,13 @@ void Settings::setName(const QString& name)
 { QSettings().setValue("name", name); }
 
 QString Settings::user() const
-{ return QSettings().value("user", QString("communi")).toString(); }
+{ return QSettings().value("user").toString(); }
 
 void Settings::setUser(const QString& user)
 { QSettings().setValue("user", user); }
 
 QString Settings::real() const
-{ return QSettings().value("real", QString("Communi user")).toString(); }
+{ return QSettings().value("real").toString(); }
 
 void Settings::setReal(const QString& real)
 { QSettings().setValue("real", real); }
