@@ -16,9 +16,9 @@
 #define MESSAGEVIEW_H
 
 #include "ui_messageview.h"
-#include <ircsession.h>
 #include <ircmessage.h>
 #include <irccommand.h>
+#include "session.h"
 #include "commandparser.h"
 #include "messageformatter.h"
 
@@ -31,7 +31,7 @@ class MessageView : public QWidget
     Q_PROPERTY(QString receiver READ receiver WRITE setReceiver)
 
 public:
-    MessageView(IrcSession* session, QWidget* parent = 0);
+    MessageView(Session* session, QWidget* parent = 0);
     ~MessageView();
 
     QString receiver() const;
@@ -68,7 +68,7 @@ private:
     struct MessageViewData : public Ui::MessageView
     {
         QString receiver;
-        IrcSession* session;
+        Session* session;
         CommandParser parser;
         MessageFormatter formatter;
         QStringListModel* userModel;

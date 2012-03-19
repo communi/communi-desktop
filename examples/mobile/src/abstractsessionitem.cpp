@@ -44,6 +44,7 @@ Session* AbstractSessionItem::session() const
 void AbstractSessionItem::setSession(Session *session)
 {
     m_session = session;
+    m_formatter.setPrefixes(session->prefixModes());
     m_formatter.setHighlights(QStringList() << session->nickName());
 }
 
