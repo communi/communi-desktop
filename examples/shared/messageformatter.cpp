@@ -20,55 +20,35 @@
 #include <QTime>
 #include <QColor>
 
-static bool nameLessThan(const QString &n1, const QString &n2)
+class NameLessThan
 {
-    const bool q1 = n1.startsWith("~");
-    const bool q2 = n2.startsWith("~");
+public:
+    NameLessThan(const QString& prefixes) : pfx(prefixes) { }
 
-    if (q1 && !q2)
-        return true;
-    if (!q1 && q2)
-        return false;
+    inline bool operator()(const QString &n1, const QString &n2) const
+    {
+        const int i1 = pfx.indexOf(n1.at(0));
+        const int i2 = pfx.indexOf(n2.at(0));
 
-    const bool a1 = n1.startsWith("&");
-    const bool a2 = n2.startsWith("&");
+        if (i1 >= 0 && i2 < 0)
+            return true;
+        if (i1 < 0 && i2 >= 0)
+            return false;
+        if (i1 >= 0 && i2 >= 0)
+            return i1 < i2;
 
-    if (a1 && !a2 && !q2)
-        return true;
-    if (!a1 && !q1 && a2)
-        return false;
+        return QString::localeAwareCompare(n1.toLower(), n2.toLower()) < 0;
+    }
 
-    const bool o1 = n1.startsWith("@");
-    const bool o2 = n2.startsWith("@");
-
-    if (o1 && !o2 && !a2 && !q2)
-        return true;
-    if (!o1 && !a1 && !q1 && o2)
-        return false;
-
-    const bool h1 = n1.startsWith("%");
-    const bool h2 = n2.startsWith("%");
-
-    if (h1 && !h2 && !o2 && !a2 && !q2)
-        return true;
-    if (!h1 && !o1 && !a1 && !q1 && h2)
-        return false;
-
-    const bool v1 = n1.startsWith("+");
-    const bool v2 = n2.startsWith("+");
-
-    if (v1 && !v2 && !h2 && !o2 && !a2 && !q2)
-        return true;
-    if (!v1 && !h1 && !o1 && !a1 && !q1 && v2)
-        return false;
-
-    return QString::localeAwareCompare(n1.toLower(), n2.toLower()) < 0;
-}
+private:
+    QString pfx;
+};
 
 MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 {
     d.highlight = false;
     d.timeStamp = false;
+    d.prefixes = "@+";
 }
 
 MessageFormatter::~MessageFormatter()
@@ -93,6 +73,16 @@ bool MessageFormatter::timeStamp() const
 void MessageFormatter::setTimeStamp(bool timeStamp)
 {
     d.timeStamp = timeStamp;
+}
+
+QString MessageFormatter::prefixes() const
+{
+    return d.prefixes;
+}
+
+void MessageFormatter::setPrefixes(const QString& prefixes)
+{
+    d.prefixes = prefixes;
 }
 
 QString MessageFormatter::messageFormat() const
@@ -157,7 +147,7 @@ void MessageFormatter::setHighlightFormat(const QString& format)
 
 QStringList MessageFormatter::currentNames() const
 {
-    qSort(d.names.begin(), d.names.end(), nameLessThan);
+    qSort(d.names.begin(), d.names.end(), NameLessThan(d.prefixes));
     return d.names;
 }
 
