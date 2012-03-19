@@ -23,6 +23,8 @@ BaseDialog {
     property alias port: portField.text
     property alias password: passField.text
     property alias name: nameField.text
+    property alias user: userField.text
+    property alias real: realField.text
     property alias channel: chanField.text
     property alias secure: secureBox.checked
 
@@ -115,6 +117,37 @@ BaseDialog {
                         text: "#communi"
                         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                         width: parent.width
+                        Keys.onReturnPressed: userField.forceActiveFocus()
+                        platformInverted: true
+                    }
+                }
+            }
+
+            Row {
+                width: parent.width
+                spacing: UI.DEFAULT_SPACING
+                Column {
+                    width: parent.width / 2 - UI.DEFAULT_SPACING/2
+                    Label { text: qsTr("User name"); platformInverted: true }
+                    TextField {
+                        id: userField
+                        text: "communi"
+                        inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+                        width: parent.width
+                        errorHighlight: !text.length
+                        Keys.onReturnPressed: realField.forceActiveFocus()
+                        platformInverted: true
+                    }
+                }
+                Column {
+                    width: parent.width / 2 - UI.DEFAULT_SPACING/2
+                    Label { text: qsTr("Real name"); platformInverted: true }
+                    TextField {
+                        id: realField
+                        text: "Communi for Symbian user"
+                        inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+                        width: parent.width
+                        errorHighlight: !text.length
                         Keys.onReturnPressed: hostField.forceActiveFocus()
                         platformInverted: true
                     }
