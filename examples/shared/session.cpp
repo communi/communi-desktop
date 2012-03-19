@@ -123,6 +123,27 @@ bool Session::isChannel(const QString& receiver) const
     return receiver.length() > 1 && channelTypes().contains(receiver.at(0));
 }
 
+QString Session::prefixTypes() const
+{
+    QString pfx = m_info.value("PREFIX", "(ov)@+");
+    return pfx.mid(1, pfx.indexOf(')') - 1);
+}
+
+QString Session::prefixModes() const
+{
+    QString pfx = m_info.value("PREFIX", "(ov)@+");
+    return pfx.mid(pfx.indexOf(')') + 1);
+}
+
+QString Session::unprefixedUser(const QString& user) const
+{
+    QString prefixes = prefixModes();
+    QString copy(user);
+    while (!copy.isEmpty() && prefixes.contains(copy.at(0)))
+        copy.remove(0, 1);
+    return copy;
+}
+
 bool Session::isSecure() const
 {
     return qobject_cast<QSslSocket*>(socket());
@@ -344,8 +365,7 @@ void Session::handleMessage(IrcMessage* message)
             }
             if (m_info.contains("NETWORK"))
                 emit networkChanged(network());
-            if (m_info.contains("CHANTYPES"))
-                emit channelTypesChanged(channelTypes());
+            emit serverInfoReceived();
         }
     }
 }
