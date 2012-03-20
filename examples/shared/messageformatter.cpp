@@ -34,7 +34,7 @@ public:
             return true;
         if (i1 < 0 && i2 >= 0)
             return false;
-        if (i1 >= 0 && i2 >= 0)
+        if (i1 >= 0 && i2 >= 0 && i1 != i2)
             return i1 < i2;
 
         return QString::localeAwareCompare(n1.toLower(), n2.toLower()) < 0;
