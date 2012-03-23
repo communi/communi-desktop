@@ -36,6 +36,7 @@
 "$(EPOCROOT)/epoc32/data/z/private/e00607ce/qml/symbian/ChatPage.qml" - "!:\private\e00607ce\qml\symbian\ChatPage.qml"
 "$(EPOCROOT)/epoc32/data/z/private/e00607ce/qml/symbian/CommonPage.qml" - "!:\private\e00607ce\qml\symbian\CommonPage.qml"
 "$(EPOCROOT)/epoc32/data/z/private/e00607ce/qml/symbian/ConnectionDialog.qml" - "!:\private\e00607ce\qml\symbian\ConnectionDialog.qml"
+"$(EPOCROOT)/epoc32/data/z/private/e00607ce/qml/symbian/Feedback.qml" - "!:\private\e00607ce\qml\symbian\Feedback.qml"
 "$(EPOCROOT)/epoc32/data/z/private/e00607ce/qml/symbian/ListDelegate.qml" - "!:\private\e00607ce\qml\symbian\ListDelegate.qml"
 "$(EPOCROOT)/epoc32/data/z/private/e00607ce/qml/symbian/main.qml" - "!:\private\e00607ce\qml\symbian\main.qml"
 "$(EPOCROOT)/epoc32/data/z/private/e00607ce/qml/symbian/MainPage.qml" - "!:\private\e00607ce\qml\symbian\MainPage.qml"
@@ -53,3 +54,4 @@
 "$(EPOCROOT)/epoc32/data/z/private/e00607ce/qml/images/server.png" - "!:\private\e00607ce\qml\images\server.png"
 "$(EPOCROOT)/epoc32/data/z/private/e00607ce/qml/images/squircle.png" - "!:\private\e00607ce\qml\images\squircle.png"
 "$(EPOCROOT)/epoc32/data/z/private/e00607ce/qml/images/tab.png" - "!:\private\e00607ce\qml\images\tab.png"
+"$(EPOCROOT)/epoc32/data/z/private/e00607ce/qml/images/unknown.png" - "!:\private\e00607ce\qml\images\unknown.png"
