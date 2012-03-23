@@ -1,14 +1,14 @@
 anna|belle|symbian {
     qml_files.source = qml/symbian
-    DEFINES += COMMUNI_PLATFORM=\"\\\"Symbian\\\"\"
-    DEFINES += COMMUNI_EXAMPLE_VERSION=\"\\\"1.1.1\\\"\"
-    DEFINES += COMMUNI_MAIN_QML=\"\\\"qml/symbian/main.qml\\\"\"
+    DEFINES += COMMUNI_PLATFORM=Symbian
+    DEFINES += COMMUNI_EXAMPLE_VERSION=1.1.1
+    DEFINES += COMMUNI_MAIN_QML=qml/symbian/main.qml
 } else {
     qml_files.source = qml/meego
-    DEFINES += COMMUNI_PLATFORM=\"\\\"MeeGo\\\"\"
-    DEFINES += COMMUNI_EXAMPLE_VERSION=\"\\\"1.1.9\\\"\"
-    DEFINES += COMMUNI_MAIN_QML=\"\\\"qml/meego/main.qml\\\"\"
-    DEFINES += COMMUNI_IMPORT_PATH=\"\\\"/opt/communi/imports\\\"\"
+    DEFINES += COMMUNI_PLATFORM=MeeGo
+    DEFINES += COMMUNI_EXAMPLE_VERSION=1.1.9
+    DEFINES += COMMUNI_MAIN_QML=qml/meego/main.qml
+    DEFINES += COMMUNI_IMPORT_PATH=/opt/communi/imports
 }
 
 # Add more folders to ship with the application, here

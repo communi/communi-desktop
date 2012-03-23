@@ -26,21 +26,24 @@
 #include "settings.h"
 #include <irc.h>
 
+#define STRINGIFY(x) XSTRINGIFY(x)
+#define XSTRINGIFY(x) #x
+
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
     QApplication::setApplicationName("Communi");
     QApplication::setOrganizationName("Communi");
-    QApplication::setApplicationVersion(COMMUNI_EXAMPLE_VERSION);
+    QApplication::setApplicationVersion(STRINGIFY(COMMUNI_EXAMPLE_VERSION));
 
     QScopedPointer<QApplication> app(createApplication(argc, argv));
     QScopedPointer<QmlApplicationViewer> viewer(QmlApplicationViewer::create());
 
     QString appName = QObject::tr("%1 %2 for %3").arg(QApplication::applicationName())
                                                  .arg(QApplication::applicationVersion())
-                                                 .arg(COMMUNI_PLATFORM);
+                                                 .arg(STRINGIFY(COMMUNI_PLATFORM));
     viewer->rootContext()->setContextProperty("ApplicationName", appName);
 #ifdef COMMUNI_IMPORT_PATH
-    viewer->engine()->addImportPath(COMMUNI_IMPORT_PATH);
+    viewer->engine()->addImportPath(STRINGIFY(COMMUNI_IMPORT_PATH));
 #endif
 
     qmlRegisterType<MessageFormatter>("Communi", 1, 0, "MessageFormatter");
@@ -61,7 +64,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     qmlRegisterType<Session>("Communi", 1, 0, "Session");
 
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
-    viewer->setMainQmlFile(COMMUNI_MAIN_QML);
+    viewer->setMainQmlFile(STRINGIFY(COMMUNI_MAIN_QML));
     viewer->showExpanded();
 
     return app->exec();
