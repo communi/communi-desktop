@@ -29,7 +29,7 @@ QML_IMPORT_PATH =
 
 symbian {
     TARGET = Communi
-    TARGET.UID3 = 0xe00607ce
+    TARGET.UID3 = 0xe0062463
     # Allow network access on Symbian
     TARGET.CAPABILITY += NetworkServices
 }
