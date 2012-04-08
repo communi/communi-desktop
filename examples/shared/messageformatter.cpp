@@ -206,7 +206,7 @@ QString MessageFormatter::formatMessage(IrcMessage* message) const
     QString format = d.messageFormat;
     if (d.highlight && !d.highlightFormat.isEmpty())
         format = d.highlightFormat;
-    else
+    else if (d.prefixedFormats.contains(formatted.left(1)))
         format = d.prefixedFormats.value(formatted.left(1));
 
     if (d.timeStamp)

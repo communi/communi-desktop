@@ -62,7 +62,7 @@ Settings::operator QVariant() const
 bool Settings::operator==(const Settings& other) const
 {
     return messages == other.messages && highlights == other.highlights
-        && language == other.language && font == other.font
+        && language == other.language && font == other.font && colors == other.colors
         && shortcuts == other.shortcuts && maxBlockCount == other.maxBlockCount
         && timeStamp == other.timeStamp;
 }
