@@ -64,7 +64,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     qmlRegisterType<Session>("Communi", 1, 0, "Session");
 
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
-    viewer->setMainQmlFile(STRINGIFY(COMMUNI_MAIN_QML));
+    viewer->setMainQmlFile(STRINGIFY(COMMUNI_QML_DIR)"/main.qml");
     viewer->showExpanded();
 
     return app->exec();
