@@ -27,7 +27,7 @@ CommonPage {
     tools: ToolBarLayout {
         ToolButton {
             iconSource: "toolbar-back"
-            onClicked: Qt.quit()
+            onClicked: confirmexitDialog.open()
             platformInverted: true
         }
         ToolButton {
@@ -286,6 +286,16 @@ CommonPage {
             Settings.channel = connectionDialog.channel;
             Settings.secure = connectionDialog.secure;
         }
+    }
+
+    QueryDialog {
+        id: confirmexitDialog
+        titleText: qsTr("Confirm exit")
+        message: "Really exit Communi?"
+        acceptButtonText: "Yes"
+        rejectButtonText: "No"
+        onAccepted: Qt.quit()
+        platformInverted: true
     }
 
     IrcCommand {
