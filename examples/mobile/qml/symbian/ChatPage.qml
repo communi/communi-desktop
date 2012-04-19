@@ -206,6 +206,7 @@ CommonPage {
     }
 
     Rectangle {
+        visible: textField.visible
         anchors.fill: textField
         anchors.leftMargin: -UI.PAGE_MARGIN
         anchors.rightMargin: -UI.PAGE_MARGIN
