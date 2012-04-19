@@ -1,7 +1,7 @@
 anna|belle|symbian {
     qml_files.source = qml/symbian
     DEFINES += COMMUNI_PLATFORM=Symbian
-    DEFINES += COMMUNI_EXAMPLE_VERSION=1.1.2
+    DEFINES += COMMUNI_EXAMPLE_VERSION=1.1.3
     DEFINES += COMMUNI_QML_DIR=qml/symbian
 } else {
     qml_files.source = qml/meego
