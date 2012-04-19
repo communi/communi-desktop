@@ -296,6 +296,7 @@ CommonPage {
         rejectButtonText: "No"
         onAccepted: Qt.quit()
         platformInverted: true
+        height: privateStyle.dialogMinSize
     }
 
     IrcCommand {
