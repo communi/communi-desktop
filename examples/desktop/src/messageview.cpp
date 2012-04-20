@@ -91,19 +91,7 @@ void MessageView::setReceiver(const QString& receiver)
 
 bool MessageView::isChannelView() const
 {
-    if (d.receiver.isEmpty())
-        return false;
-
-    switch (d.receiver.at(0).unicode())
-    {
-        case '#':
-        case '&':
-        case '!':
-        case '+':
-            return true;
-        default:
-            return false;
-    }
+    return d.session->isChannel(d.receiver);
 }
 
 void MessageView::showHelp(const QString& text, bool error)
