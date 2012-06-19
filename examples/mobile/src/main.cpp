@@ -26,22 +26,24 @@
 #include "settings.h"
 #include <irc.h>
 
+#define STRINGIFY(x) XSTRINGIFY(x)
+#define XSTRINGIFY(x) #x
+
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
     QApplication::setApplicationName("Communi");
     QApplication::setOrganizationName("Communi");
-    QApplication::setApplicationVersion(COMMUNI_EXAMPLE_VERSION);
+    QApplication::setApplicationVersion(STRINGIFY(COMMUNI_EXAMPLE_VERSION));
 
     QScopedPointer<QApplication> app(createApplication(argc, argv));
     QScopedPointer<QmlApplicationViewer> viewer(QmlApplicationViewer::create());
 
     QString appName = QObject::tr("%1 %2 for %3").arg(QApplication::applicationName())
-                                                 .arg(QApplication::applicationVersion());
-#ifdef Q_OS_SYMBIAN
-    viewer->rootContext()->setContextProperty("ApplicationName", appName.arg(QObject::tr("Symbian")));
-#else
-    viewer->rootContext()->setContextProperty("ApplicationName", appName.arg(QObject::tr("MeeGo")));
-    viewer->engine()->addImportPath("/opt/communi/imports");
+                                                 .arg(QApplication::applicationVersion())
+                                                 .arg(STRINGIFY(COMMUNI_PLATFORM));
+    viewer->rootContext()->setContextProperty("ApplicationName", appName);
+#ifdef COMMUNI_IMPORT_PATH
+    viewer->engine()->addImportPath(STRINGIFY(COMMUNI_IMPORT_PATH));
 #endif
 
     qmlRegisterType<MessageFormatter>("Communi", 1, 0, "MessageFormatter");
@@ -62,11 +64,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     qmlRegisterType<Session>("Communi", 1, 0, "Session");
 
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
-#ifdef Q_OS_SYMBIAN
-    viewer->setMainQmlFile(QLatin1String("qml/symbian/main.qml"));
-#else
-    viewer->setMainQmlFile(QLatin1String("qml/meego/main.qml"));
-#endif
+    viewer->setMainQmlFile(STRINGIFY(COMMUNI_QML_DIR)"/main.qml");
     viewer->showExpanded();
 
     return app->exec();

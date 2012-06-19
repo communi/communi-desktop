@@ -251,8 +251,8 @@ CommonPage {
             connectionSheet.host = Settings.host;
             connectionSheet.port = Settings.port;
             connectionSheet.name = Settings.name;
-            connectionSheet.user = Settings.user;
-            connectionSheet.real = Settings.real;
+            if (Settings.user !== "") connectionSheet.user = Settings.user;
+            if (Settings.real !== "") connectionSheet.real = Settings.real;
             connectionSheet.channel = Settings.channel;
             connectionSheet.secure = Settings.secure;
         }
@@ -266,7 +266,7 @@ CommonPage {
             var session = sessionComponent.createObject(root);
             session.nickName = connectionSheet.name;
             session.userName = connectionSheet.user.length ? connectionSheet.user : "communi";
-            session.realName = connectionSheet.real.length ? connectionSheet.real : connectionSheet.name;
+            session.realName = connectionSheet.real.length ? connectionSheet.real : "Communi for MeeGo user";
             session.host = connectionSheet.host;
             session.port = connectionSheet.port;
             session.password = connectionSheet.password;
@@ -317,8 +317,7 @@ CommonPage {
         title: qsTr("Open query")
         onAccepted: {
             var child = listView.currentSessionItem.addChild(name);
-            var cmd = ircCommand.createWhois(name);
-            bouncer.bounce(child, cmd);
+            bouncer.bounce(child, null);
         }
     }
 

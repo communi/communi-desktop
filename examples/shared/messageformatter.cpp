@@ -20,31 +20,35 @@
 #include <QTime>
 #include <QColor>
 
-static bool nameLessThan(const QString &n1, const QString &n2)
+class NameLessThan
 {
-    const bool o1 = n1.startsWith("@");
-    const bool o2 = n2.startsWith("@");
+public:
+    NameLessThan(const QString& prefixes) : pfx(prefixes) { }
 
-    if (o1 && !o2)
-        return true;
-    if (!o1 && o2)
-        return false;
+    inline bool operator()(const QString &n1, const QString &n2) const
+    {
+        const int i1 = pfx.indexOf(n1.at(0));
+        const int i2 = pfx.indexOf(n2.at(0));
 
-    const bool v1 = n1.startsWith("+");
-    const bool v2 = n2.startsWith("+");
+        if (i1 >= 0 && i2 < 0)
+            return true;
+        if (i1 < 0 && i2 >= 0)
+            return false;
+        if (i1 >= 0 && i2 >= 0 && i1 != i2)
+            return i1 < i2;
 
-    if (v1 && !v2 && !o2)
-        return true;
-    if (!v1 && !o1 && v2)
-        return false;
+        return QString::localeAwareCompare(n1.toLower(), n2.toLower()) < 0;
+    }
 
-    return QString::localeAwareCompare(n1.toLower(), n2.toLower()) < 0;
-}
+private:
+    QString pfx;
+};
 
 MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 {
     d.highlight = false;
     d.timeStamp = false;
+    d.prefixes = "@+";
 }
 
 MessageFormatter::~MessageFormatter()
@@ -69,6 +73,16 @@ bool MessageFormatter::timeStamp() const
 void MessageFormatter::setTimeStamp(bool timeStamp)
 {
     d.timeStamp = timeStamp;
+}
+
+QString MessageFormatter::prefixes() const
+{
+    return d.prefixes;
+}
+
+void MessageFormatter::setPrefixes(const QString& prefixes)
+{
+    d.prefixes = prefixes;
 }
 
 QString MessageFormatter::messageFormat() const
@@ -133,7 +147,7 @@ void MessageFormatter::setHighlightFormat(const QString& format)
 
 QStringList MessageFormatter::currentNames() const
 {
-    qSort(d.names.begin(), d.names.end(), nameLessThan);
+    qSort(d.names.begin(), d.names.end(), NameLessThan(d.prefixes));
     return d.names;
 }
 
@@ -192,7 +206,7 @@ QString MessageFormatter::formatMessage(IrcMessage* message) const
     QString format = d.messageFormat;
     if (d.highlight && !d.highlightFormat.isEmpty())
         format = d.highlightFormat;
-    else
+    else if (d.prefixedFormats.contains(formatted.left(1)))
         format = d.prefixedFormats.value(formatted.left(1));
 
     if (d.timeStamp)
@@ -282,10 +296,12 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
     case Irc::RPL_ENDOFWHOIS:
         return QString();
     case Irc::RPL_WHOISOPERATOR:
+    case Irc::RPL_WHOISMODES: // "is using modes"
+    case Irc::RPL_WHOISREGNICK: // "is a registered nick"
     case Irc::RPL_WHOISHELPOP: // "is available for help"
     case Irc::RPL_WHOISSPECIAL: // "is identified to services"
-    case Irc::RPL_WHOISSECURE: // nick is using a secure connection
     case Irc::RPL_WHOISHOST: // nick is connecting from <...>
+    case Irc::RPL_WHOISSECURE: // nick is using a secure connection
         return tr("! %1").arg(MID_(1));
     case Irc::RPL_WHOISUSER:
         return tr("! %1 is %2@%3 (%4)").arg(P_(1), P_(2), P_(3), IrcUtil::messageToHtml(MID_(5)));

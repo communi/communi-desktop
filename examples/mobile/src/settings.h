@@ -46,10 +46,10 @@ public:
     void setName(const QString& name);
 
     QString user() const;
-    void setUser(const QString& name);
+    void setUser(const QString& user);
 
     QString real() const;
-    void setReal(const QString& name);
+    void setReal(const QString& real);
 
     QString channel() const;
     void setChannel(const QString& channel);

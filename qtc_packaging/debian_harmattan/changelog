@@ -1,3 +1,14 @@
+communi (1.1.9) unstable; urgency=low
+
+  * Fixed issue #13: Communi 1.1.8 Debian control file does not
+    define required fields
+  * Reverted the fix for issue #8 in favor of issue #15: Nick name
+    autocompletion does not work before selecting Names once
+  * Reverted the fix for issue #11 in favor of issue #14: Links are
+    broken in Communi 1.1.8
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Sun, 18 Mar 2012 22:52:44 +0200
+
 communi (1.1.8) unstable; urgency=low
 
   * Fixed issue #11: Copy and paste is not supported

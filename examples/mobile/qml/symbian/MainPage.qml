@@ -14,7 +14,6 @@
 
 import QtQuick 1.1
 import Communi 1.0
-import QtMobility.feedback 1.1
 import com.nokia.symbian 1.1
 import com.nokia.extras 1.1
 import "UIConstants.js" as UI
@@ -28,7 +27,7 @@ CommonPage {
     tools: ToolBarLayout {
         ToolButton {
             iconSource: "toolbar-back"
-            onClicked: Qt.quit()
+            onClicked: confirmexitDialog.open()
             platformInverted: true
         }
         ToolButton {
@@ -126,9 +125,11 @@ CommonPage {
         }
     }
 
-    ThemeEffect {
-        id: effect
-        effect: ThemeEffect.Basic
+    property variant effect: null
+    Component.onCompleted: {
+        var component = Qt.createComponent("Feedback.qml");
+        if (component.status === Component.Ready)
+            effect = component.createObject(root);
     }
 
     Connections {
@@ -138,7 +139,8 @@ CommonPage {
             banner.text = item.alertText;
             banner.item = item;
             banner.open();
-            effect.play();
+            if (root.effect)
+                root.effect.play();
         }
     }
 
@@ -249,6 +251,8 @@ CommonPage {
             connectionDialog.host = Settings.host;
             connectionDialog.port = Settings.port;
             connectionDialog.name = Settings.name;
+            if (Settings.user !== "") connectionDialog.user = Settings.user
+            if (Settings.real !== "") connectionDialog.real = Settings.real;
             connectionDialog.channel = Settings.channel;
             connectionDialog.secure = Settings.secure;
         }
@@ -261,8 +265,8 @@ CommonPage {
         onAccepted: {
             var session = sessionComponent.createObject(root);
             session.nickName = connectionDialog.name;
-            session.userName = connectionDialog.name;
-            session.realName = connectionDialog.name;
+            session.userName = connectionDialog.user.length ? connectionDialog.user : "communi";
+            session.realName = connectionDialog.real.length ? connectionDialog.real : "Communi for Symbian user";
             session.host = connectionDialog.host;
             session.port = connectionDialog.port;
             session.password = connectionDialog.password;
@@ -277,9 +281,22 @@ CommonPage {
             Settings.host = connectionDialog.host;
             Settings.port = connectionDialog.port;
             Settings.name = connectionDialog.name;
+            Settings.user = connectionDialog.user;
+            Settings.real = connectionDialog.real;
             Settings.channel = connectionDialog.channel;
             Settings.secure = connectionDialog.secure;
         }
+    }
+
+    QueryDialog {
+        id: confirmexitDialog
+        titleText: qsTr("Confirm exit")
+        message: "Really exit Communi?"
+        acceptButtonText: "Yes"
+        rejectButtonText: "No"
+        onAccepted: Qt.quit()
+        platformInverted: true
+        height: privateStyle.dialogMinSize
     }
 
     IrcCommand {
@@ -311,8 +328,7 @@ CommonPage {
         titleText: qsTr("Open query")
         onAccepted: {
             var child = listView.currentSessionItem.addChild(name);
-            var cmd = ircCommand.createWhois(name);
-            bouncer.bounce(child, cmd);
+            bouncer.bounce(child, null);
         }
     }
 

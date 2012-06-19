@@ -32,7 +32,9 @@ class Session : public IrcSession
     Q_PROPERTY(QString network READ network NOTIFY networkChanged)
     Q_PROPERTY(int autoReconnectDelay READ autoReconnectDelay WRITE setAutoReconnectDelay)
     Q_PROPERTY(ChannelInfos channels READ channels WRITE setChannels)
-    Q_PROPERTY(QString channelTypes READ channelTypes NOTIFY channelTypesChanged)
+    Q_PROPERTY(QString channelTypes READ channelTypes NOTIFY serverInfoReceived)
+    Q_PROPERTY(QString prefixTypes READ prefixTypes NOTIFY serverInfoReceived)
+    Q_PROPERTY(QString prefixModes READ prefixModes NOTIFY serverInfoReceived)
     Q_PROPERTY(bool secure READ isSecure WRITE setSecure)
     Q_PROPERTY(QString password READ password WRITE setPassword)
     Q_PROPERTY(int pingInterval READ pingInterval WRITE setPingInterval)
@@ -59,6 +61,10 @@ public:
 
     QString channelTypes() const;
     Q_INVOKABLE bool isChannel(const QString& receiver) const;
+
+    QString prefixTypes() const;
+    QString prefixModes() const;
+    Q_INVOKABLE QString unprefixedUser(const QString& user) const;
 
     bool isSecure() const;
     void setSecure(bool secure);
@@ -92,7 +98,7 @@ signals:
     void nameChanged(const QString& name);
     void networkChanged(const QString& network);
     void currentLagChanged(int lag);
-    void channelTypesChanged(const QString& types);
+    void serverInfoReceived();
 
 private slots:
     void onConnected();

@@ -24,6 +24,7 @@ class MessageFormatter : public QObject
     Q_OBJECT
     Q_PROPERTY(QStringList highlights READ highlights WRITE setHighlights)
     Q_PROPERTY(bool timeStamp READ timeStamp WRITE setTimeStamp)
+    Q_PROPERTY(QString prefixes READ prefixes WRITE setPrefixes)
 
     Q_PROPERTY(QString messageFormat READ messageFormat WRITE setMessageFormat)
     Q_PROPERTY(QString eventFormat READ eventFormat WRITE setEventFormat)
@@ -41,6 +42,9 @@ public:
 
     bool timeStamp() const;
     void setTimeStamp(bool timeStamp);
+
+    QString prefixes() const;
+    void setPrefixes(const QString& prefixes);
 
     QString messageFormat() const;
     void setMessageFormat(const QString& format);
@@ -91,6 +95,7 @@ private:
         bool highlight;
         QStringList highlights;
         bool timeStamp;
+        QString prefixes;
         QStringList names;
         QString messageFormat;
         QString highlightFormat;

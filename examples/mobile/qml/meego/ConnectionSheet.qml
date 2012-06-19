@@ -153,8 +153,10 @@ CommonSheet {
                         Label { text: qsTr("User name") }
                         TextField {
                             id: userField
+                            text: "communi"
                             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                             width: parent.width
+                            errorHighlight: !text.length
                             platformSipAttributes: sipAttributes
                             Keys.onReturnPressed: realField.forceActiveFocus()
                         }
@@ -165,8 +167,10 @@ CommonSheet {
                         Label { text: qsTr("Real name") }
                         TextField {
                             id: realField
+                            text: "Communi for MeeGo user"
                             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                             width: parent.width
+                            errorHighlight: !text.length
                             platformSipAttributes: sipAttributes
                             Keys.onReturnPressed: hostField.forceActiveFocus()
                         }

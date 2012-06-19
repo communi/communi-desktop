@@ -121,12 +121,9 @@ CommonPage {
         onAccepted: {
             if (names) {
                 var name = model.get(selectedIndex).name;
-                while (name.length && name[0] == "@" || name[0] == "+")
-                    name = name.slice(1);
-
+                name = modelData.session.unprefixedUser(name);
                 var child = modelData.sessionItem.addChild(name);
-                var cmd = ircCommand.createWhois(name);
-                bouncer.bounce(child, cmd);
+                bouncer.bounce(child, null);
             }
         }
         platformInverted: true
@@ -209,6 +206,7 @@ CommonPage {
     }
 
     Rectangle {
+        visible: textField.visible
         anchors.fill: textField
         anchors.leftMargin: -UI.PAGE_MARGIN
         anchors.rightMargin: -UI.PAGE_MARGIN

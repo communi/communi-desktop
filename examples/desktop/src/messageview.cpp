@@ -13,7 +13,6 @@
 */
 
 #include "messageview.h"
-#include "session.h"
 #include "settings.h"
 #include "completer.h"
 #include "application.h"
@@ -26,7 +25,7 @@
 
 QStringListModel* MessageView::MessageViewData::commandModel = 0;
 
-MessageView::MessageView(IrcSession* session, QWidget* parent) :
+MessageView::MessageView(Session* session, QWidget* parent) :
     QWidget(parent)
 {
     d.setupUi(this);
@@ -44,6 +43,7 @@ MessageView::MessageView(IrcSession* session, QWidget* parent) :
     d.formatter.setHighlightFormat("class='highlight'");
 
     d.session = session;
+    d.formatter.setPrefixes(d.session->prefixModes());
     d.userModel = new QStringListModel(this);
     connect(&d.parser, SIGNAL(customCommand(QString,QStringList)), this, SLOT(onCustomCommand(QString,QStringList)));
 
@@ -91,19 +91,7 @@ void MessageView::setReceiver(const QString& receiver)
 
 bool MessageView::isChannelView() const
 {
-    if (d.receiver.isEmpty())
-        return false;
-
-    switch (d.receiver.at(0).unicode())
-    {
-        case '#':
-        case '&':
-        case '!':
-        case '+':
-            return true;
-        default:
-            return false;
-    }
+    return d.session->isChannel(d.receiver);
 }
 
 void MessageView::showHelp(const QString& text, bool error)

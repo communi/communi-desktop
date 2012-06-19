@@ -2,7 +2,7 @@
 &EN
 
 ; SIS header: name, uid, version
-#{"Communi"},(0x20035734),1,1,1
+#{"Communi"},(0xe0062463),1,1,3
 
 ; Default localized vendor name
 %{"J-P Nurmi"}
@@ -31,25 +31,27 @@
 "$(EPOCROOT)/epoc32/data/z/resource/apps/communi.mif" - "!:\resource\apps\communi.mif"
 "$(EPOCROOT)/epoc32/data/z/private/10003a3f/import/apps/communi_reg.rsc" - "!:\private\10003a3f\import\apps\communi_reg.rsc"
 
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/symbian/BaseDialog.qml" - "!:\private\20035734\qml\symbian\BaseDialog.qml"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/symbian/ChannelDialog.qml" - "!:\private\20035734\qml\symbian\ChannelDialog.qml"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/symbian/ChatPage.qml" - "!:\private\20035734\qml\symbian\ChatPage.qml"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/symbian/CommonPage.qml" - "!:\private\20035734\qml\symbian\CommonPage.qml"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/symbian/ConnectionDialog.qml" - "!:\private\20035734\qml\symbian\ConnectionDialog.qml"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/symbian/ListDelegate.qml" - "!:\private\20035734\qml\symbian\ListDelegate.qml"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/symbian/main.qml" - "!:\private\20035734\qml\symbian\main.qml"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/symbian/MainPage.qml" - "!:\private\20035734\qml\symbian\MainPage.qml"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/symbian/NameDialog.qml" - "!:\private\20035734\qml\symbian\NameDialog.qml"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/symbian/UIConstants.js" - "!:\private\20035734\qml\symbian\UIConstants.js"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/BaseDialog.qml" - "!:\private\e0062463\qml\symbian\BaseDialog.qml"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/ChannelDialog.qml" - "!:\private\e0062463\qml\symbian\ChannelDialog.qml"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/ChatPage.qml" - "!:\private\e0062463\qml\symbian\ChatPage.qml"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/CommonPage.qml" - "!:\private\e0062463\qml\symbian\CommonPage.qml"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/ConnectionDialog.qml" - "!:\private\e0062463\qml\symbian\ConnectionDialog.qml"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/Feedback.qml" - "!:\private\e0062463\qml\symbian\Feedback.qml"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/ListDelegate.qml" - "!:\private\e0062463\qml\symbian\ListDelegate.qml"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/main.qml" - "!:\private\e0062463\qml\symbian\main.qml"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/MainPage.qml" - "!:\private\e0062463\qml\symbian\MainPage.qml"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/NameDialog.qml" - "!:\private\e0062463\qml\symbian\NameDialog.qml"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/UIConstants.js" - "!:\private\e0062463\qml\symbian\UIConstants.js"
 
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/images/background.png" - "!:\private\20035734\qml\images\background.png"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/images/channel.png" - "!:\private\20035734\qml\images\channel.png"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/images/clear.png" - "!:\private\20035734\qml\images\clear.png"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/images/connected.png" - "!:\private\20035734\qml\images\connected.png"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/images/disconnected.png" - "!:\private\20035734\qml\images\disconnected.png"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/images/left-arrow.png" - "!:\private\20035734\qml\images\left-arrow.png"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/images/query.png" - "!:\private\20035734\qml\images\query.png"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/images/right-arrow.png" - "!:\private\20035734\qml\images\right-arrow.png"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/images/server.png" - "!:\private\20035734\qml\images\server.png"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/images/squircle.png" - "!:\private\20035734\qml\images\squircle.png"
-"$(EPOCROOT)/epoc32/data/z/private/20035734/qml/images/tab.png" - "!:\private\20035734\qml\images\tab.png"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/background.png" - "!:\private\e0062463\qml\images\background.png"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/channel.png" - "!:\private\e0062463\qml\images\channel.png"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/clear.png" - "!:\private\e0062463\qml\images\clear.png"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/connected.png" - "!:\private\e0062463\qml\images\connected.png"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/disconnected.png" - "!:\private\e0062463\qml\images\disconnected.png"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/left-arrow.png" - "!:\private\e0062463\qml\images\left-arrow.png"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/query.png" - "!:\private\e0062463\qml\images\query.png"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/right-arrow.png" - "!:\private\e0062463\qml\images\right-arrow.png"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/server.png" - "!:\private\e0062463\qml\images\server.png"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/squircle.png" - "!:\private\e0062463\qml\images\squircle.png"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/tab.png" - "!:\private\e0062463\qml\images\tab.png"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/unknown.png" - "!:\private\e0062463\qml\images\unknown.png"
