@@ -6,7 +6,7 @@ TEMPLATE = app
 win32|mac:TARGET = Communi
 else:TARGET = communi
 !mac:DESTDIR = bin
-QT += network widgets
+QT += network
 
 RESOURCES += communi.qrc
 win32:RC_FILE = communi.rc
