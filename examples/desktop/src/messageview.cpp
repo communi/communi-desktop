@@ -199,7 +199,8 @@ void MessageView::onSend(const QString& text)
 void MessageView::applySettings(const Settings& settings)
 {
     d.formatter.setTimeStamp(settings.timeStamp);
-    d.textBrowser->setFont(settings.font);
+    if (!settings.font.isEmpty())
+        d.textBrowser->setFont(settings.font);
     d.textBrowser->document()->setMaximumBlockCount(settings.maxBlockCount);
 
     QString backgroundColor = settings.colors.value(Settings::Background);

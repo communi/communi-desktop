@@ -17,7 +17,6 @@
 
 #include <QMap>
 #include <QHash>
-#include <QFont>
 #include <QVariant>
 #include <QMetaType>
 #include "streamer.h"
@@ -63,7 +62,7 @@ struct Settings
     QHash<int, QString> colors;
     QHash<int, QString> shortcuts;
     QString language;
-    QFont font;
+    QString font;
     int maxBlockCount;
     bool timeStamp;
 };
@@ -89,7 +88,7 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
     settings.messages = readStreamValue< QHash<int, bool> >(in, settings.messages);
     settings.highlights = readStreamValue< QHash<int, bool> >(in, settings.highlights);
     settings.language = readStreamValue<QString>(in, settings.language);
-    settings.font = readStreamValue<QFont>(in, settings.font);
+    settings.font = readStreamValue<QString>(in, settings.font);
     settings.colors = readStreamValue< QHash<int, QString> >(in, settings.colors);
     settings.shortcuts = readStreamValue< QHash<int, QString> >(in, settings.shortcuts);
     settings.maxBlockCount = readStreamValue<int>(in, settings.maxBlockCount);
