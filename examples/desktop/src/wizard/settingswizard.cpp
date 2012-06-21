@@ -31,7 +31,7 @@ SettingsWizard::SettingsWizard(QWidget* parent) : QWizard(parent)
 Settings SettingsWizard::settings() const
 {
     Settings settings;
-    settings.font = static_cast<GeneralWizardPage*>(page(GeneralPage))->font();
+    settings.font = static_cast<GeneralWizardPage*>(page(GeneralPage))->font().toString();
     settings.language = static_cast<GeneralWizardPage*>(page(GeneralPage))->language();
     settings.maxBlockCount = static_cast<GeneralWizardPage*>(page(GeneralPage))->maxBlockCount();
     settings.timeStamp = static_cast<GeneralWizardPage*>(page(GeneralPage))->timeStamp();
@@ -44,7 +44,10 @@ Settings SettingsWizard::settings() const
 
 void SettingsWizard::setSettings(const Settings& settings)
 {
-    static_cast<GeneralWizardPage*>(page(GeneralPage))->setFont(settings.font);
+    QFont font;
+    if (!settings.font.isEmpty())
+        font.fromString(settings.font);
+    static_cast<GeneralWizardPage*>(page(GeneralPage))->setFont(font);
     static_cast<GeneralWizardPage*>(page(GeneralPage))->setLanguage(settings.language);
     static_cast<GeneralWizardPage*>(page(GeneralPage))->setMaxBlockCount(settings.maxBlockCount);
     static_cast<GeneralWizardPage*>(page(GeneralPage))->setTimeStamp(settings.timeStamp);
