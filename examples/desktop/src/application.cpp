@@ -21,7 +21,7 @@
 #include <QIcon>
 #include <Irc>
 
-QByteArray Application::ApplicationData::encoding;
+QByteArray Application::ApplicationData::encoding("UTF-8");
 Settings Application::ApplicationData::settings;
 
 Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
