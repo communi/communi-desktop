@@ -396,7 +396,7 @@ void Session::pingServer()
     {
         // (re-)PING!
         m_lagTimer.start();
-        sendRaw("PING _C_o_m_m_u_n_i_");
+        sendData("PING _C_o_m_m_u_n_i_");
     }
 }
 
