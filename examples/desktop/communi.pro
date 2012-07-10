@@ -3,6 +3,7 @@
 ######################################################################
 
 TEMPLATE = app
+QMAKE_PROJECT_NAME = desktop
 win32|mac:TARGET = Communi
 else:TARGET = communi
 !mac:DESTDIR = bin
