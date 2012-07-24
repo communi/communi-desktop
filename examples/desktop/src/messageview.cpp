@@ -45,6 +45,7 @@ MessageView::MessageView(Session* session, QWidget* parent) :
     d.session = session;
     d.formatter.setPrefixes(d.session->prefixModes());
     d.userModel = new QStringListModel(this);
+    d.listView->setModel(d.userModel);
     connect(&d.parser, SIGNAL(customCommand(QString,QStringList)), this, SLOT(onCustomCommand(QString,QStringList)));
 
     if (!d.commandModel)
