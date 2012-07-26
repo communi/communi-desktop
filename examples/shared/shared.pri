@@ -14,8 +14,10 @@ HEADERS += $$PWD/messagehandler.h
 HEADERS += $$PWD/messagereceiver.h
 HEADERS += $$PWD/session.h
 HEADERS += $$PWD/streamer.h
+HEADERS += $$PWD/usermodel.h
 
 SOURCES += $$PWD/commandparser.cpp
 SOURCES += $$PWD/messageformatter.cpp
 SOURCES += $$PWD/messagehandler.cpp
 SOURCES += $$PWD/session.cpp
+SOURCES += $$PWD/usermodel.cpp
