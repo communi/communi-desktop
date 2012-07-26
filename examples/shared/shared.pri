@@ -11,6 +11,7 @@ HEADERS += $$PWD/commandparser.h
 HEADERS += $$PWD/connectioninfo.h
 HEADERS += $$PWD/messageformatter.h
 HEADERS += $$PWD/messagehandler.h
+HEADERS += $$PWD/messagereceiver.h
 HEADERS += $$PWD/session.h
 HEADERS += $$PWD/streamer.h
 
