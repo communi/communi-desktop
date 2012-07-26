@@ -137,6 +137,15 @@ QString Session::prefixModes() const
     return pfx.mid(pfx.indexOf(')') + 1);
 }
 
+QString Session::userPrefix(const QString& user) const
+{
+    QString prefixes = prefixModes();
+    int i = 0;
+    while (i < user.length() && prefixes.contains(user.at(i)))
+        ++i;
+    return user.left(i);
+}
+
 QString Session::unprefixedUser(const QString& user) const
 {
     QString prefixes = prefixModes();
