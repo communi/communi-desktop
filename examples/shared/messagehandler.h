@@ -75,10 +75,6 @@ private slots:
 private:
     struct Private
     {
-        QStringList userChannels(const QString& user) const;
-        void addChannelUser(QString channel, const QString& user);
-        void removeChannelUser(QString channel, const QString& user);
-
         Session* session;
         MessageReceiver* defaultReceiver;
         MessageReceiver* currentReceiver;
