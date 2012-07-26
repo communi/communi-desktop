@@ -25,9 +25,10 @@ class UserModel : public QAbstractListModel
     Q_OBJECT
 
 public:
-    explicit UserModel(Session* parent = 0);
+    explicit UserModel(Session* session);
     virtual ~UserModel();
 
+    bool hasUser(const QString& user) const;
     void addUser(const QString& user);
     void removeUser(const QString& user);
 
@@ -37,6 +38,7 @@ public:
 private:
     struct Private
     {
+        Session* session;
         QStringList names;
         QHash<QString, QString> modes;
     } d;

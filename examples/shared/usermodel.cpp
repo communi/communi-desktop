@@ -39,27 +39,40 @@ private:
     QString pfx;
 };
 
-UserModel::UserModel(Session* parent) : QAbstractListModel(parent)
+UserModel::UserModel(Session* session) : QAbstractListModel(session)
 {
+    d.session = session;
 }
 
 UserModel::~UserModel()
 {
 }
 
+bool UserModel::hasUser(const QString &user) const
+{
+    return d.names.contains(user, Qt::CaseInsensitive);
+}
+
 void UserModel::addUser(const QString& user)
 {
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    d.names += user;
+    QString name = d.session->unprefixedUser(user);
+    d.names += name;
+    d.modes.insert(name, d.session->userPrefix(user));
     endInsertRows();
 }
 
 void UserModel::removeUser(const QString& user)
 {
-    int idx = d.names.indexOf(user);
-    beginRemoveRows(QModelIndex(), idx, idx);
-    d.names.removeAt(idx);
-    endRemoveRows();
+    QString name = d.session->unprefixedUser(user);
+    int idx = d.names.indexOf(name);
+    if (idx != -1)
+    {
+        beginRemoveRows(QModelIndex(), idx, idx);
+        d.names.removeAt(idx);
+        d.modes.remove(name);
+        endRemoveRows();
+    }
 }
 
 int UserModel::rowCount(const QModelIndex& parent) const
@@ -76,7 +89,12 @@ QVariant UserModel::data(const QModelIndex& index, int role) const
         return QVariant();
 
     if (role == Qt::DisplayRole || role == Qt::EditRole)
-        return d.names.at(index.row());
+    {
+        QString name = d.names.at(index.row());
+        if (role == Qt::DisplayRole)
+            return d.modes.value(name) + name;
+        return name;
+    }
 
     return QVariant();
 }
