@@ -30,14 +30,10 @@ class QStringListModel;
 class MessageView : public QWidget, public MessageReceiver
 {
     Q_OBJECT
-    Q_PROPERTY(QString receiver READ receiver WRITE setReceiver)
 
 public:
     MessageView(Session* session, QWidget* parent = 0);
     ~MessageView();
-
-    QString receiver() const;
-    void setReceiver(const QString& receiver);
 
     bool isChannelView() const;
 
@@ -53,8 +49,8 @@ signals:
 protected:
     bool eventFilter(QObject* receiver, QEvent* event);
 
-protected slots:
     void receiveMessage(IrcMessage* message);
+    bool hasUser(const QString& user) const;
     void addUser(const QString& user);
     void removeUser(const QString& user);
 

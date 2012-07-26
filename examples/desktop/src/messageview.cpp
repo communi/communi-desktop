@@ -82,19 +82,9 @@ MessageView::~MessageView()
     delete d.userModel;
 }
 
-QString MessageView::receiver() const
-{
-    return d.receiver;
-}
-
-void MessageView::setReceiver(const QString& receiver)
-{
-    d.receiver = receiver;
-}
-
 bool MessageView::isChannelView() const
 {
-    return d.session->isChannel(d.receiver);
+    return d.session->isChannel(receiver());
 }
 
 void MessageView::showHelp(const QString& text, bool error)
@@ -180,7 +170,7 @@ void MessageView::onEscPressed()
 
 void MessageView::onSend(const QString& text)
 {
-    IrcCommand* cmd = d.parser.parseCommand(d.receiver, text);
+    IrcCommand* cmd = d.parser.parseCommand(receiver(), text);
     if (cmd)
     {
         d.session->sendCommand(cmd);
@@ -296,6 +286,11 @@ void MessageView::receiveMessage(IrcMessage* message)
         emit highlight(this, true);
     if (append)
         appendMessage(d.formatter.formatMessage(message));
+}
+
+bool MessageView::hasUser(const QString& user) const
+{
+    return d.userModel->hasUser(user);
 }
 
 void MessageView::addUser(const QString& user)
