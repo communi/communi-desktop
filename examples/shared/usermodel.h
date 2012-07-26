@@ -32,6 +32,7 @@ public:
     void addUser(const QString& user);
     void addUsers(const QStringList& users);
     void removeUser(const QString& user);
+    void renameUser(const QString& from, const QString& to);
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;

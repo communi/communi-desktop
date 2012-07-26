@@ -59,6 +59,17 @@ void UserModel::removeUser(const QString& user)
     }
 }
 
+void UserModel::renameUser(const QString& from, const QString& to)
+{
+    int idx = d.names.indexOf(from);
+    if (idx != -1)
+    {
+        d.names[idx] = to;
+        d.modes[to] = d.modes.take(from);
+        emit dataChanged(index(idx, 0), index(idx, 0));
+    }
+}
+
 int UserModel::rowCount(const QModelIndex& parent) const
 {
     if (parent.isValid())

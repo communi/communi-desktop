@@ -54,6 +54,7 @@ protected:
     void addUser(const QString& user);
     void addUsers(const QStringList& users);
     void removeUser(const QString& user);
+    void renameUser(const QString &from, const QString &to);
 
 private slots:
     void onEscPressed();

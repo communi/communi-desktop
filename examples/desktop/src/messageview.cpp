@@ -348,6 +348,12 @@ void MessageView::removeUser(const QString& user)
     d.userModel->removeUser(user);
 }
 
+void MessageView::renameUser(const QString &from, const QString &to)
+{
+    d.userModel->renameUser(from, to);
+    d.listView->model()->sort(0);
+}
+
 void MessageView::onCustomCommand(const QString& command, const QStringList& params)
 {
     if (command == "QUERY")

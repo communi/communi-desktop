@@ -190,9 +190,7 @@ void MessageHandler::handleNickMessage(IrcNickMessage* message)
         if (receiver->hasUser(nick))
         {
             receiver->receiveMessage(message);
-            //TODO: receiver->renameUser(nick, message->nick());
-            receiver->removeUser(nick);
-            receiver->addUser(message->nick());
+            receiver->renameUser(nick, message->nick());
         }
     }
 
