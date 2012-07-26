@@ -83,7 +83,6 @@ private:
         MessageReceiver* defaultReceiver;
         MessageReceiver* currentReceiver;
         QHash<QString, MessageReceiver*> receivers;
-        QHash<QString, QSet<QString> > channelUsers;
     } d;
 };
 

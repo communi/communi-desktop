@@ -33,7 +33,6 @@ MessageHandler::~MessageHandler()
     d.defaultReceiver = 0;
     d.currentReceiver = 0;
     d.receivers.clear();
-    d.channelUsers.clear();
     if (d.session && d.session->isActive())
         d.session->socket()->waitForDisconnected(500);
 }
@@ -257,7 +256,7 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
         const QString channel = message->parameters().value(count - 2);
         const QStringList names = message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts);
         foreach (const QString& name, names)
-            d.addChannelUser(channel, d.session->unprefixedUser(name));
+            d.addChannelUser(channel, name);
         sendMessage(message, channel);
         break;
         }
@@ -272,14 +271,9 @@ void MessageHandler::handlePartMessage(IrcPartMessage* message)
 {
     d.removeChannelUser(message->channel(), message->sender().name());
     if (message->sender().name() == d.session->nickName())
-    {
         removeReceiver(message->channel());
-        d.channelUsers.remove(message->channel().toLower());
-    }
     else
-    {
         sendMessage(message, message->channel());
-    }
 }
 
 void MessageHandler::handlePongMessage(IrcPongMessage* message)
@@ -341,33 +335,24 @@ void MessageHandler::onSessionDestroyed()
 QStringList MessageHandler::Private::userChannels(const QString& user) const
 {
     QStringList channels;
-    QHash<QString, QSet<QString> >::const_iterator it;
-    for (it = channelUsers.constBegin(); it != channelUsers.constEnd(); ++it)
-        if (it.value().contains(user.toLower()))
-            channels += it.key();
+    foreach (MessageReceiver* receiver, receivers)
+    {
+        if (receiver->hasUser(user))
+            channels += receiver->receiver();
+    }
     return channels;
 }
 
 void MessageHandler::Private::addChannelUser(QString channel, const QString& user)
 {
-    channel = channel.toLower();
-    if (!channelUsers.value(channel).contains(user.toLower()))
-    {
-        channelUsers[channel].insert(user.toLower());
-        MessageReceiver* receiver = receivers.value(channel);
-        if (receiver)
-            receiver->addUser(user);
-    }
+    MessageReceiver* receiver = receivers.value(channel.toLower());
+    if (receiver)
+        receiver->addUser(user);
 }
 
 void MessageHandler::Private::removeChannelUser(QString channel, const QString& user)
 {
-    channel = channel.toLower();
-    if (channelUsers.value(channel).contains(user.toLower()))
-    {
-        channelUsers[channel].remove(user.toLower());
-        MessageReceiver* receiver = receivers.value(channel);
-        if (receiver)
-            receiver->removeUser(user);
-    }
+    MessageReceiver* receiver = receivers.value(channel.toLower());
+    if (receiver)
+        receiver->removeUser(user);
 }
