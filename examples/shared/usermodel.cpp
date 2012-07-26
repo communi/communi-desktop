@@ -15,30 +15,6 @@
 #include "usermodel.h"
 #include "session.h"
 
-class NameLessThan
-{
-public:
-    NameLessThan(const QString& channel) : pfx(channel) { }
-
-    inline bool operator()(const QString &n1, const QString &n2) const
-    {
-        const int i1 = pfx.indexOf(n1.at(0));
-        const int i2 = pfx.indexOf(n2.at(0));
-
-        if (i1 >= 0 && i2 < 0)
-            return true;
-        if (i1 < 0 && i2 >= 0)
-            return false;
-        if (i1 >= 0 && i2 >= 0 && i1 != i2)
-            return i1 < i2;
-
-        return QString::localeAwareCompare(n1.toLower(), n2.toLower()) < 0;
-    }
-
-private:
-    QString pfx;
-};
-
 UserModel::UserModel(Session* session) : QAbstractListModel(session)
 {
     d.session = session;
@@ -55,10 +31,18 @@ bool UserModel::hasUser(const QString &user) const
 
 void UserModel::addUser(const QString& user)
 {
-    beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    QString name = d.session->unprefixedUser(user);
-    d.names += name;
-    d.modes.insert(name, d.session->userPrefix(user));
+    addUsers(QStringList() << user);
+}
+
+void UserModel::addUsers(const QStringList& users)
+{
+    beginInsertRows(QModelIndex(), rowCount(), rowCount() + users.count() - 1);
+    foreach (const QString& user, users)
+    {
+        QString name = d.session->unprefixedUser(user);
+        d.names += name;
+        d.modes.insert(name, d.session->userPrefix(user));
+    }
     endInsertRows();
 }
 

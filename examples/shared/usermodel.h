@@ -30,6 +30,7 @@ public:
 
     bool hasUser(const QString& user) const;
     void addUser(const QString& user);
+    void addUsers(const QStringList& users);
     void removeUser(const QString& user);
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const;
