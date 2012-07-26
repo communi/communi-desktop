@@ -133,7 +133,7 @@ void SessionTabWidget::tabActivated(int index)
 {
     if (index < count() - 1)
     {
-        d.handler.setCurrentReceiver(currentWidget());
+        d.handler.setCurrentReceiver(qobject_cast<MessageView*>(currentWidget()));
         setTabAlert(index, false);
         setTabHighlight(index, false);
         if (isVisible())

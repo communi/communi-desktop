@@ -21,11 +21,12 @@
 #include "session.h"
 #include "commandparser.h"
 #include "messageformatter.h"
+#include "messagereceiver.h"
 
 struct Settings;
 class QStringListModel;
 
-class MessageView : public QWidget
+class MessageView : public QWidget, public MessageReceiver
 {
     Q_OBJECT
     Q_PROPERTY(QString receiver READ receiver WRITE setReceiver)
