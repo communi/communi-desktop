@@ -26,7 +26,6 @@ public:
 
     virtual void receiveMessage(IrcMessage* message) = 0;
 
-    virtual bool hasUser(const QString& user) = 0;
     virtual void addUser(const QString& user) = 0;
     virtual void removeUser(const QString& user) = 0;
 };
