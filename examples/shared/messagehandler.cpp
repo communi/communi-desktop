@@ -97,7 +97,7 @@ void MessageHandler::removeReceiver(const QString& name)
     const QString lower = name.toLower();
     if (d.receivers.contains(lower))
     {
-        d.receivers.remove(name.toLower());
+        d.receivers.remove(lower);
         emit receiverToBeRemoved(name);
     }
 }
