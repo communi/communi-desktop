@@ -68,7 +68,7 @@ void SessionItem::updateCurrent(AbstractSessionItem* item)
 
 QObject* SessionItem::addChild(const QString& name)
 {
-    SessionChildItem* child = qobject_cast<SessionChildItem*>(m_handler.getReceiver(name));
+    SessionChildItem* child = static_cast<SessionChildItem*>(m_handler.getReceiver(name));
     if (!child)
     {
         child = new SessionChildItem(this);

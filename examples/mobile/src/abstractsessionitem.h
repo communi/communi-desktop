@@ -18,12 +18,14 @@
 #include <QObject>
 #include <QStringListModel>
 #include "messageformatter.h"
+#include "messagereceiver.h"
 #include <IrcCommand>
 #include "session.h"
 
 class IrcMessage;
+class UserModel;
 
-class AbstractSessionItem : public QObject
+class AbstractSessionItem : public QObject, public MessageReceiver
 {
     Q_OBJECT
     Q_PROPERTY(Session* session READ session CONSTANT)
@@ -86,9 +88,13 @@ signals:
     void whoisReceived(const QStringList& whois);
 
 protected slots:
-    virtual void addUser(const QString& user);
-    virtual void removeUser(const QString& user);
     virtual void receiveMessage(IrcMessage* message);
+    virtual bool hasUser(const QString& user) const;
+    virtual void addUser(const QString& user);
+    virtual void addUsers(const QStringList& users);
+    virtual void removeUser(const QString& user);
+    virtual void renameUser(const QString &from, const QString &to);
+    virtual void setUserMode(const QString& user, const QString& mode);
 
 protected:
     void setSession(Session* session);
@@ -101,13 +107,13 @@ private:
     bool m_current;
     bool m_highlighted;
     QStringList m_whois;
-    QStringList m_users;
     QStringListModel* m_messages;
     MessageFormatter m_formatter;
     int m_unread;
     int m_unseen;
     QString m_alertText;
     QSet<IrcCommand::Type> m_sent;
+    UserModel* m_usermodel;
 };
 
 #endif // ABSTRACTSESSIONITEM_H
