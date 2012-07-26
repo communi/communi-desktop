@@ -177,9 +177,19 @@ void MessageHandler::handleKickMessage(IrcKickMessage* message)
 void MessageHandler::handleModeMessage(IrcModeMessage* message)
 {
     if (message->sender().name() == message->target())
+    {
         sendMessage(message, d.defaultReceiver);
+    }
     else
+    {
         sendMessage(message, message->target());
+        if (!message->argument().isEmpty())
+        {
+            MessageReceiver* receiver = d.receivers.value(message->target().toLower());
+            if (receiver)
+                receiver->setUserMode(message->argument(), message->mode());
+        }
+    }
 }
 
 void MessageHandler::handleNickMessage(IrcNickMessage* message)

@@ -64,6 +64,7 @@ public:
 
     QString prefixTypes() const;
     QString prefixModes() const;
+    QString prefixTypeToMode(const QString& type) const;
     Q_INVOKABLE QString userPrefix(const QString& user) const;
     Q_INVOKABLE QString unprefixedUser(const QString& user) const;
 

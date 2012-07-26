@@ -70,6 +70,43 @@ void UserModel::renameUser(const QString& from, const QString& to)
     }
 }
 
+void UserModel::setUserMode(const QString& user, const QString& mode)
+{
+    int idx = d.names.indexOf(user);
+    if (idx != -1)
+    {
+        bool add = true;
+        QString updated = d.modes.value(user);
+        for (int i = 0; i < mode.size(); ++i)
+        {
+            QChar c = mode.at(i);
+            QString m = d.session->prefixTypeToMode(c);
+            switch (c.toAscii())
+            {
+                case '+':
+                    add = true;
+                    break;
+                case '-':
+                    add = false;
+                    break;
+                default:
+                    if (add)
+                    {
+                        if (!updated.contains(m))
+                            updated += m;
+                    }
+                    else
+                    {
+                        updated.remove(m);
+                    }
+                    break;
+            }
+        }
+        d.modes[user] = updated;
+        emit dataChanged(index(idx, 0), index(idx, 0));
+    }
+}
+
 int UserModel::rowCount(const QModelIndex& parent) const
 {
     if (parent.isValid())
@@ -87,7 +124,7 @@ QVariant UserModel::data(const QModelIndex& index, int role) const
     {
         QString name = d.names.at(index.row());
         if (role == Qt::DisplayRole)
-            return d.modes.value(name) + name;
+            return d.modes.value(name).left(1) + name;
         return name;
     }
 

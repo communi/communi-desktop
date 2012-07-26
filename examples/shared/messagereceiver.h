@@ -35,6 +35,7 @@ public:
     virtual void addUsers(const QStringList& users) = 0;
     virtual void removeUser(const QString& user) = 0;
     virtual void renameUser(const QString& from, const QString& to) = 0;
+    virtual void setUserMode(const QString& user, const QString& mode) = 0;
 
 private:
     QString r;

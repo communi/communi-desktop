@@ -55,6 +55,7 @@ protected:
     void addUsers(const QStringList& users);
     void removeUser(const QString& user);
     void renameUser(const QString &from, const QString &to);
+    void setUserMode(const QString& user, const QString& mode);
 
 private slots:
     void onEscPressed();

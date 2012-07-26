@@ -354,6 +354,11 @@ void MessageView::renameUser(const QString &from, const QString &to)
     d.listView->model()->sort(0);
 }
 
+void MessageView::setUserMode(const QString& user, const QString& mode)
+{
+    d.userModel->setUserMode(user, mode);
+}
+
 void MessageView::onCustomCommand(const QString& command, const QStringList& params)
 {
     if (command == "QUERY")
