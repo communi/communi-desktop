@@ -24,6 +24,7 @@
 #include "messagereceiver.h"
 
 struct Settings;
+class UserModel;
 class QStringListModel;
 
 class MessageView : public QWidget, public MessageReceiver
@@ -72,7 +73,7 @@ private:
         Session* session;
         CommandParser parser;
         MessageFormatter formatter;
-        QStringListModel* userModel;
+        UserModel* userModel;
         static QStringListModel* commandModel;
         QSet<IrcCommand::Type> sentCommands;
     } d;

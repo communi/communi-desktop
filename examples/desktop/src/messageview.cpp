@@ -16,6 +16,7 @@
 #include "settings.h"
 #include "completer.h"
 #include "application.h"
+#include "usermodel.h"
 #include <QStringListModel>
 #include <QShortcut>
 #include <QKeyEvent>
@@ -44,7 +45,7 @@ MessageView::MessageView(Session* session, QWidget* parent) :
 
     d.session = session;
     d.formatter.setPrefixes(d.session->prefixModes());
-    d.userModel = new QStringListModel(this);
+    d.userModel = new UserModel(d.session);
     d.listView->setModel(d.userModel);
     connect(&d.parser, SIGNAL(customCommand(QString,QStringList)), this, SLOT(onCustomCommand(QString,QStringList)));
 
@@ -78,6 +79,7 @@ MessageView::MessageView(Session* session, QWidget* parent) :
 
 MessageView::~MessageView()
 {
+    delete d.userModel;
 }
 
 QString MessageView::receiver() const
@@ -298,18 +300,12 @@ void MessageView::receiveMessage(IrcMessage* message)
 
 void MessageView::addUser(const QString& user)
 {
-    // TODO: this is far from optimal
-    QStringList users = d.userModel->stringList();
-    users.append(user);
-    d.userModel->setStringList(users);
+    d.userModel->addUser(user);
 }
 
 void MessageView::removeUser(const QString& user)
 {
-    // TODO: this is far from optimal
-    QStringList users = d.userModel->stringList();
-    if (users.removeOne(user))
-        d.userModel->setStringList(users);
+    d.userModel->removeUser(user);
 }
 
 void MessageView::onCustomCommand(const QString& command, const QStringList& params)
