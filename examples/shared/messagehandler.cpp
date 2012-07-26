@@ -13,6 +13,7 @@
 */
 
 #include "messagehandler.h"
+#include "messagereceiver.h"
 #include "session.h"
 #include <qabstractsocket.h>
 #include <qvariant.h>
@@ -62,32 +63,32 @@ void MessageHandler::setSession(Session* session)
     }
 }
 
-QObject* MessageHandler::defaultReceiver() const
+MessageReceiver* MessageHandler::defaultReceiver() const
 {
     return d.defaultReceiver;
 }
 
-void MessageHandler::setDefaultReceiver(QObject* receiver)
+void MessageHandler::setDefaultReceiver(MessageReceiver* receiver)
 {
     d.defaultReceiver = receiver;
 }
 
-QObject* MessageHandler::currentReceiver() const
+MessageReceiver* MessageHandler::currentReceiver() const
 {
     return d.currentReceiver;
 }
 
-void MessageHandler::setCurrentReceiver(QObject* receiver)
+void MessageHandler::setCurrentReceiver(MessageReceiver* receiver)
 {
     d.currentReceiver = receiver;
 }
 
-void MessageHandler::addReceiver(const QString& name, QObject* receiver)
+void MessageHandler::addReceiver(const QString& name, MessageReceiver* receiver)
 {
     d.receivers.insert(name.toLower(), receiver);
 }
 
-QObject* MessageHandler::getReceiver(const QString& name) const
+MessageReceiver* MessageHandler::getReceiver(const QString& name) const
 {
     return d.receivers.value(name.toLower());
 }
@@ -189,7 +190,7 @@ void MessageHandler::handleNickMessage(IrcNickMessage* message)
         if (!nick.compare(receiver, Qt::CaseInsensitive))
         {
             emit receiverToBeRenamed(receiver, message->nick());
-            QObject* object = d.receivers.take(nick);
+            MessageReceiver* object = d.receivers.take(nick);
             d.receivers.insert(nick, object);
             sendMessage(message, object);
         }
@@ -319,21 +320,17 @@ void MessageHandler::handleUnknownMessage(IrcMessage* message)
     sendMessage(message, d.defaultReceiver);
 }
 
-void MessageHandler::sendMessage(IrcMessage* message, QObject* receiver)
+void MessageHandler::sendMessage(IrcMessage* message, MessageReceiver* receiver)
 {
-    QMetaObject::invokeMethod(receiver, "receiveMessage", Q_ARG(IrcMessage*, message));
-
-    // if the receiver was a QML element, argument type would be QVariant(QObject*):
-    // QMetaObject::invokeMethod(receiver, "receiveMessage", Q_ARG(QVariant, QVariant::fromValue((QObject*) message)));
+    if (receiver)
+        receiver->receiveMessage(message);
 }
 
 void MessageHandler::sendMessage(IrcMessage* message, const QString& receiver)
 {
     if (!d.receivers.contains(receiver.toLower()))
         emit receiverToBeAdded(receiver);
-    QObject* object = getReceiver(receiver);
-    if (object)
-        sendMessage(message, object);
+    sendMessage(message, getReceiver(receiver));
 }
 
 void MessageHandler::onSessionDestroyed()
@@ -357,9 +354,9 @@ void MessageHandler::Private::addChannelUser(QString channel, const QString& use
     if (!channelUsers.value(channel).contains(user.toLower()))
     {
         channelUsers[channel].insert(user.toLower());
-        QObject* receiver = receivers.value(channel);
+        MessageReceiver* receiver = receivers.value(channel);
         if (receiver)
-            QMetaObject::invokeMethod(receiver, "addUser", Q_ARG(QString, user));
+            receiver->addUser(user);
     }
 }
 
@@ -369,8 +366,8 @@ void MessageHandler::Private::removeChannelUser(QString channel, const QString& 
     if (channelUsers.value(channel).contains(user.toLower()))
     {
         channelUsers[channel].remove(user.toLower());
-        QObject* receiver = receivers.value(channel);
+        MessageReceiver* receiver = receivers.value(channel);
         if (receiver)
-            QMetaObject::invokeMethod(receiver, "removeUser", Q_ARG(QString, user));
+            receiver->removeUser(user);
     }
 }
