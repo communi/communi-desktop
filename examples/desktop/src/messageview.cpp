@@ -26,7 +26,7 @@
 
 QStringListModel* MessageView::MessageViewData::commandModel = 0;
 
-MessageView::MessageView(Session* session, QWidget* parent) :
+MessageView::MessageView(const QString& receiver, Session* session, QWidget* parent) :
     QWidget(parent)
 {
     d.setupUi(this);
@@ -43,10 +43,12 @@ MessageView::MessageView(Session* session, QWidget* parent) :
     d.formatter.setUnknownFormat("class='unknown'");
     d.formatter.setHighlightFormat("class='highlight'");
 
+    setReceiver(receiver);
     d.session = session;
     d.formatter.setPrefixes(d.session->prefixModes());
     d.userModel = new UserModel(d.session);
     d.listView->setModel(d.userModel);
+    d.listView->setVisible(session->isChannel(receiver));
     connect(&d.parser, SIGNAL(customCommand(QString,QStringList)), this, SLOT(onCustomCommand(QString,QStringList)));
 
     if (!d.commandModel)

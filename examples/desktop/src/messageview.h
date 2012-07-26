@@ -32,7 +32,7 @@ class MessageView : public QWidget, public MessageReceiver
     Q_OBJECT
 
 public:
-    MessageView(Session* session, QWidget* parent = 0);
+    MessageView(const QString& receiver, Session* session, QWidget* parent = 0);
     ~MessageView();
 
     bool isChannelView() const;
