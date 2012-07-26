@@ -17,12 +17,45 @@
 #include "completer.h"
 #include "application.h"
 #include "usermodel.h"
+#include <QSortFilterProxyModel>
 #include <QStringListModel>
 #include <QShortcut>
 #include <QKeyEvent>
 #include <QDebug>
 #include <ircutil.h>
 #include <irc.h>
+
+class SortedUserModel : public QSortFilterProxyModel
+{
+public:
+    SortedUserModel(const QString& prefixes, UserModel* userModel = 0)
+        : QSortFilterProxyModel(userModel), pfx(prefixes)
+    {
+        setSourceModel(userModel);
+    }
+
+protected:
+    bool lessThan(const QModelIndex& left, const QModelIndex& right) const
+    {
+        QString u1 = sourceModel()->data(left, Qt::DisplayRole).toString();
+        QString u2 = sourceModel()->data(right, Qt::DisplayRole).toString();
+
+        const int i1 = pfx.indexOf(u1.at(0));
+        const int i2 = pfx.indexOf(u2.at(0));
+
+        if (i1 >= 0 && i2 < 0)
+            return true;
+        if (i1 < 0 && i2 >= 0)
+            return false;
+        if (i1 >= 0 && i2 >= 0 && i1 != i2)
+            return i1 < i2;
+
+        return QString::localeAwareCompare(u1.toLower(), u2.toLower()) < 0;
+    }
+
+private:
+    QString pfx;
+};
 
 QStringListModel* MessageView::MessageViewData::commandModel = 0;
 
@@ -47,9 +80,12 @@ MessageView::MessageView(const QString& receiver, Session* session, QWidget* par
     d.session = session;
     d.formatter.setPrefixes(d.session->prefixModes());
     d.userModel = new UserModel(d.session);
-    d.listView->setModel(d.userModel);
-    d.listView->setVisible(session->isChannel(receiver));
     connect(&d.parser, SIGNAL(customCommand(QString,QStringList)), this, SLOT(onCustomCommand(QString,QStringList)));
+
+    bool isChannel = session->isChannel(receiver);
+    d.listView->setVisible(isChannel);
+    if (isChannel)
+        d.listView->setModel(new SortedUserModel(session->prefixModes(), d.userModel));
 
     if (!d.commandModel)
     {
@@ -298,6 +334,13 @@ bool MessageView::hasUser(const QString& user) const
 void MessageView::addUser(const QString& user)
 {
     d.userModel->addUser(user);
+    d.listView->model()->sort(0);
+}
+
+void MessageView::addUsers(const QStringList& users)
+{
+    d.userModel->addUsers(users);
+    d.listView->model()->sort(0);
 }
 
 void MessageView::removeUser(const QString& user)
