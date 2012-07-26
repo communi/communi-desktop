@@ -24,10 +24,17 @@ class MessageReceiver
 public:
     virtual ~MessageReceiver() {}
 
+    QString receiver() const { return r; }
+    void setReceiver(const QString& receiver) { r = receiver; }
+
     virtual void receiveMessage(IrcMessage* message) = 0;
 
+    virtual bool hasUser(const QString& user) const = 0;
     virtual void addUser(const QString& user) = 0;
     virtual void removeUser(const QString& user) = 0;
+
+private:
+    QString r;
 };
 
 #endif // MESSAGERECEIVER_H
