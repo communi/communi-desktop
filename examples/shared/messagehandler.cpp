@@ -263,7 +263,6 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
     case Irc::RPL_ENDOFWHOWAS:
         break; // ignore
 
-    case Irc::RPL_ENDOFNAMES:
     case Irc::RPL_CHANNELMODEIS:
     case Irc::RPL_CHANNEL_URL:
     case Irc::RPL_CREATIONTIME:
@@ -279,10 +278,19 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
         const QStringList names = message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts);
         MessageReceiver* receiver = d.receivers.value(channel.toLower());
         if (receiver)
+        {
             receiver->addUsers(names);
-        sendMessage(message, channel);
+            receiver->receiveMessage(message);
+        }
+        else if (d.currentReceiver)
+            d.currentReceiver->receiveMessage(message);
         break;
         }
+
+    case Irc::RPL_ENDOFNAMES:
+        if (d.receivers.contains(message->parameters().value(1).toLower()))
+            sendMessage(message, message->parameters().value(1));
+        break;
 
     default:
         sendMessage(message, d.defaultReceiver);
