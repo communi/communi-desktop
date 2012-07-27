@@ -24,6 +24,11 @@ UserModel::~UserModel()
 {
 }
 
+QStringList UserModel::users() const
+{
+    return d.names;
+}
+
 bool UserModel::hasUser(const QString &user) const
 {
     return d.names.contains(user, Qt::CaseInsensitive);
@@ -36,8 +41,17 @@ void UserModel::addUser(const QString& user)
 
 void UserModel::addUsers(const QStringList& users)
 {
-    beginInsertRows(QModelIndex(), rowCount(), rowCount() + users.count() - 1);
+    QStringList unique;
+    QSet<QString> nameSet = d.names.toSet();
     foreach (const QString& user, users)
+    {
+        QString name = d.session->unprefixedUser(user);
+        if (!nameSet.contains(name))
+            unique += user;
+    }
+
+    beginInsertRows(QModelIndex(), rowCount(), rowCount() + unique.count() - 1);
+    foreach (const QString& user, unique)
     {
         QString name = d.session->unprefixedUser(user);
         d.names += name;

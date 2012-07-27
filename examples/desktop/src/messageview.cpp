@@ -78,7 +78,6 @@ MessageView::MessageView(const QString& receiver, Session* session, QWidget* par
 
     setReceiver(receiver);
     d.session = session;
-    d.formatter.setPrefixes(d.session->prefixModes());
     d.userModel = new UserModel(d.session);
     connect(&d.parser, SIGNAL(customCommand(QString,QStringList)), this, SLOT(onCustomCommand(QString,QStringList)));
 
@@ -89,6 +88,7 @@ MessageView::MessageView(const QString& receiver, Session* session, QWidget* par
         d.listView->setModel(new SortedUserModel(session->prefixModes(), d.userModel));
         connect(d.listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClicked(QModelIndex)));
     }
+    d.firstNames = false;
 
     if (!d.commandModel)
     {
@@ -215,7 +215,6 @@ void MessageView::onSend(const QString& text)
     if (cmd)
     {
         d.session->sendCommand(cmd);
-        d.sentCommands.insert(cmd->type());
 
         if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction)
         {
@@ -265,6 +264,8 @@ void MessageView::receiveMessage(IrcMessage* message)
     case IrcMessage::Join:
         append = Application::settings().messages.value(Settings::Joins);
         hilite = Application::settings().highlights.value(Settings::Joins);
+        if (message->sender().name() == d.session->nickName())
+            d.firstNames = true;
         break;
     case IrcMessage::Kick:
         append = Application::settings().messages.value(Settings::Kicks);
@@ -307,18 +308,20 @@ void MessageView::receiveMessage(IrcMessage* message)
     case IrcMessage::Pong:
     case IrcMessage::Error:
         break;
-    case IrcMessage::Numeric: {
+    case IrcMessage::Numeric:
+        if (d.firstNames)
+        {
             IrcNumericMessage* numeric = static_cast<IrcNumericMessage*>(message);
-            if (numeric->code() == Irc::RPL_ENDOFNAMES && d.sentCommands.contains(IrcCommand::Names))
+            if (numeric->code() == Irc::RPL_ENDOFNAMES)
             {
-                QString names = prettyNames(d.formatter.currentNames(), 6);
-                appendMessage(d.formatter.formatMessage(message));
-                appendMessage(names);
-                d.sentCommands.remove(IrcCommand::Names);
+                appendMessage(d.formatter.formatMessage(tr("! %1 has %2 users").arg(receiver()).arg(d.userModel->rowCount())));
+                d.firstNames = false;
                 return;
             }
-            break;
+            if (numeric->code() == Irc::RPL_NAMREPLY)
+                return;
         }
+        break;
     }
 
     if (matches)
@@ -376,19 +379,4 @@ void MessageView::onCustomCommand(const QString& command, const QStringList& par
 void MessageView::onDoubleClicked(const QModelIndex& index)
 {
     emit query(index.data(Qt::EditRole).toString());
-}
-
-QString MessageView::prettyNames(const QStringList& names, int columns)
-{
-    QString message;
-    message += "<table>";
-    for (int i = 0; i < names.count(); i += columns)
-    {
-        message += "<tr>";
-        for (int j = 0; j < columns; ++j)
-            message += "<td>" + MessageFormatter::colorize(names.value(i+j)) + "&nbsp;</td>";
-        message += "</tr>";
-    }
-    message += "</table>";
-    return message;
 }

@@ -155,9 +155,12 @@ QString Session::userPrefix(const QString& user) const
 QString Session::unprefixedUser(const QString& user) const
 {
     QString prefixes = prefixModes();
-    QString copy(user);
+    QString copy = user;
     while (!copy.isEmpty() && prefixes.contains(copy.at(0)))
         copy.remove(0, 1);
+    IrcSender sender(copy);
+    if (sender.isValid())
+        copy = sender.name();
     return copy;
 }
 

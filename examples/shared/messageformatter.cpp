@@ -20,35 +20,10 @@
 #include <QTime>
 #include <QColor>
 
-class NameLessThan
-{
-public:
-    NameLessThan(const QString& prefixes) : pfx(prefixes) { }
-
-    inline bool operator()(const QString &n1, const QString &n2) const
-    {
-        const int i1 = pfx.indexOf(n1.at(0));
-        const int i2 = pfx.indexOf(n2.at(0));
-
-        if (i1 >= 0 && i2 < 0)
-            return true;
-        if (i1 < 0 && i2 >= 0)
-            return false;
-        if (i1 >= 0 && i2 >= 0 && i1 != i2)
-            return i1 < i2;
-
-        return QString::localeAwareCompare(n1.toLower(), n2.toLower()) < 0;
-    }
-
-private:
-    QString pfx;
-};
-
 MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 {
     d.highlight = false;
     d.timeStamp = false;
-    d.prefixes = "@+";
 }
 
 MessageFormatter::~MessageFormatter()
@@ -73,16 +48,6 @@ bool MessageFormatter::timeStamp() const
 void MessageFormatter::setTimeStamp(bool timeStamp)
 {
     d.timeStamp = timeStamp;
-}
-
-QString MessageFormatter::prefixes() const
-{
-    return d.prefixes;
-}
-
-void MessageFormatter::setPrefixes(const QString& prefixes)
-{
-    d.prefixes = prefixes;
 }
 
 QString MessageFormatter::messageFormat() const
@@ -145,12 +110,6 @@ void MessageFormatter::setHighlightFormat(const QString& format)
     d.highlightFormat = format;
 }
 
-QStringList MessageFormatter::currentNames() const
-{
-    qSort(d.names.begin(), d.names.end(), NameLessThan(d.prefixes));
-    return d.names;
-}
-
 QString MessageFormatter::formatMessage(IrcMessage* message) const
 {
     QString formatted;
@@ -200,6 +159,12 @@ QString MessageFormatter::formatMessage(IrcMessage* message) const
         break;
     }
 
+    return formatMessage(formatted);
+}
+
+QString MessageFormatter::formatMessage(const QString& message) const
+{
+    QString formatted = message;
     if (formatted.isEmpty())
         return QString();
 
@@ -344,16 +309,17 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
     case Irc::RPL_NOWAWAY:
         return tr("! %1").arg(P_(1));
 
-    case Irc::RPL_NAMREPLY:
-        foreach (const QString& name, P_(3).split(" ", QString::SkipEmptyParts))
-            d.names.append(name);
-        return QString();
-
-    case Irc::RPL_ENDOFNAMES: {
-        QString msg = tr("! %1 has %2 users").arg(P_(1)).arg(d.names.count());
-        d.names.clear();
-        return msg;
+    case Irc::RPL_NAMREPLY: {
+        int count = message->parameters().count();
+        QString channel = message->parameters().value(count - 2);
+        QStringList names;
+        foreach (const QString& name, message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts))
+            names += IrcSender(name).name();
+        return tr("! %1 users: %2").arg(channel).arg(names.join(" "));
     }
+
+    case Irc::RPL_ENDOFNAMES:
+        return QString();
 
     default:
         return tr("[%1] %2").arg(message->code()).arg(QStringList(message->parameters().mid(1)).join(" "));

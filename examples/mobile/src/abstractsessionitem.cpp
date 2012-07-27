@@ -166,14 +166,6 @@ void AbstractSessionItem::setAlertText(const QString& text)
     m_alertText = text;
 }
 
-QStringList AbstractSessionItem::users() const
-{
-    QStringList users;
-    for (int i = 0; i < m_usermodel->rowCount(); ++i)
-        users += m_usermodel->data(m_usermodel->index(i)).toString();
-    return users;
-}
-
 QObject* AbstractSessionItem::messages() const
 {
     return m_messages;
@@ -187,37 +179,31 @@ bool AbstractSessionItem::hasUser(const QString& user) const
 void AbstractSessionItem::addUser(const QString& user)
 {
     m_usermodel->addUser(user);
-    emit usersChanged();
 }
 
 void AbstractSessionItem::addUsers(const QStringList& users)
 {
     m_usermodel->addUsers(users);
-    emit usersChanged();
 }
 
 void AbstractSessionItem::removeUser(const QString& user)
 {
     m_usermodel->removeUser(user);
-    emit usersChanged();
 }
 
 void AbstractSessionItem::clearUsers()
 {
     m_usermodel->clearUsers();
-    emit usersChanged();
 }
 
 void AbstractSessionItem::renameUser(const QString &from, const QString &to)
 {
     m_usermodel->renameUser(from, to);
-    emit usersChanged();
 }
 
 void AbstractSessionItem::setUserMode(const QString& user, const QString& mode)
 {
     m_usermodel->setUserMode(user, mode);
-    emit usersChanged();
 }
 
 void AbstractSessionItem::sendUiCommand(IrcCommand *command)
@@ -241,7 +227,7 @@ void AbstractSessionItem::receiveMessage(IrcMessage* message)
         case Irc::RPL_ENDOFNAMES:
             if (m_sent.contains(IrcCommand::Names))
             {
-                emit namesReceived(m_formatter.currentNames());
+                emit namesReceived(m_usermodel->users());
                 m_sent.remove(IrcCommand::Names);
                 m_formatter.formatMessage(message);
                 return;

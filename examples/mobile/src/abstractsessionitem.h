@@ -36,7 +36,6 @@ class AbstractSessionItem : public QObject, public MessageReceiver
     Q_PROPERTY(bool highlighted READ isHighlighted WRITE setHighlighted NOTIFY highlightedChanged)
     Q_PROPERTY(int unreadCount READ unreadCount WRITE setUnreadCount NOTIFY unreadCountChanged)
     Q_PROPERTY(int unseenIndex READ unseenIndex WRITE setUnseenIndex NOTIFY unseenIndexChanged)
-    Q_PROPERTY(QStringList users READ users NOTIFY usersChanged)
     Q_PROPERTY(QString alertText READ alertText CONSTANT)
     Q_PROPERTY(QObject* messages READ messages CONSTANT)
 
@@ -55,7 +54,6 @@ public:
     int unseenIndex() const;
     QString alertText() const;
 
-    QStringList users() const;
     QObject* messages() const;
 
     virtual void updateCurrent(AbstractSessionItem* item) { Q_UNUSED(item) };
@@ -81,7 +79,6 @@ signals:
     void highlightedChanged();
     void unreadCountChanged();
     void unseenIndexChanged();
-    void usersChanged();
     void alert(QObject* item);
     void removed();
     void namesReceived(const QStringList& names);

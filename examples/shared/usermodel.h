@@ -28,6 +28,7 @@ public:
     explicit UserModel(Session* session);
     virtual ~UserModel();
 
+    QStringList users() const;
     bool hasUser(const QString& user) const;
     void addUser(const QString& user);
     void addUsers(const QStringList& users);

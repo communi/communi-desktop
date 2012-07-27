@@ -66,17 +66,14 @@ private slots:
     void onDoubleClicked(const QModelIndex& index);
 
 private:
-    static QString prettyNames(const QStringList& names, int columns);
-
     struct MessageViewData : public Ui::MessageView
     {
-        QString receiver;
+        bool firstNames;
         Session* session;
         CommandParser parser;
         MessageFormatter formatter;
         UserModel* userModel;
         static QStringListModel* commandModel;
-        QSet<IrcCommand::Type> sentCommands;
     } d;
 };
 
