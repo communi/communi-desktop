@@ -93,6 +93,7 @@ protected slots:
     virtual void addUser(const QString& user);
     virtual void addUsers(const QStringList& users);
     virtual void removeUser(const QString& user);
+    virtual void clearUsers();
     virtual void renameUser(const QString &from, const QString &to);
     virtual void setUserMode(const QString& user, const QString& mode);
 

@@ -59,6 +59,15 @@ void UserModel::removeUser(const QString& user)
     }
 }
 
+void UserModel::clearUsers()
+{
+    if (!d.names.isEmpty())
+    {
+        d.names.clear();
+        reset();
+    }
+}
+
 void UserModel::renameUser(const QString& from, const QString& to)
 {
     int idx = d.names.indexOf(from);

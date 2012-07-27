@@ -202,6 +202,12 @@ void AbstractSessionItem::removeUser(const QString& user)
     emit usersChanged();
 }
 
+void AbstractSessionItem::clearUsers()
+{
+    m_usermodel->clearUsers();
+    emit usersChanged();
+}
+
 void AbstractSessionItem::renameUser(const QString &from, const QString &to)
 {
     m_usermodel->renameUser(from, to);

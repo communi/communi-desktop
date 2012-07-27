@@ -158,10 +158,12 @@ void MessageHandler::handleInviteMessage(IrcInviteMessage* message)
 void MessageHandler::handleJoinMessage(IrcJoinMessage* message)
 {
     sendMessage(message, message->channel());
-    if (message->sender().name() != d.session->nickName())
+    MessageReceiver* receiver = d.receivers.value(message->channel().toLower());
+    if (receiver)
     {
-        MessageReceiver* receiver = d.receivers.value(message->channel().toLower());
-        if (receiver)
+        if (message->sender().name() == d.session->nickName())
+            receiver->clearUsers();
+        else
             receiver->addUser(message->sender().name());
     }
 }

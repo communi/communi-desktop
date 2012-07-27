@@ -348,6 +348,11 @@ void MessageView::removeUser(const QString& user)
     d.userModel->removeUser(user);
 }
 
+void MessageView::clearUsers()
+{
+    d.userModel->clearUsers();
+}
+
 void MessageView::renameUser(const QString &from, const QString &to)
 {
     d.userModel->renameUser(from, to);
