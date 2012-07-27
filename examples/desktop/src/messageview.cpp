@@ -85,7 +85,10 @@ MessageView::MessageView(const QString& receiver, Session* session, QWidget* par
     bool isChannel = session->isChannel(receiver);
     d.listView->setVisible(isChannel);
     if (isChannel)
+    {
         d.listView->setModel(new SortedUserModel(session->prefixModes(), d.userModel));
+        connect(d.listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClicked(QModelIndex)));
+    }
 
     if (!d.commandModel)
     {
@@ -368,6 +371,11 @@ void MessageView::onCustomCommand(const QString& command, const QStringList& par
 {
     if (command == "QUERY")
         emit query(params.value(0));
+}
+
+void MessageView::onDoubleClicked(const QModelIndex& index)
+{
+    emit query(index.data(Qt::EditRole).toString());
 }
 
 QString MessageView::prettyNames(const QStringList& names, int columns)

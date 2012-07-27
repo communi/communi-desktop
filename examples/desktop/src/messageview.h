@@ -63,6 +63,7 @@ private slots:
     void onSend(const QString& text);
     void applySettings(const Settings& settings);
     void onCustomCommand(const QString& command, const QStringList& params);
+    void onDoubleClicked(const QModelIndex& index);
 
 private:
     static QString prettyNames(const QStringList& names, int columns);
