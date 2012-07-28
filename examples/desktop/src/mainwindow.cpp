@@ -15,7 +15,7 @@
 #include "mainwindow.h"
 #include "application.h"
 #include "connectionwizard.h"
-#include "maintabwidget.h"
+#include "multisessiontabwidget.h"
 #include "connectioninfo.h"
 #include "homepage.h"
 #include "session.h"
@@ -24,7 +24,7 @@
 MainWindow::MainWindow(QWidget* parent) :
     QMainWindow(parent), tabWidget(0), trayIcon(0)
 {
-    tabWidget = new MainTabWidget(this);
+    tabWidget = new MultiSessionTabWidget(this);
     tabWidget->applySettings(Application::settings());
     connect(qApp, SIGNAL(settingsChanged(Settings)), tabWidget, SLOT(applySettings(Settings)));
     setCentralWidget(tabWidget);

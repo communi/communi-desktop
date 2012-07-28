@@ -9,14 +9,14 @@ QMAKE_CLEAN += $$PWD/*~
 FORMS += $$PWD/messageview.ui
 
 HEADERS += $$PWD/lineeditor.h
-HEADERS += $$PWD/maintabwidget.h
+HEADERS += $$PWD/multisessiontabwidget.h
 HEADERS += $$PWD/messageview.h
 HEADERS += $$PWD/searcheditor.h
 HEADERS += $$PWD/sessiontabwidget.h
 HEADERS += $$PWD/settings.h
 
 SOURCES += $$PWD/lineeditor.cpp
-SOURCES += $$PWD/maintabwidget.cpp
+SOURCES += $$PWD/multisessiontabwidget.cpp
 SOURCES += $$PWD/messageview.cpp
 SOURCES += $$PWD/searcheditor.cpp
 SOURCES += $$PWD/sessiontabwidget.cpp

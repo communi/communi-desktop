@@ -12,8 +12,8 @@
 * GNU General Public License for more details.
 */
 
-#ifndef MAINTABWIDGET_H
-#define MAINTABWIDGET_H
+#ifndef MULTISESSIONTABWIDGET_H
+#define MULTISESSIONTABWIDGET_H
 
 #include "tabwidget.h"
 #include "settings.h"
@@ -21,12 +21,12 @@
 class Session;
 class QShortcut;
 
-class MainTabWidget : public TabWidget
+class MultiSessionTabWidget : public TabWidget
 {
     Q_OBJECT
 
 public:
-    MainTabWidget(QWidget* parent = 0);
+    MultiSessionTabWidget(QWidget* parent = 0);
 
     QList<Session*> sessions() const;
     void addSession(Session* session, const QString& name = QString());
@@ -57,4 +57,4 @@ private:
     } d;
 };
 
-#endif // MAINTABWIDGET_H
+#endif // MULTISESSIONTABWIDGET_H

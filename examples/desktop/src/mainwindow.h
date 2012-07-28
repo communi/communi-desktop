@@ -18,7 +18,7 @@
 #include <QMainWindow>
 #include "trayicon.h"
 
-class MainTabWidget;
+class MultiSessionTabWidget;
 struct ConnectionInfo;
 
 class MainWindow : public QMainWindow
@@ -47,7 +47,7 @@ private slots:
     void activateAlert(bool activate);
 
 private:
-    MainTabWidget* tabWidget;
+    MultiSessionTabWidget* tabWidget;
     TrayIcon* trayIcon;
 };
 

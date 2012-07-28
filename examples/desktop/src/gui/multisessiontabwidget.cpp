@@ -12,14 +12,14 @@
 * GNU General Public License for more details.
 */
 
-#include "maintabwidget.h"
+#include "multisessiontabwidget.h"
 #include "sessiontabwidget.h"
 #include "settings.h"
 #include "session.h"
 #include <QShortcut>
 #include <QTabBar>
 
-MainTabWidget::MainTabWidget(QWidget* parent) : TabWidget(parent)
+MultiSessionTabWidget::MultiSessionTabWidget(QWidget* parent) : TabWidget(parent)
 {
     setTabPosition(QTabWidget::West);
     setStyleSheet(".MainTabWidget::pane { border: 0px; }");
@@ -39,7 +39,7 @@ MainTabWidget::MainTabWidget(QWidget* parent) : TabWidget(parent)
     applySettings(d.settings);
 }
 
-QList<Session*> MainTabWidget::sessions() const
+QList<Session*> MultiSessionTabWidget::sessions() const
 {
     QList<Session*> list;
     for (int i = 0; i < count(); ++i)
@@ -51,7 +51,7 @@ QList<Session*> MainTabWidget::sessions() const
     return list;
 }
 
-void MainTabWidget::addSession(Session* session, const QString& name)
+void MultiSessionTabWidget::addSession(Session* session, const QString& name)
 {
     SessionTabWidget* tab = new SessionTabWidget(session, this);
     if (name.isEmpty())
@@ -65,19 +65,19 @@ void MainTabWidget::addSession(Session* session, const QString& name)
     setTabInactive(index, !session->isActive());
 }
 
-void MainTabWidget::tabInserted(int index)
+void MultiSessionTabWidget::tabInserted(int index)
 {
     TabWidget::tabInserted(index);
     tabBar()->setVisible(count() > 2);
 }
 
-void MainTabWidget::tabRemoved(int index)
+void MultiSessionTabWidget::tabRemoved(int index)
 {
     TabWidget::tabRemoved(index);
     tabBar()->setVisible(count() > 2);
 }
 
-void MainTabWidget::tabActivated(int index)
+void MultiSessionTabWidget::tabActivated(int index)
 {
     if (index < count() - 1)
     {
@@ -90,7 +90,7 @@ void MainTabWidget::tabActivated(int index)
     }
 }
 
-void MainTabWidget::applySettings(const Settings& settings)
+void MultiSessionTabWidget::applySettings(const Settings& settings)
 {
     d.settings = settings;
     d.tabUpShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabUp)));
@@ -108,35 +108,35 @@ void MainTabWidget::applySettings(const Settings& settings)
     }
 }
 
-void MainTabWidget::setSessionTitle(const QString& title)
+void MultiSessionTabWidget::setSessionTitle(const QString& title)
 {
     int index = senderIndex();
     if (index != -1)
         setTabText(index, title);
 }
 
-void MainTabWidget::setInactive(bool inactive)
+void MultiSessionTabWidget::setInactive(bool inactive)
 {
     int index = senderIndex();
     if (index != -1)
         setTabInactive(index, inactive);
 }
 
-void MainTabWidget::setAlerted(bool alerted)
+void MultiSessionTabWidget::setAlerted(bool alerted)
 {
     int index = senderIndex();
     if (index != -1)
         setTabAlert(index, alerted);
 }
 
-void MainTabWidget::setHighlighted(bool highlighted)
+void MultiSessionTabWidget::setHighlighted(bool highlighted)
 {
     int index = senderIndex();
     if (index != -1)
         setTabHighlight(index, highlighted);
 }
 
-int MainTabWidget::senderIndex() const
+int MultiSessionTabWidget::senderIndex() const
 {
     if (!sender() || !sender()->isWidgetType())
         return -1;
@@ -144,7 +144,7 @@ int MainTabWidget::senderIndex() const
     return indexOf(static_cast<QWidget*>(sender()));
 }
 
-void MainTabWidget::onTabMenuRequested(int index, const QPoint& pos)
+void MultiSessionTabWidget::onTabMenuRequested(int index, const QPoint& pos)
 {
     if (index < count() - 1)
     {
