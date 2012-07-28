@@ -35,6 +35,8 @@ MainTabWidget::MainTabWidget(QWidget* parent) : TabWidget(parent)
 
     QShortcut* shortcut = new QShortcut(QKeySequence::New, this);
     connect(shortcut, SIGNAL(activated()), this, SIGNAL(newTabRequested()));
+
+    applySettings(d.settings);
 }
 
 QList<Session*> MainTabWidget::sessions() const
@@ -52,7 +54,6 @@ QList<Session*> MainTabWidget::sessions() const
 void MainTabWidget::addSession(Session* session, const QString& name)
 {
     SessionTabWidget* tab = new SessionTabWidget(session, this);
-    tab->applySettings(d.settings);
     if (name.isEmpty())
         connect(tab, SIGNAL(titleChanged(QString)), this, SLOT(setSessionTitle(QString)));
     connect(tab, SIGNAL(inactiveStatusChanged(bool)), this, SLOT(setInactive(bool)));

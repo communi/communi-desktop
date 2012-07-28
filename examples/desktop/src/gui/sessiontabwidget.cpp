@@ -51,6 +51,8 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     MessageView* view = openView(d.handler.session()->host());
     d.handler.setDefaultReceiver(view);
     updateStatus();
+
+    applySettings(d.settings);
 }
 
 Session* SessionTabWidget::session() const
@@ -64,7 +66,6 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
     if (!view)
     {
         view = new MessageView(receiver, d.handler.session(), this);
-        view->applySettings(d.settings);
         connect(view, SIGNAL(alert(MessageView*, bool)), this, SLOT(alertTab(MessageView*, bool)));
         connect(view, SIGNAL(highlight(MessageView*, bool)), this, SLOT(highlightTab(MessageView*, bool)));
         connect(view, SIGNAL(query(QString)), this, SLOT(openView(QString)));

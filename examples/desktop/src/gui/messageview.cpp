@@ -115,6 +115,8 @@ MessageView::MessageView(const QString& receiver, Session* session, QWidget* par
 
     QShortcut* shortcut = new QShortcut(Qt::Key_Escape, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(onEscPressed()));
+
+    applySettings(d.settings);
 }
 
 MessageView::~MessageView()
