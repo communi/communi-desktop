@@ -76,6 +76,7 @@ MessageView::MessageView(const QString& receiver, Session* session, QWidget* par
     d.formatter.setActionFormat("class='action'");
     d.formatter.setUnknownFormat("class='unknown'");
     d.formatter.setHighlightFormat("class='highlight'");
+    d.formatter.setTimeStampFormat("class='timestamp'");
 
     setReceiver(receiver);
     d.session = session;
@@ -248,11 +249,13 @@ void MessageView::applySettings(const Settings& settings)
             ".notice    { color: %3 }"
             ".action    { color: %4 }"
             ".event     { color: %5 }"
+            ".timestamp { color: %6; font-size: small }"
         ).arg(settings.colors.value((Settings::Highlight)))
          .arg(settings.colors.value((Settings::Message)))
          .arg(settings.colors.value((Settings::Notice)))
          .arg(settings.colors.value((Settings::Action)))
-         .arg(settings.colors.value((Settings::Event))));
+         .arg(settings.colors.value((Settings::Event)))
+         .arg(settings.colors.value((Settings::TimeStamp))));
 }
 
 void MessageView::receiveMessage(IrcMessage* message)

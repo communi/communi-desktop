@@ -50,6 +50,16 @@ void MessageFormatter::setTimeStamp(bool timeStamp)
     d.timeStamp = timeStamp;
 }
 
+QString MessageFormatter::timeStampFormat() const
+{
+    return d.timeStampFormat;
+}
+
+void MessageFormatter::setTimeStampFormat(const QString& format)
+{
+    d.timeStampFormat = format;
+}
+
 QString MessageFormatter::messageFormat() const
 {
     return d.messageFormat;
@@ -175,7 +185,7 @@ QString MessageFormatter::formatMessage(const QString& message) const
         format = d.prefixedFormats.value(formatted.left(1));
 
     if (d.timeStamp)
-        formatted = tr("[%1] %2").arg(QTime::currentTime().toString(), formatted);
+        formatted = tr("<span %1>[%2]</span> %3").arg(d.timeStampFormat, QTime::currentTime().toString(), formatted);
 
     if (!format.isNull())
         formatted = tr("<span %1>%2</span>").arg(format, formatted);

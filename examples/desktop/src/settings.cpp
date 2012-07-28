@@ -52,6 +52,7 @@ Settings::Settings() : maxBlockCount(-1), timeStamp(true)
     colors[Notice] = "brown";
     colors[Action] = "darkmagenta";
     colors[Highlight] = "red";
+    colors[TimeStamp] = "gray";
 }
 
 Settings::operator QVariant() const

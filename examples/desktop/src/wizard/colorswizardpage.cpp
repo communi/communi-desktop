@@ -24,29 +24,29 @@ enum Columns
 
 // SVG color keyword names provided by the World Wide Web Consortium
 static const QStringList COLORS = QStringList()
-    << "aliceblue" << "antiquewhite" << "aqua" << "aquamarine" << "azure" << "beige" << "bisque" 
-    << "black" << "blanchedalmond" << "blue" << "blueviolet" << "brown" << "burlywood" << "cadetblue" 
-    << "chartreuse" << "chocolate" << "coral" << "cornflowerblue" << "cornsilk" << "crimson" << "cyan" 
-    << "darkblue" << "darkcyan" << "darkgoldenrod" << "darkgray" << "darkgreen" << "darkgrey" 
-    << "darkkhaki" << "darkmagenta" << "darkolivegreen" << "darkorange" << "darkorchid" << "darkred" 
-    << "darksalmon" << "darkseagreen" << "darkslateblue" << "darkslategray" << "darkslategrey" 
-    << "darkturquoise" << "darkviolet" << "deeppink" << "deepskyblue" << "dimgray" << "dimgrey" 
-    << "dodgerblue" << "firebrick" << "floralwhite" << "forestgreen" << "fuchsia" << "gainsboro" 
-    << "ghostwhite" << "gold" << "goldenrod" << "gray" << "grey" << "green" << "greenyellow" 
-    << "honeydew" << "hotpink" << "indianred" << "indigo" << "ivory" << "khaki" << "lavender" 
-    << "lavenderblush" << "lawngreen" << "lemonchiffon" << "lightblue" << "lightcoral" << "lightcyan" 
-    << "lightgoldenrodyellow" << "lightgray" << "lightgreen" << "lightgrey" << "lightpink" 
-    << "lightsalmon" << "lightseagreen" << "lightskyblue" << "lightslategray" << "lightslategrey" 
-    << "lightsteelblue" << "lightyellow" << "lime" << "limegreen" << "linen" << "magenta" 
-    << "maroon" << "mediumaquamarine" << "mediumblue" << "mediumorchid" << "mediumpurple" 
-    << "mediumseagreen" << "mediumslateblue" << "mediumspringgreen" << "mediumturquoise" 
-    << "mediumvioletred" << "midnightblue" << "mintcream" << "mistyrose" << "moccasin" 
-    << "navajowhite" << "navy" << "oldlace" << "olive" << "olivedrab" << "orange" << "orangered" 
-    << "orchid" << "palegoldenrod" << "palegreen" << "paleturquoise" << "palevioletred" 
-    << "papayawhip" << "peachpuff" << "peru" << "pink" << "plum" << "powderblue" << "purple" << "red" 
-    << "rosybrown" << "royalblue" << "saddlebrown" << "salmon" << "sandybrown" << "seagreen" 
-    << "seashell" << "sienna" << "silver" << "skyblue" << "slateblue" << "slategray" << "slategrey" 
-    << "snow" << "springgreen" << "steelblue" << "tan" << "teal" << "thistle" << "tomato" 
+    << "aliceblue" << "antiquewhite" << "aqua" << "aquamarine" << "azure" << "beige" << "bisque"
+    << "black" << "blanchedalmond" << "blue" << "blueviolet" << "brown" << "burlywood" << "cadetblue"
+    << "chartreuse" << "chocolate" << "coral" << "cornflowerblue" << "cornsilk" << "crimson" << "cyan"
+    << "darkblue" << "darkcyan" << "darkgoldenrod" << "darkgray" << "darkgreen" << "darkgrey"
+    << "darkkhaki" << "darkmagenta" << "darkolivegreen" << "darkorange" << "darkorchid" << "darkred"
+    << "darksalmon" << "darkseagreen" << "darkslateblue" << "darkslategray" << "darkslategrey"
+    << "darkturquoise" << "darkviolet" << "deeppink" << "deepskyblue" << "dimgray" << "dimgrey"
+    << "dodgerblue" << "firebrick" << "floralwhite" << "forestgreen" << "fuchsia" << "gainsboro"
+    << "ghostwhite" << "gold" << "goldenrod" << "gray" << "grey" << "green" << "greenyellow"
+    << "honeydew" << "hotpink" << "indianred" << "indigo" << "ivory" << "khaki" << "lavender"
+    << "lavenderblush" << "lawngreen" << "lemonchiffon" << "lightblue" << "lightcoral" << "lightcyan"
+    << "lightgoldenrodyellow" << "lightgray" << "lightgreen" << "lightgrey" << "lightpink"
+    << "lightsalmon" << "lightseagreen" << "lightskyblue" << "lightslategray" << "lightslategrey"
+    << "lightsteelblue" << "lightyellow" << "lime" << "limegreen" << "linen" << "magenta"
+    << "maroon" << "mediumaquamarine" << "mediumblue" << "mediumorchid" << "mediumpurple"
+    << "mediumseagreen" << "mediumslateblue" << "mediumspringgreen" << "mediumturquoise"
+    << "mediumvioletred" << "midnightblue" << "mintcream" << "mistyrose" << "moccasin"
+    << "navajowhite" << "navy" << "oldlace" << "olive" << "olivedrab" << "orange" << "orangered"
+    << "orchid" << "palegoldenrod" << "palegreen" << "paleturquoise" << "palevioletred"
+    << "papayawhip" << "peachpuff" << "peru" << "pink" << "plum" << "powderblue" << "purple" << "red"
+    << "rosybrown" << "royalblue" << "saddlebrown" << "salmon" << "sandybrown" << "seagreen"
+    << "seashell" << "sienna" << "silver" << "skyblue" << "slateblue" << "slategray" << "slategrey"
+    << "snow" << "springgreen" << "steelblue" << "tan" << "teal" << "thistle" << "tomato"
     << "turquoise" << "violet" << "wheat" << "white" << "whitesmoke" << "yellow" << "yellowgreen";
 
 class ColorItemDelegate : public QStyledItemDelegate
@@ -103,7 +103,7 @@ ColorsWizardPage::ColorsWizardPage(QWidget* parent) : QWizardPage(parent)
 QHash<int, QString> ColorsWizardPage::colors() const
 {
     QHash<int, QString> colors;
-    for (int i = Settings::Background; i <= Settings::Highlight; ++i)
+    for (int i = Settings::Background; i <= Settings::TimeStamp; ++i)
         colors[i] = ui.treeWidget->topLevelItem(i)->data(Color, Qt::DisplayRole).toString();
     return colors;
 }

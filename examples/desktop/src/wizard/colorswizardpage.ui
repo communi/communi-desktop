@@ -89,6 +89,14 @@
        <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
       </property>
      </item>
+     <item>
+      <property name="text">
+       <string>Timestamp</string>
+      </property>
+      <property name="flags">
+       <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
+      </property>
+     </item>
     </widget>
    </item>
   </layout>

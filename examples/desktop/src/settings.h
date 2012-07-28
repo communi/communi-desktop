@@ -46,7 +46,8 @@ struct Settings
         Event,
         Notice,
         Action,
-        Highlight
+        Highlight,
+        TimeStamp
     };
 
     enum ShortcutType
@@ -70,7 +71,7 @@ Q_DECLARE_METATYPE(Settings);
 
 inline QDataStream& operator<<(QDataStream& out, const Settings& settings)
 {
-    out << quint32(123); // version
+    out << quint32(125); // version
     out << settings.messages;
     out << settings.highlights;
     out << settings.language;
@@ -93,7 +94,8 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
     settings.shortcuts = readStreamValue< QHash<int, QString> >(in, settings.shortcuts);
     settings.maxBlockCount = readStreamValue<int>(in, settings.maxBlockCount);
     settings.timeStamp = readStreamValue<bool>(in, settings.timeStamp);
-    Q_UNUSED(version);
+    if (version <= 125)
+        settings.colors[Settings::TimeStamp] = "gray";
     return in;
 }
 
