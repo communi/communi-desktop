@@ -23,3 +23,4 @@ SOURCES += $$PWD/sessiontabwidget.cpp
 SOURCES += $$PWD/settings.cpp
 
 include(util/util.pri)
+include(3rdparty/3rdparty.pri)
