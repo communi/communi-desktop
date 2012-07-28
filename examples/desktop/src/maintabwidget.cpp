@@ -50,7 +50,7 @@ void MainTabWidget::tabRemoved(int index)
 
 void MainTabWidget::tabActivated(int index)
 {
-    if (index > 0 && index < count() - 1)
+    if (index < count() - 1)
     {
         SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(widget(index));
         if (tab)
@@ -116,7 +116,7 @@ int MainTabWidget::senderIndex() const
 
 void MainTabWidget::onTabMenuRequested(int index, const QPoint& pos)
 {
-    if (index > 0 && index < count() - 1)
+    if (index < count() - 1)
     {
         SessionTabWidget* tabWidget = qobject_cast<SessionTabWidget*>(widget(index));
         if (tabWidget)
