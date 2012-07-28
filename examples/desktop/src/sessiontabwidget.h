@@ -25,6 +25,7 @@ class MessageView;
 struct Connection;
 class IrcMessage;
 struct Settings;
+class QShortcut;
 
 class SessionTabWidget : public TabWidget
 {
@@ -61,6 +62,8 @@ private slots:
 private:
     struct SessionTabWidgetData
     {
+        QShortcut* tabLeftShortcut;
+        QShortcut* tabRightShortcut;
         QList<int> delayedIndexes;
         MessageHandler handler;
         QHash<QString, MessageView*> views;

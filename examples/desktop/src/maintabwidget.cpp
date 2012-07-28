@@ -29,12 +29,6 @@ MainTabWidget::MainTabWidget(QWidget* parent) : TabWidget(parent)
     d.tabDownShortcut = new QShortcut(this);
     connect(d.tabDownShortcut, SIGNAL(activated()), this, SLOT(moveToNextTab()));
 
-    d.tabLeftShortcut = new QShortcut(this);
-    connect(d.tabLeftShortcut, SIGNAL(activated()), this, SLOT(moveToPrevSubTab()));
-
-    d.tabRightShortcut = new QShortcut(this);
-    connect(d.tabRightShortcut, SIGNAL(activated()), this, SLOT(moveToNextSubTab()));
-
     QShortcut* shortcut = new QShortcut(QKeySequence::New, this);
     connect(shortcut, SIGNAL(activated()), this, SIGNAL(newTabRequested()));
 }
@@ -55,8 +49,6 @@ void MainTabWidget::applySettings(const Settings& settings)
 {
     d.tabUpShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabUp)));
     d.tabDownShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabDown)));
-    d.tabLeftShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabLeft)));
-    d.tabRightShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabRight)));
 
     QColor color(settings.colors.value(Settings::Highlight));
     setAlertColor(color);
@@ -104,18 +96,4 @@ int MainTabWidget::senderIndex() const
         return -1;
 
     return indexOf(static_cast<QWidget*>(sender()));
-}
-
-void MainTabWidget::moveToNextSubTab()
-{
-    TabWidget* tabWidget = qobject_cast<TabWidget*>(currentWidget());
-    if (tabWidget)
-        tabWidget->moveToNextTab();
-}
-
-void MainTabWidget::moveToPrevSubTab()
-{
-    TabWidget* tabWidget = qobject_cast<TabWidget*>(currentWidget());
-    if (tabWidget)
-        tabWidget->moveToPrevTab();
 }

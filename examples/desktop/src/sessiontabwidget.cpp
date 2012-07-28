@@ -36,6 +36,12 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     connect(&d.handler, SIGNAL(receiverToBeRemoved(QString)), this, SLOT(removeView(QString)));
     connect(&d.handler, SIGNAL(receiverToBeRenamed(QString,QString)), this, SLOT(renameView(QString,QString)));
 
+    d.tabLeftShortcut = new QShortcut(this);
+    connect(d.tabLeftShortcut, SIGNAL(activated()), this, SLOT(moveToPrevTab()));
+
+    d.tabRightShortcut = new QShortcut(this);
+    connect(d.tabRightShortcut, SIGNAL(activated()), this, SLOT(moveToNextTab()));
+
     QShortcut* shortcut = new QShortcut(QKeySequence::AddTab, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(onNewTabRequested()));
 
@@ -214,6 +220,9 @@ void SessionTabWidget::highlightTab(MessageView* view, bool on)
 
 void SessionTabWidget::applySettings(const Settings& settings)
 {
+    d.tabLeftShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabLeft)));
+    d.tabRightShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabRight)));
+
     QColor color(settings.colors.value(Settings::Highlight));
     setAlertColor(color);
     setHighlightColor(color);

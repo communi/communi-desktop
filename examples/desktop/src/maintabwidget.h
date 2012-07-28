@@ -39,8 +39,6 @@ private slots:
     void setInactive(bool inactive);
     void setAlerted(bool alerted);
     void setHighlighted(bool highlighted);
-    void moveToNextSubTab();
-    void moveToPrevSubTab();
 
 private:
     int senderIndex() const;
@@ -49,8 +47,6 @@ private:
     {
         QShortcut* tabUpShortcut;
         QShortcut* tabDownShortcut;
-        QShortcut* tabLeftShortcut;
-        QShortcut* tabRightShortcut;
     } d;
 };
 
