@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2008-2011 J-P Nurmi jpnurmi@gmail.com
+* Copyright (C) 2008-2012 J-P Nurmi <jpnurmi@gmail.com>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -96,7 +96,7 @@ void Application::aboutApplication()
         "<h3>%1</h3>"
         "<p>%2</p>"
         "<p><a href='%3'>%3</a></p>"
-        "<p><small>Copyright (C) 2008-2011 J-P Nurmi &lt;"
+        "<p><small>Copyright (C) 2008-2012 J-P Nurmi &lt;"
         "<a href='mailto:jpnurmi@gmail.com'>jpnurmi@gmail.com</a>&gt;</small></p>")
             .arg(tr("About %1").arg(applicationName()))
             .arg(applicationSlogan())
