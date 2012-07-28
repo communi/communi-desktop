@@ -22,9 +22,7 @@
 
 class Session;
 class MessageView;
-struct Connection;
 class IrcMessage;
-struct Settings;
 class QShortcut;
 
 class SessionTabWidget : public TabWidget
