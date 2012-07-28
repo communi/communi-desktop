@@ -13,9 +13,7 @@
 */
 
 #include "messageview.h"
-#include "settings.h"
 #include "completer.h"
-#include "application.h"
 #include "usermodel.h"
 #include <QSortFilterProxyModel>
 #include <QStringListModel>
@@ -117,9 +115,6 @@ MessageView::MessageView(const QString& receiver, Session* session, QWidget* par
 
     QShortcut* shortcut = new QShortcut(Qt::Key_Escape, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(onEscPressed()));
-
-    connect(qApp, SIGNAL(settingsChanged(Settings)), this, SLOT(applySettings(Settings)));
-    applySettings(Application::settings());
 }
 
 MessageView::~MessageView()
@@ -271,6 +266,7 @@ void MessageView::applySettings(const Settings& settings)
          .arg(settings.colors.value((Settings::Action)))
          .arg(settings.colors.value((Settings::Event)))
          .arg(settings.colors.value((Settings::TimeStamp))));
+    d.settings = settings;
 }
 
 void MessageView::receiveMessage(IrcMessage* message)
@@ -282,42 +278,42 @@ void MessageView::receiveMessage(IrcMessage* message)
     switch (message->type())
     {
     case IrcMessage::Join:
-        append = Application::settings().messages.value(Settings::Joins);
-        hilite = Application::settings().highlights.value(Settings::Joins);
+        append = d.settings.messages.value(Settings::Joins);
+        hilite = d.settings.highlights.value(Settings::Joins);
         if (message->sender().name() == d.session->nickName())
             d.joining = true;
         break;
     case IrcMessage::Kick:
-        append = Application::settings().messages.value(Settings::Kicks);
-        hilite = Application::settings().highlights.value(Settings::Kicks);
+        append = d.settings.messages.value(Settings::Kicks);
+        hilite = d.settings.highlights.value(Settings::Kicks);
         break;
     case IrcMessage::Mode:
-        append = Application::settings().messages.value(Settings::Modes);
-        hilite = Application::settings().highlights.value(Settings::Modes);
+        append = d.settings.messages.value(Settings::Modes);
+        hilite = d.settings.highlights.value(Settings::Modes);
         break;
     case IrcMessage::Nick:
-        append = Application::settings().messages.value(Settings::Nicks);
-        hilite = Application::settings().highlights.value(Settings::Nicks);
+        append = d.settings.messages.value(Settings::Nicks);
+        hilite = d.settings.highlights.value(Settings::Nicks);
         break;
     case IrcMessage::Notice:
         matches = static_cast<IrcNoticeMessage*>(message)->message().contains(d.session->nickName());
         hilite = true;
         break;
     case IrcMessage::Part:
-        append = Application::settings().messages.value(Settings::Parts);
-        hilite = Application::settings().highlights.value(Settings::Parts);
+        append = d.settings.messages.value(Settings::Parts);
+        hilite = d.settings.highlights.value(Settings::Parts);
         break;
     case IrcMessage::Private:
         matches = !isChannelView() || static_cast<IrcPrivateMessage*>(message)->message().contains(d.session->nickName());
         hilite = true;
         break;
     case IrcMessage::Quit:
-        append = Application::settings().messages.value(Settings::Quits);
-        hilite = Application::settings().highlights.value(Settings::Quits);
+        append = d.settings.messages.value(Settings::Quits);
+        hilite = d.settings.highlights.value(Settings::Quits);
         break;
     case IrcMessage::Topic:
-        append = Application::settings().messages.value(Settings::Topics);
-        hilite = Application::settings().highlights.value(Settings::Topics);
+        append = d.settings.messages.value(Settings::Topics);
+        hilite = d.settings.highlights.value(Settings::Topics);
         d.topicLabel->setText(static_cast<IrcTopicMessage*>(message)->topic());
         if (d.topicLabel->text().isEmpty())
             d.topicLabel->setText(tr("-"));

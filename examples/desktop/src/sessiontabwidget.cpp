@@ -13,7 +13,6 @@
 */
 
 #include "sessiontabwidget.h"
-#include "application.h"
 #include "messageview.h"
 #include "settings.h"
 #include "session.h"
@@ -43,8 +42,6 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     shortcut = new QShortcut(QKeySequence::Close, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(closeCurrentView()));
 
-    applySettings(Application::settings());
-
     MessageView* view = openView(d.handler.session()->host());
     d.handler.setDefaultReceiver(view);
     updateStatus();
@@ -61,6 +58,7 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
     if (!view)
     {
         view = new MessageView(receiver, d.handler.session(), this);
+        view->applySettings(d.settings);
         connect(view, SIGNAL(alert(MessageView*, bool)), this, SLOT(alertTab(MessageView*, bool)));
         connect(view, SIGNAL(highlight(MessageView*, bool)), this, SLOT(highlightTab(MessageView*, bool)));
         connect(view, SIGNAL(query(QString)), this, SLOT(openView(QString)));
@@ -97,8 +95,8 @@ void SessionTabWidget::closeView(int index)
     MessageView* view = d.views.value(tabText(index).toLower());
     if (view)
     {
-        QString reason = tr("%1 %2").arg(Application::applicationName())
-                                    .arg(Application::applicationVersion());
+        QString reason = tr("%1 %2").arg(QApplication::applicationName())
+                                    .arg(QApplication::applicationVersion());
         if (indexOf(view) == 0)
             session()->quit(reason);
         else if (view->isChannelView())
@@ -216,6 +214,11 @@ void SessionTabWidget::highlightTab(MessageView* view, bool on)
 
 void SessionTabWidget::applySettings(const Settings& settings)
 {
-    setAlertColor(QColor(settings.colors.value(Settings::Highlight)));
-    setHighlightColor(QColor(settings.colors.value(Settings::Highlight)));
+    QColor color(settings.colors.value(Settings::Highlight));
+    setAlertColor(color);
+    setHighlightColor(color);
+
+    foreach (MessageView* view, d.views)
+        view->applySettings(settings);
+    d.settings = settings;
 }

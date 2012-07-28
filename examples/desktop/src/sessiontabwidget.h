@@ -17,6 +17,7 @@
 
 #include "tabwidget.h"
 #include "messagehandler.h"
+#include "settings.h"
 #include <QHash>
 
 class Session;
@@ -40,6 +41,7 @@ public slots:
     void closeCurrentView();
     void closeView(int index);
     void renameView(const QString& from, const QString& to);
+    void applySettings(const Settings& settings);
 
 signals:
     void titleChanged(const QString& title);
@@ -55,7 +57,6 @@ private slots:
     void delayedTabResetTimeout();
     void alertTab(MessageView* view, bool on);
     void highlightTab(MessageView* view, bool on);
-    void applySettings(const Settings& settings);
 
 private:
     struct SessionTabWidgetData
@@ -63,6 +64,7 @@ private:
         QList<int> delayedIndexes;
         MessageHandler handler;
         QHash<QString, MessageView*> views;
+        Settings settings;
     } d;
 };
 

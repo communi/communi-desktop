@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget* parent) :
     QMainWindow(parent), tabWidget(0), trayIcon(0)
 {
     tabWidget = new MainTabWidget(this);
+    tabWidget->applySettings(Application::settings());
+    connect(qApp, SIGNAL(settingsChanged(Settings)), tabWidget, SLOT(applySettings(Settings)));
     setCentralWidget(tabWidget);
     connect(tabWidget, SIGNAL(newTabRequested()), this, SLOT(connectTo()), Qt::QueuedConnection);
     connect(tabWidget, SIGNAL(tabMenuRequested(int,QPoint)), this, SLOT(onTabMenuRequested(int,QPoint)));
@@ -120,6 +122,7 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
         session->open();
 
     SessionTabWidget* tab = new SessionTabWidget(session, tabWidget);
+    tab->applySettings(Application::settings());
     if (connection.name.isEmpty())
         connect(tab, SIGNAL(titleChanged(QString)), tabWidget, SLOT(setSessionTitle(QString)));
     connect(tab, SIGNAL(inactiveStatusChanged(bool)), tabWidget, SLOT(setInactive(bool)));

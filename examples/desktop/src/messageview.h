@@ -22,6 +22,7 @@
 #include "commandparser.h"
 #include "messageformatter.h"
 #include "messagereceiver.h"
+#include "settings.h"
 
 struct Settings;
 class UserModel;
@@ -41,6 +42,7 @@ public:
 public slots:
     void showHelp(const QString& text, bool error = false);
     void appendMessage(const QString& message);
+    void applySettings(const Settings& settings);
 
 signals:
     void highlight(MessageView* view, bool on);
@@ -62,7 +64,6 @@ protected:
 private slots:
     void onEscPressed();
     void onSend(const QString& text);
-    void applySettings(const Settings& settings);
     void onCustomCommand(const QString& command, const QStringList& params);
     void onDoubleClicked(const QModelIndex& index);
 
@@ -76,6 +77,7 @@ private:
         MessageFormatter formatter;
         UserModel* userModel;
         static QStringListModel* commandModel;
+        Settings settings;
     } d;
 };
 
