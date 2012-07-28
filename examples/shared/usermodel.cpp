@@ -50,14 +50,17 @@ void UserModel::addUsers(const QStringList& users)
             unique += user;
     }
 
-    beginInsertRows(QModelIndex(), rowCount(), rowCount() + unique.count() - 1);
-    foreach (const QString& user, unique)
+    if (!unique.isEmpty())
     {
-        QString name = d.session->unprefixedUser(user);
-        d.names += name;
-        d.modes.insert(name, d.session->userPrefix(user));
+        beginInsertRows(QModelIndex(), rowCount(), rowCount() + unique.count() - 1);
+        foreach (const QString& user, unique)
+        {
+            QString name = d.session->unprefixedUser(user);
+            d.names += name;
+            d.modes.insert(name, d.session->userPrefix(user));
+        }
+        endInsertRows();
     }
-    endInsertRows();
 }
 
 void UserModel::removeUser(const QString& user)
