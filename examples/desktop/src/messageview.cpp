@@ -175,8 +175,8 @@ void MessageView::appendMessage(const QString& message)
             copy += " ";
 
         d.textBrowser->append(copy);
-        int ub = d.textBrowser->unseenBlock();
-        d.textBrowser->setUnseenBlock(isVisible() ? -1 : ub != -1 ? ub : d.textBrowser->document()->blockCount() - 1);
+        if (!isVisible() && d.textBrowser->unseenBlock() == -1)
+            d.textBrowser->setUnseenBlock(d.textBrowser->document()->blockCount() - 1);
     }
 }
 
