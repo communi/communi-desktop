@@ -28,6 +28,7 @@ class MainTabWidget : public TabWidget
 public:
     MainTabWidget(QWidget* parent = 0);
 
+    QList<Session*> sessions() const;
     void addSession(Session* session, const QString& name = QString());
 
 public slots:

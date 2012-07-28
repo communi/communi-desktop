@@ -37,6 +37,18 @@ MainTabWidget::MainTabWidget(QWidget* parent) : TabWidget(parent)
     connect(shortcut, SIGNAL(activated()), this, SIGNAL(newTabRequested()));
 }
 
+QList<Session*> MainTabWidget::sessions() const
+{
+    QList<Session*> list;
+    for (int i = 0; i < count(); ++i)
+    {
+        SessionTabWidget* tabWidget = qobject_cast<SessionTabWidget*>(widget(i));
+        if (tabWidget)
+            list += tabWidget->session();
+    }
+    return list;
+}
+
 void MainTabWidget::addSession(Session* session, const QString& name)
 {
     SessionTabWidget* tab = new SessionTabWidget(session, this);

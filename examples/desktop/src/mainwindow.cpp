@@ -15,14 +15,11 @@
 #include "mainwindow.h"
 #include "application.h"
 #include "connectionwizard.h"
-#include "sessiontabwidget.h"
 #include "maintabwidget.h"
-#include "sharedtimer.h"
 #include "connectioninfo.h"
 #include "homepage.h"
 #include "session.h"
 #include <QtGui>
-#include <irccommand.h>
 
 MainWindow::MainWindow(QWidget* parent) :
     QMainWindow(parent), tabWidget(0), trayIcon(0)
@@ -127,13 +124,13 @@ void MainWindow::closeEvent(QCloseEvent* event)
     settings.setValue("geometry", saveGeometry());
 
     ConnectionInfos connections;
-    for (int i = 0; tabWidget && i < tabWidget->count(); ++i)
+    if (tabWidget)
     {
-        SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(tabWidget->widget(i));
-        if (tab)
+        QList<Session*> sessions = tabWidget->sessions();
+        foreach (Session* session, sessions)
         {
-            connections += tab->session()->toConnection();
-            tab->session()->quit();
+            connections += session->toConnection();
+            session->quit();
         }
     }
     settings.setValue("connections", QVariant::fromValue(connections));
