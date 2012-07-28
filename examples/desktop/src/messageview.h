@@ -68,7 +68,7 @@ private slots:
 private:
     struct MessageViewData : public Ui::MessageView
     {
-        bool firstNames;
+        bool joining;
         Session* session;
         CommandParser parser;
         MessageFormatter formatter;

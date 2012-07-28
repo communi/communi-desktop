@@ -21,6 +21,7 @@
 #include <QStringListModel>
 #include <QShortcut>
 #include <QKeyEvent>
+#include <QDateTime>
 #include <QDebug>
 #include <ircutil.h>
 #include <irc.h>
@@ -82,13 +83,14 @@ MessageView::MessageView(const QString& receiver, Session* session, QWidget* par
     connect(&d.parser, SIGNAL(customCommand(QString,QStringList)), this, SLOT(onCustomCommand(QString,QStringList)));
 
     bool isChannel = session->isChannel(receiver);
+    d.topicLabel->setVisible(isChannel);
     d.listView->setVisible(isChannel);
     if (isChannel)
     {
         d.listView->setModel(new SortedUserModel(session->prefixModes(), d.userModel));
         connect(d.listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClicked(QModelIndex)));
     }
-    d.firstNames = false;
+    d.joining = false;
 
     if (!d.commandModel)
     {
@@ -265,7 +267,7 @@ void MessageView::receiveMessage(IrcMessage* message)
         append = Application::settings().messages.value(Settings::Joins);
         hilite = Application::settings().highlights.value(Settings::Joins);
         if (message->sender().name() == d.session->nickName())
-            d.firstNames = true;
+            d.joining = true;
         break;
     case IrcMessage::Kick:
         append = Application::settings().messages.value(Settings::Kicks);
@@ -298,6 +300,9 @@ void MessageView::receiveMessage(IrcMessage* message)
     case IrcMessage::Topic:
         append = Application::settings().messages.value(Settings::Topics);
         hilite = Application::settings().highlights.value(Settings::Topics);
+        d.topicLabel->setText(static_cast<IrcTopicMessage*>(message)->topic());
+        if (d.topicLabel->text().isEmpty())
+            d.topicLabel->setText(tr("-"));
         break;
     case IrcMessage::Unknown:
         qWarning() << "unknown:" << message;
@@ -309,17 +314,39 @@ void MessageView::receiveMessage(IrcMessage* message)
     case IrcMessage::Error:
         break;
     case IrcMessage::Numeric:
-        if (d.firstNames)
+        switch (static_cast<IrcNumericMessage*>(message)->code())
         {
-            IrcNumericMessage* numeric = static_cast<IrcNumericMessage*>(message);
-            if (numeric->code() == Irc::RPL_ENDOFNAMES)
-            {
-                appendMessage(d.formatter.formatMessage(tr("! %1 has %2 users").arg(receiver()).arg(d.userModel->rowCount())));
-                d.firstNames = false;
-                return;
+            case Irc::RPL_ENDOFNAMES:
+                if (d.joining)
+                {
+                    appendMessage(d.formatter.formatMessage(tr("! %1 has %2 users").arg(receiver()).arg(d.userModel->rowCount())));
+                    d.joining = false;
+                    return;
+                }
+                break;
+            case Irc::RPL_NAMREPLY:
+                if (d.joining)
+                    return;
+                break;
+            case Irc::RPL_NOTOPIC:
+                d.topicLabel->setText(tr("-"));
+                if (d.joining)
+                    return;
+                break;
+            case Irc::RPL_TOPIC:
+                d.topicLabel->setText(IrcUtil::messageToHtml(message->parameters().value(2)));
+                if (d.joining)
+                    return;
+                break;
+            case Irc::RPL_TOPICWHOTIME: {
+                QDateTime dateTime = QDateTime::fromTime_t(message->parameters().value(3).toInt());
+                d.topicLabel->setToolTip(tr("Set %1 by %2").arg(dateTime.toString(), message->parameters().value(2)));
+                if (d.joining)
+                    return;
+                break;
             }
-            if (numeric->code() == Irc::RPL_NAMREPLY)
-                return;
+            default:
+                break;
         }
         break;
     }
