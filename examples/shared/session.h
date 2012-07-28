@@ -88,8 +88,6 @@ public:
     Q_INVOKABLE bool ensureNetwork();
 
     Q_INVOKABLE bool sendUiCommand(IrcCommand* command);
-    bool hasSent(IrcCommand::Type command);
-    void clearSent(IrcCommand::Type command);
 
 public slots:
     void reconnect();
@@ -122,7 +120,6 @@ private:
     int m_maxLag;
     QHash<QString,QString> m_info;
     bool m_quit;
-    QSet<IrcCommand::Type> m_sent;
     static QNetworkSession* s_network;
 };
 
