@@ -20,8 +20,13 @@
 class TextBrowser : public QTextBrowser
 {
     Q_OBJECT
+    Q_PROPERTY(int unseenBlock READ unseenBlock WRITE setUnseenBlock)
+
 public:
     TextBrowser(QWidget* parent = 0);
+
+    int unseenBlock() const;
+    void setUnseenBlock(int block);
 
 public slots:
     void scrollToTop();
@@ -30,7 +35,11 @@ public slots:
     void scrollToPreviousPage();
 
 protected:
+    void paintEvent(QPaintEvent* event);
     void resizeEvent(QResizeEvent* event);
+
+private:
+    int ub;
 };
 
 #endif // TEXTBROWSER_H

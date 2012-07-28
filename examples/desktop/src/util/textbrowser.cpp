@@ -14,9 +14,22 @@
 
 #include "textbrowser.h"
 #include <QScrollBar>
+#include <QPainter>
+#include <QTextBlock>
+#include <QAbstractTextDocumentLayout>
 
-TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent)
+TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent), ub(-1)
 {
+}
+
+int TextBrowser::unseenBlock() const
+{
+    return ub;
+}
+
+void TextBrowser::setUnseenBlock(int block)
+{
+    ub = block;
 }
 
 void TextBrowser::resizeEvent(QResizeEvent* event)
@@ -45,4 +58,23 @@ void TextBrowser::scrollToNextPage()
 void TextBrowser::scrollToPreviousPage()
 {
     verticalScrollBar()->triggerAction(QScrollBar::SliderPageStepSub);
+}
+
+void TextBrowser::paintEvent(QPaintEvent* event)
+{
+    QTextBrowser::paintEvent(event);
+
+    QTextBlock block;
+    if (ub > 0)
+        block = document()->findBlockByNumber(ub);
+
+    if (block.isValid())
+    {
+        QPainter painter(viewport());
+        painter.setPen(Qt::DashLine);
+        painter.translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
+
+        QRectF br = document()->documentLayout()->blockBoundingRect(block);
+        painter.drawLine(br.topLeft(), br.topRight());
+    }
 }

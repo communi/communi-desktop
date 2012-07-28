@@ -171,6 +171,8 @@ void MessageView::appendMessage(const QString& message)
             copy += " ";
 
         d.textBrowser->append(copy);
+        int ub = d.textBrowser->unseenBlock();
+        d.textBrowser->setUnseenBlock(isVisible() ? -1 : ub != -1 ? ub : d.textBrowser->document()->blockCount() - 1);
     }
 }
 
@@ -201,6 +203,10 @@ bool MessageView::eventFilter(QObject* receiver, QEvent* event)
                 }
                 break;
         }
+    }
+    else if (event->type() == QEvent::Hide)
+    {
+        d.textBrowser->setUnseenBlock(-1);
     }
     return false;
 }
