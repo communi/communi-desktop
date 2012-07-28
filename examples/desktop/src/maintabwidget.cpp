@@ -24,6 +24,7 @@ MainTabWidget::MainTabWidget(QWidget* parent) : TabWidget(parent)
     setStyleSheet(".MainTabWidget::pane { border: 0px; }");
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
+    connect(this, SIGNAL(tabMenuRequested(int,QPoint)), this, SLOT(onTabMenuRequested(int,QPoint)));
 
     d.tabUpShortcut = new QShortcut(this);
     connect(d.tabUpShortcut, SIGNAL(activated()), this, SLOT(moveToPrevTab()));
@@ -111,4 +112,14 @@ int MainTabWidget::senderIndex() const
         return -1;
 
     return indexOf(static_cast<QWidget*>(sender()));
+}
+
+void MainTabWidget::onTabMenuRequested(int index, const QPoint& pos)
+{
+    if (index > 0 && index < count() - 1)
+    {
+        SessionTabWidget* tabWidget = qobject_cast<SessionTabWidget*>(widget(index));
+        if (tabWidget)
+            QMetaObject::invokeMethod(tabWidget, "onTabMenuRequested", Q_ARG(int, 0), Q_ARG(QPoint, pos));
+    }
 }

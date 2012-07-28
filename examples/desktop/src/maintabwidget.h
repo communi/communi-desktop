@@ -40,6 +40,7 @@ private slots:
     void setAlerted(bool alerted);
     void setHighlighted(bool highlighted);
     void tabActivated(int index);
+    void onTabMenuRequested(int index, const QPoint& pos);
 
 private:
     int senderIndex() const;
