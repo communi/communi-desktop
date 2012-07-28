@@ -29,7 +29,7 @@ public:
     MultiSessionTabWidget(QWidget* parent = 0);
 
     QList<Session*> sessions() const;
-    void addSession(Session* session, const QString& name = QString());
+    void addSession(Session* session);
 
 public slots:
     void applySettings(const Settings& settings);

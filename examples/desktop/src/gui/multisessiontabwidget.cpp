@@ -51,16 +51,16 @@ QList<Session*> MultiSessionTabWidget::sessions() const
     return list;
 }
 
-void MultiSessionTabWidget::addSession(Session* session, const QString& name)
+void MultiSessionTabWidget::addSession(Session* session)
 {
     SessionTabWidget* tab = new SessionTabWidget(session, this);
-    if (name.isEmpty())
+    if (session->name().isEmpty())
         connect(tab, SIGNAL(titleChanged(QString)), this, SLOT(setSessionTitle(QString)));
     connect(tab, SIGNAL(inactiveStatusChanged(bool)), this, SLOT(setInactive(bool)));
     connect(tab, SIGNAL(alertStatusChanged(bool)), this, SLOT(setAlerted(bool)));
     connect(tab, SIGNAL(highlightStatusChanged(bool)), this, SLOT(setHighlighted(bool)));
 
-    int index = addTab(tab, name.isEmpty() ? session->host() : name);
+    int index = addTab(tab, session->name().isEmpty() ? session->host() : session->name());
     setCurrentIndex(index);
     setTabInactive(index, !session->isActive());
 }

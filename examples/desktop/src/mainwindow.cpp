@@ -115,7 +115,7 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     session->setUserName("communi");
     if (session->ensureNetwork())
         session->open();
-    tabWidget->addSession(session, connection.name);
+    tabWidget->addSession(session);
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
