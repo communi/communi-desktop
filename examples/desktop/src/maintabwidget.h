@@ -16,8 +16,9 @@
 #define MAINTABWIDGET_H
 
 #include "tabwidget.h"
+#include "settings.h"
 
-struct Settings;
+class Session;
 class QShortcut;
 
 class MainTabWidget : public TabWidget
@@ -26,6 +27,8 @@ class MainTabWidget : public TabWidget
 
 public:
     MainTabWidget(QWidget* parent = 0);
+
+    void addSession(Session* session, const QString& name = QString());
 
 public slots:
     void applySettings(const Settings& settings);
@@ -49,6 +52,7 @@ private:
     {
         QShortcut* tabUpShortcut;
         QShortcut* tabDownShortcut;
+        Settings settings;
     } d;
 };
 

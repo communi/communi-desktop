@@ -15,6 +15,7 @@
 #include "maintabwidget.h"
 #include "sessiontabwidget.h"
 #include "settings.h"
+#include "session.h"
 #include <QShortcut>
 #include <QTabBar>
 
@@ -34,6 +35,21 @@ MainTabWidget::MainTabWidget(QWidget* parent) : TabWidget(parent)
 
     QShortcut* shortcut = new QShortcut(QKeySequence::New, this);
     connect(shortcut, SIGNAL(activated()), this, SIGNAL(newTabRequested()));
+}
+
+void MainTabWidget::addSession(Session* session, const QString& name)
+{
+    SessionTabWidget* tab = new SessionTabWidget(session, this);
+    tab->applySettings(d.settings);
+    if (name.isEmpty())
+        connect(tab, SIGNAL(titleChanged(QString)), this, SLOT(setSessionTitle(QString)));
+    connect(tab, SIGNAL(inactiveStatusChanged(bool)), this, SLOT(setInactive(bool)));
+    connect(tab, SIGNAL(alertStatusChanged(bool)), this, SLOT(setAlerted(bool)));
+    connect(tab, SIGNAL(highlightStatusChanged(bool)), this, SLOT(setHighlighted(bool)));
+
+    int index = addTab(tab, name.isEmpty() ? session->host() : name);
+    setCurrentIndex(index);
+    setTabInactive(index, !session->isActive());
 }
 
 void MainTabWidget::tabInserted(int index)
@@ -63,6 +79,7 @@ void MainTabWidget::tabActivated(int index)
 
 void MainTabWidget::applySettings(const Settings& settings)
 {
+    d.settings = settings;
     d.tabUpShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabUp)));
     d.tabDownShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabDown)));
 
