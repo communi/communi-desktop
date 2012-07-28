@@ -78,7 +78,6 @@ void SearchEditor::find(const QString& text, bool forward, bool backward)
 
     QTextDocument* doc = d.textEdit->document();
     QTextCursor cursor = d.textEdit->textCursor();
-    QString oldText = QLineEdit::text();
 
     QTextDocument::FindFlags options;
     QPalette pal = palette();
@@ -88,6 +87,7 @@ void SearchEditor::find(const QString& text, bool forward, bool backward)
         cursor.setPosition(forward ? cursor.position() : cursor.anchor(), QTextCursor::MoveAnchor);
 
     QTextCursor newCursor = cursor;
+    QList<QTextEdit::ExtraSelection> extraSelections;
 
     if (!text.isEmpty()) {
         if (backward)
@@ -105,10 +105,20 @@ void SearchEditor::find(const QString& text, bool forward, bool backward)
                 newCursor = cursor;
             }
         }
+
+        d.textEdit->moveCursor(QTextCursor::Start);
+        while (d.textEdit->find(text))
+        {
+            QTextEdit::ExtraSelection extra;
+            extra.format.setBackground(Qt::yellow);
+            extra.cursor = d.textEdit->textCursor();
+            extraSelections.append(extra);
+        }
     }
 
     if (!isVisible())
         show();
     d.textEdit->setTextCursor(newCursor);
+    d.textEdit->setExtraSelections(extraSelections);
     setPalette(pal);
 }
