@@ -25,13 +25,16 @@ static QMap<QString, QString>& command_syntaxes()
     {
         syntaxes.insert("AWAY", "(<reason>)");
         syntaxes.insert("INVITE", "<user>");
+        syntaxes.insert("JOIN", "<channel> (<key>)");
         syntaxes.insert("KICK", "<user> (<reason>)");
         syntaxes.insert("ME", "<message>");
         syntaxes.insert("MODE", "<channel/user> <mode> (<arg>)");
         syntaxes.insert("NAMES", "");
         syntaxes.insert("NICK", "<nick>");
         syntaxes.insert("NOTICE", "<channel/user> <message>");
+        syntaxes.insert("PART", "(<reason>)");
         syntaxes.insert("PING", "(<user>)");
+        syntaxes.insert("QUIT" , "(<message>)");
         syntaxes.insert("QUOTE" , "<command> (<parameters>)");
         syntaxes.insert("TIME", "(<user>)");
         syntaxes.insert("TOPIC", "(<topic>)");
@@ -100,13 +103,16 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
         {
             parseFunctions.insert("AWAY", &CommandParser::parseAway);
             parseFunctions.insert("INVITE", &CommandParser::parseInvite);
+            parseFunctions.insert("JOIN", &CommandParser::parseJoin);
             parseFunctions.insert("KICK", &CommandParser::parseKick);
             parseFunctions.insert("ME", &CommandParser::parseMe);
             parseFunctions.insert("MODE", &CommandParser::parseMode);
             parseFunctions.insert("NAMES", &CommandParser::parseNames);
             parseFunctions.insert("NICK", &CommandParser::parseNick);
             parseFunctions.insert("NOTICE", &CommandParser::parseNotice);
+            parseFunctions.insert("PART", &CommandParser::parsePart);
             parseFunctions.insert("PING", &CommandParser::parsePing);
+            parseFunctions.insert("QUIT", &CommandParser::parseQuit);
             parseFunctions.insert("QUOTE", &CommandParser::parseQuote);
             parseFunctions.insert("TIME", &CommandParser::parseTime);
             parseFunctions.insert("TOPIC", &CommandParser::parseTopic);
@@ -151,6 +157,14 @@ IrcCommand* CommandParser::parseInvite(const QString& receiver, const QStringLis
 {
     if (params.count() == 1)
         return IrcCommand::createInvite(params.at(0), receiver);
+    return 0;
+}
+
+IrcCommand* CommandParser::parseJoin(const QString& receiver, const QStringList& params)
+{
+    Q_UNUSED(receiver);
+    if (params.count() == 1 || params.count() == 2)
+        return IrcCommand::createJoin(params.at(0), params.value(1));
     return 0;
 }
 
@@ -199,6 +213,11 @@ IrcCommand* CommandParser::parseNotice(const QString& receiver, const QStringLis
     return 0;
 }
 
+IrcCommand* CommandParser::parsePart(const QString& receiver, const QStringList& params)
+{
+    return IrcCommand::createPart(receiver, params.join(" "));
+}
+
 IrcCommand* CommandParser::parsePing(const QString& receiver, const QStringList& params)
 {
     Q_UNUSED(receiver);
@@ -206,6 +225,12 @@ IrcCommand* CommandParser::parsePing(const QString& receiver, const QStringList&
     if (params.isEmpty())
         return IrcCommand::createQuote(QStringList() << "PING" << time);
     return IrcCommand::createCtcpRequest(params.at(0), "PING " + time);
+}
+
+IrcCommand* CommandParser::parseQuit(const QString& receiver, const QStringList& params)
+{
+    Q_UNUSED(receiver);
+    return IrcCommand::createQuit(params.join(" "));
 }
 
 IrcCommand* CommandParser::parseQuote(const QString& receiver, const QStringList& params)

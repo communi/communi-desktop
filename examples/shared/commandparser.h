@@ -46,13 +46,16 @@ signals:
 private:
     static IrcCommand* parseAway(const QString& receiver, const QStringList& params);
     static IrcCommand* parseInvite(const QString& receiver, const QStringList& params);
+    static IrcCommand* parseJoin(const QString& receiver, const QStringList& params);
     static IrcCommand* parseKick(const QString& receiver, const QStringList& params);
     static IrcCommand* parseMe(const QString& receiver, const QStringList& params);
     static IrcCommand* parseMode(const QString& receiver, const QStringList& params);
     static IrcCommand* parseNames(const QString& receiver, const QStringList& params);
     static IrcCommand* parseNick(const QString& receiver, const QStringList& params);
     static IrcCommand* parseNotice(const QString& receiver, const QStringList& params);
+    static IrcCommand* parsePart(const QString& receiver, const QStringList& params);
     static IrcCommand* parsePing(const QString& receiver, const QStringList& params);
+    static IrcCommand* parseQuit(const QString& receiver, const QStringList& params);
     static IrcCommand* parseQuote(const QString& receiver, const QStringList& params);
     static IrcCommand* parseTime(const QString& receiver, const QStringList& params);
     static IrcCommand* parseTopic(const QString& receiver, const QStringList& params);
