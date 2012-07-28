@@ -225,6 +225,12 @@ void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
 
 void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
 {
+    if (QByteArray(Irc::toString(message->code())).startsWith("ERR_"))
+    {
+        sendMessage(message, d.currentReceiver);
+        return;
+    }
+
     switch (message->code())
     {
     case Irc::RPL_ENDOFWHO:
