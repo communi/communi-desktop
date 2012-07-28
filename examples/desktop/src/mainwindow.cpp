@@ -146,17 +146,8 @@ void MainWindow::changeEvent(QEvent* event)
     QMainWindow::changeEvent(event);
     if (event->type() == QEvent::ActivationChange)
     {
-        if (isActiveWindow())
-        {
-            if (trayIcon)
-                trayIcon->unalert();
-            if (tabWidget)
-            {
-                SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(tabWidget->currentWidget());
-                if (tab)
-                    QMetaObject::invokeMethod(tab, "delayedTabReset");
-            }
-        }
+        if (trayIcon && isActiveWindow())
+            trayIcon->unalert();
     }
 }
 

@@ -48,6 +48,9 @@ signals:
     void titleChanged(const QString& title);
     void inactiveStatusChanged(bool inactive);
 
+protected:
+    bool event(QEvent* event);
+
 private slots:
     void updateStatus();
     void tabActivated(int index);
