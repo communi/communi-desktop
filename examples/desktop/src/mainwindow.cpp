@@ -33,7 +33,6 @@ MainWindow::MainWindow(QWidget* parent) :
     setCentralWidget(tabWidget);
     connect(tabWidget, SIGNAL(newTabRequested()), this, SLOT(connectTo()), Qt::QueuedConnection);
     connect(tabWidget, SIGNAL(tabMenuRequested(int,QPoint)), this, SLOT(onTabMenuRequested(int,QPoint)));
-    connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
     connect(tabWidget, SIGNAL(alertStatusChanged(bool)), this, SLOT(activateAlert(bool)));
 
     HomePage* homePage = new HomePage(this);
@@ -215,19 +214,6 @@ void MainWindow::activateAlert(bool activate)
         {
             if (trayIcon)
                 trayIcon->unalert();
-        }
-    }
-}
-
-void MainWindow::tabActivated(int index)
-{
-    if (index > 0 && index < tabWidget->count() - 1)
-    {
-        QTabWidget* tab = qobject_cast<QTabWidget*>(tabWidget->widget(index));
-        if (tab)
-        {
-            setWindowFilePath(tab->tabText(tab->currentIndex()));
-            QMetaObject::invokeMethod(tab, "delayedTabReset");
         }
     }
 }

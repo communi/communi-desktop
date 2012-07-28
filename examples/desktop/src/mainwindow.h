@@ -47,7 +47,6 @@ private slots:
     void initialize();
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void activateAlert(bool activate);
-    void tabActivated(int index);
     void onTabMenuRequested(int index, const QPoint& pos);
 
 private:

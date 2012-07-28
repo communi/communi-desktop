@@ -39,6 +39,7 @@ private slots:
     void setInactive(bool inactive);
     void setAlerted(bool alerted);
     void setHighlighted(bool highlighted);
+    void tabActivated(int index);
 
 private:
     int senderIndex() const;

@@ -23,6 +23,8 @@ MainTabWidget::MainTabWidget(QWidget* parent) : TabWidget(parent)
     setTabPosition(QTabWidget::West);
     setStyleSheet(".MainTabWidget::pane { border: 0px; }");
 
+    connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
+
     d.tabUpShortcut = new QShortcut(this);
     connect(d.tabUpShortcut, SIGNAL(activated()), this, SLOT(moveToPrevTab()));
 
@@ -43,6 +45,19 @@ void MainTabWidget::tabRemoved(int index)
 {
     TabWidget::tabRemoved(index);
     tabBar()->setVisible(count() > 2);
+}
+
+void MainTabWidget::tabActivated(int index)
+{
+    if (index > 0 && index < count() - 1)
+    {
+        SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(widget(index));
+        if (tab)
+        {
+            setWindowFilePath(tab->tabText(tab->currentIndex()));
+            QMetaObject::invokeMethod(tab, "delayedTabReset");
+        }
+    }
 }
 
 void MainTabWidget::applySettings(const Settings& settings)
