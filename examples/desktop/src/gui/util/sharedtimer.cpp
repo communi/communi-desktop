@@ -17,7 +17,7 @@
 
 SharedTimer::SharedTimer(QObject* parent) : QObject(parent)
 {
-    d.interval = 0;
+    d.interval = 500;
 }
 
 SharedTimer* SharedTimer::instance()

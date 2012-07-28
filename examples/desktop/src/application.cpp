@@ -45,8 +45,6 @@ Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
 
     QSettings settings;
     ApplicationData::settings = settings.value("settings").value<Settings>();
-
-    SharedTimer::instance()->setInterval(500);
 }
 
 Application::~Application()
