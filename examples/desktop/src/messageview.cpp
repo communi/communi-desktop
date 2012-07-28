@@ -375,12 +375,16 @@ void MessageView::receiveMessage(IrcMessage* message)
         break;
     }
 
-    if (matches)
-        emit alert(this, true);
-    else if (hilite || (!d.connecting && isServerView()))
-        emit highlight(this, true);
-    if (append)
-        appendMessage(d.formatter.formatMessage(message));
+    QString formatted = d.formatter.formatMessage(message);
+    if (append && formatted.length())
+    {
+        if (matches)
+            emit alert(this, true);
+        else if (hilite || (!d.connecting && isServerView()))
+            emit highlight(this, true);
+
+        appendMessage(formatted);
+    }
 }
 
 bool MessageView::hasUser(const QString& user) const
