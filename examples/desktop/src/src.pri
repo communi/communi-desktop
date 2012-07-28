@@ -19,5 +19,4 @@ SOURCES += $$PWD/trayicon.cpp
 
 include(3rdparty/3rdparty.pri)
 include(gui/gui.pri)
-include(util/util.pri)
 include(wizard/wizard.pri)

@@ -21,3 +21,5 @@ SOURCES += $$PWD/messageview.cpp
 SOURCES += $$PWD/searcheditor.cpp
 SOURCES += $$PWD/sessiontabwidget.cpp
 SOURCES += $$PWD/settings.cpp
+
+include(util/util.pri)
