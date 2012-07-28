@@ -35,6 +35,7 @@ public:
     MessageView(const QString& receiver, Session* session, QWidget* parent = 0);
     ~MessageView();
 
+    bool isServerView() const;
     bool isChannelView() const;
 
 public slots:
@@ -68,6 +69,7 @@ private slots:
 private:
     struct MessageViewData : public Ui::MessageView
     {
+        bool connecting;
         bool joining;
         Session* session;
         CommandParser parser;

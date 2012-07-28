@@ -263,7 +263,6 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
     case Irc::RPL_ENDOFINFO:
     case Irc::RPL_ENDOFINVITELIST:
     case Irc::RPL_ENDOFLINKS:
-    case Irc::RPL_ENDOFMOTD:
     case Irc::RPL_ENDOFSTATS:
     case Irc::RPL_ENDOFUSERS:
     case Irc::RPL_ENDOFWHOWAS:

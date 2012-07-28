@@ -266,6 +266,8 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
     case Irc::RPL_MOTDSTART:
     case Irc::RPL_MOTD:
         return tr("[MOTD] %1").arg(IrcUtil::messageToHtml(MID_(1)));
+    case Irc::RPL_ENDOFMOTD:
+        return QString();
     case Irc::RPL_AWAY:
         return tr("! %1 is away (%2)").arg(P_(1), MID_(2));
     case Irc::RPL_ENDOFWHOIS:

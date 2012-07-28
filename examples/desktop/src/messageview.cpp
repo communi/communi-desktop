@@ -92,6 +92,7 @@ MessageView::MessageView(const QString& receiver, Session* session, QWidget* par
         connect(d.listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClicked(QModelIndex)));
     }
     d.joining = false;
+    d.connecting = false;
 
     if (!d.commandModel)
     {
@@ -124,6 +125,14 @@ MessageView::MessageView(const QString& receiver, Session* session, QWidget* par
 MessageView::~MessageView()
 {
     delete d.userModel;
+}
+
+bool MessageView::isServerView() const
+{
+    QTabWidget* tabWidget = 0;
+    if (parentWidget())
+        tabWidget = qobject_cast<QTabWidget*>(parentWidget()->parentWidget());
+    return tabWidget && tabWidget->indexOf(const_cast<MessageView*>(this)) == 0;
 }
 
 bool MessageView::isChannelView() const
@@ -325,6 +334,12 @@ void MessageView::receiveMessage(IrcMessage* message)
     case IrcMessage::Numeric:
         switch (static_cast<IrcNumericMessage*>(message)->code())
         {
+            case Irc::RPL_WELCOME:
+                d.connecting = true;
+                break;
+            case Irc::RPL_ENDOFMOTD:
+                d.connecting = false;
+                break;
             case Irc::RPL_ENDOFNAMES:
                 if (d.joining)
                 {
@@ -362,7 +377,7 @@ void MessageView::receiveMessage(IrcMessage* message)
 
     if (matches)
         emit alert(this, true);
-    else if (hilite)
+    else if (hilite || (!d.connecting && isServerView()))
         emit highlight(this, true);
     if (append)
         appendMessage(d.formatter.formatMessage(message));
