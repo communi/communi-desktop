@@ -196,15 +196,19 @@ void MessageHandler::handleModeMessage(IrcModeMessage* message)
 
 void MessageHandler::handleNickMessage(IrcNickMessage* message)
 {
+    bool received = false;
     QString nick = message->sender().name().toLower();
     foreach (MessageReceiver* receiver, d.receivers)
     {
         if (receiver->hasUser(nick))
         {
+            received = true;
             receiver->receiveMessage(message);
             receiver->renameUser(nick, message->nick());
         }
     }
+    if (!received && d.currentReceiver)
+        d.currentReceiver->receiveMessage(message);
 
     foreach (const QString& receiver, d.receivers.keys())
     {
