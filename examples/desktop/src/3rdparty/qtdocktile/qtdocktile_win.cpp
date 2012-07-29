@@ -24,14 +24,42 @@
 
 #define WINVER 0x0500
 #include <qt_windows.h>
+#include "winutils.h"
 
 #include "qtdocktile.h"
 #include "qtdocktile_p.h"
-#include "taskbar.h"
 #include <QApplication>
 #include <QSysInfo>
 #include <QPainter>
 #include <QStyle>
+
+static ITaskbarList3 *windowsTaskBar()
+{
+    ITaskbarList3 *taskbar = 0;
+    if (S_OK != CoCreateInstance(CLSID_TaskbarList, 0, CLSCTX_INPROC_SERVER, IID_ITaskbarList3, (void**)&taskbar))
+        return 0;
+    return taskbar;
+}
+
+static void setOverlayIcon(HWND winId, HICON icon)
+{
+    ITaskbarList3 *taskbar = windowsTaskBar();
+    if (!taskbar)
+        return;
+    taskbar->SetOverlayIcon(winId, icon, L"No description");
+    taskbar->Release();
+}
+
+static void setProgressValue(HWND winId, int progress)
+{
+    ITaskbarList3 *taskbar = windowsTaskBar();
+    if (!taskbar)
+        return;
+    taskbar->HrInit();
+    taskbar->SetProgressValue(winId, progress, 100);
+    taskbar->SetProgressState(winId, progress ? TBPF_NORMAL : TBPF_NOPROGRESS);
+    taskbar->Release();
+}
 
 static QPixmap createBadge(const QString &badge, const QPalette &palette)
 {
@@ -63,7 +91,7 @@ bool QtDockTile::isAvailable()
 void QtDockTilePrivate::setBadge(const QString &badge)
 {
     if (badge.isEmpty())
-        clearOverlayIcon(window->winId());
+        setOverlayIcon(window->winId(), 0);
     else {
         QPixmap pixmap = createBadge(badge, window->palette());
         setOverlayIcon(window->winId(), pixmap.toWinHICON());

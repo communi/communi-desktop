@@ -22,5 +22,7 @@ unix:!mac {
 }
 
 win32 {
-    include(windows/windows.pri)
+    LIBS += -lole32
+    HEADERS += $$PWD/winutils.h
+    SOURCES += $$PWD/qtdocktile_win.cpp
 }
