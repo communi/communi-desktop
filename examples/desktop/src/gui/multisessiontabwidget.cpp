@@ -84,6 +84,18 @@ SessionTabWidget* MultiSessionTabWidget::sessionWidget(Session* session) const
     return 0;
 }
 
+void MultiSessionTabWidget::tabInserted(int index)
+{
+    TabWidget::tabInserted(index);
+    tabBar()->setVisible(count() > 2);
+}
+
+void MultiSessionTabWidget::tabRemoved(int index)
+{
+    TabWidget::tabRemoved(index);
+    tabBar()->setVisible(count() > 2);
+}
+
 void MultiSessionTabWidget::tabActivated(int index)
 {
     if (index < count() - 1)

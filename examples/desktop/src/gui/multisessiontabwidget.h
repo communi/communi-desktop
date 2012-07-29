@@ -38,6 +38,10 @@ public:
 public slots:
     void applySettings(const Settings& settings);
 
+protected:
+    void tabInserted(int index);
+    void tabRemoved(int index);
+
 private slots:
     void onSessionNetworkChanged(const QString& network);
     void setInactive(bool inactive);
