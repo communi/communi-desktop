@@ -30,7 +30,7 @@
 **
 **************************************************************************/
 
-#include "macdocktile.h"
+#include "qtdocktile_p.h"
 
 #import <AppKit/NSDockTile.h>
 #import <AppKit/NSApplication.h>
@@ -39,12 +39,6 @@
 #import <AppKit/NSBezierPath.h>
 #import <AppKit/NSColor.h>
 #import <Foundation/NSString.h>
-
-#include <QApplication>
-#include <QIcon>
-#include <QPainter>
-#include <QtPlugin>
-#include <QDebug>
 
 extern void qt_mac_set_dock_menu(QMenu *);
 
@@ -127,41 +121,23 @@ static ApplicationProgressView *sharedProgressView = nil;
 
 @end
 
-
-QtMacDockTile::QtMacDockTile(QObject *parent) :
-    QtDockProvider(parent),
-    m_isAlert(false)
-{
-    qDebug("%s", Q_FUNC_INFO);
-    [[ApplicationProgressView sharedProgressView] setRangeMin:0 max:100];
-}
-
-QtMacDockTile::~QtMacDockTile()
-{
-
-}
-
-bool QtMacDockTile::isUsable() const
+bool QtDockTilePrivate::isAvailable_impl() const
 {
     return true;
 }
 
-void QtMacDockTile::setMenu(QMenu *menu)
-{
-    qt_mac_set_dock_menu(menu);
-}
-
-void QtMacDockTile::setBadge(const QString &badge)
+void QtDockTilePrivate::setBadge_impl(const QString &badge)
 {
     NSString *cocoaString = [[NSString alloc] initWithUTF8String:badge.toUtf8().constData()];
     [[NSApp dockTile] setBadgeLabel:cocoaString];
     [cocoaString release];
 }
 
-void QtMacDockTile::setProgress(int value)
+void QtDockTilePrivate::setProgress_impl(int progress)
 {
-    [[ApplicationProgressView sharedProgressView] setValue:value];
-    if (value) {
+    [[ApplicationProgressView sharedProgressView] setRangeMin:0 max:100];
+    [[ApplicationProgressView sharedProgressView] setValue:progress];
+    if (progress) {
         [[NSApp dockTile] setContentView:[ApplicationProgressView sharedProgressView]];
     } else {
         [[NSApp dockTile] setContentView:nil];
@@ -169,9 +145,13 @@ void QtMacDockTile::setProgress(int value)
     [[NSApp dockTile] display];
 }
 
-void QtMacDockTile::alert(bool on)
+void QtDockTilePrivate::setMenu_impl(QMenu *menu)
 {
-    m_isAlert = on;
+    qt_mac_set_dock_menu(menu);
+}
+
+void QtDockTilePrivate::alert_impl(bool on)
+{
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     if (on) {
         [[NSApplication sharedApplication] requestUserAttention:NSInformationalRequest];
@@ -181,5 +161,9 @@ void QtMacDockTile::alert(bool on)
     [pool release];
 }
 
-
-Q_EXPORT_PLUGIN2(QtMacDockTile, QtMacDockTile)
+QVariant QtDockTilePrivate::platformInvoke(const QByteArray &method, const QVariant &arguments)
+{
+    Q_UNUSED(method);
+    Q_UNUSED(arguments);
+    return QVariant();
+}

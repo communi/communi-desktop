@@ -26,19 +26,28 @@
   * This file is a part of private API
   */
 
+#ifndef QTDOCKTILE_P_H
+#define QTDOCKTILE_P_H
 
-#ifndef QTDOCKICON_P_H
-#define QTDOCKICON_P_H
-#include "qtdocktile.h"
-#include <QIcon>
+#include <QString>
+#include <QMenu>
 
-class QtDockTile;
 class QtDockTilePrivate
 {
-    Q_DECLARE_PUBLIC(QtDockTile)
 public:
-    QtDockTilePrivate(QtDockTile *q) : q_ptr(q) {}
-    QtDockTile *q_ptr;
+    QtDockTilePrivate() : progress(0), menu(0) { }
+
+    bool isAvailable_impl() const;
+    void setBadge_impl(const QString &badge);
+    void setProgress_impl(int progress);
+    void setMenu_impl(QMenu *menu);
+    void alert_impl(bool on);
+
+    QVariant platformInvoke(const QByteArray &method, const QVariant &arguments);
+
+    QString badge;
+    int progress;
+    QMenu *menu;
 };
 
-#endif // QTDOCKICON_P_H
+#endif // QTDOCKTILE_P_H

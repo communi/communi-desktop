@@ -25,42 +25,46 @@
 #ifndef QTDOCKICON_H
 #define QTDOCKICON_H
 
-#include "qtdocktile_global.h"
 #include <QObject>
 #include <QVariant>
-#include <QIcon>
 
-class QMenu;
 class QtDockTilePrivate;
-class QTDOCKTILE_EXPORT QtDockTile : public QObject
-{
-    Q_DECLARE_PRIVATE(QtDockTile)
-	Q_OBJECT
+QT_FORWARD_DECLARE_CLASS(QMenu);
 
-	Q_PROPERTY(QMenu* menu  READ menu WRITE setMenu NOTIFY menuChanged)
-	Q_PROPERTY(QString badge READ badge WRITE setBadge NOTIFY badgeChanged)
-	Q_PROPERTY(int progress  READ progress WRITE setProgress NOTIFY progressChanged)
+class QtDockTile : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(bool available READ isAvailable)
+    Q_PROPERTY(QString badge READ badge WRITE setBadge NOTIFY badgeChanged)
+    Q_PROPERTY(int progress READ progress WRITE setProgress NOTIFY progressChanged)
+    Q_PROPERTY(QMenu* menu READ menu WRITE setMenu NOTIFY menuChanged)
+
 public:
     QtDockTile(QObject *parent = 0);
-	QtDockTile(QWidget *widget, QObject *parent = 0);
+    QtDockTile(QWidget *widget, QObject *parent = 0);
     virtual ~QtDockTile();
 
-    QMenu *menu() const;
-    QString badge() const;	
-    int progress() const;
-	Q_INVOKABLE QVariant platformInvoke(const QByteArray &method, const QVariant &arguments);
+    bool isAvailable() const;
 
-    void setBadge(int count);
+    QString badge() const;
     void setBadge(const QString &text);
+
+    int progress() const;
     void setProgress(int percent);
+
+    QMenu *menu() const;
     void setMenu(QMenu *menu);
-signals:
-    void menuChanged(QMenu *menu);
-    void badgeChanged(const QString &badje);
-	void progressChanged(int percent);
+
 public slots:
     void alert(bool on = true);
+
+signals:
+    void badgeChanged(const QString &badge);
+    void progressChanged(int progress);
+    void menuChanged(QMenu *menu);
+
 protected:
+    Q_DECLARE_PRIVATE(QtDockTile)
     QScopedPointer<QtDockTilePrivate> d_ptr;
 };
 
