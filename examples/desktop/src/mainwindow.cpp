@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget* parent) :
     connect(qApp, SIGNAL(settingsChanged(Settings)), tabWidget, SLOT(applySettings(Settings)));
     setCentralWidget(tabWidget);
     connect(tabWidget, SIGNAL(newTabRequested()), this, SLOT(connectTo()), Qt::QueuedConnection);
-    connect(tabWidget, SIGNAL(alertStatusChanged(bool)), this, SLOT(activateAlert(bool)));
+    connect(tabWidget, SIGNAL(alert()), this, SLOT(alert()));
 
     HomePage* homePage = new HomePage(this);
     connect(homePage, SIGNAL(connectRequested()), this, SLOT(connectTo()));
@@ -46,10 +46,7 @@ MainWindow::MainWindow(QWidget* parent) :
     }
 
     if (QtDockTile::isAvailable())
-    {
         dockTile = new QtDockTile(this);
-        dockTile->setBadge("3");
-    }
 
     QShortcut* shortcut = new QShortcut(QKeySequence(tr("Ctrl+Q")), this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(close()));
@@ -150,8 +147,13 @@ void MainWindow::changeEvent(QEvent* event)
     QMainWindow::changeEvent(event);
     if (event->type() == QEvent::ActivationChange)
     {
-        if (trayIcon && isActiveWindow())
-            trayIcon->unalert();
+        if (isActiveWindow())
+        {
+            if (trayIcon)
+                trayIcon->unalert();
+            if (dockTile)
+                dockTile->setBadge(0);
+        }
     }
 }
 
@@ -183,20 +185,14 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
-void MainWindow::activateAlert(bool activate)
+void MainWindow::alert()
 {
     if (!isActiveWindow())
     {
-        if (activate)
-        {
-            if (trayIcon)
-                trayIcon->alert();
-            QApplication::alert(this);
-        }
-        else
-        {
-            if (trayIcon)
-                trayIcon->unalert();
-        }
+        QApplication::alert(this);
+        if (trayIcon)
+            trayIcon->alert();
+        if (dockTile)
+            dockTile->setBadge(dockTile->badge() + 1);
     }
 }

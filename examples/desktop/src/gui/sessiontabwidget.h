@@ -42,6 +42,7 @@ public slots:
     void applySettings(const Settings& settings);
 
 signals:
+    void alert();
     void inactiveStatusChanged(bool inactive);
 
 protected:

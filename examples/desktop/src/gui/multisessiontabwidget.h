@@ -38,6 +38,9 @@ public:
 public slots:
     void applySettings(const Settings& settings);
 
+signals:
+    void alert();
+
 protected:
     void tabInserted(int index);
     void tabRemoved(int index);

@@ -45,7 +45,7 @@ protected:
 private slots:
     void initialize();
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
-    void activateAlert(bool activate);
+    void alert();
 
 private:
     MultiSessionTabWidget* tabWidget;

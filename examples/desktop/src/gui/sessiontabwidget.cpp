@@ -211,7 +211,10 @@ void SessionTabWidget::alertTab(MessageView* view, bool on)
     if (index != -1)
     {
         if (!isVisible() || !isActiveWindow() || index != currentIndex())
+        {
             setTabAlert(index, on);
+            emit alert();
+        }
     }
 }
 
