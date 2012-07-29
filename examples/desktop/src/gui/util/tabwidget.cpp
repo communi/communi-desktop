@@ -196,6 +196,7 @@ void TabWidget::tabInserted(int index)
     shiftIndexesFrom(d.inactiveIndexes, index, 1);
     shiftIndexesFrom(d.alertIndexes, index, 1);
     shiftIndexesFrom(d.highlightIndexes, index, 1);
+    tabBar()->setVisible(count() > 2);
 }
 
 void TabWidget::tabRemoved(int index)
@@ -206,6 +207,7 @@ void TabWidget::tabRemoved(int index)
     shiftIndexesFrom(d.inactiveIndexes, index, -1);
     shiftIndexesFrom(d.alertIndexes, index, -1);
     shiftIndexesFrom(d.highlightIndexes, index, -1);
+    tabBar()->setVisible(count() > 2);
 }
 
 void TabWidget::tabChanged(int index)
