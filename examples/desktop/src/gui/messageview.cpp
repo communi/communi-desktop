@@ -18,6 +18,7 @@
 #include "session.h"
 #include <QSortFilterProxyModel>
 #include <QStringListModel>
+#include <QTextBlock>
 #include <QShortcut>
 #include <QKeyEvent>
 #include <QDateTime>
@@ -182,6 +183,12 @@ void MessageView::appendMessage(const QString& message)
         d.textBrowser->append(copy);
         if (!isVisible() && d.textBrowser->unseenBlock() == -1)
             d.textBrowser->setUnseenBlock(d.textBrowser->document()->blockCount() - 1);
+
+        QTextBlock block = d.textBrowser->document()->lastBlock();
+        QTextBlockFormat format = block.blockFormat();
+        format.setLineHeight(120, QTextBlockFormat::ProportionalHeight);
+        QTextCursor cursor(block);
+        cursor.setBlockFormat(format);
     }
 }
 
