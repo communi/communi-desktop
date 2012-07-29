@@ -127,9 +127,10 @@ bool QtDockTile::isAvailable()
 
 void QtDockTilePrivate::setBadge(int badge)
 {
-    NSString *label = [[NSNumber numberWithInt:badge] stringValue];
-    [[NSApp dockTile] setBadgeLabel:label];
-    [label release];
+    if (badge > 0)
+        [[NSApp dockTile] setBadgeLabel:[[NSNumber numberWithInt:badge] stringValue]];
+    else
+        [[NSApp dockTile] setBadgeLabel:nil];
 }
 
 void QtDockTilePrivate::setProgress(int progress)
