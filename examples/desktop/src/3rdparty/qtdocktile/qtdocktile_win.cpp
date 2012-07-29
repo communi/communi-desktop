@@ -74,7 +74,7 @@ bool QtDockTile::isAvailable()
 
 void QtDockTilePrivate::setBadge(int badge)
 {
-    if (badge >= 0) {
+    if (badge > 0) {
         QPixmap pixmap = createBadge(badge, window->palette());
         setOverlayIcon(window->winId(), pixmap.toWinHICON());
     } else
