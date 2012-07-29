@@ -27,7 +27,6 @@
 #include <QApplication>
 #include <QSysInfo>
 #include <QPainter>
-#include <QStyle>
 #include "winutils.h"
 
 static ITaskbarList3 *windowsTaskBar()
@@ -47,21 +46,9 @@ static void setOverlayIcon(HWND winId, HICON icon)
     taskbar->Release();
 }
 
-static void setProgressValue(HWND winId, int progress)
-{
-    ITaskbarList3 *taskbar = windowsTaskBar();
-    if (!taskbar)
-        return;
-    taskbar->HrInit();
-    taskbar->SetProgressValue(winId, progress, 100);
-    taskbar->SetProgressState(winId, progress ? TBPF_NORMAL : TBPF_NOPROGRESS);
-    taskbar->Release();
-}
-
 static QPixmap createBadge(const QString &badge, const QPalette &palette)
 {
-    int size = qApp->style()->pixelMetric(QStyle::PM_ListViewIconSize);
-    QPixmap pixmap(size, size);
+    QPixmap pixmap(16, 16);
     QRect rect = pixmap.rect();
     rect.adjust(1, 1, -1, -1);
     pixmap.fill(Qt::transparent);
@@ -97,5 +84,11 @@ void QtDockTilePrivate::setBadge(const QString &badge)
 
 void QtDockTilePrivate::setProgress(int progress)
 {
-    setProgressValue(window->winId(), progress);
+    ITaskbarList3 *taskbar = windowsTaskBar();
+    if (!taskbar)
+        return;
+    taskbar->HrInit();
+    taskbar->SetProgressValue(window->winId(), progress, 100);
+    taskbar->SetProgressState(window->winId(), progress ? TBPF_NORMAL : TBPF_NOPROGRESS);
+    taskbar->Release();
 }
