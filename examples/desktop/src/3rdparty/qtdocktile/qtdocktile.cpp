@@ -25,16 +25,11 @@
 #include "qtdocktile.h"
 #include "qtdocktile_p.h"
 
-QtDockTile::QtDockTile(QObject *parent) :
-    QObject(parent), d_ptr(new QtDockTilePrivate)
-{
-}
-
-QtDockTile::QtDockTile(QWidget *widget, QObject *parent) :
-    QObject(parent ? parent : widget), d_ptr(new QtDockTilePrivate)
+QtDockTile::QtDockTile(QWidget *window) :
+    QObject(window), d_ptr(new QtDockTilePrivate)
 {
     Q_D(QtDockTile);
-    d->window = widget;
+    d->window = window;
 }
 
 QtDockTile::~QtDockTile()

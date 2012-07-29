@@ -62,16 +62,16 @@ bool QtDockTilePrivate::isAvailable() const
 void QtDockTilePrivate::setBadge(const QString &badge)
 {
     if (badge.isEmpty())
-        clearOverlayIcon(window.data()->winId());
+        clearOverlayIcon(window->winId());
     else {
-        QPixmap pixmap = createBadge(badge, window.data()->palette());
-        setOverlayIcon(window.data()->winId(), pixmap.toWinHICON());
+        QPixmap pixmap = createBadge(badge, window->palette());
+        setOverlayIcon(window->winId(), pixmap.toWinHICON());
     }
 }
 
 void QtDockTilePrivate::setProgress(int progress)
 {
-    setProgressValue(window.data()->winId(), progress);
+    setProgressValue(window->winId(), progress);
 }
 
 void QtDockTilePrivate::alert(bool on)
@@ -80,7 +80,7 @@ void QtDockTilePrivate::alert(bool on)
         FLASHWINFO fi = {0};
         fi.cbSize  = sizeof(fi);
         fi.dwFlags = FLASHW_TRAY;
-        fi.hwnd    = window.data()->winId();
+        fi.hwnd    = window->winId();
         fi.uCount  = 1;
         FlashWindowEx(&fi);
     }

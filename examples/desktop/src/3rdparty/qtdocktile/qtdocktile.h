@@ -38,8 +38,7 @@ class QtDockTile : public QObject
     Q_PROPERTY(int progress READ progress WRITE setProgress NOTIFY progressChanged)
 
 public:
-    QtDockTile(QObject *parent = 0);
-    QtDockTile(QWidget *widget, QObject *parent = 0);
+    QtDockTile(QWidget *window);
     virtual ~QtDockTile();
 
     bool isAvailable() const;

@@ -31,7 +31,6 @@
 
 #include <QString>
 #include <QWidget>
-#include <QWeakPointer>
 
 class QtDockTilePrivate
 {
@@ -45,7 +44,7 @@ public:
 
     QString badge;
     int progress;
-    QWeakPointer<QWidget> window;
+    QWidget* window;
 };
 
 #endif // QTDOCKTILE_P_H
