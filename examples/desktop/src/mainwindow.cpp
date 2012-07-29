@@ -19,10 +19,11 @@
 #include "connectioninfo.h"
 #include "homepage.h"
 #include "session.h"
+#include "qtdocktile.h"
 #include <QtGui>
 
 MainWindow::MainWindow(QWidget* parent) :
-    QMainWindow(parent), tabWidget(0), trayIcon(0)
+    QMainWindow(parent), tabWidget(0), trayIcon(0), dockTile(0)
 {
     tabWidget = new MultiSessionTabWidget(this);
     tabWidget->applySettings(Application::settings());
@@ -42,6 +43,12 @@ MainWindow::MainWindow(QWidget* parent) :
         trayIcon->setVisible(true);
         connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+    }
+
+    if (QtDockTile::isAvailable())
+    {
+        dockTile = new QtDockTile(this);
+        dockTile->setBadge("3");
     }
 
     QShortcut* shortcut = new QShortcut(QKeySequence(tr("Ctrl+Q")), this);

@@ -20,6 +20,7 @@
 
 class MultiSessionTabWidget;
 struct ConnectionInfo;
+class QtDockTile;
 
 class MainWindow : public QMainWindow
 {
@@ -49,6 +50,7 @@ private slots:
 private:
     MultiSessionTabWidget* tabWidget;
     TrayIcon* trayIcon;
+    QtDockTile* dockTile;
 };
 
 #endif // MAINWINDOW_H
