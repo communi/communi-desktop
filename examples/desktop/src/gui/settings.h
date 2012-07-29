@@ -15,7 +15,6 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <QMap>
 #include <QHash>
 #include <QVariant>
 #include <QMetaType>

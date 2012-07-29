@@ -16,17 +16,14 @@
 #define MESSAGEVIEW_H
 
 #include "ui_messageview.h"
-#include <ircmessage.h>
-#include <irccommand.h>
-#include "session.h"
-#include "commandparser.h"
-#include "messageformatter.h"
 #include "messagereceiver.h"
+#include "messageformatter.h"
+#include "commandparser.h"
 #include "settings.h"
 
-struct Settings;
+class IrcMessage;
 class UserModel;
-class QStringListModel;
+class Session;
 
 class MessageView : public QWidget, public MessageReceiver
 {
@@ -76,7 +73,6 @@ private:
         CommandParser parser;
         MessageFormatter formatter;
         UserModel* userModel;
-        static QStringListModel* commandModel;
         Settings settings;
     } d;
 };

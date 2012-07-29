@@ -22,7 +22,6 @@
 
 class Session;
 class MessageView;
-class IrcMessage;
 class QShortcut;
 
 class SessionTabWidget : public TabWidget

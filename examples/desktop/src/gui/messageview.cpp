@@ -15,12 +15,15 @@
 #include "messageview.h"
 #include "completer.h"
 #include "usermodel.h"
+#include "session.h"
 #include <QSortFilterProxyModel>
 #include <QStringListModel>
 #include <QShortcut>
 #include <QKeyEvent>
 #include <QDateTime>
 #include <QDebug>
+#include <ircmessage.h>
+#include <irccommand.h>
 #include <ircutil.h>
 #include <irc.h>
 
@@ -56,7 +59,7 @@ private:
     QString pfx;
 };
 
-QStringListModel* MessageView::MessageViewData::commandModel = 0;
+static QStringListModel* command_model = 0;
 
 MessageView::MessageView(const QString& receiver, Session* session, QWidget* parent) :
     QWidget(parent)
@@ -92,7 +95,7 @@ MessageView::MessageView(const QString& receiver, Session* session, QWidget* par
     d.joining = false;
     d.connecting = false;
 
-    if (!d.commandModel)
+    if (!command_model)
     {
         CommandParser::addCustomCommand("QUERY", "<user>");
 
@@ -100,12 +103,12 @@ MessageView::MessageView(const QString& receiver, Session* session, QWidget* par
         foreach (const QString& command, CommandParser::availableCommands())
             prefixedCommands += "/" + command;
 
-        d.commandModel = new QStringListModel(qApp);
-        d.commandModel->setStringList(prefixedCommands);
+        command_model = new QStringListModel(qApp);
+        command_model->setStringList(prefixedCommands);
     }
 
     d.lineEditor->completer()->setDefaultModel(d.userModel);
-    d.lineEditor->completer()->setSlashModel(d.commandModel);
+    d.lineEditor->completer()->setSlashModel(command_model);
 
     connect(d.lineEditor, SIGNAL(send(QString)), this, SLOT(onSend(QString)));
     connect(d.lineEditor, SIGNAL(typed(QString)), this, SLOT(showHelp(QString)));

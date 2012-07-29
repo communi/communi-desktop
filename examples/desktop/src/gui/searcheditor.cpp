@@ -13,7 +13,7 @@
 */
 
 #include "searcheditor.h"
-#include <QTextBrowser>
+#include <QTextEdit>
 #include <QShortcut>
 
 SearchEditor::SearchEditor(QWidget* parent) : HistoryLineEdit(parent)
