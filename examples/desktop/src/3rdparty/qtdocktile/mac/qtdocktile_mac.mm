@@ -40,8 +40,6 @@
 #import <AppKit/NSColor.h>
 #import <Foundation/NSString.h>
 
-extern void qt_mac_set_dock_menu(QMenu *);
-
 @interface ApplicationProgressView : NSView {
     int min;
     int max;
@@ -121,19 +119,19 @@ static ApplicationProgressView *sharedProgressView = nil;
 
 @end
 
-bool QtDockTilePrivate::isAvailable_impl() const
+bool QtDockTilePrivate::isAvailable() const
 {
     return true;
 }
 
-void QtDockTilePrivate::setBadge_impl(const QString &badge)
+void QtDockTilePrivate::setBadge(const QString &badge)
 {
     NSString *cocoaString = [[NSString alloc] initWithUTF8String:badge.toUtf8().constData()];
     [[NSApp dockTile] setBadgeLabel:cocoaString];
     [cocoaString release];
 }
 
-void QtDockTilePrivate::setProgress_impl(int progress)
+void QtDockTilePrivate::setProgress(int progress)
 {
     [[ApplicationProgressView sharedProgressView] setRangeMin:0 max:100];
     [[ApplicationProgressView sharedProgressView] setValue:progress];
@@ -145,12 +143,7 @@ void QtDockTilePrivate::setProgress_impl(int progress)
     [[NSApp dockTile] display];
 }
 
-void QtDockTilePrivate::setMenu_impl(QMenu *menu)
-{
-    qt_mac_set_dock_menu(menu);
-}
-
-void QtDockTilePrivate::alert_impl(bool on)
+void QtDockTilePrivate::alert(bool on)
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     if (on) {
@@ -159,11 +152,4 @@ void QtDockTilePrivate::alert_impl(bool on)
         [[NSApplication sharedApplication] cancelUserAttentionRequest:NSInformationalRequest];
     }
     [pool release];
-}
-
-QVariant QtDockTilePrivate::platformInvoke(const QByteArray &method, const QVariant &arguments)
-{
-    Q_UNUSED(method);
-    Q_UNUSED(arguments);
-    return QVariant();
 }
