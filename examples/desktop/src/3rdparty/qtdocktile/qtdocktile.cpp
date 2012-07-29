@@ -68,9 +68,3 @@ void QtDockTile::setProgress(int progress)
         emit progressChanged(progress);
     }
 }
-
-void QtDockTile::alert(bool on)
-{
-    Q_D(QtDockTile);
-    d->alert(on);
-}

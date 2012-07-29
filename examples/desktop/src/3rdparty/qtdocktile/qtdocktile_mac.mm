@@ -143,14 +143,3 @@ void QtDockTilePrivate::setProgress(int progress)
     }
     [[NSApp dockTile] display];
 }
-
-void QtDockTilePrivate::alert(bool on)
-{
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    if (on) {
-        [[NSApplication sharedApplication] requestUserAttention:NSInformationalRequest];
-    } else {
-        [[NSApplication sharedApplication] cancelUserAttentionRequest:NSInformationalRequest];
-    }
-    [pool release];
-}

@@ -49,9 +49,6 @@ public:
     int progress() const;
     void setProgress(int percent);
 
-public slots:
-    void alert(bool on = true);
-
 signals:
     void badgeChanged(const QString &badge);
     void progressChanged(int progress);

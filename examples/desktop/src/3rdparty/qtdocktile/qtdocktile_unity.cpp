@@ -74,10 +74,3 @@ void QtDockTilePrivate::setProgress(int progress)
     map.insert(QLatin1String("progress-visible"), progress > 0);
     sendMessage(map);
 }
-
-void QtDockTilePrivate::alert(bool on)
-{
-    QVariantMap map;
-    map.insert(QLatin1String("urgent"), on);
-    sendMessage(map);
-}

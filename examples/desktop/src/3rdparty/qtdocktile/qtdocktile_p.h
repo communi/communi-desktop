@@ -39,7 +39,6 @@ public:
 
     void setBadge(const QString &badge);
     void setProgress(int progress);
-    void alert(bool on);
 
     QString badge;
     int progress;
