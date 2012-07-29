@@ -38,10 +38,10 @@ class QtDockTile : public QObject
     Q_PROPERTY(int progress READ progress WRITE setProgress NOTIFY progressChanged)
 
 public:
-    QtDockTile(QWidget *window);
+    explicit QtDockTile(QWidget *window);
     virtual ~QtDockTile();
 
-    bool isAvailable() const;
+    static bool isAvailable();
 
     QString badge() const;
     void setBadge(const QString &text);

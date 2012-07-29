@@ -30,6 +30,7 @@
 **
 **************************************************************************/
 
+#include "qtdocktile.h"
 #include "qtdocktile_p.h"
 
 #import <AppKit/NSDockTile.h>
@@ -119,7 +120,7 @@ static ApplicationProgressView *sharedProgressView = nil;
 
 @end
 
-bool QtDockTilePrivate::isAvailable() const
+bool QtDockTile::isAvailable()
 {
     return true;
 }

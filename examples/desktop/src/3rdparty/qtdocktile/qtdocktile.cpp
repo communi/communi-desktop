@@ -36,12 +36,6 @@ QtDockTile::~QtDockTile()
 {
 }
 
-bool QtDockTile::isAvailable() const
-{
-    Q_D(const QtDockTile);
-    return d->isAvailable();
-}
-
 QString QtDockTile::badge() const
 {
     Q_D(const QtDockTile);

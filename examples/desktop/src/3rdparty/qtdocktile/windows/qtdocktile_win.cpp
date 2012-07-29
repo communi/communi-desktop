@@ -25,6 +25,7 @@
 #define WINVER 0x0500
 #include <qt_windows.h>
 
+#include "qtdocktile.h"
 #include "qtdocktile_p.h"
 #include "taskbar.h"
 #include <QApplication>
@@ -54,7 +55,7 @@ static QPixmap createBadge(const QString &badge, const QPalette &palette)
     return pixmap;
 }
 
-bool QtDockTilePrivate::isAvailable() const
+bool QtDockTile::isAvailable()
 {
     return QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7;
 }

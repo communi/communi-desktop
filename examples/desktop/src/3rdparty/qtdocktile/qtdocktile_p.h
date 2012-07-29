@@ -37,7 +37,6 @@ class QtDockTilePrivate
 public:
     QtDockTilePrivate() : progress(0) { }
 
-    bool isAvailable() const;
     void setBadge(const QString &badge);
     void setProgress(int progress);
     void alert(bool on);
