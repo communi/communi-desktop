@@ -43,7 +43,6 @@ public slots:
     void applySettings(const Settings& settings);
 
 signals:
-    void titleChanged(const QString& title);
     void inactiveStatusChanged(bool inactive);
 
 protected:
