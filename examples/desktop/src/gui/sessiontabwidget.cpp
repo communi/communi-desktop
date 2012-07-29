@@ -128,11 +128,7 @@ void SessionTabWidget::renameView(const QString& from, const QString& to)
 bool SessionTabWidget::event(QEvent* event)
 {
     if (event->type() == QEvent::WindowActivate)
-    {
-        SessionTabWidget* tabWidget = qobject_cast<SessionTabWidget*>(currentWidget());
-        if (tabWidget)
-            QMetaObject::invokeMethod(tabWidget, "delayedTabReset");
-    }
+        delayedTabReset();
     return TabWidget::event(event);
 }
 
