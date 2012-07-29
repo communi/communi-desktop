@@ -30,24 +30,22 @@
 #define QTDOCKTILE_P_H
 
 #include <QString>
-#include <QMenu>
+#include <QWidget>
+#include <QWeakPointer>
 
 class QtDockTilePrivate
 {
 public:
-    QtDockTilePrivate() : progress(0), menu(0) { }
+    QtDockTilePrivate() : progress(0) { }
 
-    bool isAvailable_impl() const;
-    void setBadge_impl(const QString &badge);
-    void setProgress_impl(int progress);
-    void setMenu_impl(QMenu *menu);
-    void alert_impl(bool on);
-
-    QVariant platformInvoke(const QByteArray &method, const QVariant &arguments);
+    bool isAvailable() const;
+    void setBadge(const QString &badge);
+    void setProgress(int progress);
+    void alert(bool on);
 
     QString badge;
     int progress;
-    QMenu *menu;
+    QWeakPointer<QWidget> window;
 };
 
 #endif // QTDOCKTILE_P_H

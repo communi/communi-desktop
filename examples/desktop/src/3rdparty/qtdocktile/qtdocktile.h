@@ -29,7 +29,6 @@
 #include <QVariant>
 
 class QtDockTilePrivate;
-QT_FORWARD_DECLARE_CLASS(QMenu);
 
 class QtDockTile : public QObject
 {
@@ -37,7 +36,6 @@ class QtDockTile : public QObject
     Q_PROPERTY(bool available READ isAvailable)
     Q_PROPERTY(QString badge READ badge WRITE setBadge NOTIFY badgeChanged)
     Q_PROPERTY(int progress READ progress WRITE setProgress NOTIFY progressChanged)
-    Q_PROPERTY(QMenu* menu READ menu WRITE setMenu NOTIFY menuChanged)
 
 public:
     QtDockTile(QObject *parent = 0);
@@ -52,16 +50,12 @@ public:
     int progress() const;
     void setProgress(int percent);
 
-    QMenu *menu() const;
-    void setMenu(QMenu *menu);
-
 public slots:
     void alert(bool on = true);
 
 signals:
     void badgeChanged(const QString &badge);
     void progressChanged(int progress);
-    void menuChanged(QMenu *menu);
 
 protected:
     Q_DECLARE_PRIVATE(QtDockTile)

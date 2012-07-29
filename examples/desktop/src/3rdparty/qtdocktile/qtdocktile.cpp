@@ -34,7 +34,7 @@ QtDockTile::QtDockTile(QWidget *widget, QObject *parent) :
     QObject(parent ? parent : widget), d_ptr(new QtDockTilePrivate)
 {
     Q_D(QtDockTile);
-    d->platformInvoke("setWidget", qVariantFromValue(widget));
+    d->window = widget;
 }
 
 QtDockTile::~QtDockTile()
@@ -44,7 +44,7 @@ QtDockTile::~QtDockTile()
 bool QtDockTile::isAvailable() const
 {
     Q_D(const QtDockTile);
-    return d->isAvailable_impl();
+    return d->isAvailable();
 }
 
 QString QtDockTile::badge() const
@@ -58,7 +58,7 @@ void QtDockTile::setBadge(const QString &badge)
     Q_D(QtDockTile);
     if (d->badge != badge) {
         d->badge = badge;
-        d->setBadge_impl(badge);
+        d->setBadge(badge);
         emit badgeChanged(badge);
     }
 }
@@ -72,31 +72,16 @@ int QtDockTile::progress() const
 void QtDockTile::setProgress(int progress)
 {
     Q_D(QtDockTile);
+    progress = qBound(0, progress, 100);
     if (d->progress != progress) {
         d->progress = progress;
-        d->setProgress_impl(progress);
+        d->setProgress(progress);
         emit progressChanged(progress);
-    }
-}
-
-QMenu *QtDockTile::menu() const
-{
-    Q_D(const QtDockTile);
-    return d->menu;
-}
-
-void QtDockTile::setMenu(QMenu *menu)
-{
-    Q_D(QtDockTile);
-    if (d->menu != menu) {
-        d->menu = menu;
-        d->setMenu_impl(menu);
-        emit menuChanged(menu);
     }
 }
 
 void QtDockTile::alert(bool on)
 {
     Q_D(QtDockTile);
-    d->alert_impl(on);
+    d->alert(on);
 }

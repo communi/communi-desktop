@@ -20,4 +20,4 @@ SOURCES += $$PWD/trayicon.cpp
 include(gui/gui.pri)
 include(wizard/wizard.pri)
 include(3rdparty/qtwin/qtwin.pri)
-mac:include(3rdparty/qtdocktile/qtdocktile.pri)
+win32|mac:include(3rdparty/qtdocktile/qtdocktile.pri)
