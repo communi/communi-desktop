@@ -11,6 +11,16 @@ HEADERS += $$PWD/qtdocktile_p.h
 
 SOURCES += $$PWD/qtdocktile.cpp
 
-mac:include(mac/mac.pri)
-else:unix:include(unity/unity.pri)
-win32:include(windows/windows.pri)
+mac {
+    LIBS += -framework AppKit
+    OBJECTIVE_SOURCES += $$PWD/qtdocktile_mac.mm
+}
+
+unix:!mac {
+    QT += dbus
+    SOURCES += $$PWD/qtdocktile_unity.cpp
+}
+
+win32 {
+    include(windows/windows.pri)
+}
