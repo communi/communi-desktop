@@ -26,7 +26,6 @@
 #define QTDOCKICON_H
 
 #include <QObject>
-#include <QVariant>
 
 class QtDockTilePrivate;
 
@@ -34,7 +33,7 @@ class QtDockTile : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool available READ isAvailable)
-    Q_PROPERTY(QString badge READ badge WRITE setBadge NOTIFY badgeChanged)
+    Q_PROPERTY(int badge READ badge WRITE setBadge NOTIFY badgeChanged)
     Q_PROPERTY(int progress READ progress WRITE setProgress NOTIFY progressChanged)
 
 public:
@@ -43,14 +42,14 @@ public:
 
     static bool isAvailable();
 
-    QString badge() const;
-    void setBadge(const QString &text);
+    int badge() const;
+    void setBadge(int badge);
 
     int progress() const;
     void setProgress(int percent);
 
 signals:
-    void badgeChanged(const QString &badge);
+    void badgeChanged(int value);
     void progressChanged(int progress);
 
 protected:

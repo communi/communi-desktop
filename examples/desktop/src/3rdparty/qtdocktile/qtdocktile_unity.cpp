@@ -46,7 +46,7 @@ static void sendMessage(const QVariantMap &map)
     args << appDesktopUri() << map;
     message.setArguments(args);
     if (!QDBusConnection::sessionBus().send(message))
-        qWarning("Unable to send message");
+        qWarning("QtDockTile: unable to send DBus message");
 }
 
 bool QtDockTile::isAvailable()
@@ -54,13 +54,8 @@ bool QtDockTile::isAvailable()
     return true; //TODO check com.canonical.Unity interface
 }
 
-void QtDockTilePrivate::setBadge(const QString &badge)
+void QtDockTilePrivate::setBadge(int badge)
 {
-    bool ok;
-    qint64 count = badge.toInt(&ok);
-    if (!ok)
-        qWarning("Unity launcher doesn't support string badges");
-
     QVariantMap map;
     map.insert(QLatin1String("count"), count);
     map.insert(QLatin1String("count-visible"), count > 0);

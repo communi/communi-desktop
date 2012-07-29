@@ -36,13 +36,13 @@ QtDockTile::~QtDockTile()
 {
 }
 
-QString QtDockTile::badge() const
+int QtDockTile::badge() const
 {
     Q_D(const QtDockTile);
     return d->badge;
 }
 
-void QtDockTile::setBadge(const QString &badge)
+void QtDockTile::setBadge(int badge)
 {
     Q_D(QtDockTile);
     if (d->badge != badge) {

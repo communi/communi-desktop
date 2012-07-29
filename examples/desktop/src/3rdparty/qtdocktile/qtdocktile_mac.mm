@@ -125,11 +125,11 @@ bool QtDockTile::isAvailable()
     return true;
 }
 
-void QtDockTilePrivate::setBadge(const QString &badge)
+void QtDockTilePrivate::setBadge(int badge)
 {
-    NSString *cocoaString = [[NSString alloc] initWithUTF8String:badge.toUtf8().constData()];
-    [[NSApp dockTile] setBadgeLabel:cocoaString];
-    [cocoaString release];
+    NSString *label = [[NSNumber numberWithInt:badge] stringValue];
+    [[NSApp dockTile] setBadgeLabel:label];
+    [label release];
 }
 
 void QtDockTilePrivate::setProgress(int progress)

@@ -46,7 +46,7 @@ static void setOverlayIcon(HWND winId, HICON icon)
     taskbar->Release();
 }
 
-static QPixmap createBadge(const QString &badge, const QPalette &palette)
+static QPixmap createBadge(int badge, const QPalette &palette)
 {
     QPixmap pixmap(16, 16);
     QRect rect = pixmap.rect();
@@ -61,7 +61,7 @@ static QPixmap createBadge(const QString &badge, const QPalette &palette)
     pen.setColor(palette.color(QPalette::ToolTipText));
     painter.setPen(pen);
 
-    QString label = QFontMetrics(painter.font()).elidedText(badge, Qt::ElideMiddle, rect.width());
+    QString label = QFontMetrics(painter.font()).elidedText(QString::number(badge), Qt::ElideMiddle, rect.width());
     painter.drawRoundedRect(rect, 5, 5);
     painter.drawText(rect, Qt::AlignCenter | Qt::TextSingleLine, label);
     return pixmap;
@@ -72,14 +72,13 @@ bool QtDockTile::isAvailable()
     return QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7;
 }
 
-void QtDockTilePrivate::setBadge(const QString &badge)
+void QtDockTilePrivate::setBadge(int badge)
 {
-    if (badge.isEmpty())
-        setOverlayIcon(window->winId(), 0);
-    else {
+    if (badge >= 0) {
         QPixmap pixmap = createBadge(badge, window->palette());
         setOverlayIcon(window->winId(), pixmap.toWinHICON());
-    }
+    } else
+        setOverlayIcon(window->winId(), 0);
 }
 
 void QtDockTilePrivate::setProgress(int progress)

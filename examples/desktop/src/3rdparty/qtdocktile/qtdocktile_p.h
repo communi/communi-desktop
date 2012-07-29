@@ -37,10 +37,10 @@ class QtDockTilePrivate
 public:
     QtDockTilePrivate() : progress(0) { }
 
-    void setBadge(const QString &badge);
+    void setBadge(int value);
     void setProgress(int progress);
 
-    QString badge;
+    int badge;
     int progress;
     QWidget* window;
 };
