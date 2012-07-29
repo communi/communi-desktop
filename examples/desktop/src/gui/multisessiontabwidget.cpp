@@ -65,6 +65,20 @@ void MultiSessionTabWidget::addSession(Session* session)
     setTabInactive(index, !session->isActive());
 }
 
+void MultiSessionTabWidget::removeSession(Session *session)
+{
+    for (int i = 0; i < count(); ++i)
+    {
+        SessionTabWidget* tabWidget = qobject_cast<SessionTabWidget*>(widget(i));
+        if (tabWidget && tabWidget->session() == session)
+        {
+            tabWidget->deleteLater();
+            removeTab(i);
+            break;
+        }
+    }
+}
+
 void MultiSessionTabWidget::tabInserted(int index)
 {
     TabWidget::tabInserted(index);

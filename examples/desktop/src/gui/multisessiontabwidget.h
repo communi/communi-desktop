@@ -30,6 +30,7 @@ public:
 
     QList<Session*> sessions() const;
     void addSession(Session* session);
+    void removeSession(Session* session);
 
 public slots:
     void applySettings(const Settings& settings);
