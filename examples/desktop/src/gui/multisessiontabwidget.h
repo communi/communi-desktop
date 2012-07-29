@@ -20,6 +20,7 @@
 
 class Session;
 class QShortcut;
+class SessionTabWidget;
 
 class MultiSessionTabWidget : public TabWidget
 {
@@ -32,11 +33,13 @@ public:
     void addSession(Session* session);
     void removeSession(Session* session);
 
+    SessionTabWidget* sessionWidget(Session* session) const;
+
 public slots:
     void applySettings(const Settings& settings);
 
 private slots:
-    void setSessionTitle(const QString& title);
+    void onSessionNetworkChanged(const QString& network);
     void setInactive(bool inactive);
     void setAlerted(bool alerted);
     void setHighlighted(bool highlighted);

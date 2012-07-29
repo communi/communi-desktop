@@ -54,29 +54,34 @@ QList<Session*> MultiSessionTabWidget::sessions() const
 void MultiSessionTabWidget::addSession(Session* session)
 {
     SessionTabWidget* tab = new SessionTabWidget(session, this);
-    if (session->name().isEmpty())
-        connect(tab, SIGNAL(titleChanged(QString)), this, SLOT(setSessionTitle(QString)));
     connect(tab, SIGNAL(inactiveStatusChanged(bool)), this, SLOT(setInactive(bool)));
     connect(tab, SIGNAL(alertStatusChanged(bool)), this, SLOT(setAlerted(bool)));
     connect(tab, SIGNAL(highlightStatusChanged(bool)), this, SLOT(setHighlighted(bool)));
 
-    int index = addTab(tab, session->name().isEmpty() ? session->host() : session->name());
+    QString name = session->name();
+    if (name.isEmpty())
+        connect(session, SIGNAL(networkChanged(QString)), this, SLOT(onSessionNetworkChanged(QString)));
+    int index = addTab(tab, name.isEmpty() ? session->host() : name);
     setCurrentIndex(index);
     setTabInactive(index, !session->isActive());
 }
 
 void MultiSessionTabWidget::removeSession(Session *session)
 {
+    SessionTabWidget* tabWidget = sessionWidget(session);
+    if (tabWidget)
+        tabWidget->deleteLater();
+}
+
+SessionTabWidget* MultiSessionTabWidget::sessionWidget(Session* session) const
+{
     for (int i = 0; i < count(); ++i)
     {
         SessionTabWidget* tabWidget = qobject_cast<SessionTabWidget*>(widget(i));
         if (tabWidget && tabWidget->session() == session)
-        {
-            tabWidget->deleteLater();
-            removeTab(i);
-            break;
-        }
+            return tabWidget;
     }
+    return 0;
 }
 
 void MultiSessionTabWidget::tabActivated(int index)
@@ -110,11 +115,12 @@ void MultiSessionTabWidget::applySettings(const Settings& settings)
     }
 }
 
-void MultiSessionTabWidget::setSessionTitle(const QString& title)
+void MultiSessionTabWidget::onSessionNetworkChanged(const QString& network)
 {
-    int index = senderIndex();
-    if (index != -1)
-        setTabText(index, title);
+    Session* session = qobject_cast<Session*>(sender());
+    SessionTabWidget* tabWidget = sessionWidget(session);
+    if (tabWidget)
+        setTabText(indexOf(tabWidget), network);
 }
 
 void MultiSessionTabWidget::setInactive(bool inactive)
