@@ -22,16 +22,13 @@
  *
 *****************************************************************************/
 
-#define WINVER 0x0500
-#include <qt_windows.h>
-#include "winutils.h"
-
 #include "qtdocktile.h"
 #include "qtdocktile_p.h"
 #include <QApplication>
 #include <QSysInfo>
 #include <QPainter>
 #include <QStyle>
+#include "winutils.h"
 
 static ITaskbarList3 *windowsTaskBar()
 {
