@@ -418,5 +418,5 @@ QString MessageFormatter::prettyUser(const QString& user)
 QString MessageFormatter::colorize(const QString& str)
 {
     QColor color = QColor::fromHsl(qHash(str) % 359, 255, 64);
-    return QString("<span style='color:%1'>%2</span>").arg(color.name()).arg(str);
+    return QString("<strong style='color:%1'>%2</strong>").arg(color.name()).arg(str);
 }
