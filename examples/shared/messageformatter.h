@@ -19,6 +19,8 @@
 #include <QObject>
 #include <IrcMessage>
 
+class UserModel;
+
 class MessageFormatter : public QObject
 {
     Q_OBJECT
@@ -63,12 +65,8 @@ public:
     QString highlightFormat() const;
     void setHighlightFormat(const QString& format);
 
-    Q_INVOKABLE QString formatMessage(IrcMessage* message) const;
+    Q_INVOKABLE QString formatMessage(IrcMessage* message, UserModel* userModel = 0) const;
     Q_INVOKABLE QString formatMessage(const QString& message) const;
-
-    static QString prettyUser(const IrcSender& sender);
-    static QString prettyUser(const QString& user);
-    static QString colorize(const QString& str);
 
 protected:
     QString formatInviteMessage(IrcInviteMessage* message) const;
@@ -87,12 +85,18 @@ protected:
 
     static QString formatPingReply(const IrcSender& sender, const QString& arg);
 
+    static QString prettyUser(const IrcSender& sender);
+    static QString prettyUser(const QString& user);
+    static QString colorize(const QString& str);
+    QString messageToHtml(const QString& message) const;
+
 private:
     mutable struct Private
     {
         bool highlight;
-        QStringList highlights;
         bool timeStamp;
+        UserModel* userModel;
+        QStringList highlights;
         QString timeStampFormat;
         QString messageFormat;
         QString highlightFormat;

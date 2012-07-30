@@ -388,7 +388,7 @@ void MessageView::receiveMessage(IrcMessage* message)
         break;
     }
 
-    QString formatted = d.formatter.formatMessage(message);
+    QString formatted = d.formatter.formatMessage(message, d.userModel);
     if (append && formatted.length())
     {
         if (matches)
