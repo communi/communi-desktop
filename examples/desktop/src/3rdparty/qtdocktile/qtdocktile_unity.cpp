@@ -57,8 +57,8 @@ bool QtDockTile::isAvailable()
 void QtDockTilePrivate::setBadge(int badge)
 {
     QVariantMap map;
-    map.insert(QLatin1String("count"), count);
-    map.insert(QLatin1String("count-visible"), count > 0);
+    map.insert(QLatin1String("count"), badge);
+    map.insert(QLatin1String("count-visible"), badge > 0);
     sendMessage(map);
 }
 
