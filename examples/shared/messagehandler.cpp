@@ -158,40 +158,19 @@ void MessageHandler::handleInviteMessage(IrcInviteMessage* message)
 void MessageHandler::handleJoinMessage(IrcJoinMessage* message)
 {
     sendMessage(message, message->channel());
-    MessageReceiver* receiver = d.receivers.value(message->channel().toLower());
-    if (receiver)
-    {
-        if (message->sender().name() == d.session->nickName())
-            receiver->clearUsers();
-        else
-            receiver->addUser(message->sender().name());
-    }
 }
 
 void MessageHandler::handleKickMessage(IrcKickMessage* message)
 {
     sendMessage(message, message->channel());
-    MessageReceiver* receiver = d.receivers.value(message->channel().toLower());
-    if (receiver)
-        receiver->removeUser(message->user());
 }
 
 void MessageHandler::handleModeMessage(IrcModeMessage* message)
 {
     if (message->sender().name() == message->target())
-    {
         sendMessage(message, d.defaultReceiver);
-    }
     else
-    {
         sendMessage(message, message->target());
-        if (!message->argument().isEmpty())
-        {
-            MessageReceiver* receiver = d.receivers.value(message->target().toLower());
-            if (receiver)
-                receiver->setUserMode(message->argument(), message->mode());
-        }
-    }
 }
 
 void MessageHandler::handleNickMessage(IrcNickMessage* message)
@@ -204,7 +183,6 @@ void MessageHandler::handleNickMessage(IrcNickMessage* message)
         {
             received = true;
             receiver->receiveMessage(message);
-            receiver->renameUser(nick, message->nick());
         }
     }
     if (!received && d.currentReceiver)
@@ -284,13 +262,9 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
     case Irc::RPL_NAMREPLY: {
         const int count = message->parameters().count();
         const QString channel = message->parameters().value(count - 2);
-        const QStringList names = message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts);
         MessageReceiver* receiver = d.receivers.value(channel.toLower());
         if (receiver)
-        {
-            receiver->addUsers(names);
             receiver->receiveMessage(message);
-        }
         else if (d.currentReceiver)
             d.currentReceiver->receiveMessage(message);
         break;
@@ -310,16 +284,9 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
 void MessageHandler::handlePartMessage(IrcPartMessage* message)
 {
     if (message->sender().name() == d.session->nickName())
-    {
         removeReceiver(message->channel());
-    }
     else
-    {
         sendMessage(message, message->channel());
-        MessageReceiver* receiver = d.receivers.value(message->channel().toLower());
-        if (receiver)
-            receiver->removeUser(message->sender().name());
-    }
 }
 
 void MessageHandler::handlePongMessage(IrcPongMessage* message)
@@ -343,10 +310,7 @@ void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
     foreach (MessageReceiver* receiver, d.receivers)
     {
         if (receiver->hasUser(nick))
-        {
             receiver->receiveMessage(message);
-            receiver->removeUser(nick);
-        }
     }
 
     if (d.receivers.contains(nick.toLower()))

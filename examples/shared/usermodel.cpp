@@ -14,6 +14,9 @@
 
 #include "usermodel.h"
 #include "session.h"
+#include <ircmessage.h>
+#include <ircsender.h>
+#include <irc.h>
 
 UserModel::UserModel(Session* session) : QAbstractListModel(session)
 {
@@ -160,4 +163,52 @@ QVariant UserModel::data(const QModelIndex& index, int role) const
     }
 
     return QVariant();
+}
+
+void UserModel::processMessage(IrcMessage* message)
+{
+    if (message->type() == IrcMessage::Nick)
+    {
+        QString nick = message->sender().name().toLower();
+        renameUser(nick, static_cast<IrcNickMessage*>(message)->nick());
+    }
+    else if (message->type() == IrcMessage::Join)
+    {
+        if (message->sender().name() == d.session->nickName())
+            clearUsers();
+        else
+            addUser(message->sender().name());
+    }
+    else if (message->type() == IrcMessage::Part)
+    {
+        if (message->sender().name() == d.session->nickName())
+            clearUsers();
+        else
+            removeUser(message->sender().name());
+    }
+    else if (message->type() == IrcMessage::Kick)
+    {
+        removeUser(static_cast<IrcKickMessage*>(message)->user());
+    }
+    else if (message->type() == IrcMessage::Quit)
+    {
+        removeUser(message->sender().name());
+    }
+    else if (message->type() == IrcMessage::Mode)
+    {
+        IrcModeMessage* modeMsg = static_cast<IrcModeMessage*>(message);
+        if (modeMsg->sender().name() != modeMsg->target() && !modeMsg->argument().isEmpty())
+            setUserMode(modeMsg->argument(), modeMsg->mode());
+    }
+    else if (message->type() == IrcMessage::Numeric)
+    {
+        if (static_cast<IrcNumericMessage*>(message)->code() == Irc::RPL_NAMREPLY)
+        {
+            if (!message->parameters().isEmpty())
+            {
+                QString names = message->parameters().last();
+                addUsers(names.split(" ", QString::SkipEmptyParts));
+            }
+        }
+    }
 }

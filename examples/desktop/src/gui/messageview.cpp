@@ -35,6 +35,8 @@ public:
         : QSortFilterProxyModel(userModel), pfx(prefixes)
     {
         setSourceModel(userModel);
+        sort(0, Qt::AscendingOrder);
+        setDynamicSortFilter(true);
     }
 
 protected:
@@ -283,6 +285,9 @@ void MessageView::applySettings(const Settings& settings)
 
 void MessageView::receiveMessage(IrcMessage* message)
 {
+    if (d.userModel)
+        d.userModel->processMessage(message);
+
     bool append = true;
     bool hilite = false;
     bool matches = false;
@@ -398,39 +403,6 @@ void MessageView::receiveMessage(IrcMessage* message)
 bool MessageView::hasUser(const QString& user) const
 {
     return d.userModel->hasUser(user);
-}
-
-void MessageView::addUser(const QString& user)
-{
-    d.userModel->addUser(user);
-    d.listView->model()->sort(0);
-}
-
-void MessageView::addUsers(const QStringList& users)
-{
-    d.userModel->addUsers(users);
-    d.listView->model()->sort(0);
-}
-
-void MessageView::removeUser(const QString& user)
-{
-    d.userModel->removeUser(user);
-}
-
-void MessageView::clearUsers()
-{
-    d.userModel->clearUsers();
-}
-
-void MessageView::renameUser(const QString &from, const QString &to)
-{
-    d.userModel->renameUser(from, to);
-    d.listView->model()->sort(0);
-}
-
-void MessageView::setUserMode(const QString& user, const QString& mode)
-{
-    d.userModel->setUserMode(user, mode);
 }
 
 void MessageView::onCustomCommand(const QString& command, const QStringList& params)

@@ -19,6 +19,7 @@
 #include <QAbstractListModel>
 
 class Session;
+class IrcMessage;
 
 class UserModel : public QAbstractListModel
 {
@@ -32,15 +33,20 @@ public:
 
     QStringList users() const;
     bool hasUser(const QString& user) const;
+
+    int rowCount(const QModelIndex& parent = QModelIndex()) const;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+
+public slots:
+    void processMessage(IrcMessage* message);
+
+protected:
     void addUser(const QString& user);
     void addUsers(const QStringList& users);
     void removeUser(const QString& user);
     void clearUsers();
     void renameUser(const QString& from, const QString& to);
     void setUserMode(const QString& user, const QString& mode);
-
-    int rowCount(const QModelIndex& parent = QModelIndex()) const;
-    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
 private:
     struct Private

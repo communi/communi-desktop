@@ -21,7 +21,7 @@
 
 AbstractSessionItem::AbstractSessionItem(QObject *parent) :
     QObject(parent), m_session(0), m_busy(false), m_current(false),
-    m_highlighted(false), m_unread(0), m_unseen(0)
+    m_highlighted(false), m_unread(0), m_unseen(0), m_usermodel(0)
 {
     m_messages = new QStringListModel(this);
     m_formatter.setTimeStamp(true);
@@ -177,36 +177,6 @@ bool AbstractSessionItem::hasUser(const QString& user) const
     return m_usermodel->hasUser(user);
 }
 
-void AbstractSessionItem::addUser(const QString& user)
-{
-    m_usermodel->addUser(user);
-}
-
-void AbstractSessionItem::addUsers(const QStringList& users)
-{
-    m_usermodel->addUsers(users);
-}
-
-void AbstractSessionItem::removeUser(const QString& user)
-{
-    m_usermodel->removeUser(user);
-}
-
-void AbstractSessionItem::clearUsers()
-{
-    m_usermodel->clearUsers();
-}
-
-void AbstractSessionItem::renameUser(const QString &from, const QString &to)
-{
-    m_usermodel->renameUser(from, to);
-}
-
-void AbstractSessionItem::setUserMode(const QString& user, const QString& mode)
-{
-    m_usermodel->setUserMode(user, mode);
-}
-
 void AbstractSessionItem::sendUiCommand(IrcCommand *command)
 {
     m_sent.insert(command->type());
@@ -220,6 +190,9 @@ void AbstractSessionItem::clear()
 
 void AbstractSessionItem::receiveMessage(IrcMessage* message)
 {
+    if (m_usermodel)
+        m_usermodel->processMessage(message);
+
     if (message->type() == IrcMessage::Numeric)
     {
         IrcNumericMessage* numeric = static_cast<IrcNumericMessage*>(message);

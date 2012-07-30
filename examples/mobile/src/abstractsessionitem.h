@@ -87,12 +87,6 @@ signals:
 protected slots:
     virtual void receiveMessage(IrcMessage* message);
     virtual bool hasUser(const QString& user) const;
-    virtual void addUser(const QString& user);
-    virtual void addUsers(const QStringList& users);
-    virtual void removeUser(const QString& user);
-    virtual void clearUsers();
-    virtual void renameUser(const QString &from, const QString &to);
-    virtual void setUserMode(const QString& user, const QString& mode);
 
 protected:
     void setSession(Session* session);
