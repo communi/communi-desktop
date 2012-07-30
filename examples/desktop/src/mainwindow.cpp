@@ -128,14 +128,11 @@ void MainWindow::closeEvent(QCloseEvent* event)
     settings.setValue("geometry", saveGeometry());
 
     ConnectionInfos connections;
-    if (tabWidget)
+    QList<Session*> sessions = tabWidget->sessions();
+    foreach (Session* session, sessions)
     {
-        QList<Session*> sessions = tabWidget->sessions();
-        foreach (Session* session, sessions)
-        {
-            connections += session->toConnection();
-            session->quit();
-        }
+        connections += session->toConnection();
+        session->quit();
     }
     settings.setValue("connections", QVariant::fromValue(connections));
 
