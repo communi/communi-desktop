@@ -24,6 +24,11 @@ UserModel::~UserModel()
 {
 }
 
+Session* UserModel::session() const
+{
+    return d.session;
+}
+
 QStringList UserModel::users() const
 {
     return d.names;
