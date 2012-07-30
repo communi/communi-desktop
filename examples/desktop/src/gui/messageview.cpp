@@ -387,9 +387,9 @@ void MessageView::receiveMessage(IrcMessage* message)
     if (append && formatted.length())
     {
         if (matches)
-            emit alert(this, true);
+            emit alerted(message);
         else if (hilite || (!d.connecting && isServerView()))
-            emit highlight(this, true);
+            emit highlighted(message);
 
         appendMessage(formatted);
     }
@@ -436,10 +436,10 @@ void MessageView::setUserMode(const QString& user, const QString& mode)
 void MessageView::onCustomCommand(const QString& command, const QStringList& params)
 {
     if (command == "QUERY")
-        emit query(params.value(0));
+        emit queried(params.value(0));
 }
 
 void MessageView::onDoubleClicked(const QModelIndex& index)
 {
-    emit query(index.data(Qt::EditRole).toString());
+    emit queried(index.data(Qt::EditRole).toString());
 }

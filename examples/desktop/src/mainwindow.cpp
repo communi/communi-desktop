@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget* parent) :
     connect(qApp, SIGNAL(settingsChanged(Settings)), tabWidget, SLOT(applySettings(Settings)));
     setCentralWidget(tabWidget);
     connect(tabWidget, SIGNAL(newTabRequested()), this, SLOT(connectTo()), Qt::QueuedConnection);
-    connect(tabWidget, SIGNAL(alert()), this, SLOT(alert()));
+    connect(tabWidget, SIGNAL(alerted(IrcMessage*)), this, SLOT(alert(IrcMessage*)));
 
     HomePage* homePage = new HomePage(this);
     connect(homePage, SIGNAL(connectRequested()), this, SLOT(connectTo()));
@@ -182,8 +182,9 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
-void MainWindow::alert()
+void MainWindow::alert(IrcMessage* message)
 {
+    Q_UNUSED(message);
     if (!isActiveWindow())
     {
         QApplication::alert(this);

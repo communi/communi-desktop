@@ -65,9 +65,9 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
     if (!view)
     {
         view = new MessageView(receiver, d.handler.session(), this);
-        connect(view, SIGNAL(alert(MessageView*, bool)), this, SLOT(alertTab(MessageView*, bool)));
-        connect(view, SIGNAL(highlight(MessageView*, bool)), this, SLOT(highlightTab(MessageView*, bool)));
-        connect(view, SIGNAL(query(QString)), this, SLOT(openView(QString)));
+        connect(view, SIGNAL(alerted(IrcMessage*)), this, SLOT(onTabAlerted(IrcMessage*)));
+        connect(view, SIGNAL(highlighted(IrcMessage*)), this, SLOT(onTabHighlighted(IrcMessage*)));
+        connect(view, SIGNAL(queried(QString)), this, SLOT(openView(QString)));
 
         d.handler.addReceiver(receiver, view);
         d.views.insert(receiver.toLower(), view);
@@ -205,26 +205,29 @@ void SessionTabWidget::delayedTabResetTimeout()
     tabActivated(index);
 }
 
-void SessionTabWidget::alertTab(MessageView* view, bool on)
+void SessionTabWidget::onTabAlerted(IrcMessage* message)
 {
-    int index = indexOf(view);
+    int index = indexOf(static_cast<QWidget*>(sender()));
     if (index != -1)
     {
         if (!isVisible() || !isActiveWindow() || index != currentIndex())
         {
-            setTabAlert(index, on);
-            emit alert();
+            setTabAlert(index, true);
+            emit alerted(message);
         }
     }
 }
 
-void SessionTabWidget::highlightTab(MessageView* view, bool on)
+void SessionTabWidget::onTabHighlighted(IrcMessage* message)
 {
-    int index = indexOf(view);
+    int index = indexOf(static_cast<QWidget*>(sender()));
     if (index != -1)
     {
         if (!isVisible() || !isActiveWindow() || index != currentIndex())
-            setTabHighlight(index, on);
+        {
+            setTabHighlight(index, true);
+            emit highlighted(message);
+        }
     }
 }
 

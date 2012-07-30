@@ -42,9 +42,9 @@ public slots:
     void applySettings(const Settings& settings);
 
 signals:
-    void highlight(MessageView* view, bool on);
-    void alert(MessageView* view, bool on);
-    void query(const QString& user);
+    void highlighted(IrcMessage* message);
+    void alerted(IrcMessage* message);
+    void queried(const QString& user);
 
 protected:
     bool eventFilter(QObject* receiver, QEvent* event);

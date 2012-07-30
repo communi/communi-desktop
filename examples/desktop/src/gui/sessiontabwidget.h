@@ -21,8 +21,9 @@
 #include <QHash>
 
 class Session;
-class MessageView;
 class QShortcut;
+class IrcMessage;
+class MessageView;
 
 class SessionTabWidget : public TabWidget
 {
@@ -42,7 +43,8 @@ public slots:
     void applySettings(const Settings& settings);
 
 signals:
-    void alert();
+    void alerted(IrcMessage* message);
+    void highlighted(IrcMessage* message);
     void inactiveStatusChanged(bool inactive);
 
 protected:
@@ -56,8 +58,8 @@ private slots:
     void onTabCloseRequested();
     void delayedTabReset();
     void delayedTabResetTimeout();
-    void alertTab(MessageView* view, bool on);
-    void highlightTab(MessageView* view, bool on);
+    void onTabAlerted(IrcMessage* message);
+    void onTabHighlighted(IrcMessage* message);
 
 private:
     struct SessionTabWidgetData

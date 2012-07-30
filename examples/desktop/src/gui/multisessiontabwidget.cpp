@@ -57,7 +57,8 @@ void MultiSessionTabWidget::addSession(Session* session)
     connect(tab, SIGNAL(highlightStatusChanged(bool)), this, SLOT(setHighlighted(bool)));
     connect(tab, SIGNAL(inactiveStatusChanged(bool)), this, SLOT(setInactive(bool)));
     connect(tab, SIGNAL(alertStatusChanged(bool)), this, SLOT(setAlerted(bool)));
-    connect(tab, SIGNAL(alert()), this, SIGNAL(alert()));
+    connect(tab, SIGNAL(alerted(IrcMessage*)), this, SIGNAL(alerted(IrcMessage*)));
+    connect(tab, SIGNAL(highlighted(IrcMessage*)), this, SIGNAL(highlighted(IrcMessage*)));
 
     QString name = session->name();
     if (name.isEmpty())

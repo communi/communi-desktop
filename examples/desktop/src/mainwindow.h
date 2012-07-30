@@ -20,6 +20,7 @@
 
 class MultiSessionTabWidget;
 struct ConnectionInfo;
+class IrcMessage;
 class QtDockTile;
 
 class MainWindow : public QMainWindow
@@ -45,7 +46,7 @@ protected:
 private slots:
     void initialize();
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
-    void alert();
+    void alert(IrcMessage* message);
 
 private:
     MultiSessionTabWidget* tabWidget;

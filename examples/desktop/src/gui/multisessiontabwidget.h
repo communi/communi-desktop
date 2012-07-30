@@ -20,6 +20,7 @@
 
 class Session;
 class QShortcut;
+class IrcMessage;
 class SessionTabWidget;
 
 class MultiSessionTabWidget : public TabWidget
@@ -39,7 +40,8 @@ public slots:
     void applySettings(const Settings& settings);
 
 signals:
-    void alert();
+    void alerted(IrcMessage* message);
+    void highlighted(IrcMessage* message);
 
 protected:
     void tabInserted(int index);
