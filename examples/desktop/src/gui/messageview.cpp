@@ -186,11 +186,13 @@ void MessageView::appendMessage(const QString& message)
         if (!isVisible() && d.textBrowser->unseenBlock() == -1)
             d.textBrowser->setUnseenBlock(d.textBrowser->document()->blockCount() - 1);
 
+#if QT_VERSION >= 0x040800
         QTextBlock block = d.textBrowser->document()->lastBlock();
         QTextBlockFormat format = block.blockFormat();
         format.setLineHeight(120, QTextBlockFormat::ProportionalHeight);
         QTextCursor cursor(block);
         cursor.setBlockFormat(format);
+#endif // QT_VERSION
     }
 }
 
