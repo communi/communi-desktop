@@ -85,10 +85,9 @@ protected:
 
     static QString formatPingReply(const IrcSender& sender, const QString& arg);
 
-    static QString prettyUser(const IrcSender& sender);
-    static QString prettyUser(const QString& user);
-    static QString colorize(const QString& str);
-    QString messageToHtml(const QString& message) const;
+    static QString formatSender(const IrcSender& sender);
+    static QString formatUser(const QString& user);
+    QString formatHtml(const QString& message) const;
 
 private:
     mutable struct Private
