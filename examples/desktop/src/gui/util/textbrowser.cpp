@@ -78,3 +78,13 @@ void TextBrowser::paintEvent(QPaintEvent* event)
         painter.drawLine(br.topLeft(), br.topRight());
     }
 }
+
+void TextBrowser::wheelEvent(QWheelEvent* event)
+{
+#ifdef Q_WS_MACX
+    // disable cmd+wheel zooming on mac
+    QAbstractScrollArea::wheelEvent(event);
+#else
+    QTextBrowser::wheelEvent(event);
+#endif // Q_WS_MACX
+}

@@ -37,6 +37,7 @@ public slots:
 protected:
     void paintEvent(QPaintEvent* event);
     void resizeEvent(QResizeEvent* event);
+    void wheelEvent(QWheelEvent* event);
 
 private:
     int ub;
