@@ -27,7 +27,14 @@
 #include <QApplication>
 #include <QSysInfo>
 #include <QPainter>
+
+#ifdef Q_CC_GNU
 #include "winutils.h"
+#endif // Q_CC_GNU
+
+#ifdef Q_CC_MSVC
+#include <shobjidl.h>
+#endif // Q_CC_MSVC
 
 static ITaskbarList3 *windowsTaskBar()
 {
