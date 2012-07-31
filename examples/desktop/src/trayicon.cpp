@@ -18,6 +18,12 @@
 TrayIcon::TrayIcon(QObject* parent) : QSystemTrayIcon(parent)
 {
     d.timer = 0;
+    d.alertIcon.addFile(":/resources/icons/16x16/communi-alert.png");
+    d.alertIcon.addFile(":/resources/icons/24x24/communi-alert.png");
+    d.alertIcon.addFile(":/resources/icons/32x32/communi-alert.png");
+    d.alertIcon.addFile(":/resources/icons/48x48/communi-alert.png");
+    d.alertIcon.addFile(":/resources/icons/64x64/communi-alert.png");
+    d.alertIcon.addFile(":/resources/icons/128x128/communi-alert.png");
 }
 
 void TrayIcon::alert()
@@ -44,8 +50,8 @@ void TrayIcon::unalert()
 
 void TrayIcon::toggleIcon()
 {
-    if (icon().isNull())
+    if (icon().cacheKey() == d.alertIcon.cacheKey())
         setIcon(d.icon);
     else
-        setIcon(QIcon());
+        setIcon(d.alertIcon);
 }

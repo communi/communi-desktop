@@ -35,6 +35,7 @@ private:
     struct TrayIconData
     {
         QIcon icon;
+        QIcon alertIcon;
         QTimer* timer;
     } d;
 };

@@ -123,7 +123,7 @@ void MessageView::showHelp(const QString& text, bool error)
     d.helpLabel->setVisible(!syntax.isEmpty());
     QPalette pal;
     if (error)
-        pal.setColor(QPalette::WindowText, Qt::red);
+        pal.setColor(QPalette::WindowText, d.settings.colors[Settings::Highlight]);
     d.helpLabel->setPalette(pal);
     d.helpLabel->setText(syntax);
 }

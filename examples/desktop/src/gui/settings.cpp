@@ -51,7 +51,7 @@ Settings::Settings() : maxBlockCount(-1), timeStamp(true)
     colors[Event] = "gray";
     colors[Notice] = "brown";
     colors[Action] = "darkmagenta";
-    colors[Highlight] = "red";
+    colors[Highlight] = "#ff3333";
     colors[TimeStamp] = "gray";
 }
 
