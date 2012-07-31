@@ -15,8 +15,8 @@
 #include "messageview.h"
 #include "completer.h"
 #include "usermodel.h"
+#include "sortedusermodel.h"
 #include "session.h"
-#include <QSortFilterProxyModel>
 #include <QStringListModel>
 #include <QTextBlock>
 #include <QShortcut>
@@ -27,40 +27,6 @@
 #include <irccommand.h>
 #include <ircutil.h>
 #include <irc.h>
-
-class SortedUserModel : public QSortFilterProxyModel
-{
-public:
-    SortedUserModel(const QString& prefixes, UserModel* userModel = 0)
-        : QSortFilterProxyModel(userModel), pfx(prefixes)
-    {
-        setSourceModel(userModel);
-        sort(0, Qt::AscendingOrder);
-        setDynamicSortFilter(true);
-    }
-
-protected:
-    bool lessThan(const QModelIndex& left, const QModelIndex& right) const
-    {
-        QString u1 = sourceModel()->data(left, Qt::DisplayRole).toString();
-        QString u2 = sourceModel()->data(right, Qt::DisplayRole).toString();
-
-        const int i1 = pfx.indexOf(u1.at(0));
-        const int i2 = pfx.indexOf(u2.at(0));
-
-        if (i1 >= 0 && i2 < 0)
-            return true;
-        if (i1 < 0 && i2 >= 0)
-            return false;
-        if (i1 >= 0 && i2 >= 0 && i1 != i2)
-            return i1 < i2;
-
-        return QString::localeAwareCompare(u1.toLower(), u2.toLower()) < 0;
-    }
-
-private:
-    QString pfx;
-};
 
 static QStringListModel* command_model = 0;
 
