@@ -32,7 +32,7 @@ Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
 
     QIcon icon;
     icon.addFile(":/resources/icons/16x16/communi.png");
-    icon.addFile(":/resources/icons/26x26/communi.png");
+    icon.addFile(":/resources/icons/24x24/communi.png");
     icon.addFile(":/resources/icons/32x32/communi.png");
     icon.addFile(":/resources/icons/48x48/communi.png");
     icon.addFile(":/resources/icons/64x64/communi.png");
