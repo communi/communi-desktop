@@ -308,14 +308,15 @@ void MessageView::receiveMessage(IrcMessage* message)
                 d.receivedCodes.clear();
                 break;
             case Irc::RPL_ENDOFNAMES:
-                if (!d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
+                if (d.viewType == ChannelView && !d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
                 {
                     appendMessage(d.formatter.formatMessage(tr("! %1 has %2 users").arg(receiver()).arg(d.userModel->rowCount())));
+                    d.receivedCodes += static_cast<IrcNumericMessage*>(message)->code();
                     return;
                 }
                 break;
             case Irc::RPL_NAMREPLY:
-                if (!d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
+                if (d.viewType == ChannelView && !d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
                     return;
                 break;
             case Irc::RPL_NOTOPIC:
