@@ -24,8 +24,9 @@ DEPENDPATH += $$PWD/../include
 macx:!qt_no_framework {
     LIBS += -F$$PWD/../lib -framework Communi
 } else {
-    TEMPLATE += fakelib
+    REAL_TEMPLATE = $$TEMPLATE
+    TEMPLATE = fakelib
     LIBS += -L$$PWD/../lib -l$$qtLibraryTarget(Communi)
-    TEMPLATE -= fakelib
+    TEMPLATE = $$REAL_TEMPLATE
     QMAKE_RPATHDIR += $$PWD/../lib
 }
