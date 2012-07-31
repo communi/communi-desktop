@@ -1,104 +1,245 @@
-#ifndef WINUTILS_H
-#define WINUTILS_H
-#include <shlobj.h>
+/*****************************************************************************
+ * vlc_windows_interfaces.h : Replacement for incomplete MinGW headers
+ ****************************************************************************
+ *
+ * Copyright (C) 2009-2010 VideoLAN
+ *
+ * Authors: Geoffroy Couprie <geal@videolan.org>
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
+ *****************************************************************************/
 
-#define DEFINE_GUID_(n,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) const GUID n GUID_SECT = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
+#ifndef MINGW_WORKAROUNDS_H
+#define MINGW_WORKAROUNDS_H
 
-typedef enum STPFLAG
-{
-    STPF_NONE = 0,
-    STPF_USEAPPTHUMBNAILALWAYS = 0x1,
-    STPF_USEAPPTHUMBNAILWHENACTIVE = 0x2,
-    STPF_USEAPPPEEKALWAYS = 0x4,
-    STPF_USEAPPPEEKWHENACTIVE = 0x8
-} STPFLAG;
+#ifdef __MINGW32__
+# include <_mingw.h>
+#endif
 
-typedef enum THUMBBUTTONMASK
-{
-    THB_BITMAP = 0x1,
-    THB_ICON = 0x2,
-    THB_TOOLTIP	= 0x4,
-    THB_FLAGS = 0x8
-} THUMBBUTTONMASK;
+#ifdef __MINGW64_VERSION_MAJOR /* mingw.org lacks this header */
+# include <shobjidl.h>
+#endif
 
-typedef enum THUMBBUTTONFLAGS
-{
-    THBF_ENABLED = 0,
-    THBF_DISABLED = 0x1,
-    THBF_DISMISSONCLICK	= 0x2,
-    THBF_NOBACKGROUND = 0x4,
-    THBF_HIDDEN	= 0x8,
-    THBF_NONINTERACTIVE	= 0x10
-} THUMBBUTTONFLAGS;
+#include <commctrl.h>
+#include <basetyps.h>
+#include <objbase.h>
 
-typedef struct THUMBBUTTON
-{
-    THUMBBUTTONMASK dwMask;
-    UINT iId;
-    UINT iBitmap;
-    HICON hIcon;
-    WCHAR szTip[260];
-    THUMBBUTTONFLAGS dwFlags;
-} THUMBBUTTON;
-typedef struct THUMBBUTTON *LPTHUMBBUTTON;
+/* rpcndr.h defines small not only for idl */
+#undef small
+
+/* mingw.org fails to define this */
+#ifndef __ITaskbarList3_INTERFACE_DEFINED__
+#define __ITaskbarList3_INTERFACE_DEFINED__
+const GUID CLSID_TaskbarList ={ 0x56FDF344,0xFD6D,0x11d0,{0x95,0x8A,0x00,0x60,0x97,0xC9,0xA0,0x90}};
+const GUID IID_ITaskbarList3 = { 0xea1afb91,0x9e28,0x4b86,{0x90,0xe9,0x9e,0x9f,0x8a,0x5e,0xef,0xaf}};
+
 
 typedef enum TBPFLAG
 {
-    TBPF_NOPROGRESS = 0,
+    TBPF_NOPROGRESS    = 0,
     TBPF_INDETERMINATE = 0x1,
-    TBPF_NORMAL = 0x2,
-    TBPF_ERROR = 0x4,
-    TBPF_PAUSED = 0x8
+    TBPF_NORMAL        = 0x2,
+    TBPF_ERROR         = 0x4,
+    TBPF_PAUSED        = 0x8
 } TBPFLAG;
 
-//MIDL_INTERFACE("56FDF342-FD6D-11d0-958A-006097C9A090")
-DECLARE_INTERFACE_(ITaskbarList, IUnknown)
+typedef struct tagTHUMBBUTTON
 {
-    STDMETHOD (HrInit) (THIS) PURE;
-    STDMETHOD (AddTab) (THIS_ HWND hwnd) PURE;
-    STDMETHOD (DeleteTab) (THIS_ HWND hwnd) PURE;
-    STDMETHOD (ActivateTab) (THIS_ HWND hwnd) PURE;
-    STDMETHOD (SetActiveAlt) (THIS_ HWND hwnd) PURE;
-};
-typedef ITaskbarList *LPITaskbarList;
+    DWORD dwMask;
+    UINT iId;
+    UINT iBitmap;
+    HICON hIcon;
+    //    WCHAR pszTip[ 260 ];
+    wchar_t pszTip[ 260 ];
+    DWORD dwFlags;
+} THUMBBUTTON;
 
-//MIDL_INTERFACE("602D4995-B13A-429b-A66E-1935E44F4317")
-DECLARE_INTERFACE_(ITaskbarList2, ITaskbarList)
+typedef struct tagTHUMBBUTTON *LPTHUMBBUTTON;
+
+typedef enum THUMBBUTTONMASK {
+    THB_BITMAP  = 0x1,
+    THB_ICON    = 0x2,
+    THB_TOOLTIP = 0x4,
+    THB_FLAGS   = 0x8
+} THUMBBUTTONMASK;
+
+typedef enum THUMBBUTTONFLAGS {
+    THBF_ENABLED        = 0x0,
+    THBF_DISABLED       = 0x1,
+    THBF_DISMISSONCLICK = 0x2,
+    THBF_NOBACKGROUND   = 0x4,
+    THBF_HIDDEN         = 0x8,
+    THBF_NONINTERACTIVE = 0x10
+} THUMBBUTTONFLAGS;
+
+#ifdef __cplusplus
+interface ITaskbarList : public IUnknown {
+public:
+    virtual HRESULT WINAPI HrInit(void) = 0;
+    virtual HRESULT WINAPI AddTab(HWND hwnd) = 0;
+    virtual HRESULT WINAPI DeleteTab(HWND hwnd) = 0;
+    virtual HRESULT WINAPI ActivateTab(HWND hwnd) = 0;
+    virtual HRESULT WINAPI SetActiveAlt(HWND hwnd) = 0;
+};
+
+interface ITaskbarList2 : public ITaskbarList {
+public:
+    virtual HRESULT WINAPI MarkFullscreenWindow(HWND hwnd,WINBOOL fFullscreen) = 0;
+};
+
+interface ITaskbarList3 : public ITaskbarList2
 {
-    STDMETHOD (MarkFullscreenWindow) (THIS_ HWND hwnd, int fFullscreen) PURE;
-};
-typedef ITaskbarList2 *LPITaskbarList2;
+    virtual HRESULT STDMETHODCALLTYPE SetProgressValue(
+        HWND hwnd,
+        ULONGLONG ullCompleted,
+        ULONGLONG ullTotal) = 0;
 
-//MIDL_INTERFACE("ea1afb91-9e28-4b86-90e9-9e9f8a5eefaf")
-DECLARE_INTERFACE_(ITaskbarList3, ITaskbarList2)
+    virtual HRESULT STDMETHODCALLTYPE SetProgressState(
+        HWND hwnd,
+        TBPFLAG tbpFlags) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE RegisterTab(
+        HWND hwndTab,
+        HWND hwndMDI) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE UnregisterTab(
+        HWND hwndTab) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE SetTabOrder(
+        HWND hwndTab,
+        HWND hwndInsertBefore) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE SetTabActive(
+        HWND hwndTab,
+        HWND hwndMDI,
+        DWORD dwReserved) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE ThumbBarAddButtons(
+        HWND hwnd,
+        UINT cButtons,
+        LPTHUMBBUTTON pButton) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE ThumbBarUpdateButtons(
+        HWND hwnd,
+        UINT cButtons,
+        LPTHUMBBUTTON pButton) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE ThumbBarSetImageList(
+        HWND hwnd,
+        HIMAGELIST himl) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE SetOverlayIcon(
+        HWND hwnd,
+        HICON hIcon,
+        LPCWSTR pszDescription) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE SetThumbnailTooltip(
+        HWND hwnd,
+        LPCWSTR pszTip) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE SetThumbnailClip(
+        HWND hwnd,
+        RECT *prcClip) = 0;
+
+};
+
+#else /* !__cplusplus */
+
+struct ITaskbarList3Vtbl;
+struct ITaskbarList3 { struct ITaskbarList3Vtbl* lpVtbl; };
+typedef struct ITaskbarList3 ITaskbarList3;
+
+struct ITaskbarList3Vtbl
 {
-    STDMETHOD (SetProgressValue) (THIS_ HWND hwnd, ULONGLONG ullCompleted, ULONGLONG ullTotal) PURE;
-    STDMETHOD (SetProgressState) (THIS_ HWND hwnd, TBPFLAG tbpFlags) PURE;
-    STDMETHOD (RegisterTab) (THIS_ HWND hwndTab,HWND hwndMDI) PURE;
-    STDMETHOD (UnregisterTab) (THIS_ HWND hwndTab) PURE;
-    STDMETHOD (SetTabOrder) (THIS_ HWND hwndTab, HWND hwndInsertBefore) PURE;
-    STDMETHOD (SetTabActive) (THIS_ HWND hwndTab, HWND hwndMDI, DWORD dwReserved) PURE;
-    STDMETHOD (ThumbBarAddButtons) (THIS_ HWND hwnd, UINT cButtons, LPTHUMBBUTTON pButton) PURE;
-    STDMETHOD (ThumbBarUpdateButtons) (THIS_ HWND hwnd, UINT cButtons, LPTHUMBBUTTON pButton) PURE;
-    STDMETHOD (ThumbBarSetImageList) (THIS_ HWND hwnd, HIMAGELIST himl) PURE;
-    STDMETHOD (SetOverlayIcon) (THIS_ HWND hwnd, HICON hIcon, LPCWSTR pszDescription) PURE;
-    STDMETHOD (SetThumbnailTooltip) (THIS_ HWND hwnd, LPCWSTR pszTip) PURE;
-    STDMETHOD (SetThumbnailClip) (THIS_ HWND hwnd, RECT *prcClip) PURE;
-};
-typedef ITaskbarList3 *LPITaskbarList3;
 
-//MIDL_INTERFACE("c43dc798-95d1-4bea-9030-bb99e2983a1a")
-DECLARE_INTERFACE_(ITaskbarList4, ITaskbarList3)
+    long ( WINAPI *QueryInterface )(ITaskbarList3 * This, REFIID riid, void **ppvObject);
+
+    long ( WINAPI *AddRef )(ITaskbarList3 *This);
+
+    long ( WINAPI *Release )(ITaskbarList3 *This);
+
+    long ( WINAPI *HrInit )(ITaskbarList3 *This);
+
+    long ( WINAPI *AddTab )(ITaskbarList3 *This, HWND hwnd);
+
+    long ( WINAPI *DeleteTab )(ITaskbarList3 *This, HWND hwnd);
+
+    long ( WINAPI *ActivateTab )(ITaskbarList3 *This, HWND hwnd);
+
+    long ( WINAPI *SetActiveAlt )(ITaskbarList3 *This, HWND hwnd);
+
+    long ( WINAPI *MarkFullscreenWindow )(ITaskbarList3 *This, HWND hwnd,
+        BOOL fFullscreen);
+
+    long ( WINAPI *SetProgressValue )(ITaskbarList3 *This, HWND hwnd,
+        ULONGLONG ullCompleted, ULONGLONG ullTotal);
+
+    long ( WINAPI *SetProgressState )(ITaskbarList3 *This, HWND hwnd,
+        TBPFLAG tbpFlags);
+
+    long ( WINAPI *RegisterTab )( ITaskbarList3 *This, HWND hwndTab, HWND hwndMDI);
+
+    long ( WINAPI *UnregisterTab )(ITaskbarList3 *This, HWND hwndTab);
+
+    long ( WINAPI *SetTabOrder )(ITaskbarList3 *This, HWND hwndTab,
+        HWND hwndInsertBefore);
+
+    long ( WINAPI *SetTabActive )(ITaskbarList3 *This, HWND hwndTab,
+        HWND hwndMDI, DWORD dwReserved);
+
+    long ( WINAPI *ThumbBarAddButtons )(ITaskbarList3 *This, HWND hwnd,
+        UINT cButtons, LPTHUMBBUTTON pButton);
+
+    long ( WINAPI *ThumbBarUpdateButtons )(ITaskbarList3 *This, HWND hwnd,
+        UINT cButtons, LPTHUMBBUTTON pButton);
+
+    long ( WINAPI *ThumbBarSetImageList )(ITaskbarList3 *This, HWND hwnd,
+        HIMAGELIST himl);
+
+    long ( WINAPI *SetOverlayIcon )(ITaskbarList3 *This, HWND hwnd,
+        HICON hIcon, LPCWSTR pszDescription);
+
+    long ( WINAPI *SetThumbnailTooltip )(ITaskbarList3 *This, HWND hwnd,
+        LPCWSTR pszTip);
+
+    long ( WINAPI *SetThumbnailClip )(ITaskbarList3 *This, HWND hwnd,
+        RECT *prcClip);
+
+};
+
+#endif /* __cplusplus */
+#endif /* __ITaskbarList3_INTERFACE_DEFINED__ */
+
+/* mingw-w64 also fails to define these as of 2.0.1 */
+
+#ifndef THBN_CLICKED
+# define THBN_CLICKED        0x1800
+#endif
+
+#ifndef __IApplicationAssociationRegistrationUI_INTERFACE_DEFINED__
+#define __IApplicationAssociationRegistrationUI_INTERFACE_DEFINED__
+const GUID IID_IApplicationAssociationRegistrationUI = {0x1f76a169,0xf994,0x40ac, {0x8f,0xc8,0x09,0x59,0xe8,0x87,0x47,0x10}};
+const GUID CLSID_ApplicationAssociationRegistrationUI = { 0x1968106d,0xf3b5,0x44cf,{0x89,0x0e,0x11,0x6f,0xcb,0x9e,0xce,0xf1}};
+#ifdef __cplusplus
+
+interface IApplicationAssociationRegistrationUI : public IUnknown
 {
-    STDMETHOD (SetTabProperties) (HWND hwndTab, STPFLAG stpFlags) PURE;
+    virtual HRESULT STDMETHODCALLTYPE LaunchAdvancedAssociationUI(
+        LPCWSTR pszAppRegName) = 0;
 };
-typedef ITaskbarList4 *LPITaskbarList4;
+#endif /* __cplusplus */
+#endif /* __IApplicationAssociationRegistrationUI_INTERFACE_DEFINED__ */
 
-DEFINE_GUID_(CLSID_TaskbarList,0x56fdf344,0xfd6d,0x11d0,0x95,0x8a,0x0,0x60,0x97,0xc9,0xa0,0x90);
-
-DEFINE_GUID_(IID_ITaskbarList,0x56FDF342,0xFD6D,0x11d0,0x95,0x8A,0x00,0x60,0x97,0xC9,0xA0,0x90);
-DEFINE_GUID_(IID_ITaskbarList2,0x602D4995,0xB13A,0x429b,0xA6,0x6E,0x19,0x35,0xE4,0x4F,0x43,0x17);
-DEFINE_GUID_(IID_ITaskbarList3,0xea1afb91,0x9e28,0x4b86,0x90,0xE9,0x9e,0x9f,0x8a,0x5e,0xef,0xaf);
-DEFINE_GUID_(IID_ITaskbarList4,0xc43dc798,0x95d1,0x4bea,0x90,0x30,0xbb,0x99,0xe2,0x98,0x3a,0x1a);
-
-#endif // WINUTILS_H
+#endif //MINGW_WORKAROUNDS_H
