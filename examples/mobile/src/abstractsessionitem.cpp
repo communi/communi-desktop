@@ -191,7 +191,7 @@ void AbstractSessionItem::clear()
 void AbstractSessionItem::receiveMessage(IrcMessage* message)
 {
     if (m_usermodel)
-        m_usermodel->processMessage(message);
+        m_usermodel->processMessage(message, receiver());
 
     if (message->type() == IrcMessage::Numeric)
     {

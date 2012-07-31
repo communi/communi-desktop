@@ -243,7 +243,7 @@ void MessageView::applySettings(const Settings& settings)
 void MessageView::receiveMessage(IrcMessage* message)
 {
     if (d.userModel)
-        d.userModel->processMessage(message);
+        d.userModel->processMessage(message, receiver());
 
     bool append = true;
     bool hilite = false;

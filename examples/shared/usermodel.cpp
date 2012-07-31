@@ -165,7 +165,7 @@ QVariant UserModel::data(const QModelIndex& index, int role) const
     return QVariant();
 }
 
-void UserModel::processMessage(IrcMessage* message)
+void UserModel::processMessage(IrcMessage* message, const QString& channel)
 {
     if (message->type() == IrcMessage::Nick)
     {
@@ -204,9 +204,10 @@ void UserModel::processMessage(IrcMessage* message)
     {
         if (static_cast<IrcNumericMessage*>(message)->code() == Irc::RPL_NAMREPLY)
         {
-            if (!message->parameters().isEmpty())
+            int count = message->parameters().count();
+            if (!channel.isNull() && channel == message->parameters().value(count - 2))
             {
-                QString names = message->parameters().last();
+                QString names = message->parameters().value(count - 1);
                 addUsers(names.split(" ", QString::SkipEmptyParts));
             }
         }

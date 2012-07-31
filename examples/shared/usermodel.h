@@ -38,7 +38,7 @@ public:
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
 public slots:
-    void processMessage(IrcMessage* message);
+    void processMessage(IrcMessage* message, const QString& channel = QString());
 
 protected:
     void addUser(const QString& user);
