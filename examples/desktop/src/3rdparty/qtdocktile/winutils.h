@@ -96,7 +96,7 @@ public:
 
 interface ITaskbarList2 : public ITaskbarList {
 public:
-    virtual HRESULT WINAPI MarkFullscreenWindow(HWND hwnd,WINBOOL fFullscreen) = 0;
+    virtual HRESULT WINAPI MarkFullscreenWindow(HWND hwnd, BOOL fFullscreen) = 0;
 };
 
 interface ITaskbarList3 : public ITaskbarList2
