@@ -20,6 +20,7 @@
 #include <QHash>
 #include <QTime>
 #include <QColor>
+#include <QRegExp>
 
 MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 {
@@ -429,14 +430,17 @@ QString MessageFormatter::messageToHtml(const QString &message) const
     QString msg = IrcUtil::messageToHtml(message);
     if (d.userModel)
     {
-        QStringList words;
-        foreach (QString word, msg.split(" ", QString::SkipEmptyParts))
+        foreach (const QString& user, d.userModel->users())
         {
-            if (d.userModel->hasUser(word))
-                word = prettyUser(word);
-            words += word;
+            int pos = 0;
+            QRegExp rx("\\b" + QRegExp::escape(user) + "\\b", Qt::CaseInsensitive);
+            while ((pos = rx.indexIn(msg, pos)) != -1)
+            {
+                QString pretty = prettyUser(msg.mid(pos, rx.matchedLength()));
+                msg.replace(pos, rx.matchedLength(), pretty);
+                pos += pretty.length();
+            }
         }
-        msg = words.join(" ");
     }
     return msg;
 }
