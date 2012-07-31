@@ -30,10 +30,11 @@
 
 static QStringListModel* command_model = 0;
 
-MessageView::MessageView(const QString& receiver, Session* session, QWidget* parent) :
+MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* parent) :
     QWidget(parent)
 {
     d.setupUi(this);
+    d.viewType = type;
 
     setFocusProxy(d.lineEditor);
     d.textBrowser->installEventFilter(this);
@@ -48,15 +49,13 @@ MessageView::MessageView(const QString& receiver, Session* session, QWidget* par
     d.formatter.setHighlightFormat("class='highlight'");
     d.formatter.setTimeStampFormat("class='timestamp'");
 
-    setReceiver(receiver);
     d.session = session;
     d.userModel = new UserModel(d.session);
     connect(&d.parser, SIGNAL(customCommand(QString,QStringList)), this, SLOT(onCustomCommand(QString,QStringList)));
 
-    bool isChannel = session->isChannel(receiver);
-    d.topicLabel->setVisible(isChannel);
-    d.listView->setVisible(isChannel);
-    if (isChannel)
+    d.topicLabel->setVisible(type == ChannelView);
+    d.listView->setVisible(type == ChannelView);
+    if (type == ChannelView)
     {
         d.listView->setModel(new SortedUserModel(session->prefixModes(), d.userModel));
         connect(d.listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClicked(QModelIndex)));
@@ -96,17 +95,9 @@ MessageView::~MessageView()
     delete d.userModel;
 }
 
-bool MessageView::isServerView() const
+MessageView::ViewType MessageView::viewType() const
 {
-    QTabWidget* tabWidget = 0;
-    if (parentWidget())
-        tabWidget = qobject_cast<QTabWidget*>(parentWidget()->parentWidget());
-    return tabWidget && tabWidget->indexOf(const_cast<MessageView*>(this)) == 0;
-}
-
-bool MessageView::isChannelView() const
-{
-    return d.session->isChannel(receiver());
+    return d.viewType;
 }
 
 void MessageView::showHelp(const QString& text, bool error)
@@ -289,7 +280,7 @@ void MessageView::receiveMessage(IrcMessage* message)
         hilite = d.settings.highlights.value(Settings::Parts);
         break;
     case IrcMessage::Private:
-        matches = !isChannelView() || static_cast<IrcPrivateMessage*>(message)->message().contains(d.session->nickName());
+        matches = d.viewType != ChannelView || static_cast<IrcPrivateMessage*>(message)->message().contains(d.session->nickName());
         hilite = true;
         break;
     case IrcMessage::Quit:
@@ -361,7 +352,7 @@ void MessageView::receiveMessage(IrcMessage* message)
     {
         if (matches)
             emit alerted(message);
-        else if (hilite || (!d.connecting && isServerView()))
+        else if (hilite || (!d.connecting && d.viewType == ServerView))
             emit highlighted(message);
 
         appendMessage(formatted);

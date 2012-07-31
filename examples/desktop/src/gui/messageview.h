@@ -30,11 +30,12 @@ class MessageView : public QWidget, public MessageReceiver
     Q_OBJECT
 
 public:
-    MessageView(const QString& receiver, Session* session, QWidget* parent = 0);
+    enum ViewType { ServerView, ChannelView, QueryView };
+
+    MessageView(ViewType type, Session* session, QWidget* parent = 0);
     ~MessageView();
 
-    bool isServerView() const;
-    bool isChannelView() const;
+    ViewType viewType() const;
 
 public slots:
     void showHelp(const QString& text, bool error = false);
@@ -61,6 +62,7 @@ private slots:
 private:
     struct MessageViewData : public Ui::MessageView
     {
+        ViewType viewType;
         bool connecting;
         bool joining;
         Session* session;

@@ -64,7 +64,11 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
     MessageView* view = d.views.value(receiver.toLower());
     if (!view)
     {
-        view = new MessageView(receiver, d.handler.session(), this);
+        MessageView::ViewType type = MessageView::ServerView;
+        if (!d.views.isEmpty())
+            type = session()->isChannel(receiver) ? MessageView::ChannelView : MessageView::QueryView;
+        view = new MessageView(type, d.handler.session(), this);
+        view->setReceiver(receiver);
         connect(view, SIGNAL(alerted(IrcMessage*)), this, SLOT(onTabAlerted(IrcMessage*)));
         connect(view, SIGNAL(highlighted(IrcMessage*)), this, SLOT(onTabHighlighted(IrcMessage*)));
         connect(view, SIGNAL(queried(QString)), this, SLOT(openView(QString)));
@@ -105,7 +109,7 @@ void SessionTabWidget::closeView(int index)
                                     .arg(QApplication::applicationVersion());
         if (indexOf(view) == 0)
             session()->quit(reason);
-        else if (view->isChannelView())
+        else if (view->viewType() == MessageView::ChannelView)
             d.handler.session()->sendCommand(IrcCommand::createPart(view->receiver(), reason));
 
         d.handler.removeReceiver(view->receiver());
@@ -176,7 +180,7 @@ void SessionTabWidget::onTabMenuRequested(int index, const QPoint& pos)
         else
             menu.addAction(tr("Reconnect"), session(), SLOT(reconnect()));
     }
-    if (static_cast<MessageView*>(widget(index))->isChannelView())
+    if (static_cast<MessageView*>(widget(index))->viewType() == MessageView::ChannelView)
         menu.addAction(tr("Part"), this, SLOT(onTabCloseRequested()))->setData(index);
     else
         menu.addAction(tr("Close"), this, SLOT(onTabCloseRequested()))->setData(index);
