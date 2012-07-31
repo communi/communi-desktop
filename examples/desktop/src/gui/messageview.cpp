@@ -60,8 +60,6 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
         d.listView->setModel(new SortedUserModel(session->prefixModes(), d.userModel));
         connect(d.listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClicked(QModelIndex)));
     }
-    d.joining = false;
-    d.connecting = false;
 
     if (!command_model)
     {
@@ -257,7 +255,7 @@ void MessageView::receiveMessage(IrcMessage* message)
         append = d.settings.messages.value(Settings::Joins);
         hilite = d.settings.highlights.value(Settings::Joins);
         if (message->sender().name() == d.session->nickName())
-            d.joining = true;
+            d.receivedCodes.clear();
         break;
     case IrcMessage::Kick:
         append = d.settings.messages.value(Settings::Kicks);
@@ -307,43 +305,40 @@ void MessageView::receiveMessage(IrcMessage* message)
         switch (static_cast<IrcNumericMessage*>(message)->code())
         {
             case Irc::RPL_WELCOME:
-                d.connecting = true;
-                break;
-            case Irc::RPL_ENDOFMOTD:
-                d.connecting = false;
+                d.receivedCodes.clear();
                 break;
             case Irc::RPL_ENDOFNAMES:
-                if (d.joining)
+                if (!d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
                 {
                     appendMessage(d.formatter.formatMessage(tr("! %1 has %2 users").arg(receiver()).arg(d.userModel->rowCount())));
-                    d.joining = false;
                     return;
                 }
                 break;
             case Irc::RPL_NAMREPLY:
-                if (d.joining)
+                if (!d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
                     return;
                 break;
             case Irc::RPL_NOTOPIC:
                 d.topicLabel->setText(tr("-"));
-                if (d.joining)
+                if (!d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
                     return;
                 break;
             case Irc::RPL_TOPIC:
                 d.topicLabel->setText(IrcUtil::messageToHtml(message->parameters().value(2)));
-                if (d.joining)
+                if (!d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
                     return;
                 break;
             case Irc::RPL_TOPICWHOTIME: {
                 QDateTime dateTime = QDateTime::fromTime_t(message->parameters().value(3).toInt());
                 d.topicLabel->setToolTip(tr("Set %1 by %2").arg(dateTime.toString(), message->parameters().value(2)));
-                if (d.joining)
+                if (!d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
                     return;
                 break;
             }
             default:
                 break;
         }
+        d.receivedCodes += static_cast<IrcNumericMessage*>(message)->code();
         break;
     }
 
@@ -352,7 +347,7 @@ void MessageView::receiveMessage(IrcMessage* message)
     {
         if (matches)
             emit alerted(message);
-        else if (hilite || (!d.connecting && d.viewType == ServerView))
+        else if (hilite || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ServerView))
             emit highlighted(message);
 
         appendMessage(formatted);

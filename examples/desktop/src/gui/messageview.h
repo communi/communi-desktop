@@ -63,8 +63,7 @@ private:
     struct MessageViewData : public Ui::MessageView
     {
         ViewType viewType;
-        bool connecting;
-        bool joining;
+        QList<int> receivedCodes;
         Session* session;
         CommandParser parser;
         MessageFormatter formatter;
