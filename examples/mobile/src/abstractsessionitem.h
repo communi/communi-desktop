@@ -94,7 +94,6 @@ protected:
 
 private:
     Session* m_session;
-    QString m_title;
     QString m_subtitle;
     bool m_busy;
     bool m_current;

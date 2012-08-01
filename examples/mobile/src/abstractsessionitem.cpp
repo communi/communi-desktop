@@ -53,14 +53,14 @@ void AbstractSessionItem::setSession(Session *session)
 
 QString AbstractSessionItem::title() const
 {
-    return m_title;
+    return receiver();
 }
 
 void AbstractSessionItem::setTitle(const QString& title)
 {
-    if (m_title != title)
+    if (title != receiver())
     {
-        m_title = title;
+        setReceiver(title);
         emit titleChanged();
     }
 }
@@ -207,7 +207,6 @@ void AbstractSessionItem::receiveMessage(IrcMessage* message)
             {
                 emit namesReceived(m_usermodel->users());
                 m_sent.remove(IrcCommand::Names);
-                m_formatter.formatMessage(message);
                 return;
             }
             break;
@@ -294,7 +293,7 @@ void AbstractSessionItem::receiveMessage(IrcMessage* message)
         }
     }
 
-    const QString formatted = m_formatter.formatMessage(message);
+    const QString formatted = m_formatter.formatMessage(message, m_usermodel);
     if (!formatted.isEmpty())
     {
         const int index = m_messages->rowCount();
