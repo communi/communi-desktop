@@ -134,6 +134,8 @@ QString MessageFormatter::formatMessage(IrcMessage* message, UserModel* userMode
         formatted = formatInviteMessage(static_cast<IrcInviteMessage*>(message));
         break;
     case IrcMessage::Join:
+        if (message->isOwn())
+            d.receivedCodes.clear();
         formatted = formatJoinMessage(static_cast<IrcJoinMessage*>(message));
         break;
     case IrcMessage::Kick:
@@ -260,6 +262,10 @@ QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* message) const
 
 QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
 {
+    if (message->code() == Irc::RPL_WELCOME)
+        d.receivedCodes.clear();
+    d.receivedCodes += message->code();
+
     if (message->code() < 300)
         return tr("[INFO] %1").arg(formatHtml(MID_(1)));
     if (QByteArray(Irc::toString(message->code())).startsWith("ERR_"))
@@ -308,13 +314,20 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
         return tr("! %1 was created %2").arg(P_(1), dateTime.toString());
     }
     case Irc::RPL_NOTOPIC:
+        if (!d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
+            return QString();
         return tr("! %1 has no topic set").arg(P_(1));
     case Irc::RPL_TOPIC:
+        if (!d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
+            return QString();
         return tr("! %1 topic is \"%2\"").arg(P_(1), formatHtml(P_(2)));
-    case Irc::RPL_TOPICWHOTIME: {
-        QDateTime dateTime = QDateTime::fromTime_t(P_(3).toInt());
-        return tr("! %1 topic was set %2 by %3").arg(P_(1), dateTime.toString(), P_(2));
-    }
+    case Irc::RPL_TOPICWHOTIME:
+        if (d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
+        {
+            QDateTime dateTime = QDateTime::fromTime_t(P_(3).toInt());
+            return tr("! %1 topic was set %2 by %3").arg(P_(1), dateTime.toString(), P_(2));
+        }
+        return QString();
     case Irc::RPL_INVITING:
         return tr("! inviting %1 to %2").arg(formatUser(P_(1)), P_(2));
     case Irc::RPL_VERSION:
@@ -325,16 +338,21 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
     case Irc::RPL_NOWAWAY:
         return tr("! %1").arg(P_(1));
 
-    case Irc::RPL_NAMREPLY: {
-        int count = message->parameters().count();
-        QString channel = message->parameters().value(count - 2);
-        QStringList names;
-        foreach (const QString& name, message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts))
-            names += IrcSender(name).name();
-        return tr("! %1 users: %2").arg(channel).arg(names.join(" "));
-    }
+    case Irc::RPL_NAMREPLY:
+        if (d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
+        {
+            int count = message->parameters().count();
+            QString channel = message->parameters().value(count - 2);
+            QStringList names;
+            foreach (const QString& name, message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts))
+                names += IrcSender(name).name();
+            return tr("! %1 users: %2").arg(channel).arg(names.join(" "));
+        }
+        return QString();
 
     case Irc::RPL_ENDOFNAMES:
+        if (d.userModel && !d.receivedCodes.mid(0, d.receivedCodes.count() - 1).contains(Irc::RPL_ENDOFNAMES))
+            return tr("! %1 has %2 users").arg(message->parameters().value(1)).arg(d.userModel->rowCount());
         return QString();
 
     default:

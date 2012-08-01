@@ -254,8 +254,6 @@ void MessageView::receiveMessage(IrcMessage* message)
     case IrcMessage::Join:
         append = d.settings.messages.value(Settings::Joins);
         hilite = d.settings.highlights.value(Settings::Joins);
-        if (message->isOwn())
-            d.receivedCodes.clear();
         break;
     case IrcMessage::Kick:
         append = d.settings.messages.value(Settings::Kicks);
@@ -304,42 +302,20 @@ void MessageView::receiveMessage(IrcMessage* message)
     case IrcMessage::Numeric:
         switch (static_cast<IrcNumericMessage*>(message)->code())
         {
-            case Irc::RPL_WELCOME:
-                d.receivedCodes.clear();
-                break;
-            case Irc::RPL_ENDOFNAMES:
-                if (d.viewType == ChannelView && !d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
-                {
-                    appendMessage(d.formatter.formatMessage(tr("! %1 has %2 users").arg(receiver()).arg(d.userModel->rowCount())));
-                    d.receivedCodes += static_cast<IrcNumericMessage*>(message)->code();
-                    return;
-                }
-                break;
-            case Irc::RPL_NAMREPLY:
-                if (d.viewType == ChannelView && !d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
-                    return;
-                break;
             case Irc::RPL_NOTOPIC:
                 d.topicLabel->setText(tr("-"));
-                if (!d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
-                    return;
                 break;
             case Irc::RPL_TOPIC:
                 d.topicLabel->setText(IrcUtil::messageToHtml(message->parameters().value(2)));
-                if (!d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
-                    return;
                 break;
             case Irc::RPL_TOPICWHOTIME: {
                 QDateTime dateTime = QDateTime::fromTime_t(message->parameters().value(3).toInt());
                 d.topicLabel->setToolTip(tr("Set %1 by %2").arg(dateTime.toString(), message->parameters().value(2)));
-                if (!d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
-                    return;
                 break;
             }
             default:
                 break;
         }
-        d.receivedCodes += static_cast<IrcNumericMessage*>(message)->code();
         break;
     }
 
@@ -348,7 +324,7 @@ void MessageView::receiveMessage(IrcMessage* message)
     {
         if (matches)
             emit alerted(message);
-        else if (hilite || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ServerView))
+        else if (hilite) // TODO: || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ServerView))
             emit highlighted(message);
 
         appendMessage(formatted);

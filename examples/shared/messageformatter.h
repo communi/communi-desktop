@@ -100,6 +100,7 @@ private:
         QString messageFormat;
         QString highlightFormat;
         QHash<QString, QString> prefixedFormats;
+        QList<int> receivedCodes;
     } d;
 };
 
