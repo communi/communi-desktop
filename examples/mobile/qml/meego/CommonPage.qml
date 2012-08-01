@@ -50,7 +50,7 @@ Page {
         id: header
 
         property bool expanded: false
-        property real baseHeight: screen.currentOrientation === Screen.Landscape ? 46 : 72
+        property real baseHeight: screen.currentOrientation === Screen.Landscape ? UI.HTB_LANDSCAPE_HEIGHT : UI.HTB_PORTRAIT_HEIGHT
 
         width: parent.width
         height: baseHeight + (expanded && subtitle ? sublabel.height + UI.DEFAULT_SPACING : 0)

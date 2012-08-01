@@ -113,6 +113,7 @@ CommonPage {
 
     Connections {
         target: modelData
+        ignoreUnknownSignals: true
         onRemoved: page.pageStack.pop()
         onNamesReceived: {
             dialog.setContent(names);
@@ -183,6 +184,7 @@ CommonPage {
 
     TextField {
         id: textField
+        height: screen.currentOrientation === Screen.Landscape ? UI.HTB_LANDSCAPE_HEIGHT : UI.HTB_PORTRAIT_HEIGHT
         visible: false
         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhUrlCharactersOnly
         platformSipAttributes: SipAttributes {
@@ -195,7 +197,6 @@ CommonPage {
             left: parent.left
             right: parent.right
             bottom: parent.bottom
-            margins: UI.PAGE_MARGIN
         }
 
         onActiveFocusChanged: {
@@ -229,6 +230,11 @@ CommonPage {
         style: TextFieldStyle {
             paddingLeft: tabButton.width
             paddingRight: clearButton.width
+            background: "image://theme/meegotouch-messaging-textedit-background"
+            backgroundError: "image://theme/meegotouch-messaging-textedit-background"
+            backgroundDisabled: "image://theme/meegotouch-messaging-textedit-background"
+            backgroundSelected: "image://theme/meegotouch-messaging-textedit-background"
+            backgroundCornerMargin: 1
         }
 
         Image {
@@ -236,8 +242,12 @@ CommonPage {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             source: "../images/tab.png"
+            opacity: tabArea.pressed && tabArea.containsMouse ? UI.DISABLED_OPACITY : 1.0
             MouseArea {
-                anchors.fill: parent
+                id: tabArea
+                width: parent.width
+                height: textField.height
+                anchors.verticalCenter: parent.verticalCenter
                 onClicked: Completer.complete(textField.text, textField.selectionStart, textField.selectionEnd)
             }
         }
@@ -247,8 +257,12 @@ CommonPage {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             source: "../images/clear.png"
+            opacity: clearArea.pressed && clearArea.containsMouse ? UI.DISABLED_OPACITY : 1.0
             MouseArea {
-                anchors.fill: parent
+                id: clearArea
+                width: parent.width
+                height: textField.height
+                anchors.verticalCenter: parent.verticalCenter
                 onClicked: {
                     inputContext.reset();
                     if (textField.text.length)
