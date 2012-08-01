@@ -52,7 +52,7 @@ ListItem {
             role: "Title"
             mode: root.active ? root.mode : "disabled"
             platformInverted: root.platformInverted
-            color: root.highlighted ? "red" : platformStyle.colorNormalLightInverted
+            color: root.highlighted ? "#ff3333" : platformStyle.colorNormalLightInverted
             width: parent.width
         }
 

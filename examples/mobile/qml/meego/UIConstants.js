@@ -22,7 +22,7 @@ var MEDIUM_FONT = 26;
 var SMALL_FONT = 18;
 
 var BACKGROUND_COLOR = "#e0e1e2";
-var HIGHLIGHT_COLOR = "#ff0000";
+var HIGHLIGHT_COLOR = "#ff3333";
 var SEPARATOR_COLOR = "#b2b2b4";
 var INACTIVE_COLOR = "#b2b2b4";
 var TITLE_COLOR = "#282828";

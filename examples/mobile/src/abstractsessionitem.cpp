@@ -26,7 +26,7 @@ AbstractSessionItem::AbstractSessionItem(QObject *parent) :
     m_formatter.setNoticeFormat("style='color:brown'");
     m_formatter.setActionFormat("style='color:darkmagenta'");
     m_formatter.setUnknownFormat("style='color:brown'");
-    m_formatter.setHighlightFormat("style='color:red'");
+    m_formatter.setHighlightFormat("style='color:#ff3333'");
     m_formatter.setTimeStampFormat("style='color:gray; font-size: small'");
 }
 
