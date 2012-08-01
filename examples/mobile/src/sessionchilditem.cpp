@@ -206,5 +206,7 @@ void SessionChildItem::receiveMessage(IrcMessage* message)
             setSubtitle(numMsg->parameters().value(5));
     }
 
-    AbstractSessionItem::receiveMessage(message);
+    const QString formatted = messageFormatter()->formatMessage(message, m_usermodel);
+    if (!formatted.isEmpty())
+        appendMessage(formatted);
 }

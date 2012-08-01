@@ -183,6 +183,11 @@ void AbstractSessionItem::receiveMessage(IrcMessage* message)
         appendMessage(formatted);
 }
 
+const MessageFormatter* AbstractSessionItem::messageFormatter() const
+{
+    return &m_formatter;
+}
+
 void AbstractSessionItem::appendMessage(const QString& message)
 {
     const int index = m_messages->rowCount();

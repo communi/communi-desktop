@@ -80,6 +80,7 @@ signals:
 
 protected:
     void setSession(Session* session);
+    const MessageFormatter* messageFormatter() const;
 
 protected slots:
     void appendMessage(const QString& message);
