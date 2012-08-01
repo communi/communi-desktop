@@ -52,7 +52,6 @@ Page {
         property bool expanded: false
         property real baseHeight: screen.currentOrientation === Screen.Landscape ? 46 : 72
 
-        clip: true
         width: parent.width
         height: baseHeight + (expanded && subtitle ? sublabel.height + UI.DEFAULT_SPACING : 0)
         source: "image://theme/meegotouch-sheet-header-background"
@@ -68,56 +67,57 @@ Page {
 
         MouseArea {
             id: mouseArea
+            clip: true
             anchors.fill: parent
             onClicked: {
                 page.busy = false;
                 header.expanded = !header.expanded;
             }
-        }
 
-        Label {
-            id: label
+            Label {
+                id: label
 
-            elide: Text.ElideRight
-            font.pixelSize: UI.LARGE_FONT
-            verticalAlignment: Text.AlignVCenter
-            color: page.active ? UI.TITLE_COLOR : UI.INACTIVE_COLOR
+                elide: Text.ElideRight
+                font.pixelSize: UI.LARGE_FONT
+                verticalAlignment: Text.AlignVCenter
+                color: page.active ? UI.TITLE_COLOR : UI.INACTIVE_COLOR
 
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: busyIndicator.left
-            anchors.leftMargin: UI.PAGE_MARGIN
-            anchors.rightMargin: UI.DEFAULT_SPACING
-            height: header.baseHeight
-        }
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: busyIndicator.left
+                anchors.leftMargin: UI.PAGE_MARGIN
+                anchors.rightMargin: UI.DEFAULT_SPACING
+                height: header.baseHeight
+            }
 
-        BusyIndicator {
-            id: busyIndicator
+            BusyIndicator {
+                id: busyIndicator
 
-            running: page.busy
-            visible: page.busy
+                running: page.busy
+                visible: page.busy
 
-            anchors.right: parent.right
-            anchors.rightMargin: UI.PAGE_MARGIN
-            anchors.verticalCenter: label.verticalCenter
-        }
+                anchors.right: parent.right
+                anchors.rightMargin: UI.PAGE_MARGIN
+                anchors.verticalCenter: label.verticalCenter
+            }
 
-        Image {
-            source: "image://theme/icon-m-common-expand"
-            rotation: header.expanded ? 180 : 0
-            anchors.centerIn: busyIndicator
-            visible: page.subtitle && mouseArea.pressed && mouseArea.containsMouse
-        }
+            Image {
+                source: "image://theme/icon-m-common-expand"
+                rotation: header.expanded ? 180 : 0
+                anchors.centerIn: busyIndicator
+                visible: page.subtitle && mouseArea.pressed && mouseArea.containsMouse
+            }
 
-        Label {
-            id: sublabel
+            Label {
+                id: sublabel
 
-            font.pixelSize: UI.SMALL_FONT
-            color: page.active ? UI.SUBTITLE_COLOR : UI.INACTIVE_COLOR
+                font.pixelSize: UI.SMALL_FONT
+                color: page.active ? UI.SUBTITLE_COLOR : UI.INACTIVE_COLOR
 
-            anchors.top: label.bottom
-            anchors.left: label.left
-            anchors.right: busyIndicator.right
+                anchors.top: label.bottom
+                anchors.left: label.left
+                anchors.right: busyIndicator.right
+            }
         }
     }
 }
