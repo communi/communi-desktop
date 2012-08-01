@@ -345,7 +345,7 @@ CommonPage {
 
         MenuLayout {
             MenuItem {
-                text: listView.currentChildItem !== null && listView.currentChildItem.channel && listView.currentSession.connected ? qsTr("Part") : qsTr("Close")
+                text: listView.currentChildItem && listView.currentChildItem.channel && listView.currentSession && listView.currentSession.connected ? qsTr("Part") : qsTr("Close")
                 onClicked: {
                     var item = listView.currentChildItem;
                     if (item.channel) {

@@ -52,7 +52,7 @@ CommonSheet {
                 Keys.onReturnPressed: passwordField.forceActiveFocus()
             }
             Label {
-                text: qsTr("%1 supports channel types: %2").arg(session.network).arg(session.channelTypes)
+                text: session ? qsTr("%1 supports channel types: %2").arg(session.network).arg(session.channelTypes) : ""
                 font.pixelSize: UI.SMALL_FONT
                 font.weight: Font.Light
                 color: UI.SUBTITLE_COLOR
