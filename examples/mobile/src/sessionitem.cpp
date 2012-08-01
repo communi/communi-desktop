@@ -14,10 +14,8 @@
 
 #include "sessionitem.h"
 #include "sessionchilditem.h"
-#include <QApplication>
-#include <IrcSession>
+#include "session.h"
 #include <IrcMessage>
-#include <IrcCommand>
 #include <Irc>
 
 SessionItem::SessionItem(Session* session) : AbstractSessionItem(session)

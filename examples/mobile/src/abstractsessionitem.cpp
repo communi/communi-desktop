@@ -13,15 +13,12 @@
 */
 
 #include "abstractsessionitem.h"
-#include "usermodel.h"
-#include <QDateTime>
-#include <IrcSession>
-#include <IrcMessage>
-#include <Irc>
+#include "commandparser.h"
+#include "session.h"
 
 AbstractSessionItem::AbstractSessionItem(QObject *parent) :
     QObject(parent), m_session(0), m_busy(false), m_current(false),
-    m_highlighted(false), m_unread(0), m_unseen(0), m_usermodel(0)
+    m_highlighted(false), m_unread(0), m_unseen(0)
 {
     m_messages = new QStringListModel(this);
     m_formatter.setTimeStamp(true);
@@ -36,7 +33,6 @@ AbstractSessionItem::AbstractSessionItem(QObject *parent) :
 AbstractSessionItem::~AbstractSessionItem()
 {
     emit removed();
-    delete m_usermodel;
 }
 
 Session* AbstractSessionItem::session() const
@@ -48,7 +44,6 @@ void AbstractSessionItem::setSession(Session *session)
 {
     m_session = session;
     m_formatter.setHighlights(QStringList() << session->nickName());
-    m_usermodel = new UserModel(session);
 }
 
 QString AbstractSessionItem::title() const
@@ -156,11 +151,6 @@ void AbstractSessionItem::setUnseenIndex(int index)
     }
 }
 
-QStringList AbstractSessionItem::users() const
-{
-    return m_usermodel->users();
-}
-
 QObject* AbstractSessionItem::messages() const
 {
     return m_messages;
@@ -168,13 +158,8 @@ QObject* AbstractSessionItem::messages() const
 
 bool AbstractSessionItem::hasUser(const QString& user) const
 {
-    return m_usermodel->hasUser(user);
-}
-
-void AbstractSessionItem::sendUiCommand(IrcCommand *command)
-{
-    m_sent.insert(command->type());
-    m_session->sendUiCommand(command);
+    Q_UNUSED(user);
+    return false;
 }
 
 void AbstractSessionItem::clear()
@@ -182,112 +167,25 @@ void AbstractSessionItem::clear()
     m_messages->setStringList(QStringList());
 }
 
+QStringList AbstractSessionItem::completions(const QString& prefix, const QString& word) const
+{
+    if (word == "/")
+        return CommandParser::availableCommands();
+    else if (prefix == "/")
+        return CommandParser::availableCommands().filter(QRegExp("^"+word+".*", Qt::CaseInsensitive));
+    return QStringList();
+}
+
 void AbstractSessionItem::receiveMessage(IrcMessage* message)
 {
-    if (m_usermodel)
-        m_usermodel->processMessage(message, receiver());
-
-    if (message->type() == IrcMessage::Numeric)
-    {
-        IrcNumericMessage* numeric = static_cast<IrcNumericMessage*>(message);
-        switch (numeric->code())
-        {
-        case Irc::RPL_ENDOFNAMES:
-            if (m_sent.contains(IrcCommand::Names))
-            {
-                emit namesReceived(m_usermodel->users());
-                m_sent.remove(IrcCommand::Names);
-                return;
-            }
-            break;
-        case Irc::RPL_WHOISUSER:
-            if (m_sent.contains(IrcCommand::Whois))
-            {
-                m_whois.append(tr("Ident: %1").arg(message->parameters().value(2)));
-                m_whois.append(tr("Host: %1").arg(message->parameters().value(3)));
-                m_whois.append(tr("Name: %1").arg(message->parameters().value(5)));
-                return;
-            }
-            break;
-        case Irc::RPL_WHOISSERVER:
-            if (m_sent.contains(IrcCommand::Whois))
-            {
-                m_whois.append(tr("Server: %1 (%2)").arg(message->parameters().value(2), message->parameters().value(3)));
-                return;
-            }
-            break;
-        case Irc::RPL_WHOISOPERATOR:
-            if (m_sent.contains(IrcCommand::Whois))
-            {
-                m_whois.append(tr("IRC operator"));
-                return;
-            }
-            break;
-        case Irc::RPL_WHOISACCOUNT:
-            if (m_sent.contains(IrcCommand::Whois))
-            {
-                m_whois.append(tr("Logged in as: %1").arg(message->parameters().value(2)));
-                return;
-            }
-            break;
-        case Irc::RPL_WHOISREGNICK:
-            if (m_sent.contains(IrcCommand::Whois))
-            {
-                m_whois.append(tr("Registered nick"));
-                return;
-            }
-            break;
-        case Irc::RPL_WHOISSECURE:
-            if (m_sent.contains(IrcCommand::Whois))
-            {
-                m_whois.append(tr("Secure connection"));
-                return;
-            }
-            break;
-        case Irc::RPL_WHOISIDLE:
-            if (m_sent.contains(IrcCommand::Whois))
-            {
-                QDateTime signon = QDateTime::fromTime_t(message->parameters().value(3).toInt());
-                QTime idle = QTime().addSecs(message->parameters().value(2).toInt());
-                m_whois.append(tr("Connected: %1").arg(signon.toString()));
-                m_whois.append(tr("Idle: %1").arg(idle.toString()));
-                return;
-            }
-            break;
-        case Irc::RPL_WHOISCHANNELS:
-            if (m_sent.contains(IrcCommand::Whois))
-            {
-                m_whois.append(tr("Channels: %1").arg(message->parameters().value(2)));
-                return;
-            }
-            break;
-        case Irc::RPL_WHOISHOST:
-        case Irc::RPL_WHOISMODES:
-            if (m_sent.contains(IrcCommand::Whois))
-            {
-                return;
-            }
-            break;
-        case Irc::RPL_ENDOFWHOIS:
-            if (m_sent.contains(IrcCommand::Whois))
-            {
-                emit whoisReceived(m_whois);
-                m_sent.remove(IrcCommand::Whois);
-                m_whois.clear();
-            }
-        case Irc::RPL_WHOISHELPOP:
-        case Irc::RPL_WHOISSPECIAL:
-            return;
-        default:
-            break;
-        }
-    }
-
-    const QString formatted = m_formatter.formatMessage(message, m_usermodel);
+    const QString formatted = m_formatter.formatMessage(message);
     if (!formatted.isEmpty())
-    {
-        const int index = m_messages->rowCount();
-        m_messages->insertRow(index);
-        m_messages->setData(m_messages->index(index), formatted);
-    }
+        appendMessage(formatted);
+}
+
+void AbstractSessionItem::appendMessage(const QString& message)
+{
+    const int index = m_messages->rowCount();
+    m_messages->insertRow(index);
+    m_messages->setData(m_messages->index(index), message);
 }

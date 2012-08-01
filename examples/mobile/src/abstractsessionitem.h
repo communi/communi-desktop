@@ -19,11 +19,9 @@
 #include <QStringListModel>
 #include "messageformatter.h"
 #include "messagereceiver.h"
-#include <IrcCommand>
-#include "session.h"
 
 class IrcMessage;
-class UserModel;
+class Session;
 
 class AbstractSessionItem : public QObject, public MessageReceiver
 {
@@ -40,7 +38,7 @@ class AbstractSessionItem : public QObject, public MessageReceiver
 
 public:
     explicit AbstractSessionItem(QObject *parent = 0);
-    ~AbstractSessionItem();
+    virtual ~AbstractSessionItem();
 
     Session* session() const;
 
@@ -52,10 +50,12 @@ public:
     int unreadCount() const;
     int unseenIndex() const;
 
-    QStringList users() const;
     QObject* messages() const;
 
-    virtual void updateCurrent(AbstractSessionItem* item) { Q_UNUSED(item) };
+    virtual QStringList completions(const QString& prefix, const QString& word) const;
+    virtual void updateCurrent(AbstractSessionItem* item) = 0;
+    virtual void receiveMessage(IrcMessage* message);
+    virtual bool hasUser(const QString& user) const;
 
 public slots:
     void setTitle(const QString& title);
@@ -65,7 +65,6 @@ public slots:
     void setHighlighted(bool highlighted);
     void setUnreadCount(int count);
     void setUnseenIndex(int index);
-    void sendUiCommand(IrcCommand* command);
     void clear();
 
 signals:
@@ -78,15 +77,12 @@ signals:
     void unreadCountChanged();
     void unseenIndexChanged();
     void removed();
-    void namesReceived(const QStringList& names);
-    void whoisReceived(const QStringList& whois);
-
-protected slots:
-    virtual void receiveMessage(IrcMessage* message);
-    virtual bool hasUser(const QString& user) const;
 
 protected:
     void setSession(Session* session);
+
+protected slots:
+    void appendMessage(const QString& message);
 
 private:
     Session* m_session;
@@ -94,13 +90,10 @@ private:
     bool m_busy;
     bool m_current;
     bool m_highlighted;
-    QStringList m_whois;
     QStringListModel* m_messages;
     MessageFormatter m_formatter;
     int m_unread;
     int m_unseen;
-    QSet<IrcCommand::Type> m_sent;
-    UserModel* m_usermodel;
 };
 
 #endif // ABSTRACTSESSIONITEM_H

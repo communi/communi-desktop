@@ -19,6 +19,8 @@
 
 class SessionItem;
 class IrcMessage;
+class IrcCommand;
+class UserModel;
 
 class SessionChildItem : public AbstractSessionItem
 {
@@ -28,21 +30,32 @@ class SessionChildItem : public AbstractSessionItem
 
 public:
     explicit SessionChildItem(SessionItem* parent);
+    virtual ~SessionChildItem();
 
     bool isChannel() const;
+    QStringList users() const;
     SessionItem* sessionItem() const;
 
+    QStringList completions(const QString& prefix, const QString& word) const;
     void updateCurrent(AbstractSessionItem* item);
+
+public slots:
+    void sendUiCommand(IrcCommand* command);
 
 signals:
     void channelChanged();
     void alerted(const QString& text);
+    void namesReceived(const QStringList& names);
+    void whoisReceived(const QStringList& whois);
 
 protected slots:
     void receiveMessage(IrcMessage* message);
 
 private:
     SessionItem* m_parent;
+    QStringList m_whois;
+    UserModel* m_usermodel;
+    QSet<int> m_sent;
 };
 
 #endif // SESSIONCHILDITEM_H

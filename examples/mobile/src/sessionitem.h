@@ -17,7 +17,9 @@
 
 #include "abstractsessionitem.h"
 #include "messagehandler.h"
-class IrcSession;
+
+class Session;
+class IrcMessage;
 
 class SessionItem : public AbstractSessionItem
 {
