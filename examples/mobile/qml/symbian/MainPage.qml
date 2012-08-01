@@ -136,7 +136,7 @@ CommonPage {
         target: SessionManager
         onAlert: {
             var banner = bannerComponent.createObject(pageStack.currentPage);
-            banner.text = item.alertText;
+            banner.text = text;
             banner.item = item;
             banner.open();
             if (root.effect)

@@ -141,7 +141,7 @@ CommonPage {
         target: SessionManager
         onAlert: {
             var banner = bannerComponent.createObject(pageStack.currentPage.header);
-            banner.text = item.alertText;
+            banner.text = text;
             banner.item = item;
             banner.show();
             if (Qt.application.active)

@@ -27,7 +27,7 @@ SessionManager::SessionManager(QDeclarativeContext* context) : m_context(context
 void SessionManager::addSession(Session* session)
 {
     SessionItem* item = new SessionItem(session);
-    connect(item, SIGNAL(alert(QObject*)), SIGNAL(alert(QObject*)));
+    connect(item, SIGNAL(childAlerted(QObject*,QString)), SIGNAL(alert(QObject*,QString)));
     connect(item, SIGNAL(channelKeyRequired(Session*,QString)), SIGNAL(channelKeyRequired(Session*,QString)));
     m_items.append(item);
     updateModel();

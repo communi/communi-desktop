@@ -156,16 +156,6 @@ void AbstractSessionItem::setUnseenIndex(int index)
     }
 }
 
-QString AbstractSessionItem::alertText() const
-{
-    return m_alertText;
-}
-
-void AbstractSessionItem::setAlertText(const QString& text)
-{
-    m_alertText = text;
-}
-
 QStringList AbstractSessionItem::users() const
 {
     return m_usermodel->users();

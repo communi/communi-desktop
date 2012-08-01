@@ -72,7 +72,7 @@ QObject* SessionItem::addChild(const QString& name)
     if (!child)
     {
         child = new SessionChildItem(this);
-        connect(child, SIGNAL(alert(QObject*)), SIGNAL(alert(QObject*)));
+        connect(child, SIGNAL(alerted(QString)), SLOT(onChildAlerted(QString)));
         child->setTitle(name);
         if (child->isChannel())
             session()->addChannel(name);
@@ -143,4 +143,9 @@ void SessionItem::updateState()
 {
     IrcSession* session = m_handler.session();
     setBusy(session->isActive() && !session->isConnected());
+}
+
+void SessionItem::onChildAlerted(const QString &text)
+{
+    emit childAlerted(sender(), text);
 }

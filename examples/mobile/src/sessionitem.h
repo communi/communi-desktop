@@ -40,6 +40,7 @@ public slots:
 signals:
     void errorChanged();
     void childItemsChanged();
+    void childAlerted(QObject* child, const QString& text);
     void channelKeyRequired(Session* session, const QString& channel);
 
 protected slots:
@@ -47,6 +48,7 @@ protected slots:
 
 private slots:
     void updateState();
+    void onChildAlerted(const QString& text);
 
 private:
     QObjectList m_children;

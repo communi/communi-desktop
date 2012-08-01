@@ -36,6 +36,7 @@ public:
 
 signals:
     void channelChanged();
+    void alerted(const QString& text);
 
 protected slots:
     void receiveMessage(IrcMessage* message);

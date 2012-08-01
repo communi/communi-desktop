@@ -34,11 +34,13 @@ public slots:
     void save();
 
 signals:
-    void alert(QObject* item);
+    void alert(QObject* item, const QString& text);
     void channelKeyRequired(Session* session, const QString& channel);
 
-private:
+private slots:
     void updateModel();
+
+private:
     QObjectList m_items;
     QDeclarativeContext* m_context;
 };
