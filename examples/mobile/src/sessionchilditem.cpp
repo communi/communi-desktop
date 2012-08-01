@@ -17,6 +17,7 @@
 #include "usermodel.h"
 #include "session.h"
 #include <QDateTime>
+#include <ircutil.h>
 #include <irc.h>
 
 SessionChildItem::SessionChildItem(SessionItem* parent) :
@@ -200,9 +201,10 @@ void SessionChildItem::receiveMessage(IrcMessage* message)
     else if (message->type() == IrcMessage::Numeric)
     {
         IrcNumericMessage* numMsg = static_cast<IrcNumericMessage*>(message);
-        if (isChannel() && numMsg->code() == Irc::RPL_TOPIC)
+        if (isChannel() && numMsg->code() == Irc::RPL_TOPIC) {
             setSubtitle(numMsg->parameters().value(2));
-        else if (!isChannel() && numMsg->code() == Irc::RPL_WHOISUSER)
+            setDescription(IrcUtil::messageToHtml(subtitle()));
+        } else if (!isChannel() && numMsg->code() == Irc::RPL_WHOISUSER)
             setSubtitle(numMsg->parameters().value(5));
     }
 

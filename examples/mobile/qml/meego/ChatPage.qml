@@ -43,7 +43,7 @@ CommonPage {
 
     active: modelData !== null && modelData.session.active
     title: modelData ? modelData.title : ""
-    subtitle: modelData ? modelData.subtitle : ""
+    subtitle: modelData ? modelData.description : ""
     tools: ToolBarLayout {
         ToolIcon {
             iconId: "toolbar-back"

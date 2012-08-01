@@ -74,6 +74,20 @@ void AbstractSessionItem::setSubtitle(const QString& subtitle)
     }
 }
 
+QString AbstractSessionItem::description() const
+{
+    return m_description;
+}
+
+void AbstractSessionItem::setDescription(const QString& description)
+{
+    if (m_description != description)
+    {
+        m_description = description;
+        emit descriptionChanged();
+    }
+}
+
 bool AbstractSessionItem::isBusy() const
 {
     return m_busy;

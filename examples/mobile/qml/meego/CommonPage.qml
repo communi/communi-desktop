@@ -117,6 +117,11 @@ Page {
                 anchors.top: label.bottom
                 anchors.left: label.left
                 anchors.right: busyIndicator.right
+
+                onLinkActivated: {
+                    page.busy = true;
+                    Qt.openUrlExternally(link);
+                }
             }
         }
     }
