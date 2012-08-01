@@ -21,8 +21,9 @@ Page {
     id: page
 
     property alias title: label.text
+    property alias subtitle: sublabel.text
     property alias header: header
-    property alias busy: indicator.running
+    property bool busy: false
     property bool active: true
     default property alias content: content.data
 
@@ -48,9 +49,15 @@ Page {
     BorderImage {
         id: header
 
+        property bool expanded: false
+        property real baseHeight: screen.currentOrientation === Screen.Landscape ? 46 : 72
+
+        clip: true
         width: parent.width
-        height: screen.currentOrientation === Screen.Landscape ? 46 : 72
+        height: baseHeight + (expanded && subtitle ? sublabel.height + UI.DEFAULT_SPACING : 0)
         source: "image://theme/meegotouch-sheet-header-background"
+
+        Behavior on height { NumberAnimation { duration: 100 } }
 
         border {
             top: 10
@@ -60,59 +67,57 @@ Page {
         }
 
         MouseArea {
+            id: mouseArea
             anchors.fill: parent
+            onClicked: {
+                page.busy = false;
+                header.expanded = !header.expanded;
+            }
         }
 
-        Row {
-            spacing: UI.DEFAULT_SPACING
-            anchors {
-                fill: parent
-                leftMargin: UI.PAGE_MARGIN
-                rightMargin: UI.PAGE_MARGIN
-            }
+        Label {
+            id: label
 
-            Label {
-                id: label
+            elide: Text.ElideRight
+            font.pixelSize: UI.LARGE_FONT
+            verticalAlignment: Text.AlignVCenter
+            color: page.active ? UI.TITLE_COLOR : UI.INACTIVE_COLOR
 
-                elide: Text.ElideRight
-                font.pixelSize: UI.LARGE_FONT
-                color: page.active ? UI.TITLE_COLOR : UI.INACTIVE_COLOR
-                anchors.verticalCenter: parent.verticalCenter
-                width: parent.width - indicator.width - UI.DEFAULT_SPACING
-            }
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: busyIndicator.left
+            anchors.leftMargin: UI.PAGE_MARGIN
+            anchors.rightMargin: UI.DEFAULT_SPACING
+            height: header.baseHeight
+        }
 
-            BusyIndicator {
-                id: indicator
-                visible: running
-                anchors.verticalCenter: parent.verticalCenter
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: indicator.busy = false
-                }
-            }
+        BusyIndicator {
+            id: busyIndicator
 
-//            Image {
-//                id: indicator
-//                width: 32
-//                height: 32
-//                visible: SessionModel.length > 0
-//                source: mouseArea.pressed ? "image://theme/icon-m-common-gray"
-//                      : SessionManager.online ? "image://theme/icon-m-presence-online"
-//                      : SessionManager.offline ? "image://theme/icon-m-presence-offline"
-//                      : "image://theme/icon-m-presence-unknown"
-//                anchors.verticalCenter: parent.verticalCenter
+            running: page.busy
+            visible: page.busy
 
-//                MouseArea {
-//                    id: mouseArea
-//                    width: parent.width * 2
-//                    height: header.height
-//                    anchors.centerIn: parent
-//                    onClicked: {
-//                        if (SessionManager.offline)
-//                            SessionManager.ensureNetwork();
-//                    }
-//                }
-//            }
+            anchors.right: parent.right
+            anchors.rightMargin: UI.PAGE_MARGIN
+            anchors.verticalCenter: label.verticalCenter
+        }
+
+        Image {
+            source: "image://theme/icon-m-common-expand"
+            rotation: header.expanded ? 180 : 0
+            anchors.centerIn: busyIndicator
+            visible: page.subtitle && mouseArea.pressed && mouseArea.containsMouse
+        }
+
+        Label {
+            id: sublabel
+
+            font.pixelSize: UI.SMALL_FONT
+            color: page.active ? UI.SUBTITLE_COLOR : UI.INACTIVE_COLOR
+
+            anchors.top: label.bottom
+            anchors.left: label.left
+            anchors.right: busyIndicator.right
         }
     }
 }
