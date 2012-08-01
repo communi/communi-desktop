@@ -88,7 +88,19 @@ void SessionChildItem::receiveMessage(IrcMessage* message)
                 return;
             }
             break;
+        case Irc::RPL_TOPIC:
+            if (isChannel())
+            {
+                setSubtitle(message->parameters().value(2));
+                setDescription(IrcUtil::messageToHtml(subtitle()));
+            }
+            break;
         case Irc::RPL_WHOISUSER:
+            if (!isChannel())
+            {
+                setSubtitle(message->parameters().value(5));
+                setDescription(IrcUtil::messageToHtml(subtitle()));
+            }
             if (m_sent.contains(IrcCommand::Whois))
             {
                 m_whois.append(tr("Ident: %1").arg(message->parameters().value(2)));
@@ -197,15 +209,6 @@ void SessionChildItem::receiveMessage(IrcMessage* message)
 
         if (!isCurrent())
             setUnreadCount(unreadCount() + 1);
-    }
-    else if (message->type() == IrcMessage::Numeric)
-    {
-        IrcNumericMessage* numMsg = static_cast<IrcNumericMessage*>(message);
-        if (isChannel() && numMsg->code() == Irc::RPL_TOPIC) {
-            setSubtitle(numMsg->parameters().value(2));
-            setDescription(IrcUtil::messageToHtml(subtitle()));
-        } else if (!isChannel() && numMsg->code() == Irc::RPL_WHOISUSER)
-            setSubtitle(numMsg->parameters().value(5));
     }
 
     const QString formatted = messageFormatter()->formatMessage(message, m_usermodel);
