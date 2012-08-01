@@ -38,7 +38,6 @@ signals:
 
 private:
     static QString findWord(const QString& text, int selStart, int selEnd, int* wordStart, int* wordEnd);
-    static QStringList filterList(const QStringList& list, const QString& prefix);
 
     AbstractSessionItem* m_item;
     QStringList m_candidates;

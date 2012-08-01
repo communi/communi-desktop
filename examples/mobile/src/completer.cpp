@@ -13,7 +13,6 @@
 */
 
 #include "completer.h"
-#include "commandparser.h"
 #include "abstractsessionitem.h"
 #include <QTextBoundaryFinder>
 
@@ -37,16 +36,12 @@ void Completer::complete(const QString& text, int selStart, int selEnd)
         return;
 
     int wordStart = 0, wordEnd = 0;
-    const QString word = findWord(text, selStart, selEnd, &wordStart, &wordEnd);
+    QString word = findWord(text, selStart, selEnd, &wordStart, &wordEnd);
+    QString prefix;
+    if (wordStart > 0)
+        prefix = text.mid(0, wordStart);
 
-    QStringList candidates;
-    if (word == "/")
-        candidates = CommandParser::availableCommands();
-    else if (wordStart > 0 && text.at(wordStart - 1) == '/')
-        candidates = filterList(CommandParser::availableCommands(), word);
-    else
-        candidates = filterList(m_item->users(), word);
-
+    QStringList candidates = m_item->completions(prefix, word);
     if (m_candidates != candidates)
     {
         m_current = 0;
@@ -83,10 +78,4 @@ QString Completer::findWord(const QString& text, int selStart, int selEnd, int* 
     *wordStart = finder.position();
     *wordEnd = (selStart == selEnd) ? finder.toNextBoundary() : selStart;
     return text.mid(*wordStart, *wordEnd - *wordStart);
-}
-
-QStringList Completer::filterList(const QStringList& list, const QString& prefix)
-{
-    QRegExp rx("^"+prefix+".*", Qt::CaseInsensitive);
-    return list.filter(rx);
 }
