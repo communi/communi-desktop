@@ -1,3 +1,14 @@
+communi (1.1.10) unstable; urgency=low
+
+  * Tap channel header to show/hide topic
+  * Tap query header to show/hide real name (which is
+    only available after whois...)
+  * Improved message formatting for better readability
+  * New text input field visuals and larger touch area
+    or nick/command completion and clear buttons
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Thu, 2 Aug 2012 00:42:31 +0200
+
 communi (1.1.9) unstable; urgency=low
 
   * Fixed issue #13: Communi 1.1.8 Debian control file does not
