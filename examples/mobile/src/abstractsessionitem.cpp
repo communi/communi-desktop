@@ -47,7 +47,6 @@ Session* AbstractSessionItem::session() const
 void AbstractSessionItem::setSession(Session *session)
 {
     m_session = session;
-    m_formatter.setPrefixes(session->prefixModes());
     m_formatter.setHighlights(QStringList() << session->nickName());
     m_usermodel = new UserModel(session);
 }
@@ -165,6 +164,11 @@ QString AbstractSessionItem::alertText() const
 void AbstractSessionItem::setAlertText(const QString& text)
 {
     m_alertText = text;
+}
+
+QStringList AbstractSessionItem::users() const
+{
+    return m_usermodel->users();
 }
 
 QObject* AbstractSessionItem::messages() const

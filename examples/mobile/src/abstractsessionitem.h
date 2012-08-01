@@ -54,6 +54,7 @@ public:
     int unseenIndex() const;
     QString alertText() const;
 
+    QStringList users() const;
     QObject* messages() const;
 
     virtual void updateCurrent(AbstractSessionItem* item) { Q_UNUSED(item) };
