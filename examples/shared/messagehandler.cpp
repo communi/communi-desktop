@@ -283,7 +283,7 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
 
 void MessageHandler::handlePartMessage(IrcPartMessage* message)
 {
-    if (message->sender().name() == d.session->nickName())
+    if (message->isOwn())
         removeReceiver(message->channel());
     else
         sendMessage(message, message->channel());

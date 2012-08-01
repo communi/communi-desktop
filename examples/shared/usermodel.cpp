@@ -174,14 +174,14 @@ void UserModel::processMessage(IrcMessage* message, const QString& channel)
     }
     else if (message->type() == IrcMessage::Join)
     {
-        if (message->sender().name() == d.session->nickName())
+        if (message->isOwn())
             clearUsers();
         else
             addUser(message->sender().name());
     }
     else if (message->type() == IrcMessage::Part)
     {
-        if (message->sender().name() == d.session->nickName())
+        if (message->isOwn())
             clearUsers();
         else
             removeUser(message->sender().name());

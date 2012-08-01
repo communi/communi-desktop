@@ -352,12 +352,12 @@ void Session::handleMessage(IrcMessage* message)
 
     if (message->type() == IrcMessage::Join)
     {
-        if (message->sender().name() == nickName())
+        if (message->isOwn())
             addChannel(static_cast<IrcJoinMessage*>(message)->channel());
     }
     else if (message->type() == IrcMessage::Part)
     {
-        if (message->sender().name() == nickName())
+        if (message->isOwn())
             removeChannel(static_cast<IrcPartMessage*>(message)->channel());
     }
     else if (message->type() == IrcMessage::Pong)

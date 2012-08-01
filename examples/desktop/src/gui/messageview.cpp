@@ -254,7 +254,7 @@ void MessageView::receiveMessage(IrcMessage* message)
     case IrcMessage::Join:
         append = d.settings.messages.value(Settings::Joins);
         hilite = d.settings.highlights.value(Settings::Joins);
-        if (message->sender().name() == d.session->nickName())
+        if (message->isOwn())
             d.receivedCodes.clear();
         break;
     case IrcMessage::Kick:
