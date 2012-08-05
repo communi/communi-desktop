@@ -43,6 +43,7 @@ CommonPage {
 
     active: modelData !== null && modelData.session.active
     title: modelData ? modelData.title : ""
+    subtitle: modelData ? modelData.description : ""
     tools: ToolBarLayout {
         ToolButton {
             id: backButton
