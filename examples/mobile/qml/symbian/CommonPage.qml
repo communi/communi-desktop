@@ -68,7 +68,7 @@ Page {
         property real baseHeight: implicitHeight //screen.currentOrientation === Screen.Landscape ? UI.HTB_LANDSCAPE_HEIGHT : UI.HTB_PORTRAIT_HEIGHT
 
         width: parent.width
-        height: baseHeight + (expanded && subtitle ? subtitle.height + UI.DEFAULT_SPACING : 0)
+        height: baseHeight + (expanded && page.subtitle ? subtitle.height + UI.DEFAULT_SPACING : 0)
         source: privateStyle.imagePath("qtg_fr_toolbar", true)
 
         Behavior on height { NumberAnimation { duration: 100 } }
@@ -83,6 +83,7 @@ Page {
         MouseArea {
             id: mouseArea
             clip: true
+            enabled: page.subtitle
             anchors.fill: parent
             onClicked: {
                 page.busy = false;
@@ -124,11 +125,10 @@ Page {
             }
 
             Image {
-                source: privateStyle.imagePath("toolbar-next", true)
-                rotation: header.expanded ? 270 : 90
+                source: header.expanded ? "../images/up-arrow.png" : "../images/down-arrow.png"
                 anchors.centerIn: indicator
                 visible: page.subtitle && mouseArea.pressed && mouseArea.containsMouse
-                width: 16; height: 16
+                smooth: true
             }
 
             ListItemText {
