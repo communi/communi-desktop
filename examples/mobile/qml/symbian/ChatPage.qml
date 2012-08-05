@@ -132,6 +132,7 @@ CommonPage {
 
     Connections {
         target: modelData
+        ignoreUnknownSignals: true
         onRemoved: page.pageStack.pop()
         onNamesReceived: {
             dialog.setContent(names);
