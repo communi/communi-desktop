@@ -107,7 +107,7 @@ CommonPage {
         lister.busy = false;
     }
 
-    SelectionDialog {
+    ListDialog {
         id: dialog
         model: ListModel { }
         property bool names: false
