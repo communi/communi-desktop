@@ -2,7 +2,7 @@
 &EN
 
 ; SIS header: name, uid, version
-#{"Communi"},(0xe0062463),1,1,3
+#{"Communi"},(0xe0062463),1,1,4
 
 ; Default localized vendor name
 %{"J-P Nurmi"}
@@ -38,6 +38,7 @@
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/ConnectionDialog.qml" - "!:\private\e0062463\qml\symbian\ConnectionDialog.qml"
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/Feedback.qml" - "!:\private\e0062463\qml\symbian\Feedback.qml"
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/ListDelegate.qml" - "!:\private\e0062463\qml\symbian\ListDelegate.qml"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/ListDialog.qml" - "!:\private\e0062463\qml\symbian\ListDialog.qml"
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/main.qml" - "!:\private\e0062463\qml\symbian\main.qml"
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/MainPage.qml" - "!:\private\e0062463\qml\symbian\MainPage.qml"
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/NameDialog.qml" - "!:\private\e0062463\qml\symbian\NameDialog.qml"
@@ -48,6 +49,7 @@
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/clear.png" - "!:\private\e0062463\qml\images\clear.png"
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/connected.png" - "!:\private\e0062463\qml\images\connected.png"
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/disconnected.png" - "!:\private\e0062463\qml\images\disconnected.png"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/down-arrow.png" - "!:\private\e0062463\qml\images\down-arrow.png"
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/left-arrow.png" - "!:\private\e0062463\qml\images\left-arrow.png"
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/query.png" - "!:\private\e0062463\qml\images\query.png"
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/right-arrow.png" - "!:\private\e0062463\qml\images\right-arrow.png"
@@ -55,3 +57,4 @@
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/squircle.png" - "!:\private\e0062463\qml\images\squircle.png"
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/tab.png" - "!:\private\e0062463\qml\images\tab.png"
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/unknown.png" - "!:\private\e0062463\qml\images\unknown.png"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/up-arrow.png" - "!:\private\e0062463\qml\images\up-arrow.png"
