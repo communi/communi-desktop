@@ -57,8 +57,8 @@ Page {
             top: header.bottom
             left: parent.left
             right: parent.right
-            bottom: parent.bottom
         }
+        height: parent.height - header.height - (inputContext.visible ? inputContext.height : 0)
     }
 
     BorderImage {
