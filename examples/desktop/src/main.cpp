@@ -35,25 +35,40 @@ static void setApplicationProxy(QUrl url)
 int main (int argc, char* argv[])
 {
     Application app(argc, argv);
-
+    MainWindow window;
     QStringList args = app.arguments();
+
+    QUrl proxy;
     int index = args.indexOf("-proxy");
     if (index != -1)
-        setApplicationProxy(QUrl(args.value(index + 1)));
+        proxy = QUrl(args.value(index + 1));
     else
-        setApplicationProxy(QUrl(qgetenv("http_proxy")));
+        proxy = QUrl(qgetenv("http_proxy"));
+    if (!proxy.isEmpty())
+        setApplicationProxy(proxy);
 
+    QByteArray encoding;
     index = args.indexOf("-encoding");
     if (index != -1)
-        Application::setEncoding(args.value(index + 1).toLocal8Bit());
+        encoding = args.value(index + 1).toLocal8Bit();
+    else if (!qgetenv("COMMUNI_ENCODING").isEmpty())
+        encoding = qgetenv("COMMUNI_ENCODING");
+    if (!encoding.isEmpty())
+        Application::setEncoding(encoding);
 
-    MainWindow window;
 #ifdef Q_WS_WIN
-    if (QtWin::isCompositionEnabled()) {
+    bool composition = QtWin::isCompositionEnabled();
+    index = args.indexOf("-composition");
+    if (index != -1)
+        composition = args.value(index + 1).toInt();
+    else if (!qgetenv("COMMUNI_COMPOSITION").isEmpty())
+        composition = qgetenv("COMMUNI_COMPOSITION").toInt();
+    if (composition) {
         QtWin::extendFrameIntoClientArea(&window);
         window.setContentsMargins(0, 0, 0, 0);
     }
 #endif
+
     window.show();
     return app.exec();
 }
