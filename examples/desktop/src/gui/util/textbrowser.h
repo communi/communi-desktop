@@ -25,6 +25,9 @@ class TextBrowser : public QTextBrowser
 public:
     TextBrowser(QWidget* parent = 0);
 
+    QWidget* buddy() const;
+    void setBuddy(QWidget* buddy);
+
     int unseenBlock() const;
     void setUnseenBlock(int block);
 
@@ -35,12 +38,14 @@ public slots:
     void scrollToPreviousPage();
 
 protected:
+    void keyPressEvent(QKeyEvent* event);
     void paintEvent(QPaintEvent* event);
     void resizeEvent(QResizeEvent* event);
     void wheelEvent(QWheelEvent* event);
 
 private:
     int ub;
+    QWidget* bud;
 };
 
 #endif // TEXTBROWSER_H

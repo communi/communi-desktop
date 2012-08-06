@@ -48,7 +48,7 @@ signals:
     void queried(const QString& user);
 
 protected:
-    bool eventFilter(QObject* receiver, QEvent* event);
+    void hideEvent(QHideEvent *event);
 
     void receiveMessage(IrcMessage* message);
     bool hasUser(const QString& user) const;

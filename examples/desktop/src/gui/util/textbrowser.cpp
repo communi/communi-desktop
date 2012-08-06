@@ -13,13 +13,24 @@
 */
 
 #include "textbrowser.h"
+#include <QApplication>
 #include <QScrollBar>
 #include <QPainter>
 #include <QTextBlock>
 #include <QAbstractTextDocumentLayout>
 
-TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent), ub(-1)
+TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent), ub(-1), bud(0)
 {
+}
+
+QWidget* TextBrowser::buddy() const
+{
+    return bud;
+}
+
+void TextBrowser::setBuddy(QWidget* buddy)
+{
+    bud = buddy;
 }
 
 int TextBrowser::unseenBlock() const
@@ -30,6 +41,32 @@ int TextBrowser::unseenBlock() const
 void TextBrowser::setUnseenBlock(int block)
 {
     ub = block;
+}
+
+void TextBrowser::keyPressEvent(QKeyEvent* event)
+{
+    // for example:
+    // - Ctrl+C goes to the browser
+    // - Ctrl+V goes to the buddy
+    // - Shift+7 ("/") goes to the buddy
+    switch (event->key())
+    {
+        case Qt::Key_Shift:
+        case Qt::Key_Control:
+        case Qt::Key_Meta:
+        case Qt::Key_Alt:
+        case Qt::Key_AltGr:
+            break;
+        default:
+            if (!event->matches(QKeySequence::Copy))
+            {
+                QApplication::sendEvent(bud, event);
+                bud->setFocus();
+                return;
+            }
+            break;
+    }
+    QTextBrowser::keyPressEvent(event);
 }
 
 void TextBrowser::resizeEvent(QResizeEvent* event)

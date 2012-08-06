@@ -37,8 +37,7 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     d.viewType = type;
 
     setFocusProxy(d.lineEditor);
-    d.textBrowser->installEventFilter(this);
-    d.textBrowser->viewport()->installEventFilter(this);
+    d.textBrowser->setBuddy(d.lineEditor);
 
     d.formatter.setHighlights(QStringList(session->nickName()));
     d.formatter.setMessageFormat("class='message'");
@@ -151,39 +150,10 @@ void MessageView::appendMessage(const QString& message)
     }
 }
 
-bool MessageView::eventFilter(QObject* receiver, QEvent* event)
+void MessageView::hideEvent(QHideEvent* event)
 {
-    Q_UNUSED(receiver);
-    if (event->type() == QEvent::KeyPress)
-    {
-        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-        // for example:
-        // - Ctrl+C goes to the browser
-        // - Ctrl+V goes to the line edit
-        // - Shift+7 ("/") goes to the line edit
-        switch (keyEvent->key())
-        {
-            case Qt::Key_Shift:
-            case Qt::Key_Control:
-            case Qt::Key_Meta:
-            case Qt::Key_Alt:
-            case Qt::Key_AltGr:
-                break;
-            default:
-                if (!keyEvent->matches(QKeySequence::Copy))
-                {
-                    QApplication::sendEvent(d.lineEditor, keyEvent);
-                    d.lineEditor->setFocus();
-                    return true;
-                }
-                break;
-        }
-    }
-    else if (event->type() == QEvent::Hide)
-    {
-        d.textBrowser->setUnseenBlock(-1);
-    }
-    return false;
+    QWidget::hideEvent(event);
+    d.textBrowser->setUnseenBlock(-1);
 }
 
 void MessageView::onEscPressed()
