@@ -103,10 +103,10 @@
       <string>Entering a server password is optional. Some servers are secured with a password.</string>
      </property>
      <property name="inputMethodHints">
-      <set>Qt::ImhNoAutoUppercase</set>
+      <set>Qt::ImhHiddenText|Qt::ImhNoAutoUppercase|Qt::ImhNoPredictiveText</set>
      </property>
      <property name="echoMode">
-      <enum>QLineEdit::PasswordEchoOnEdit</enum>
+      <enum>QLineEdit::Password</enum>
      </property>
     </widget>
    </item>
