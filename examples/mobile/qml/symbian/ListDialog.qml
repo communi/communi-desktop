@@ -35,7 +35,6 @@ CommonDialog {
         delegate: MenuItem {
             platformInverted: root.platformInverted
             text: modelData
-            privateSelectionIndicator: selectedIndex == index
 
             onClicked: {
                 selectedIndex = index
