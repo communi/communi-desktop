@@ -22,9 +22,11 @@
 ; DEPLOYMENT
 "$(EPOCROOT)/epoc32/release/$(PLATFORM)/$(TARGET)/Communi.dll" - "!:\sys\bin\Communi.dll"
 "$(EPOCROOT)/epoc32/release/$(PLATFORM)/$(TARGET)/communiplugin.dll" - "!:\sys\bin\communiplugin.dll"
+"$(EPOCROOT)/epoc32/release/$(PLATFORM)/$(TARGET)/uchardetplugin.dll" - "!:\sys\bin\uchardetplugin.dll"
 
 "$(EPOCROOT)/epoc32/data/z/resource/qt/imports/Communi/qmldir" - "!:\resource\qt\imports\Communi\qmldir"
 "$(EPOCROOT)/epoc32/data/z/resource/qt/imports/Communi/communiplugin.qtplugin" - "!:\resource\qt\imports\Communi\communiplugin.qtplugin"
+"$(EPOCROOT)/epoc32/data/z/resource/qt/plugins/communi/uchardetplugin.qtplugin" - "!:\resource\qt\plugins\communi\uchardetplugin.qtplugin"
 
 "$(EPOCROOT)/epoc32/release/$(PLATFORM)/$(TARGET)/communi.exe" - "!:\sys\bin\communi.exe"
 "$(EPOCROOT)/epoc32/data/z/resource/apps/communi.rsc" - "!:\resource\apps\communi.rsc"
