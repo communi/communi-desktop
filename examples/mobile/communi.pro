@@ -9,6 +9,7 @@ anna|belle|symbian {
     DEFINES += COMMUNI_EXAMPLE_VERSION=1.1.10
     DEFINES += COMMUNI_QML_DIR=qml/meego
     DEFINES += COMMUNI_IMPORT_PATH=/opt/communi/imports
+    DEFINES += COMMUNI_PLUGIN_PATH=/opt/communi/plugins
 }
 
 # Add more folders to ship with the application, here

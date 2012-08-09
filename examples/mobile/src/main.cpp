@@ -45,6 +45,9 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 #ifdef COMMUNI_IMPORT_PATH
     viewer->engine()->addImportPath(STRINGIFY(COMMUNI_IMPORT_PATH));
 #endif
+#ifdef COMMUNI_PLUGIN_PATH
+    QCoreApplication::addLibraryPath(STRINGIFY(COMMUNI_PLUGIN_PATH));
+#endif
 
     qmlRegisterType<MessageFormatter>("Communi", 1, 0, "MessageFormatter");
     qmlRegisterType<MessageHandler>("Communi", 1, 0, "MessageHandler");
