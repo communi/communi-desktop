@@ -13,27 +13,31 @@
 */
 
 import QtQuick 1.1
-import Communi 1.0
 import com.nokia.symbian 1.1
+import "UIConstants.js" as UI
 
-PageStackWindow {
-    id: window
+BaseDialog {
+    id: dialog
 
-    platformInverted: true
+    property alias timeStamp: timeStampBox.checked
 
-    initialPage: MainPage { id: page }
+    titleText: qsTr("Settings")
 
-    Component.onCompleted: {
-        SessionManager.restore();
-        for (var i = 0; i < SessionModel.length; ++i)
-            if (!SessionModel[i].session.hasQuit)
-                SessionModel[i].session.reconnect();
-        page.applySettings();
-    }
+    Column {
+        width: parent.width
+        Column {
+            width: parent.width
+            spacing: UI.DEFAULT_SPACING
 
-    Component.onDestruction: {
-        SessionManager.save();
-        for (var i = 0; i < SessionModel.length; ++i)
-            SessionModel[i].session.quit(ApplicationName);
+            Row {
+                width: parent.width
+                spacing: UI.DEFAULT_SPACING
+                CheckBox {
+                    id: timeStampBox
+                    text: qsTr("Enable timestamps")
+                    platformInverted: true
+                }
+            }
+        }
     }
 }

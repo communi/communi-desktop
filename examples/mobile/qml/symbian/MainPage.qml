@@ -23,11 +23,24 @@ CommonPage {
 
     property alias bouncer: bouncer
 
+    function applySettings() {
+        for (var i = 0; i < SessionModel.length; ++i) {
+            SessionModel[i].timeStamp = Settings.timeStamp;
+            for (var j = 0; j < SessionModel[i].childItems.length; ++j)
+                SessionModel[i].childItems[j].timeStamp = Settings.timeStamp;
+        }
+    }
+
     title: qsTr("Communi")
     tools: ToolBarLayout {
         ToolButton {
             iconSource: "toolbar-back"
             onClicked: confirmexitDialog.open()
+            platformInverted: true
+        }
+        ToolButton {
+            iconSource: "toolbar-menu"
+            onClicked: contextMenu.open()
             platformInverted: true
         }
         ToolButton {
@@ -354,6 +367,29 @@ CommonPage {
                     }
                     item.sessionItem.removeChild(item.title);
                 }
+                platformInverted: true
+            }
+        }
+        platformInverted: true
+    }
+
+    SettingsDialog {
+        id: settingsDialog
+        onAccepted: {
+            Settings.timeStamp = settingsDialog.timeStamp;
+            applySettings();
+        }
+        Component.onCompleted: timeStamp = Settings.timeStamp
+    }
+
+    ContextMenu {
+        id: contextMenu
+        MenuLayout {
+            MenuItem {
+                id: settingsItem
+                text: qsTr("Settings")
+                enabled: active
+                onClicked: settingsDialog.open()
                 platformInverted: true
             }
         }
