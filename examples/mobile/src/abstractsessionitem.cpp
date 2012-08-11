@@ -137,6 +137,20 @@ void AbstractSessionItem::setHighlighted(bool highlighted)
     }
 }
 
+bool AbstractSessionItem::timeStamp() const
+{
+    return m_formatter.timeStamp();
+}
+
+void AbstractSessionItem::setTimeStamp(bool timeStamp)
+{
+    if (m_formatter.timeStamp() != timeStamp)
+    {
+        m_formatter.setTimeStamp(timeStamp);
+        emit timeStampChanged();
+    }
+}
+
 int AbstractSessionItem::unreadCount() const
 {
     return m_unread;
