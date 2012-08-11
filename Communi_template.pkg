@@ -44,6 +44,7 @@
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/main.qml" - "!:\private\e0062463\qml\symbian\main.qml"
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/MainPage.qml" - "!:\private\e0062463\qml\symbian\MainPage.qml"
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/NameDialog.qml" - "!:\private\e0062463\qml\symbian\NameDialog.qml"
+"$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/SettingsDialog.qml" - "!:\private\e0062463\qml\symbian\SettingsDialog.qml"
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/symbian/UIConstants.js" - "!:\private\e0062463\qml\symbian\UIConstants.js"
 
 "$(EPOCROOT)/epoc32/data/z/private/e0062463/qml/images/background.png" - "!:\private\e0062463\qml\images\background.png"
