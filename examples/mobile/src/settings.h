@@ -29,6 +29,7 @@ class Settings : public QObject
     Q_PROPERTY(QString real READ real WRITE setReal)
     Q_PROPERTY(QString channel READ channel WRITE setChannel)
     Q_PROPERTY(ConnectionInfos connections READ connections WRITE setConnections)
+    Q_PROPERTY(bool timeStamp READ timeStamp WRITE setTimeStamp)
 
 public:
     explicit Settings(QObject *parent = 0);
@@ -56,6 +57,9 @@ public:
 
     ConnectionInfos connections() const;
     void setConnections(const ConnectionInfos& connections);
+
+    bool timeStamp() const;
+    void setTimeStamp(bool timeStamp);
 };
 
 #endif // SETTINGS_H

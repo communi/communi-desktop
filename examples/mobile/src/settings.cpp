@@ -70,3 +70,9 @@ ConnectionInfos Settings::connections() const
 
 void Settings::setConnections(const ConnectionInfos& connections)
 { QSettings().setValue("connections", QVariant::fromValue(connections)); }
+
+bool Settings::timeStamp() const
+{ return QSettings().value("timestamp", true).toBool(); }
+
+void Settings::setTimeStamp(bool timeStamp)
+{ QSettings().setValue("timestamp", timeStamp); }
