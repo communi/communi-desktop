@@ -103,6 +103,7 @@ signals:
 private slots:
     void onConnected();
     void onPassword(QString* password);
+    void onCapabilities(const QStringList& available, QStringList* request);
     void handleMessage(IrcMessage* message);
     void togglePingTimer(bool enabled);
     void pingServer();

@@ -29,6 +29,7 @@ Session::Session(QObject *parent) : IrcSession(parent),
 {
     connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(this, SIGNAL(password(QString*)), this, SLOT(onPassword(QString*)));
+    connect(this, SIGNAL(capabilities(QStringList,QStringList*)), this, SLOT(onCapabilities(QStringList,QStringList*)));
     connect(this, SIGNAL(messageReceived(IrcMessage*)), SLOT(handleMessage(IrcMessage*)));
 
     setAutoReconnectDelay(15);
@@ -343,6 +344,12 @@ void Session::onConnected()
 void Session::onPassword(QString* password)
 {
     *password = m_password;
+}
+
+void Session::onCapabilities(const QStringList& available, QStringList* request)
+{
+    if (available.contains("identify-msg"))
+        request->append("identify-msg");
 }
 
 void Session::handleMessage(IrcMessage* message)
