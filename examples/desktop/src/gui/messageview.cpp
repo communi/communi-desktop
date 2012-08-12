@@ -172,7 +172,7 @@ void MessageView::onSend(const QString& text)
 
         if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction)
         {
-            IrcMessage* msg = IrcMessage::fromCommand(d.session->nickName(), cmd);
+            IrcMessage* msg = IrcMessage::fromCommand(d.session->nickName(), cmd, d.session);
             receiveMessage(msg);
             delete msg;
         }
