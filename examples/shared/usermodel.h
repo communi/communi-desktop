@@ -26,10 +26,11 @@ class UserModel : public QAbstractListModel
     Q_OBJECT
 
 public:
-    explicit UserModel(Session* session);
+    explicit UserModel(QObject* parent = 0);
     virtual ~UserModel();
 
     Session* session() const;
+    void setSession(Session* session);
 
     QStringList users() const;
     bool hasUser(const QString& user) const;

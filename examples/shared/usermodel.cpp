@@ -18,9 +18,9 @@
 #include <ircsender.h>
 #include <irc.h>
 
-UserModel::UserModel(Session* session) : QAbstractListModel(session)
+UserModel::UserModel(QObject* parent) : QAbstractListModel(parent)
 {
-    d.session = session;
+    d.session = qobject_cast<Session*>(parent);
 }
 
 UserModel::~UserModel()
@@ -30,6 +30,12 @@ UserModel::~UserModel()
 Session* UserModel::session() const
 {
     return d.session;
+}
+
+void UserModel::setSession(Session* session)
+{
+    d.session = session;
+    clearUsers();
 }
 
 QStringList UserModel::users() const
@@ -167,6 +173,12 @@ QVariant UserModel::data(const QModelIndex& index, int role) const
 
 void UserModel::processMessage(IrcMessage* message, const QString& channel)
 {
+    if (!d.session)
+    {
+        qWarning() << "UserModel::processMessage(): session is null!";
+        return;
+    }
+
     if (message->type() == IrcMessage::Nick)
     {
         QString nick = message->sender().name().toLower();
