@@ -15,6 +15,7 @@ HEADERS += $$PWD/searcheditor.h
 HEADERS += $$PWD/sessiontabwidget.h
 HEADERS += $$PWD/settings.h
 HEADERS += $$PWD/sortedusermodel.h
+HEADERS += $$PWD/userlistview.h
 
 SOURCES += $$PWD/lineeditor.cpp
 SOURCES += $$PWD/multisessiontabwidget.cpp
@@ -23,6 +24,7 @@ SOURCES += $$PWD/searcheditor.cpp
 SOURCES += $$PWD/sessiontabwidget.cpp
 SOURCES += $$PWD/settings.cpp
 SOURCES += $$PWD/sortedusermodel.cpp
+SOURCES += $$PWD/userlistview.cpp
 
 include(util/util.pri)
 include(3rdparty/3rdparty.pri)
