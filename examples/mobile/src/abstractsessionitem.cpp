@@ -46,6 +46,20 @@ void AbstractSessionItem::setSession(Session *session)
     m_formatter.setHighlights(QStringList() << session->nickName());
 }
 
+QString AbstractSessionItem::receiver() const
+{
+    return m_receiver;
+}
+
+void AbstractSessionItem::setReceiver(const QString& receiver)
+{
+    if (m_receiver != receiver)
+    {
+        m_receiver = receiver;
+        emit titleChanged();
+    }
+}
+
 QString AbstractSessionItem::title() const
 {
     return receiver();
@@ -53,11 +67,7 @@ QString AbstractSessionItem::title() const
 
 void AbstractSessionItem::setTitle(const QString& title)
 {
-    if (title != receiver())
-    {
-        setReceiver(title);
-        emit titleChanged();
-    }
+    setReceiver(title);
 }
 
 QString AbstractSessionItem::subtitle() const

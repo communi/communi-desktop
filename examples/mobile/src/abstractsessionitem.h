@@ -27,6 +27,7 @@ class AbstractSessionItem : public QObject, public MessageReceiver
 {
     Q_OBJECT
     Q_PROPERTY(Session* session READ session CONSTANT)
+    Q_PROPERTY(QString receiver READ receiver WRITE setReceiver)
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
     Q_PROPERTY(QString subtitle READ subtitle WRITE setSubtitle NOTIFY subtitleChanged)
     Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged)
@@ -43,6 +44,9 @@ public:
     virtual ~AbstractSessionItem();
 
     Session* session() const;
+
+    QString receiver() const;
+    void setReceiver(const QString &receiver);
 
     QString title() const;
     QString subtitle() const;
@@ -95,6 +99,7 @@ protected slots:
 
 private:
     Session* m_session;
+    QString m_receiver;
     QString m_subtitle;
     QString m_description;
     bool m_busy;

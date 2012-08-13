@@ -28,6 +28,7 @@ class Session;
 class MessageView : public QWidget, public MessageReceiver
 {
     Q_OBJECT
+    Q_PROPERTY(QString receiver READ receiver WRITE setReceiver)
 
 public:
     enum ViewType { ServerView, ChannelView, QueryView };
@@ -36,6 +37,9 @@ public:
     ~MessageView();
 
     ViewType viewType() const;
+
+    QString receiver() const;
+    void setReceiver(const QString &receiver);
 
 public slots:
     void showHelp(const QString& text, bool error = false);
@@ -63,6 +67,7 @@ private:
     struct MessageViewData : public Ui::MessageView
     {
         ViewType viewType;
+        QString receiver;
         Session* session;
         CommandParser parser;
         MessageFormatter formatter;

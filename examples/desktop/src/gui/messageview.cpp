@@ -97,6 +97,16 @@ MessageView::ViewType MessageView::viewType() const
     return d.viewType;
 }
 
+QString MessageView::receiver() const
+{
+    return d.receiver;
+}
+
+void MessageView::setReceiver(const QString& receiver)
+{
+    d.receiver = receiver;
+}
+
 void MessageView::showHelp(const QString& text, bool error)
 {
     QString syntax;
