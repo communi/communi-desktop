@@ -42,6 +42,18 @@ public:
 public slots:
     void processMessage(IrcMessage* message);
 
+signals:
+    void queried(const QString& user);
+    void commanded(const QString& command, const QStringList& params);
+
+protected:
+    void contextMenuEvent(QContextMenuEvent* event);
+    void mousePressEvent(QMouseEvent* event);
+
+private slots:
+    void onDoubleClicked(const QModelIndex& index);
+    void onWhoisTriggered();
+
 private:
     struct UserListViewData
     {

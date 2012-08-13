@@ -16,10 +16,15 @@
 #include "sortedusermodel.h"
 #include "usermodel.h"
 #include "session.h"
+#include <QItemSelectionModel>
+#include <QContextMenuEvent>
+#include <QAction>
+#include <QMenu>
 
 UserListView::UserListView(QWidget* parent) : QListView(parent)
 {
     d.userModel = new UserModel(this);
+    connect(this, SIGNAL(doubleClicked(QModelIndex)), SLOT(onDoubleClicked(QModelIndex)));
 }
 
 UserListView::~UserListView()
@@ -63,4 +68,36 @@ bool UserListView::hasUser(const QString &user) const
 void UserListView::processMessage(IrcMessage* message)
 {
     d.userModel->processMessage(message);
+}
+
+void UserListView::contextMenuEvent(QContextMenuEvent* event)
+{
+    QModelIndex index = indexAt(event->pos());
+    if (index.isValid())
+    {
+        QMenu menu;
+        QAction* action = menu.addAction(tr("Whois"), this, SLOT(onWhoisTriggered()));
+        action->setData(index.data(Qt::EditRole));
+        menu.exec(event->globalPos());
+    }
+}
+
+void UserListView::mousePressEvent(QMouseEvent* event)
+{
+    QListView::mousePressEvent(event);
+    if (!indexAt(event->pos()).isValid())
+        selectionModel()->clear();
+}
+
+void UserListView::onDoubleClicked(const QModelIndex& index)
+{
+    if (index.isValid())
+        emit queried(index.data(Qt::EditRole).toString());
+}
+
+void UserListView::onWhoisTriggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action)
+        emit commanded("WHOIS", QStringList() << action->data().toString());
 }

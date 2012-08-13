@@ -55,7 +55,8 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     if (type == ChannelView)
     {
         d.listView->setSession(session);
-        connect(d.listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClicked(QModelIndex)));
+        connect(d.listView, SIGNAL(queried(QString)), this, SIGNAL(queried(QString)));
+        connect(d.listView, SIGNAL(commanded(QString,QStringList)), this, SLOT(onCustomCommand(QString,QStringList)));
     }
 
     if (!command_model)
@@ -319,9 +320,6 @@ void MessageView::onCustomCommand(const QString& command, const QStringList& par
 {
     if (command == "QUERY")
         emit queried(params.value(0));
-}
-
-void MessageView::onDoubleClicked(const QModelIndex& index)
-{
-    emit queried(index.data(Qt::EditRole).toString());
+    else if (command == "WHOIS")
+        d.session->sendCommand(IrcCommand::createWhois(params.value(0)));
 }

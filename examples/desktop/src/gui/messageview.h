@@ -60,7 +60,6 @@ private slots:
     void onEscPressed();
     void onSend(const QString& text);
     void onCustomCommand(const QString& command, const QStringList& params);
-    void onDoubleClicked(const QModelIndex& index);
 
 private:
     struct MessageViewData : public Ui::MessageView
