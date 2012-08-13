@@ -22,7 +22,6 @@
 #include "settings.h"
 
 class IrcMessage;
-class UserModel;
 class Session;
 
 class MessageView : public QWidget, public MessageReceiver
@@ -71,7 +70,6 @@ private:
         Session* session;
         CommandParser parser;
         MessageFormatter formatter;
-        UserModel* userModel;
         Settings settings;
     } d;
 };

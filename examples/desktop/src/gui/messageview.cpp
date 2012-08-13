@@ -15,7 +15,6 @@
 #include "messageview.h"
 #include "completer.h"
 #include "usermodel.h"
-#include "sortedusermodel.h"
 #include "session.h"
 #include <QStringListModel>
 #include <QTextBlock>
@@ -49,14 +48,13 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     d.formatter.setTimeStampFormat("class='timestamp'");
 
     d.session = session;
-    d.userModel = new UserModel(d.session);
     connect(&d.parser, SIGNAL(customCommand(QString,QStringList)), this, SLOT(onCustomCommand(QString,QStringList)));
 
     d.topicLabel->setVisible(type == ChannelView);
     d.listView->setVisible(type == ChannelView);
     if (type == ChannelView)
     {
-        d.listView->setModel(new SortedUserModel(session->prefixModes(), d.userModel));
+        d.listView->setSession(session);
         connect(d.listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClicked(QModelIndex)));
     }
 
@@ -72,7 +70,7 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
         command_model->setStringList(prefixedCommands);
     }
 
-    d.lineEditor->completer()->setDefaultModel(d.userModel);
+    d.lineEditor->completer()->setDefaultModel(d.listView->userModel());
     d.lineEditor->completer()->setSlashModel(command_model);
 
     connect(d.lineEditor, SIGNAL(send(QString)), this, SLOT(onSend(QString)));
@@ -89,7 +87,6 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
 
 MessageView::~MessageView()
 {
-    delete d.userModel;
 }
 
 MessageView::ViewType MessageView::viewType() const
@@ -105,6 +102,8 @@ QString MessageView::receiver() const
 void MessageView::setReceiver(const QString& receiver)
 {
     d.receiver = receiver;
+    if (d.viewType == ChannelView)
+        d.listView->setChannel(receiver);
 }
 
 void MessageView::showHelp(const QString& text, bool error)
@@ -222,8 +221,8 @@ void MessageView::applySettings(const Settings& settings)
 
 void MessageView::receiveMessage(IrcMessage* message)
 {
-    if (d.userModel)
-        d.userModel->processMessage(message, receiver());
+    if (d.viewType == ChannelView)
+        d.listView->processMessage(message);
 
     bool append = true;
     bool hilite = false;
@@ -299,7 +298,7 @@ void MessageView::receiveMessage(IrcMessage* message)
         break;
     }
 
-    QString formatted = d.formatter.formatMessage(message, d.userModel);
+    QString formatted = d.formatter.formatMessage(message, d.listView->userModel());
     if (append && formatted.length())
     {
         if (matches)
@@ -313,7 +312,7 @@ void MessageView::receiveMessage(IrcMessage* message)
 
 bool MessageView::hasUser(const QString& user) const
 {
-    return d.userModel->hasUser(user);
+    return d.viewType == ChannelView && d.listView->hasUser(user);
 }
 
 void MessageView::onCustomCommand(const QString& command, const QStringList& params)
