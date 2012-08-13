@@ -24,6 +24,7 @@ class IrcMessage;
 class UserModel : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(QString channel READ channel WRITE setChannel)
 
 public:
     explicit UserModel(QObject* parent = 0);
@@ -32,6 +33,8 @@ public:
     Session* session() const;
     void setSession(Session* session);
 
+    QString channel() const;
+
     QStringList users() const;
     bool hasUser(const QString& user) const;
 
@@ -39,7 +42,8 @@ public:
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
 public slots:
-    void processMessage(IrcMessage* message, const QString& channel = QString());
+    void setChannel(const QString& channel);
+    void processMessage(IrcMessage* message);
 
 protected:
     void addUser(const QString& user);
@@ -52,6 +56,7 @@ protected:
 private:
     struct Private
     {
+        QString channel;
         Session* session;
         QStringList names;
         QHash<QString, QString> modes;

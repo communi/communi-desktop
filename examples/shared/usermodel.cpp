@@ -38,6 +38,16 @@ void UserModel::setSession(Session* session)
     clearUsers();
 }
 
+QString UserModel::channel() const
+{
+    return d.channel;
+}
+
+void UserModel::setChannel(const QString &channel)
+{
+    d.channel = channel;
+}
+
 QStringList UserModel::users() const
 {
     return d.names;
@@ -171,7 +181,7 @@ QVariant UserModel::data(const QModelIndex& index, int role) const
     return QVariant();
 }
 
-void UserModel::processMessage(IrcMessage* message, const QString& channel)
+void UserModel::processMessage(IrcMessage* message)
 {
     if (!d.session)
     {
@@ -217,7 +227,7 @@ void UserModel::processMessage(IrcMessage* message, const QString& channel)
         if (static_cast<IrcNumericMessage*>(message)->code() == Irc::RPL_NAMREPLY)
         {
             int count = message->parameters().count();
-            if (!channel.isNull() && channel == message->parameters().value(count - 2))
+            if (!d.channel.isNull() && d.channel == message->parameters().value(count - 2))
             {
                 QString names = message->parameters().value(count - 1);
                 addUsers(names.split(" ", QString::SkipEmptyParts));
