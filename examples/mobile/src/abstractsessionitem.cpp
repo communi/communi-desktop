@@ -48,26 +48,26 @@ void AbstractSessionItem::setSession(Session *session)
 
 QString AbstractSessionItem::receiver() const
 {
-    return m_receiver;
+    return title();
 }
 
 void AbstractSessionItem::setReceiver(const QString& receiver)
 {
-    if (m_receiver != receiver)
-    {
-        m_receiver = receiver;
-        emit titleChanged();
-    }
+    setTitle(receiver);
 }
 
 QString AbstractSessionItem::title() const
 {
-    return receiver();
+    return m_title;
 }
 
 void AbstractSessionItem::setTitle(const QString& title)
 {
-    setReceiver(title);
+    if (m_title != title)
+    {
+        m_title = title;
+        emit titleChanged(title);
+    }
 }
 
 QString AbstractSessionItem::subtitle() const

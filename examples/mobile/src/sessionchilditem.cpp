@@ -25,7 +25,8 @@ SessionChildItem::SessionChildItem(SessionItem* parent) :
 {
     setSession(parent->session());
     m_usermodel = new UserModel(session());
-    connect(this, SIGNAL(titleChanged()), SIGNAL(channelChanged()));
+    connect(this, SIGNAL(titleChanged(QString)), SIGNAL(channelChanged()));
+    connect(this, SIGNAL(titleChanged(QString)), m_usermodel, SLOT(setChannel(QString)));
 }
 
 SessionChildItem::~SessionChildItem()
@@ -69,7 +70,7 @@ void SessionChildItem::sendUiCommand(IrcCommand *command)
 void SessionChildItem::receiveMessage(IrcMessage* message)
 {
     if (m_usermodel)
-        m_usermodel->processMessage(message, receiver());
+        m_usermodel->processMessage(message);
 
     if (message->type() == IrcMessage::Numeric)
     {

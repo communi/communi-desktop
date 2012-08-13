@@ -79,7 +79,7 @@ public slots:
 
 signals:
     void iconChanged();
-    void titleChanged();
+    void titleChanged(const QString& title);
     void subtitleChanged();
     void descriptionChanged();
     void busyChanged();
@@ -99,7 +99,7 @@ protected slots:
 
 private:
     Session* m_session;
-    QString m_receiver;
+    QString m_title;
     QString m_subtitle;
     QString m_description;
     bool m_busy;
