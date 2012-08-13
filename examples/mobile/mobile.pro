@@ -33,6 +33,8 @@ symbian {
     TARGET.UID3 = 0xe0062463
     # Allow network access on Symbian
     TARGET.CAPABILITY += NetworkServices
+} else {
+    TARGET = communi
 }
 
 # If your application uses the Qt Mobility libraries, uncomment the following
