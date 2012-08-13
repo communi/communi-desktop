@@ -13,11 +13,54 @@
 */
 
 #include "userlistview.h"
+#include "sortedusermodel.h"
+#include "usermodel.h"
+#include "session.h"
 
 UserListView::UserListView(QWidget* parent) : QListView(parent)
 {
+    d.userModel = new UserModel(this);
 }
 
 UserListView::~UserListView()
 {
+}
+
+Session* UserListView::session() const
+{
+    return d.userModel->session();
+}
+
+void UserListView::setSession(Session* session)
+{
+    delete model();
+    if (session)
+        setModel(new SortedUserModel(session->prefixModes(), d.userModel));
+
+    d.userModel->setSession(session);
+}
+
+QString UserListView::channel() const
+{
+    return d.userModel->channel();
+}
+
+void UserListView::setChannel(const QString &channel)
+{
+    d.userModel->setChannel(channel);
+}
+
+UserModel* UserListView::userModel() const
+{
+    return d.userModel;
+}
+
+bool UserListView::hasUser(const QString &user) const
+{
+    return d.userModel->hasUser(user);
+}
+
+void UserListView::processMessage(IrcMessage* message)
+{
+    d.userModel->processMessage(message);
 }

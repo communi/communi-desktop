@@ -17,17 +17,35 @@
 
 #include <QListView>
 
+class Session;
+class UserModel;
+class IrcMessage;
+
 class UserListView : public QListView
 {
     Q_OBJECT
+    Q_PROPERTY(QString channel READ channel WRITE setChannel)
 
 public:
     UserListView(QWidget* parent = 0);
     ~UserListView();
 
+    Session* session() const;
+    void setSession(Session* session);
+
+    QString channel() const;
+    void setChannel(const QString& channel);
+
+    UserModel* userModel() const;
+    bool hasUser(const QString& user) const;
+
+public slots:
+    void processMessage(IrcMessage* message);
+
 private:
     struct UserListViewData
     {
+        UserModel* userModel;
     } d;
 };
 
