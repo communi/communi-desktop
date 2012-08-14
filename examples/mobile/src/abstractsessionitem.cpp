@@ -14,6 +14,7 @@
 
 #include "abstractsessionitem.h"
 #include "commandparser.h"
+#include "settings.h"
 #include "session.h"
 
 AbstractSessionItem::AbstractSessionItem(QObject *parent) :
@@ -21,7 +22,7 @@ AbstractSessionItem::AbstractSessionItem(QObject *parent) :
     m_highlighted(false), m_unread(0), m_unseen(0)
 {
     m_messages = new QStringListModel(this);
-    m_formatter.setTimeStamp(true);
+    m_formatter.setTimeStamp(Settings::instance()->timeStamp());
     m_formatter.setEventFormat("style='color:gray'");
     m_formatter.setNoticeFormat("style='color:brown'");
     m_formatter.setActionFormat("style='color:darkmagenta'");

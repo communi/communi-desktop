@@ -28,7 +28,6 @@ PageStackWindow {
         for (var i = 0; i < SessionModel.length; ++i)
             if (!SessionModel[i].session.hasQuit)
                 SessionModel[i].session.reconnect();
-        page.applySettings();
     }
 
     Component.onDestruction: {

@@ -32,7 +32,7 @@ class Settings : public QObject
     Q_PROPERTY(bool timeStamp READ timeStamp WRITE setTimeStamp)
 
 public:
-    explicit Settings(QObject *parent = 0);
+    static Settings* instance();
 
     QString host() const;
     void setHost(const QString& host);
@@ -60,6 +60,9 @@ public:
 
     bool timeStamp() const;
     void setTimeStamp(bool timeStamp);
+
+private:
+    explicit Settings(QObject *parent = 0);
 };
 
 #endif // SETTINGS_H

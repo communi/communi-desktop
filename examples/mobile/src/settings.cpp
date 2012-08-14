@@ -16,6 +16,12 @@
 #include <QSettings>
 #include <QTime>
 
+Settings* Settings::instance()
+{
+    static Settings settings;
+    return &settings;
+}
+
 Settings::Settings(QObject *parent) : QObject(parent)
 {
     qsrand(QTime::currentTime().msec());

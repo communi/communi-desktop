@@ -52,8 +52,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     qmlRegisterType<MessageFormatter>("Communi", 1, 0, "MessageFormatter");
     qmlRegisterType<MessageHandler>("Communi", 1, 0, "MessageHandler");
 
-    Settings* settings = new Settings(viewer->rootContext());
-    viewer->rootContext()->setContextProperty("Settings", settings);
+    viewer->rootContext()->setContextProperty("Settings", Settings::instance());
 
     CommandParser* parser = new CommandParser(viewer->rootContext());
     viewer->rootContext()->setContextProperty("CommandParser", parser);
