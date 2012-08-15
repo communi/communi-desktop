@@ -438,15 +438,15 @@ QString MessageFormatter::formatHtml(const QString &message) const
     QString msg = IrcUtil::messageToHtml(message);
     if (d.userModel)
     {
-        foreach (QString user, d.userModel->users())
+        foreach (const QString& user, d.userModel->users())
         {
             int pos = 0;
             QRegExp rx("\\b" + QRegExp::escape(user) + "\\b(?![^<]*</a>)");
             while ((pos = rx.indexIn(msg, pos)) != -1)
             {
-                user = formatUser(msg.mid(pos, rx.matchedLength()));
-                msg.replace(pos, rx.matchedLength(), user);
-                pos += user.length();
+                QString formatted = formatUser(msg.mid(pos, rx.matchedLength()));
+                msg.replace(pos, rx.matchedLength(), formatted);
+                pos += formatted.length();
             }
         }
     }
