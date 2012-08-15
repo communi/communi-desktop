@@ -29,10 +29,15 @@ QML_IMPORT_PATH =
 #symbian:DEPLOYMENT.installer_header = 0x2002CCCF
 
 symbian {
-    TARGET = Communi
+    TARGET = CommuniApp
     TARGET.UID3 = 0xe0062463
     # Allow network access on Symbian
     TARGET.CAPABILITY += NetworkServices
+
+    vendor.pkg_prerules += \
+        "%{\"J-P Nurmi\"}" \
+        ":\"J-P Nurmi\""
+    DEPLOYMENT += vendor
 } else {
     TARGET = communi
 }
