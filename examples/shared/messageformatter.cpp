@@ -441,7 +441,7 @@ QString MessageFormatter::formatHtml(const QString &message) const
         foreach (QString user, d.userModel->users())
         {
             int pos = 0;
-            QRegExp rx("\\b" + QRegExp::escape(user) + "\\b(?![^<]*</a>)", Qt::CaseInsensitive);
+            QRegExp rx("\\b" + QRegExp::escape(user) + "\\b(?![^<]*</a>)");
             while ((pos = rx.indexIn(msg, pos)) != -1)
             {
                 user = formatUser(msg.mid(pos, rx.matchedLength()));
