@@ -441,11 +441,18 @@ QString MessageFormatter::formatHtml(const QString &message) const
         foreach (const QString& user, d.userModel->users())
         {
             int pos = 0;
-            QRegExp rx("\\b" + QRegExp::escape(user) + "\\b(?![^<]*</a>)");
+            QRegExp rx("\\b" + QRegExp::escape(user) + "\\b"); // (?![^<]*</a>)
             while ((pos = rx.indexIn(msg, pos)) != -1)
             {
-                QString formatted = formatUser(msg.mid(pos, rx.matchedLength()));
-                msg.replace(pos, rx.matchedLength(), formatted);
+                const int len = rx.matchedLength();
+                const int anchor = msg.indexOf("</a>", pos + len + 1);
+                if (anchor != -1 && anchor <= msg.indexOf('<', pos + len + 1))
+                {
+                    pos += len;
+                    continue;
+                }
+                QString formatted = formatUser(msg.mid(pos, len));
+                msg.replace(pos, len, formatted);
                 pos += formatted.length();
             }
         }
