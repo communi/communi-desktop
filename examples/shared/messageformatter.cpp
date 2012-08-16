@@ -20,7 +20,7 @@
 #include <QHash>
 #include <QTime>
 #include <QColor>
-#include <QRegExp>
+#include <QTextBoundaryFinder>
 
 MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 {
@@ -441,18 +441,33 @@ QString MessageFormatter::formatHtml(const QString &message) const
         foreach (const QString& user, d.userModel->users())
         {
             int pos = 0;
-            QRegExp rx("\\b" + QRegExp::escape(user) + "\\b"); // (?![^<]*</a>)
-            while ((pos = rx.indexIn(msg, pos)) != -1)
+            while ((pos = msg.indexOf(user, pos)) != -1)
             {
-                const int len = rx.matchedLength();
-                const int anchor = msg.indexOf("</a>", pos + len + 1);
-                if (anchor != -1 && anchor <= msg.indexOf('<', pos + len + 1))
+                QTextBoundaryFinder finder(QTextBoundaryFinder::Word, msg);
+
+                finder.setPosition(pos);
+                if (!finder.isAtBoundary() || finder.boundaryReasons() & QTextBoundaryFinder::StartWord == 0)
                 {
-                    pos += len;
+                    pos += user.length();
                     continue;
                 }
-                QString formatted = formatUser(msg.mid(pos, len));
-                msg.replace(pos, len, formatted);
+
+                finder.setPosition(pos + user.length());
+                if (!finder.isAtBoundary() || finder.boundaryReasons() & QTextBoundaryFinder::EndWord == 0)
+                {
+                    pos += user.length();
+                    continue;
+                }
+
+                const int anchor = msg.indexOf("</a>", pos + user.length() + 1);
+                if (anchor != -1 && anchor <= msg.indexOf('<', pos + user.length() + 1))
+                {
+                    pos += user.length();
+                    continue;
+                }
+
+                QString formatted = formatUser(msg.mid(pos, user.length()));
+                msg.replace(pos, user.length(), formatted);
                 pos += formatted.length();
             }
         }
