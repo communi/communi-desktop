@@ -446,14 +446,14 @@ QString MessageFormatter::formatHtml(const QString &message) const
                 QTextBoundaryFinder finder(QTextBoundaryFinder::Word, msg);
 
                 finder.setPosition(pos);
-                if (!finder.isAtBoundary() || finder.boundaryReasons() & QTextBoundaryFinder::StartWord == 0)
+                if (!finder.isAtBoundary() || !finder.boundaryReasons().testFlag(QTextBoundaryFinder::StartWord))
                 {
                     pos += user.length();
                     continue;
                 }
 
                 finder.setPosition(pos + user.length());
-                if (!finder.isAtBoundary() || finder.boundaryReasons() & QTextBoundaryFinder::EndWord == 0)
+                if (!finder.isAtBoundary() || !finder.boundaryReasons().testFlag(QTextBoundaryFinder::EndWord))
                 {
                     pos += user.length();
                     continue;
