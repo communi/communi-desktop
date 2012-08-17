@@ -1,3 +1,10 @@
+communi (1.1.11) unstable; urgency=low
+
+  * Fixed nicks within URLs not to be highlighted
+  * Fixed a performance issue in channel message nick highlighting
+
+ -- J-P Nurmi <j-p.nurmi@nokia.com>  Fri, 17 Aug 2012 15:04:36 +0200
+
 communi (1.1.10) unstable; urgency=low
 
   * Tap channel header to show/hide topic
