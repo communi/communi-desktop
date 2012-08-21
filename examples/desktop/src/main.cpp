@@ -16,6 +16,7 @@
 #include "mainwindow.h"
 #include <QNetworkProxy>
 #include <QUrl>
+#include <Irc>
 
 #ifdef Q_WS_WIN
 #include "qtwin.h"
@@ -55,6 +56,13 @@ int main (int argc, char* argv[])
         encoding = qgetenv("COMMUNI_ENCODING");
     if (!encoding.isEmpty())
         Application::setEncoding(encoding);
+
+    QByteArray codecPlugin;
+    index = args.indexOf("-codec-plugin");
+    if (index != -1)
+        codecPlugin = args.value(index + 1).toLocal8Bit();
+    if (!codecPlugin.isEmpty())
+        irc_set_codec_plugin(codecPlugin);
 
 #ifdef Q_WS_WIN
     bool composition = QtWin::isCompositionEnabled();
