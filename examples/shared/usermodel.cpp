@@ -170,11 +170,13 @@ QVariant UserModel::data(const QModelIndex& index, int role) const
     if (index.row() < 0 || index.row() >= d.names.count())
         return QVariant();
 
-    if (role == Qt::DisplayRole || role == Qt::EditRole)
+    if (role == Qt::DisplayRole || role == Qt::EditRole || role == Qt::UserRole)
     {
         QString name = d.names.at(index.row());
         if (role == Qt::DisplayRole)
             return d.modes.value(name).left(1) + name;
+        if (role == Qt::UserRole)
+            return d.modes.value(name);
         return name;
     }
 
