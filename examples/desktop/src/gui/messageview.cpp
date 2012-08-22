@@ -56,7 +56,8 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     {
         d.listView->setSession(session);
         connect(d.listView, SIGNAL(queried(QString)), this, SIGNAL(queried(QString)));
-        connect(d.listView, SIGNAL(commanded(QString,QStringList)), this, SLOT(onCustomCommand(QString,QStringList)));
+        connect(d.listView, SIGNAL(doubleClicked(QString)), this, SIGNAL(queried(QString)));
+        connect(d.listView, SIGNAL(commandRequested(IrcCommand*)), d.session, SLOT(sendCommand(IrcCommand*)));
     }
 
     if (!command_model)

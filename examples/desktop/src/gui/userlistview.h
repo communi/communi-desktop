@@ -20,6 +20,7 @@
 class Session;
 class UserModel;
 class IrcMessage;
+class IrcCommand;
 
 class UserListView : public QListView
 {
@@ -44,7 +45,8 @@ public slots:
 
 signals:
     void queried(const QString& user);
-    void commanded(const QString& command, const QStringList& params);
+    void doubleClicked(const QString& user);
+    void commandRequested(IrcCommand* command);
 
 protected:
     void contextMenuEvent(QContextMenuEvent* event);
@@ -53,8 +55,14 @@ protected:
 private slots:
     void onDoubleClicked(const QModelIndex& index);
     void onWhoisTriggered();
+    void onQueryTriggered();
+    void onModeTriggered();
+    void onKickTriggered();
+    void onBanTriggered();
 
 private:
+    QMenu* createMenu(const QModelIndex& index, QWidget* parent = 0);
+
     struct UserListViewData
     {
         UserModel* userModel;
