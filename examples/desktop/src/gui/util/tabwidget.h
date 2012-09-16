@@ -18,25 +18,19 @@
 #include <QTabWidget>
 #include <QColor>
 #include <QList>
+#include <QHash>
 
 class TabWidget : public QTabWidget
 {
     Q_OBJECT
-    Q_PROPERTY(QColor inactiveColor READ inactiveColor WRITE setInactiveColor)
-    Q_PROPERTY(QColor alertColor READ alertColor WRITE setAlertColor)
-    Q_PROPERTY(QColor highlightColor READ highlightColor WRITE setHighlightColor)
 
 public:
     TabWidget(QWidget* parent = 0);
 
-    QColor inactiveColor() const;
-    void setInactiveColor(const QColor& color);
+    enum TabTextRole { Active, Inactive, Alert, Highlight };
 
-    QColor alertColor() const;
-    void setAlertColor(const QColor& color);
-
-    QColor highlightColor() const;
-    void setHighlightColor(const QColor& color);
+    QColor tabTextColor(TabTextRole role) const;
+    void setTabTextColor(TabTextRole role, const QColor& color);
 
     bool isTabInactive(int index);
     void setTabInactive(int index, bool inactive);
@@ -71,13 +65,11 @@ private:
     struct TabWidgetData
     {
         int previous;
-        QColor inactiveColor;
-        QColor alertColor;
-        QColor highlightColor;
         QColor currentAlertColor;
         QList<int> inactiveIndexes;
         QList<int> alertIndexes;
         QList<int> highlightIndexes;
+        QHash<TabTextRole, QColor> colors;
     } d;
 };
 

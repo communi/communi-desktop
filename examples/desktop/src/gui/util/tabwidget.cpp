@@ -57,41 +57,24 @@ TabWidget::TabWidget(QWidget* parent) : QTabWidget(parent)
     setTabBar(new TabBar(this));
     setElideMode(Qt::ElideMiddle);
     d.previous = -1;
-    d.inactiveColor = palette().color(QPalette::Disabled, QPalette::Highlight);
-    d.alertColor = palette().color(QPalette::Highlight);
-    d.highlightColor = palette().color(QPalette::Highlight);
+
+    d.colors[Active] = palette().color(QPalette::WindowText);
+    d.colors[Inactive] = palette().color(QPalette::Disabled, QPalette::Highlight);
+    d.colors[Alert] = palette().color(QPalette::Highlight);
+    d.colors[Highlight] = palette().color(QPalette::Highlight);
+
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
     connect(tabBar(), SIGNAL(menuRequested(int,QPoint)), this, SIGNAL(tabMenuRequested(int,QPoint)));
 }
 
-QColor TabWidget::inactiveColor() const
+QColor TabWidget::tabTextColor(TabWidget::TabTextRole role) const
 {
-    return d.inactiveColor;
+    return d.colors.value(role);
 }
 
-void TabWidget::setInactiveColor(const QColor& color)
+void TabWidget::setTabTextColor(TabWidget::TabTextRole role, const QColor& color)
 {
-    d.inactiveColor = color;
-}
-
-QColor TabWidget::alertColor() const
-{
-    return d.alertColor;
-}
-
-void TabWidget::setAlertColor(const QColor& color)
-{
-    d.alertColor = color;
-}
-
-QColor TabWidget::highlightColor() const
-{
-    return d.highlightColor;
-}
-
-void TabWidget::setHighlightColor(const QColor& color)
-{
-    d.highlightColor = color;
+    d.colors[role] = color;
 }
 
 bool TabWidget::isTabInactive(int index)
@@ -224,10 +207,10 @@ void TabWidget::tabChanged(int index)
 
 void TabWidget::alertTimeout()
 {
-    if (d.currentAlertColor == d.alertColor)
-        d.currentAlertColor = QColor();
+    if (d.currentAlertColor == d.colors.value(Alert))
+        d.currentAlertColor = d.colors.value(Active);
     else
-        d.currentAlertColor = d.alertColor;
+        d.currentAlertColor = d.colors.value(Alert);
 
     foreach (int index, d.alertIndexes)
         colorizeTab(index);
@@ -236,11 +219,11 @@ void TabWidget::alertTimeout()
 void TabWidget::colorizeTab(int index)
 {
     if (isTabInactive(index))
-        tabBar()->setTabTextColor(index, d.inactiveColor);
+        tabBar()->setTabTextColor(index, d.colors.value(Inactive));
     else if (hasTabAlert(index))
         tabBar()->setTabTextColor(index, d.currentAlertColor);
     else if (hasTabHighlight(index))
-        tabBar()->setTabTextColor(index, d.highlightColor);
+        tabBar()->setTabTextColor(index, d.colors.value(Highlight));
     else
-        tabBar()->setTabTextColor(index, QColor());
+        tabBar()->setTabTextColor(index, d.colors.value(Active));
 }

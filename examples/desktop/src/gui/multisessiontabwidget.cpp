@@ -118,8 +118,8 @@ void MultiSessionTabWidget::applySettings(const Settings& settings)
     d.tabDownShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabDown)));
 
     QColor color(settings.colors.value(Settings::Highlight));
-    setAlertColor(color);
-    setHighlightColor(color);
+    setTabTextColor(Alert, color);
+    setTabTextColor(Highlight, color);
 
     for (int i = 0; i < count(); ++i)
     {

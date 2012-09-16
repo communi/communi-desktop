@@ -241,8 +241,8 @@ void SessionTabWidget::applySettings(const Settings& settings)
     d.tabRightShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabRight)));
 
     QColor color(settings.colors.value(Settings::Highlight));
-    setAlertColor(color);
-    setHighlightColor(color);
+    setTabTextColor(Alert, color);
+    setTabTextColor(Highlight, color);
 
     foreach (MessageView* view, d.views)
         view->applySettings(settings);
