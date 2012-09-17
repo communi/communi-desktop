@@ -27,6 +27,8 @@ class TabWidget : public QTabWidget
 public:
     TabWidget(QWidget* parent = 0);
 
+    QTabBar* tabBar() const;
+
     enum TabRole { Active, Inactive, Alert, Highlight };
 
     QColor tabTextColor(TabRole role) const;
@@ -44,7 +46,6 @@ public:
 public slots:
     void moveToNextTab();
     void moveToPrevTab();
-    void setTabBarVisible(bool visible);
 
 signals:
     void newTabRequested();

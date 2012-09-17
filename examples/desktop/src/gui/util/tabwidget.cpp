@@ -67,6 +67,11 @@ TabWidget::TabWidget(QWidget* parent) : QTabWidget(parent)
     connect(tabBar(), SIGNAL(menuRequested(int,QPoint)), this, SIGNAL(tabMenuRequested(int,QPoint)));
 }
 
+QTabBar* TabWidget::tabBar() const
+{
+    return QTabWidget::tabBar();
+}
+
 QColor TabWidget::tabTextColor(TabWidget::TabRole role) const
 {
     return d.colors.value(role);
@@ -157,11 +162,6 @@ void TabWidget::moveToPrevTab()
     if (--index < 0)
         index = count() - 2;
     setCurrentIndex(index);
-}
-
-void TabWidget::setTabBarVisible(bool visible)
-{
-    tabBar()->setVisible(visible);
 }
 
 static void shiftIndexesFrom(QList<int>& indexes, int from, int delta)
