@@ -57,6 +57,7 @@ TabWidget::TabWidget(QWidget* parent) : QTabWidget(parent)
     setTabBar(new TabBar(this));
     setElideMode(Qt::ElideMiddle);
     d.previous = -1;
+    d.updatingColors = false;
 
     d.colors[Active] = palette().color(QPalette::WindowText);
     d.colors[Inactive] = palette().color(QPalette::Disabled, QPalette::Highlight);
@@ -80,6 +81,11 @@ QColor TabWidget::tabTextColor(TabWidget::TabRole role) const
 void TabWidget::setTabTextColor(TabWidget::TabRole role, const QColor& color)
 {
     d.colors[role] = color;
+    if (!d.updatingColors)
+    {
+        d.updatingColors = true;
+        QMetaObject::invokeMethod(this, "updateTabColors", Qt::QueuedConnection);
+    }
 }
 
 bool TabWidget::isTabInactive(int index)
@@ -179,6 +185,7 @@ void TabWidget::tabInserted(int index)
     shiftIndexesFrom(d.inactiveIndexes, index, 1);
     shiftIndexesFrom(d.alertIndexes, index, 1);
     shiftIndexesFrom(d.highlightIndexes, index, 1);
+    colorizeTab(index);
 }
 
 void TabWidget::tabRemoved(int index)
@@ -226,4 +233,11 @@ void TabWidget::colorizeTab(int index)
         tabBar()->setTabTextColor(index, d.colors.value(Highlight));
     else
         tabBar()->setTabTextColor(index, d.colors.value(Active));
+}
+
+void TabWidget::updateTabColors()
+{
+    for (int i = 0; i < count(); ++i)
+        colorizeTab(i);
+    d.updatingColors = false;
 }

@@ -61,11 +61,13 @@ private slots:
     void tabChanged(int index);
     void alertTimeout();
     void colorizeTab(int index);
+    void updateTabColors();
 
 private:
     struct TabWidgetData
     {
         int previous;
+        bool updatingColors;
         QColor currentAlertColor;
         QList<int> inactiveIndexes;
         QList<int> alertIndexes;
