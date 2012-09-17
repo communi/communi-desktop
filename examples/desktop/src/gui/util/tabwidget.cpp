@@ -67,12 +67,12 @@ TabWidget::TabWidget(QWidget* parent) : QTabWidget(parent)
     connect(tabBar(), SIGNAL(menuRequested(int,QPoint)), this, SIGNAL(tabMenuRequested(int,QPoint)));
 }
 
-QColor TabWidget::tabTextColor(TabWidget::TabTextRole role) const
+QColor TabWidget::tabTextColor(TabWidget::TabRole role) const
 {
     return d.colors.value(role);
 }
 
-void TabWidget::setTabTextColor(TabWidget::TabTextRole role, const QColor& color)
+void TabWidget::setTabTextColor(TabWidget::TabRole role, const QColor& color)
 {
     d.colors[role] = color;
 }

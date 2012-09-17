@@ -27,10 +27,10 @@ class TabWidget : public QTabWidget
 public:
     TabWidget(QWidget* parent = 0);
 
-    enum TabTextRole { Active, Inactive, Alert, Highlight };
+    enum TabRole { Active, Inactive, Alert, Highlight };
 
-    QColor tabTextColor(TabTextRole role) const;
-    void setTabTextColor(TabTextRole role, const QColor& color);
+    QColor tabTextColor(TabRole role) const;
+    void setTabTextColor(TabRole role, const QColor& color);
 
     bool isTabInactive(int index);
     void setTabInactive(int index, bool inactive);
@@ -69,7 +69,7 @@ private:
         QList<int> inactiveIndexes;
         QList<int> alertIndexes;
         QList<int> highlightIndexes;
-        QHash<TabTextRole, QColor> colors;
+        QHash<TabRole, QColor> colors;
     } d;
 };
 
