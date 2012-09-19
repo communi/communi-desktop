@@ -75,7 +75,7 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
 
         d.handler.addReceiver(receiver, view);
         d.views.insert(receiver.toLower(), view);
-        addTab(view, receiver);
+        addTab(view, QString(receiver).replace("&", "&&"));
     }
     setCurrentWidget(view);
     return view;
