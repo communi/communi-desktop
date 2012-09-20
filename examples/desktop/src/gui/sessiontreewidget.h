@@ -46,4 +46,4 @@ private:
     } d;
 };
 
-#endif // MULTISESSIONTREEWIDGET_H
+#endif // SESSIONTREEWIDGET_H
