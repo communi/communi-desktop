@@ -13,38 +13,8 @@
 */
 
 #include "sessiontreewidget.h"
+#include "sessiontreeitem.h"
 #include "session.h"
-
-class SessionTreeItem : public QTreeWidgetItem
-{
-public:
-    SessionTreeItem(QTreeWidget* parent) : QTreeWidgetItem(parent),
-      _alerted(false), _inactive(true), _highlighted(false) { }
-
-    QVariant data(int column, int role) const
-    {
-        if (role == Qt::ForegroundRole)
-        {
-            if (_alerted)
-                return QColor(Qt::red); // TODO: treeWidget()->palette().color(QPalette::Highlight);
-            if (_highlighted)
-                return treeWidget()->palette().color(QPalette::Highlight);
-            if (_inactive)
-                return treeWidget()->palette().color(QPalette::Disabled, QPalette::Highlight);
-            return treeWidget()->palette().color(QPalette::WindowText);
-        }
-        return QTreeWidgetItem::data(column, role);
-    }
-
-    void setAlerted(bool alerted) { _alerted = alerted; emitDataChanged(); }
-    void setInactive(bool inactive) { _inactive = inactive; emitDataChanged(); }
-    void setHighlighted(bool highlighted) { _highlighted = highlighted; emitDataChanged(); }
-
-private:
-    bool _alerted;
-    bool _inactive;
-    bool _highlighted;
-};
 
 SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
