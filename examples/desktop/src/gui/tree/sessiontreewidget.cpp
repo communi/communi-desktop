@@ -16,10 +16,8 @@
 #include "sessiontreeitem.h"
 #include "session.h"
 
-SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
+SessionTreeWidget::SessionTreeWidget(QWidget* parent) : TreeWidget(parent)
 {
-    setAnimated(true);
-    setHeaderHidden(true);
 }
 
 QList<Session*> SessionTreeWidget::sessions() const

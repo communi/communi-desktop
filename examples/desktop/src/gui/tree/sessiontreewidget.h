@@ -15,13 +15,13 @@
 #ifndef SESSIONTREEWIDGET_H
 #define SESSIONTREEWIDGET_H
 
-#include <QTreeWidget>
+#include "treewidget.h"
 #include <QHash>
 
 class Session;
 class SessionTreeItem;
 
-class SessionTreeWidget : public QTreeWidget
+class SessionTreeWidget : public TreeWidget
 {
     Q_OBJECT
 
