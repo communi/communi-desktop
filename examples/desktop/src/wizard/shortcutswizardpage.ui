@@ -13,7 +13,7 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="TreeWidget" name="treeWidget">
+    <widget class="WizardTreeWidget" name="treeWidget">
      <property name="inputMethodHints">
       <set>Qt::ImhNoAutoUppercase</set>
      </property>
@@ -86,9 +86,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TreeWidget</class>
+   <class>WizardTreeWidget</class>
    <extends>QTreeWidget</extends>
-   <header>treewidget.h</header>
+   <header>wizardtreewidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

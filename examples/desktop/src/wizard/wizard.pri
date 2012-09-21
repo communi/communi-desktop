@@ -22,8 +22,8 @@ HEADERS += $$PWD/shortcutswizardpage.h
 HEADERS += $$PWD/messageswizardpage.h
 HEADERS += $$PWD/serverwizardpage.h
 HEADERS += $$PWD/settingswizard.h
-HEADERS += $$PWD/treewidget.h
 HEADERS += $$PWD/userwizardpage.h
+HEADERS += $$PWD/wizardtreewidget.h
 
 SOURCES += $$PWD/colorswizardpage.cpp
 SOURCES += $$PWD/connectionwizard.cpp
@@ -33,5 +33,5 @@ SOURCES += $$PWD/shortcutswizardpage.cpp
 SOURCES += $$PWD/messageswizardpage.cpp
 SOURCES += $$PWD/serverwizardpage.cpp
 SOURCES += $$PWD/settingswizard.cpp
-SOURCES += $$PWD/treewidget.cpp
 SOURCES += $$PWD/userwizardpage.cpp
+SOURCES += $$PWD/wizardtreewidget.cpp

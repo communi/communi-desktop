@@ -12,20 +12,14 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TREEWIDGET_H
-#define TREEWIDGET_H
+#include "wizardtreewidget.h"
 
-#include <QTreeWidget>
-
-class TreeWidget : public QTreeWidget
+WizardTreeWidget::WizardTreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
-    Q_OBJECT
+}
 
-public:
-    TreeWidget(QWidget* parent = 0);
-
-protected:
-    virtual bool edit(const QModelIndex& index, EditTrigger trigger, QEvent* event);
-};
-
-#endif // TREEWIDGET_H
+bool WizardTreeWidget::edit(const QModelIndex& index, EditTrigger trigger, QEvent* event)
+{
+    QModelIndex sibling = index.sibling(index.row(), 1);
+    return QTreeWidget::edit(sibling, trigger, event);
+}

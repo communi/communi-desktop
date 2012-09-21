@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>ColorsWizardPage</class>
  <widget class="QWizardPage" name="ColorsWizardPage">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>313</width>
-    <height>171</height>
-   </rect>
-  </property>
   <property name="title">
    <string>Color settings</string>
   </property>
@@ -18,7 +10,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="TreeWidget" name="treeWidget">
+    <widget class="WizardTreeWidget" name="treeWidget">
      <property name="rootIsDecorated">
       <bool>false</bool>
      </property>
@@ -103,9 +95,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TreeWidget</class>
+   <class>WizardTreeWidget</class>
    <extends>QTreeWidget</extends>
-   <header>treewidget.h</header>
+   <header>wizardtreewidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
