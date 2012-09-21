@@ -161,12 +161,19 @@ void SessionTabWidget::tabActivated(int index)
 
 void SessionTabWidget::onNewTabRequested()
 {
-    QString channel = QInputDialog::getText(this, tr("Join channel"), tr("Channel:"));
-    if (!channel.isEmpty())
+    QInputDialog dialog(this);
+    dialog.setWindowFlags(dialog.windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    dialog.setWindowTitle(tr("Join channel"));
+    dialog.setLabelText(tr("Channel:"));
+    if (dialog.exec())
     {
-        if (session()->isChannel(channel))
-            d.handler.session()->sendCommand(IrcCommand::createJoin(channel));
-        openView(channel);
+        QString channel = dialog.textValue();
+        if (!channel.isEmpty())
+        {
+            if (session()->isChannel(channel))
+                d.handler.session()->sendCommand(IrcCommand::createJoin(channel));
+            openView(channel);
+        }
     }
 }
 
