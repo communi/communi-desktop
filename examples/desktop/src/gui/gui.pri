@@ -9,10 +9,8 @@ QMAKE_CLEAN += $$PWD/*~
 FORMS += $$PWD/messageview.ui
 
 HEADERS += $$PWD/lineeditor.h
-HEADERS += $$PWD/multisessiontabwidget.h
 HEADERS += $$PWD/messageview.h
 HEADERS += $$PWD/searcheditor.h
-HEADERS += $$PWD/sessiontabwidget.h
 HEADERS += $$PWD/sessiontreeitem.h
 HEADERS += $$PWD/sessiontreewidget.h
 HEADERS += $$PWD/settings.h
@@ -20,15 +18,14 @@ HEADERS += $$PWD/sortedusermodel.h
 HEADERS += $$PWD/userlistview.h
 
 SOURCES += $$PWD/lineeditor.cpp
-SOURCES += $$PWD/multisessiontabwidget.cpp
 SOURCES += $$PWD/messageview.cpp
 SOURCES += $$PWD/searcheditor.cpp
-SOURCES += $$PWD/sessiontabwidget.cpp
 SOURCES += $$PWD/sessiontreeitem.cpp
 SOURCES += $$PWD/sessiontreewidget.cpp
 SOURCES += $$PWD/settings.cpp
 SOURCES += $$PWD/sortedusermodel.cpp
 SOURCES += $$PWD/userlistview.cpp
 
+include(tabs/tabs.pri)
 include(util/util.pri)
 include(3rdparty/3rdparty.pri)
