@@ -102,7 +102,7 @@ void SessionTabWidget::closeCurrentView()
 
 void SessionTabWidget::closeView(int index)
 {
-    MessageView* view = d.views.value(tabText(index).toLower());
+    MessageView* view = d.views.value(tabText(index).replace("&&", "&").toLower());
     if (view)
     {
         QString reason = tr("%1 %2").arg(QApplication::applicationName())
@@ -125,7 +125,7 @@ void SessionTabWidget::renameView(const QString& from, const QString& to)
         d.views.insert(to.toLower(), view);
         int index = indexOf(view);
         if (index != -1)
-            setTabText(index, view->receiver());
+            setTabText(index, view->receiver().replace("&", "&&"));
     }
 }
 
