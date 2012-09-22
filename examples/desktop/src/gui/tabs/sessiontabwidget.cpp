@@ -152,7 +152,7 @@ void SessionTabWidget::tabActivated(int index)
         setTabHighlight(index, false);
         if (isVisible())
         {
-            window()->setWindowFilePath(tabText(index));
+            window()->setWindowFilePath(tabText(index).replace("&&", "&"));
             if (currentWidget())
                 currentWidget()->setFocus();
         }
