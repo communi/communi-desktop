@@ -16,8 +16,6 @@
 #define TREEWIDGET_H
 
 #include <QTreeWidget>
-#include <QColor>
-#include <QHash>
 
 class TreeWidget : public QTreeWidget
 {
@@ -26,21 +24,9 @@ class TreeWidget : public QTreeWidget
 public:
     TreeWidget(QWidget* parent = 0);
 
-    enum ItemStatus { Active, Inactive, Alert, Highlight };
-
-    QColor statusColor(ItemStatus status) const;
-    void setStatusColor(ItemStatus status, const QColor& color);
-
-signals:
-    void menuRequested(QTreeWidgetItem* item, const QPoint& pos);
-
-protected:
-    void contextMenuEvent(QContextMenuEvent* event);
-
 private:
     struct Private
     {
-        QHash<ItemStatus, QColor> colors;
     } d;
 };
 

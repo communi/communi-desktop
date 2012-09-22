@@ -15,18 +15,24 @@
 #ifndef SESSIONTREEWIDGET_H
 #define SESSIONTREEWIDGET_H
 
-#include "treewidget.h"
+#include <QTreeWidget>
+#include <QColor>
 #include <QHash>
 
 class Session;
 class SessionTreeItem;
 
-class SessionTreeWidget : public TreeWidget
+class SessionTreeWidget : public QTreeWidget
 {
     Q_OBJECT
 
 public:
     SessionTreeWidget(QWidget* parent = 0);
+
+    enum ItemStatus { Active, Inactive, Alert, Highlight };
+
+    QColor statusColor(ItemStatus status) const;
+    void setStatusColor(ItemStatus status, const QColor& color);
 
     QList<Session*> sessions() const;
     void addSession(Session* session);
@@ -36,12 +42,19 @@ public:
     void setAlerted(Session* session, bool alerted);
     void setHighlighted(Session* session, bool highlighted);
 
+signals:
+    void menuRequested(QTreeWidgetItem* item, const QPoint& pos);
+
+protected:
+    void contextMenuEvent(QContextMenuEvent* event);
+
 private slots:
     void onSessionNetworkChanged(const QString& network);
 
 private:
     struct SessionTreeWidgetData
     {
+        QHash<ItemStatus, QColor> colors;
         QHash<Session*, SessionTreeItem*> sessions;
     } d;
 };

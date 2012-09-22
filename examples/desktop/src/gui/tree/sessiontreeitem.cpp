@@ -13,7 +13,7 @@
 */
 
 #include "sessiontreeitem.h"
-#include "treewidget.h"
+#include "sessiontreewidget.h"
 
 SessionTreeItem::SessionTreeItem(QTreeWidget* parent) : QTreeWidgetItem(parent)
 {
@@ -26,14 +26,14 @@ QVariant SessionTreeItem::data(int column, int role) const
 {
     if (role == Qt::ForegroundRole)
     {
-        TreeWidget* tw = static_cast<TreeWidget*>(treeWidget());
+        SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget());
         if (d.inactive)
-            return tw->statusColor(TreeWidget::Inactive);
+            return tw->statusColor(SessionTreeWidget::Inactive);
         if (d.alerted)
-            return tw->statusColor(TreeWidget::Alert);
+            return tw->statusColor(SessionTreeWidget::Alert);
         if (d.highlighted)
-            return tw->statusColor(TreeWidget::Highlight);
-        return tw->statusColor(TreeWidget::Active);
+            return tw->statusColor(SessionTreeWidget::Highlight);
+        return tw->statusColor(SessionTreeWidget::Active);
     }
     return QTreeWidgetItem::data(column, role);
 }

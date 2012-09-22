@@ -15,9 +15,27 @@
 #include "sessiontreewidget.h"
 #include "sessiontreeitem.h"
 #include "session.h"
+#include <QContextMenuEvent>
 
-SessionTreeWidget::SessionTreeWidget(QWidget* parent) : TreeWidget(parent)
+SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
+    setAnimated(true);
+    setHeaderHidden(true);
+
+    d.colors[Active] = palette().color(QPalette::WindowText);
+    d.colors[Inactive] = palette().color(QPalette::Disabled, QPalette::Highlight);
+    d.colors[Alert] = QColor(Qt::red); //palette().color(QPalette::Highlight);
+    d.colors[Highlight] = QColor(Qt::green); //palette().color(QPalette::Highlight);
+}
+
+QColor SessionTreeWidget::statusColor(SessionTreeWidget::ItemStatus status) const
+{
+    return d.colors.value(status);
+}
+
+void SessionTreeWidget::setStatusColor(SessionTreeWidget::ItemStatus status, const QColor& color)
+{
+    d.colors[status] = color;
 }
 
 QList<Session*> SessionTreeWidget::sessions() const
@@ -41,6 +59,13 @@ void SessionTreeWidget::addSession(Session* session)
 void SessionTreeWidget::removeSession(Session *session)
 {
     delete d.sessions.take(session);
+}
+
+void SessionTreeWidget::contextMenuEvent(QContextMenuEvent* event)
+{
+    QTreeWidgetItem* item = itemAt(event->pos());
+    if (item)
+        emit menuRequested(item, event->globalPos());
 }
 
 void SessionTreeWidget::onSessionNetworkChanged(const QString& network)
