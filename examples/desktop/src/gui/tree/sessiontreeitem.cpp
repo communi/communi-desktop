@@ -22,6 +22,21 @@ SessionTreeItem::SessionTreeItem(QTreeWidget* parent) : QTreeWidgetItem(parent)
     d.highlighted = false;
 }
 
+SessionTreeItem::SessionTreeItem(QTreeWidgetItem* parent) : QTreeWidgetItem(parent)
+{
+    d.alerted = false;
+    d.inactive = false;
+    d.highlighted = false;
+}
+
+SessionTreeItem* SessionTreeItem::findChild(const QString& name) const
+{
+    for (int i = 0; i < childCount(); ++i)
+        if (child(i)->text(0).compare(name, Qt::CaseInsensitive) == 0)
+            return static_cast<SessionTreeItem*>(child(i));
+    return 0;
+}
+
 QVariant SessionTreeItem::data(int column, int role) const
 {
     if (role == Qt::ForegroundRole)

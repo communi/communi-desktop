@@ -21,6 +21,9 @@ class SessionTreeItem : public QTreeWidgetItem
 {
 public:
     SessionTreeItem(QTreeWidget* parent);
+    SessionTreeItem(QTreeWidgetItem* parent);
+
+    SessionTreeItem* findChild(const QString& name) const;
 
     QVariant data(int column, int role) const;
 
