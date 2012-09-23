@@ -222,26 +222,28 @@ void SessionTabWidget::delayedTabResetTimeout()
 
 void SessionTabWidget::onTabAlerted(IrcMessage* message)
 {
-    int index = indexOf(static_cast<QWidget*>(sender()));
+    MessageView* view = qobject_cast<MessageView*>(sender());
+    int index = indexOf(view);
     if (index != -1)
     {
         if (!isVisible() || !isActiveWindow() || index != currentIndex())
         {
             setTabAlert(index, true);
-            emit alerted(message);
+            emit alerted(view, message);
         }
     }
 }
 
 void SessionTabWidget::onTabHighlighted(IrcMessage* message)
 {
-    int index = indexOf(static_cast<QWidget*>(sender()));
+    MessageView* view = qobject_cast<MessageView*>(sender());
+    int index = indexOf(view);
     if (index != -1)
     {
         if (!isVisible() || !isActiveWindow() || index != currentIndex())
         {
             setTabHighlight(index, true);
-            emit highlighted(message);
+            emit highlighted(view, message);
         }
     }
 }

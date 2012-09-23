@@ -57,8 +57,8 @@ void MultiSessionTabWidget::addSession(Session* session)
     connect(tab, SIGNAL(highlightStatusChanged(bool)), this, SLOT(setHighlighted(bool)));
     connect(tab, SIGNAL(inactiveStatusChanged(bool)), this, SLOT(setInactive(bool)));
     connect(tab, SIGNAL(alertStatusChanged(bool)), this, SLOT(setAlerted(bool)));
-    connect(tab, SIGNAL(alerted(IrcMessage*)), this, SIGNAL(alerted(IrcMessage*)));
-    connect(tab, SIGNAL(highlighted(IrcMessage*)), this, SIGNAL(highlighted(IrcMessage*)));
+    connect(tab, SIGNAL(alerted(MessageView*,IrcMessage*)), this, SIGNAL(alerted(MessageView*,IrcMessage*)));
+    connect(tab, SIGNAL(highlighted(MessageView*,IrcMessage*)), this, SIGNAL(highlighted(MessageView*,IrcMessage*)));
     connect(tab, SIGNAL(sessionClosed(Session*)), this, SIGNAL(sessionRemoved(Session*)));
     tab->applySettings(d.settings);
 

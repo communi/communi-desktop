@@ -21,6 +21,7 @@
 class Session;
 class QShortcut;
 class IrcMessage;
+class MessageView;
 class SessionTabWidget;
 
 class MultiSessionTabWidget : public TabWidget
@@ -43,8 +44,8 @@ signals:
     void sessionAdded(Session* session);
     void sessionRemoved(Session* session);
 
-    void alerted(IrcMessage* message);
-    void highlighted(IrcMessage* message);
+    void alerted(MessageView* view, IrcMessage* message);
+    void highlighted(MessageView* view, IrcMessage* message);
 
 protected:
     void tabInserted(int index);

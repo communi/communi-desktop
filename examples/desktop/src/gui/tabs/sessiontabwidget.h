@@ -43,8 +43,8 @@ public slots:
     void applySettings(const Settings& settings);
 
 signals:
-    void alerted(IrcMessage* message);
-    void highlighted(IrcMessage* message);
+    void alerted(MessageView* view, IrcMessage* message);
+    void highlighted(MessageView* view, IrcMessage* message);
     void inactiveStatusChanged(bool inactive);
     void sessionClosed(Session* session);
 
