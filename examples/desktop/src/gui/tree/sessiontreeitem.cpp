@@ -15,18 +15,25 @@
 #include "sessiontreeitem.h"
 #include "sessiontreewidget.h"
 
-SessionTreeItem::SessionTreeItem(QTreeWidget* parent) : QTreeWidgetItem(parent)
+SessionTreeItem::SessionTreeItem(Session* session, QTreeWidget* parent) : QTreeWidgetItem(parent)
 {
+    d.session = session;
     d.alerted = false;
     d.inactive = true;
     d.highlighted = false;
 }
 
-SessionTreeItem::SessionTreeItem(QTreeWidgetItem* parent) : QTreeWidgetItem(parent)
+SessionTreeItem::SessionTreeItem(Session* session, QTreeWidgetItem* parent) : QTreeWidgetItem(parent)
 {
+    d.session = session;
     d.alerted = false;
     d.inactive = false;
     d.highlighted = false;
+}
+
+Session* SessionTreeItem::session() const
+{
+    return d.session;
 }
 
 SessionTreeItem* SessionTreeItem::findChild(const QString& name) const

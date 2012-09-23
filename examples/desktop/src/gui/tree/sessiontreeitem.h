@@ -17,12 +17,15 @@
 
 #include <QTreeWidgetItem>
 
+class Session;
+
 class SessionTreeItem : public QTreeWidgetItem
 {
 public:
-    SessionTreeItem(QTreeWidget* parent);
-    SessionTreeItem(QTreeWidgetItem* parent);
+    SessionTreeItem(Session* session, QTreeWidget* parent);
+    SessionTreeItem(Session* session, QTreeWidgetItem* parent);
 
+    Session* session() const;
     SessionTreeItem* findChild(const QString& name) const;
 
     QVariant data(int column, int role) const;
@@ -37,6 +40,7 @@ private:
         bool alerted;
         bool inactive;
         bool highlighted;
+        Session* session;
     } d;
 };
 
