@@ -35,12 +35,14 @@ public:
     void setStatusColor(ItemStatus status, const QColor& color);
 
     QList<Session*> sessions() const;
-    void addSession(Session* session);
-    void removeSession(Session* session);
 
     void setInactive(Session* session, bool inactive);
     void setAlerted(Session* session, bool alerted);
     void setHighlighted(Session* session, bool highlighted);
+
+public slots:
+    void addSession(Session* session);
+    void removeSession(Session* session);
 
 signals:
     void menuRequested(QTreeWidgetItem* item, const QPoint& pos);
