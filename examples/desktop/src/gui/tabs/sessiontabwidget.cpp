@@ -151,14 +151,18 @@ void SessionTabWidget::tabActivated(int index)
 {
     if (index < count() - 1)
     {
-        d.handler.setCurrentReceiver(qobject_cast<MessageView*>(currentWidget()));
-        setTabAlert(index, false);
-        setTabHighlight(index, false);
-        if (isVisible())
+        MessageView* view = qobject_cast<MessageView*>(currentWidget());
+        if (view)
         {
-            window()->setWindowFilePath(tabText(index).replace("&&", "&"));
-            if (currentWidget())
-                currentWidget()->setFocus();
+            d.handler.setCurrentReceiver(view);
+            setTabAlert(index, false);
+            setTabHighlight(index, false);
+            if (isVisible())
+            {
+                window()->setWindowFilePath(tabText(index).replace("&&", "&"));
+                view->setFocus();
+                emit viewActivated(view);
+            }
         }
     }
 }
