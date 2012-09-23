@@ -19,9 +19,13 @@
 #include "trayicon.h"
 
 class MultiSessionTabWidget;
+class SessionTreeWidget;
 struct ConnectionInfo;
+class MessageView;
 class IrcMessage;
 class QtDockTile;
+class Settings;
+class Session;
 
 class MainWindow : public QMainWindow
 {
@@ -45,10 +49,18 @@ protected:
 
 private slots:
     void initialize();
+    void applySettings(const Settings& settings);
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void alert(IrcMessage* message);
+    void viewAdded(MessageView* view);
+    void viewRemoved(MessageView* view);
+    void viewRenamed(const QString& from, const QString& to);
+    void currentTreeItemChanged(Session* session, const QString& view);
 
 private:
+    void createTree();
+
+    SessionTreeWidget* treeWidget;
     MultiSessionTabWidget* tabWidget;
     TrayIcon* trayIcon;
     QtDockTile* dockTile;
