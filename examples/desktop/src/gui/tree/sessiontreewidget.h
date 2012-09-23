@@ -16,6 +16,7 @@
 #define SESSIONTREEWIDGET_H
 
 #include <QTreeWidget>
+#include <QShortcut>
 #include <QColor>
 #include <QHash>
 
@@ -46,6 +47,9 @@ public slots:
     void renameView(Session* session, const QString& from, const QString& to);
     void setCurrentView(Session* session, const QString& view);
 
+    void moveToNextItem();
+    void moveToPrevItem();
+
 signals:
     void currentViewChanged(Session* session, const QString& view);
     void menuRequested(QTreeWidgetItem* item, const QPoint& pos);
@@ -60,6 +64,8 @@ private slots:
 private:
     struct SessionTreeWidgetData
     {
+        QShortcut* prevShortcut;
+        QShortcut* nextShortcut;
         QHash<ItemStatus, QColor> colors;
         QHash<Session*, SessionTreeItem*> sessions;
     } d;

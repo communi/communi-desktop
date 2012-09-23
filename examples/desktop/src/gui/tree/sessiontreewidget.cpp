@@ -29,6 +29,12 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
 
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));
+
+    d.prevShortcut = new QShortcut(QKeySequence("Ctrl+Alt+Up"), this); // TODO
+    connect(d.prevShortcut, SIGNAL(activated()), this, SLOT(moveToPrevItem()));
+
+    d.nextShortcut = new QShortcut(QKeySequence("Ctrl+Alt+Down"), this); // TODO
+    connect(d.nextShortcut, SIGNAL(activated()), this, SLOT(moveToNextItem()));
 }
 
 QColor SessionTreeWidget::statusColor(SessionTreeWidget::ItemStatus status) const
@@ -102,6 +108,24 @@ void SessionTreeWidget::setCurrentView(Session* session, const QString& view)
     if (item && !view.isEmpty())
         item = item->findChild(view);
     setCurrentItem(item);
+}
+
+void SessionTreeWidget::moveToNextItem()
+{
+    QTreeWidgetItemIterator it(currentItem());
+    if (*++it)
+        setCurrentItem(*it);
+    else
+        setCurrentItem(topLevelItem(0));
+}
+
+void SessionTreeWidget::moveToPrevItem()
+{
+    QTreeWidgetItemIterator it(currentItem());
+    if (*--it)
+        setCurrentItem(*it);
+    else
+        setCurrentItem(topLevelItem(topLevelItemCount() - 1));
 }
 
 void SessionTreeWidget::contextMenuEvent(QContextMenuEvent* event)
