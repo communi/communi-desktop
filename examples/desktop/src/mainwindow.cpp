@@ -234,7 +234,11 @@ void MainWindow::viewAdded(MessageView* view)
     {
         SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(sender());
         if (tab)
-            treeWidget->addView(tab->session(), view->receiver());
+        {
+            Session* session = tab->session();
+            treeWidget->addView(session, view->receiver());
+            treeWidget->expandItem(treeWidget->sessionItem(session));
+        }
     }
 }
 
@@ -290,6 +294,7 @@ void MainWindow::createTree()
                 treeWidget->addView(session, view->receiver());
         }
     }
+    treeWidget->expandAll();
 
     QSizePolicy policy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     policy.setHorizontalStretch(2);
