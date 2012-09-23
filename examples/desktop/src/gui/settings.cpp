@@ -15,7 +15,7 @@
 #include "settings.h"
 #include <QApplication>
 
-Settings::Settings() : maxBlockCount(-1), timeStamp(true)
+Settings::Settings() : maxBlockCount(-1), timeStamp(true), layout("tabs")
 {
 #if defined(Q_WS_MAC)
     shortcuts[TabUp] = QApplication::translate("Shortcuts", "Ctrl+Alt+Up");
@@ -65,7 +65,7 @@ bool Settings::operator==(const Settings& other) const
     return messages == other.messages && highlights == other.highlights
         && language == other.language && font == other.font && colors == other.colors
         && shortcuts == other.shortcuts && maxBlockCount == other.maxBlockCount
-        && timeStamp == other.timeStamp;
+        && timeStamp == other.timeStamp && layout == other.layout;
 }
 
 bool Settings::operator!=(const Settings& other) const

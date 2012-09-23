@@ -65,12 +65,13 @@ struct Settings
     QString font;
     int maxBlockCount;
     bool timeStamp;
+    QString layout;
 };
 Q_DECLARE_METATYPE(Settings);
 
 inline QDataStream& operator<<(QDataStream& out, const Settings& settings)
 {
-    out << quint32(125); // version
+    out << quint32(126); // version
     out << settings.messages;
     out << settings.highlights;
     out << settings.language;
@@ -79,6 +80,7 @@ inline QDataStream& operator<<(QDataStream& out, const Settings& settings)
     out << settings.shortcuts;
     out << settings.maxBlockCount;
     out << settings.timeStamp;
+    out << settings.layout;
     return out;
 }
 
@@ -93,6 +95,9 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
     settings.shortcuts = readStreamValue< QHash<int, QString> >(in, settings.shortcuts);
     settings.maxBlockCount = readStreamValue<int>(in, settings.maxBlockCount);
     settings.timeStamp = readStreamValue<bool>(in, settings.timeStamp);
+    settings.layout = readStreamValue<QString>(in, settings.layout);
+    if (settings.layout.isEmpty())
+        settings.layout = "tabs";
     if (version <= 125)
         settings.colors[Settings::TimeStamp] = "gray";
     return in;
