@@ -62,18 +62,27 @@ QVariant SessionTreeItem::data(int column, int role) const
 
 void SessionTreeItem::setAlerted(bool alerted)
 {
-    d.alerted = alerted;
-    emitDataChanged();
+    if (d.alerted != alerted)
+    {
+        d.alerted = alerted;
+        emitDataChanged();
+    }
 }
 
 void SessionTreeItem::setInactive(bool inactive)
 {
-    d.inactive = inactive;
-    emitDataChanged();
+    if (d.inactive != inactive)
+    {
+        d.inactive = inactive;
+        emitDataChanged();
+    }
 }
 
 void SessionTreeItem::setHighlighted(bool highlighted)
 {
-    d.highlighted = highlighted;
-    emitDataChanged();
+    if (d.highlighted != highlighted)
+    {
+        d.highlighted = highlighted;
+        emitDataChanged();
+    }
 }
