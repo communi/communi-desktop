@@ -287,7 +287,7 @@ void MainWindow::createTree()
     {
         treeWidget->addSession(session);
         SessionTabWidget* tab = tabWidget->sessionWidget(session);
-        for (int i = 0; i < tab->count(); ++i)
+        for (int i = 1; i < tab->count() - 1; ++i)
         {
             MessageView* view = qobject_cast<MessageView*>(tab->widget(i));
             if (view)
