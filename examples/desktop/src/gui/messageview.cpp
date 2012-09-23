@@ -298,6 +298,8 @@ void MessageView::receiveMessage(IrcMessage* message)
                 break;
         }
         break;
+    default:
+        break;
     }
 
     QString formatted = d.formatter.formatMessage(message, d.listView->userModel());
