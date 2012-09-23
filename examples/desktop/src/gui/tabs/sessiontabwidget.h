@@ -48,6 +48,10 @@ signals:
     void inactiveStatusChanged(bool inactive);
     void sessionClosed(Session* session);
 
+    void viewAdded(MessageView* view);
+    void viewRemoved(MessageView* view);
+    void viewRenamed(const QString& from, const QString& to);
+
 protected:
     bool event(QEvent* event);
 

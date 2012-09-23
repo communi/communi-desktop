@@ -76,6 +76,7 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
         d.handler.addReceiver(receiver, view);
         d.views.insert(receiver.toLower(), view);
         addTab(view, QString(receiver).replace("&", "&&"));
+        emit viewAdded(view);
     }
     setCurrentWidget(view);
     return view;
@@ -87,6 +88,7 @@ void SessionTabWidget::removeView(const QString& receiver)
     if (view)
     {
         view->deleteLater();
+        emit viewRemoved(view);
         if (indexOf(view) == 0)
         {
             deleteLater();
@@ -127,6 +129,7 @@ void SessionTabWidget::renameView(const QString& from, const QString& to)
         int index = indexOf(view);
         if (index != -1)
             setTabText(index, view->receiver().replace("&", "&&"));
+        emit viewRenamed(from, to);
     }
 }
 
