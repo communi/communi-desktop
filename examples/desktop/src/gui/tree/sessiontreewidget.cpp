@@ -60,8 +60,7 @@ void SessionTreeWidget::addSession(Session* session)
     if (name.isEmpty())
         connect(session, SIGNAL(networkChanged(QString)), this, SLOT(onSessionNetworkChanged(QString)));
     item->setText(0, name.isEmpty() ? session->host() : name);
-
-    setInactive(session, !session->isActive());
+    item->setInactive(!session->isActive());
 }
 
 void SessionTreeWidget::removeSession(Session *session)
@@ -116,25 +115,4 @@ void SessionTreeWidget::onCurrentItemChanged(QTreeWidgetItem* item)
 {
     if (item)
         emit currentViewChanged(static_cast<SessionTreeItem*>(item)->session(), item->parent() ? item->text(0) : QString());
-}
-
-void SessionTreeWidget::setInactive(Session* session, bool inactive)
-{
-    SessionTreeItem* item = d.sessions.value(session);
-    if (item)
-        item->setInactive(inactive);
-}
-
-void SessionTreeWidget::setAlerted(Session* session, bool alerted)
-{
-    SessionTreeItem* item = d.sessions.value(session);
-    if (item)
-        item->setAlerted(alerted);
-}
-
-void SessionTreeWidget::setHighlighted(Session* session, bool highlighted)
-{
-    SessionTreeItem* item = d.sessions.value(session);
-    if (item)
-        item->setHighlighted(highlighted);
 }

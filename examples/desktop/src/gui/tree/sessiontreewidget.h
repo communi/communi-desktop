@@ -37,10 +37,6 @@ public:
     QList<Session*> sessions() const;
     QTreeWidgetItem* sessionItem(Session* session) const;
 
-    void setInactive(Session* session, bool inactive);
-    void setAlerted(Session* session, bool alerted);
-    void setHighlighted(Session* session, bool highlighted);
-
 public slots:
     void addSession(Session* session);
     void removeSession(Session* session);
