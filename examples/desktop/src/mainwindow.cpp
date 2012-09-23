@@ -139,6 +139,7 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     connect(tab, SIGNAL(viewAdded(MessageView*)), this, SLOT(viewAdded(MessageView*)));
     connect(tab, SIGNAL(viewRemoved(MessageView*)), this, SLOT(viewRemoved(MessageView*)));
     connect(tab, SIGNAL(viewRenamed(QString,QString)), this, SLOT(viewRenamed(QString,QString)));
+    connect(tab, SIGNAL(viewActivated(MessageView*)), this, SLOT(viewActivated(MessageView*)));
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
@@ -283,6 +284,17 @@ void MainWindow::viewRenamed(const QString& from, const QString& to)
         SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(sender());
         if (tab)
             treeWidget->renameView(tab->session(), from, to);
+    }
+}
+
+void MainWindow::viewActivated(MessageView *view)
+{
+    if (treeWidget)
+    {
+        QString receiver;
+        if (view->viewType() != MessageView::ServerView)
+            receiver = view->receiver();
+        treeWidget->setCurrentView(view->session(), receiver);
     }
 }
 

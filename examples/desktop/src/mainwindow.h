@@ -56,6 +56,7 @@ private slots:
     void viewAdded(MessageView* view);
     void viewRemoved(MessageView* view);
     void viewRenamed(const QString& from, const QString& to);
+    void viewActivated(MessageView* view);
     void currentTreeItemChanged(Session* session, const QString& view);
 
 private:
