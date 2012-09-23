@@ -49,6 +49,7 @@ public slots:
     void renameView(Session* session, const QString& from, const QString& to);
 
 signals:
+    void currentViewChanged(Session* session, const QString& view);
     void menuRequested(QTreeWidgetItem* item, const QPoint& pos);
 
 protected:
@@ -56,6 +57,7 @@ protected:
 
 private slots:
     void onSessionNetworkChanged(const QString& network);
+    void onCurrentItemChanged(QTreeWidgetItem* current);
 
 private:
     struct SessionTreeWidgetData

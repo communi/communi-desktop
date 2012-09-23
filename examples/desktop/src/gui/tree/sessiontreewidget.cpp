@@ -26,6 +26,9 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     d.colors[Inactive] = palette().color(QPalette::Disabled, QPalette::Highlight);
     d.colors[Alert] = QColor(Qt::red); //palette().color(QPalette::Highlight);
     d.colors[Highlight] = QColor(Qt::green); //palette().color(QPalette::Highlight);
+
+    connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
+            this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));
 }
 
 QColor SessionTreeWidget::statusColor(SessionTreeWidget::ItemStatus status) const
@@ -45,7 +48,7 @@ QList<Session*> SessionTreeWidget::sessions() const
 
 void SessionTreeWidget::addSession(Session* session)
 {
-    SessionTreeItem* item = new SessionTreeItem(this);
+    SessionTreeItem* item = new SessionTreeItem(session, this);
     d.sessions.insert(session, item);
 
     QString name = session->name();
@@ -66,7 +69,7 @@ void SessionTreeWidget::addView(Session* session, const QString& view)
     SessionTreeItem* parent = d.sessions.value(session);
     if (parent)
     {
-        SessionTreeItem* item = new SessionTreeItem(parent);
+        SessionTreeItem* item = new SessionTreeItem(session, parent);
         item->setText(0, view);
     }
 }
@@ -102,6 +105,12 @@ void SessionTreeWidget::onSessionNetworkChanged(const QString& network)
     SessionTreeItem* item = d.sessions.value(session);
     if (item)
         item->setText(0, network);
+}
+
+void SessionTreeWidget::onCurrentItemChanged(QTreeWidgetItem* item)
+{
+    if (item)
+        emit currentViewChanged(static_cast<SessionTreeItem*>(item)->session(), item->parent() ? item->text(0) : QString());
 }
 
 void SessionTreeWidget::setInactive(Session* session, bool inactive)
