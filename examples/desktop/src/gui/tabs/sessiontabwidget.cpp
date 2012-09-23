@@ -250,6 +250,7 @@ void SessionTabWidget::applySettings(const Settings& settings)
 {
     d.tabLeftShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabLeft)));
     d.tabRightShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabRight)));
+    tabBar()->setVisible(settings.layout == "tabs");
 
     QColor color(settings.colors.value(Settings::Highlight));
     setTabTextColor(Alert, color);

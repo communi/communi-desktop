@@ -93,13 +93,13 @@ SessionTabWidget* MultiSessionTabWidget::sessionWidget(Session* session) const
 void MultiSessionTabWidget::tabInserted(int index)
 {
     TabWidget::tabInserted(index);
-    tabBar()->setVisible(count() > 2);
+    tabBar()->setVisible(d.settings.layout == "tabs" && count() > 2);
 }
 
 void MultiSessionTabWidget::tabRemoved(int index)
 {
     TabWidget::tabRemoved(index);
-    tabBar()->setVisible(count() > 2);
+    tabBar()->setVisible(d.settings.layout == "tabs" && count() > 2);
 }
 
 void MultiSessionTabWidget::tabActivated(int index)
@@ -120,6 +120,7 @@ void MultiSessionTabWidget::applySettings(const Settings& settings)
     d.settings = settings;
     d.tabUpShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabUp)));
     d.tabDownShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabDown)));
+    tabBar()->setVisible(d.settings.layout == "tabs" && count() > 2);
 
     QColor color(settings.colors.value(Settings::Highlight));
     setTabTextColor(Alert, color);
