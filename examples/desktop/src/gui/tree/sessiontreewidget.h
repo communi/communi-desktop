@@ -35,6 +35,7 @@ public:
     void setStatusColor(ItemStatus status, const QColor& color);
 
     QList<Session*> sessions() const;
+    QTreeWidgetItem* sessionItem(Session* session) const;
 
     void setInactive(Session* session, bool inactive);
     void setAlerted(Session* session, bool alerted);
