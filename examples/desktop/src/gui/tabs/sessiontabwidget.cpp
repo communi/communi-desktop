@@ -91,6 +91,7 @@ void SessionTabWidget::removeView(const QString& receiver)
         {
             deleteLater();
             session()->destructLater();
+            emit sessionClosed(session());
         }
     }
 }

@@ -46,6 +46,7 @@ signals:
     void alerted(IrcMessage* message);
     void highlighted(IrcMessage* message);
     void inactiveStatusChanged(bool inactive);
+    void sessionClosed(Session* session);
 
 protected:
     bool event(QEvent* event);
