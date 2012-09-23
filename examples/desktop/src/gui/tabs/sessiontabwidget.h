@@ -21,7 +21,6 @@
 #include <QHash>
 
 class Session;
-class QShortcut;
 class IrcMessage;
 class MessageView;
 
@@ -70,8 +69,6 @@ private slots:
 private:
     struct SessionTabWidgetData
     {
-        QShortcut* tabLeftShortcut;
-        QShortcut* tabRightShortcut;
         QList<int> delayedIndexes;
         MessageHandler handler;
         QHash<QString, MessageView*> views;

@@ -17,12 +17,18 @@
 
 #include <QTabBar>
 
+class QShortcut;
+
 class TabBar : public QTabBar
 {
     Q_OBJECT
 
 public:
     TabBar(QWidget* parent = 0);
+
+    enum Navigation { Next, Previous };
+    QKeySequence navigationShortcut(Navigation navigation) const;
+    void setNavigationShortcut(Navigation navigation, const QKeySequence& shortcut);
 
 signals:
     void menuRequested(int index, const QPoint& pos);
@@ -31,6 +37,10 @@ protected:
     void changeEvent(QEvent* event);
     void contextMenuEvent(QContextMenuEvent* event);
     void wheelEvent(QWheelEvent* event);
+
+private:
+    QShortcut* prevShortcut;
+    QShortcut* nextShortcut;
 };
 
 #endif // TABWIDGET_P_H

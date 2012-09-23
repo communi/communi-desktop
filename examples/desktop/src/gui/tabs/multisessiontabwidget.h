@@ -19,7 +19,6 @@
 #include "settings.h"
 
 class Session;
-class QShortcut;
 class IrcMessage;
 class MessageView;
 class SessionTabWidget;
@@ -64,8 +63,6 @@ private:
 
     struct MainTabWidgetData
     {
-        QShortcut* tabUpShortcut;
-        QShortcut* tabDownShortcut;
         Settings settings;
     } d;
 };

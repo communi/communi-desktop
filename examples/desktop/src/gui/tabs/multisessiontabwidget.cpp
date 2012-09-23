@@ -14,6 +14,7 @@
 
 #include "multisessiontabwidget.h"
 #include "sessiontabwidget.h"
+#include "tabwidget_p.h"
 #include "settings.h"
 #include "session.h"
 #include <QShortcut>
@@ -26,12 +27,6 @@ MultiSessionTabWidget::MultiSessionTabWidget(QWidget* parent) : TabWidget(parent
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
     connect(this, SIGNAL(tabMenuRequested(int,QPoint)), this, SLOT(onTabMenuRequested(int,QPoint)));
-
-    d.tabUpShortcut = new QShortcut(this);
-    connect(d.tabUpShortcut, SIGNAL(activated()), this, SLOT(moveToPrevTab()));
-
-    d.tabDownShortcut = new QShortcut(this);
-    connect(d.tabDownShortcut, SIGNAL(activated()), this, SLOT(moveToNextTab()));
 
     QShortcut* shortcut = new QShortcut(QKeySequence::New, this);
     connect(shortcut, SIGNAL(activated()), this, SIGNAL(newTabRequested()));
@@ -119,9 +114,11 @@ void MultiSessionTabWidget::tabActivated(int index)
 void MultiSessionTabWidget::applySettings(const Settings& settings)
 {
     d.settings = settings;
-    d.tabUpShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabUp)));
-    d.tabDownShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabDown)));
-    tabBar()->setVisible(d.settings.layout == "tabs" && count() > 2);
+
+    TabBar* tb = static_cast<TabBar*>(tabBar());
+    tb->setNavigationShortcut(TabBar::Previous, QKeySequence(settings.shortcuts.value(Settings::TabUp)));
+    tb->setNavigationShortcut(TabBar::Next, QKeySequence(settings.shortcuts.value(Settings::TabDown)));
+    tb->setVisible(d.settings.layout == "tabs" && count() > 2);
 
     QColor color(settings.colors.value(Settings::Highlight));
     setTabTextColor(Alert, color);

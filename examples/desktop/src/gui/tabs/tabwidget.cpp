@@ -16,11 +16,34 @@
 #include "tabwidget_p.h"
 #include "sharedtimer.h"
 #include <QContextMenuEvent>
+#include <QShortcut>
 
 TabBar::TabBar(QWidget* parent) : QTabBar(parent)
 {
+    prevShortcut = new QShortcut(this);
+    connect(prevShortcut, SIGNAL(activated()), parent, SLOT(moveToPrevTab()));
+
+    nextShortcut = new QShortcut(this);
+    connect(nextShortcut, SIGNAL(activated()), parent, SLOT(moveToNextTab()));
+
     addTab(tr("+"));
     setSelectionBehaviorOnRemove(SelectLeftTab);
+}
+
+QKeySequence TabBar::navigationShortcut(Navigation navigation) const
+{
+    if (navigation == Previous)
+        return prevShortcut->key();
+    else
+        return nextShortcut->key();
+}
+
+void TabBar::setNavigationShortcut(Navigation navigation, const QKeySequence& shortcut)
+{
+    if (navigation == Previous)
+        prevShortcut->setKey(shortcut);
+    else
+        nextShortcut->setKey(shortcut);
 }
 
 void TabBar::changeEvent(QEvent* event)
