@@ -59,6 +59,7 @@ void MultiSessionTabWidget::addSession(Session* session)
     connect(tab, SIGNAL(alertStatusChanged(bool)), this, SLOT(setAlerted(bool)));
     connect(tab, SIGNAL(alerted(IrcMessage*)), this, SIGNAL(alerted(IrcMessage*)));
     connect(tab, SIGNAL(highlighted(IrcMessage*)), this, SIGNAL(highlighted(IrcMessage*)));
+    connect(tab, SIGNAL(sessionClosed(Session*)), this, SIGNAL(sessionRemoved(Session*)));
 
     QString name = session->name();
     if (name.isEmpty())
@@ -66,6 +67,8 @@ void MultiSessionTabWidget::addSession(Session* session)
     int index = addTab(tab, name.isEmpty() ? session->host() : name);
     setCurrentIndex(index);
     setTabInactive(index, !session->isActive());
+
+    emit sessionAdded(session);
 }
 
 void MultiSessionTabWidget::removeSession(Session *session)
@@ -73,6 +76,7 @@ void MultiSessionTabWidget::removeSession(Session *session)
     SessionTabWidget* tabWidget = sessionWidget(session);
     if (tabWidget)
         tabWidget->deleteLater();
+    emit sessionRemoved(session);
 }
 
 SessionTabWidget* MultiSessionTabWidget::sessionWidget(Session* session) const

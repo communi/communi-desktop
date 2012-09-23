@@ -40,6 +40,9 @@ public slots:
     void applySettings(const Settings& settings);
 
 signals:
+    void sessionAdded(Session* session);
+    void sessionRemoved(Session* session);
+
     void alerted(IrcMessage* message);
     void highlighted(IrcMessage* message);
 
