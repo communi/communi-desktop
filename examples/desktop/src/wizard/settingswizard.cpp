@@ -32,6 +32,7 @@ Settings SettingsWizard::settings() const
 {
     Settings settings;
     settings.font = static_cast<GeneralWizardPage*>(page(GeneralPage))->font().toString();
+    settings.layout = static_cast<GeneralWizardPage*>(page(GeneralPage))->layout();
     settings.language = static_cast<GeneralWizardPage*>(page(GeneralPage))->language();
     settings.maxBlockCount = static_cast<GeneralWizardPage*>(page(GeneralPage))->maxBlockCount();
     settings.timeStamp = static_cast<GeneralWizardPage*>(page(GeneralPage))->timeStamp();
@@ -48,6 +49,7 @@ void SettingsWizard::setSettings(const Settings& settings)
     if (!settings.font.isEmpty())
         font.fromString(settings.font);
     static_cast<GeneralWizardPage*>(page(GeneralPage))->setFont(font);
+    static_cast<GeneralWizardPage*>(page(GeneralPage))->setLayout(settings.layout);
     static_cast<GeneralWizardPage*>(page(GeneralPage))->setLanguage(settings.language);
     static_cast<GeneralWizardPage*>(page(GeneralPage))->setMaxBlockCount(settings.maxBlockCount);
     static_cast<GeneralWizardPage*>(page(GeneralPage))->setTimeStamp(settings.timeStamp);

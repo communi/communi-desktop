@@ -28,6 +28,9 @@ public:
     QFont font() const;
     void setFont(const QFont& font);
 
+    QString layout() const;
+    void setLayout(const QString& layout);
+
     QString language() const;
     void setLanguage(const QString& language);
 
