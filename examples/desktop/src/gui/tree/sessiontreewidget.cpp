@@ -114,5 +114,10 @@ void SessionTreeWidget::onSessionNetworkChanged(const QString& network)
 void SessionTreeWidget::onCurrentItemChanged(QTreeWidgetItem* item)
 {
     if (item)
-        emit currentViewChanged(static_cast<SessionTreeItem*>(item)->session(), item->parent() ? item->text(0) : QString());
+    {
+        SessionTreeItem* sessionItem = static_cast<SessionTreeItem*>(item);
+        sessionItem->setAlerted(false);
+        sessionItem->setHighlighted(false);
+        emit currentViewChanged(sessionItem->session(), item->parent() ? item->text(0) : QString());
+    }
 }
