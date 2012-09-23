@@ -96,6 +96,14 @@ void SessionTreeWidget::renameView(Session* session, const QString& from, const 
     }
 }
 
+void SessionTreeWidget::setCurrentView(Session* session, const QString& view)
+{
+    SessionTreeItem* item = d.sessions.value(session);
+    if (item && !view.isEmpty())
+        item = item->findChild(view);
+    setCurrentItem(item);
+}
+
 void SessionTreeWidget::contextMenuEvent(QContextMenuEvent* event)
 {
     QTreeWidgetItem* item = itemAt(event->pos());
