@@ -24,17 +24,19 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
 
     d.colors[Active] = palette().color(QPalette::WindowText);
     d.colors[Inactive] = palette().color(QPalette::Disabled, QPalette::Highlight);
-    d.colors[Alert] = QColor(Qt::red); //palette().color(QPalette::Highlight);
-    d.colors[Highlight] = QColor(Qt::green); //palette().color(QPalette::Highlight);
+    d.colors[Alert] = palette().color(QPalette::Highlight);
+    d.colors[Highlight] = palette().color(QPalette::Highlight);
 
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));
 
-    d.prevShortcut = new QShortcut(QKeySequence("Ctrl+Alt+Up"), this); // TODO
+    d.prevShortcut = new QShortcut(this);
     connect(d.prevShortcut, SIGNAL(activated()), this, SLOT(moveToPrevItem()));
 
-    d.nextShortcut = new QShortcut(QKeySequence("Ctrl+Alt+Down"), this); // TODO
+    d.nextShortcut = new QShortcut(this);
     connect(d.nextShortcut, SIGNAL(activated()), this, SLOT(moveToNextItem()));
+
+    applySettings(d.settings);
 }
 
 QColor SessionTreeWidget::statusColor(SessionTreeWidget::ItemStatus status) const
@@ -126,6 +128,17 @@ void SessionTreeWidget::moveToPrevItem()
         setCurrentItem(*it);
     else
         setCurrentItem(topLevelItem(topLevelItemCount() - 1));
+}
+
+void SessionTreeWidget::applySettings(const Settings& settings)
+{
+    QColor color(settings.colors.value(Settings::Highlight));
+    setStatusColor(Alert, color);
+    setStatusColor(Highlight, color);
+
+    d.prevShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabUp)));
+    d.nextShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabDown)));
+    d.settings = settings;
 }
 
 void SessionTreeWidget::contextMenuEvent(QContextMenuEvent* event)

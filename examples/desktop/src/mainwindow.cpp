@@ -193,7 +193,7 @@ void MainWindow::applySettings(const Settings& settings)
     {
         if (!treeWidget)
             createTree();
-        // TODO: treeWidget->applySettings(settings);
+        treeWidget->applySettings(settings);
     }
     else if (treeWidget)
     {

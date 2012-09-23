@@ -19,8 +19,10 @@
 #include <QShortcut>
 #include <QColor>
 #include <QHash>
+#include "settings.h"
 
 class Session;
+class Settings;
 class SessionTreeItem;
 
 class SessionTreeWidget : public QTreeWidget
@@ -50,6 +52,8 @@ public slots:
     void moveToNextItem();
     void moveToPrevItem();
 
+    void applySettings(const Settings& settings);
+
 signals:
     void currentViewChanged(Session* session, const QString& view);
     void menuRequested(QTreeWidgetItem* item, const QPoint& pos);
@@ -64,6 +68,7 @@ private slots:
 private:
     struct SessionTreeWidgetData
     {
+        Settings settings;
         QShortcut* prevShortcut;
         QShortcut* nextShortcut;
         QHash<ItemStatus, QColor> colors;
