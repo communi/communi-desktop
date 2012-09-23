@@ -18,6 +18,7 @@
 #include "multisessiontabwidget.h"
 #include "sessiontreewidget.h"
 #include "sessiontabwidget.h"
+#include "sessiontreeitem.h"
 #include "connectioninfo.h"
 #include "messageview.h"
 #include "homepage.h"
@@ -30,7 +31,8 @@ MainWindow::MainWindow(QWidget* parent) :
 {
     tabWidget = new MultiSessionTabWidget(this);
     connect(tabWidget, SIGNAL(newTabRequested()), this, SLOT(connectTo()), Qt::QueuedConnection);
-    connect(tabWidget, SIGNAL(alerted(IrcMessage*)), this, SLOT(alert(IrcMessage*)));
+    connect(tabWidget, SIGNAL(alerted(MessageView*,IrcMessage*)), this, SLOT(alert(MessageView*,IrcMessage*)));
+    connect(tabWidget, SIGNAL(highlighted(MessageView*,IrcMessage*)), this, SLOT(highlight(MessageView*,IrcMessage*)));
 
     QSizePolicy policy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     policy.setHorizontalStretch(5);
@@ -215,7 +217,7 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
-void MainWindow::alert(IrcMessage* message)
+void MainWindow::alert(MessageView* view, IrcMessage* message)
 {
     Q_UNUSED(message);
     if (!isActiveWindow())
@@ -225,6 +227,28 @@ void MainWindow::alert(IrcMessage* message)
             trayIcon->alert();
         if (dockTile)
             dockTile->setBadge(dockTile->badge() + 1);
+    }
+
+    if (treeWidget)
+    {
+        SessionTreeItem* item = treeWidget->sessionItem(view->session());
+        if (view->viewType() != MessageView::ServerView)
+            item = item->findChild(view->receiver());
+        if (item)
+            item->setAlerted(true);
+    }
+}
+
+void MainWindow::highlight(MessageView* view, IrcMessage* message)
+{
+    Q_UNUSED(message);
+    if (treeWidget)
+    {
+        SessionTreeItem* item = treeWidget->sessionItem(view->session());
+        if (view->viewType() != MessageView::ServerView)
+            item = item->findChild(view->receiver());
+        if (item)
+            item->setHighlighted(true);
     }
 }
 

@@ -51,7 +51,8 @@ private slots:
     void initialize();
     void applySettings(const Settings& settings);
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
-    void alert(IrcMessage* message);
+    void alert(MessageView* view, IrcMessage* message);
+    void highlight(MessageView* view, IrcMessage* message);
     void viewAdded(MessageView* view);
     void viewRemoved(MessageView* view);
     void viewRenamed(const QString& from, const QString& to);
