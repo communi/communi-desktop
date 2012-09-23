@@ -96,6 +96,11 @@ MessageView::ViewType MessageView::viewType() const
     return d.viewType;
 }
 
+Session* MessageView::session() const
+{
+    return d.session;
+}
+
 QString MessageView::receiver() const
 {
     return d.receiver;

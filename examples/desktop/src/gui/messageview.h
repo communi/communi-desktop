@@ -36,6 +36,7 @@ public:
     ~MessageView();
 
     ViewType viewType() const;
+    Session* session() const;
 
     QString receiver() const;
     void setReceiver(const QString &receiver);
