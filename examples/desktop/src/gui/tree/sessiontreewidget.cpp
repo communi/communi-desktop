@@ -46,7 +46,7 @@ QList<Session*> SessionTreeWidget::sessions() const
     return d.sessions.keys();
 }
 
-QTreeWidgetItem* SessionTreeWidget::sessionItem(Session* session) const
+SessionTreeItem* SessionTreeWidget::sessionItem(Session* session) const
 {
     return d.sessions.value(session);
 }

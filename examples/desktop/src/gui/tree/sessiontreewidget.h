@@ -35,7 +35,7 @@ public:
     void setStatusColor(ItemStatus status, const QColor& color);
 
     QList<Session*> sessions() const;
-    QTreeWidgetItem* sessionItem(Session* session) const;
+    SessionTreeItem* sessionItem(Session* session) const;
 
 public slots:
     void addSession(Session* session);
