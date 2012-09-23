@@ -60,6 +60,7 @@ void MultiSessionTabWidget::addSession(Session* session)
     connect(tab, SIGNAL(alerted(IrcMessage*)), this, SIGNAL(alerted(IrcMessage*)));
     connect(tab, SIGNAL(highlighted(IrcMessage*)), this, SIGNAL(highlighted(IrcMessage*)));
     connect(tab, SIGNAL(sessionClosed(Session*)), this, SIGNAL(sessionRemoved(Session*)));
+    tab->applySettings(d.settings);
 
     QString name = session->name();
     if (name.isEmpty())
