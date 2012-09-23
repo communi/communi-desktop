@@ -61,6 +61,34 @@ void SessionTreeWidget::removeSession(Session *session)
     delete d.sessions.take(session);
 }
 
+void SessionTreeWidget::addView(Session* session, const QString& view)
+{
+    SessionTreeItem* parent = d.sessions.value(session);
+    if (parent)
+    {
+        SessionTreeItem* item = new SessionTreeItem(parent);
+        item->setText(0, view);
+    }
+}
+
+void SessionTreeWidget::removeView(Session* session, const QString& view)
+{
+    SessionTreeItem* parent = d.sessions.value(session);
+    if (parent)
+        delete parent->findChild(view);
+}
+
+void SessionTreeWidget::renameView(Session* session, const QString& from, const QString& to)
+{
+    SessionTreeItem* parent = d.sessions.value(session);
+    if (parent)
+    {
+        SessionTreeItem* item = parent->findChild(from);
+        if (item)
+            item->setText(0, to);
+    }
+}
+
 void SessionTreeWidget::contextMenuEvent(QContextMenuEvent* event)
 {
     QTreeWidgetItem* item = itemAt(event->pos());

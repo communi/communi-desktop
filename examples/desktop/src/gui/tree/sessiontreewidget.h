@@ -44,6 +44,10 @@ public slots:
     void addSession(Session* session);
     void removeSession(Session* session);
 
+    void addView(Session* session, const QString& view);
+    void removeView(Session* session, const QString& view);
+    void renameView(Session* session, const QString& from, const QString& to);
+
 signals:
     void menuRequested(QTreeWidgetItem* item, const QPoint& pos);
 
