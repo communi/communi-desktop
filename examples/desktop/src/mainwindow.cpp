@@ -314,6 +314,7 @@ void MainWindow::currentTreeItemChanged(Session* session, const QString& view)
 void MainWindow::createTree()
 {
     treeWidget = new SessionTreeWidget(this);
+    treeWidget->setFocusPolicy(Qt::NoFocus);
     connect(treeWidget, SIGNAL(currentViewChanged(Session*,QString)), this, SLOT(currentTreeItemChanged(Session*,QString)));
 
     connect(tabWidget, SIGNAL(sessionAdded(Session*)), treeWidget, SLOT(addSession(Session*)));
