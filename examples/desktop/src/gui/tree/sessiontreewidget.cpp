@@ -160,7 +160,7 @@ void SessionTreeWidget::applySettings(const Settings& settings)
 
 void SessionTreeWidget::contextMenuEvent(QContextMenuEvent* event)
 {
-    QTreeWidgetItem* item = itemAt(event->pos());
+    SessionTreeItem* item = static_cast<SessionTreeItem*>(itemAt(event->pos()));
     if (item)
         emit menuRequested(item, event->globalPos());
 }

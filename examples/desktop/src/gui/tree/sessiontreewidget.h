@@ -59,7 +59,7 @@ public slots:
 
 signals:
     void currentViewChanged(Session* session, const QString& view);
-    void menuRequested(QTreeWidgetItem* item, const QPoint& pos);
+    void menuRequested(SessionTreeItem* item, const QPoint& pos);
 
 protected:
     void contextMenuEvent(QContextMenuEvent* event);

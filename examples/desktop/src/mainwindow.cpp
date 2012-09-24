@@ -311,11 +311,27 @@ void MainWindow::currentTreeItemChanged(Session* session, const QString& view)
     }
 }
 
+void  MainWindow::menuRequested(SessionTreeItem* item, const QPoint& pos)
+{
+    SessionTreeItem* parent = static_cast<SessionTreeItem*>(item->parent());
+    if (parent)
+    {
+        int index = treeWidget->indexOfTopLevelItem(parent) + 1;
+        QMetaObject::invokeMethod(tabWidget->widget(index), "onTabMenuRequested", Q_ARG(int, parent->indexOfChild(item) + 1), Q_ARG(QPoint, pos));
+    }
+    else
+    {
+        int index = treeWidget->indexOfTopLevelItem(item) + 1;
+        QMetaObject::invokeMethod(tabWidget, "onTabMenuRequested", Q_ARG(int, index), Q_ARG(QPoint, pos));
+    }
+}
+
 void MainWindow::createTree()
 {
     treeWidget = new SessionTreeWidget(this);
     treeWidget->setFocusPolicy(Qt::NoFocus);
     connect(treeWidget, SIGNAL(currentViewChanged(Session*,QString)), this, SLOT(currentTreeItemChanged(Session*,QString)));
+    connect(treeWidget, SIGNAL(menuRequested(SessionTreeItem*,QPoint)), this, SLOT(menuRequested(SessionTreeItem*,QPoint)));
 
     connect(tabWidget, SIGNAL(sessionAdded(Session*)), treeWidget, SLOT(addSession(Session*)));
     connect(tabWidget, SIGNAL(sessionRemoved(Session*)), treeWidget, SLOT(removeSession(Session*)));

@@ -20,6 +20,7 @@
 
 class MultiSessionTabWidget;
 class SessionTreeWidget;
+class SessionTreeItem;
 struct ConnectionInfo;
 class MessageView;
 class IrcMessage;
@@ -58,6 +59,7 @@ private slots:
     void viewRenamed(const QString& from, const QString& to);
     void viewActivated(MessageView* view);
     void currentTreeItemChanged(Session* session, const QString& view);
+    void menuRequested(SessionTreeItem* item, const QPoint& pos);
 
 private:
     void createTree();
