@@ -16,7 +16,26 @@
 #include "tabwidget_p.h"
 #include "sharedtimer.h"
 #include <QContextMenuEvent>
+#include <QStyleOption>
+#include <QProxyStyle>
 #include <QShortcut>
+
+class TabWidgetStyle : public QProxyStyle
+{
+public:
+    TabWidgetStyle(QStyle* style) : QProxyStyle(style) { }
+
+    QRect subElementRect(SubElement se, const QStyleOption* opt, const QWidget* widget = 0) const
+    {
+        if (se == QStyle::SE_TabWidgetTabContents)
+        {
+            const TabWidget* tabWidget = qobject_cast<const TabWidget*>(widget);
+            if (tabWidget && tabWidget->tabBar()->testAttribute(Qt::WA_WState_Hidden))
+                return opt->rect;
+        }
+        return baseStyle()->subElementRect(se, opt, widget);
+    }
+};
 
 TabBar::TabBar(QWidget* parent) : QTabBar(parent)
 {
@@ -79,6 +98,7 @@ TabWidget::TabWidget(QWidget* parent) : QTabWidget(parent)
 {
     setTabBar(new TabBar(this));
     setElideMode(Qt::ElideMiddle);
+    setStyle(new TabWidgetStyle(style()));
     d.previous = -1;
     d.updatingColors = false;
 
