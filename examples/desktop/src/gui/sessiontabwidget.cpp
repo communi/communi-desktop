@@ -212,11 +212,11 @@ void SessionTabWidget::delayedTabReset()
 
 void SessionTabWidget::delayedTabResetTimeout()
 {
-    if (d.delayedIndexes.isEmpty())
-        return;
-
-    int index = d.delayedIndexes.takeFirst();
-    tabActivated(index);
+    if (!d.delayedIndexes.isEmpty())
+    {
+        tabActivated(d.delayedIndexes.takeLast());
+        d.delayedIndexes.clear();
+    }
 }
 
 void SessionTabWidget::onTabAlerted(IrcMessage* message)
