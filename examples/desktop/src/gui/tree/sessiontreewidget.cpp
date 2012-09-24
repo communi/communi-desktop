@@ -14,6 +14,7 @@
 
 #include "sessiontreewidget.h"
 #include "sessiontreeitem.h"
+#include "sharedtimer.h"
 #include "session.h"
 #include <QContextMenuEvent>
 #include <QTimer>
@@ -131,6 +132,21 @@ void SessionTreeWidget::moveToPrevItem()
         setCurrentItem(topLevelItem(topLevelItemCount() - 1));
 }
 
+
+void SessionTreeWidget::alert(SessionTreeItem* item)
+{
+    if (d.alertedItems.isEmpty())
+        SharedTimer::instance()->registerReceiver(this, "alertTimeout");
+    d.alertedItems.append(item);
+}
+
+void SessionTreeWidget::unalert(SessionTreeItem* item)
+{
+    d.alertedItems.removeAll(item);
+    if (d.alertedItems.isEmpty())
+        SharedTimer::instance()->unregisterReceiver(this, "alertTimeout");
+}
+
 void SessionTreeWidget::applySettings(const Settings& settings)
 {
     QColor color(settings.colors.value(Settings::Highlight));
@@ -169,6 +185,7 @@ void SessionTreeWidget::onCurrentItemChanged(QTreeWidgetItem* item)
     if (item)
     {
         SessionTreeItem* sessionItem = static_cast<SessionTreeItem*>(item);
+        unalert(sessionItem);
         sessionItem->setAlerted(false);
         sessionItem->setHighlighted(false);
         emit currentViewChanged(sessionItem->session(), item->parent() ? item->text(0) : QString());
@@ -180,16 +197,24 @@ void SessionTreeWidget::delayedItemReset()
     SessionTreeItem* item = static_cast<SessionTreeItem*>(currentItem());
     if (item)
     {
-        d.delayedItems += item;
+        d.resetedItems += item;
         QTimer::singleShot(500, this, SLOT(delayedItemResetTimeout()));
     }
 }
 
 void SessionTreeWidget::delayedItemResetTimeout()
 {
-    if (!d.delayedItems.isEmpty())
+    if (!d.resetedItems.isEmpty())
     {
-        onCurrentItemChanged(d.delayedItems.takeLast());
-        d.delayedItems.clear();
+        onCurrentItemChanged(d.resetedItems.takeLast());
+        d.resetedItems.clear();
     }
+}
+
+void SessionTreeWidget::alertTimeout()
+{
+    static bool alerted = true;
+    foreach (SessionTreeItem* item, d.alertedItems)
+        item->setAlerted(alerted);
+    alerted = !alerted;
 }

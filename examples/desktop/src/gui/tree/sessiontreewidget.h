@@ -52,6 +52,9 @@ public slots:
     void moveToNextItem();
     void moveToPrevItem();
 
+    void alert(SessionTreeItem* item);
+    void unalert(SessionTreeItem* item);
+
     void applySettings(const Settings& settings);
 
 signals:
@@ -67,6 +70,7 @@ private slots:
     void onCurrentItemChanged(QTreeWidgetItem* current);
     void delayedItemReset();
     void delayedItemResetTimeout();
+    void alertTimeout();
 
 private:
     struct SessionTreeWidgetData
@@ -75,7 +79,8 @@ private:
         QShortcut* prevShortcut;
         QShortcut* nextShortcut;
         QHash<ItemStatus, QColor> colors;
-        QList<SessionTreeItem*> delayedItems;
+        QList<SessionTreeItem*> alertedItems;
+        QList<SessionTreeItem*> resetedItems;
         QHash<Session*, SessionTreeItem*> sessions;
     } d;
 };

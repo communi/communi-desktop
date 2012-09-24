@@ -236,7 +236,7 @@ void MainWindow::alert(MessageView* view, IrcMessage* message)
         if (view->viewType() != MessageView::ServerView)
             item = item->findChild(view->receiver());
         if (item)
-            item->setAlerted(true);
+            treeWidget->alert(item);
     }
 }
 
