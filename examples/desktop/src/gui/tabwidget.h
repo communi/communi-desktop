@@ -28,6 +28,7 @@ public:
     TabWidget(QWidget* parent = 0);
 
     QTabBar* tabBar() const;
+    QSize sizeHint() const;
 
     enum TabRole { Active, Inactive, Alert, Highlight };
 

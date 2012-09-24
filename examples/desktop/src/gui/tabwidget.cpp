@@ -16,6 +16,7 @@
 #include "tabwidget_p.h"
 #include "sharedtimer.h"
 #include <QContextMenuEvent>
+#include <QStackedWidget>
 #include <QStyleOption>
 #include <QProxyStyle>
 #include <QShortcut>
@@ -119,6 +120,16 @@ TabWidget::TabWidget(QWidget* parent) : QTabWidget(parent)
 QTabBar* TabWidget::tabBar() const
 {
     return QTabWidget::tabBar();
+}
+
+QSize TabWidget::sizeHint() const
+{
+    if (tabBar()->testAttribute(Qt::WA_WState_Hidden))
+    {
+        QStackedWidget* stack = findChild<QStackedWidget*>("qt_tabwidget_stackedwidget");
+        return stack->sizeHint();
+    }
+    return QTabWidget::sizeHint();
 }
 
 QColor TabWidget::tabTextColor(TabWidget::TabRole role) const
