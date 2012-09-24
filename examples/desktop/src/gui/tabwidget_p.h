@@ -30,6 +30,8 @@ public:
     QKeySequence navigationShortcut(Navigation navigation) const;
     void setNavigationShortcut(Navigation navigation, const QKeySequence& shortcut);
 
+    QSize minimumSizeHint() const;
+
 signals:
     void menuRequested(int index, const QPoint& pos);
 

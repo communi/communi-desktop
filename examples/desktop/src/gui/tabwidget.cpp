@@ -65,6 +65,11 @@ void TabBar::setNavigationShortcut(Navigation navigation, const QKeySequence& sh
         nextShortcut->setKey(shortcut);
 }
 
+QSize TabBar::minimumSizeHint() const
+{
+    return testAttribute(Qt::WA_WState_Hidden) ? QSize() : QTabBar::minimumSizeHint();
+}
+
 void TabBar::changeEvent(QEvent* event)
 {
     if (event->type() == QEvent::StyleChange)
