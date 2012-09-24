@@ -16,6 +16,7 @@
 #include "sessiontreeitem.h"
 #include "session.h"
 #include <QContextMenuEvent>
+#include <QTimer>
 
 SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
@@ -148,6 +149,13 @@ void SessionTreeWidget::contextMenuEvent(QContextMenuEvent* event)
         emit menuRequested(item, event->globalPos());
 }
 
+bool SessionTreeWidget::event(QEvent* event)
+{
+    if (event->type() == QEvent::WindowActivate)
+        delayedItemReset();
+    return QTreeWidget::event(event);
+}
+
 void SessionTreeWidget::onSessionNetworkChanged(const QString& network)
 {
     Session* session = qobject_cast<Session*>(sender());
@@ -164,5 +172,24 @@ void SessionTreeWidget::onCurrentItemChanged(QTreeWidgetItem* item)
         sessionItem->setAlerted(false);
         sessionItem->setHighlighted(false);
         emit currentViewChanged(sessionItem->session(), item->parent() ? item->text(0) : QString());
+    }
+}
+
+void SessionTreeWidget::delayedItemReset()
+{
+    SessionTreeItem* item = static_cast<SessionTreeItem*>(currentItem());
+    if (item)
+    {
+        d.delayedItems += item;
+        QTimer::singleShot(500, this, SLOT(delayedItemResetTimeout()));
+    }
+}
+
+void SessionTreeWidget::delayedItemResetTimeout()
+{
+    if (!d.delayedItems.isEmpty())
+    {
+        onCurrentItemChanged(d.delayedItems.takeLast());
+        d.delayedItems.clear();
     }
 }

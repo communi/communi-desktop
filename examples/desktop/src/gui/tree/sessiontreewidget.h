@@ -60,10 +60,13 @@ signals:
 
 protected:
     void contextMenuEvent(QContextMenuEvent* event);
+    bool event(QEvent* event);
 
 private slots:
     void onSessionNetworkChanged(const QString& network);
     void onCurrentItemChanged(QTreeWidgetItem* current);
+    void delayedItemReset();
+    void delayedItemResetTimeout();
 
 private:
     struct SessionTreeWidgetData
@@ -72,6 +75,7 @@ private:
         QShortcut* prevShortcut;
         QShortcut* nextShortcut;
         QHash<ItemStatus, QColor> colors;
+        QList<SessionTreeItem*> delayedItems;
         QHash<Session*, SessionTreeItem*> sessions;
     } d;
 };
