@@ -22,7 +22,7 @@
 #include "settings.h"
 
 class Session;
-class Settings;
+struct Settings;
 class SessionTreeItem;
 
 class SessionTreeWidget : public QTreeWidget

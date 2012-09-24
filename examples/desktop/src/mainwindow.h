@@ -24,7 +24,7 @@ struct ConnectionInfo;
 class MessageView;
 class IrcMessage;
 class QtDockTile;
-class Settings;
+struct Settings;
 class Session;
 
 class MainWindow : public QMainWindow
