@@ -23,6 +23,7 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
     setAnimated(true);
     setHeaderHidden(true);
+    setRootIsDecorated(false);
 
     d.colors[Active] = palette().color(QPalette::WindowText);
     d.colors[Inactive] = palette().color(QPalette::Disabled, QPalette::Highlight);
