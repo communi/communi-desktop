@@ -30,13 +30,10 @@ MainWindow::MainWindow(QWidget* parent) :
     QMainWindow(parent), treeWidget(0), trayIcon(0), dockTile(0)
 {
     tabWidget = new MultiSessionTabWidget(this);
+
     connect(tabWidget, SIGNAL(newTabRequested()), this, SLOT(connectTo()), Qt::QueuedConnection);
     connect(tabWidget, SIGNAL(alerted(MessageView*,IrcMessage*)), this, SLOT(alert(MessageView*,IrcMessage*)));
     connect(tabWidget, SIGNAL(highlighted(MessageView*,IrcMessage*)), this, SLOT(highlight(MessageView*,IrcMessage*)));
-
-    QSizePolicy policy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    policy.setHorizontalStretch(5);
-    tabWidget->setSizePolicy(policy);
 
     QSplitter* splitter = new QSplitter(this);
     splitter->setHandleWidth(1);
@@ -146,6 +143,8 @@ void MainWindow::closeEvent(QCloseEvent* event)
 {
     QSettings settings;
     settings.setValue("geometry", saveGeometry());
+    if (treeWidget)
+        settings.setValue("splitter", static_cast<QSplitter*>(centralWidget())->saveState());
 
     ConnectionInfos connections;
     QList<Session*> sessions = tabWidget->sessions();
@@ -330,6 +329,8 @@ void MainWindow::createTree()
 {
     treeWidget = new SessionTreeWidget(this);
     treeWidget->setFocusPolicy(Qt::NoFocus);
+    treeWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
+
     connect(treeWidget, SIGNAL(currentViewChanged(Session*,QString)), this, SLOT(currentTreeItemChanged(Session*,QString)));
     connect(treeWidget, SIGNAL(menuRequested(SessionTreeItem*,QPoint)), this, SLOT(menuRequested(SessionTreeItem*,QPoint)));
 
@@ -349,10 +350,10 @@ void MainWindow::createTree()
     }
     treeWidget->expandAll();
 
-    QSizePolicy policy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    policy.setHorizontalStretch(2);
-    treeWidget->setSizePolicy(policy);
-
     QSplitter* splitter = static_cast<QSplitter*>(centralWidget());
     splitter->insertWidget(0, treeWidget);
+    splitter->setStretchFactor(1, 1);
+    QSettings settings;
+    if (settings.contains("splitter"))
+        splitter->restoreState(settings.value("splitter").toByteArray());
 }

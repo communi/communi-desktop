@@ -43,6 +43,11 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     applySettings(d.settings);
 }
 
+QSize SessionTreeWidget::sizeHint() const
+{
+    return QSize(20 * fontMetrics().width('#'), QTreeWidget::sizeHint().height());
+}
+
 QColor SessionTreeWidget::statusColor(SessionTreeWidget::ItemStatus status) const
 {
     return d.colors.value(status);

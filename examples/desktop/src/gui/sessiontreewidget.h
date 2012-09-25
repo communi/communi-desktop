@@ -32,6 +32,8 @@ class SessionTreeWidget : public QTreeWidget
 public:
     SessionTreeWidget(QWidget* parent = 0);
 
+    QSize sizeHint() const;
+
     enum ItemStatus { Active, Inactive, Alert, Highlight };
 
     QColor statusColor(ItemStatus status) const;
