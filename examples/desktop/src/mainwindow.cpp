@@ -26,8 +26,8 @@
 #include "qtdocktile.h"
 #include <QtGui>
 
-MainWindow::MainWindow(QWidget* parent) :
-    QMainWindow(parent), treeWidget(0), trayIcon(0), dockTile(0)
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
+    toolBar(0), treeWidget(0), trayIcon(0), dockTile(0)
 {
     tabWidget = new MultiSessionTabWidget(this);
 
@@ -201,8 +201,9 @@ void MainWindow::applySettings(const Settings& settings)
     }
     else if (treeWidget)
     {
-        treeWidget->deleteLater();
+        treeWidget->parentWidget()->deleteLater();
         treeWidget = 0;
+        toolBar = 0;
     }
 }
 
@@ -340,11 +341,21 @@ void MainWindow::splitterChanged(const QByteArray& state)
     settings.setValue("list", state);
 }
 
+void MainWindow::addView()
+{
+    SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(tabWidget->currentWidget());
+    if (tab)
+        QMetaObject::invokeMethod(tab, "onNewTabRequested");
+}
+
 void MainWindow::createTree()
 {
-    treeWidget = new SessionTreeWidget(this);
+    QSplitter* splitter = static_cast<QSplitter*>(centralWidget());
+    QWidget* container = new QWidget(this);
+    container->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
+
+    treeWidget = new SessionTreeWidget(container);
     treeWidget->setFocusPolicy(Qt::NoFocus);
-    treeWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
 
     connect(treeWidget, SIGNAL(currentViewChanged(Session*,QString)), this, SLOT(currentTreeItemChanged(Session*,QString)));
     connect(treeWidget, SIGNAL(menuRequested(SessionTreeItem*,QPoint)), this, SLOT(menuRequested(SessionTreeItem*,QPoint)));
@@ -365,8 +376,22 @@ void MainWindow::createTree()
     }
     treeWidget->expandAll();
 
-    QSplitter* splitter = static_cast<QSplitter*>(centralWidget());
-    splitter->insertWidget(0, treeWidget);
+    toolBar = new QToolBar(container);
+    toolBar->addAction(tr("?"), qApp, SLOT(aboutApplication()));
+    toolBar->addAction(tr("S"), qApp, SLOT(showSettings()));
+    QWidget* spacer = new QWidget(toolBar);
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    toolBar->addWidget(spacer);
+    toolBar->addAction(tr("+"), this, SLOT(connectTo()));
+    toolBar->addAction(tr("#"), this, SLOT(addView()));
+
+    QVBoxLayout* layout = new QVBoxLayout(container);
+    layout->addWidget(treeWidget);
+    layout->addWidget(toolBar);
+    layout->setSpacing(0);
+    layout->setMargin(0);
+
+    splitter->insertWidget(0, container);
     splitter->setStretchFactor(1, 1);
     QSettings settings;
     if (settings.contains("tree"))

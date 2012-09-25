@@ -61,10 +61,12 @@ private slots:
     void currentTreeItemChanged(Session* session, const QString& view);
     void menuRequested(SessionTreeItem* item, const QPoint& pos);
     void splitterChanged(const QByteArray& state);
+    void addView();
 
 private:
     void createTree();
 
+    QToolBar* toolBar;
     SessionTreeWidget* treeWidget;
     MultiSessionTabWidget* tabWidget;
     TrayIcon* trayIcon;
