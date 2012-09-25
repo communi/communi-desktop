@@ -8,6 +8,10 @@ win32|mac:TARGET = Communi
 else:TARGET = communi
 !mac:DESTDIR = bin
 QT += network
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT += widgets
+    DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000
+}
 
 RESOURCES += communi.qrc
 win32:RC_FILE = communi.rc

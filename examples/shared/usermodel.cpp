@@ -104,8 +104,9 @@ void UserModel::clearUsers()
 {
     if (!d.names.isEmpty())
     {
+        beginResetModel();
         d.names.clear();
-        reset();
+        endResetModel();
     }
 }
 
@@ -131,7 +132,7 @@ void UserModel::setUserMode(const QString& user, const QString& mode)
         {
             QChar c = mode.at(i);
             QString m = d.session->prefixTypeToMode(c);
-            switch (c.toAscii())
+            switch (c.unicode())
             {
                 case '+':
                     add = true;
