@@ -41,6 +41,9 @@ public:
     QString receiver() const;
     void setReceiver(const QString &receiver);
 
+    QByteArray saveSplitter() const;
+    void restoreSplitter(const QByteArray& state);
+
 public slots:
     void showHelp(const QString& text, bool error = false);
     void appendMessage(const QString& message);
@@ -50,6 +53,7 @@ signals:
     void highlighted(IrcMessage* message);
     void alerted(IrcMessage* message);
     void queried(const QString& user);
+    void splitterChanged(const QByteArray& state);
 
 protected:
     void hideEvent(QHideEvent *event);
@@ -59,6 +63,7 @@ protected:
 
 private slots:
     void onEscPressed();
+    void onSplitterMoved();
     void onSend(const QString& text);
     void onCustomCommand(const QString& command, const QStringList& params);
 

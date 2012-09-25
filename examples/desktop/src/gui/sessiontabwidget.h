@@ -33,7 +33,11 @@ public:
 
     Session* session() const;
 
+    QByteArray saveSplitter() const;
+
 public slots:
+    void restoreSplitter(const QByteArray& state);
+
     MessageView* openView(const QString& receiver);
     void removeView(const QString& receiver);
     void closeCurrentView();
@@ -46,6 +50,7 @@ signals:
     void highlighted(MessageView* view, IrcMessage* message);
     void inactiveStatusChanged(bool inactive);
     void sessionClosed(Session* session);
+    void splitterChanged(const QByteArray& state);
 
     void viewAdded(MessageView* view);
     void viewRemoved(MessageView* view);

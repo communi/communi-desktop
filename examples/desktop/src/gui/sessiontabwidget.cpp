@@ -54,6 +54,25 @@ Session* SessionTabWidget::session() const
     return qobject_cast<Session*>(d.handler.session());
 }
 
+QByteArray SessionTabWidget::saveSplitter() const
+{
+    foreach (MessageView* view, d.views)
+        if (view->viewType() != MessageView::ServerView)
+            return view->saveSplitter();
+    return QByteArray();
+}
+
+void SessionTabWidget::restoreSplitter(const QByteArray& state)
+{
+    foreach (MessageView* view, d.views)
+    {
+        view->blockSignals(true);
+        view->restoreSplitter(state);
+        view->blockSignals(false);
+    }
+    emit splitterChanged(state);
+}
+
 MessageView* SessionTabWidget::openView(const QString& receiver)
 {
     MessageView* view = d.views.value(receiver.toLower());
@@ -67,6 +86,7 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
         connect(view, SIGNAL(alerted(IrcMessage*)), this, SLOT(onTabAlerted(IrcMessage*)));
         connect(view, SIGNAL(highlighted(IrcMessage*)), this, SLOT(onTabHighlighted(IrcMessage*)));
         connect(view, SIGNAL(queried(QString)), this, SLOT(openView(QString)));
+        connect(view, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
 
         d.handler.addReceiver(receiver, view);
         d.views.insert(receiver.toLower(), view);

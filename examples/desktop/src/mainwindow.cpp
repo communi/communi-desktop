@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget* parent) :
     connect(tabWidget, SIGNAL(newTabRequested()), this, SLOT(connectTo()), Qt::QueuedConnection);
     connect(tabWidget, SIGNAL(alerted(MessageView*,IrcMessage*)), this, SLOT(alert(MessageView*,IrcMessage*)));
     connect(tabWidget, SIGNAL(highlighted(MessageView*,IrcMessage*)), this, SLOT(highlight(MessageView*,IrcMessage*)));
+    connect(tabWidget, SIGNAL(splitterChanged(QByteArray)), this, SLOT(splitterChanged(QByteArray)));
 
     QSplitter* splitter = new QSplitter(this);
     splitter->setHandleWidth(1);
@@ -137,6 +138,10 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     connect(tab, SIGNAL(viewRemoved(MessageView*)), this, SLOT(viewRemoved(MessageView*)));
     connect(tab, SIGNAL(viewRenamed(QString,QString)), this, SLOT(viewRenamed(QString,QString)));
     connect(tab, SIGNAL(viewActivated(MessageView*)), this, SLOT(viewActivated(MessageView*)));
+
+    QSettings settings;
+    if (settings.contains("list"))
+        tab->restoreSplitter(settings.value("list").toByteArray());
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
@@ -144,7 +149,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
     QSettings settings;
     settings.setValue("geometry", saveGeometry());
     if (treeWidget)
-        settings.setValue("splitter", static_cast<QSplitter*>(centralWidget())->saveState());
+        settings.setValue("tree", static_cast<QSplitter*>(centralWidget())->saveState());
 
     ConnectionInfos connections;
     QList<Session*> sessions = tabWidget->sessions();
@@ -254,6 +259,10 @@ void MainWindow::highlight(MessageView* view, IrcMessage* message)
 
 void MainWindow::viewAdded(MessageView* view)
 {
+    QSettings settings;
+    if (settings.contains("list"))
+        view->restoreSplitter(settings.value("list").toByteArray());
+
     if (treeWidget)
     {
         SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(sender());
@@ -325,6 +334,12 @@ void  MainWindow::menuRequested(SessionTreeItem* item, const QPoint& pos)
     }
 }
 
+void MainWindow::splitterChanged(const QByteArray& state)
+{
+    QSettings settings;
+    settings.setValue("list", state);
+}
+
 void MainWindow::createTree()
 {
     treeWidget = new SessionTreeWidget(this);
@@ -354,6 +369,6 @@ void MainWindow::createTree()
     splitter->insertWidget(0, treeWidget);
     splitter->setStretchFactor(1, 1);
     QSettings settings;
-    if (settings.contains("splitter"))
-        splitter->restoreState(settings.value("splitter").toByteArray());
+    if (settings.contains("tree"))
+        splitter->restoreState(settings.value("tree").toByteArray());
 }

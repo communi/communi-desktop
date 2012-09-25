@@ -36,7 +36,10 @@ public:
 
     SessionTabWidget* sessionWidget(Session* session) const;
 
+    QByteArray saveSplitter() const;
+
 public slots:
+    void restoreSplitter(const QByteArray& state);
     void applySettings(const Settings& settings);
 
 signals:
@@ -45,6 +48,8 @@ signals:
 
     void alerted(MessageView* view, IrcMessage* message);
     void highlighted(MessageView* view, IrcMessage* message);
+
+    void splitterChanged(const QByteArray& state);
 
 protected:
     void tabInserted(int index);

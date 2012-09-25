@@ -60,6 +60,7 @@ private slots:
     void viewActivated(MessageView* view);
     void currentTreeItemChanged(Session* session, const QString& view);
     void menuRequested(SessionTreeItem* item, const QPoint& pos);
+    void splitterChanged(const QByteArray& state);
 
 private:
     void createTree();

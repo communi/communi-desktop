@@ -55,6 +55,7 @@ void MultiSessionTabWidget::addSession(Session* session)
     connect(tab, SIGNAL(alerted(MessageView*,IrcMessage*)), this, SIGNAL(alerted(MessageView*,IrcMessage*)));
     connect(tab, SIGNAL(highlighted(MessageView*,IrcMessage*)), this, SIGNAL(highlighted(MessageView*,IrcMessage*)));
     connect(tab, SIGNAL(sessionClosed(Session*)), this, SIGNAL(sessionRemoved(Session*)));
+    connect(tab, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
     tab->applySettings(d.settings);
 
     QString name = session->name();
@@ -130,6 +131,33 @@ void MultiSessionTabWidget::applySettings(const Settings& settings)
         if (tabWidget)
             tabWidget->applySettings(settings);
     }
+}
+
+QByteArray MultiSessionTabWidget::saveSplitter() const
+{
+    QByteArray state;
+    for (int i = count() - 1; state.isNull() && i >= 0; --i)
+    {
+        SessionTabWidget* tabWidget = qobject_cast<SessionTabWidget*>(widget(i));
+        if (tabWidget)
+            state = tabWidget->saveSplitter();
+    }
+    return state;
+}
+
+void MultiSessionTabWidget::restoreSplitter(const QByteArray& state)
+{
+    for (int i = 0; i < count(); ++i)
+    {
+        SessionTabWidget* tabWidget = qobject_cast<SessionTabWidget*>(widget(i));
+        if (tabWidget)
+        {
+            tabWidget->blockSignals(true);
+            tabWidget->restoreSplitter(state);
+            tabWidget->blockSignals(false);
+        }
+    }
+    emit splitterChanged(state);
 }
 
 void MultiSessionTabWidget::onSessionNetworkChanged(const QString& network)

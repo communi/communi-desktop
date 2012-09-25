@@ -35,6 +35,8 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     d.setupUi(this);
     d.viewType = type;
 
+    connect(d.splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(onSplitterMoved()));
+
     setFocusProxy(d.lineEditor);
     d.textBrowser->setBuddy(d.lineEditor);
 
@@ -113,6 +115,17 @@ void MessageView::setReceiver(const QString& receiver)
         d.listView->setChannel(receiver);
 }
 
+QByteArray MessageView::saveSplitter() const
+{
+    if (d.viewType != ServerView)
+        return d.splitter->saveState();
+    return QByteArray();
+}
+
+void MessageView::restoreSplitter(const QByteArray& state)
+{
+    d.splitter->restoreState(state);
+}
 void MessageView::showHelp(const QString& text, bool error)
 {
     QString syntax;
@@ -177,6 +190,11 @@ void MessageView::onEscPressed()
     d.helpLabel->hide();
     d.searchEditor->hide();
     setFocus(Qt::OtherFocusReason);
+}
+
+void MessageView::onSplitterMoved()
+{
+    emit splitterChanged(d.splitter->saveState());
 }
 
 void MessageView::onSend(const QString& text)
