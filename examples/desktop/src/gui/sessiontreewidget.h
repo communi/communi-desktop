@@ -37,6 +37,8 @@ public:
     QColor statusColor(ItemStatus status) const;
     void setStatusColor(ItemStatus status, const QColor& color);
 
+    QColor currentAlertColor() const;
+
     QList<Session*> sessions() const;
     SessionTreeItem* sessionItem(Session* session) const;
 
@@ -75,6 +77,7 @@ private slots:
 private:
     struct SessionTreeWidgetData
     {
+        QColor alertColor;
         Settings settings;
         QShortcut* prevShortcut;
         QShortcut* nextShortcut;

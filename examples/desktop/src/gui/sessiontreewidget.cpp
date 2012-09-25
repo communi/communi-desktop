@@ -29,6 +29,7 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     d.colors[Inactive] = palette().color(QPalette::Disabled, QPalette::Highlight);
     d.colors[Alert] = palette().color(QPalette::Highlight);
     d.colors[Highlight] = palette().color(QPalette::Highlight);
+    d.alertColor = d.colors.value(Alert);
 
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));
@@ -50,6 +51,11 @@ QColor SessionTreeWidget::statusColor(SessionTreeWidget::ItemStatus status) cons
 void SessionTreeWidget::setStatusColor(SessionTreeWidget::ItemStatus status, const QColor& color)
 {
     d.colors[status] = color;
+}
+
+QColor SessionTreeWidget::currentAlertColor() const
+{
+    return d.alertColor;
 }
 
 QList<Session*> SessionTreeWidget::sessions() const
@@ -133,7 +139,6 @@ void SessionTreeWidget::moveToPrevItem()
         setCurrentItem(topLevelItem(topLevelItemCount() - 1));
 }
 
-
 void SessionTreeWidget::alert(SessionTreeItem* item)
 {
     if (d.alertedItems.isEmpty())
@@ -143,8 +148,7 @@ void SessionTreeWidget::alert(SessionTreeItem* item)
 
 void SessionTreeWidget::unalert(SessionTreeItem* item)
 {
-    d.alertedItems.removeAll(item);
-    if (d.alertedItems.isEmpty())
+    if (d.alertedItems.removeAll(item) && d.alertedItems.isEmpty())
         SharedTimer::instance()->unregisterReceiver(this, "alertTimeout");
 }
 
@@ -214,8 +218,9 @@ void SessionTreeWidget::delayedItemResetTimeout()
 
 void SessionTreeWidget::alertTimeout()
 {
-    static bool alerted = true;
+    bool active = d.alertColor == d.colors.value(Active);
+    d.alertColor = d.colors.value(active ? Alert : Active);
+
     foreach (SessionTreeItem* item, d.alertedItems)
-        item->setAlerted(alerted);
-    alerted = !alerted;
+        item->emitDataChanged();
 }

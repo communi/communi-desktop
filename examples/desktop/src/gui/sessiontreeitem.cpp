@@ -52,7 +52,7 @@ QVariant SessionTreeItem::data(int column, int role) const
         if (d.inactive)
             return tw->statusColor(SessionTreeWidget::Inactive);
         if (d.alerted)
-            return tw->statusColor(SessionTreeWidget::Alert);
+            return tw->currentAlertColor();
         if (d.highlighted)
             return tw->statusColor(SessionTreeWidget::Highlight);
         return tw->statusColor(SessionTreeWidget::Active);

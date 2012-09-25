@@ -47,6 +47,7 @@ private:
         bool highlighted;
         Session* session;
     } d;
+    friend class SessionTreeWidget;
 };
 
 #endif // SESSIONTREEITEM_H
