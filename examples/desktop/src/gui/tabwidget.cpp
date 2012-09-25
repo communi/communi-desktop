@@ -28,11 +28,16 @@ public:
 
     QRect subElementRect(SubElement se, const QStyleOption* opt, const QWidget* widget = 0) const
     {
-        if (se == QStyle::SE_TabWidgetTabContents)
+        if (se == QStyle::SE_TabWidgetTabContents || se == QStyle::SE_TabWidgetTabPane)
         {
             const TabWidget* tabWidget = qobject_cast<const TabWidget*>(widget);
             if (tabWidget && tabWidget->tabBar()->testAttribute(Qt::WA_WState_Hidden))
+            {
+                const QStyleOptionTabWidgetFrame* frame = qstyleoption_cast<const QStyleOptionTabWidgetFrame*>(opt);
+                if (frame && QStyle::SE_TabWidgetTabContents)
+                    return opt->rect.adjusted(frame->lineWidth, frame->lineWidth, -frame->lineWidth, -frame->lineWidth);
                 return opt->rect;
+            }
         }
         return baseStyle()->subElementRect(se, opt, widget);
     }
