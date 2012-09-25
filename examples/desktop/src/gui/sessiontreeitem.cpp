@@ -60,6 +60,11 @@ QVariant SessionTreeItem::data(int column, int role) const
     return QTreeWidgetItem::data(column, role);
 }
 
+bool SessionTreeItem::isAlerted() const
+{
+    return d.alerted;
+}
+
 void SessionTreeItem::setAlerted(bool alerted)
 {
     if (d.alerted != alerted)
@@ -69,6 +74,11 @@ void SessionTreeItem::setAlerted(bool alerted)
     }
 }
 
+bool SessionTreeItem::isInactive() const
+{
+    return d.inactive;
+}
+
 void SessionTreeItem::setInactive(bool inactive)
 {
     if (d.inactive != inactive)
@@ -76,6 +86,11 @@ void SessionTreeItem::setInactive(bool inactive)
         d.inactive = inactive;
         emitDataChanged();
     }
+}
+
+bool SessionTreeItem::isHighlighted() const
+{
+    return d.highlighted;
 }
 
 void SessionTreeItem::setHighlighted(bool highlighted)

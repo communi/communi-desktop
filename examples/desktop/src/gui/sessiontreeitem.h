@@ -30,8 +30,13 @@ public:
 
     QVariant data(int column, int role) const;
 
+    bool isAlerted() const;
     void setAlerted(bool alerted);
+
+    bool isInactive() const;
     void setInactive(bool inactive);
+
+    bool isHighlighted() const;
     void setHighlighted(bool highlighted);
 
 private:
