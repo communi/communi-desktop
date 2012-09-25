@@ -31,6 +31,8 @@ public:
     UserListView(QWidget* parent = 0);
     ~UserListView();
 
+    QSize sizeHint() const;
+
     Session* session() const;
     void setSession(Session* session);
 

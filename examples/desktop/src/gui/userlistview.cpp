@@ -18,6 +18,7 @@
 #include "session.h"
 #include <QItemSelectionModel>
 #include <QContextMenuEvent>
+#include <QScrollBar>
 #include <QAction>
 #include <QMenu>
 
@@ -29,6 +30,11 @@ UserListView::UserListView(QWidget* parent) : QListView(parent)
 
 UserListView::~UserListView()
 {
+}
+
+QSize UserListView::sizeHint() const
+{
+    return QSize(16 * fontMetrics().width('#') + verticalScrollBar()->sizeHint().width(), QListView::sizeHint().height());
 }
 
 Session* UserListView::session() const
