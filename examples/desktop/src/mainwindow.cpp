@@ -24,7 +24,10 @@
 #include "homepage.h"
 #include "session.h"
 #include "qtdocktile.h"
-#include <QtGui>
+#include <QSettings>
+#include <QToolBar>
+#include <QMenuBar>
+#include <QMenu>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     toolBar(0), treeWidget(0), trayIcon(0), dockTile(0)

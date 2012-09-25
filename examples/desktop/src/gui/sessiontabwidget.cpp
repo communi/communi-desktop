@@ -18,7 +18,9 @@
 #include "settings.h"
 #include "session.h"
 #include <irccommand.h>
-#include <QtGui>
+#include <QInputDialog>
+#include <QShortcut>
+#include <QMenu>
 
 SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     TabWidget(parent)
