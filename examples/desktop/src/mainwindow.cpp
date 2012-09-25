@@ -380,13 +380,14 @@ void MainWindow::createTree()
     treeWidget->expandAll();
 
     toolBar = new QToolBar(container);
-    toolBar->addAction(tr("?"), qApp, SLOT(aboutApplication()));
-    toolBar->addAction(tr("S"), qApp, SLOT(showSettings()));
+    toolBar->setIconSize(QSize(12, 12));
+    toolBar->addAction(QIcon(":/resources/iconmonstr/about.png"), "", qApp, SLOT(aboutApplication()))->setToolTip(tr("About"));
+    toolBar->addAction(QIcon(":/resources/iconmonstr/settings.png"), "", qApp, SLOT(showSettings()))->setToolTip(tr("Settings"));
     QWidget* spacer = new QWidget(toolBar);
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     toolBar->addWidget(spacer);
-    toolBar->addAction(tr("+"), this, SLOT(connectTo()));
-    toolBar->addAction(tr("#"), this, SLOT(addView()));
+    toolBar->addAction(QIcon(":/resources/iconmonstr/connect.png"), "", this, SLOT(connectTo()))->setToolTip(tr("Connect"));
+    toolBar->addAction(QIcon(":/resources/iconmonstr/new-view.png"), "", this, SLOT(addView()))->setToolTip(tr("Join channel"));
 
     QVBoxLayout* layout = new QVBoxLayout(container);
     layout->addWidget(treeWidget);

@@ -29,5 +29,10 @@
   <file>resources/oxygen/64x64/actions/network.png</file>
   <file>resources/oxygen/64x64/actions/user.png</file>
   <file>resources/oxygen/64x64/actions/save_all.png</file>
+
+  <file>resources/iconmonstr/about.png</file>
+  <file>resources/iconmonstr/connect.png</file>
+  <file>resources/iconmonstr/new-view.png</file>
+  <file>resources/iconmonstr/settings.png</file>
 </qresource>
 </RCC>
