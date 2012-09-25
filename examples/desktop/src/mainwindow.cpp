@@ -394,6 +394,7 @@ void MainWindow::createTree()
     layout->setSpacing(0);
     layout->setMargin(0);
 
+    container->setMinimumWidth(toolBar->sizeHint().width());
     splitter->insertWidget(0, container);
     splitter->setStretchFactor(1, 1);
     QSettings settings;
