@@ -30,7 +30,7 @@
 #include <QMenu>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
-    toolBar(0), treeWidget(0), trayIcon(0), dockTile(0)
+    toolBar(0), homePage(0), treeWidget(0), trayIcon(0), dockTile(0)
 {
     tabWidget = new MultiSessionTabWidget(this);
 
@@ -43,10 +43,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     splitter->setHandleWidth(1);
     splitter->addWidget(tabWidget);
     setCentralWidget(splitter);
-
-    HomePage* homePage = new HomePage(this);
-    connect(homePage, SIGNAL(connectRequested()), this, SLOT(connectTo()));
-    tabWidget->addTab(homePage, tr("Home"));
 
     if (QSystemTrayIcon::isSystemTrayAvailable())
     {
@@ -201,9 +197,15 @@ void MainWindow::applySettings(const Settings& settings)
         if (!treeWidget)
             createTree();
         treeWidget->applySettings(settings);
+
+        homePage->deleteLater();
+        homePage = 0;
     }
     else if (treeWidget)
     {
+        if (!homePage)
+            createHome();
+
         treeWidget->parentWidget()->deleteLater();
         treeWidget = 0;
         toolBar = 0;
@@ -403,4 +405,11 @@ void MainWindow::createTree()
     QSettings settings;
     if (settings.contains("tree"))
         splitter->restoreState(settings.value("tree").toByteArray());
+}
+
+void MainWindow::createHome()
+{
+    homePage = new HomePage(tabWidget);
+    connect(homePage, SIGNAL(connectRequested()), this, SLOT(connectTo()));
+    tabWidget->insertTab(0, homePage, tr("Home"));
 }
