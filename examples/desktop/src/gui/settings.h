@@ -51,10 +51,14 @@ struct Settings
 
     enum ShortcutType
     {
-        TabUp,
-        TabDown,
-        TabLeft,
-        TabRight
+        NavigateUp,
+        NavigateDown,
+        NavigateLeft,
+        NavigateRight,
+        NextUnreadUp,
+        NextUnreadDown,
+        NextUnreadLeft,
+        NextUnreadRight
     };
 
     QHash<int, bool> messages;
@@ -71,7 +75,7 @@ Q_DECLARE_METATYPE(Settings);
 
 inline QDataStream& operator<<(QDataStream& out, const Settings& settings)
 {
-    out << quint32(126); // version
+    out << quint32(127); // version
     out << settings.messages;
     out << settings.highlights;
     out << settings.language;
@@ -100,6 +104,20 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
         settings.layout = "tabs";
     if (version <= 125)
         settings.colors[Settings::TimeStamp] = "gray";
+    if (version <= 126)
+    {
+#ifdef Q_OS_MAC
+        settings.shortcuts[Settings::NextUnreadUp] = "Shift+Ctrl+Alt+Up";
+        settings.shortcuts[Settings::NextUnreadDown] = "Shift+Ctrl+Alt+Down";
+        settings.shortcuts[Settings::NextUnreadLeft] = "Shift+Ctrl+Alt+Left";
+        settings.shortcuts[Settings::NextUnreadRight] = "Shift+Ctrl+Alt+Right";
+#else
+        settings.shortcuts[Settings::NextUnreadUp] = "Shift+Alt+Up";
+        settings.shortcuts[Settings::NextUnreadDown] = "Shift+Alt+Down";
+        settings.shortcuts[Settings::NextUnreadLeft] = "Shift+Alt+Left";
+        settings.shortcuts[Settings::NextUnreadRight] = "Shift+Alt+Right";
+#endif
+    }
     return in;
 }
 

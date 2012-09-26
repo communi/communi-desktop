@@ -17,17 +17,22 @@
 
 Settings::Settings() : maxBlockCount(-1), timeStamp(true), layout("tabs")
 {
-#if defined(Q_WS_MAC)
-    shortcuts[TabUp] = QApplication::translate("Shortcuts", "Ctrl+Alt+Up");
-    shortcuts[TabDown] = QApplication::translate("Shortcuts", "Ctrl+Alt+Down");
-    shortcuts[TabLeft] = QApplication::translate("Shortcuts", "Ctrl+Alt+Left");
-    shortcuts[TabRight] = QApplication::translate("Shortcuts", "Ctrl+Alt+Right");
+#ifdef Q_OS_MAC
+    QString navigate("Ctrl+Alt+%1");
+    QString nextUnread("Shift+Ctrl+Alt+%1");
 #else
-    shortcuts[TabUp] = QApplication::translate("Shortcuts", "Alt+Up");
-    shortcuts[TabDown] = QApplication::translate("Shortcuts", "Alt+Down");
-    shortcuts[TabLeft] = QApplication::translate("Shortcuts", "Alt+Left");
-    shortcuts[TabRight] = QApplication::translate("Shortcuts", "Alt+Right");
-#endif // Q_WS_XXX
+    QString navigate("Alt+%1");
+    QString nextUnread("Shift+Alt+%1");
+#endif
+    shortcuts[NavigateUp] = navigate.arg("Up");
+    shortcuts[NavigateDown] = navigate.arg("Down");
+    shortcuts[NavigateLeft] = navigate.arg("Left");
+    shortcuts[NavigateRight] = navigate.arg("Right");
+
+    shortcuts[NextUnreadUp] = nextUnread.arg("Up");
+    shortcuts[NextUnreadDown] = nextUnread.arg("Down");
+    shortcuts[NextUnreadLeft] = nextUnread.arg("Left");
+    shortcuts[NextUnreadRight] = nextUnread.arg("Right");
 
     messages[Joins] = true;
     messages[Parts] = true;
