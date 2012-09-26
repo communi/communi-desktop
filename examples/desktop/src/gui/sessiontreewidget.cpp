@@ -40,6 +40,12 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     d.nextShortcut = new QShortcut(this);
     connect(d.nextShortcut, SIGNAL(activated()), this, SLOT(moveToNextItem()));
 
+    d.prevUnreadShortcut = new QShortcut(this);
+    connect(d.prevUnreadShortcut, SIGNAL(activated()), this, SLOT(moveToPrevUnreadItem()));
+
+    d.nextUnreadShortcut = new QShortcut(this);
+    connect(d.nextUnreadShortcut, SIGNAL(activated()), this, SLOT(moveToNextUnreadItem()));
+
     applySettings(d.settings);
 }
 
@@ -160,6 +166,42 @@ void SessionTreeWidget::moveToPrevItem()
     }
 }
 
+void SessionTreeWidget::moveToNextUnreadItem()
+{
+    QTreeWidgetItem* current = currentItem();
+    if (current)
+    {
+        QTreeWidgetItemIterator it(current);
+        while (*++it && *it != current)
+        {
+            SessionTreeItem* item = static_cast<SessionTreeItem*>(*it);
+            if (item->isAlerted() || item->isHighlighted())
+            {
+                setCurrentItem(item);
+                break;
+            }
+        }
+    }
+}
+
+void SessionTreeWidget::moveToPrevUnreadItem()
+{
+    QTreeWidgetItem* current = currentItem();
+    if (current)
+    {
+        QTreeWidgetItemIterator it(current);
+        while (*--it && *it != current)
+        {
+            SessionTreeItem* item = static_cast<SessionTreeItem*>(*it);
+            if (item->isAlerted() || item->isHighlighted())
+            {
+                setCurrentItem(item);
+                break;
+            }
+        }
+    }
+}
+
 void SessionTreeWidget::alert(SessionTreeItem* item)
 {
     if (d.alertedItems.isEmpty())
@@ -179,8 +221,10 @@ void SessionTreeWidget::applySettings(const Settings& settings)
     setStatusColor(Alert, color);
     setStatusColor(Highlight, color);
 
-    d.prevShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabUp)));
-    d.nextShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::TabDown)));
+    d.prevShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NavigateUp)));
+    d.nextShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NavigateDown)));
+    d.prevUnreadShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NextUnreadUp)));
+    d.nextUnreadShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NextUnreadDown)));
     d.settings = settings;
 }
 

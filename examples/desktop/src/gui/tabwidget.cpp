@@ -51,24 +51,36 @@ TabBar::TabBar(QWidget* parent) : QTabBar(parent)
     nextShortcut = new QShortcut(this);
     connect(nextShortcut, SIGNAL(activated()), parent, SLOT(moveToNextTab()));
 
+    prevUnreadShortcut = new QShortcut(this);
+    connect(prevUnreadShortcut, SIGNAL(activated()), parent, SLOT(moveToPrevUnreadTab()));
+
+    nextUnreadShortcut = new QShortcut(this);
+    connect(nextUnreadShortcut, SIGNAL(activated()), parent, SLOT(moveToNextUnreadTab()));
+
     addTab(tr("+"));
     setSelectionBehaviorOnRemove(SelectLeftTab);
 }
 
 QKeySequence TabBar::navigationShortcut(Navigation navigation) const
 {
-    if (navigation == Previous)
-        return prevShortcut->key();
-    else
-        return nextShortcut->key();
+    switch (navigation)
+    {
+        case Next:           return nextShortcut->key();
+        case Previous:       return prevShortcut->key();
+        case NextUnread:     return nextUnreadShortcut->key();
+        case PreviousUnread: return prevUnreadShortcut->key();
+    }
 }
 
 void TabBar::setNavigationShortcut(Navigation navigation, const QKeySequence& shortcut)
 {
-    if (navigation == Previous)
-        prevShortcut->setKey(shortcut);
-    else
-        nextShortcut->setKey(shortcut);
+    switch (navigation)
+    {
+        case Next:           return nextShortcut->setKey(shortcut);
+        case Previous:       return prevShortcut->setKey(shortcut);
+        case NextUnread:     return nextUnreadShortcut->setKey(shortcut);
+        case PreviousUnread: return prevUnreadShortcut->setKey(shortcut);
+    }
 }
 
 QSize TabBar::minimumSizeHint() const
@@ -232,6 +244,32 @@ void TabWidget::moveToPrevTab()
     if (--index < 0)
         index = count() - 2;
     setCurrentIndex(index);
+}
+
+void TabWidget::moveToNextUnreadTab()
+{
+    int index = currentIndex();
+    while (++index < count())
+    {
+        if (hasTabAlert(index) || hasTabHighlight(index))
+        {
+            setCurrentIndex(index);
+            break;
+        }
+    }
+}
+
+void TabWidget::moveToPrevUnreadTab()
+{
+    int index = currentIndex();
+    while (index-- > 0)
+    {
+        if (hasTabAlert(index) || hasTabHighlight(index))
+        {
+            setCurrentIndex(index);
+            break;
+        }
+    }
 }
 
 static void shiftIndexesFrom(QList<int>& indexes, int from, int delta)

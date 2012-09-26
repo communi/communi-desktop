@@ -272,8 +272,10 @@ void SessionTabWidget::onTabHighlighted(IrcMessage* message)
 void SessionTabWidget::applySettings(const Settings& settings)
 {
     TabBar* tb = static_cast<TabBar*>(tabBar());
-    tb->setNavigationShortcut(TabBar::Previous, QKeySequence(settings.shortcuts.value(Settings::TabLeft)));
-    tb->setNavigationShortcut(TabBar::Next, QKeySequence(settings.shortcuts.value(Settings::TabRight)));
+    tb->setNavigationShortcut(TabBar::Next, QKeySequence(settings.shortcuts.value(Settings::NavigateRight)));
+    tb->setNavigationShortcut(TabBar::Previous, QKeySequence(settings.shortcuts.value(Settings::NavigateLeft)));
+    tb->setNavigationShortcut(TabBar::NextUnread, QKeySequence(settings.shortcuts.value(Settings::NextUnreadRight)));
+    tb->setNavigationShortcut(TabBar::PreviousUnread, QKeySequence(settings.shortcuts.value(Settings::NextUnreadLeft)));
     tb->setVisible(settings.layout == "tabs");
 
     QColor color(settings.colors.value(Settings::Highlight));

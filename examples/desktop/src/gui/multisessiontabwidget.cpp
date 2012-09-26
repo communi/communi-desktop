@@ -105,8 +105,10 @@ void MultiSessionTabWidget::applySettings(const Settings& settings)
     d.settings = settings;
 
     TabBar* tb = static_cast<TabBar*>(tabBar());
-    tb->setNavigationShortcut(TabBar::Previous, QKeySequence(settings.shortcuts.value(Settings::TabUp)));
-    tb->setNavigationShortcut(TabBar::Next, QKeySequence(settings.shortcuts.value(Settings::TabDown)));
+    tb->setNavigationShortcut(TabBar::Next, QKeySequence(settings.shortcuts.value(Settings::NavigateDown)));
+    tb->setNavigationShortcut(TabBar::Previous, QKeySequence(settings.shortcuts.value(Settings::NavigateUp)));
+    tb->setNavigationShortcut(TabBar::NextUnread, QKeySequence(settings.shortcuts.value(Settings::NextUnreadDown)));
+    tb->setNavigationShortcut(TabBar::PreviousUnread, QKeySequence(settings.shortcuts.value(Settings::NextUnreadUp)));
     tb->setVisible(d.settings.layout == "tabs");
 
     QColor color(settings.colors.value(Settings::Highlight));

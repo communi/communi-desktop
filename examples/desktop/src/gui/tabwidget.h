@@ -47,6 +47,8 @@ public:
 public slots:
     void moveToNextTab();
     void moveToPrevTab();
+    void moveToNextUnreadTab();
+    void moveToPrevUnreadTab();
 
 signals:
     void newTabRequested();

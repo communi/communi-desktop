@@ -26,7 +26,7 @@ class TabBar : public QTabBar
 public:
     TabBar(QWidget* parent = 0);
 
-    enum Navigation { Next, Previous };
+    enum Navigation { Next, Previous, NextUnread, PreviousUnread };
     QKeySequence navigationShortcut(Navigation navigation) const;
     void setNavigationShortcut(Navigation navigation, const QKeySequence& shortcut);
 
@@ -43,6 +43,8 @@ protected:
 private:
     QShortcut* prevShortcut;
     QShortcut* nextShortcut;
+    QShortcut* prevUnreadShortcut;
+    QShortcut* nextUnreadShortcut;
 };
 
 #endif // TABWIDGET_P_H

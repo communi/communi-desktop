@@ -56,6 +56,9 @@ public slots:
     void moveToNextItem();
     void moveToPrevItem();
 
+    void moveToNextUnreadItem();
+    void moveToPrevUnreadItem();
+
     void alert(SessionTreeItem* item);
     void unalert(SessionTreeItem* item);
 
@@ -83,6 +86,8 @@ private:
         Settings settings;
         QShortcut* prevShortcut;
         QShortcut* nextShortcut;
+        QShortcut* prevUnreadShortcut;
+        QShortcut* nextUnreadShortcut;
         QHash<ItemStatus, QColor> colors;
         QSet<SessionTreeItem*> alertedItems;
         QSet<SessionTreeItem*> resetedItems;
