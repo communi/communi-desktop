@@ -243,8 +243,10 @@ void MainWindow::alert(MessageView* view, IrcMessage* message)
         SessionTreeItem* item = treeWidget->sessionItem(view->session());
         if (view->viewType() != MessageView::ServerView)
             item = item->findChild(view->receiver());
-        if (item)
+        if (item) {
+            item->setAlerted(true);
             treeWidget->alert(item);
+        }
     }
 }
 

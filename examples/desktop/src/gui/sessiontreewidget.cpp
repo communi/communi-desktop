@@ -148,12 +148,12 @@ void SessionTreeWidget::alert(SessionTreeItem* item)
 {
     if (d.alertedItems.isEmpty())
         SharedTimer::instance()->registerReceiver(this, "alertTimeout");
-    d.alertedItems.append(item);
+    d.alertedItems.insert(item);
 }
 
 void SessionTreeWidget::unalert(SessionTreeItem* item)
 {
-    if (d.alertedItems.removeAll(item) && d.alertedItems.isEmpty())
+    if (d.alertedItems.remove(item) && d.alertedItems.isEmpty())
         SharedTimer::instance()->unregisterReceiver(this, "alertTimeout");
 }
 
@@ -207,7 +207,7 @@ void SessionTreeWidget::delayedItemReset()
     SessionTreeItem* item = static_cast<SessionTreeItem*>(currentItem());
     if (item)
     {
-        d.resetedItems += item;
+        d.resetedItems.insert(item);
         QTimer::singleShot(500, this, SLOT(delayedItemResetTimeout()));
     }
 }
@@ -216,7 +216,8 @@ void SessionTreeWidget::delayedItemResetTimeout()
 {
     if (!d.resetedItems.isEmpty())
     {
-        onCurrentItemChanged(d.resetedItems.takeLast());
+        foreach (SessionTreeItem* item, d.resetedItems)
+            onCurrentItemChanged(item);
         d.resetedItems.clear();
     }
 }

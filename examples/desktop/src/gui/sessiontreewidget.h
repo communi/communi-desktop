@@ -84,8 +84,8 @@ private:
         QShortcut* prevShortcut;
         QShortcut* nextShortcut;
         QHash<ItemStatus, QColor> colors;
-        QList<SessionTreeItem*> alertedItems;
-        QList<SessionTreeItem*> resetedItems;
+        QSet<SessionTreeItem*> alertedItems;
+        QSet<SessionTreeItem*> resetedItems;
         QHash<Session*, SessionTreeItem*> sessions;
     } d;
 };
