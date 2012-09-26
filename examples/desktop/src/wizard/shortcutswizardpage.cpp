@@ -41,6 +41,8 @@ ShortcutsWizardPage::ShortcutsWizardPage(QWidget* parent) : QWizardPage(parent)
     setPixmap(QWizard::LogoPixmap, QPixmap(":/resources/oxygen/64x64/actions/forward.png"));
     ui.treeWidget->setItemDelegate(new ItemDelegate(ui.treeWidget));
     ui.treeWidget->header()->setResizeMode(0, QHeaderView::ResizeToContents);
+    ui.treeWidget->expandItem(ui.treeWidget->topLevelItem(0));
+    ui.treeWidget->expandItem(ui.treeWidget->topLevelItem(1));
 
     updateUi();
 }
@@ -48,19 +50,37 @@ ShortcutsWizardPage::ShortcutsWizardPage(QWidget* parent) : QWizardPage(parent)
 QHash<int, QString> ShortcutsWizardPage::shortcuts() const
 {
     QHash<int, QString> shortcuts;
-    for (int i = Settings::TabUp; i <= Settings::TabRight; ++i)
+
+    QTreeWidgetItem* navigate = ui.treeWidget->topLevelItem(0);
+    for (int i = Settings::NavigateUp; i <= Settings::NavigateRight; ++i)
     {
-        QTreeWidgetItem* item = ui.treeWidget->topLevelItem(i);
+        QTreeWidgetItem* item = navigate->child(i);
         shortcuts.insert(i, item->text(Shortcut));
     }
+
+    QTreeWidgetItem* unread = ui.treeWidget->topLevelItem(1);
+    for (int i = Settings::NextUnreadUp; i <= Settings::NextUnreadRight; ++i)
+    {
+        QTreeWidgetItem* item = unread->child(i - Settings::NextUnreadUp);
+        shortcuts.insert(i, item->text(Shortcut));
+    }
+
     return shortcuts;
 }
 
 void ShortcutsWizardPage::setShortcuts(const QHash<int, QString>& shortcuts)
 {
-    for (int i = Settings::TabUp; i <= Settings::TabRight; ++i)
+    QTreeWidgetItem* navigate = ui.treeWidget->topLevelItem(0);
+    for (int i = Settings::NavigateUp; i <= Settings::NavigateRight; ++i)
     {
-        QTreeWidgetItem* item = ui.treeWidget->topLevelItem(i);
+        QTreeWidgetItem* item = navigate->child(i);
+        item->setText(Shortcut, shortcuts.value(i));
+    }
+
+    QTreeWidgetItem* unread = ui.treeWidget->topLevelItem(1);
+    for (int i = Settings::NextUnreadUp; i <= Settings::NextUnreadRight; ++i)
+    {
+        QTreeWidgetItem* item = unread->child(i - Settings::NextUnreadUp);
         item->setText(Shortcut, shortcuts.value(i));
     }
 }
