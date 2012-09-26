@@ -128,20 +128,28 @@ void SessionTreeWidget::setCurrentView(Session* session, const QString& view)
 
 void SessionTreeWidget::moveToNextItem()
 {
-    QTreeWidgetItemIterator it(currentItem());
-    if (*++it)
-        setCurrentItem(*it);
-    else
-        setCurrentItem(topLevelItem(0));
+    QTreeWidgetItem* current = currentItem();
+    if (current)
+    {
+        QTreeWidgetItemIterator it(current);
+        if (*++it)
+            setCurrentItem(*it);
+        else
+            setCurrentItem(topLevelItem(0));
+    }
 }
 
 void SessionTreeWidget::moveToPrevItem()
 {
-    QTreeWidgetItemIterator it(currentItem());
-    if (*--it)
-        setCurrentItem(*it);
-    else
-        setCurrentItem(topLevelItem(topLevelItemCount() - 1));
+    QTreeWidgetItem* current = currentItem();
+    if (current)
+    {
+        QTreeWidgetItemIterator it(current);
+        if (*--it)
+            setCurrentItem(*it);
+        else
+            setCurrentItem(topLevelItem(topLevelItemCount() - 1));
+    }
 }
 
 void SessionTreeWidget::alert(SessionTreeItem* item)
