@@ -51,10 +51,6 @@ signals:
 
     void splitterChanged(const QByteArray& state);
 
-protected:
-    void tabInserted(int index);
-    void tabRemoved(int index);
-
 private slots:
     void onSessionNetworkChanged(const QString& network);
     void setInactive(bool inactive);
