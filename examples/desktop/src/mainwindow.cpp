@@ -201,14 +201,17 @@ void MainWindow::applySettings(const Settings& settings)
         homePage->deleteLater();
         homePage = 0;
     }
-    else if (treeWidget)
+    else
     {
         if (!homePage)
             createHome();
 
-        treeWidget->parentWidget()->deleteLater();
-        treeWidget = 0;
-        toolBar = 0;
+        if (treeWidget)
+        {
+            treeWidget->parentWidget()->deleteLater();
+            treeWidget = 0;
+            toolBar = 0;
+        }
     }
 }
 
