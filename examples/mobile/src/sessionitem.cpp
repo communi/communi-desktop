@@ -118,22 +118,8 @@ void SessionItem::receiveMessage(IrcMessage* message)
     if (message->type() == IrcMessage::Numeric)
     {
         IrcNumericMessage* numeric = static_cast<IrcNumericMessage*>(message);
-        if (numeric->code() == Irc::ERR_NICKNAMEINUSE)
-        {
-            if (m_alternateNicks.isEmpty())
-            {
-                QString currentNick = session()->nickName();
-                m_alternateNicks << (currentNick + "_")
-                                 <<  currentNick
-                                 << (currentNick + "__")
-                                 <<  currentNick;
-            }
-            session()->setNickName(m_alternateNicks.takeFirst());
-        }
-        else if (numeric->code() == Irc::ERR_BADCHANNELKEY)
-        {
+        if (numeric->code() == Irc::ERR_BADCHANNELKEY)
             emit channelKeyRequired(session(), message->parameters().value(1));
-        }
     }
 }
 

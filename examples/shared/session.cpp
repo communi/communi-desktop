@@ -380,7 +380,8 @@ void Session::handleMessage(IrcMessage* message)
     }
     else if (message->type() == IrcMessage::Numeric)
     {
-        if (static_cast<IrcNumericMessage*>(message)->code() == Irc::RPL_ISUPPORT)
+        int code = static_cast<IrcNumericMessage*>(message)->code();
+        if (code == Irc::RPL_ISUPPORT)
         {
             foreach (const QString& param, message->parameters().mid(1))
             {
@@ -390,6 +391,18 @@ void Session::handleMessage(IrcMessage* message)
             if (m_info.contains("NETWORK"))
                 emit networkChanged(network());
             emit serverInfoReceived();
+        }
+        else if (code == Irc::ERR_NICKNAMEINUSE)
+        {
+            if (m_alternateNicks.isEmpty())
+            {
+                QString currentNick = nickName();
+                m_alternateNicks << (currentNick + "_")
+                                 <<  currentNick
+                                 << (currentNick + "__")
+                                 <<  currentNick;
+            }
+            setNickName(m_alternateNicks.takeFirst());
         }
     }
 }

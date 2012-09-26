@@ -55,7 +55,6 @@ private slots:
 private:
     QObjectList m_children;
     MessageHandler m_handler;
-    QStringList m_alternateNicks;
 };
 
 #endif // SESSIONITEM_H

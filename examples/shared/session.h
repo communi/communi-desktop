@@ -121,6 +121,7 @@ private:
     int m_maxLag;
     QHash<QString,QString> m_info;
     bool m_quit;
+    QStringList m_alternateNicks;
     static QNetworkSession* s_network;
 };
 
