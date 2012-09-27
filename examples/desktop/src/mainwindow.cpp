@@ -22,6 +22,7 @@
 #include "connectioninfo.h"
 #include "messageview.h"
 #include "homepage.h"
+#include "toolbar.h"
 #include "session.h"
 #include "qtdocktile.h"
 #include <QSettings>
@@ -30,7 +31,7 @@
 #include <QMenu>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
-    toolBar(0), homePage(0), treeWidget(0), trayIcon(0), dockTile(0)
+    homePage(0), treeWidget(0), trayIcon(0), dockTile(0)
 {
     tabWidget = new MultiSessionTabWidget(this);
 
@@ -210,7 +211,6 @@ void MainWindow::applySettings(const Settings& settings)
         {
             treeWidget->parentWidget()->deleteLater();
             treeWidget = 0;
-            toolBar = 0;
         }
     }
 }
@@ -386,15 +386,11 @@ void MainWindow::createTree()
     }
     treeWidget->expandAll();
 
-    toolBar = new QToolBar(container);
-    toolBar->setIconSize(QSize(12, 12));
-    toolBar->addAction(QIcon(":/resources/iconmonstr/about.png"), "", qApp, SLOT(aboutApplication()))->setToolTip(tr("About"));
-    toolBar->addAction(QIcon(":/resources/iconmonstr/settings.png"), "", qApp, SLOT(showSettings()))->setToolTip(tr("Settings"));
-    QWidget* spacer = new QWidget(toolBar);
-    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    toolBar->addWidget(spacer);
-    toolBar->addAction(QIcon(":/resources/iconmonstr/connect.png"), "", this, SLOT(connectTo()))->setToolTip(tr("Connect"));
-    toolBar->addAction(QIcon(":/resources/iconmonstr/new-view.png"), "", this, SLOT(addView()))->setToolTip(tr("Join channel"));
+    ToolBar* toolBar = new ToolBar(container);
+    connect(toolBar, SIGNAL(aboutTriggered()), qApp, SLOT(aboutApplication()));
+    connect(toolBar, SIGNAL(settingsTriggered()), qApp, SLOT(showSettings()));
+    connect(toolBar, SIGNAL(connectTriggered()), this, SLOT(connectTo()));
+    connect(toolBar, SIGNAL(joinTriggered()), this, SLOT(addView()));
 
     QVBoxLayout* layout = new QVBoxLayout(container);
     layout->addWidget(treeWidget);

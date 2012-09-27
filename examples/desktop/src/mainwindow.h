@@ -68,7 +68,6 @@ private:
     void createHome();
     void createTree();
 
-    QToolBar* toolBar;
     HomePage* homePage;
     SessionTreeWidget* treeWidget;
     MultiSessionTabWidget* tabWidget;
