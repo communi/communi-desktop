@@ -42,7 +42,7 @@ QSize ToolBar::sizeHint() const
 {
     QFontMetrics fm = fontMetrics();
     const int width = QToolBar::sizeHint().width();
-    const int height = fm.height() + qMax(2 * VERTICAL_MARGIN, fm.leading()) + 1;
+    const int height = fm.height() + qMax(2 * VERTICAL_MARGIN, fm.leading());
 
     QStyleOptionFrame frame;
     frame.initFrom(this);
