@@ -18,10 +18,6 @@
 #include <QUrl>
 #include <Irc>
 
-#ifdef Q_WS_WIN
-#include "qtwin.h"
-#endif
-
 static void setApplicationProxy(QUrl url)
 {
     if (!url.isEmpty())
@@ -63,19 +59,6 @@ int main (int argc, char* argv[])
         codecPlugin = args.value(index + 1).toLocal8Bit();
     if (!codecPlugin.isEmpty())
         irc_set_codec_plugin(codecPlugin);
-
-#ifdef Q_WS_WIN
-    bool composition = QtWin::isCompositionEnabled();
-    index = args.indexOf("-composition");
-    if (index != -1)
-        composition = args.value(index + 1).toInt();
-    else if (!qgetenv("COMMUNI_COMPOSITION").isEmpty())
-        composition = qgetenv("COMMUNI_COMPOSITION").toInt();
-    if (composition) {
-        QtWin::extendFrameIntoClientArea(&window);
-        window.setContentsMargins(0, 0, 0, 0);
-    }
-#endif
 
     window.show();
     return app.exec();
