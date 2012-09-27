@@ -19,6 +19,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QIcon>
+#include <QFile>
 #include <Irc>
 
 QByteArray Application::ApplicationData::encoding("UTF-8");
@@ -45,6 +46,10 @@ Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
 
     QSettings settings;
     ApplicationData::settings = settings.value("settings").value<Settings>();
+
+    QFile file(":resources/stylesheet.css");
+    if (file.open(QFile::ReadOnly | QIODevice::Text))
+        setStyleSheet(QString::fromUtf8(file.readAll()));
 }
 
 Application::~Application()

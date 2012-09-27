@@ -21,6 +21,7 @@
   <file>resources/welcome_header.html</file>
   <file>resources/welcome_footer.html</file>
   <file>resources/background.png</file>
+  <file>resources/stylesheet.css</file>
 
   <file>resources/oxygen/64x64/actions/bookmark.png</file>
   <file>resources/oxygen/64x64/actions/color_line.png</file>
