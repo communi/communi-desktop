@@ -46,6 +46,7 @@ QKeySequence TabBar::navigationShortcut(Navigation navigation) const
         case Previous:       return prevShortcut->key();
         case NextUnread:     return nextUnreadShortcut->key();
         case PreviousUnread: return prevUnreadShortcut->key();
+        default:             return QKeySequence();
     }
 }
 
