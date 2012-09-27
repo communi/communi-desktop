@@ -1,38 +1,35 @@
 QAbstractItemView {
-   border: none;
-   background: palette(alternate-base);
+    border: none;
+    background: palette(alternate-base);
 }
 
 QSplitter::handle {
-   background: palette(dark);
+    background: palette(dark);
 }
 
 ToolBar {
-   border: 1px solid transparent;
-   border-top-color: palette(dark);
-   background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                               stop: 0.0 palette(alternate-base),
-                               stop: 1.0 palette(dark));
+    border: 1px solid transparent;
+    border-top-color: palette(dark);
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0.0 palette(alternate-base),
+                                stop: 1.0 palette(dark));
 }
 
 TextBrowser {
-   border: none;
+    border: none;
 }
 
 MessageView > QLineEdit {
-   border: 1px solid transparent;
-   border-top-color: palette(dark);
-}
-
-MessageView > QLabel {
-   border: 1px solid transparent;
-   background: palette(alternate-base);
+    border: 1px solid transparent;
+    border-top-color: palette(dark);
 }
 
 QLabel#helpLabel {
-   border-top-color: palette(dark)
+    border: 1px solid transparent;
+    border-top-color: palette(dark)
 }
 
 QLabel#topicLabel {
-   border-bottom-color: palette(dark)
+    border: 1px solid transparent;
+    border-bottom-color: palette(dark)
 }
