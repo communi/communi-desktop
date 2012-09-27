@@ -1,6 +1,12 @@
 QAbstractItemView {
     border: none;
     background: palette(alternate-base);
+    selection-background-color: palette(highlight);
+}
+
+QTreeView::branch {
+    border: none;
+    background: palette(alternate-base);
 }
 
 QSplitter::handle {
@@ -26,10 +32,13 @@ MessageView > QLineEdit {
 
 QLabel#helpLabel {
     border: 1px solid transparent;
-    border-top-color: palette(dark)
+    border-top-color: palette(dark);
 }
 
 QLabel#topicLabel {
     border: 1px solid transparent;
-    border-bottom-color: palette(dark)
+    border-bottom-color: palette(dark);
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0.0 palette(alternate-base),
+                                stop: 1.0 palette(dark));
 }

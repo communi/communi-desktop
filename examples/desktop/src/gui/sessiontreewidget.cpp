@@ -13,6 +13,7 @@
 */
 
 #include "sessiontreewidget.h"
+#include "sessiontreedelegate.h"
 #include "sessiontreeitem.h"
 #include "sharedtimer.h"
 #include "session.h"
@@ -24,6 +25,7 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     setAnimated(true);
     setHeaderHidden(true);
     setRootIsDecorated(false);
+    setItemDelegate(new SessionTreeDelegate(this));
 
     d.colors[Active] = palette().color(QPalette::WindowText);
     d.colors[Inactive] = palette().color(QPalette::Disabled, QPalette::Highlight);
