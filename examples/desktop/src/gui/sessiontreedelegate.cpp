@@ -28,18 +28,17 @@ void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
     if (topLevel)
     {
         const bool selected = option.state & QStyle::State_Selected;
-        if (!selected)
-        {
-            QLinearGradient gradient(option.rect.topLeft(), option.rect.bottomLeft());
-            gradient.setColorAt(0.0, qApp->palette().color(QPalette::AlternateBase));
-            gradient.setColorAt(1.0, qApp->palette().color(QPalette::Dark));
-            painter->fillRect(option.rect, gradient);
-        }
-        else
-        {
-            const_cast<QStyleOptionViewItem&>(option).state &= ~QStyle::State_Selected;
-            painter->fillRect(option.rect, qApp->palette().color(QPalette::Highlight));
-        }
+        const_cast<QStyleOptionViewItem&>(option).state &= ~QStyle::State_Selected;
+
+        QColor c1 = qApp->palette().color(QPalette::AlternateBase);
+        QColor c2 = qApp->palette().color(QPalette::Dark);
+        if (selected)
+            qSwap(c1, c2);
+
+        QLinearGradient gradient(option.rect.topLeft(), option.rect.bottomLeft());
+        gradient.setColorAt(0.0, c1);
+        gradient.setColorAt(1.0, c2);
+        painter->fillRect(option.rect, gradient);
 
         QVector<QLine> lines;
         if (index.row() > 0)
