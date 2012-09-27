@@ -17,31 +17,7 @@
 #include "sharedtimer.h"
 #include <QContextMenuEvent>
 #include <QStackedWidget>
-#include <QStyleOption>
-#include <QProxyStyle>
 #include <QShortcut>
-
-class TabWidgetStyle : public QProxyStyle
-{
-public:
-    TabWidgetStyle(QStyle* style) : QProxyStyle(style) { }
-
-    QRect subElementRect(SubElement se, const QStyleOption* opt, const QWidget* widget = 0) const
-    {
-        if (se == QStyle::SE_TabWidgetTabContents || se == QStyle::SE_TabWidgetTabPane)
-        {
-            const TabWidget* tabWidget = qobject_cast<const TabWidget*>(widget);
-            if (tabWidget && tabWidget->tabBar()->testAttribute(Qt::WA_WState_Hidden))
-            {
-                const QStyleOptionTabWidgetFrame* frame = qstyleoption_cast<const QStyleOptionTabWidgetFrame*>(opt);
-                if (frame && QStyle::SE_TabWidgetTabContents)
-                    return opt->rect.adjusted(frame->lineWidth, frame->lineWidth, -frame->lineWidth, -frame->lineWidth);
-                return opt->rect;
-            }
-        }
-        return baseStyle()->subElementRect(se, opt, widget);
-    }
-};
 
 TabBar::TabBar(QWidget* parent) : QTabBar(parent)
 {
@@ -58,6 +34,7 @@ TabBar::TabBar(QWidget* parent) : QTabBar(parent)
     connect(nextUnreadShortcut, SIGNAL(activated()), parent, SLOT(moveToNextUnreadTab()));
 
     addTab(tr("+"));
+    setDocumentMode(true);
     setSelectionBehaviorOnRemove(SelectLeftTab);
 }
 
@@ -121,7 +98,6 @@ TabWidget::TabWidget(QWidget* parent) : QTabWidget(parent)
 {
     setTabBar(new TabBar(this));
     setElideMode(Qt::ElideMiddle);
-    setStyle(new TabWidgetStyle(style()));
     d.previous = -1;
     d.updatingColors = false;
 
