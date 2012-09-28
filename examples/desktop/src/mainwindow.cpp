@@ -213,6 +213,8 @@ void MainWindow::applySettings(const Settings& settings)
             treeWidget = 0;
         }
     }
+    // refresh stylesheet (required for styles depending on dynamic properties)
+    qApp->setStyleSheet(qApp->styleSheet());
 }
 
 void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)

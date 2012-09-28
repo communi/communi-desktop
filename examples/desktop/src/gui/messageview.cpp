@@ -223,6 +223,7 @@ void MessageView::applySettings(const Settings& settings)
     if (!settings.font.isEmpty())
         d.textBrowser->setFont(settings.font);
     d.textBrowser->document()->setMaximumBlockCount(settings.maxBlockCount);
+    d.topicLabel->setProperty("gradient", settings.layout == "tree");
 
     QString backgroundColor = settings.colors.value(Settings::Background);
     d.textBrowser->setStyleSheet(QString("QTextBrowser { background-color: %1 }").arg(backgroundColor));
