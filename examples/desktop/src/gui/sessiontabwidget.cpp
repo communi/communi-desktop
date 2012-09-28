@@ -84,6 +84,7 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
         if (!d.views.isEmpty())
             type = session()->isChannel(receiver) ? MessageView::ChannelView : MessageView::QueryView;
         view = new MessageView(type, d.handler.session(), this);
+        view->applySettings(d.settings);
         view->setReceiver(receiver);
         connect(view, SIGNAL(alerted(IrcMessage*)), this, SLOT(onTabAlerted(IrcMessage*)));
         connect(view, SIGNAL(highlighted(IrcMessage*)), this, SLOT(onTabHighlighted(IrcMessage*)));
