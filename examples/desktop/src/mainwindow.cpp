@@ -199,7 +199,8 @@ void MainWindow::applySettings(const Settings& settings)
             createTree();
         treeWidget->applySettings(settings);
 
-        homePage->deleteLater();
+        if (homePage)
+            homePage->deleteLater();
         homePage = 0;
     }
     else
