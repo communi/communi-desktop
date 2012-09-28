@@ -19,7 +19,9 @@
 
 ConnectionWizard::ConnectionWizard(QWidget* parent) : QWizard(parent)
 {
-    setWindowFilePath(tr("Connection"));
+    setWindowTitle(tr("Connect"));
+    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
     setPage(UserPage, new UserWizardPage(this));
     setPage(ServerPage, new ServerWizardPage(this));
     setPage(ConnectionPage, new ConnectionWizardPage(this));

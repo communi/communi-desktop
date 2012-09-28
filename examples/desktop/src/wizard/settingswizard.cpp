@@ -20,7 +20,9 @@
 
 SettingsWizard::SettingsWizard(QWidget* parent) : QWizard(parent)
 {
-    setWindowFilePath(tr("Settings"));
+    setWindowTitle(tr("Settings"));
+    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
     setPage(GeneralPage, new GeneralWizardPage(this));
     setPage(ShortcutsPage, new ShortcutsWizardPage(this));
     setPage(MessagesPage, new MessagesWizardPage(this));
