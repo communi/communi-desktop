@@ -23,6 +23,7 @@
 SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
     setAnimated(true);
+    setIndentation(0);
     setHeaderHidden(true);
     setRootIsDecorated(false);
     setItemDelegate(new SessionTreeDelegate(this));
