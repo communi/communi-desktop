@@ -333,19 +333,16 @@ void MainWindow::currentTreeItemChanged(Session* session, const QString& view)
     }
 }
 
-void  MainWindow::menuRequested(SessionTreeItem* item, const QPoint& pos)
+void MainWindow::menuRequested(SessionTreeItem* item, const QPoint& pos)
 {
+    SessionTabWidget* tab = tabWidget->sessionWidget(item->session());
     SessionTreeItem* parent = static_cast<SessionTreeItem*>(item->parent());
+
+    int index = 0;
     if (parent)
-    {
-        int index = treeWidget->indexOfTopLevelItem(parent) + 1;
-        QMetaObject::invokeMethod(tabWidget->widget(index), "onTabMenuRequested", Q_ARG(int, parent->indexOfChild(item) + 1), Q_ARG(QPoint, pos));
-    }
-    else
-    {
-        int index = treeWidget->indexOfTopLevelItem(item) + 1;
-        QMetaObject::invokeMethod(tabWidget, "onTabMenuRequested", Q_ARG(int, index), Q_ARG(QPoint, pos));
-    }
+        index = parent->indexOfChild(item) + 1;
+
+    QMetaObject::invokeMethod(tab, "onTabMenuRequested", Q_ARG(int, index), Q_ARG(QPoint, pos));
 }
 
 void MainWindow::splitterChanged(const QByteArray& state)
