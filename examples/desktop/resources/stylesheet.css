@@ -17,7 +17,7 @@ ToolBar {
     border: 1px solid transparent;
     border-top-color: palette(dark);
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0.0 palette(alternate-base),
+                                stop: 0.0 palette(light),
                                 stop: 1.0 palette(dark));
 }
 
@@ -42,6 +42,6 @@ QLabel#topicLabel {
 
 QLabel#topicLabel[gradient="true"] {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0.0 palette(alternate-base),
+                                stop: 0.0 palette(light),
                                 stop: 1.0 palette(dark));
 }
