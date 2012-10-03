@@ -13,6 +13,7 @@
 */
 
 #include "sessionchilditem.h"
+#include "sortedusermodel.h"
 #include "sessionitem.h"
 #include "usermodel.h"
 #include "session.h"
@@ -41,7 +42,11 @@ bool SessionChildItem::isChannel() const
 
 QStringList SessionChildItem::users() const
 {
-    return m_usermodel->users();
+    SortedUserModel sorted(session()->prefixModes(), m_usermodel);
+    QStringList names;
+    for (int i = 0; i < sorted.rowCount(QModelIndex()); ++i)
+        names += sorted.data(sorted.index(i, 0)).toString();
+    return names;
 }
 
 SessionItem* SessionChildItem::sessionItem() const

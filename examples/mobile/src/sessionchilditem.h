@@ -27,6 +27,7 @@ class SessionChildItem : public AbstractSessionItem
     Q_OBJECT
     Q_PROPERTY(bool channel READ isChannel NOTIFY channelChanged)
     Q_PROPERTY(SessionItem* sessionItem READ sessionItem)
+    Q_PROPERTY(QStringList users READ users)
 
 public:
     explicit SessionChildItem(SessionItem* parent);

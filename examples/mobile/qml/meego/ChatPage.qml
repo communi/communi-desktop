@@ -115,11 +115,6 @@ CommonPage {
         target: modelData
         ignoreUnknownSignals: true
         onRemoved: page.pageStack.pop()
-        onNamesReceived: {
-            dialog.setContent(names);
-            dialog.names = true;
-            dialog.open();
-        }
         onWhoisReceived: {
             dialog.setContent(whois);
             dialog.names = false;
@@ -289,10 +284,15 @@ CommonPage {
                 text: chat && modelData.channel ? qsTr("Names") : chat ? qsTr("Whois") : qsTr("Info")
                 enabled: modelData !== null && modelData.channel !== undefined && modelData.session.active
                 onClicked: {
-                    var cmd = modelData.channel ? ircCommand.createNames(modelData.title)
-                                                : ircCommand.createWhois(modelData.title);
-                    modelData.sendUiCommand(cmd);
-                    indicator.visible = true;
+                    if (modelData.channel) {
+                        dialog.setContent(modelData.users);
+                        dialog.names = true;
+                        dialog.open();
+                    } else {
+                        var cmd = ircCommand.createWhois(modelData.title);
+                        modelData.sendUiCommand(cmd);
+                        indicator.visible = true;
+                    }
                 }
             }
         }
