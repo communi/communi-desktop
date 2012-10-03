@@ -137,36 +137,18 @@ void SessionTreeWidget::setCurrentView(Session* session, const QString& view)
 
 void SessionTreeWidget::moveToNextItem()
 {
-    QTreeWidgetItem* current = currentItem();
-    if (current)
-    {
-        QTreeWidgetItemIterator it(current);
-        if (*++it)
-            setCurrentItem(*it);
-        else
-            setCurrentItem(topLevelItem(0));
-    }
+    QTreeWidgetItem* item = nextItem(currentItem());
+    if (!item)
+        item = topLevelItem(0);
+    setCurrentItem(item);
 }
 
 void SessionTreeWidget::moveToPrevItem()
 {
-    QTreeWidgetItem* current = currentItem();
-    if (current)
-    {
-        QTreeWidgetItemIterator it(current);
-        if (*--it)
-        {
-            setCurrentItem(*it);
-        }
-        else
-        {
-            current = topLevelItem(topLevelItemCount() - 1);
-            int count = current->childCount();
-            if (count > 0)
-                current = current->child(count - 1);
-            setCurrentItem(current);
-        }
-    }
+    QTreeWidgetItem* item = previousItem(currentItem());
+    if (!item)
+        item = previousItem(lastItem());
+    setCurrentItem(item);
 }
 
 void SessionTreeWidget::moveToNextUnreadItem()
@@ -292,4 +274,34 @@ void SessionTreeWidget::alertTimeout()
 
     foreach (SessionTreeItem* item, d.alertedItems)
         item->emitDataChanged();
+}
+
+QTreeWidgetItem* SessionTreeWidget::lastItem() const
+{
+    QTreeWidgetItem* item = topLevelItem(topLevelItemCount() - 1);
+    if (item->childCount() > 0)
+        item = item->child(item->childCount() - 1);
+    return item;
+}
+
+QTreeWidgetItem* SessionTreeWidget::nextItem(QTreeWidgetItem* from) const
+{
+    QTreeWidgetItemIterator it(from);
+    while (*++it)
+    {
+        if (!(*it)->parent() || (*it)->parent()->isExpanded())
+            break;
+    }
+    return *it;
+}
+
+QTreeWidgetItem* SessionTreeWidget::previousItem(QTreeWidgetItem* from) const
+{
+    QTreeWidgetItemIterator it(from);
+    while (*--it)
+    {
+        if (!(*it)->parent() || (*it)->parent()->isExpanded())
+            break;
+    }
+    return *it;
 }

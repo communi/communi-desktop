@@ -80,6 +80,10 @@ private slots:
     void alertTimeout();
 
 private:
+    QTreeWidgetItem* lastItem() const;
+    QTreeWidgetItem* nextItem(QTreeWidgetItem* from) const;
+    QTreeWidgetItem* previousItem(QTreeWidgetItem* from) const;
+
     struct SessionTreeWidgetData
     {
         QColor alertColor;
