@@ -49,6 +49,12 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     d.nextUnreadShortcut = new QShortcut(this);
     connect(d.nextUnreadShortcut, SIGNAL(activated()), this, SLOT(moveToNextUnreadItem()));
 
+    d.expandShortcut = new QShortcut(this);
+    connect(d.expandShortcut, SIGNAL(activated()), this, SLOT(expandCurrentSession()));
+
+    d.collapseShortcut = new QShortcut(this);
+    connect(d.collapseShortcut, SIGNAL(activated()), this, SLOT(collapseCurrentSession()));
+
     applySettings(d.settings);
 }
 
@@ -187,6 +193,27 @@ void SessionTreeWidget::moveToPrevUnreadItem()
     }
 }
 
+void SessionTreeWidget::expandCurrentSession()
+{
+    QTreeWidgetItem* item = currentItem();
+    if (item && item->parent())
+        item = item->parent();
+    if (item)
+        expandItem(item);
+}
+
+void SessionTreeWidget::collapseCurrentSession()
+{
+    QTreeWidgetItem* item = currentItem();
+    if (item && item->parent())
+        item = item->parent();
+    if (item)
+    {
+        collapseItem(item);
+        setCurrentItem(item);
+    }
+}
+
 void SessionTreeWidget::alert(SessionTreeItem* item)
 {
     if (d.alertedItems.isEmpty())
@@ -210,6 +237,8 @@ void SessionTreeWidget::applySettings(const Settings& settings)
     d.nextShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NavigateDown)));
     d.prevUnreadShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NextUnreadUp)));
     d.nextUnreadShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NextUnreadDown)));
+    d.expandShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NavigateRight)));
+    d.collapseShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NavigateLeft)));
     d.settings = settings;
 }
 
