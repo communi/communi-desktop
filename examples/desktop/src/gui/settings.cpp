@@ -53,11 +53,11 @@ Settings::Settings() : maxBlockCount(-1), timeStamp(true), layout("tabs")
     // TODO: the default values should respect palette
     colors[Background] = "white";
     colors[Message] = "black";
-    colors[Event] = "gray";
-    colors[Notice] = "brown";
-    colors[Action] = "darkmagenta";
-    colors[Highlight] = "#ff3333";
-    colors[TimeStamp] = "gray";
+    colors[Event] = "#808080";
+    colors[Notice] = "#a54242";
+    colors[Action] = "#8b388b";
+    colors[Highlight] = "#ff6666";
+    colors[TimeStamp] = "#808080";
 }
 
 Settings::operator QVariant() const

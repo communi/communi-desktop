@@ -23,12 +23,12 @@ AbstractSessionItem::AbstractSessionItem(QObject *parent) :
 {
     m_messages = new QStringListModel(this);
     m_formatter.setTimeStamp(Settings::instance()->timeStamp());
-    m_formatter.setEventFormat("style='color:gray'");
-    m_formatter.setNoticeFormat("style='color:brown'");
-    m_formatter.setActionFormat("style='color:darkmagenta'");
-    m_formatter.setUnknownFormat("style='color:brown'");
-    m_formatter.setHighlightFormat("style='color:#ff3333'");
-    m_formatter.setTimeStampFormat("style='color:gray; font-size: small'");
+    m_formatter.setEventFormat("style='color:#808080'");
+    m_formatter.setNoticeFormat("style='color:#a54242'");
+    m_formatter.setActionFormat("style='color:#8b388b'");
+    m_formatter.setUnknownFormat("style='color:#a54242'");
+    m_formatter.setHighlightFormat("style='color:#ff6666'");
+    m_formatter.setTimeStampFormat("style='color:#808080; font-size: small'");
 }
 
 AbstractSessionItem::~AbstractSessionItem()
