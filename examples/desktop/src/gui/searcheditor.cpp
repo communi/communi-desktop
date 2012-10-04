@@ -41,6 +41,7 @@ SearchEditor::SearchEditor(QWidget* parent) : HistoryLineEdit(parent)
     connect(this, SIGNAL(returnPressed()), this, SLOT(findNext()));
     connect(this, SIGNAL(textEdited(QString)), this, SLOT(find(QString)));
 
+    setAttribute(Qt::WA_MacShowFocusRect, false);
     setVisible(false);
 }
 

@@ -15,6 +15,7 @@
 #include "sessiontreedelegate.h"
 #include <QStyleOptionViewItem>
 #include <QApplication>
+#include <QLineEdit>
 #include <QPalette>
 #include <QPainter>
 
@@ -26,14 +27,19 @@ SessionTreeDelegate::SessionTreeDelegate(QObject* parent) : QStyledItemDelegate(
 
 QSize SessionTreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
+    QSize size = QStyledItemDelegate::sizeHint(option, index);
     if (!index.parent().isValid())
     {
-        QFontMetrics fm = qApp->fontMetrics();
-        const int height = fm.height() + qMax(2 * VERTICAL_MARGIN, fm.leading());
-        return qApp->style()->sizeFromContents(QStyle::CT_LineEdit, 0, QSize(0, height)
-                                               .expandedTo(QApplication::globalStrut()), 0);
+        static int height = 0;
+        if (!height)
+        {
+            QLineEdit lineEdit;
+            lineEdit.setStyleSheet("QLineEdit { border: 1px solid transparent; }");
+            height = lineEdit.minimumSizeHint().height();
+        }
+        size.setHeight(height);
     }
-    return QStyledItemDelegate::sizeHint(option, index);
+    return size;
 }
 
 void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const

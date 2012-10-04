@@ -13,11 +13,8 @@
 */
 
 #include "toolbar.h"
-#include <QStyleOptionFrame>
-#include <QApplication>
-#include <QVBoxLayout>
+#include <QLineEdit>
 #include <QAction>
-#include <QStyle>
 #include <QIcon>
 
 static const int VERTICAL_MARGIN = 1; // matches qlineedit_p.cpp
@@ -36,18 +33,8 @@ ToolBar::ToolBar(QWidget* parent) : QToolBar(parent)
 
     addAction(QIcon(":/resources/iconmonstr/connect.png"), "", this, SIGNAL(connectTriggered()))->setToolTip(tr("Connect"));
     addAction(QIcon(":/resources/iconmonstr/new-view.png"), "", this, SIGNAL(joinTriggered()))->setToolTip(tr("Join channel"));
-}
 
-QSize ToolBar::sizeHint() const
-{
-    QFontMetrics fm = qApp->fontMetrics();
-    const int width = QToolBar::sizeHint().width();
-    const int height = fm.height() + qMax(2 * VERTICAL_MARGIN, fm.leading());
-    return qApp->style()->sizeFromContents(QStyle::CT_LineEdit, 0, QSize(width, height)
-                                           .expandedTo(QApplication::globalStrut()), 0);
-}
-
-QSize ToolBar::minimumSizeHint() const
-{
-    return sizeHint();
+    QLineEdit lineEdit;
+    lineEdit.setStyleSheet("QLineEdit { border: 1px solid transparent; }");
+    setFixedHeight(lineEdit.minimumSizeHint().height());
 }

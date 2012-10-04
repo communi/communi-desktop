@@ -24,9 +24,6 @@ class ToolBar : public QToolBar
 public:
     explicit ToolBar(QWidget* parent = 0);
 
-    QSize sizeHint() const;
-    QSize minimumSizeHint() const;
-
 signals:
     void aboutTriggered();
     void settingsTriggered();
