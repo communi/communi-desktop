@@ -101,18 +101,27 @@ void TextBrowser::paintEvent(QPaintEvent* event)
 {
     QTextBrowser::paintEvent(event);
 
+    QPainter painter(viewport());
+
     QTextBlock block;
     if (ub > 0)
         block = document()->findBlockByNumber(ub);
 
     if (block.isValid())
     {
-        QPainter painter(viewport());
         painter.setPen(Qt::DashLine);
         painter.translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
 
         QRectF br = document()->documentLayout()->blockBoundingRect(block);
         painter.drawLine(br.topLeft(), br.topRight());
+    }
+
+    if (verticalScrollBar()->value() > 0)
+    {
+        QLinearGradient gradient(0, 0, 0, 4);
+        gradient.setColorAt(0.0, palette().color(QPalette::Shadow));
+        gradient.setColorAt(1.0, Qt::transparent);
+        painter.fillRect(0, 0, width(), 4, gradient);
     }
 }
 
