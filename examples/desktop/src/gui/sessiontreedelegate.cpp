@@ -31,7 +31,7 @@ void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
         const_cast<QStyleOptionViewItem&>(option).state &= ~QStyle::State_Selected;
 
         QColor c1 = qApp->palette().color(QPalette::Light);
-        QColor c2 = qApp->palette().color(QPalette::Dark);
+        QColor c2 = qApp->palette().color(QPalette::Button);
         if (selected)
             qSwap(c1, c2);
 
