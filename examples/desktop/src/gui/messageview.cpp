@@ -36,15 +36,8 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     d.setupUi(this);
     d.viewType = type;
 
-    static int height = 0;
-    if (!height)
-    {
-        QLineEdit lineEdit;
-        lineEdit.setStyleSheet("QLineEdit { border: 1px solid transparent; }");
-        height = lineEdit.minimumSizeHint().height();
-    }
-    d.topicLabel->setMinimumHeight(height);
-    d.helpLabel->setMinimumHeight(height);
+    d.topicLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
+    d.helpLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
 
     connect(d.splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(onSplitterMoved()));
 

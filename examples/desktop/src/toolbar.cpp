@@ -36,5 +36,5 @@ ToolBar::ToolBar(QWidget* parent) : QToolBar(parent)
 
     QLineEdit lineEdit;
     lineEdit.setStyleSheet("QLineEdit { border: 1px solid transparent; }");
-    setFixedHeight(lineEdit.minimumSizeHint().height());
+    setFixedHeight(lineEdit.sizeHint().height());
 }

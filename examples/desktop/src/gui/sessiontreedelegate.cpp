@@ -35,7 +35,7 @@ QSize SessionTreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QM
         {
             QLineEdit lineEdit;
             lineEdit.setStyleSheet("QLineEdit { border: 1px solid transparent; }");
-            height = lineEdit.minimumSizeHint().height();
+            height = lineEdit.sizeHint().height();
         }
         size.setHeight(height);
     }
