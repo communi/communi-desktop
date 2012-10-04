@@ -32,7 +32,7 @@ ToolBar::ToolBar(QWidget* parent) : QToolBar(parent)
     addWidget(spacer);
 
     addAction(QIcon(":/resources/iconmonstr/connect.png"), "", this, SIGNAL(connectTriggered()))->setToolTip(tr("Connect"));
-    addAction(QIcon(":/resources/iconmonstr/new-view.png"), "", this, SIGNAL(joinTriggered()))->setToolTip(tr("Join channel"));
+    addAction(QIcon(":/resources/iconmonstr/new-view.png"), "", this, SIGNAL(joinTriggered()))->setToolTip(tr("Add view"));
 
     QLineEdit lineEdit;
     lineEdit.setStyleSheet("QLineEdit { border: 1px solid transparent; }");

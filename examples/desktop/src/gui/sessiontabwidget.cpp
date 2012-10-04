@@ -13,12 +13,12 @@
 */
 
 #include "sessiontabwidget.h"
+#include "addviewdialog.h"
 #include "tabwidget_p.h"
 #include "messageview.h"
 #include "settings.h"
 #include "session.h"
 #include <irccommand.h>
-#include <QInputDialog>
 #include <QShortcut>
 #include <QMenu>
 
@@ -187,19 +187,13 @@ void SessionTabWidget::tabActivated(int index)
 
 void SessionTabWidget::onNewTabRequested()
 {
-    QInputDialog dialog(this);
-    dialog.setWindowFlags(dialog.windowFlags() & ~Qt::WindowContextHelpButtonHint);
-    dialog.setWindowTitle(tr("Join channel"));
-    dialog.setLabelText(tr("Channel:"));
+    AddViewDialog dialog(session(), this);
     if (dialog.exec())
     {
-        QString channel = dialog.textValue();
-        if (!channel.isEmpty())
-        {
-            if (session()->isChannel(channel))
-                d.handler.session()->sendCommand(IrcCommand::createJoin(channel));
-            openView(channel);
-        }
+        QString view = dialog.view();
+        if (session()->isChannel(view))
+            d.handler.session()->sendCommand(IrcCommand::createJoin(view, dialog.password()));
+        openView(view);
     }
 }
 

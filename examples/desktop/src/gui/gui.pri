@@ -8,6 +8,7 @@ QMAKE_CLEAN += $$PWD/*~
 
 FORMS += $$PWD/messageview.ui
 
+HEADERS += $$PWD/addviewdialog.h
 HEADERS += $$PWD/lineeditor.h
 HEADERS += $$PWD/messageview.h
 HEADERS += $$PWD/multisessiontabwidget.h
@@ -21,6 +22,7 @@ HEADERS += $$PWD/tabwidget.h
 HEADERS += $$PWD/tabwidget_p.h
 HEADERS += $$PWD/userlistview.h
 
+SOURCES += $$PWD/addviewdialog.cpp
 SOURCES += $$PWD/lineeditor.cpp
 SOURCES += $$PWD/messageview.cpp
 SOURCES += $$PWD/multisessiontabwidget.cpp
