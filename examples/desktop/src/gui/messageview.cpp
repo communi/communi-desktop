@@ -28,12 +28,22 @@
 #include <irc.h>
 
 static QStringListModel* command_model = 0;
+static const int VERTICAL_MARGIN = 1; // matches qlineedit_p.cpp
 
 MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* parent) :
     QWidget(parent)
 {
     d.setupUi(this);
     d.viewType = type;
+
+    QFontMetrics fm = qApp->fontMetrics();
+    int height = fm.height() + qMax(2 * VERTICAL_MARGIN, fm.leading());
+    height = qApp->style()->sizeFromContents(QStyle::CT_LineEdit, 0, QSize(0, height)
+                                             .expandedTo(QApplication::globalStrut()), 0).height();
+    d.topicLabel->setMinimumHeight(height);
+    d.helpLabel->setMinimumHeight(height);
+    d.searchEditor->setMinimumHeight(height);
+    d.lineEditor->setMinimumHeight(height);
 
     connect(d.splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(onSplitterMoved()));
 

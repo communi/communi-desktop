@@ -18,14 +18,27 @@
 #include <QPalette>
 #include <QPainter>
 
+static const int VERTICAL_MARGIN = 1; // matches qlineedit_p.cpp
+
 SessionTreeDelegate::SessionTreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
 {
 }
 
+QSize SessionTreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+    if (!index.parent().isValid())
+    {
+        QFontMetrics fm = qApp->fontMetrics();
+        const int height = fm.height() + qMax(2 * VERTICAL_MARGIN, fm.leading());
+        return qApp->style()->sizeFromContents(QStyle::CT_LineEdit, 0, QSize(0, height)
+                                               .expandedTo(QApplication::globalStrut()), 0);
+    }
+    return QStyledItemDelegate::sizeHint(option, index);
+}
+
 void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    const bool topLevel = !index.parent().isValid();
-    if (topLevel)
+    if (!index.parent().isValid())
     {
         const bool selected = option.state & QStyle::State_Selected;
         const_cast<QStyleOptionViewItem&>(option).state &= ~QStyle::State_Selected;
@@ -47,6 +60,5 @@ void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
         painter->setPen(qApp->palette().color(QPalette::Dark));
         painter->drawLines(lines);
     }
-
     QStyledItemDelegate::paint(painter, option, index);
 }

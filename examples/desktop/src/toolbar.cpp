@@ -40,14 +40,11 @@ ToolBar::ToolBar(QWidget* parent) : QToolBar(parent)
 
 QSize ToolBar::sizeHint() const
 {
-    QFontMetrics fm = fontMetrics();
+    QFontMetrics fm = qApp->fontMetrics();
     const int width = QToolBar::sizeHint().width();
     const int height = fm.height() + qMax(2 * VERTICAL_MARGIN, fm.leading());
-
-    QStyleOptionFrame frame;
-    frame.initFrom(this);
-    return style()->sizeFromContents(QStyle::CT_LineEdit, &frame, QSize(width, height)
-                                     .expandedTo(QApplication::globalStrut()), this);
+    return qApp->style()->sizeFromContents(QStyle::CT_LineEdit, 0, QSize(width, height)
+                                           .expandedTo(QApplication::globalStrut()), 0);
 }
 
 QSize ToolBar::minimumSizeHint() const
