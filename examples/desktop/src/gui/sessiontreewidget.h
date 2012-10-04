@@ -78,6 +78,8 @@ protected:
 private slots:
     void onSessionNetworkChanged(const QString& network);
     void onCurrentItemChanged(QTreeWidgetItem* current);
+    void onItemExpanded(QTreeWidgetItem* item);
+    void onItemCollapsed(QTreeWidgetItem* item);
     void delayedItemReset();
     void delayedItemResetTimeout();
     void alertTimeout();
@@ -102,6 +104,7 @@ private:
         QSet<SessionTreeItem*> resetedItems;
         QHash<Session*, SessionTreeItem*> sessions;
     } d;
+    friend class SessionTreeItem;
 };
 
 #endif // SESSIONTREEWIDGET_H

@@ -31,6 +31,21 @@ SessionTreeItem::SessionTreeItem(Session* session, QTreeWidgetItem* parent) : QT
     d.highlighted = false;
 }
 
+SessionTreeItem::~SessionTreeItem()
+{
+    if (SessionTreeItem* p = static_cast<SessionTreeItem*>(parent()))
+    {
+        p->d.alertedChildren.remove(this);
+        p->d.highlightedChildren.remove(this);
+    }
+
+    if (SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget()))
+    {
+        tw->d.alertedItems.remove(this);
+        tw->d.resetedItems.remove(this);
+    }
+}
+
 Session* SessionTreeItem::session() const
 {
     return d.session;
@@ -51,9 +66,9 @@ QVariant SessionTreeItem::data(int column, int role) const
         SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget());
         if (d.inactive)
             return tw->statusColor(SessionTreeWidget::Inactive);
-        if (d.alerted)
+        if (d.alerted || (!isExpanded() && !d.alertedChildren.isEmpty()))
             return tw->currentAlertColor();
-        if (d.highlighted)
+        if (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty()))
             return tw->statusColor(SessionTreeWidget::Highlight);
         return tw->statusColor(SessionTreeWidget::Active);
     }
@@ -70,6 +85,15 @@ void SessionTreeItem::setAlerted(bool alerted)
     if (d.alerted != alerted)
     {
         d.alerted = alerted;
+        if (SessionTreeItem* p = static_cast<SessionTreeItem*>(parent()))
+        {
+            if (alerted)
+                p->d.alertedChildren.insert(this);
+            else
+                p->d.alertedChildren.remove(this);
+            if (!p->isExpanded())
+                p->emitDataChanged();
+        }
         emitDataChanged();
     }
 }
@@ -98,6 +122,15 @@ void SessionTreeItem::setHighlighted(bool highlighted)
     if (d.highlighted != highlighted)
     {
         d.highlighted = highlighted;
+        if (SessionTreeItem* p = static_cast<SessionTreeItem*>(parent()))
+        {
+            if (highlighted)
+                p->d.highlightedChildren.insert(this);
+            else
+                p->d.highlightedChildren.remove(this);
+            if (!p->isExpanded())
+                p->emitDataChanged();
+        }
         emitDataChanged();
     }
 }

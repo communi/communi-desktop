@@ -24,6 +24,7 @@ class SessionTreeItem : public QTreeWidgetItem
 public:
     SessionTreeItem(Session* session, QTreeWidget* parent);
     SessionTreeItem(Session* session, QTreeWidgetItem* parent);
+    ~SessionTreeItem();
 
     Session* session() const;
     SessionTreeItem* findChild(const QString& name) const;
@@ -46,6 +47,8 @@ private:
         bool inactive;
         bool highlighted;
         Session* session;
+        QSet<SessionTreeItem*> alertedChildren;
+        QSet<SessionTreeItem*> highlightedChildren;
     } d;
     friend class SessionTreeWidget;
 };

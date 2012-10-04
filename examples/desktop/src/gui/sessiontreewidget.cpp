@@ -36,6 +36,10 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
 
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));
+    connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)),
+            this, SLOT(onItemExpanded(QTreeWidgetItem*)));
+    connect(this, SIGNAL(itemCollapsed(QTreeWidgetItem*)),
+            this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
 
     d.prevShortcut = new QShortcut(this);
     connect(d.prevShortcut, SIGNAL(activated()), this, SLOT(moveToPrevItem()));
@@ -276,6 +280,16 @@ void SessionTreeWidget::onCurrentItemChanged(QTreeWidgetItem* item)
     }
 }
 
+void SessionTreeWidget::onItemExpanded(QTreeWidgetItem* item)
+{
+    static_cast<SessionTreeItem*>(item)->emitDataChanged();
+}
+
+void SessionTreeWidget::onItemCollapsed(QTreeWidgetItem* item)
+{
+    static_cast<SessionTreeItem*>(item)->emitDataChanged();
+}
+
 void SessionTreeWidget::delayedItemReset()
 {
     SessionTreeItem* item = static_cast<SessionTreeItem*>(currentItem());
@@ -302,7 +316,12 @@ void SessionTreeWidget::alertTimeout()
     d.alertColor = d.colors.value(active ? Alert : Active);
 
     foreach (SessionTreeItem* item, d.alertedItems)
+    {
         item->emitDataChanged();
+        if (SessionTreeItem* p = static_cast<SessionTreeItem*>(item->parent()))
+            if (!p->isExpanded())
+                p->emitDataChanged();
+    }
 }
 
 QTreeWidgetItem* SessionTreeWidget::lastItem() const
