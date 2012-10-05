@@ -27,6 +27,11 @@ SettingsWizard::SettingsWizard(QWidget* parent) : QWizard(parent)
     setPage(ShortcutsPage, new ShortcutsWizardPage(this));
     setPage(MessagesPage, new MessagesWizardPage(this));
     setPage(ColorsPage, new ColorsWizardPage(this));
+
+    setOption(HaveCustomButton1, true);
+    setButtonText(QWizard::CustomButton1, tr("Reset"));
+    connect(button(QWizard::CustomButton1), SIGNAL(clicked()), this, SLOT(resetCurrentPage()));
+
     setOption(NoDefaultButton, false);
 }
 
@@ -47,6 +52,14 @@ Settings SettingsWizard::settings() const
 
 void SettingsWizard::setSettings(const Settings& settings)
 {
+    setGeneralSettings(settings);
+    setShortcutSettings(settings);
+    setMessageSettings(settings);
+    setColorSettings(settings);
+}
+
+void SettingsWizard::setGeneralSettings(const Settings& settings)
+{
     QFont font;
     if (!settings.font.isEmpty())
         font.fromString(settings.font);
@@ -55,8 +68,33 @@ void SettingsWizard::setSettings(const Settings& settings)
     static_cast<GeneralWizardPage*>(page(GeneralPage))->setLanguage(settings.language);
     static_cast<GeneralWizardPage*>(page(GeneralPage))->setMaxBlockCount(settings.maxBlockCount);
     static_cast<GeneralWizardPage*>(page(GeneralPage))->setTimeStamp(settings.timeStamp);
+}
+
+void SettingsWizard::setShortcutSettings(const Settings& settings)
+{
     static_cast<ShortcutsWizardPage*>(page(ShortcutsPage))->setShortcuts(settings.shortcuts);
+}
+
+void SettingsWizard::setMessageSettings(const Settings& settings)
+{
     static_cast<MessagesWizardPage*>(page(MessagesPage))->setMessages(settings.messages);
     static_cast<MessagesWizardPage*>(page(MessagesPage))->setHighlights(settings.highlights);
+}
+
+void SettingsWizard::setColorSettings(const Settings& settings)
+{
     static_cast<ColorsWizardPage*>(page(ColorsPage))->setColors(settings.colors);
+}
+
+void SettingsWizard::resetCurrentPage()
+{
+    Settings settings; // default values
+    switch (currentId())
+    {
+        case GeneralPage: setGeneralSettings(settings); break;
+        case ShortcutsPage: setShortcutSettings(settings); break;
+        case MessagesPage: setMessageSettings(settings); break;
+        case ColorsPage: setColorSettings(settings); break;
+        default: Q_ASSERT(false); break;
+    }
 }
