@@ -229,6 +229,10 @@ void MessageView::applySettings(const Settings& settings)
     d.textBrowser->document()->setMaximumBlockCount(settings.maxBlockCount);
     d.topicLabel->setProperty("gradient", settings.layout == "tree");
 
+    QTextDocument* doc = d.topicLabel->findChild<QTextDocument*>();
+    if (doc)
+        doc->setDefaultStyleSheet(QString("a { color: %1 }").arg(settings.colors.value(Settings::Link)));
+
     QString backgroundColor = settings.colors.value(Settings::Background);
     d.textBrowser->setStyleSheet(QString("QTextBrowser { background-color: %1 }").arg(backgroundColor));
 
@@ -240,12 +244,14 @@ void MessageView::applySettings(const Settings& settings)
             ".action    { color: %4 }"
             ".event     { color: %5 }"
             ".timestamp { color: %6; font-size: small }"
-        ).arg(settings.colors.value((Settings::Highlight)))
-         .arg(settings.colors.value((Settings::Message)))
-         .arg(settings.colors.value((Settings::Notice)))
-         .arg(settings.colors.value((Settings::Action)))
-         .arg(settings.colors.value((Settings::Event)))
-         .arg(settings.colors.value((Settings::TimeStamp))));
+            "a { color: %7 }"
+        ).arg(settings.colors.value(Settings::Highlight))
+         .arg(settings.colors.value(Settings::Message))
+         .arg(settings.colors.value(Settings::Notice))
+         .arg(settings.colors.value(Settings::Action))
+         .arg(settings.colors.value(Settings::Event))
+         .arg(settings.colors.value(Settings::TimeStamp))
+         .arg(settings.colors.value(Settings::Link)));
     d.settings = settings;
 }
 

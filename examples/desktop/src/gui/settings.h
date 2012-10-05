@@ -46,7 +46,8 @@ struct Settings
         Notice,
         Action,
         Highlight,
-        TimeStamp
+        TimeStamp,
+        Link
     };
 
     enum ShortcutType
@@ -75,7 +76,7 @@ Q_DECLARE_METATYPE(Settings);
 
 inline QDataStream& operator<<(QDataStream& out, const Settings& settings)
 {
-    out << quint32(127); // version
+    out << quint32(128); // version
     out << settings.messages;
     out << settings.highlights;
     out << settings.language;
@@ -102,9 +103,9 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
     settings.layout = readStreamValue<QString>(in, settings.layout);
     if (settings.layout.isEmpty())
         settings.layout = "tabs";
-    if (version <= 125)
-        settings.colors[Settings::TimeStamp] = "gray";
-    if (version <= 126)
+    if (version < 126)
+        settings.colors[Settings::TimeStamp] = "#808080";
+    if (version < 127)
     {
 #ifdef Q_OS_MAC
         settings.shortcuts[Settings::NextUnreadUp] = "Shift+Ctrl+Alt+Up";
@@ -118,6 +119,8 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
         settings.shortcuts[Settings::NextUnreadRight] = "Shift+Alt+Right";
 #endif
     }
+    if (version < 128)
+        settings.colors[Settings::Link] = "#6666ff";
     return in;
 }
 
