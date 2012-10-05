@@ -56,7 +56,7 @@ Settings::Settings() : maxBlockCount(-1), timeStamp(true), layout("tabs")
     colors[Event] = "#808080";
     colors[Notice] = "#a54242";
     colors[Action] = "#8b388b";
-    colors[Highlight] = "#ff6666";
+    colors[Highlight] = "#ff4040";
     colors[TimeStamp] = "#808080";
     colors[Link] = "#4040ff";
 }
