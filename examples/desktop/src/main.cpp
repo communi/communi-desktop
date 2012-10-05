@@ -15,6 +15,7 @@
 #include "application.h"
 #include "mainwindow.h"
 #include <QNetworkProxy>
+#include <QSettings>
 #include <QUrl>
 #include <Irc>
 
@@ -34,6 +35,9 @@ int main (int argc, char* argv[])
     Application app(argc, argv);
     MainWindow window;
     QStringList args = app.arguments();
+
+    if (args.contains("-reset"))
+        QSettings().clear();
 
     QUrl proxy;
     int index = args.indexOf("-proxy");
