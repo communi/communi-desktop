@@ -36,9 +36,6 @@ int main (int argc, char* argv[])
     MainWindow window;
     QStringList args = app.arguments();
 
-    if (args.contains("-reset"))
-        QSettings().clear();
-
     QUrl proxy;
     int index = args.indexOf("-proxy");
     if (index != -1)

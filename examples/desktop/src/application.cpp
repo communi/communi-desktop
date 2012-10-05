@@ -45,6 +45,8 @@ Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
     qRegisterMetaTypeStreamOperators<ConnectionInfos>("ConnectionInfos");
 
     QSettings settings;
+    if (arguments().contains("-reset"))
+        settings.clear();
     ApplicationData::settings = settings.value("settings").value<Settings>();
 
     QFile file(":resources/stylesheet.css");
