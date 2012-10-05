@@ -116,13 +116,10 @@ void TextBrowser::paintEvent(QPaintEvent* event)
         painter.drawLine(br.topLeft(), br.topRight());
     }
 
-    if (verticalScrollBar()->value() > 0)
-    {
-        QLinearGradient gradient(0, 0, 0, 4);
-        gradient.setColorAt(0.0, palette().color(QPalette::Shadow));
-        gradient.setColorAt(1.0, Qt::transparent);
-        painter.fillRect(0, 0, width(), 4, gradient);
-    }
+    QLinearGradient gradient(0, 0, 0, 3);
+    gradient.setColorAt(0.0, palette().color(QPalette::Dark));
+    gradient.setColorAt(1.0, Qt::transparent);
+    painter.fillRect(0, 0, width(), 3, gradient);
 }
 
 void TextBrowser::wheelEvent(QWheelEvent* event)
