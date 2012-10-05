@@ -58,7 +58,7 @@ Settings::Settings() : maxBlockCount(-1), timeStamp(true), layout("tabs")
     colors[Action] = "#8b388b";
     colors[Highlight] = "#ff6666";
     colors[TimeStamp] = "#808080";
-    colors[Link] = "#6666ff";
+    colors[Link] = "#4040ff";
 }
 
 Settings::operator QVariant() const

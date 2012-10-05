@@ -120,7 +120,7 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
 #endif
     }
     if (version < 128)
-        settings.colors[Settings::Link] = "#6666ff";
+        settings.colors[Settings::Link] = "#4040ff";
     return in;
 }
 
