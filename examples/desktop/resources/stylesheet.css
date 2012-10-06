@@ -63,14 +63,12 @@ QLabel#topicLabel[gradient="true"] {
 }
 
 QToolButton#reconnectButton {
-    border: 1px solid palette(dark);
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0.0 palette(light),
-                                stop: 1.0 palette(button));
+    border: none;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url(:/resources/reconnect.png);
 }
 
 QToolButton#reconnectButton:pressed {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0.0 palette(button),
-                                stop: 1.0 palette(light));
+    background-image: url(:/resources/reconnect-pressed.png);
 }

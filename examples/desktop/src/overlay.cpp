@@ -67,8 +67,7 @@ void Overlay::setRefresh(bool enabled)
         {
             d.button = new QToolButton(parentWidget());
             d.button->setObjectName("reconnectButton");
-            d.button->setIconSize(QSize(32, 32));
-            d.button->setIcon(QIcon(":/resources/iconmonstr/reconnect.png"));
+            d.button->setFixedSize(32, 32);
             connect(d.button, SIGNAL(clicked()), this, SIGNAL(refresh()));
             relayout();
         }
@@ -94,5 +93,5 @@ void Overlay::relayout()
 {
     resize(parentWidget()->size());
     if (d.button)
-        d.button->move(rect().center() - d.button->rect().center() / 2);
+        d.button->move(rect().center() - d.button->rect().center());
 }

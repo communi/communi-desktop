@@ -22,6 +22,8 @@
   <file>resources/background.png</file>
   <file>resources/stylesheet.css</file>
   <file>resources/ajax-loader.gif</file>
+  <file>resources/reconnect.png</file>
+  <file>resources/reconnect-pressed.png</file>
 
   <file>resources/oxygen/64x64/actions/bookmark.png</file>
   <file>resources/oxygen/64x64/actions/color_line.png</file>
