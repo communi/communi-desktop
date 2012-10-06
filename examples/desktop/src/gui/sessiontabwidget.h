@@ -63,6 +63,7 @@ protected:
 
 private slots:
     void updateStatus();
+    void resetTab(int index);
     void tabActivated(int index);
     void onNewTabRequested();
     void onTabMenuRequested(int index, const QPoint& pos);

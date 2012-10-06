@@ -165,6 +165,19 @@ void SessionTabWidget::updateStatus()
     emit inactiveStatusChanged(inactive);
 }
 
+void SessionTabWidget::resetTab(int index)
+{
+    if (index < count() - 1)
+    {
+        MessageView* view = qobject_cast<MessageView*>(widget(index));
+        if (view)
+        {
+            setTabAlert(index, false);
+            setTabHighlight(index, false);
+        }
+    }
+}
+
 void SessionTabWidget::tabActivated(int index)
 {
     if (index < count() - 1)
@@ -172,11 +185,10 @@ void SessionTabWidget::tabActivated(int index)
         MessageView* view = qobject_cast<MessageView*>(currentWidget());
         if (view)
         {
-            d.handler.setCurrentReceiver(view);
-            setTabAlert(index, false);
-            setTabHighlight(index, false);
+            resetTab(index);
             if (isVisible())
             {
+                d.handler.setCurrentReceiver(view);
                 window()->setWindowFilePath(tabText(index).replace("&&", "&"));
                 view->setFocus();
                 emit viewActivated(view);
@@ -232,7 +244,7 @@ void SessionTabWidget::delayedTabResetTimeout()
 {
     if (!d.delayedIndexes.isEmpty())
     {
-        tabActivated(d.delayedIndexes.takeLast());
+        resetTab(d.delayedIndexes.takeLast());
         d.delayedIndexes.clear();
     }
 }

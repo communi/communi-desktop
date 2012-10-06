@@ -77,7 +77,7 @@ protected:
 
 private slots:
     void updateSession(Session* session = 0);
-    void onCurrentItemChanged(QTreeWidgetItem* current);
+    void onItemSelectionChanged();
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
     void delayedItemReset();
@@ -85,6 +85,7 @@ private slots:
     void alertTimeout();
 
 private:
+    void resetItem(SessionTreeItem* item);
     QTreeWidgetItem* lastItem() const;
     QTreeWidgetItem* nextItem(QTreeWidgetItem* from) const;
     QTreeWidgetItem* previousItem(QTreeWidgetItem* from) const;

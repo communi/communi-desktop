@@ -34,8 +34,8 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     d.colors[Highlight] = palette().color(QPalette::Highlight);
     d.alertColor = d.colors.value(Alert);
 
-    connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
-            this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));
+    connect(this, SIGNAL(itemSelectionChanged()),
+            this, SLOT(onItemSelectionChanged()));
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)),
             this, SLOT(onItemExpanded(QTreeWidgetItem*)));
     connect(this, SIGNAL(itemCollapsed(QTreeWidgetItem*)),
@@ -271,15 +271,13 @@ void SessionTreeWidget::updateSession(Session* session)
     }
 }
 
-void SessionTreeWidget::onCurrentItemChanged(QTreeWidgetItem* item)
+void SessionTreeWidget::onItemSelectionChanged()
 {
+    SessionTreeItem* item = static_cast<SessionTreeItem*>(selectedItems().value(0));
     if (item)
     {
-        SessionTreeItem* sessionItem = static_cast<SessionTreeItem*>(item);
-        unalert(sessionItem);
-        sessionItem->setAlerted(false);
-        sessionItem->setHighlighted(false);
-        emit currentViewChanged(sessionItem->session(), item->parent() ? item->text(0) : QString());
+        resetItem(item);
+        emit currentViewChanged(item->session(), item->parent() ? item->text(0) : QString());
     }
 }
 
@@ -308,7 +306,7 @@ void SessionTreeWidget::delayedItemResetTimeout()
     if (!d.resetedItems.isEmpty())
     {
         foreach (SessionTreeItem* item, d.resetedItems)
-            onCurrentItemChanged(item);
+            resetItem(item);
         d.resetedItems.clear();
     }
 }
@@ -325,6 +323,13 @@ void SessionTreeWidget::alertTimeout()
             if (!p->isExpanded())
                 p->emitDataChanged();
     }
+}
+
+void SessionTreeWidget::resetItem(SessionTreeItem* item)
+{
+    unalert(item);
+    item->setAlerted(false);
+    item->setHighlighted(false);
 }
 
 QTreeWidgetItem* SessionTreeWidget::lastItem() const
