@@ -62,6 +62,8 @@ private slots:
     void currentTreeItemChanged(Session* session, const QString& view);
     void menuRequested(SessionTreeItem* item, const QPoint& pos);
     void splitterChanged(const QByteArray& state);
+    void sessionAdded(Session* session);
+    void sessionRemoved(Session* session);
     void addView();
 
 private:

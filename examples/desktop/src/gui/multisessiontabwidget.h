@@ -31,14 +31,14 @@ public:
     MultiSessionTabWidget(QWidget* parent = 0);
 
     QList<Session*> sessions() const;
-    void addSession(Session* session);
-    void removeSession(Session* session);
-
     SessionTabWidget* sessionWidget(Session* session) const;
 
     QByteArray saveSplitter() const;
 
 public slots:
+    void addSession(Session* session);
+    void removeSession(Session* session);
+
     void restoreSplitter(const QByteArray& state);
     void applySettings(const Settings& settings);
 

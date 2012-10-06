@@ -39,6 +39,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     connect(tabWidget, SIGNAL(alerted(MessageView*,IrcMessage*)), this, SLOT(alert(MessageView*,IrcMessage*)));
     connect(tabWidget, SIGNAL(highlighted(MessageView*,IrcMessage*)), this, SLOT(highlight(MessageView*,IrcMessage*)));
     connect(tabWidget, SIGNAL(splitterChanged(QByteArray)), this, SLOT(splitterChanged(QByteArray)));
+    connect(tabWidget, SIGNAL(sessionAdded(Session*)), this, SLOT(sessionAdded(Session*)));
+    connect(tabWidget, SIGNAL(sessionRemoved(Session*)), this, SLOT(sessionRemoved(Session*)));
 
     HomePage* homePage = new HomePage(tabWidget);
     connect(homePage, SIGNAL(connectRequested()), this, SLOT(connectTo()));
@@ -354,6 +356,24 @@ void MainWindow::splitterChanged(const QByteArray& state)
     settings.setValue("list", state);
 }
 
+void MainWindow::sessionAdded(Session* session)
+{
+    if (treeWidget)
+    {
+        treeWidget->addSession(session);
+        treeWidget->parentWidget()->show();
+    }
+}
+
+void MainWindow::sessionRemoved(Session* session)
+{
+    if (treeWidget)
+    {
+        treeWidget->removeSession(session);
+        treeWidget->parentWidget()->setVisible(!tabWidget->sessions().isEmpty());
+    }
+}
+
 void MainWindow::addView()
 {
     SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(tabWidget->currentWidget());
@@ -366,15 +386,13 @@ void MainWindow::createTree()
     QSplitter* splitter = static_cast<QSplitter*>(centralWidget());
     QWidget* container = new QWidget(this);
     container->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
+    container->setVisible(!tabWidget->sessions().isEmpty());
 
     treeWidget = new SessionTreeWidget(container);
     treeWidget->setFocusPolicy(Qt::NoFocus);
 
     connect(treeWidget, SIGNAL(currentViewChanged(Session*,QString)), this, SLOT(currentTreeItemChanged(Session*,QString)));
     connect(treeWidget, SIGNAL(menuRequested(SessionTreeItem*,QPoint)), this, SLOT(menuRequested(SessionTreeItem*,QPoint)));
-
-    connect(tabWidget, SIGNAL(sessionAdded(Session*)), treeWidget, SLOT(addSession(Session*)));
-    connect(tabWidget, SIGNAL(sessionRemoved(Session*)), treeWidget, SLOT(removeSession(Session*)));
 
     foreach (Session* session, tabWidget->sessions())
     {

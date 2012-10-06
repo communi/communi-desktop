@@ -51,7 +51,7 @@ void MultiSessionTabWidget::addSession(Session* session)
     SessionTabWidget* tab = new SessionTabWidget(session, this);
     connect(tab, SIGNAL(alerted(MessageView*,IrcMessage*)), this, SIGNAL(alerted(MessageView*,IrcMessage*)));
     connect(tab, SIGNAL(highlighted(MessageView*,IrcMessage*)), this, SIGNAL(highlighted(MessageView*,IrcMessage*)));
-    connect(tab, SIGNAL(sessionClosed(Session*)), this, SIGNAL(sessionRemoved(Session*)));
+    connect(tab, SIGNAL(sessionClosed(Session*)), this, SLOT(removeSession(Session*)));
     connect(tab, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
     tab->applySettings(d.settings);
 
@@ -72,8 +72,11 @@ void MultiSessionTabWidget::removeSession(Session *session)
 {
     SessionTabWidget* tabWidget = sessionWidget(session);
     if (tabWidget)
+    {
+        removeTab(indexOf(tabWidget));
         tabWidget->deleteLater();
-    emit sessionRemoved(session);
+        emit sessionRemoved(session);
+    }
 }
 
 SessionTabWidget* MultiSessionTabWidget::sessionWidget(Session* session) const
