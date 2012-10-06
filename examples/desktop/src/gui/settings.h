@@ -104,28 +104,23 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
     settings.timeStamp = readStreamValue<bool>(in, settings.timeStamp);
     settings.layout = readStreamValue<QString>(in, settings.layout);
     settings.stripNicks = readStreamValue<bool>(in, settings.stripNicks);
-    if (settings.layout.isEmpty())
-        settings.layout = "tabs";
+
+    Settings defaults; // default values
+    if (version < 125)
+        settings.colors[Settings::TimeStamp] = defaults.colors.value(Settings::TimeStamp);
     if (version < 126)
-        settings.colors[Settings::TimeStamp] = "#808080";
+        settings.layout = defaults.layout;
     if (version < 127)
     {
-#ifdef Q_OS_MAC
-        settings.shortcuts[Settings::NextUnreadUp] = "Shift+Ctrl+Alt+Up";
-        settings.shortcuts[Settings::NextUnreadDown] = "Shift+Ctrl+Alt+Down";
-        settings.shortcuts[Settings::NextUnreadLeft] = "Shift+Ctrl+Alt+Left";
-        settings.shortcuts[Settings::NextUnreadRight] = "Shift+Ctrl+Alt+Right";
-#else
-        settings.shortcuts[Settings::NextUnreadUp] = "Shift+Alt+Up";
-        settings.shortcuts[Settings::NextUnreadDown] = "Shift+Alt+Down";
-        settings.shortcuts[Settings::NextUnreadLeft] = "Shift+Alt+Left";
-        settings.shortcuts[Settings::NextUnreadRight] = "Shift+Alt+Right";
-#endif
+        settings.shortcuts[Settings::NextUnreadUp] = defaults.shortcuts.value(Settings::NextUnreadUp);
+        settings.shortcuts[Settings::NextUnreadDown] = defaults.shortcuts.value(Settings::NextUnreadDown);
+        settings.shortcuts[Settings::NextUnreadLeft] = defaults.shortcuts.value(Settings::NextUnreadLeft);
+        settings.shortcuts[Settings::NextUnreadRight] = defaults.shortcuts.value(Settings::NextUnreadRight);
     }
     if (version < 128)
-        settings.colors[Settings::Link] = "#4040ff";
+        settings.colors[Settings::Link] = defaults.colors.value(Settings::Link);
     if (version < 129)
-        settings.stripNicks = true;
+        settings.stripNicks = defaults.stripNicks;
     return in;
 }
 
