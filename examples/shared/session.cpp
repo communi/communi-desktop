@@ -220,20 +220,25 @@ ConnectionInfo Session::toConnection() const
     return connection;
 }
 
+void Session::initFrom(const ConnectionInfo& connection)
+{
+    setName(connection.name);
+    setSecure(connection.secure);
+    setPassword(connection.pass);
+    setHost(connection.host);
+    setPort(connection.port);
+    setNickName(connection.nick);
+    QString appName = QApplication::applicationName();
+    setUserName(connection.user.isEmpty() ? appName : connection.user);
+    setRealName(connection.real.isEmpty() ? appName : connection.real);
+    setChannels(connection.channels);
+    m_quit = connection.quit;
+}
+
 Session* Session::fromConnection(const ConnectionInfo& connection, QObject* parent)
 {
     Session* session = new Session(parent);
-    session->setName(connection.name);
-    session->setSecure(connection.secure);
-    session->setPassword(connection.pass);
-    QString appName = QApplication::applicationName();
-    session->setHost(connection.host);
-    session->setPort(connection.port);
-    session->setNickName(connection.nick);
-    session->setUserName(connection.user.isEmpty() ? appName : connection.user);
-    session->setRealName(connection.real.isEmpty() ? appName : connection.real);
-    session->setChannels(connection.channels);
-    session->m_quit = connection.quit;
+    session->initFrom(connection);
     return session;
 }
 

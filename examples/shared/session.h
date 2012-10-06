@@ -75,6 +75,7 @@ public:
     void setPassword(const QString& password);
 
     ConnectionInfo toConnection() const;
+    void initFrom(const ConnectionInfo& connection);
     static Session* fromConnection(const ConnectionInfo& connection, QObject* parent = 0);
 
     int pingInterval() const;
