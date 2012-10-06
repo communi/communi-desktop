@@ -40,6 +40,9 @@ public:
     bool timeStamp() const;
     void setTimeStamp(bool timeStamp);
 
+    bool stripNicks() const;
+    void setStripNicks(bool strip);
+
 private:
     Ui::GeneralWizardPage ui;
 };

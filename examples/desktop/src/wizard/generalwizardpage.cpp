@@ -74,3 +74,13 @@ void GeneralWizardPage::setTimeStamp(bool timeStamp)
 {
     ui.timeStampCheckBox->setChecked(timeStamp);
 }
+
+bool GeneralWizardPage::stripNicks() const
+{
+    return ui.stripNicksCheckBox->isChecked();
+}
+
+void GeneralWizardPage::setStripNicks(bool strip)
+{
+    ui.stripNicksCheckBox->setChecked(strip);
+}
