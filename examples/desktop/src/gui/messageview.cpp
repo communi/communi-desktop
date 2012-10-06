@@ -224,6 +224,8 @@ void MessageView::onSend(const QString& text)
 void MessageView::applySettings(const Settings& settings)
 {
     d.formatter.setTimeStamp(settings.timeStamp);
+    d.formatter.setStripNicks(settings.stripNicks);
+
     if (!settings.font.isEmpty())
         d.textBrowser->setFont(settings.font);
     d.textBrowser->document()->setMaximumBlockCount(settings.maxBlockCount);
