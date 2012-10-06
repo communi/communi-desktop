@@ -17,25 +17,53 @@
 #include <QCommandLinkButton>
 #include <QGridLayout>
 #include <QVBoxLayout>
+#include <QLineEdit>
 #include <QPainter>
 #include <QLabel>
 #include <QMenu>
 #include <QFile>
+
+static QString readHtmlFile(const QString& filePath)
+{
+    QFile file(filePath);
+    file.open(QIODevice::ReadOnly);
+    return QString::fromUtf8(file.readAll());
+}
 
 HomePage::HomePage(QWidget* parent) : QWidget(parent)
 {
     bg.load(":/resources/background.png");
 
     header = new QLabel(this);
+    header->setMargin(2);
+    header->setObjectName("headerLabel");
     header->setOpenExternalLinks(true);
     header->setWordWrap(true);
-    footer = new QLabel(this);
-    footer->setOpenExternalLinks(true);
+    header->setText(readHtmlFile(":/resources/welcome_header.html").arg(Application::applicationName()));
 
-    updateHtml();
+    slogan = new QLabel(this);
+    slogan->setMargin(2);
+    slogan->setObjectName("sloganLabel");
+    slogan->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    slogan->setText("<small>" + Application::applicationSlogan() + "</small>");
+
+    footer = new QLabel(this);
+    footer->setObjectName("footerLabel");
+    footer->setMargin(2);
+    footer->setOpenExternalLinks(true);
+    footer->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    footer->setStyleSheet("");
+    footer->setText("<small>Copyright (C) 2008-2012 J-P Nurmi &lt;<a href='mailto:jpnurmi@gmail.com'>jpnurmi@gmail.com</a>&gt;</small>");
+
+    QLineEdit lineEdit;
+    lineEdit.setStyleSheet("QLineEdit { border: 1px solid transparent; }");
+    slogan->setFixedHeight(lineEdit.sizeHint().height());
+    footer->setFixedHeight(lineEdit.sizeHint().height());
 
     QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->setMargin(0);
     layout->addWidget(header);
+    layout->addWidget(slogan);
     layout->addWidget(createBody(this), 1);
     layout->addWidget(footer);
     setLayout(layout);
@@ -45,23 +73,8 @@ void HomePage::paintEvent(QPaintEvent* event)
 {
     QWidget::paintEvent(event);
     QPainter painter(this);
-    painter.drawPixmap(width() - bg.width(), height() - bg.height(), bg);
-}
-
-static QString readHtmlFile(const QString& filePath)
-{
-    QFile file(filePath);
-    file.open(QIODevice::ReadOnly);
-    return QString::fromUtf8(file.readAll());
-}
-
-void HomePage::updateHtml()
-{
-    QString headerHtml = readHtmlFile(":/resources/welcome_header.html");
-    headerHtml = headerHtml.arg(Application::applicationName())
-                           .arg(Application::applicationSlogan());
-    header->setText(headerHtml);
-    footer->setText(readHtmlFile(":/resources/welcome_footer.html"));
+    painter.setOpacity(0.4);
+    painter.drawPixmap(width() - bg.width(), height() - footer->height() - bg.height(), bg);
 }
 
 QWidget* HomePage::createBody(QWidget* parent) const

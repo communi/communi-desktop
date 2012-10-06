@@ -31,13 +31,11 @@ signals:
 protected:
     void paintEvent(QPaintEvent* event);
 
-private slots:
-    void updateHtml();
-
 private:
     QWidget* createBody(QWidget* parent = 0) const;
 
     QLabel* header;
+    QLabel* slogan;
     QLabel* footer;
     QPixmap bg;
 };
