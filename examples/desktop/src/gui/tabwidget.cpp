@@ -143,6 +143,8 @@ void TabWidget::setTabTextColor(TabWidget::TabRole role, const QColor& color)
 
 bool TabWidget::isTabInactive(int index)
 {
+    if (index == -1)
+        return !d.inactiveIndexes.isEmpty();
     return d.inactiveIndexes.contains(index);
 }
 
@@ -157,6 +159,8 @@ void TabWidget::setTabInactive(int index, bool inactive)
 
 bool TabWidget::hasTabAlert(int index)
 {
+    if (index == -1)
+        return !d.alertIndexes.isEmpty();
     return d.alertIndexes.contains(index);
 }
 
@@ -186,6 +190,8 @@ void TabWidget::setTabAlert(int index, bool alert)
 
 bool TabWidget::hasTabHighlight(int index) const
 {
+    if (index == -1)
+        return !d.highlightIndexes.isEmpty();
     return d.highlightIndexes.contains(index);
 }
 

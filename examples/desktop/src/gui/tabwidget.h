@@ -35,13 +35,13 @@ public:
     QColor tabTextColor(TabRole role) const;
     void setTabTextColor(TabRole role, const QColor& color);
 
-    bool isTabInactive(int index);
+    bool isTabInactive(int index = -1);
     void setTabInactive(int index, bool inactive);
 
-    bool hasTabAlert(int index);
+    bool hasTabAlert(int index = -1);
     void setTabAlert(int index, bool alert);
 
-    bool hasTabHighlight(int index) const;
+    bool hasTabHighlight(int index = -1) const;
     void setTabHighlight(int index, bool highlight);
 
 public slots:
