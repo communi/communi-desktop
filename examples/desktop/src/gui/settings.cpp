@@ -15,7 +15,7 @@
 #include "settings.h"
 #include <QApplication>
 
-Settings::Settings() : maxBlockCount(-1), timeStamp(true), layout("tabs"), stripNicks(true)
+Settings::Settings() : maxBlockCount(-1), timeStamp(true), layout("tree"), stripNicks(true)
 {
 #ifdef Q_OS_MAC
     QString navigate("Ctrl+Alt+%1");
