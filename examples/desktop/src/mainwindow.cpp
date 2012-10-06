@@ -31,7 +31,7 @@
 #include <QMenu>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
-    homePage(0), treeWidget(0), trayIcon(0), dockTile(0)
+    treeWidget(0), trayIcon(0), dockTile(0)
 {
     tabWidget = new MultiSessionTabWidget(this);
 
@@ -39,6 +39,10 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     connect(tabWidget, SIGNAL(alerted(MessageView*,IrcMessage*)), this, SLOT(alert(MessageView*,IrcMessage*)));
     connect(tabWidget, SIGNAL(highlighted(MessageView*,IrcMessage*)), this, SLOT(highlight(MessageView*,IrcMessage*)));
     connect(tabWidget, SIGNAL(splitterChanged(QByteArray)), this, SLOT(splitterChanged(QByteArray)));
+
+    HomePage* homePage = new HomePage(tabWidget);
+    connect(homePage, SIGNAL(connectRequested()), this, SLOT(connectTo()));
+    tabWidget->insertTab(0, homePage, tr("Home"));
 
     QSplitter* splitter = new QSplitter(this);
     splitter->setHandleWidth(1);
@@ -207,21 +211,11 @@ void MainWindow::applySettings(const Settings& settings)
         if (!treeWidget)
             createTree();
         treeWidget->applySettings(settings);
-
-        if (homePage)
-            homePage->deleteLater();
-        homePage = 0;
     }
-    else
+    else if (treeWidget)
     {
-        if (!homePage)
-            createHome();
-
-        if (treeWidget)
-        {
-            treeWidget->parentWidget()->deleteLater();
-            treeWidget = 0;
-        }
+        treeWidget->parentWidget()->deleteLater();
+        treeWidget = 0;
     }
     // refresh stylesheet (required for styles depending on dynamic properties)
     qApp->setStyleSheet(qApp->styleSheet());
@@ -413,11 +407,4 @@ void MainWindow::createTree()
     QSettings settings;
     if (settings.contains("tree"))
         splitter->restoreState(settings.value("tree").toByteArray());
-}
-
-void MainWindow::createHome()
-{
-    homePage = new HomePage(tabWidget);
-    connect(homePage, SIGNAL(connectRequested()), this, SLOT(connectTo()));
-    tabWidget->insertTab(0, homePage, tr("Home"));
 }

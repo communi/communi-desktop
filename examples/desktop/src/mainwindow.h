@@ -26,7 +26,6 @@ class MessageView;
 class IrcMessage;
 class QtDockTile;
 struct Settings;
-class HomePage;
 class Session;
 
 class MainWindow : public QMainWindow
@@ -66,10 +65,8 @@ private slots:
     void addView();
 
 private:
-    void createHome();
     void createTree();
 
-    HomePage* homePage;
     SessionTreeWidget* treeWidget;
     MultiSessionTabWidget* tabWidget;
     TrayIcon* trayIcon;
