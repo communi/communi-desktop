@@ -25,7 +25,12 @@ TextBrowser {
     border: none;
 }
 
-MessageView > QLineEdit {
+LineEditor {
+    border: 1px solid transparent;
+    border-top-color: palette(dark);
+}
+
+SearchEditor {
     border: 1px solid transparent;
     border-top-color: palette(dark);
 }
