@@ -139,6 +139,8 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     if (!session->hasQuit() && session->ensureNetwork())
         session->open();
     tabWidget->addSession(session);
+    if (treeWidget)
+        treeWidget->setCurrentView(session);
 
     connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateSession()));
     connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateSession()));
