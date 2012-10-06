@@ -26,6 +26,7 @@ MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 {
     d.highlight = false;
     d.timeStamp = false;
+    d.stripNicks = true;
     d.userModel = 0;
 }
 
@@ -51,6 +52,16 @@ bool MessageFormatter::timeStamp() const
 void MessageFormatter::setTimeStamp(bool timeStamp)
 {
     d.timeStamp = timeStamp;
+}
+
+bool MessageFormatter::stripNicks() const
+{
+    return d.stripNicks;
+}
+
+void MessageFormatter::setStripNicks(bool strip)
+{
+    d.stripNicks = strip;
 }
 
 QString MessageFormatter::timeStampFormat() const
@@ -207,7 +218,7 @@ QString MessageFormatter::formatInviteMessage(IrcInviteMessage* message) const
 
 QString MessageFormatter::formatJoinMessage(IrcJoinMessage* message) const
 {
-    const QString sender = formatSender(message->sender());
+    const QString sender = formatSender(message->sender(), d.stripNicks);
     return tr("! %1 joined %2").arg(sender, message->channel());
 }
 
@@ -319,7 +330,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
         return tr("! %1 topic is \"%2\"").arg(P_(1), formatHtml(P_(2)));
     case Irc::RPL_TOPICWHOTIME: {
         QDateTime dateTime = QDateTime::fromTime_t(P_(3).toInt());
-        return tr("! %1 topic was set %2 by %3").arg(P_(1), dateTime.toString(), formatUser(P_(2)));
+        return tr("! %1 topic was set %2 by %3").arg(P_(1), dateTime.toString(), formatUser(P_(2), d.stripNicks));
     }
     case Irc::RPL_INVITING:
         return tr("! inviting %1 to %2").arg(formatUser(P_(1)), P_(2));
@@ -355,7 +366,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
 
 QString MessageFormatter::formatPartMessage(IrcPartMessage* message) const
 {
-    const QString sender = formatSender(message->sender());
+    const QString sender = formatSender(message->sender(), d.stripNicks);
     if (!message->reason().isEmpty())
         return tr("! %1 parted %2 (%3)").arg(sender, message->channel(), formatHtml(message->reason()));
     else
@@ -384,7 +395,7 @@ QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* message) const
 
 QString MessageFormatter::formatQuitMessage(IrcQuitMessage* message) const
 {
-    const QString sender = formatSender(message->sender());
+    const QString sender = formatSender(message->sender(), d.stripNicks);
     if (!message->reason().isEmpty())
         return tr("! %1 has quit (%2)").arg(sender, formatHtml(message->reason()));
     else
@@ -417,20 +428,22 @@ QString MessageFormatter::formatPingReply(const IrcSender& sender, const QString
     return QString();
 }
 
-QString MessageFormatter::formatSender(const IrcSender& sender)
+QString MessageFormatter::formatSender(const IrcSender& sender, bool strip)
 {
-    const QString name = sender.name();
+    QString name = sender.name();
     if (sender.isValid())
     {
         QColor color = QColor::fromHsl(qHash(name) % 359, 255, 64);
-        return QString("<strong style='color:%1'>%2</strong>").arg(color.name()).arg(name);
+        name = QString("<strong style='color:%1'>%2</strong>").arg(color.name()).arg(name);
+        if (!strip && !sender.user().isEmpty() && !sender.host().isEmpty())
+            name = QString("%1 (%2@%3)").arg(name, sender.user(), sender.host());
     }
     return name;
 }
 
-QString MessageFormatter::formatUser(const QString& user)
+QString MessageFormatter::formatUser(const QString& user, bool strip)
 {
-    return formatSender(IrcSender(user));
+    return formatSender(IrcSender(user), strip);
 }
 
 QString MessageFormatter::formatHtml(const QString &message) const

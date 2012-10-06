@@ -26,6 +26,7 @@ class MessageFormatter : public QObject
     Q_OBJECT
     Q_PROPERTY(QStringList highlights READ highlights WRITE setHighlights)
     Q_PROPERTY(bool timeStamp READ timeStamp WRITE setTimeStamp)
+    Q_PROPERTY(bool stripNicks READ stripNicks WRITE setStripNicks)
     Q_PROPERTY(QString timeStampFormat READ timeStampFormat WRITE setTimeStampFormat)
     Q_PROPERTY(QString messageFormat READ messageFormat WRITE setMessageFormat)
     Q_PROPERTY(QString eventFormat READ eventFormat WRITE setEventFormat)
@@ -43,6 +44,9 @@ public:
 
     bool timeStamp() const;
     void setTimeStamp(bool timeStamp);
+
+    bool stripNicks() const;
+    void setStripNicks(bool strip);
 
     QString timeStampFormat() const;
     void setTimeStampFormat(const QString& format);
@@ -85,8 +89,8 @@ protected:
 
     static QString formatPingReply(const IrcSender& sender, const QString& arg);
 
-    static QString formatSender(const IrcSender& sender);
-    static QString formatUser(const QString& user);
+    static QString formatSender(const IrcSender& sender, bool strip = true);
+    static QString formatUser(const QString& user, bool strip = true);
     QString formatHtml(const QString& message) const;
 
 private:
@@ -94,6 +98,7 @@ private:
     {
         bool highlight;
         bool timeStamp;
+        bool stripNicks;
         UserModel* userModel;
         QStringList highlights;
         QString timeStampFormat;
