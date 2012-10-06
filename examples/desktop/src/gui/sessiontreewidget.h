@@ -76,7 +76,7 @@ protected:
     bool event(QEvent* event);
 
 private slots:
-    void onSessionNetworkChanged(const QString& network);
+    void updateSession(Session* session = 0);
     void onCurrentItemChanged(QTreeWidgetItem* current);
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);

@@ -52,16 +52,11 @@ signals:
     void splitterChanged(const QByteArray& state);
 
 private slots:
-    void onSessionNetworkChanged(const QString& network);
-    void setInactive(bool inactive);
-    void setAlerted(bool alerted);
-    void setHighlighted(bool highlighted);
+    void updateTab(int index = -1);
     void tabActivated(int index);
     void onTabMenuRequested(int index, const QPoint& pos);
 
 private:
-    int senderIndex() const;
-
     struct MainTabWidgetData
     {
         Settings settings;

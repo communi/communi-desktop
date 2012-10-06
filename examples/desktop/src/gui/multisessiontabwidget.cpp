@@ -49,21 +49,21 @@ QList<Session*> MultiSessionTabWidget::sessions() const
 void MultiSessionTabWidget::addSession(Session* session)
 {
     SessionTabWidget* tab = new SessionTabWidget(session, this);
-    connect(tab, SIGNAL(highlightStatusChanged(bool)), this, SLOT(setHighlighted(bool)));
-    connect(tab, SIGNAL(inactiveStatusChanged(bool)), this, SLOT(setInactive(bool)));
-    connect(tab, SIGNAL(alertStatusChanged(bool)), this, SLOT(setAlerted(bool)));
     connect(tab, SIGNAL(alerted(MessageView*,IrcMessage*)), this, SIGNAL(alerted(MessageView*,IrcMessage*)));
     connect(tab, SIGNAL(highlighted(MessageView*,IrcMessage*)), this, SIGNAL(highlighted(MessageView*,IrcMessage*)));
     connect(tab, SIGNAL(sessionClosed(Session*)), this, SIGNAL(sessionRemoved(Session*)));
     connect(tab, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
     tab->applySettings(d.settings);
 
-    QString name = session->name();
-    if (name.isEmpty())
-        connect(session, SIGNAL(networkChanged(QString)), this, SLOT(onSessionNetworkChanged(QString)));
-    int index = addTab(tab, name.isEmpty() ? session->host() : name);
+    int index = addTab(tab, session->name().isEmpty() ? session->host() : session->name());
     setCurrentIndex(index);
-    setTabInactive(index, !session->isActive());
+    updateTab(index);
+
+    connect(tab, SIGNAL(highlightStatusChanged(bool)), this, SLOT(updateTab()));
+    connect(tab, SIGNAL(inactiveStatusChanged(bool)), this, SLOT(updateTab()));
+    connect(tab, SIGNAL(alertStatusChanged(bool)), this, SLOT(updateTab()));
+    connect(session, SIGNAL(nameChanged(QString)), this, SLOT(updateTab()));
+    connect(session, SIGNAL(networkChanged(QString)), this, SLOT(updateTab()));
 
     emit sessionAdded(session);
 }
@@ -150,41 +150,25 @@ void MultiSessionTabWidget::restoreSplitter(const QByteArray& state)
     emit splitterChanged(state);
 }
 
-void MultiSessionTabWidget::onSessionNetworkChanged(const QString& network)
+void MultiSessionTabWidget::updateTab(int index)
 {
-    Session* session = qobject_cast<Session*>(sender());
-    SessionTabWidget* tabWidget = sessionWidget(session);
-    if (tabWidget)
-        setTabText(indexOf(tabWidget), network);
-}
-
-void MultiSessionTabWidget::setInactive(bool inactive)
-{
-    int index = senderIndex();
+    SessionTabWidget* tab = 0;
     if (index != -1)
-        setTabInactive(index, inactive);
-}
+        tab = qobject_cast<SessionTabWidget*>(widget(index));
+    else if (Session* session = qobject_cast<Session*>(sender()))
+        tab = sessionWidget(session);
+    else
+        tab = qobject_cast<SessionTabWidget*>(sender());
+    index = indexOf(tab);
 
-void MultiSessionTabWidget::setAlerted(bool alerted)
-{
-    int index = senderIndex();
-    if (index != -1)
-        setTabAlert(index, alerted);
-}
-
-void MultiSessionTabWidget::setHighlighted(bool highlighted)
-{
-    int index = senderIndex();
-    if (index != -1)
-        setTabHighlight(index, highlighted);
-}
-
-int MultiSessionTabWidget::senderIndex() const
-{
-    if (!sender() || !sender()->isWidgetType())
-        return -1;
-
-    return indexOf(static_cast<QWidget*>(sender()));
+    if (tab && index != -1 && tab->session())
+    {
+        setTabAlert(index, tab->hasTabAlert());
+        setTabInactive(index, tab->isTabInactive());
+        setTabHighlight(index, tab->hasTabHighlight());
+        setTabText(index, tab->session()->name().isEmpty() ?
+                          tab->session()->host() : tab->session()->name());
+    }
 }
 
 void MultiSessionTabWidget::onTabMenuRequested(int index, const QPoint& pos)

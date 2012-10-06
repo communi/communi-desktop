@@ -97,11 +97,10 @@ void SessionTreeWidget::addSession(Session* session)
     SessionTreeItem* item = new SessionTreeItem(session, this);
     d.sessions.insert(session, item);
 
-    QString name = session->name();
-    if (name.isEmpty())
-        connect(session, SIGNAL(networkChanged(QString)), this, SLOT(onSessionNetworkChanged(QString)));
-    item->setText(0, name.isEmpty() ? session->host() : name);
-    item->setInactive(!session->isActive());
+    connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateSession()));
+    connect(session, SIGNAL(nameChanged(QString)), this, SLOT(updateSession()));
+    connect(session, SIGNAL(networkChanged(QString)), this, SLOT(updateSession()));
+    updateSession(session);
 }
 
 void SessionTreeWidget::removeSession(Session *session)
@@ -260,12 +259,16 @@ bool SessionTreeWidget::event(QEvent* event)
     return QTreeWidget::event(event);
 }
 
-void SessionTreeWidget::onSessionNetworkChanged(const QString& network)
+void SessionTreeWidget::updateSession(Session* session)
 {
-    Session* session = qobject_cast<Session*>(sender());
+    if (!session)
+        session = qobject_cast<Session*>(sender());
     SessionTreeItem* item = d.sessions.value(session);
     if (item)
-        item->setText(0, network);
+    {
+        item->setText(0, session->name().isEmpty() ? session->host() : session->name());
+        item->setInactive(!session->isActive());
+    }
 }
 
 void SessionTreeWidget::onCurrentItemChanged(QTreeWidgetItem* item)
