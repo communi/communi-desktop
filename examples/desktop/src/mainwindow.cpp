@@ -138,6 +138,7 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     connect(tab, SIGNAL(viewRemoved(MessageView*)), this, SLOT(viewRemoved(MessageView*)));
     connect(tab, SIGNAL(viewRenamed(QString,QString)), this, SLOT(viewRenamed(QString,QString)));
     connect(tab, SIGNAL(viewActivated(MessageView*)), this, SLOT(viewActivated(MessageView*)));
+    connect(tab, SIGNAL(editSession(Session*)), this, SLOT(editSession(Session*)));
 
     QSettings settings;
     if (settings.contains("list"))
@@ -188,6 +189,14 @@ void MainWindow::initialize()
 
     if (connections.isEmpty())
         connectTo(ConnectionInfo());
+}
+
+void MainWindow::editSession(Session* session)
+{
+    ConnectionWizard wizard;
+    wizard.setConnection(session->toConnection());
+    if (wizard.exec())
+        session->initFrom(wizard.connection());
 }
 
 void MainWindow::applySettings(const Settings& settings)

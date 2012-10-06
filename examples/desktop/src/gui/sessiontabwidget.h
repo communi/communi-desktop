@@ -51,6 +51,7 @@ signals:
     void inactiveStatusChanged(bool inactive);
     void sessionClosed(Session* session);
     void splitterChanged(const QByteArray& state);
+    void editSession(Session* session);
 
     void viewAdded(MessageView* view);
     void viewRemoved(MessageView* view);
@@ -70,6 +71,7 @@ private slots:
     void delayedTabResetTimeout();
     void onTabAlerted(IrcMessage* message);
     void onTabHighlighted(IrcMessage* message);
+    void onEditSession();
 
 private:
     struct SessionTabWidgetData

@@ -206,6 +206,7 @@ void SessionTabWidget::onTabMenuRequested(int index, const QPoint& pos)
             menu.addAction(tr("Disconnect"), session(), SLOT(quit()));
         else
             menu.addAction(tr("Reconnect"), session(), SLOT(reconnect()));
+        menu.addAction(tr("Edit"), this, SLOT(onEditSession()))->setEnabled(!session()->isActive());
     }
     if (static_cast<MessageView*>(widget(index))->viewType() == MessageView::ChannelView)
         menu.addAction(tr("Part"), this, SLOT(onTabCloseRequested()))->setData(index);
@@ -262,6 +263,11 @@ void SessionTabWidget::onTabHighlighted(IrcMessage* message)
             emit highlighted(view, message);
         }
     }
+}
+
+void SessionTabWidget::onEditSession()
+{
+    emit editSession(session());
 }
 
 void SessionTabWidget::applySettings(const Settings& settings)

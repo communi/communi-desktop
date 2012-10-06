@@ -51,6 +51,7 @@ protected:
 
 private slots:
     void initialize();
+    void editSession(Session* session);
     void applySettings(const Settings& settings);
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void alert(MessageView* view, IrcMessage* message);
