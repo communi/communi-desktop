@@ -15,7 +15,7 @@
 #include "settings.h"
 #include <QApplication>
 
-Settings::Settings() : maxBlockCount(-1), timeStamp(true), layout("tabs")
+Settings::Settings() : maxBlockCount(-1), timeStamp(true), layout("tabs"), stripNicks(true)
 {
 #ifdef Q_OS_MAC
     QString navigate("Ctrl+Alt+%1");
@@ -71,7 +71,8 @@ bool Settings::operator==(const Settings& other) const
     return messages == other.messages && highlights == other.highlights
         && language == other.language && font == other.font && colors == other.colors
         && shortcuts == other.shortcuts && maxBlockCount == other.maxBlockCount
-        && timeStamp == other.timeStamp && layout == other.layout;
+        && timeStamp == other.timeStamp && layout == other.layout
+        && stripNicks == other.stripNicks;
 }
 
 bool Settings::operator!=(const Settings& other) const

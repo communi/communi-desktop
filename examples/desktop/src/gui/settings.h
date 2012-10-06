@@ -71,12 +71,13 @@ struct Settings
     int maxBlockCount;
     bool timeStamp;
     QString layout;
+    bool stripNicks;
 };
 Q_DECLARE_METATYPE(Settings);
 
 inline QDataStream& operator<<(QDataStream& out, const Settings& settings)
 {
-    out << quint32(128); // version
+    out << quint32(129); // version
     out << settings.messages;
     out << settings.highlights;
     out << settings.language;
@@ -86,6 +87,7 @@ inline QDataStream& operator<<(QDataStream& out, const Settings& settings)
     out << settings.maxBlockCount;
     out << settings.timeStamp;
     out << settings.layout;
+    out << settings.stripNicks;
     return out;
 }
 
@@ -101,6 +103,7 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
     settings.maxBlockCount = readStreamValue<int>(in, settings.maxBlockCount);
     settings.timeStamp = readStreamValue<bool>(in, settings.timeStamp);
     settings.layout = readStreamValue<QString>(in, settings.layout);
+    settings.stripNicks = readStreamValue<bool>(in, settings.stripNicks);
     if (settings.layout.isEmpty())
         settings.layout = "tabs";
     if (version < 126)
@@ -121,6 +124,8 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
     }
     if (version < 128)
         settings.colors[Settings::Link] = "#4040ff";
+    if (version < 129)
+        settings.stripNicks = true;
     return in;
 }
 
