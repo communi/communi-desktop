@@ -26,6 +26,7 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     setIndentation(0);
     setHeaderHidden(true);
     setRootIsDecorated(false);
+    setFrameStyle(QFrame::NoFrame);
     setItemDelegate(new SessionTreeDelegate(this));
 
     d.colors[Active] = palette().color(QPalette::WindowText);
