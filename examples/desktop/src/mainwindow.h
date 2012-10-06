@@ -64,6 +64,7 @@ private slots:
     void splitterChanged(const QByteArray& state);
     void sessionAdded(Session* session);
     void sessionRemoved(Session* session);
+    void updateSession(Session* session = 0);
     void addView();
 
 private:

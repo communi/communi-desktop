@@ -22,6 +22,7 @@
 #include "connectioninfo.h"
 #include "messageview.h"
 #include "homepage.h"
+#include "overlay.h"
 #include "toolbar.h"
 #include "session.h"
 #include "qtdocktile.h"
@@ -138,6 +139,10 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     if (session->ensureNetwork())
         session->open();
     tabWidget->addSession(session);
+
+    connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateSession()));
+    connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateSession()));
+    updateSession(session);
 
     SessionTabWidget* tab = tabWidget->sessionWidget(session);
     connect(tab, SIGNAL(viewAdded(MessageView*)), this, SLOT(viewAdded(MessageView*)));
@@ -371,6 +376,34 @@ void MainWindow::sessionRemoved(Session* session)
     {
         treeWidget->removeSession(session);
         treeWidget->parentWidget()->setVisible(!tabWidget->sessions().isEmpty());
+    }
+}
+
+void MainWindow::updateSession(Session* session)
+{
+    if (!session)
+        session = qobject_cast<Session*>(sender());
+    SessionTabWidget* tab = tabWidget->sessionWidget(session);
+    if (tab)
+    {
+        if (!tab->session()->isConnected())
+        {
+            QObject* overlay = tab->property("_communi_overlay_").value<QObject*>();
+            if (!overlay)
+            {
+                overlay = new Overlay(tab);
+                tab->setProperty("_communi_overlay_", QVariant::fromValue(overlay));
+                connect(overlay, SIGNAL(refresh()), tab->session(), SLOT(reconnect()));
+            }
+            overlay->setProperty("visible", true);
+            overlay->setProperty("busy", tab->session()->isActive());
+            overlay->setProperty("refresh", !tab->session()->isActive());
+        }
+        else
+        {
+            delete tab->property("_communi_overlay_").value<QObject*>();
+            tab->setProperty("_communi_overlay_", QVariant());
+        }
     }
 }
 

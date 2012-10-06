@@ -21,6 +21,7 @@
   <file>resources/welcome_header.html</file>
   <file>resources/background.png</file>
   <file>resources/stylesheet.css</file>
+  <file>resources/ajax-loader.gif</file>
 
   <file>resources/oxygen/64x64/actions/bookmark.png</file>
   <file>resources/oxygen/64x64/actions/color_line.png</file>
@@ -33,6 +34,7 @@
   <file>resources/iconmonstr/about.png</file>
   <file>resources/iconmonstr/connect.png</file>
   <file>resources/iconmonstr/new-view.png</file>
+  <file>resources/iconmonstr/reconnect.png</file>
   <file>resources/iconmonstr/settings.png</file>
 </qresource>
 </RCC>
