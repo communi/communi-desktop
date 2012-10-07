@@ -119,7 +119,7 @@ CommonSheet {
                     Label { text: qsTr("Channel") }
                     TextField {
                         id: chanField
-                        text: "#communi"
+                        text: "#freenode"
                         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                         width: parent.width
                         platformSipAttributes: sipAttributes
