@@ -19,7 +19,7 @@ import com.nokia.meego 1.0
 PageStackWindow {
     id: window
 
-    initialPage: MainPage { }
+    initialPage: MainPage { id: mainPage }
 
     style: PageStackWindowStyle {
         background: "../images/meego-background-portrait.png"
@@ -31,6 +31,8 @@ PageStackWindow {
         for (var i = 0; i < SessionModel.length; ++i)
             if (!SessionModel[i].session.hasQuit)
                 SessionModel[i].session.reconnect();
+        if (!Settings.policyAgreed)
+            mainPage.showAbout();
     }
 
     Component.onDestruction: {

@@ -41,9 +41,16 @@ CommonPage {
         id: ircMessage
     }
 
-    active: modelData !== null && modelData.session.active
-    title: modelData ? modelData.title : ""
-    subtitle: modelData ? modelData.description : ""
+    header: Header {
+        id: header
+        title: modelData ? modelData.title : ""
+        subtitle: modelData ? modelData.description : ""
+        active: modelData !== null && modelData.session.active
+        icon.source: header.expanded ? "../images/collapse.png" : "../images/expand.png"
+        icon.visible: subtitle && pressed
+        onClicked: header.expanded = !header.expanded;
+    }
+
     tools: ToolBarLayout {
         ToolIcon {
             iconId: "toolbar-back"
@@ -140,7 +147,7 @@ CommonPage {
             width: listView.width
             wrapMode: Text.Wrap
             onLinkActivated: {
-                page.busy = true;
+                header.busy = true;
                 Qt.openUrlExternally(link);
             }
         }
@@ -200,7 +207,7 @@ CommonPage {
         }
 
         Keys.onReturnPressed: {
-            page.sendMessage(page.title, textField.text);
+            page.sendMessage(modelData.title, textField.text);
             textField.text = "";
         }
 

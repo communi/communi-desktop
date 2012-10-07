@@ -25,7 +25,19 @@ CommonPage {
 
     property alias bouncer: bouncer
 
-    title: qsTr("Communi")
+    function showAbout() {
+        var dialog = about.createObject(root, {showPolicy: !Settings.policyAgreed});
+        dialog.open();
+    }
+
+    header: Header {
+        id: header
+        title: qsTr("Communi")
+        icon.visible: pressed
+        icon.source: "../images/about.png"
+        onClicked: root.showAbout()
+    }
+
     tools: ToolBarLayout {
         ToolIcon {
             iconId: "toolbar-add"
@@ -140,7 +152,7 @@ CommonPage {
     Connections {
         target: SessionManager
         onAlert: {
-            var banner = bannerComponent.createObject(pageStack.currentPage.header);
+            var banner = bannerComponent.createObject(pageStack.currentPage.__headerItem);
             banner.text = text;
             banner.item = item;
             banner.show();
@@ -344,6 +356,30 @@ CommonPage {
                     item.sessionItem.removeChild(item.title);
                 }
             }
+        }
+    }
+
+    Component {
+        id: about
+        QueryDialog {
+            id: dialog
+
+            property bool showPolicy: false
+            property string policy: qsTr("<p>PLEASE REVIEW THE <a href='http://github.com/communi/communi/wiki/Privacy-Policy'>PRIVACY POLICY</a>.</p>")
+            property string license: qsTr("<p><small>This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.</small></p>" +
+                                          "<p><small>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</small></p>")
+
+            titleText: ApplicationName
+            message: qsTr("<p>Communi is an IRC (Internet Relay Chat) client used to communicate with others on IRC networks around the world.</p>" +
+                          "<p>Copyright (C) 2012 J-P Nurmi <a href=\"mailto:jpnurmi@gmail.com\">jpnurmi@gmail.com</a><br/></p>" +
+                          "%1").arg(showPolicy ? policy : license)
+            onLinkActivated: Qt.openUrlExternally(link)
+
+            acceptButtonText: showPolicy ? qsTr("I AGREE") : qsTr("OK")
+            onAccepted: { Settings.policyAgreed = true; dialog.destroy(1000) }
+
+            rejectButtonText: showPolicy ? qsTr("I DISAGREE") : ""
+            onRejected: { showPolicy ? Qt.quit() : dialog.destroy(1000) }
         }
     }
 }

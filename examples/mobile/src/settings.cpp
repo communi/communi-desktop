@@ -82,3 +82,9 @@ bool Settings::timeStamp() const
 
 void Settings::setTimeStamp(bool timeStamp)
 { QSettings().setValue("timestamp", timeStamp); }
+
+bool Settings::policyAgreed() const
+{ return QSettings().value("policy", false).toBool(); }
+
+void Settings::setPolicyAgreed(bool agreed)
+{ QSettings().setValue("policy", agreed); }

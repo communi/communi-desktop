@@ -30,6 +30,7 @@ class Settings : public QObject
     Q_PROPERTY(QString channel READ channel WRITE setChannel)
     Q_PROPERTY(ConnectionInfos connections READ connections WRITE setConnections)
     Q_PROPERTY(bool timeStamp READ timeStamp WRITE setTimeStamp)
+    Q_PROPERTY(bool policyAgreed READ policyAgreed WRITE setPolicyAgreed)
 
 public:
     static Settings* instance();
@@ -60,6 +61,9 @@ public:
 
     bool timeStamp() const;
     void setTimeStamp(bool timeStamp);
+
+    bool policyAgreed() const;
+    void setPolicyAgreed(bool agreed);
 
 private:
     explicit Settings(QObject *parent = 0);
