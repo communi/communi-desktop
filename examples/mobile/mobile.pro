@@ -6,7 +6,7 @@ anna|belle|symbian {
 } else {
     qml_files.source = qml/meego
     DEFINES += COMMUNI_PLATFORM=MeeGo
-    DEFINES += COMMUNI_EXAMPLE_VERSION=1.2.0.0
+    DEFINES += COMMUNI_EXAMPLE_VERSION=1.2.0.1
     DEFINES += COMMUNI_QML_DIR=qml/meego
     DEFINES += COMMUNI_IMPORT_PATH=/opt/communi/imports
     DEFINES += COMMUNI_PLUGIN_PATH=/opt/communi/plugins
