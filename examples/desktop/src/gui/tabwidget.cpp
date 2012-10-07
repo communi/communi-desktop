@@ -175,15 +175,13 @@ void TabWidget::setTabAlert(int index, bool alert)
             SharedTimer::instance()->unregisterReceiver(this, "alertTimeout");
         }
     }
-    else
+    else if (!d.alertIndexes.contains(index))
     {
         if (d.alertIndexes.isEmpty())
-        {
-            emit alertStatusChanged(true);
             SharedTimer::instance()->registerReceiver(this, "alertTimeout");
-        }
-        if (!d.alertIndexes.contains(index))
-            d.alertIndexes.append(index);
+        d.alertIndexes.append(index);
+        if (d.alertIndexes.count() == 1)
+            emit alertStatusChanged(true);
     }
     colorizeTab(index);
 }
@@ -203,12 +201,11 @@ void TabWidget::setTabHighlight(int index, bool highlight)
         if (count > 0 && d.highlightIndexes.isEmpty())
             emit highlightStatusChanged(false);
     }
-    else
+    else if (!d.highlightIndexes.contains(index))
     {
-        if (d.highlightIndexes.isEmpty())
+        d.highlightIndexes.append(index);
+        if (d.highlightIndexes.count() == 1)
             emit highlightStatusChanged(true);
-        if (!d.highlightIndexes.contains(index))
-            d.highlightIndexes.append(index);
     }
     colorizeTab(index);
 }
