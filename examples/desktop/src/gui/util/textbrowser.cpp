@@ -109,11 +109,13 @@ void TextBrowser::paintEvent(QPaintEvent* event)
 
     if (block.isValid())
     {
+        painter.save();
         painter.setPen(Qt::DashLine);
         painter.translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
 
         QRectF br = document()->documentLayout()->blockBoundingRect(block);
         painter.drawLine(br.topLeft(), br.topRight());
+        painter.restore();
     }
 
     QLinearGradient gradient(0, 0, 0, 3);
