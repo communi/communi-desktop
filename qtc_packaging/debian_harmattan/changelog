@@ -1,3 +1,14 @@
+communi (1.2.0.0) unstable; urgency=low
+
+  * Refactored the automatic message encoding detection system
+  * Fixed sorting of the channel users list
+  * Added an about dialog, including a link to the privacy policy
+    as requested by the Nokia Store
+  * Fixed message color handling (nested color spans)
+  * Desaturated the standard message colors to make them "softer"
+
+ -- J-P Nurmi <jpnurmi@gmail.com>  Sun, 7 Oct 2012 11:59:28 +0200
+
 communi (1.1.11) unstable; urgency=low
 
   * Fixed nicks within URLs not to be highlighted

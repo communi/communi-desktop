@@ -1,7 +1,7 @@
 Source: communi
 Section: user/other
 Priority: optional
-Maintainer: J-P Nurmi <j-p.nurmi@nokia.com>
+Maintainer: J-P Nurmi <jpnurmi@gmail.com>
 Build-Depends: debhelper (>= 5), libqt4-dev
 Standards-Version: 3.7.3
 Homepage: http://communi.github.com
