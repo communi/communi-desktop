@@ -343,6 +343,8 @@ QTreeWidgetItem* SessionTreeWidget::lastItem() const
 
 QTreeWidgetItem* SessionTreeWidget::nextItem(QTreeWidgetItem* from) const
 {
+    if (!from)
+        return 0;
     QTreeWidgetItemIterator it(from);
     while (*++it)
     {
@@ -354,6 +356,8 @@ QTreeWidgetItem* SessionTreeWidget::nextItem(QTreeWidgetItem* from) const
 
 QTreeWidgetItem* SessionTreeWidget::previousItem(QTreeWidgetItem* from) const
 {
+    if (!from)
+        return 0;
     QTreeWidgetItemIterator it(from);
     while (*--it)
     {
