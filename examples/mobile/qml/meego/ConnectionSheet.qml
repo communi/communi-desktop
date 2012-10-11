@@ -167,7 +167,7 @@ CommonSheet {
                         Label { text: qsTr("Real name") }
                         TextField {
                             id: realField
-                            text: "Communi for MeeGo user"
+                            text: ApplicationName
                             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                             width: parent.width
                             errorHighlight: !text.length

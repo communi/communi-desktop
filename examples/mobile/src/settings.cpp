@@ -66,7 +66,7 @@ void Settings::setReal(const QString& real)
 { QSettings().setValue("real", real); }
 
 QString Settings::channel() const
-{ return QSettings().value("channel", QString("#communi")).toString(); }
+{ return QSettings().value("channel", QString("#freenode")).toString(); }
 
 void Settings::setChannel(const QString& channel)
 { QSettings().setValue("channel", channel); }

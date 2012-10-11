@@ -114,7 +114,7 @@ BaseDialog {
                     Label { text: qsTr("Channel"); platformInverted: true }
                     TextField {
                         id: chanField
-                        text: "#communi"
+                        text: "#freenode"
                         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                         width: parent.width
                         Keys.onReturnPressed: userField.forceActiveFocus()
@@ -144,7 +144,7 @@ BaseDialog {
                     Label { text: qsTr("Real name"); platformInverted: true }
                     TextField {
                         id: realField
-                        text: "Communi for Symbian user"
+                        text: ApplicationName
                         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                         width: parent.width
                         errorHighlight: !text.length

@@ -20,20 +20,9 @@ import "UIConstants.js" as UI
 Page {
     id: page
 
-    property alias title: title.text
-    property alias subtitle: subtitle.text
-    property alias header: header
-    property bool busy: false
-    property bool active: true
+    property alias header: header.data
+    property alias __headerItem: header
     default property alias content: content.data
-
-    Connections {
-        target: Qt.application
-        onActiveChanged: {
-            if (!Qt.application.active)
-                page.busy = false;
-        }
-    }
 
     Rectangle {
         id: background
@@ -61,93 +50,9 @@ Page {
         height: parent.height - header.height - (inputContext.visible ? inputContext.height : 0)
     }
 
-    BorderImage {
+    Item {
         id: header
-
-        property bool expanded: false
-        property real baseHeight: implicitHeight //screen.currentOrientation === Screen.Landscape ? UI.HTB_LANDSCAPE_HEIGHT : UI.HTB_PORTRAIT_HEIGHT
-
         width: parent.width
-        height: baseHeight + (expanded && page.subtitle ? subtitle.height + UI.DEFAULT_SPACING : 0)
-        source: privateStyle.imagePath("qtg_fr_toolbar", true)
-
-        Behavior on height { NumberAnimation { duration: 100 } }
-
-        border {
-            top: 20
-            left: 20
-            right: 20
-            bottom: 20
-        }
-
-        MouseArea {
-            id: mouseArea
-            clip: true
-            enabled: page.subtitle
-            anchors.fill: parent
-            onClicked: {
-                page.busy = false;
-                header.expanded = !header.expanded;
-            }
-
-            ListItemText {
-                id: title
-
-                role: "Title"
-                verticalAlignment: Text.AlignVCenter
-                mode: page.active ? "normal" : "disabled"
-                platformInverted: true
-
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.right: indicator.left
-                anchors.leftMargin: UI.PAGE_MARGIN
-                anchors.rightMargin: UI.DEFAULT_SPACING
-                height: header.baseHeight
-            }
-
-            BusyIndicator {
-                id: indicator
-
-                running: page.busy
-                visible: page.busy
-
-                anchors.right: parent.right
-                anchors.rightMargin: UI.PAGE_MARGIN
-                anchors.verticalCenter: title.verticalCenter
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: indicator.running = false
-                }
-
-                platformInverted: true
-            }
-
-            Image {
-                source: header.expanded ? "../images/up-arrow.png" : "../images/down-arrow.png"
-                anchors.centerIn: indicator
-                visible: page.subtitle && mouseArea.pressed && mouseArea.containsMouse
-                smooth: true
-            }
-
-            ListItemText {
-                id: subtitle
-
-                role: "SubTitle"
-                mode: page.active ? "normal" : "disabled"
-                platformInverted: true
-                wrapMode: Text.Wrap
-
-                anchors.top: title.bottom
-                anchors.left: title.left
-                anchors.right: indicator.right
-
-                onLinkActivated: {
-                    page.busy = true;
-                    Qt.openUrlExternally(link);
-                }
-            }
-        }
+        height: childrenRect.height
     }
 }

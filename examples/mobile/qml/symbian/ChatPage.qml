@@ -41,9 +41,16 @@ CommonPage {
         id: ircMessage
     }
 
-    active: modelData !== null && modelData.session.active
-    title: modelData ? modelData.title : ""
-    subtitle: modelData ? modelData.description : ""
+    header: Header {
+        id: header
+        title: modelData ? modelData.title : ""
+        subtitle: modelData ? modelData.description : ""
+        active: modelData !== null && modelData.session.active
+        icon.source: header.expanded ? "../images/collapse.png" : "../images/expand.png"
+        icon.visible: subtitle && pressed
+        onClicked: header.expanded = !header.expanded;
+    }
+
     tools: ToolBarLayout {
         ToolButton {
             id: backButton
@@ -63,7 +70,7 @@ CommonPage {
                 ToolButton {
                     visible: modelData !== null
                     opacity: enabled ? 1.0 : UI.DISABLED_OPACITY
-                    enabled: clearItem.active || infoItem.active
+                    enabled: clearItem.enabled || infoItem.enabled
                     iconSource: "toolbar-menu"
                     onClicked: contextMenu.open()
                     platformInverted: true
@@ -95,8 +102,8 @@ CommonPage {
 
     Keys.onReturnPressed: {
         textField.visible = true;
-        textField.openSoftwareInputPanel();
         textField.forceActiveFocus();
+        textField.openSoftwareInputPanel();
     }
 
     onModelDataChanged: {
@@ -134,11 +141,6 @@ CommonPage {
         target: modelData
         ignoreUnknownSignals: true
         onRemoved: page.pageStack.pop()
-        onNamesReceived: {
-            dialog.setContent(names);
-            dialog.names = true;
-            dialog.open();
-        }
         onWhoisReceived: {
             dialog.setContent(whois);
             dialog.names = false;
@@ -164,7 +166,7 @@ CommonPage {
             width: listView.width
             wrapMode: Text.Wrap
             onLinkActivated: {
-                page.busy = true;
+                header.busy = true;
                 Qt.openUrlExternally(link);
             }
             platformInverted: true
@@ -218,8 +220,8 @@ CommonPage {
 
     TextField {
         id: textField
-        visible: false
         height: visible ? implicitHeight : 0
+        visible: false
         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhUrlCharactersOnly
         platformInverted: true
 
@@ -258,10 +260,12 @@ CommonPage {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             source: "../images/tab.png"
+            opacity: tabArea.pressed && tabArea.containsMouse ? UI.DISABLED_OPACITY : 1.0
             MouseArea {
-                anchors.fill: parent
-                anchors.leftMargin: -UI.PAGE_MARGIN
-                anchors.bottomMargin: -UI.PAGE_MARGIN
+                id: tabArea
+                width: parent.width
+                height: textField.height
+                anchors.verticalCenter: parent.verticalCenter
                 onClicked: Completer.complete(textField.text, textField.selectionStart, textField.selectionEnd)
             }
         }
@@ -271,10 +275,12 @@ CommonPage {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             source: "../images/clear.png"
+            opacity: clearArea.pressed && clearArea.containsMouse ? UI.DISABLED_OPACITY : 1.0
             MouseArea {
-                anchors.fill: parent
-                anchors.rightMargin: -UI.PAGE_MARGIN
-                anchors.bottomMargin: -UI.PAGE_MARGIN
+                id: clearArea
+                width: parent.width
+                height: textField.height
+                anchors.verticalCenter: parent.verticalCenter
                 onClicked: {
                     textField.visible = false;
                     textField.closeSoftwareInputPanel();
@@ -290,8 +296,7 @@ CommonPage {
             MenuItem {
                 id: clearItem
                 text: qsTr("Clear")
-                property bool active: modelData !== null && listView.count
-                enabled: active
+                enabled: modelData !== null && listView.count
                 onClicked: modelData.clear();
                 platformInverted: true
             }
@@ -299,13 +304,17 @@ CommonPage {
                 id: infoItem
                 property bool chat: modelData !== null && modelData.channel !== undefined
                 text: chat && modelData.channel ? qsTr("Names") : chat ? qsTr("Whois") : qsTr("Info")
-                property bool active: modelData !== null && modelData.channel !== undefined && modelData.session.active
-                enabled: active
+                enabled: modelData !== null && modelData.channel !== undefined && modelData.session.active
                 onClicked: {
-                    var cmd = modelData.channel ? ircCommand.createNames(modelData.title)
-                                                : ircCommand.createWhois(modelData.title);
-                    modelData.sendUiCommand(cmd);
-                    lister.busy = true;
+                    if (modelData.channel) {
+                        dialog.setContent(modelData.users);
+                        dialog.names = true;
+                        dialog.open();
+                    } else {
+                        var cmd = ircCommand.createWhois(modelData.title);
+                        modelData.sendUiCommand(cmd);
+                        lister.busy = true;
+                    }
                 }
                 platformInverted: true
             }

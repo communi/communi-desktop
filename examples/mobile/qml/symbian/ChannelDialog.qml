@@ -44,7 +44,17 @@ BaseDialog {
                 inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                 errorHighlight: !session || !session.isChannel(text)
                 width: parent.width
-                Keys.onReturnPressed: passworld.forceActiveFocus()
+                Keys.onReturnPressed: passwordField.forceActiveFocus()
+                platformInverted: true
+            }
+            Label {
+                text: session ? qsTr("%1 supports channel types: %2").arg(session.network).arg(session.channelTypes) : ""
+                /*font.pixelSize: 13 // TODO: UI.SMALL_FONT*/
+                font.weight: Font.Light
+                color: "gray" /* TODO: UI.SUBTITLE_COLOR */
+                width: parent.width
+                elide: Text.ElideRight
+                horizontalAlignment: Text.AlignRight
                 platformInverted: true
             }
         }
@@ -59,7 +69,7 @@ BaseDialog {
                 errorHighlight: dialog.passwordRequired ? !text.length : false
                 visible: placeholderText.length
                 width: parent.width
-                Keys.onReturnPressed: channelField.forceActiveFocus()
+                Keys.onReturnPressed: dialog.accept()
                 platformInverted: true
             }
         }
