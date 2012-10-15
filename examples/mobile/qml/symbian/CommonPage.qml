@@ -47,7 +47,7 @@ Page {
             left: parent.left
             right: parent.right
         }
-        height: parent.height - header.height - (inputContext.visible ? inputContext.height : 0)
+        height: parent.height - header.height + (tools ? tools.height : 0) - (inputContext.visible ? inputContext.height : 0)
     }
 
     Item {
