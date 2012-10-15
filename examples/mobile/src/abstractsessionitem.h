@@ -35,6 +35,7 @@ class AbstractSessionItem : public QObject, public MessageReceiver
     Q_PROPERTY(bool current READ isCurrent WRITE setCurrent NOTIFY currentChanged)
     Q_PROPERTY(bool highlighted READ isHighlighted WRITE setHighlighted NOTIFY highlightedChanged)
     Q_PROPERTY(bool timeStamp READ timeStamp WRITE setTimeStamp NOTIFY timeStampChanged)
+    Q_PROPERTY(bool stripNicks READ stripNicks WRITE setStripNicks NOTIFY stripNicksChanged)
     Q_PROPERTY(int unreadCount READ unreadCount WRITE setUnreadCount NOTIFY unreadCountChanged)
     Q_PROPERTY(int unseenIndex READ unseenIndex WRITE setUnseenIndex NOTIFY unseenIndexChanged)
     Q_PROPERTY(QObject* messages READ messages CONSTANT)
@@ -55,6 +56,7 @@ public:
     bool isCurrent() const;
     bool isHighlighted() const;
     bool timeStamp() const;
+    bool stripNicks() const;
     int unreadCount() const;
     int unseenIndex() const;
 
@@ -73,6 +75,7 @@ public slots:
     void setCurrent(bool current);
     void setHighlighted(bool highlighted);
     void setTimeStamp(bool timeStamp);
+    void setStripNicks(bool strip);
     void setUnreadCount(int count);
     void setUnseenIndex(int index);
     void clear();
@@ -86,6 +89,7 @@ signals:
     void currentChanged();
     void highlightedChanged();
     void timeStampChanged();
+    void stripNicksChanged();
     void unreadCountChanged();
     void unseenIndexChanged();
     void removed();

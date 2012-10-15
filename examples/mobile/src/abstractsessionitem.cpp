@@ -23,6 +23,7 @@ AbstractSessionItem::AbstractSessionItem(QObject *parent) :
 {
     m_messages = new QStringListModel(this);
     m_formatter.setTimeStamp(Settings::instance()->timeStamp());
+    m_formatter.setStripNicks(Settings::instance()->stripNicks());
     m_formatter.setEventFormat("style='color:#808080'");
     m_formatter.setNoticeFormat("style='color:#a54242'");
     m_formatter.setActionFormat("style='color:#8b388b'");
@@ -159,6 +160,20 @@ void AbstractSessionItem::setTimeStamp(bool timeStamp)
     {
         m_formatter.setTimeStamp(timeStamp);
         emit timeStampChanged();
+    }
+}
+
+bool AbstractSessionItem::stripNicks() const
+{
+    return m_formatter.stripNicks();
+}
+
+void AbstractSessionItem::setStripNicks(bool strip)
+{
+    if (m_formatter.stripNicks() != strip)
+    {
+        m_formatter.setStripNicks(strip);
+        emit stripNicksChanged();
     }
 }
 
