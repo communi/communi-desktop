@@ -83,6 +83,12 @@ bool Settings::timeStamp() const
 void Settings::setTimeStamp(bool timeStamp)
 { QSettings().setValue("timestamp", timeStamp); }
 
+bool Settings::stripNicks() const
+{ return QSettings().value("stripNicks", true).toBool(); }
+
+void Settings::setStripNicks(bool strip)
+{ QSettings().setValue("stripNicks", strip); }
+
 bool Settings::policyAgreed() const
 { return QSettings().value("policy", false).toBool(); }
 
