@@ -93,8 +93,8 @@ CommonPage {
             enabled: modelData !== null && modelData.session.active
             onClicked: {
                 textField.visible = true;
-                textField.openSoftwareInputPanel();
                 textField.forceActiveFocus();
+                textField.openSoftwareInputPanel();
             }
             platformInverted: true
         }
@@ -220,7 +220,6 @@ CommonPage {
 
     TextField {
         id: textField
-        height: visible ? implicitHeight : 0
         visible: false
         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhUrlCharactersOnly
         platformInverted: true
