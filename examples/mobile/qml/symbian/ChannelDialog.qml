@@ -25,8 +25,13 @@ BaseDialog {
     property QtObject session: null
 
     onStatusChanged: {
-        if (status == DialogStatus.Open) channelField.forceActiveFocus();
-        else if (status == DialogStatus.Closed) passwordRequired = false;
+        if (status == DialogStatus.Open) {
+            channelField.forceActiveFocus();
+            channelField.openSoftwareInputPanel();
+        }
+        else if (status == DialogStatus.Closed) {
+            passwordRequired = false;
+        }
     }
 
     Column {
@@ -44,14 +49,14 @@ BaseDialog {
                 inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                 errorHighlight: !session || !session.isChannel(text)
                 width: parent.width
-                Keys.onReturnPressed: passwordField.forceActiveFocus()
+                Keys.onEnterPressed: dialog.accept()
+                Keys.onReturnPressed: dialog.accept()
                 platformInverted: true
             }
             Label {
                 text: session ? qsTr("%1 supports channel types: %2").arg(session.network).arg(session.channelTypes) : ""
-                /*font.pixelSize: 13 // TODO: UI.SMALL_FONT*/
-                font.weight: Font.Light
-                color: "gray" /* TODO: UI.SUBTITLE_COLOR */
+                font { weight: Font.Light; family: platformStyle.fontFamilyRegular; pixelSize: platformStyle.fontSizeSmall }
+                color: platformStyle.colorDisabledLight
                 width: parent.width
                 elide: Text.ElideRight
                 horizontalAlignment: Text.AlignRight
@@ -69,6 +74,7 @@ BaseDialog {
                 errorHighlight: dialog.passwordRequired ? !text.length : false
                 visible: placeholderText.length
                 width: parent.width
+                Keys.onEnterPressed: dialog.accept()
                 Keys.onReturnPressed: dialog.accept()
                 platformInverted: true
             }
