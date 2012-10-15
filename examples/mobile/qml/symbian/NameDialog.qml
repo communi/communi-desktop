@@ -21,7 +21,12 @@ BaseDialog {
 
     property alias name: nameField.text
 
-    onStatusChanged: if (status === DialogStatus.Open) nameField.forceActiveFocus()
+    onStatusChanged: {
+        if (status == DialogStatus.Open) {
+            nameField.forceActiveFocus();
+            nameField.openSoftwareInputPanel();
+        }
+    }
 
     Column {
         id: column
@@ -34,6 +39,7 @@ BaseDialog {
             errorHighlight: !text.length
             width: parent.width
             platformInverted: true
+            Keys.onEnterPressed: dialog.accept()
             Keys.onReturnPressed: dialog.accept()
         }
     }
