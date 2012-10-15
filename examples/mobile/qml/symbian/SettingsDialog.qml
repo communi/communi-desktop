@@ -20,6 +20,7 @@ BaseDialog {
     id: dialog
 
     property alias timeStamp: timeStampBox.checked
+    property alias stripNicks: stripNicksBox.checked
 
     titleText: qsTr("Settings")
 
@@ -29,14 +30,15 @@ BaseDialog {
             width: parent.width
             spacing: UI.DEFAULT_SPACING
 
-            Row {
-                width: parent.width
-                spacing: UI.DEFAULT_SPACING
-                CheckBox {
-                    id: timeStampBox
-                    text: qsTr("Enable timestamps")
-                    platformInverted: true
-                }
+            CheckBox {
+                id: timeStampBox
+                text: qsTr("Enable timestamps")
+                platformInverted: true
+            }
+            CheckBox {
+                id: stripNicksBox
+                text: qsTr("Strip nicks")
+                platformInverted: true
             }
         }
     }

@@ -31,8 +31,11 @@ CommonPage {
     function applySettings() {
         for (var i = 0; i < SessionModel.length; ++i) {
             SessionModel[i].timeStamp = Settings.timeStamp;
-            for (var j = 0; j < SessionModel[i].childItems.length; ++j)
+            SessionModel[i].stripNicks = Settings.stripNicks;
+            for (var j = 0; j < SessionModel[i].childItems.length; ++j) {
                 SessionModel[i].childItems[j].timeStamp = Settings.timeStamp;
+                SessionModel[i].childItems[j].stripNicks = Settings.stripNicks;
+            }
         }
     }
 
@@ -414,9 +417,13 @@ CommonPage {
         id: settingsDialog
         onAccepted: {
             Settings.timeStamp = settingsDialog.timeStamp;
+            Settings.stripNicks = settingsDialog.stripNicks;
             applySettings();
         }
-        Component.onCompleted: timeStamp = Settings.timeStamp
+        Component.onCompleted: {
+            timeStamp = Settings.timeStamp;
+            stripNicks = Settings.stripNicks;
+        }
     }
 
     ContextMenu {
