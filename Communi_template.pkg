@@ -2,7 +2,7 @@
 &EN
 
 ; SIS header: name, uid, version
-#{"Communi"},(0xe0062463),1,1,4
+#{"Communi"},(0xe0062463),1,2,0
 
 ; Default localized vendor name
 %{"J-P Nurmi"}
