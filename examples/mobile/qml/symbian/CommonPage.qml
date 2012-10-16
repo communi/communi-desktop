@@ -42,12 +42,16 @@ Page {
     Item {
         id: content
 
+        property real inputHeight: inputContext.visible ? inputContext.height : 0
+        property real toolsHeight: tools && inputContext.visible ? tools.height : 0
+
+        height: parent.height - header.height + toolsHeight - inputHeight
+
         anchors {
             top: header.bottom
             left: parent.left
             right: parent.right
         }
-        height: parent.height - header.height + (tools ? tools.height : 0) - (inputContext.visible ? inputContext.height : 0)
     }
 
     Item {
