@@ -303,7 +303,7 @@ void MessageView::receiveMessage(IrcMessage* message)
     case IrcMessage::Topic:
         append = d.settings.messages.value(Settings::Topics);
         hilite = d.settings.highlights.value(Settings::Topics);
-        d.topicLabel->setText(static_cast<IrcTopicMessage*>(message)->topic());
+        d.topicLabel->setText(IrcUtil::messageToHtml(static_cast<IrcTopicMessage*>(message)->topic()));
         if (d.topicLabel->text().isEmpty())
             d.topicLabel->setText(tr("-"));
         break;
