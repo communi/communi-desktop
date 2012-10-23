@@ -1,16 +1,9 @@
-anna|belle|symbian {
-    qml_files.source = qml/symbian
-    DEFINES += COMMUNI_PLATFORM=Symbian
-    DEFINES += COMMUNI_EXAMPLE_VERSION=1.2.0.0
-    DEFINES += COMMUNI_QML_DIR=qml/symbian
-} else {
-    qml_files.source = qml/meego
-    DEFINES += COMMUNI_PLATFORM=MeeGo
-    DEFINES += COMMUNI_EXAMPLE_VERSION=1.2.0.1
-    DEFINES += COMMUNI_QML_DIR=qml/meego
-    DEFINES += COMMUNI_IMPORT_PATH=/opt/communi/imports
-    DEFINES += COMMUNI_PLUGIN_PATH=/opt/communi/plugins
-}
+qml_files.source = qml/meego
+DEFINES += COMMUNI_PLATFORM=MeeGo
+DEFINES += COMMUNI_EXAMPLE_VERSION=1.2.0.1
+DEFINES += COMMUNI_QML_DIR=qml/meego
+DEFINES += COMMUNI_IMPORT_PATH=/opt/communi/imports
+DEFINES += COMMUNI_PLUGIN_PATH=/opt/communi/plugins
 
 # Add more folders to ship with the application, here
 qml_files.target = qml
@@ -21,26 +14,7 @@ DEPLOYMENTFOLDERS = qml_files qml_images
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =
 
-# Smart Installer package's UID
-# This UID is from the protected range and therefore the package will
-# fail to install if self-signed. By default qmake uses the unprotected
-# range value if unprotected UID is defined for the application and
-# 0x2002CCCF value if protected UID is given to the application
-#symbian:DEPLOYMENT.installer_header = 0x2002CCCF
-
-symbian {
-    TARGET = Communi
-    TARGET.UID3 = 0xe0062463
-    # Allow network access on Symbian
-    TARGET.CAPABILITY += NetworkServices
-
-    vendor.pkg_prerules += \
-        "%{\"J-P Nurmi\"}" \
-        ":\"J-P Nurmi\""
-    DEPLOYMENT += vendor
-} else {
-    TARGET = communi
-}
+TARGET = communi
 
 # If your application uses the Qt Mobility libraries, uncomment the following
 # lines and add the respective components to the MOBILITY variable.
@@ -49,9 +23,6 @@ symbian {
 
 # Speed up launching on MeeGo/Harmattan when using applauncherd daemon
 # CONFIG += qdeclarative-boostable
-
-# Add dependency to Symbian components
-CONFIG += qt-components
 
 INCLUDEPATH += src
 DEPENDPATH += src
