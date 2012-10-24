@@ -278,7 +278,7 @@ CommonPage {
             var session = sessionComponent.createObject(root);
             session.nickName = connectionSheet.name;
             session.userName = connectionSheet.user.length ? connectionSheet.user : "communi";
-            session.realName = connectionSheet.real.length ? connectionSheet.real : "Communi for MeeGo user";
+            session.realName = connectionSheet.real.length ? connectionSheet.real : ApplicationName;
             session.host = connectionSheet.host;
             session.port = connectionSheet.port;
             session.password = connectionSheet.password;

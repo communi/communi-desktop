@@ -1,3 +1,10 @@
+communi (1.2.0.2) unstable; urgency=low
+
+  * Fix the default channel
+  * Adjust the default real name
+
+ -- J-P Nurmi <jpnurmi@gmail.com>  Wed, 24 Oct 2012 18:53:31 +0200
+
 communi (1.2.0.1) unstable; urgency=low
 
   * Fix case insensitivity of the channel user list
