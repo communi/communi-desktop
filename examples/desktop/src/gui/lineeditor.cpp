@@ -14,8 +14,9 @@
 
 #include "lineeditor.h"
 #include "completer.h"
+#include <QStyleFactory>
 #include <QShortcut>
-#include <QPlastiqueStyle>
+#include <QStyle>
 
 LineEditor::LineEditor(QWidget* parent) : HistoryLineEdit(parent)
 {
@@ -25,9 +26,17 @@ LineEditor::LineEditor(QWidget* parent) : HistoryLineEdit(parent)
 
     setAttribute(Qt::WA_MacShowFocusRect, false);
 
-    // a workaround for a bug in the Oxygen style
-    if (style()->objectName() == "oxygen")
-        setStyle(new QPlastiqueStyle);
+    // a workaround for a bug in the Oxygen style (style animation eats up all cpu)
+    if (style()->objectName() == "oxygen") {
+        QStringList keys = QStringList() << "fusion" << "plastique" << "cleanlooks" << "windows";
+        while (!keys.isEmpty()) {
+            QString key = keys.takeFirst();
+            if (QStyleFactory::keys().contains(key)) {
+                setStyle(QStyleFactory::create(key));
+                break;
+            }
+        }
+    }
 
     QShortcut* shortcut = new QShortcut(Qt::Key_Tab, this);
     connect(shortcut, SIGNAL(activated()), d.completer, SLOT(onTabPressed()));
