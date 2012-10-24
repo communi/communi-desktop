@@ -21,8 +21,7 @@
 
 static void setApplicationProxy(QUrl url)
 {
-    if (!url.isEmpty())
-    {
+    if (!url.isEmpty()) {
         if (url.port() == -1)
             url.setPort(8080);
         QNetworkProxy proxy(QNetworkProxy::HttpProxy, url.host(), url.port(), url.userName(), url.password());
@@ -30,7 +29,7 @@ static void setApplicationProxy(QUrl url)
     }
 }
 
-int main (int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     Application app(argc, argv);
     MainWindow window;

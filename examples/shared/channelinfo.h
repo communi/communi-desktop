@@ -20,8 +20,7 @@
 #include <QDataStream>
 #include "streamer.h"
 
-struct ChannelInfo
-{
+struct ChannelInfo {
     QString channel;
     QString key;
 };

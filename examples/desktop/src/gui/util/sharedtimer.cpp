@@ -44,8 +44,7 @@ void SharedTimer::registerReceiver(QObject* receiver, const char* member)
         return;
 
     Receiver pair = qMakePair(receiver, member);
-    if (!d.receivers.contains(pair))
-    {
+    if (!d.receivers.contains(pair)) {
         if (d.receivers.isEmpty())
             d.timer.start(d.interval, this);
 
@@ -60,20 +59,15 @@ void SharedTimer::unregisterReceiver(QObject* receiver, const char* member)
         return;
 
     Receiver pair = qMakePair(receiver, member);
-    if (!member)
-    {
+    if (!member) {
         QMutableListIterator<Receiver> it(d.receivers);
-        while (it.hasNext())
-        {
-            if (it.next().first == receiver)
-            {
+        while (it.hasNext()) {
+            if (it.next().first == receiver) {
                 disconnect(receiver, SIGNAL(destroyed(QObject*)), this, SLOT(destroyed(QObject*)));
                 it.remove();
             }
         }
-    }
-    else if (d.receivers.contains(pair))
-    {
+    } else if (d.receivers.contains(pair)) {
         disconnect(receiver, SIGNAL(destroyed(QObject*)), this, SLOT(destroyed(QObject*)));
         d.receivers.removeAll(pair);
     }
@@ -96,10 +90,9 @@ void SharedTimer::resume()
 
 void SharedTimer::timerEvent(QTimerEvent* event)
 {
-    if (event->timerId() == d.timer.timerId())
-    {
-        foreach (Receiver receiver, d.receivers)
-            QMetaObject::invokeMethod(receiver.first, receiver.second);
+    if (event->timerId() == d.timer.timerId()) {
+        foreach(Receiver receiver, d.receivers)
+        QMetaObject::invokeMethod(receiver.first, receiver.second);
     }
 }
 

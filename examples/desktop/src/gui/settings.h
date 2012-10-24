@@ -20,15 +20,13 @@
 #include <QMetaType>
 #include "streamer.h"
 
-struct Settings
-{
+struct Settings {
     Settings();
     operator QVariant() const;
     bool operator==(const Settings& other) const;
     bool operator!=(const Settings& other) const;
 
-    enum MessageType
-    {
+    enum MessageType {
         Joins,
         Parts,
         Nicks,
@@ -38,8 +36,7 @@ struct Settings
         Topics
     };
 
-    enum ColorType
-    {
+    enum ColorType {
         Background,
         Message,
         Event,
@@ -50,8 +47,7 @@ struct Settings
         Link
     };
 
-    enum ShortcutType
-    {
+    enum ShortcutType {
         NavigateUp,
         NavigateDown,
         NavigateLeft,
@@ -110,8 +106,7 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
         settings.colors[Settings::TimeStamp] = defaults.colors.value(Settings::TimeStamp);
     if (version < 126)
         settings.layout = defaults.layout;
-    if (version < 127)
-    {
+    if (version < 127) {
         settings.shortcuts[Settings::NextUnreadUp] = defaults.shortcuts.value(Settings::NextUnreadUp);
         settings.shortcuts[Settings::NextUnreadDown] = defaults.shortcuts.value(Settings::NextUnreadDown);
         settings.shortcuts[Settings::NextUnreadLeft] = defaults.shortcuts.value(Settings::NextUnreadLeft);

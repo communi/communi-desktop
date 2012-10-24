@@ -24,13 +24,13 @@ public:
         ScreenOrientationAuto
     };
 
-    explicit QmlApplicationViewer(QWidget *parent = 0);
+    explicit QmlApplicationViewer(QWidget* parent = 0);
     virtual ~QmlApplicationViewer();
 
-    static QmlApplicationViewer *create();
+    static QmlApplicationViewer* create();
 
-    void setMainQmlFile(const QString &file);
-    void addImportPath(const QString &path);
+    void setMainQmlFile(const QString& file);
+    void addImportPath(const QString& path);
 
     // Note that this will only have an effect on Symbian and Fremantle.
     void setOrientation(ScreenOrientation orientation);
@@ -38,9 +38,9 @@ public:
     void showExpanded();
 
 private:
-    class QmlApplicationViewerPrivate *d;
+    class QmlApplicationViewerPrivate* d;
 };
 
-QApplication *createApplication(int &argc, char **argv);
+QApplication* createApplication(int& argc, char** argv);
 
 #endif // QMLAPPLICATIONVIEWER_H

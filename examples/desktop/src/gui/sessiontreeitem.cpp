@@ -33,14 +33,12 @@ SessionTreeItem::SessionTreeItem(Session* session, QTreeWidgetItem* parent) : QT
 
 SessionTreeItem::~SessionTreeItem()
 {
-    if (SessionTreeItem* p = static_cast<SessionTreeItem*>(parent()))
-    {
+    if (SessionTreeItem* p = static_cast<SessionTreeItem*>(parent())) {
         p->d.alertedChildren.remove(this);
         p->d.highlightedChildren.remove(this);
     }
 
-    if (SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget()))
-    {
+    if (SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget())) {
         tw->d.alertedItems.remove(this);
         tw->d.resetedItems.remove(this);
     }
@@ -61,8 +59,7 @@ SessionTreeItem* SessionTreeItem::findChild(const QString& name) const
 
 QVariant SessionTreeItem::data(int column, int role) const
 {
-    if (role == Qt::ForegroundRole)
-    {
+    if (role == Qt::ForegroundRole) {
         SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget());
         if (d.inactive)
             return tw->statusColor(SessionTreeWidget::Inactive);
@@ -82,11 +79,9 @@ bool SessionTreeItem::isAlerted() const
 
 void SessionTreeItem::setAlerted(bool alerted)
 {
-    if (d.alerted != alerted)
-    {
+    if (d.alerted != alerted) {
         d.alerted = alerted;
-        if (SessionTreeItem* p = static_cast<SessionTreeItem*>(parent()))
-        {
+        if (SessionTreeItem* p = static_cast<SessionTreeItem*>(parent())) {
             if (alerted)
                 p->d.alertedChildren.insert(this);
             else
@@ -105,8 +100,7 @@ bool SessionTreeItem::isInactive() const
 
 void SessionTreeItem::setInactive(bool inactive)
 {
-    if (d.inactive != inactive)
-    {
+    if (d.inactive != inactive) {
         d.inactive = inactive;
         emitDataChanged();
     }
@@ -119,11 +113,9 @@ bool SessionTreeItem::isHighlighted() const
 
 void SessionTreeItem::setHighlighted(bool highlighted)
 {
-    if (d.highlighted != highlighted)
-    {
+    if (d.highlighted != highlighted) {
         d.highlighted = highlighted;
-        if (SessionTreeItem* p = static_cast<SessionTreeItem*>(parent()))
-        {
+        if (SessionTreeItem* p = static_cast<SessionTreeItem*>(parent())) {
             if (highlighted)
                 p->d.highlightedChildren.insert(this);
             else

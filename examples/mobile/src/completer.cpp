@@ -16,7 +16,7 @@
 #include "abstractsessionitem.h"
 #include <QTextBoundaryFinder>
 
-Completer::Completer(QObject *parent) : QObject(parent), m_item(0), m_current(0)
+Completer::Completer(QObject* parent) : QObject(parent), m_item(0), m_current(0)
 {
 }
 
@@ -42,21 +42,17 @@ void Completer::complete(const QString& text, int selStart, int selEnd)
         prefix = text.mid(0, wordStart);
 
     QStringList candidates = m_item->completions(prefix, word);
-    if (m_candidates != candidates)
-    {
+    if (m_candidates != candidates) {
         m_current = 0;
         m_candidates = candidates;
-    }
-    else
-    {
+    } else {
         if (!m_candidates.isEmpty())
             m_current = (m_current + 1) % m_candidates.count();
         else
             m_current = 0;
     }
 
-    if (!m_candidates.isEmpty())
-    {
+    if (!m_candidates.isEmpty()) {
         QString replace = m_candidates.value(m_current);
 
         if (word == "/")

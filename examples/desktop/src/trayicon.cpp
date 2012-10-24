@@ -28,8 +28,7 @@ TrayIcon::TrayIcon(QObject* parent) : QSystemTrayIcon(parent)
 
 void TrayIcon::alert()
 {
-    if (!d.timer)
-    {
+    if (!d.timer) {
         d.icon = icon();
         d.timer = new QTimer(this);
         connect(d.timer, SIGNAL(timeout()), this, SLOT(toggleIcon()));
@@ -39,8 +38,7 @@ void TrayIcon::alert()
 
 void TrayIcon::unalert()
 {
-    if (d.timer)
-    {
+    if (d.timer) {
         d.timer->stop();
         d.timer->deleteLater();
         d.timer = 0;

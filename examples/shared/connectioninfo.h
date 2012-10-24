@@ -23,10 +23,8 @@
 #include "channelinfo.h"
 #include "streamer.h"
 
-struct ConnectionInfo
-{
-    ConnectionInfo() : port(6667), secure(false), quit(false)
-    {
+struct ConnectionInfo {
+    ConnectionInfo() : port(6667), secure(false), quit(false) {
     }
 
     QString name;

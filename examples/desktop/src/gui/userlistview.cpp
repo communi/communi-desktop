@@ -56,7 +56,7 @@ QString UserListView::channel() const
     return d.userModel->channel();
 }
 
-void UserListView::setChannel(const QString &channel)
+void UserListView::setChannel(const QString& channel)
 {
     d.userModel->setChannel(channel);
 }
@@ -66,7 +66,7 @@ UserModel* UserListView::userModel() const
     return d.userModel;
 }
 
-bool UserListView::hasUser(const QString &user) const
+bool UserListView::hasUser(const QString& user) const
 {
     return d.userModel->hasUser(user);
 }
@@ -79,8 +79,7 @@ void UserListView::processMessage(IrcMessage* message)
 void UserListView::contextMenuEvent(QContextMenuEvent* event)
 {
     QModelIndex index = indexAt(event->pos());
-    if (index.isValid())
-    {
+    if (index.isValid()) {
         QMenu* menu = createMenu(index, this);
         menu->exec(event->globalPos());
         menu->deleteLater();
@@ -103,8 +102,7 @@ void UserListView::onDoubleClicked(const QModelIndex& index)
 void UserListView::onWhoisTriggered()
 {
     QAction* action = qobject_cast<QAction*>(sender());
-    if (action)
-    {
+    if (action) {
         IrcCommand* command = IrcCommand::createWhois(action->data().toString());
         emit commandRequested(command);
         command->deleteLater();
@@ -121,8 +119,7 @@ void UserListView::onQueryTriggered()
 void UserListView::onModeTriggered()
 {
     QAction* action = qobject_cast<QAction*>(sender());
-    if (action)
-    {
+    if (action) {
         QStringList params = action->data().toStringList();
         IrcCommand* command = IrcCommand::createMode(channel(), params.at(1), params.at(0));
         emit commandRequested(command);
@@ -133,8 +130,7 @@ void UserListView::onModeTriggered()
 void UserListView::onKickTriggered()
 {
     QAction* action = qobject_cast<QAction*>(sender());
-    if (action)
-    {
+    if (action) {
         IrcCommand* command = IrcCommand::createKick(channel(), action->data().toString());
         emit commandRequested(command);
         command->deleteLater();
@@ -144,8 +140,7 @@ void UserListView::onKickTriggered()
 void UserListView::onBanTriggered()
 {
     QAction* action = qobject_cast<QAction*>(sender());
-    if (action)
-    {
+    if (action) {
         IrcCommand* command = IrcCommand::createMode(channel(), "+b", action->data().toString() + "!*@*");
         emit commandRequested(command);
         command->deleteLater();
@@ -168,24 +163,18 @@ QMenu* UserListView::createMenu(const QModelIndex& index, QWidget* parent)
 
     menu->addSeparator();
 
-    if (modes.contains("@"))
-    {
+    if (modes.contains("@")) {
         action = menu->addAction(tr("Deop"), this, SLOT(onModeTriggered()));
         action->setData(QStringList() << user << "-o");
-    }
-    else
-    {
+    } else {
         action = menu->addAction(tr("Op"), this, SLOT(onModeTriggered()));
         action->setData(QStringList() << user << "+o");
     }
 
-    if (modes.contains("+"))
-    {
+    if (modes.contains("+")) {
         action = menu->addAction(tr("Devoice"), this, SLOT(onModeTriggered()));
         action->setData(QStringList() << user << "-v");
-    }
-    else
-    {
+    } else {
         action = menu->addAction(tr("Voice"), this, SLOT(onModeTriggered()));
         action->setData(QStringList() << user << "+v");
     }

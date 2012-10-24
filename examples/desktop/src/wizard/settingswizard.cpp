@@ -91,8 +91,7 @@ void SettingsWizard::setColorSettings(const Settings& settings)
 void SettingsWizard::resetCurrentPage()
 {
     Settings settings; // default values
-    switch (currentId())
-    {
+    switch (currentId()) {
         case GeneralPage: setGeneralSettings(settings); break;
         case ShortcutsPage: setShortcutSettings(settings); break;
         case MessagesPage: setMessageSettings(settings); break;

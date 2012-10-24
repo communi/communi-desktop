@@ -43,7 +43,7 @@ class Session : public IrcSession
     Q_PROPERTY(bool hasQuit READ hasQuit)
 
 public:
-    explicit Session(QObject *parent = 0);
+    explicit Session(QObject* parent = 0);
 
     QString name() const;
     void setName(const QString& name);
@@ -120,7 +120,7 @@ private:
     QTimer m_pingTimer;
     int m_currentLag;
     int m_maxLag;
-    QHash<QString,QString> m_info;
+    QHash<QString, QString> m_info;
     bool m_quit;
     QStringList m_alternateNicks;
     static QNetworkSession* s_network;

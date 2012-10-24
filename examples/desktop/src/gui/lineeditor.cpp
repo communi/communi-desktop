@@ -63,8 +63,7 @@ Completer* LineEditor::completer() const
 void LineEditor::onSend()
 {
     const QString input = text();
-    if (!input.isEmpty())
-    {
+    if (!input.isEmpty()) {
         clear();
         emit send(input);
     }

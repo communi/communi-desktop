@@ -29,14 +29,14 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
     connect(this, SIGNAL(newTabRequested()), this, SLOT(onNewTabRequested()), Qt::QueuedConnection);
-    connect(this, SIGNAL(tabMenuRequested(int,QPoint)), this, SLOT(onTabMenuRequested(int,QPoint)));
+    connect(this, SIGNAL(tabMenuRequested(int, QPoint)), this, SLOT(onTabMenuRequested(int, QPoint)));
 
     connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateStatus()));
     connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateStatus()));
 
     connect(&d.handler, SIGNAL(receiverToBeAdded(QString)), this, SLOT(openView(QString)));
     connect(&d.handler, SIGNAL(receiverToBeRemoved(QString)), this, SLOT(removeView(QString)));
-    connect(&d.handler, SIGNAL(receiverToBeRenamed(QString,QString)), this, SLOT(renameView(QString,QString)));
+    connect(&d.handler, SIGNAL(receiverToBeRenamed(QString, QString)), this, SLOT(renameView(QString, QString)));
 
     QShortcut* shortcut = new QShortcut(QKeySequence::AddTab, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(onNewTabRequested()));
@@ -58,16 +58,15 @@ Session* SessionTabWidget::session() const
 
 QByteArray SessionTabWidget::saveSplitter() const
 {
-    foreach (MessageView* view, d.views)
-        if (view->viewType() != MessageView::ServerView)
-            return view->saveSplitter();
+    foreach(MessageView * view, d.views)
+    if (view->viewType() != MessageView::ServerView)
+        return view->saveSplitter();
     return QByteArray();
 }
 
 void SessionTabWidget::restoreSplitter(const QByteArray& state)
 {
-    foreach (MessageView* view, d.views)
-    {
+    foreach(MessageView * view, d.views) {
         view->blockSignals(true);
         view->restoreSplitter(state);
         view->blockSignals(false);
@@ -78,8 +77,7 @@ void SessionTabWidget::restoreSplitter(const QByteArray& state)
 MessageView* SessionTabWidget::openView(const QString& receiver)
 {
     MessageView* view = d.views.value(receiver.toLower());
-    if (!view)
-    {
+    if (!view) {
         MessageView::ViewType type = MessageView::ServerView;
         if (!d.views.isEmpty())
             type = session()->isChannel(receiver) ? MessageView::ChannelView : MessageView::QueryView;
@@ -103,12 +101,10 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
 void SessionTabWidget::removeView(const QString& receiver)
 {
     MessageView* view = d.views.take(receiver.toLower());
-    if (view)
-    {
+    if (view) {
         view->deleteLater();
         emit viewRemoved(view);
-        if (indexOf(view) == 0)
-        {
+        if (indexOf(view) == 0) {
             deleteLater();
             session()->destructLater();
             emit sessionClosed(session());
@@ -124,10 +120,9 @@ void SessionTabWidget::closeCurrentView()
 void SessionTabWidget::closeView(int index)
 {
     MessageView* view = d.views.value(tabText(index).replace("&&", "&").toLower());
-    if (view)
-    {
+    if (view) {
         QString reason = tr("%1 %2").arg(QApplication::applicationName())
-                                    .arg(QApplication::applicationVersion());
+                         .arg(QApplication::applicationVersion());
         if (indexOf(view) == 0)
             session()->quit(reason);
         else if (view->viewType() == MessageView::ChannelView)
@@ -140,8 +135,7 @@ void SessionTabWidget::closeView(int index)
 void SessionTabWidget::renameView(const QString& from, const QString& to)
 {
     MessageView* view = d.views.take(from.toLower());
-    if (view)
-    {
+    if (view) {
         view->setReceiver(to);
         d.views.insert(to.toLower(), view);
         int index = indexOf(view);
@@ -167,11 +161,9 @@ void SessionTabWidget::updateStatus()
 
 void SessionTabWidget::resetTab(int index)
 {
-    if (index < count() - 1)
-    {
+    if (index < count() - 1) {
         MessageView* view = qobject_cast<MessageView*>(widget(index));
-        if (view)
-        {
+        if (view) {
             setTabAlert(index, false);
             setTabHighlight(index, false);
         }
@@ -180,14 +172,11 @@ void SessionTabWidget::resetTab(int index)
 
 void SessionTabWidget::tabActivated(int index)
 {
-    if (index < count() - 1)
-    {
+    if (index < count() - 1) {
         MessageView* view = qobject_cast<MessageView*>(currentWidget());
-        if (view)
-        {
+        if (view) {
             resetTab(index);
-            if (isVisible())
-            {
+            if (isVisible()) {
                 d.handler.setCurrentReceiver(view);
                 window()->setWindowFilePath(tabText(index).replace("&&", "&"));
                 view->setFocus();
@@ -200,8 +189,7 @@ void SessionTabWidget::tabActivated(int index)
 void SessionTabWidget::onNewTabRequested()
 {
     AddViewDialog dialog(session(), this);
-    if (dialog.exec())
-    {
+    if (dialog.exec()) {
         QString view = dialog.view();
         if (session()->isChannel(view))
             d.handler.session()->sendCommand(IrcCommand::createJoin(view, dialog.password()));
@@ -212,8 +200,7 @@ void SessionTabWidget::onNewTabRequested()
 void SessionTabWidget::onTabMenuRequested(int index, const QPoint& pos)
 {
     QMenu menu;
-    if (index == 0)
-    {
+    if (index == 0) {
         if (session()->isActive())
             menu.addAction(tr("Disconnect"), session(), SLOT(quit()));
         else
@@ -242,8 +229,7 @@ void SessionTabWidget::delayedTabReset()
 
 void SessionTabWidget::delayedTabResetTimeout()
 {
-    if (!d.delayedIndexes.isEmpty())
-    {
+    if (!d.delayedIndexes.isEmpty()) {
         resetTab(d.delayedIndexes.takeLast());
         d.delayedIndexes.clear();
     }
@@ -253,10 +239,8 @@ void SessionTabWidget::onTabAlerted(IrcMessage* message)
 {
     MessageView* view = qobject_cast<MessageView*>(sender());
     int index = indexOf(view);
-    if (index != -1)
-    {
-        if (!isVisible() || !isActiveWindow() || index != currentIndex())
-        {
+    if (index != -1) {
+        if (!isVisible() || !isActiveWindow() || index != currentIndex()) {
             setTabAlert(index, true);
             emit alerted(view, message);
         }
@@ -267,10 +251,8 @@ void SessionTabWidget::onTabHighlighted(IrcMessage* message)
 {
     MessageView* view = qobject_cast<MessageView*>(sender());
     int index = indexOf(view);
-    if (index != -1)
-    {
-        if (!isVisible() || !isActiveWindow() || index != currentIndex())
-        {
+    if (index != -1) {
+        if (!isVisible() || !isActiveWindow() || index != currentIndex()) {
             setTabHighlight(index, true);
             emit highlighted(view, message);
         }
@@ -295,7 +277,7 @@ void SessionTabWidget::applySettings(const Settings& settings)
     setTabTextColor(Alert, color);
     setTabTextColor(Highlight, color);
 
-    foreach (MessageView* view, d.views)
-        view->applySettings(settings);
+    foreach(MessageView * view, d.views)
+    view->applySettings(settings);
     d.settings = settings;
 }

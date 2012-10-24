@@ -75,8 +75,7 @@ private slots:
     void onEditSession();
 
 private:
-    struct SessionTabWidgetData
-    {
+    struct SessionTabWidgetData {
         QList<int> delayedIndexes;
         MessageHandler handler;
         QHash<QString, MessageView*> views;

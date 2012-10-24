@@ -16,8 +16,7 @@
 #include "settings.h"
 #include <QStyledItemDelegate>
 
-enum Columns
-{
+enum Columns {
     Description,
     Shortcut
 };
@@ -26,8 +25,7 @@ class ItemDelegate : public QStyledItemDelegate
 {
 public:
     ItemDelegate(QObject* parent = 0) : QStyledItemDelegate(parent) { }
-    QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& opt, const QModelIndex& index) const
-    {
+    QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& opt, const QModelIndex& index) const {
         QWidget* editor = 0;
         if (index.column() == Shortcut)
             editor = QStyledItemDelegate::createEditor(parent, opt, index);
@@ -52,15 +50,13 @@ QHash<int, QString> ShortcutsWizardPage::shortcuts() const
     QHash<int, QString> shortcuts;
 
     QTreeWidgetItem* navigate = ui.treeWidget->topLevelItem(0);
-    for (int i = Settings::NavigateUp; i <= Settings::NavigateRight; ++i)
-    {
+    for (int i = Settings::NavigateUp; i <= Settings::NavigateRight; ++i) {
         QTreeWidgetItem* item = navigate->child(i);
         shortcuts.insert(i, item->text(Shortcut));
     }
 
     QTreeWidgetItem* unread = ui.treeWidget->topLevelItem(1);
-    for (int i = Settings::NextUnreadUp; i <= Settings::NextUnreadRight; ++i)
-    {
+    for (int i = Settings::NextUnreadUp; i <= Settings::NextUnreadRight; ++i) {
         QTreeWidgetItem* item = unread->child(i - Settings::NextUnreadUp);
         shortcuts.insert(i, item->text(Shortcut));
     }
@@ -71,15 +67,13 @@ QHash<int, QString> ShortcutsWizardPage::shortcuts() const
 void ShortcutsWizardPage::setShortcuts(const QHash<int, QString>& shortcuts)
 {
     QTreeWidgetItem* navigate = ui.treeWidget->topLevelItem(0);
-    for (int i = Settings::NavigateUp; i <= Settings::NavigateRight; ++i)
-    {
+    for (int i = Settings::NavigateUp; i <= Settings::NavigateRight; ++i) {
         QTreeWidgetItem* item = navigate->child(i);
         item->setText(Shortcut, shortcuts.value(i));
     }
 
     QTreeWidgetItem* unread = ui.treeWidget->topLevelItem(1);
-    for (int i = Settings::NextUnreadUp; i <= Settings::NextUnreadRight; ++i)
-    {
+    for (int i = Settings::NextUnreadUp; i <= Settings::NextUnreadRight; ++i) {
         QTreeWidgetItem* item = unread->child(i - Settings::NextUnreadUp);
         item->setText(Shortcut, shortcuts.value(i));
     }

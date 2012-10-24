@@ -41,13 +41,13 @@ class AbstractSessionItem : public QObject, public MessageReceiver
     Q_PROPERTY(QObject* messages READ messages CONSTANT)
 
 public:
-    explicit AbstractSessionItem(QObject *parent = 0);
+    explicit AbstractSessionItem(QObject* parent = 0);
     virtual ~AbstractSessionItem();
 
     Session* session() const;
 
     QString receiver() const;
-    void setReceiver(const QString &receiver);
+    void setReceiver(const QString& receiver);
 
     QString title() const;
     QString subtitle() const;

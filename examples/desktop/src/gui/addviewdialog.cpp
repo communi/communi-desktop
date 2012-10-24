@@ -82,13 +82,10 @@ void AddViewDialog::updateUi()
 {
     bool valid = false;
     bool channel = !view().isEmpty() && d.session->channelTypes().contains(view().at(0));
-    if (channel)
-    {
+    if (channel) {
         valid = view().length() > 1;
         d.viewLabel->setText(tr("Join channel:"));
-    }
-    else
-    {
+    } else {
         valid = !view().isEmpty();
         d.viewLabel->setText(tr("Open query:"));
     }

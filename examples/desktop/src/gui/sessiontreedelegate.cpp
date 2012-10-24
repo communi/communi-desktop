@@ -28,11 +28,9 @@ SessionTreeDelegate::SessionTreeDelegate(QObject* parent) : QStyledItemDelegate(
 QSize SessionTreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     QSize size = QStyledItemDelegate::sizeHint(option, index);
-    if (!index.parent().isValid())
-    {
+    if (!index.parent().isValid()) {
         static int height = 0;
-        if (!height)
-        {
+        if (!height) {
             QLineEdit lineEdit;
             lineEdit.setStyleSheet("QLineEdit { border: 1px solid transparent; }");
             height = lineEdit.sizeHint().height();
@@ -44,8 +42,7 @@ QSize SessionTreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QM
 
 void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    if (!index.parent().isValid())
-    {
+    if (!index.parent().isValid()) {
         const bool selected = option.state & QStyle::State_Selected;
         const_cast<QStyleOptionViewItem&>(option).state &= ~QStyle::State_Selected;
 

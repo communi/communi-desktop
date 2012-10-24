@@ -37,8 +37,7 @@ protected slots:
     void find(const QString& text, bool forward = false, bool backward = false);
 
 private:
-    struct Private
-    {
+    struct Private {
         QTextEdit* textEdit;
     } d;
 };

@@ -94,8 +94,7 @@ protected:
     QString formatHtml(const QString& message) const;
 
 private:
-    mutable struct Private
-    {
+    mutable struct Private {
         bool highlight;
         bool timeStamp;
         bool stripNicks;

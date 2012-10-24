@@ -37,8 +37,7 @@ private slots:
     void updateUi();
 
 private:
-    struct Private
-    {
+    struct Private {
         Session* session;
         QLabel* viewLabel;
         QLabel* passLabel;

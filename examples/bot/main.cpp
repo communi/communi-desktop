@@ -16,7 +16,7 @@
 #include <QSettings>
 #include "ircbot.h"
 
-int main (int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     QCoreApplication app(argc, argv);
     IrcBot bot;

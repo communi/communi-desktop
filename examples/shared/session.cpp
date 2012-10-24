@@ -24,12 +24,12 @@
 
 QNetworkSession* Session::s_network = 0;
 
-Session::Session(QObject *parent) : IrcSession(parent),
+Session::Session(QObject* parent) : IrcSession(parent),
     m_currentLag(-1), m_maxLag(120000), m_quit(false)
 {
     connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(this, SIGNAL(password(QString*)), this, SLOT(onPassword(QString*)));
-    connect(this, SIGNAL(capabilities(QStringList,QStringList*)), this, SLOT(onCapabilities(QStringList,QStringList*)));
+    connect(this, SIGNAL(capabilities(QStringList, QStringList*)), this, SLOT(onCapabilities(QStringList, QStringList*)));
     connect(this, SIGNAL(messageReceived(IrcMessage*)), SLOT(handleMessage(IrcMessage*)));
 
     setAutoReconnectDelay(15);
@@ -46,8 +46,7 @@ QString Session::name() const
 
 void Session::setName(const QString& name)
 {
-    if (m_name != name)
-    {
+    if (m_name != name) {
         m_name = name;
         emit nameChanged(name);
     }
@@ -76,9 +75,9 @@ ChannelInfos Session::channels() const
 void Session::addChannel(const QString& channel)
 {
     const QString lower = channel.toLower();
-    foreach (const ChannelInfo& info, m_channels)
-        if (info.channel.toLower() == lower)
-            return;
+    foreach(const ChannelInfo & info, m_channels)
+    if (info.channel.toLower() == lower)
+        return;
 
     ChannelInfo info;
     info.channel = channel;
@@ -92,8 +91,7 @@ void Session::setChannelKey(const QString& channel, const QString& key)
     for (int i = 0; idx == -1 && i < m_channels.count(); ++i)
         if (m_channels.at(i).channel.toLower() == lower)
             idx = i;
-    if (idx != -1)
-    {
+    if (idx != -1) {
         ChannelInfo info = m_channels.at(idx);
         info.key = key;
         m_channels.replace(idx, info);
@@ -180,15 +178,12 @@ void Session::setSecure(bool secure)
     Q_UNUSED(secure)
 #else
     QSslSocket* sslSocket = qobject_cast<QSslSocket*>(socket());
-    if (secure && !sslSocket)
-    {
+    if (secure && !sslSocket) {
         sslSocket = new QSslSocket(this);
         sslSocket->setPeerVerifyMode(QSslSocket::VerifyNone);
         sslSocket->ignoreSslErrors();
         setSocket(sslSocket);
-    }
-    else if (!secure && sslSocket)
-    {
+    } else if (!secure && sslSocket) {
         setSocket(new QTcpSocket(this));
     }
 #endif // QT_NO_OPENSSL
@@ -275,8 +270,7 @@ bool Session::hasQuit() const
 bool Session::ensureNetwork()
 {
     QNetworkConfigurationManager manager;
-    if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired)
-    {
+    if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired) {
         if (!s_network)
             s_network = new QNetworkSession(manager.defaultConfiguration(), qApp);
         s_network->open();
@@ -287,8 +281,7 @@ bool Session::ensureNetwork()
 
 bool Session::sendUiCommand(IrcCommand* command)
 {
-    if (command->type() == IrcCommand::Join)
-    {
+    if (command->type() == IrcCommand::Join) {
         QString key = command->parameters().value(1);
         if (!key.isEmpty())
             setChannelKey(command->parameters().value(0), key);
@@ -313,7 +306,7 @@ void Session::quit(const QString& reason)
     QString message = reason;
     if (message.isEmpty())
         message = tr("%1 %2").arg(QApplication::applicationName())
-                             .arg(QApplication::applicationVersion());
+                  .arg(QApplication::applicationVersion());
 
     if (isConnected())
         sendCommand(IrcCommand::createQuit(message));
@@ -324,22 +317,18 @@ void Session::quit(const QString& reason)
 
 void Session::destructLater()
 {
-    if (isConnected())
-    {
+    if (isConnected()) {
         connect(this, SIGNAL(disconnected()), SLOT(deleteLater()));
         connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), SLOT(deleteLater()));
         QTimer::singleShot(1000, this, SLOT(deleteLater()));
-    }
-    else
-    {
+    } else {
         deleteLater();
     }
 }
 
 void Session::onConnected()
 {
-    foreach (const ChannelInfo& channel, m_channels)
-    {
+    foreach(const ChannelInfo & channel, m_channels) {
         if (!channel.channel.isEmpty())
             sendCommand(IrcCommand::createJoin(channel.channel, channel.key));
     }
@@ -362,45 +351,32 @@ void Session::handleMessage(IrcMessage* message)
     // 20s delay since the last message was received
     setPingInterval(20);
 
-    if (message->type() == IrcMessage::Join)
-    {
+    if (message->type() == IrcMessage::Join) {
         if (message->isOwn())
             addChannel(static_cast<IrcJoinMessage*>(message)->channel());
-    }
-    else if (message->type() == IrcMessage::Part)
-    {
+    } else if (message->type() == IrcMessage::Part) {
         if (message->isOwn())
             removeChannel(static_cast<IrcPartMessage*>(message)->channel());
-    }
-    else if (message->type() == IrcMessage::Pong)
-    {
-        if (message->parameters().contains("_C_o_m_m_u_n_i_"))
-        {
+    } else if (message->type() == IrcMessage::Pong) {
+        if (message->parameters().contains("_C_o_m_m_u_n_i_")) {
             // slow down to 60s intervals
             setPingInterval(60);
 
             updateLag(static_cast<int>(m_lagTimer.elapsed()));
             m_lagTimer.invalidate();
         }
-    }
-    else if (message->type() == IrcMessage::Numeric)
-    {
+    } else if (message->type() == IrcMessage::Numeric) {
         int code = static_cast<IrcNumericMessage*>(message)->code();
-        if (code == Irc::RPL_ISUPPORT)
-        {
-            foreach (const QString& param, message->parameters().mid(1))
-            {
+        if (code == Irc::RPL_ISUPPORT) {
+            foreach(const QString & param, message->parameters().mid(1)) {
                 QStringList keyValue = param.split("=", QString::SkipEmptyParts);
                 m_info.insert(keyValue.value(0), keyValue.value(1));
             }
             if (m_info.contains("NETWORK"))
                 emit networkChanged(network());
             emit serverInfoReceived();
-        }
-        else if (code == Irc::ERR_NICKNAMEINUSE)
-        {
-            if (m_alternateNicks.isEmpty())
-            {
+        } else if (code == Irc::ERR_NICKNAMEINUSE) {
+            if (m_alternateNicks.isEmpty()) {
                 QString currentNick = nickName();
                 m_alternateNicks << (currentNick + "_")
                                  <<  currentNick
@@ -414,8 +390,7 @@ void Session::handleMessage(IrcMessage* message)
 
 void Session::pingServer()
 {
-    if (m_lagTimer.isValid())
-    {
+    if (m_lagTimer.isValid()) {
         // still lagging (no response since last PING)
         updateLag(static_cast<int>(m_lagTimer.elapsed()));
 
@@ -423,9 +398,7 @@ void Session::pingServer()
         int interval = pingInterval();
         if (interval >= 6)
             setPingInterval(interval / 3);
-    }
-    else
-    {
+    } else {
         // (re-)PING!
         m_lagTimer.start();
         sendData("PING _C_o_m_m_u_n_i_");
@@ -434,8 +407,7 @@ void Session::pingServer()
 
 void Session::updateLag(int lag)
 {
-    if (m_currentLag != lag)
-    {
+    if (m_currentLag != lag) {
         m_currentLag = lag;
         emit currentLagChanged(lag);
 
@@ -451,14 +423,11 @@ void Session::updateLag(int lag)
 
 void Session::togglePingTimer(bool enabled)
 {
-    if (enabled)
-    {
+    if (enabled) {
         m_lagTimer.invalidate();
         m_pingTimer.start();
         pingServer();
-    }
-    else
-    {
+    } else {
         m_pingTimer.stop();
         updateLag(-1);
     }

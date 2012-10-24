@@ -90,8 +90,7 @@ private:
     QTreeWidgetItem* nextItem(QTreeWidgetItem* from) const;
     QTreeWidgetItem* previousItem(QTreeWidgetItem* from) const;
 
-    struct SessionTreeWidgetData
-    {
+    struct SessionTreeWidgetData {
         QColor alertColor;
         Settings settings;
         QShortcut* prevShortcut;

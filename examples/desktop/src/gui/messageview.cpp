@@ -39,7 +39,7 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     d.topicLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
     d.helpLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
 
-    connect(d.splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(onSplitterMoved()));
+    connect(d.splitter, SIGNAL(splitterMoved(int, int)), this, SLOT(onSplitterMoved()));
 
     setFocusProxy(d.lineEditor);
     d.textBrowser->setBuddy(d.lineEditor);
@@ -54,25 +54,23 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     d.formatter.setTimeStampFormat("class='timestamp'");
 
     d.session = session;
-    connect(&d.parser, SIGNAL(customCommand(QString,QStringList)), this, SLOT(onCustomCommand(QString,QStringList)));
+    connect(&d.parser, SIGNAL(customCommand(QString, QStringList)), this, SLOT(onCustomCommand(QString, QStringList)));
 
     d.topicLabel->setVisible(type == ChannelView);
     d.listView->setVisible(type == ChannelView);
-    if (type == ChannelView)
-    {
+    if (type == ChannelView) {
         d.listView->setSession(session);
         connect(d.listView, SIGNAL(queried(QString)), this, SIGNAL(queried(QString)));
         connect(d.listView, SIGNAL(doubleClicked(QString)), this, SIGNAL(queried(QString)));
         connect(d.listView, SIGNAL(commandRequested(IrcCommand*)), d.session, SLOT(sendCommand(IrcCommand*)));
     }
 
-    if (!command_model)
-    {
+    if (!command_model) {
         CommandParser::addCustomCommand("QUERY", "<user>");
 
         QStringList prefixedCommands;
-        foreach (const QString& command, CommandParser::availableCommands())
-            prefixedCommands += "/" + command;
+        foreach(const QString & command, CommandParser::availableCommands())
+        prefixedCommands += "/" + command;
 
         command_model = new QStringListModel(qApp);
         command_model->setStringList(prefixedCommands);
@@ -133,13 +131,10 @@ void MessageView::restoreSplitter(const QByteArray& state)
 void MessageView::showHelp(const QString& text, bool error)
 {
     QString syntax;
-    if (text == "/")
-    {
+    if (text == "/") {
         QStringList commands = CommandParser::availableCommands();
         syntax = commands.join(" ");
-    }
-    else if (text.startsWith('/'))
-    {
+    } else if (text.startsWith('/')) {
         QStringList words = text.mid(1).split(' ');
         QString command = words.value(0);
         QStringList suggestions = CommandParser::suggestedCommands(command, words.mid(1));
@@ -162,8 +157,7 @@ void MessageView::showHelp(const QString& text, bool error)
 
 void MessageView::appendMessage(const QString& message)
 {
-    if (!message.isEmpty())
-    {
+    if (!message.isEmpty()) {
         // workaround the link activation merge char format bug
         QString copy = message;
         if (copy.endsWith("</a>"))
@@ -204,19 +198,15 @@ void MessageView::onSplitterMoved()
 void MessageView::onSend(const QString& text)
 {
     IrcCommand* cmd = d.parser.parseCommand(receiver(), text);
-    if (cmd)
-    {
+    if (cmd) {
         d.session->sendCommand(cmd);
 
-        if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction)
-        {
+        if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction) {
             IrcMessage* msg = IrcMessage::fromCommand(d.session->nickName(), cmd, d.session);
             receiveMessage(msg);
             delete msg;
         }
-    }
-    else if (d.parser.hasError())
-    {
+    } else if (d.parser.hasError()) {
         showHelp(text, true);
     }
 }
@@ -248,12 +238,12 @@ void MessageView::applySettings(const Settings& settings)
             ".timestamp { color: %6; font-size: small }"
             "a { color: %7 }"
         ).arg(settings.colors.value(Settings::Highlight))
-         .arg(settings.colors.value(Settings::Message))
-         .arg(settings.colors.value(Settings::Notice))
-         .arg(settings.colors.value(Settings::Action))
-         .arg(settings.colors.value(Settings::Event))
-         .arg(settings.colors.value(Settings::TimeStamp))
-         .arg(settings.colors.value(Settings::Link)));
+        .arg(settings.colors.value(Settings::Message))
+        .arg(settings.colors.value(Settings::Notice))
+        .arg(settings.colors.value(Settings::Action))
+        .arg(settings.colors.value(Settings::Event))
+        .arg(settings.colors.value(Settings::TimeStamp))
+        .arg(settings.colors.value(Settings::Link)));
     d.settings = settings;
 }
 
@@ -266,81 +256,78 @@ void MessageView::receiveMessage(IrcMessage* message)
     bool hilite = false;
     bool matches = false;
 
-    switch (message->type())
-    {
-    case IrcMessage::Join:
-        append = d.settings.messages.value(Settings::Joins);
-        hilite = d.settings.highlights.value(Settings::Joins);
-        break;
-    case IrcMessage::Kick:
-        append = d.settings.messages.value(Settings::Kicks);
-        hilite = d.settings.highlights.value(Settings::Kicks);
-        break;
-    case IrcMessage::Mode:
-        append = d.settings.messages.value(Settings::Modes);
-        hilite = d.settings.highlights.value(Settings::Modes);
-        break;
-    case IrcMessage::Nick:
-        append = d.settings.messages.value(Settings::Nicks);
-        hilite = d.settings.highlights.value(Settings::Nicks);
-        break;
-    case IrcMessage::Notice:
-        matches = static_cast<IrcNoticeMessage*>(message)->message().contains(d.session->nickName());
-        hilite = true;
-        break;
-    case IrcMessage::Part:
-        append = d.settings.messages.value(Settings::Parts);
-        hilite = d.settings.highlights.value(Settings::Parts);
-        break;
-    case IrcMessage::Private:
-        matches = d.viewType != ChannelView || static_cast<IrcPrivateMessage*>(message)->message().contains(d.session->nickName());
-        hilite = true;
-        break;
-    case IrcMessage::Quit:
-        append = d.settings.messages.value(Settings::Quits);
-        hilite = d.settings.highlights.value(Settings::Quits);
-        break;
-    case IrcMessage::Topic:
-        append = d.settings.messages.value(Settings::Topics);
-        hilite = d.settings.highlights.value(Settings::Topics);
-        d.topicLabel->setText(IrcUtil::messageToHtml(static_cast<IrcTopicMessage*>(message)->topic()));
-        if (d.topicLabel->text().isEmpty())
-            d.topicLabel->setText(tr("-"));
-        break;
-    case IrcMessage::Unknown:
-        qWarning() << "unknown:" << message;
-        append = false;
-        break;
-    case IrcMessage::Invite:
-    case IrcMessage::Ping:
-    case IrcMessage::Pong:
-    case IrcMessage::Error:
-        break;
-    case IrcMessage::Numeric:
-        switch (static_cast<IrcNumericMessage*>(message)->code())
-        {
-            case Irc::RPL_NOTOPIC:
+    switch (message->type()) {
+        case IrcMessage::Join:
+            append = d.settings.messages.value(Settings::Joins);
+            hilite = d.settings.highlights.value(Settings::Joins);
+            break;
+        case IrcMessage::Kick:
+            append = d.settings.messages.value(Settings::Kicks);
+            hilite = d.settings.highlights.value(Settings::Kicks);
+            break;
+        case IrcMessage::Mode:
+            append = d.settings.messages.value(Settings::Modes);
+            hilite = d.settings.highlights.value(Settings::Modes);
+            break;
+        case IrcMessage::Nick:
+            append = d.settings.messages.value(Settings::Nicks);
+            hilite = d.settings.highlights.value(Settings::Nicks);
+            break;
+        case IrcMessage::Notice:
+            matches = static_cast<IrcNoticeMessage*>(message)->message().contains(d.session->nickName());
+            hilite = true;
+            break;
+        case IrcMessage::Part:
+            append = d.settings.messages.value(Settings::Parts);
+            hilite = d.settings.highlights.value(Settings::Parts);
+            break;
+        case IrcMessage::Private:
+            matches = d.viewType != ChannelView || static_cast<IrcPrivateMessage*>(message)->message().contains(d.session->nickName());
+            hilite = true;
+            break;
+        case IrcMessage::Quit:
+            append = d.settings.messages.value(Settings::Quits);
+            hilite = d.settings.highlights.value(Settings::Quits);
+            break;
+        case IrcMessage::Topic:
+            append = d.settings.messages.value(Settings::Topics);
+            hilite = d.settings.highlights.value(Settings::Topics);
+            d.topicLabel->setText(IrcUtil::messageToHtml(static_cast<IrcTopicMessage*>(message)->topic()));
+            if (d.topicLabel->text().isEmpty())
                 d.topicLabel->setText(tr("-"));
-                break;
-            case Irc::RPL_TOPIC:
-                d.topicLabel->setText(IrcUtil::messageToHtml(message->parameters().value(2)));
-                break;
-            case Irc::RPL_TOPICWHOTIME: {
-                QDateTime dateTime = QDateTime::fromTime_t(message->parameters().value(3).toInt());
-                d.topicLabel->setToolTip(tr("Set %1 by %2").arg(dateTime.toString(), message->parameters().value(2)));
-                break;
+            break;
+        case IrcMessage::Unknown:
+            qWarning() << "unknown:" << message;
+            append = false;
+            break;
+        case IrcMessage::Invite:
+        case IrcMessage::Ping:
+        case IrcMessage::Pong:
+        case IrcMessage::Error:
+            break;
+        case IrcMessage::Numeric:
+            switch (static_cast<IrcNumericMessage*>(message)->code()) {
+                case Irc::RPL_NOTOPIC:
+                    d.topicLabel->setText(tr("-"));
+                    break;
+                case Irc::RPL_TOPIC:
+                    d.topicLabel->setText(IrcUtil::messageToHtml(message->parameters().value(2)));
+                    break;
+                case Irc::RPL_TOPICWHOTIME: {
+                    QDateTime dateTime = QDateTime::fromTime_t(message->parameters().value(3).toInt());
+                    d.topicLabel->setToolTip(tr("Set %1 by %2").arg(dateTime.toString(), message->parameters().value(2)));
+                    break;
+                }
+                default:
+                    break;
             }
-            default:
-                break;
-        }
-        break;
-    default:
-        break;
+            break;
+        default:
+            break;
     }
 
     QString formatted = d.formatter.formatMessage(message, d.listView->userModel());
-    if (append && formatted.length())
-    {
+    if (append && formatted.length()) {
         if (matches)
             emit alerted(message);
         else if (hilite) // TODO: || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ServerView))

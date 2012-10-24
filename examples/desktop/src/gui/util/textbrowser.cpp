@@ -49,8 +49,7 @@ void TextBrowser::keyPressEvent(QKeyEvent* event)
     // - Ctrl+C goes to the browser
     // - Ctrl+V goes to the buddy
     // - Shift+7 ("/") goes to the buddy
-    switch (event->key())
-    {
+    switch (event->key()) {
         case Qt::Key_Shift:
         case Qt::Key_Control:
         case Qt::Key_Meta:
@@ -58,8 +57,7 @@ void TextBrowser::keyPressEvent(QKeyEvent* event)
         case Qt::Key_AltGr:
             break;
         default:
-            if (!event->matches(QKeySequence::Copy))
-            {
+            if (!event->matches(QKeySequence::Copy)) {
                 QApplication::sendEvent(bud, event);
                 bud->setFocus();
                 return;
@@ -107,8 +105,7 @@ void TextBrowser::paintEvent(QPaintEvent* event)
     if (ub > 0)
         block = document()->findBlockByNumber(ub);
 
-    if (block.isValid())
-    {
+    if (block.isValid()) {
         painter.save();
         painter.setPen(Qt::DashLine);
         painter.translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());

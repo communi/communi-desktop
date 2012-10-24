@@ -37,8 +37,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     tabWidget = new MultiSessionTabWidget(this);
 
     connect(tabWidget, SIGNAL(newTabRequested()), this, SLOT(connectTo()), Qt::QueuedConnection);
-    connect(tabWidget, SIGNAL(alerted(MessageView*,IrcMessage*)), this, SLOT(alert(MessageView*,IrcMessage*)));
-    connect(tabWidget, SIGNAL(highlighted(MessageView*,IrcMessage*)), this, SLOT(highlight(MessageView*,IrcMessage*)));
+    connect(tabWidget, SIGNAL(alerted(MessageView*, IrcMessage*)), this, SLOT(alert(MessageView*, IrcMessage*)));
+    connect(tabWidget, SIGNAL(highlighted(MessageView*, IrcMessage*)), this, SLOT(highlight(MessageView*, IrcMessage*)));
     connect(tabWidget, SIGNAL(splitterChanged(QByteArray)), this, SLOT(splitterChanged(QByteArray)));
     connect(tabWidget, SIGNAL(sessionAdded(Session*)), this, SLOT(sessionAdded(Session*)));
     connect(tabWidget, SIGNAL(sessionRemoved(Session*)), this, SLOT(sessionRemoved(Session*)));
@@ -52,13 +52,12 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     splitter->addWidget(tabWidget);
     setCentralWidget(splitter);
 
-    if (QSystemTrayIcon::isSystemTrayAvailable())
-    {
+    if (QSystemTrayIcon::isSystemTrayAvailable()) {
         trayIcon = new TrayIcon(this);
         trayIcon->setIcon(QApplication::windowIcon());
         trayIcon->setVisible(true);
         connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-            this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+                this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
     }
 
     if (QtDockTile::isAvailable())
@@ -149,7 +148,7 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     SessionTabWidget* tab = tabWidget->sessionWidget(session);
     connect(tab, SIGNAL(viewAdded(MessageView*)), this, SLOT(viewAdded(MessageView*)));
     connect(tab, SIGNAL(viewRemoved(MessageView*)), this, SLOT(viewRemoved(MessageView*)));
-    connect(tab, SIGNAL(viewRenamed(QString,QString)), this, SLOT(viewRenamed(QString,QString)));
+    connect(tab, SIGNAL(viewRenamed(QString, QString)), this, SLOT(viewRenamed(QString, QString)));
     connect(tab, SIGNAL(viewActivated(MessageView*)), this, SLOT(viewActivated(MessageView*)));
     connect(tab, SIGNAL(editSession(Session*)), this, SLOT(editSession(Session*)));
 
@@ -167,8 +166,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
     ConnectionInfos connections;
     QList<Session*> sessions = tabWidget->sessions();
-    foreach (Session* session, sessions)
-    {
+    foreach(Session * session, sessions) {
         connections += session->toConnection();
         session->quit();
     }
@@ -180,10 +178,8 @@ void MainWindow::closeEvent(QCloseEvent* event)
 void MainWindow::changeEvent(QEvent* event)
 {
     QMainWindow::changeEvent(event);
-    if (event->type() == QEvent::ActivationChange)
-    {
-        if (isActiveWindow())
-        {
+    if (event->type() == QEvent::ActivationChange) {
+        if (isActiveWindow()) {
             if (trayIcon)
                 trayIcon->unalert();
             if (dockTile)
@@ -197,8 +193,8 @@ void MainWindow::initialize()
     QSettings settings;
     ConnectionInfos connections = settings.value("connections").value<ConnectionInfos>();
 
-    foreach (const ConnectionInfo& connection, connections)
-        connectToImpl(connection);
+    foreach(const ConnectionInfo & connection, connections)
+    connectToImpl(connection);
 
     if (connections.isEmpty())
         connectTo(ConnectionInfo());
@@ -215,14 +211,11 @@ void MainWindow::editSession(Session* session)
 void MainWindow::applySettings(const Settings& settings)
 {
     tabWidget->applySettings(settings);
-    if (settings.layout == "tree")
-    {
+    if (settings.layout == "tree") {
         if (!treeWidget)
             createTree();
         treeWidget->applySettings(settings);
-    }
-    else if (treeWidget)
-    {
+    } else if (treeWidget) {
         treeWidget->parentWidget()->deleteLater();
         treeWidget = 0;
     }
@@ -234,8 +227,7 @@ void MainWindow::applySettings(const Settings& settings)
 
 void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 {
-    switch (reason)
-    {
+    switch (reason) {
         case QSystemTrayIcon::DoubleClick:
             setVisible(!isVisible());
             break;
@@ -251,8 +243,7 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 void MainWindow::alert(MessageView* view, IrcMessage* message)
 {
     Q_UNUSED(message);
-    if (!isActiveWindow())
-    {
+    if (!isActiveWindow()) {
         QApplication::alert(this);
         if (trayIcon)
             trayIcon->alert();
@@ -260,8 +251,7 @@ void MainWindow::alert(MessageView* view, IrcMessage* message)
             dockTile->setBadge(dockTile->badge() + 1);
     }
 
-    if (treeWidget)
-    {
+    if (treeWidget) {
         SessionTreeItem* item = treeWidget->sessionItem(view->session());
         if (view->viewType() != MessageView::ServerView)
             item = item->findChild(view->receiver());
@@ -275,8 +265,7 @@ void MainWindow::alert(MessageView* view, IrcMessage* message)
 void MainWindow::highlight(MessageView* view, IrcMessage* message)
 {
     Q_UNUSED(message);
-    if (treeWidget)
-    {
+    if (treeWidget) {
         SessionTreeItem* item = treeWidget->sessionItem(view->session());
         if (view->viewType() != MessageView::ServerView)
             item = item->findChild(view->receiver());
@@ -291,11 +280,9 @@ void MainWindow::viewAdded(MessageView* view)
     if (settings.contains("list"))
         view->restoreSplitter(settings.value("list").toByteArray());
 
-    if (treeWidget)
-    {
+    if (treeWidget) {
         SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(sender());
-        if (tab)
-        {
+        if (tab) {
             Session* session = tab->session();
             treeWidget->addView(session, view->receiver());
             treeWidget->expandItem(treeWidget->sessionItem(session));
@@ -305,8 +292,7 @@ void MainWindow::viewAdded(MessageView* view)
 
 void MainWindow::viewRemoved(MessageView* view)
 {
-    if (treeWidget)
-    {
+    if (treeWidget) {
         SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(sender());
         if (tab)
             treeWidget->removeView(tab->session(), view->receiver());
@@ -315,18 +301,16 @@ void MainWindow::viewRemoved(MessageView* view)
 
 void MainWindow::viewRenamed(const QString& from, const QString& to)
 {
-    if (treeWidget)
-    {
+    if (treeWidget) {
         SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(sender());
         if (tab)
             treeWidget->renameView(tab->session(), from, to);
     }
 }
 
-void MainWindow::viewActivated(MessageView *view)
+void MainWindow::viewActivated(MessageView* view)
 {
-    if (treeWidget)
-    {
+    if (treeWidget) {
         QString receiver;
         if (view->viewType() != MessageView::ServerView)
             receiver = view->receiver();
@@ -337,8 +321,7 @@ void MainWindow::viewActivated(MessageView *view)
 void MainWindow::currentTreeItemChanged(Session* session, const QString& view)
 {
     SessionTabWidget* tab = tabWidget->sessionWidget(session);
-    if (tab)
-    {
+    if (tab) {
         tabWidget->setCurrentWidget(tab);
         if (view.isEmpty())
             tab->setCurrentIndex(0);
@@ -367,8 +350,7 @@ void MainWindow::splitterChanged(const QByteArray& state)
 
 void MainWindow::sessionAdded(Session* session)
 {
-    if (treeWidget)
-    {
+    if (treeWidget) {
         treeWidget->addSession(session);
         treeWidget->parentWidget()->show();
     }
@@ -376,8 +358,7 @@ void MainWindow::sessionAdded(Session* session)
 
 void MainWindow::sessionRemoved(Session* session)
 {
-    if (treeWidget)
-    {
+    if (treeWidget) {
         treeWidget->removeSession(session);
         treeWidget->parentWidget()->setVisible(!tabWidget->sessions().isEmpty());
     }
@@ -388,13 +369,10 @@ void MainWindow::updateSession(Session* session)
     if (!session)
         session = qobject_cast<Session*>(sender());
     SessionTabWidget* tab = tabWidget->sessionWidget(session);
-    if (tab)
-    {
-        if (!tab->session()->isConnected())
-        {
+    if (tab) {
+        if (!tab->session()->isConnected()) {
             QObject* overlay = tab->property("_communi_overlay_").value<QObject*>();
-            if (!overlay)
-            {
+            if (!overlay) {
                 overlay = new Overlay(tab);
                 tab->setProperty("_communi_overlay_", QVariant::fromValue(overlay));
                 connect(overlay, SIGNAL(refresh()), tab->session(), SLOT(reconnect()));
@@ -402,9 +380,7 @@ void MainWindow::updateSession(Session* session)
             overlay->setProperty("visible", true);
             overlay->setProperty("busy", tab->session()->isActive());
             overlay->setProperty("refresh", !tab->session()->isActive());
-        }
-        else
-        {
+        } else {
             delete tab->property("_communi_overlay_").value<QObject*>();
             tab->setProperty("_communi_overlay_", QVariant());
         }
@@ -428,15 +404,13 @@ void MainWindow::createTree()
     treeWidget = new SessionTreeWidget(container);
     treeWidget->setFocusPolicy(Qt::NoFocus);
 
-    connect(treeWidget, SIGNAL(currentViewChanged(Session*,QString)), this, SLOT(currentTreeItemChanged(Session*,QString)));
-    connect(treeWidget, SIGNAL(menuRequested(SessionTreeItem*,QPoint)), this, SLOT(menuRequested(SessionTreeItem*,QPoint)));
+    connect(treeWidget, SIGNAL(currentViewChanged(Session*, QString)), this, SLOT(currentTreeItemChanged(Session*, QString)));
+    connect(treeWidget, SIGNAL(menuRequested(SessionTreeItem*, QPoint)), this, SLOT(menuRequested(SessionTreeItem*, QPoint)));
 
-    foreach (Session* session, tabWidget->sessions())
-    {
+    foreach(Session * session, tabWidget->sessions()) {
         treeWidget->addSession(session);
         SessionTabWidget* tab = tabWidget->sessionWidget(session);
-        for (int i = 1; i < tab->count() - 1; ++i)
-        {
+        for (int i = 1; i < tab->count() - 1; ++i) {
             MessageView* view = qobject_cast<MessageView*>(tab->widget(i));
             if (view)
                 treeWidget->addView(session, view->receiver());

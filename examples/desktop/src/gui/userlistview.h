@@ -65,8 +65,7 @@ private slots:
 private:
     QMenu* createMenu(const QModelIndex& index, QWidget* parent = 0);
 
-    struct UserListViewData
-    {
+    struct UserListViewData {
         UserModel* userModel;
     } d;
 };

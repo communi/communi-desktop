@@ -14,8 +14,7 @@
 
 #include "messageswizardpage.h"
 
-enum Columns
-{
+enum Columns {
     Name,
     Message,
     Highlight
@@ -41,8 +40,7 @@ QHash<int, bool> MessagesWizardPage::messages() const
 void MessagesWizardPage::setMessages(const QHash<int, bool>& messages)
 {
     QHashIterator<int, bool> it(messages);
-    while (it.hasNext())
-    {
+    while (it.hasNext()) {
         it.next();
         ui.treeWidget->topLevelItem(it.key())->setCheckState(Message, it.value() ? Qt::Checked : Qt::Unchecked);
     }
@@ -52,15 +50,14 @@ QHash<int, bool> MessagesWizardPage::highlights() const
 {
     QHash<int, bool> highlights;
     for (int i = Settings::Joins; i <= Settings::Topics; ++i)
-         highlights[i] = ui.treeWidget->topLevelItem(i)->checkState(Highlight) == Qt::Checked;
+        highlights[i] = ui.treeWidget->topLevelItem(i)->checkState(Highlight) == Qt::Checked;
     return highlights;
 }
 
 void MessagesWizardPage::setHighlights(const QHash<int, bool>& highlights)
 {
     QHashIterator<int, bool> it(highlights);
-    while (it.hasNext())
-    {
+    while (it.hasNext()) {
         it.next();
         ui.treeWidget->topLevelItem(it.key())->setCheckState(Highlight, it.value() ? Qt::Checked : Qt::Unchecked);
     }

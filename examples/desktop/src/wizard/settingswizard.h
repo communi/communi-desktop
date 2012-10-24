@@ -25,8 +25,7 @@ class SettingsWizard : public QWizard
 public:
     SettingsWizard(QWidget* parent = 0);
 
-    enum Page
-    {
+    enum Page {
         GeneralPage,
         ShortcutsPage,
         MessagesPage,

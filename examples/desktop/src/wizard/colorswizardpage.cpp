@@ -16,75 +16,67 @@
 #include <QStyledItemDelegate>
 #include <QComboBox>
 
-enum Columns
-{
+enum Columns {
     Message,
     Color
 };
 
 // SVG color keyword names provided by the World Wide Web Consortium
 static const QStringList COLORS = QStringList()
-    << "aliceblue" << "antiquewhite" << "aqua" << "aquamarine" << "azure" << "beige" << "bisque"
-    << "black" << "blanchedalmond" << "blue" << "blueviolet" << "brown" << "burlywood" << "cadetblue"
-    << "chartreuse" << "chocolate" << "coral" << "cornflowerblue" << "cornsilk" << "crimson" << "cyan"
-    << "darkblue" << "darkcyan" << "darkgoldenrod" << "darkgray" << "darkgreen" << "darkgrey"
-    << "darkkhaki" << "darkmagenta" << "darkolivegreen" << "darkorange" << "darkorchid" << "darkred"
-    << "darksalmon" << "darkseagreen" << "darkslateblue" << "darkslategray" << "darkslategrey"
-    << "darkturquoise" << "darkviolet" << "deeppink" << "deepskyblue" << "dimgray" << "dimgrey"
-    << "dodgerblue" << "firebrick" << "floralwhite" << "forestgreen" << "fuchsia" << "gainsboro"
-    << "ghostwhite" << "gold" << "goldenrod" << "gray" << "grey" << "green" << "greenyellow"
-    << "honeydew" << "hotpink" << "indianred" << "indigo" << "ivory" << "khaki" << "lavender"
-    << "lavenderblush" << "lawngreen" << "lemonchiffon" << "lightblue" << "lightcoral" << "lightcyan"
-    << "lightgoldenrodyellow" << "lightgray" << "lightgreen" << "lightgrey" << "lightpink"
-    << "lightsalmon" << "lightseagreen" << "lightskyblue" << "lightslategray" << "lightslategrey"
-    << "lightsteelblue" << "lightyellow" << "lime" << "limegreen" << "linen" << "magenta"
-    << "maroon" << "mediumaquamarine" << "mediumblue" << "mediumorchid" << "mediumpurple"
-    << "mediumseagreen" << "mediumslateblue" << "mediumspringgreen" << "mediumturquoise"
-    << "mediumvioletred" << "midnightblue" << "mintcream" << "mistyrose" << "moccasin"
-    << "navajowhite" << "navy" << "oldlace" << "olive" << "olivedrab" << "orange" << "orangered"
-    << "orchid" << "palegoldenrod" << "palegreen" << "paleturquoise" << "palevioletred"
-    << "papayawhip" << "peachpuff" << "peru" << "pink" << "plum" << "powderblue" << "purple" << "red"
-    << "rosybrown" << "royalblue" << "saddlebrown" << "salmon" << "sandybrown" << "seagreen"
-    << "seashell" << "sienna" << "silver" << "skyblue" << "slateblue" << "slategray" << "slategrey"
-    << "snow" << "springgreen" << "steelblue" << "tan" << "teal" << "thistle" << "tomato"
-    << "turquoise" << "violet" << "wheat" << "white" << "whitesmoke" << "yellow" << "yellowgreen";
+                                  << "aliceblue" << "antiquewhite" << "aqua" << "aquamarine" << "azure" << "beige" << "bisque"
+                                  << "black" << "blanchedalmond" << "blue" << "blueviolet" << "brown" << "burlywood" << "cadetblue"
+                                  << "chartreuse" << "chocolate" << "coral" << "cornflowerblue" << "cornsilk" << "crimson" << "cyan"
+                                  << "darkblue" << "darkcyan" << "darkgoldenrod" << "darkgray" << "darkgreen" << "darkgrey"
+                                  << "darkkhaki" << "darkmagenta" << "darkolivegreen" << "darkorange" << "darkorchid" << "darkred"
+                                  << "darksalmon" << "darkseagreen" << "darkslateblue" << "darkslategray" << "darkslategrey"
+                                  << "darkturquoise" << "darkviolet" << "deeppink" << "deepskyblue" << "dimgray" << "dimgrey"
+                                  << "dodgerblue" << "firebrick" << "floralwhite" << "forestgreen" << "fuchsia" << "gainsboro"
+                                  << "ghostwhite" << "gold" << "goldenrod" << "gray" << "grey" << "green" << "greenyellow"
+                                  << "honeydew" << "hotpink" << "indianred" << "indigo" << "ivory" << "khaki" << "lavender"
+                                  << "lavenderblush" << "lawngreen" << "lemonchiffon" << "lightblue" << "lightcoral" << "lightcyan"
+                                  << "lightgoldenrodyellow" << "lightgray" << "lightgreen" << "lightgrey" << "lightpink"
+                                  << "lightsalmon" << "lightseagreen" << "lightskyblue" << "lightslategray" << "lightslategrey"
+                                  << "lightsteelblue" << "lightyellow" << "lime" << "limegreen" << "linen" << "magenta"
+                                  << "maroon" << "mediumaquamarine" << "mediumblue" << "mediumorchid" << "mediumpurple"
+                                  << "mediumseagreen" << "mediumslateblue" << "mediumspringgreen" << "mediumturquoise"
+                                  << "mediumvioletred" << "midnightblue" << "mintcream" << "mistyrose" << "moccasin"
+                                  << "navajowhite" << "navy" << "oldlace" << "olive" << "olivedrab" << "orange" << "orangered"
+                                  << "orchid" << "palegoldenrod" << "palegreen" << "paleturquoise" << "palevioletred"
+                                  << "papayawhip" << "peachpuff" << "peru" << "pink" << "plum" << "powderblue" << "purple" << "red"
+                                  << "rosybrown" << "royalblue" << "saddlebrown" << "salmon" << "sandybrown" << "seagreen"
+                                  << "seashell" << "sienna" << "silver" << "skyblue" << "slateblue" << "slategray" << "slategrey"
+                                  << "snow" << "springgreen" << "steelblue" << "tan" << "teal" << "thistle" << "tomato"
+                                  << "turquoise" << "violet" << "wheat" << "white" << "whitesmoke" << "yellow" << "yellowgreen";
 
 class ColorItemDelegate : public QStyledItemDelegate
 {
 public:
-    ColorItemDelegate(QObject* parent = 0) : QStyledItemDelegate(parent)
-    {
+    ColorItemDelegate(QObject* parent = 0) : QStyledItemDelegate(parent) {
     }
 
-    QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
-    {
+    QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const {
         Q_UNUSED(option);
-        if (index.column() == Color)
-        {
+        if (index.column() == Color) {
             QComboBox* comboBox = new QComboBox(parent);
             comboBox->addItems(COLORS);
             int i = 0;
-            foreach (const QString& color, COLORS)
-                comboBox->setItemData(i++, QColor(color), Qt::DecorationRole);
+            foreach(const QString & color, COLORS)
+            comboBox->setItemData(i++, QColor(color), Qt::DecorationRole);
             return comboBox;
         }
         return 0;
     }
 
-    void setEditorData(QWidget* editor, const QModelIndex& index) const
-    {
-        if (index.column() == Color)
-        {
+    void setEditorData(QWidget* editor, const QModelIndex& index) const {
+        if (index.column() == Color) {
             QComboBox* comboBox = static_cast<QComboBox*>(editor);
             int i = comboBox->findText(index.data().toString());
             comboBox->setCurrentIndex(i);
         }
     }
 
-    void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
-    {
-        if (index.column() == Color)
-        {
+    void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const {
+        if (index.column() == Color) {
             QComboBox* comboBox = static_cast<QComboBox*>(editor);
             model->setData(index, comboBox->currentText());
             model->setData(index, QColor(comboBox->currentText()), Qt::DecorationRole);
@@ -111,8 +103,7 @@ QHash<int, QString> ColorsWizardPage::colors() const
 void ColorsWizardPage::setColors(const QHash<int, QString>& colors)
 {
     QHashIterator<int, QString> it(colors);
-    while (it.hasNext())
-    {
+    while (it.hasNext()) {
         it.next();
         ui.treeWidget->topLevelItem(it.key())->setData(Color, Qt::DisplayRole, it.value());
         ui.treeWidget->topLevelItem(it.key())->setData(Color, Qt::DecorationRole, QColor(it.value()));

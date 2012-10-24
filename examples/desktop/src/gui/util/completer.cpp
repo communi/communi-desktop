@@ -32,8 +32,7 @@ HistoryLineEdit* Completer::lineEdit() const
 
 void Completer::setLineEdit(HistoryLineEdit* lineEdit)
 {
-    if (d.lineEdit != lineEdit)
-    {
+    if (d.lineEdit != lineEdit) {
         if (d.lineEdit)
             disconnect(d.lineEdit, SIGNAL(textEdited(QString)), this, SLOT(onTextEdited()));
 
@@ -80,13 +79,10 @@ void Completer::onTabPressed()
     QString word = d.lineEdit->selectedText();
 
     // choose model
-    if (word.startsWith('/'))
-    {
+    if (word.startsWith('/')) {
         if (model() != d.slashModel)
             setModel(d.slashModel);
-    }
-    else
-    {
+    } else {
         if (model() != d.defaultModel)
             setModel(d.defaultModel);
     }
@@ -101,13 +97,11 @@ void Completer::onTabPressed()
         d.lineEdit->setSelection(start, selected.length());
 
     // complete
-    if (!word.isEmpty())
-    {
+    if (!word.isEmpty()) {
         complete();
 
         int count = completionCount();
-        if (count > 0)
-        {
+        if (count > 0) {
             int next = currentRow() + 1;
             setCurrentRow(next % count);
         }

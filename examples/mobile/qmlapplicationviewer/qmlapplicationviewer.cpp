@@ -35,10 +35,8 @@
 #endif
 
 // Enable debugging before any QDeclarativeEngine is created
-struct QmlJsDebuggingEnabler
-{
-    QmlJsDebuggingEnabler()
-    {
+struct QmlJsDebuggingEnabler {
+    QmlJsDebuggingEnabler() {
         QDeclarativeDebugHelper::enableDebugging();
     }
 };
@@ -52,19 +50,19 @@ class QmlApplicationViewerPrivate
 {
     QString mainQmlFile;
     friend class QmlApplicationViewer;
-    static QString adjustPath(const QString &path);
+    static QString adjustPath(const QString& path);
 };
 
-QString QmlApplicationViewerPrivate::adjustPath(const QString &path)
+QString QmlApplicationViewerPrivate::adjustPath(const QString& path)
 {
 #ifdef Q_OS_UNIX
 #ifdef Q_OS_MAC
     if (!QDir::isAbsolutePath(path))
         return QString::fromLatin1("%1/../Resources/%2")
-                .arg(QCoreApplication::applicationDirPath(), path);
+               .arg(QCoreApplication::applicationDirPath(), path);
 #else
     const QString pathInInstallDir =
-            QString::fromLatin1("%1/../%2").arg(QCoreApplication::applicationDirPath(), path);
+        QString::fromLatin1("%1/../%2").arg(QCoreApplication::applicationDirPath(), path);
     if (QFileInfo(pathInInstallDir).exists())
         return pathInInstallDir;
 #endif
@@ -72,7 +70,7 @@ QString QmlApplicationViewerPrivate::adjustPath(const QString &path)
     return path;
 }
 
-QmlApplicationViewer::QmlApplicationViewer(QWidget *parent)
+QmlApplicationViewer::QmlApplicationViewer(QWidget* parent)
     : QDeclarativeView(parent)
     , d(new QmlApplicationViewerPrivate())
 {
@@ -94,18 +92,18 @@ QmlApplicationViewer::~QmlApplicationViewer()
     delete d;
 }
 
-QmlApplicationViewer *QmlApplicationViewer::create()
+QmlApplicationViewer* QmlApplicationViewer::create()
 {
     return new QmlApplicationViewer();
 }
 
-void QmlApplicationViewer::setMainQmlFile(const QString &file)
+void QmlApplicationViewer::setMainQmlFile(const QString& file)
 {
     d->mainQmlFile = QmlApplicationViewerPrivate::adjustPath(file);
     setSource(QUrl::fromLocalFile(d->mainQmlFile));
 }
 
-void QmlApplicationViewer::addImportPath(const QString &path)
+void QmlApplicationViewer::addImportPath(const QString& path)
 {
     engine()->addImportPath(QmlApplicationViewerPrivate::adjustPath(path));
 }
@@ -126,28 +124,28 @@ void QmlApplicationViewer::setOrientation(ScreenOrientation orientation)
     Qt::WidgetAttribute attribute;
     switch (orientation) {
 #if QT_VERSION < 0x040702
-    // Qt < 4.7.2 does not yet have the Qt::WA_*Orientation attributes
-    case ScreenOrientationLockPortrait:
-        attribute = static_cast<Qt::WidgetAttribute>(128);
-        break;
-    case ScreenOrientationLockLandscape:
-        attribute = static_cast<Qt::WidgetAttribute>(129);
-        break;
-    default:
-    case ScreenOrientationAuto:
-        attribute = static_cast<Qt::WidgetAttribute>(130);
-        break;
+            // Qt < 4.7.2 does not yet have the Qt::WA_*Orientation attributes
+        case ScreenOrientationLockPortrait:
+            attribute = static_cast<Qt::WidgetAttribute>(128);
+            break;
+        case ScreenOrientationLockLandscape:
+            attribute = static_cast<Qt::WidgetAttribute>(129);
+            break;
+        default:
+        case ScreenOrientationAuto:
+            attribute = static_cast<Qt::WidgetAttribute>(130);
+            break;
 #else // QT_VERSION < 0x040702
-    case ScreenOrientationLockPortrait:
-        attribute = Qt::WA_LockPortraitOrientation;
-        break;
-    case ScreenOrientationLockLandscape:
-        attribute = Qt::WA_LockLandscapeOrientation;
-        break;
-    default:
-    case ScreenOrientationAuto:
-        attribute = Qt::WA_AutoOrientation;
-        break;
+        case ScreenOrientationLockPortrait:
+            attribute = Qt::WA_LockPortraitOrientation;
+            break;
+        case ScreenOrientationLockLandscape:
+            attribute = Qt::WA_LockLandscapeOrientation;
+            break;
+        default:
+        case ScreenOrientationAuto:
+            attribute = Qt::WA_AutoOrientation;
+            break;
 #endif // QT_VERSION < 0x040702
     };
     setAttribute(attribute, true);
@@ -164,7 +162,7 @@ void QmlApplicationViewer::showExpanded()
 #endif
 }
 
-QApplication *createApplication(int &argc, char **argv)
+QApplication* createApplication(int& argc, char** argv)
 {
 #ifdef HARMATTAN_BOOSTER
     return MDeclarativeCache::qApplication(argc, argv);

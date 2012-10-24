@@ -25,8 +25,7 @@ class ConnectionWizard : public QWizard
 public:
     ConnectionWizard(QWidget* parent = 0);
 
-    enum Page
-    {
+    enum Page {
         UserPage,
         ServerPage,
         ConnectionPage

@@ -35,8 +35,7 @@ private slots:
     void onSend();
 
 private:
-    struct Private
-    {
+    struct Private {
         Completer* completer;
     } d;
 };

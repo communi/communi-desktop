@@ -41,8 +41,7 @@ public:
     void setHighlighted(bool highlighted);
 
 private:
-    struct Private
-    {
+    struct Private {
         bool alerted;
         bool inactive;
         bool highlighted;

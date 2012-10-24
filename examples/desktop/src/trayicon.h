@@ -32,8 +32,7 @@ private slots:
     void toggleIcon();
 
 private:
-    struct TrayIconData
-    {
+    struct TrayIconData {
         QIcon icon;
         QIcon alertIcon;
         QTimer* timer;

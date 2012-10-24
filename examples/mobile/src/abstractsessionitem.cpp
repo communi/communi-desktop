@@ -17,7 +17,7 @@
 #include "settings.h"
 #include "session.h"
 
-AbstractSessionItem::AbstractSessionItem(QObject *parent) :
+AbstractSessionItem::AbstractSessionItem(QObject* parent) :
     QObject(parent), m_session(0), m_busy(false), m_current(false),
     m_highlighted(false), m_unread(0), m_unseen(0)
 {
@@ -42,7 +42,7 @@ Session* AbstractSessionItem::session() const
     return m_session;
 }
 
-void AbstractSessionItem::setSession(Session *session)
+void AbstractSessionItem::setSession(Session* session)
 {
     m_session = session;
     m_formatter.setHighlights(QStringList() << session->nickName());
@@ -65,8 +65,7 @@ QString AbstractSessionItem::title() const
 
 void AbstractSessionItem::setTitle(const QString& title)
 {
-    if (m_title != title)
-    {
+    if (m_title != title) {
         m_title = title;
         emit titleChanged(title);
     }
@@ -79,8 +78,7 @@ QString AbstractSessionItem::subtitle() const
 
 void AbstractSessionItem::setSubtitle(const QString& subtitle)
 {
-    if (m_subtitle != subtitle)
-    {
+    if (m_subtitle != subtitle) {
         m_subtitle = subtitle;
         emit subtitleChanged();
     }
@@ -93,8 +91,7 @@ QString AbstractSessionItem::description() const
 
 void AbstractSessionItem::setDescription(const QString& description)
 {
-    if (m_description != description)
-    {
+    if (m_description != description) {
         m_description = description;
         emit descriptionChanged();
     }
@@ -107,8 +104,7 @@ bool AbstractSessionItem::isBusy() const
 
 void AbstractSessionItem::setBusy(bool busy)
 {
-    if (m_busy != busy)
-    {
+    if (m_busy != busy) {
         m_busy = busy;
         emit busyChanged();
     }
@@ -121,14 +117,12 @@ bool AbstractSessionItem::isCurrent() const
 
 void AbstractSessionItem::setCurrent(bool current)
 {
-    if (current)
-    {
+    if (current) {
         setHighlighted(false);
         setUnreadCount(0);
     }
 
-    if (m_current != current)
-    {
+    if (m_current != current) {
         m_current = current;
         emit currentChanged();
         updateCurrent(this);
@@ -142,8 +136,7 @@ bool AbstractSessionItem::isHighlighted() const
 
 void AbstractSessionItem::setHighlighted(bool highlighted)
 {
-    if (!m_current && m_highlighted != highlighted)
-    {
+    if (!m_current && m_highlighted != highlighted) {
         m_highlighted = highlighted;
         emit highlightedChanged();
     }
@@ -156,8 +149,7 @@ bool AbstractSessionItem::timeStamp() const
 
 void AbstractSessionItem::setTimeStamp(bool timeStamp)
 {
-    if (m_formatter.timeStamp() != timeStamp)
-    {
+    if (m_formatter.timeStamp() != timeStamp) {
         m_formatter.setTimeStamp(timeStamp);
         emit timeStampChanged();
     }
@@ -170,8 +162,7 @@ bool AbstractSessionItem::stripNicks() const
 
 void AbstractSessionItem::setStripNicks(bool strip)
 {
-    if (m_formatter.stripNicks() != strip)
-    {
+    if (m_formatter.stripNicks() != strip) {
         m_formatter.setStripNicks(strip);
         emit stripNicksChanged();
     }
@@ -184,8 +175,7 @@ int AbstractSessionItem::unreadCount() const
 
 void AbstractSessionItem::setUnreadCount(int count)
 {
-    if (!m_current && m_unread != count)
-    {
+    if (!m_current && m_unread != count) {
         m_unread = count;
         emit unreadCountChanged();
     }
@@ -198,8 +188,7 @@ int AbstractSessionItem::unseenIndex() const
 
 void AbstractSessionItem::setUnseenIndex(int index)
 {
-    if (m_unseen != index)
-    {
+    if (m_unseen != index) {
         m_unseen = index;
         emit unseenIndexChanged();
     }
@@ -226,7 +215,7 @@ QStringList AbstractSessionItem::completions(const QString& prefix, const QStrin
     if (word == "/")
         return CommandParser::availableCommands();
     else if (prefix == "/")
-        return CommandParser::availableCommands().filter(QRegExp("^"+word+".*", Qt::CaseInsensitive));
+        return CommandParser::availableCommands().filter(QRegExp("^" + word + ".*", Qt::CaseInsensitive));
     return QStringList();
 }
 

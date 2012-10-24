@@ -99,7 +99,7 @@ void SearchEditor::find(const QString& text, bool forward, bool backward)
         if (newCursor.isNull()) {
             QTextCursor ac(doc);
             ac.movePosition(options & QTextDocument::FindBackward
-                ? QTextCursor::End : QTextCursor::Start);
+                            ? QTextCursor::End : QTextCursor::Start);
             newCursor = doc->find(text, ac, options);
             if (newCursor.isNull()) {
                 pal.setColor(QPalette::Active, QPalette::Base, QColor(255, 102, 102));
@@ -108,8 +108,7 @@ void SearchEditor::find(const QString& text, bool forward, bool backward)
         }
 
         d.textEdit->moveCursor(QTextCursor::Start);
-        while (d.textEdit->find(text))
-        {
+        while (d.textEdit->find(text)) {
             QTextEdit::ExtraSelection extra;
             extra.format.setBackground(Qt::yellow);
             extra.cursor = d.textEdit->textCursor();

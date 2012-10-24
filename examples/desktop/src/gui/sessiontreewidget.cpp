@@ -104,7 +104,7 @@ void SessionTreeWidget::addSession(Session* session)
     updateSession(session);
 }
 
-void SessionTreeWidget::removeSession(Session *session)
+void SessionTreeWidget::removeSession(Session* session)
 {
     delete d.sessions.take(session);
 }
@@ -112,8 +112,7 @@ void SessionTreeWidget::removeSession(Session *session)
 void SessionTreeWidget::addView(Session* session, const QString& view)
 {
     SessionTreeItem* parent = d.sessions.value(session);
-    if (parent)
-    {
+    if (parent) {
         SessionTreeItem* item = new SessionTreeItem(session, parent);
         item->setText(0, view);
     }
@@ -129,8 +128,7 @@ void SessionTreeWidget::removeView(Session* session, const QString& view)
 void SessionTreeWidget::renameView(Session* session, const QString& from, const QString& to)
 {
     SessionTreeItem* parent = d.sessions.value(session);
-    if (parent)
-    {
+    if (parent) {
         SessionTreeItem* item = parent->findChild(from);
         if (item)
             item->setText(0, to);
@@ -164,14 +162,11 @@ void SessionTreeWidget::moveToPrevItem()
 void SessionTreeWidget::moveToNextUnreadItem()
 {
     QTreeWidgetItem* current = currentItem();
-    if (current)
-    {
+    if (current) {
         QTreeWidgetItemIterator it(current);
-        while (*++it && *it != current)
-        {
+        while (*++it && *it != current) {
             SessionTreeItem* item = static_cast<SessionTreeItem*>(*it);
-            if (item->isAlerted() || item->isHighlighted())
-            {
+            if (item->isAlerted() || item->isHighlighted()) {
                 setCurrentItem(item);
                 break;
             }
@@ -182,14 +177,11 @@ void SessionTreeWidget::moveToNextUnreadItem()
 void SessionTreeWidget::moveToPrevUnreadItem()
 {
     QTreeWidgetItem* current = currentItem();
-    if (current)
-    {
+    if (current) {
         QTreeWidgetItemIterator it(current);
-        while (*--it && *it != current)
-        {
+        while (*--it && *it != current) {
             SessionTreeItem* item = static_cast<SessionTreeItem*>(*it);
-            if (item->isAlerted() || item->isHighlighted())
-            {
+            if (item->isAlerted() || item->isHighlighted()) {
                 setCurrentItem(item);
                 break;
             }
@@ -211,8 +203,7 @@ void SessionTreeWidget::collapseCurrentSession()
     QTreeWidgetItem* item = currentItem();
     if (item && item->parent())
         item = item->parent();
-    if (item)
-    {
+    if (item) {
         collapseItem(item);
         setCurrentItem(item);
     }
@@ -265,8 +256,7 @@ void SessionTreeWidget::updateSession(Session* session)
     if (!session)
         session = qobject_cast<Session*>(sender());
     SessionTreeItem* item = d.sessions.value(session);
-    if (item)
-    {
+    if (item) {
         item->setText(0, session->name().isEmpty() ? session->host() : session->name());
         item->setInactive(!session->isActive());
     }
@@ -275,8 +265,7 @@ void SessionTreeWidget::updateSession(Session* session)
 void SessionTreeWidget::onItemSelectionChanged()
 {
     SessionTreeItem* item = static_cast<SessionTreeItem*>(selectedItems().value(0));
-    if (item)
-    {
+    if (item) {
         resetItem(item);
         emit currentViewChanged(item->session(), item->parent() ? item->text(0) : QString());
     }
@@ -295,8 +284,7 @@ void SessionTreeWidget::onItemCollapsed(QTreeWidgetItem* item)
 void SessionTreeWidget::delayedItemReset()
 {
     SessionTreeItem* item = static_cast<SessionTreeItem*>(currentItem());
-    if (item)
-    {
+    if (item) {
         d.resetedItems.insert(item);
         QTimer::singleShot(500, this, SLOT(delayedItemResetTimeout()));
     }
@@ -304,10 +292,9 @@ void SessionTreeWidget::delayedItemReset()
 
 void SessionTreeWidget::delayedItemResetTimeout()
 {
-    if (!d.resetedItems.isEmpty())
-    {
-        foreach (SessionTreeItem* item, d.resetedItems)
-            resetItem(item);
+    if (!d.resetedItems.isEmpty()) {
+        foreach(SessionTreeItem * item, d.resetedItems)
+        resetItem(item);
         d.resetedItems.clear();
     }
 }
@@ -317,8 +304,7 @@ void SessionTreeWidget::alertTimeout()
     bool active = d.alertColor == d.colors.value(Active);
     d.alertColor = d.colors.value(active ? Alert : Active);
 
-    foreach (SessionTreeItem* item, d.alertedItems)
-    {
+    foreach(SessionTreeItem * item, d.alertedItems) {
         item->emitDataChanged();
         if (SessionTreeItem* p = static_cast<SessionTreeItem*>(item->parent()))
             if (!p->isExpanded())
@@ -346,8 +332,7 @@ QTreeWidgetItem* SessionTreeWidget::nextItem(QTreeWidgetItem* from) const
     if (!from)
         return 0;
     QTreeWidgetItemIterator it(from);
-    while (*++it)
-    {
+    while (*++it) {
         if (!(*it)->parent() || (*it)->parent()->isExpanded())
             break;
     }
@@ -359,8 +344,7 @@ QTreeWidgetItem* SessionTreeWidget::previousItem(QTreeWidgetItem* from) const
     if (!from)
         return 0;
     QTreeWidgetItemIterator it(from);
-    while (*--it)
-    {
+    while (*--it) {
         if (!(*it)->parent() || (*it)->parent()->isExpanded())
             break;
     }

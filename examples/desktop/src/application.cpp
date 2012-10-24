@@ -82,8 +82,7 @@ Settings Application::settings()
 
 void Application::setSettings(const Settings& settings)
 {
-    if (ApplicationData::settings != settings)
-    {
+    if (ApplicationData::settings != settings) {
         ApplicationData::settings = settings;
         QMetaObject::invokeMethod(qApp, "settingsChanged", Q_ARG(Settings, settings));
     }
@@ -98,15 +97,15 @@ void Application::aboutApplication()
         activeWindow(),
 #endif // Q_WS_MAC
         applicationName(), QString(
-        "<h3>%1</h3>"
-        "<p>%2</p>"
-        "<p><a href='%3'>%3</a></p>"
-        "<p><small>Copyright (C) 2008-2012 J-P Nurmi &lt;"
-        "<a href='mailto:jpnurmi@gmail.com'>jpnurmi@gmail.com</a>&gt;</small></p>")
-            .arg(tr("About %1").arg(applicationName()))
-            .arg(applicationSlogan())
-            .arg(organizationDomain())
-        );
+            "<h3>%1</h3>"
+            "<p>%2</p>"
+            "<p><a href='%3'>%3</a></p>"
+            "<p><small>Copyright (C) 2008-2012 J-P Nurmi &lt;"
+            "<a href='mailto:jpnurmi@gmail.com'>jpnurmi@gmail.com</a>&gt;</small></p>")
+        .arg(tr("About %1").arg(applicationName()))
+        .arg(applicationSlogan())
+        .arg(organizationDomain())
+    );
 }
 
 void Application::aboutOxygen()
@@ -118,8 +117,8 @@ void Application::aboutOxygen()
         activeWindow(),
 #endif // Q_WS_MAC
         "Oxygen", QString(
-        "<h3>%1</h3>"
-        "<p><a href='http://www.oxygen-icons.org/'>http://www.oxygen-icons.org/</a></p>"
+            "<h3>%1</h3>"
+            "<p><a href='http://www.oxygen-icons.org/'>http://www.oxygen-icons.org/</a></p>"
         ).arg(tr("About %1").arg("Oxygen")));
 }
 

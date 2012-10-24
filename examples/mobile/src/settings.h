@@ -70,7 +70,7 @@ public:
     void setPolicyAgreed(bool agreed);
 
 private:
-    explicit Settings(QObject *parent = 0);
+    explicit Settings(QObject* parent = 0);
 };
 
 #endif // SETTINGS_H

@@ -43,13 +43,10 @@ bool Overlay::isBusy() const
 
 void Overlay::setBusy(bool busy)
 {
-    if (busy)
-    {
+    if (busy) {
         setMovie(new QMovie(":/resources/ajax-loader.gif", QByteArray(), this));
         movie()->start();
-    }
-    else
-    {
+    } else {
         delete movie();
     }
 }
@@ -61,10 +58,8 @@ bool Overlay::hasRefresh() const
 
 void Overlay::setRefresh(bool enabled)
 {
-    if (enabled)
-    {
-        if (!d.button)
-        {
+    if (enabled) {
+        if (!d.button) {
             d.button = new QToolButton(parentWidget());
             d.button->setObjectName("reconnectButton");
             d.button->setFixedSize(32, 32);
@@ -72,9 +67,7 @@ void Overlay::setRefresh(bool enabled)
             relayout();
         }
         d.button->show();
-    }
-    else
-    {
+    } else {
         if (d.button)
             d.button->deleteLater();
         d.button = 0;

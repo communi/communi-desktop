@@ -73,12 +73,10 @@ void HistoryLineEdit::clearHistory()
 
 void HistoryLineEdit::keyPressEvent(QKeyEvent* event)
 {
-    switch (event->key())
-    {
+    switch (event->key()) {
         case Qt::Key_Return:
         case Qt::Key_Enter:
-            if (!text().isEmpty())
-            {
+            if (!text().isEmpty()) {
                 input.clear();
                 history.append(text());
                 index = history.count();

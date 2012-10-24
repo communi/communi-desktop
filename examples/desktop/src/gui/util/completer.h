@@ -40,8 +40,7 @@ private slots:
     void insertCompletion(const QString& completion);
 
 private:
-    struct CompleterData
-    {
+    struct CompleterData {
         HistoryLineEdit* lineEdit;
         QAbstractItemModel* defaultModel;
         QAbstractItemModel* slashModel;

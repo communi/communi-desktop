@@ -21,8 +21,7 @@
 static QMap<QString, QString>& command_syntaxes()
 {
     static QMap<QString, QString> syntaxes;
-    if (syntaxes.isEmpty())
-    {
+    if (syntaxes.isEmpty()) {
         syntaxes.insert("AWAY", "(<reason>)");
         syntaxes.insert("INVITE", "<user>");
         syntaxes.insert("JOIN", "<channel> (<key>)");
@@ -61,9 +60,9 @@ QStringList CommandParser::availableCommands()
 QStringList CommandParser::suggestedCommands(const QString& command, const QStringList& params)
 {
     QStringList suggestions;
-    foreach (const QString& available, availableCommands())
-        if (!command.compare(available, Qt::CaseInsensitive) || (params.isEmpty() && available.startsWith(command, Qt::CaseInsensitive)))
-            suggestions += available;
+    foreach(const QString & available, availableCommands())
+    if (!command.compare(available, Qt::CaseInsensitive) || (params.isEmpty() && available.startsWith(command, Qt::CaseInsensitive)))
+        suggestions += available;
     return suggestions;
 }
 
@@ -94,13 +93,11 @@ bool CommandParser::hasError() const
 IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& text)
 {
     *has_error() = false;
-    if (text.startsWith("/"))
-    {
+    if (text.startsWith("/")) {
         typedef IrcCommand*(*ParseFunc)(const QString&, const QStringList&);
 
         static QHash<QString, ParseFunc> parseFunctions;
-        if (parseFunctions.isEmpty())
-        {
+        if (parseFunctions.isEmpty()) {
             parseFunctions.insert("AWAY", &CommandParser::parseAway);
             parseFunctions.insert("INVITE", &CommandParser::parseInvite);
             parseFunctions.insert("JOIN", &CommandParser::parseJoin);
@@ -124,21 +121,17 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
         const QStringList words = text.mid(1).split(" ", QString::SkipEmptyParts);
         const QString command = words.value(0).toUpper();
         ParseFunc parseFunc = parseFunctions.value(command);
-        if (parseFunc)
-        {
+        if (parseFunc) {
             IrcCommand* cmd = parseFunc(receiver, words.mid(1));
             if (!cmd)
                 *has_error() = true;
             return cmd;
         }
-        if (command_syntaxes().contains(command.toUpper()))
-        {
+        if (command_syntaxes().contains(command.toUpper())) {
             emit customCommand(command, words.mid(1));
             return 0;
         }
-    }
-    else
-    {
+    } else {
         return IrcCommand::createMessage(receiver, text);
     }
 

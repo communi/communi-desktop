@@ -35,7 +35,7 @@ SessionItem::SessionItem(Session* session) : AbstractSessionItem(session)
     m_handler.setDefaultReceiver(this);
     m_handler.setCurrentReceiver(this);
     connect(&m_handler, SIGNAL(receiverToBeAdded(QString)), SLOT(addChild(QString)));
-    connect(&m_handler, SIGNAL(receiverToBeRenamed(QString,QString)), SLOT(renameChild(QString,QString)));
+    connect(&m_handler, SIGNAL(receiverToBeRenamed(QString, QString)), SLOT(renameChild(QString, QString)));
     connect(&m_handler, SIGNAL(receiverToBeRemoved(QString)), SLOT(removeChild(QString)));
 
     updateCurrent(this);
@@ -50,8 +50,7 @@ QObjectList SessionItem::childItems() const
 QStringList SessionItem::channels() const
 {
     QStringList chans;
-    for (int i = 0; i < m_children.count(); ++i)
-    {
+    for (int i = 0; i < m_children.count(); ++i) {
         SessionChildItem* child = static_cast<SessionChildItem*>(m_children.at(i));
         if (child->isChannel())
             chans += child->title();
@@ -67,8 +66,7 @@ void SessionItem::updateCurrent(AbstractSessionItem* item)
 QObject* SessionItem::addChild(const QString& name)
 {
     SessionChildItem* child = static_cast<SessionChildItem*>(m_handler.getReceiver(name));
-    if (!child)
-    {
+    if (!child) {
         child = new SessionChildItem(this);
         connect(child, SIGNAL(alerted(QString)), SLOT(onChildAlerted(QString)));
         child->setTitle(name);
@@ -83,11 +81,9 @@ QObject* SessionItem::addChild(const QString& name)
 
 void SessionItem::renameChild(const QString& from, const QString& to)
 {
-    for (int i = 0; i < m_children.count(); ++i)
-    {
+    for (int i = 0; i < m_children.count(); ++i) {
         SessionChildItem* child = static_cast<SessionChildItem*>(m_children.at(i));
-        if (child->title() == from)
-        {
+        if (child->title() == from) {
             child->setTitle(to);
             emit childItemsChanged();
             break;
@@ -98,11 +94,9 @@ void SessionItem::renameChild(const QString& from, const QString& to)
 void SessionItem::removeChild(const QString& name)
 {
     m_handler.removeReceiver(name);
-    for (int i = 0; i < m_children.count(); ++i)
-    {
+    for (int i = 0; i < m_children.count(); ++i) {
         SessionChildItem* child = static_cast<SessionChildItem*>(m_children.at(i));
-        if (child->title().toLower() == name.toLower())
-        {
+        if (child->title().toLower() == name.toLower()) {
             if (child->isChannel())
                 session()->removeChannel(name);
             m_children.takeAt(i)->deleteLater();
@@ -115,8 +109,7 @@ void SessionItem::removeChild(const QString& name)
 void SessionItem::receiveMessage(IrcMessage* message)
 {
     AbstractSessionItem::receiveMessage(message);
-    if (message->type() == IrcMessage::Numeric)
-    {
+    if (message->type() == IrcMessage::Numeric) {
         IrcNumericMessage* numeric = static_cast<IrcNumericMessage*>(message);
         if (numeric->code() == Irc::ERR_BADCHANNELKEY)
             emit channelKeyRequired(session(), message->parameters().value(1));
@@ -129,7 +122,7 @@ void SessionItem::updateState()
     setBusy(session->isActive() && !session->isConnected());
 }
 
-void SessionItem::onChildAlerted(const QString &text)
+void SessionItem::onChildAlerted(const QString& text)
 {
     emit childAlerted(sender(), text);
 }

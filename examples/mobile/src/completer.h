@@ -25,7 +25,7 @@ class Completer : public QObject
     Q_PROPERTY(QObject* modelItem READ modelItem WRITE setModelItem)
 
 public:
-    explicit Completer(QObject *parent = 0);
+    explicit Completer(QObject* parent = 0);
 
     QObject* modelItem() const;
     void setModelItem(QObject* item);

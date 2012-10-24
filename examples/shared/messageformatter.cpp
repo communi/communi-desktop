@@ -139,51 +139,50 @@ QString MessageFormatter::formatMessage(IrcMessage* message, UserModel* userMode
     QString formatted;
     d.highlight = false;
     d.userModel = userModel;
-    switch (message->type())
-    {
-    case IrcMessage::Invite:
-        formatted = formatInviteMessage(static_cast<IrcInviteMessage*>(message));
-        break;
-    case IrcMessage::Join:
-        if (message->isOwn())
-            d.receivedCodes.clear();
-        formatted = formatJoinMessage(static_cast<IrcJoinMessage*>(message));
-        break;
-    case IrcMessage::Kick:
-        formatted = formatKickMessage(static_cast<IrcKickMessage*>(message));
-        break;
-    case IrcMessage::Mode:
-        formatted = formatModeMessage(static_cast<IrcModeMessage*>(message));
-        break;
-    case IrcMessage::Nick:
-        formatted = formatNickMessage(static_cast<IrcNickMessage*>(message));
-        break;
-    case IrcMessage::Notice:
-        formatted = formatNoticeMessage(static_cast<IrcNoticeMessage*>(message));
-        break;
-    case IrcMessage::Numeric:
-        formatted = formatNumericMessage(static_cast<IrcNumericMessage*>(message));
-        break;
-    case IrcMessage::Part:
-        formatted = formatPartMessage(static_cast<IrcPartMessage*>(message));
-        break;
-    case IrcMessage::Pong:
-        formatted = formatPongMessage(static_cast<IrcPongMessage*>(message));
-        break;
-    case IrcMessage::Private:
-        formatted = formatPrivateMessage(static_cast<IrcPrivateMessage*>(message));
-        break;
-    case IrcMessage::Quit:
-        formatted = formatQuitMessage(static_cast<IrcQuitMessage*>(message));
-        break;
-    case IrcMessage::Topic:
-        formatted = formatTopicMessage(static_cast<IrcTopicMessage*>(message));
-        break;
-    case IrcMessage::Unknown:
-        formatted = formatUnknownMessage(static_cast<IrcMessage*>(message));
-        break;
-    default:
-        break;
+    switch (message->type()) {
+        case IrcMessage::Invite:
+            formatted = formatInviteMessage(static_cast<IrcInviteMessage*>(message));
+            break;
+        case IrcMessage::Join:
+            if (message->isOwn())
+                d.receivedCodes.clear();
+            formatted = formatJoinMessage(static_cast<IrcJoinMessage*>(message));
+            break;
+        case IrcMessage::Kick:
+            formatted = formatKickMessage(static_cast<IrcKickMessage*>(message));
+            break;
+        case IrcMessage::Mode:
+            formatted = formatModeMessage(static_cast<IrcModeMessage*>(message));
+            break;
+        case IrcMessage::Nick:
+            formatted = formatNickMessage(static_cast<IrcNickMessage*>(message));
+            break;
+        case IrcMessage::Notice:
+            formatted = formatNoticeMessage(static_cast<IrcNoticeMessage*>(message));
+            break;
+        case IrcMessage::Numeric:
+            formatted = formatNumericMessage(static_cast<IrcNumericMessage*>(message));
+            break;
+        case IrcMessage::Part:
+            formatted = formatPartMessage(static_cast<IrcPartMessage*>(message));
+            break;
+        case IrcMessage::Pong:
+            formatted = formatPongMessage(static_cast<IrcPongMessage*>(message));
+            break;
+        case IrcMessage::Private:
+            formatted = formatPrivateMessage(static_cast<IrcPrivateMessage*>(message));
+            break;
+        case IrcMessage::Quit:
+            formatted = formatQuitMessage(static_cast<IrcQuitMessage*>(message));
+            break;
+        case IrcMessage::Topic:
+            formatted = formatTopicMessage(static_cast<IrcTopicMessage*>(message));
+            break;
+        case IrcMessage::Unknown:
+            formatted = formatUnknownMessage(static_cast<IrcMessage*>(message));
+            break;
+        default:
+            break;
     }
 
     return formatMessage(formatted);
@@ -247,8 +246,7 @@ QString MessageFormatter::formatNickMessage(IrcNickMessage* message) const
 
 QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* message) const
 {
-    if (message->isReply())
-    {
+    if (message->isReply()) {
         const QStringList params = message->message().split(" ", QString::SkipEmptyParts);
         const QString cmd = params.value(0);
         const QString arg = params.value(1);
@@ -260,9 +258,9 @@ QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* message) const
             return tr("! %1 version is %2").arg(formatSender(message->sender()), QStringList(params.mid(1)).join(" "));
     }
 
-    foreach (const QString& hilite, d.highlights)
-        if (message->message().contains(hilite))
-            d.highlight = true;
+    foreach(const QString & hilite, d.highlights)
+    if (message->message().contains(hilite))
+        d.highlight = true;
     const QString sender = formatSender(message->sender());
     const QString msg = formatHtml(message->message());
     return tr("[%1] %2").arg(sender, msg);
@@ -282,85 +280,83 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
     if (QByteArray(Irc::toString(message->code())).startsWith("ERR_"))
         return tr("[ERROR] %1").arg(formatHtml(MID_(1)));
 
-    switch (message->code())
-    {
-    case Irc::RPL_MOTDSTART:
-    case Irc::RPL_MOTD:
-        return tr("[MOTD] %1").arg(formatHtml(MID_(1)));
-    case Irc::RPL_ENDOFMOTD:
-        return QString();
-    case Irc::RPL_AWAY:
-        return tr("! %1 is away (%2)").arg(P_(1), MID_(2));
-    case Irc::RPL_ENDOFWHOIS:
-        return QString();
-    case Irc::RPL_WHOISOPERATOR:
-    case Irc::RPL_WHOISMODES: // "is using modes"
-    case Irc::RPL_WHOISREGNICK: // "is a registered nick"
-    case Irc::RPL_WHOISHELPOP: // "is available for help"
-    case Irc::RPL_WHOISSPECIAL: // "is identified to services"
-    case Irc::RPL_WHOISHOST: // nick is connecting from <...>
-    case Irc::RPL_WHOISSECURE: // nick is using a secure connection
-        return tr("! %1").arg(MID_(1));
-    case Irc::RPL_WHOISUSER:
-        return tr("! %1 is %2@%3 (%4)").arg(P_(1), P_(2), P_(3), formatHtml(MID_(5)));
-    case Irc::RPL_WHOISSERVER:
-        return tr("! %1 is online via %2 (%3)").arg(P_(1), P_(2), P_(3));
-    case Irc::RPL_WHOISACCOUNT: // nick user is logged in as
-        return tr("! %1 %3 %2").arg(P_(1), P_(2), P_(3));
-    case Irc::RPL_WHOWASUSER:
-        return tr("! %1 was %2@%3 %4 %5").arg(P_(1), P_(2), P_(3), P_(4), P_(5));
-    case Irc::RPL_WHOISIDLE: {
-        QDateTime signon = QDateTime::fromTime_t(P_(3).toInt());
-        QTime idle = QTime().addSecs(P_(2).toInt());
-        return tr("! %1 has been online since %2 (idle for %3)").arg(P_(1), signon.toString(), idle.toString());
-    }
-    case Irc::RPL_WHOISCHANNELS:
-        return tr("! %1 is on channels %2").arg(P_(1), P_(2));
-    case Irc::RPL_CHANNELMODEIS:
-        return tr("! %1 mode is %2").arg(P_(1), P_(2));
-    case Irc::RPL_CHANNEL_URL:
-        return tr("! %1 url is %2").arg(P_(1), formatHtml(P_(2)));
-    case Irc::RPL_CREATIONTIME: {
-        QDateTime dateTime = QDateTime::fromTime_t(P_(2).toInt());
-        return tr("! %1 was created %2").arg(P_(1), dateTime.toString());
-    }
-    case Irc::RPL_NOTOPIC:
-        return tr("! %1 has no topic set").arg(P_(1));
-    case Irc::RPL_TOPIC:
-        return tr("! %1 topic is \"%2\"").arg(P_(1), formatHtml(P_(2)));
-    case Irc::RPL_TOPICWHOTIME: {
-        QDateTime dateTime = QDateTime::fromTime_t(P_(3).toInt());
-        return tr("! %1 topic was set %2 by %3").arg(P_(1), dateTime.toString(), formatUser(P_(2), d.stripNicks));
-    }
-    case Irc::RPL_INVITING:
-        return tr("! inviting %1 to %2").arg(formatUser(P_(1)), P_(2));
-    case Irc::RPL_VERSION:
-        return tr("! %1 version is %2").arg(formatSender(message->sender()), P_(1));
-    case Irc::RPL_TIME:
-        return tr("! %1 time is %2").arg(formatUser(P_(1)), P_(2));
-    case Irc::RPL_UNAWAY:
-    case Irc::RPL_NOWAWAY:
-        return tr("! %1").arg(P_(1));
-
-    case Irc::RPL_NAMREPLY:
-        if (d.receivedCodes.contains(Irc::RPL_ENDOFNAMES))
-        {
-            int count = message->parameters().count();
-            QString channel = message->parameters().value(count - 2);
-            QStringList names;
-            foreach (const QString& name, message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts))
-                names += IrcSender(name).name();
-            return tr("! %1 users: %2").arg(channel).arg(names.join(" "));
+    switch (message->code()) {
+        case Irc::RPL_MOTDSTART:
+        case Irc::RPL_MOTD:
+            return tr("[MOTD] %1").arg(formatHtml(MID_(1)));
+        case Irc::RPL_ENDOFMOTD:
+            return QString();
+        case Irc::RPL_AWAY:
+            return tr("! %1 is away (%2)").arg(P_(1), MID_(2));
+        case Irc::RPL_ENDOFWHOIS:
+            return QString();
+        case Irc::RPL_WHOISOPERATOR:
+        case Irc::RPL_WHOISMODES: // "is using modes"
+        case Irc::RPL_WHOISREGNICK: // "is a registered nick"
+        case Irc::RPL_WHOISHELPOP: // "is available for help"
+        case Irc::RPL_WHOISSPECIAL: // "is identified to services"
+        case Irc::RPL_WHOISHOST: // nick is connecting from <...>
+        case Irc::RPL_WHOISSECURE: // nick is using a secure connection
+            return tr("! %1").arg(MID_(1));
+        case Irc::RPL_WHOISUSER:
+            return tr("! %1 is %2@%3 (%4)").arg(P_(1), P_(2), P_(3), formatHtml(MID_(5)));
+        case Irc::RPL_WHOISSERVER:
+            return tr("! %1 is online via %2 (%3)").arg(P_(1), P_(2), P_(3));
+        case Irc::RPL_WHOISACCOUNT: // nick user is logged in as
+            return tr("! %1 %3 %2").arg(P_(1), P_(2), P_(3));
+        case Irc::RPL_WHOWASUSER:
+            return tr("! %1 was %2@%3 %4 %5").arg(P_(1), P_(2), P_(3), P_(4), P_(5));
+        case Irc::RPL_WHOISIDLE: {
+            QDateTime signon = QDateTime::fromTime_t(P_(3).toInt());
+            QTime idle = QTime().addSecs(P_(2).toInt());
+            return tr("! %1 has been online since %2 (idle for %3)").arg(P_(1), signon.toString(), idle.toString());
         }
-        return QString();
+        case Irc::RPL_WHOISCHANNELS:
+            return tr("! %1 is on channels %2").arg(P_(1), P_(2));
+        case Irc::RPL_CHANNELMODEIS:
+            return tr("! %1 mode is %2").arg(P_(1), P_(2));
+        case Irc::RPL_CHANNEL_URL:
+            return tr("! %1 url is %2").arg(P_(1), formatHtml(P_(2)));
+        case Irc::RPL_CREATIONTIME: {
+            QDateTime dateTime = QDateTime::fromTime_t(P_(2).toInt());
+            return tr("! %1 was created %2").arg(P_(1), dateTime.toString());
+        }
+        case Irc::RPL_NOTOPIC:
+            return tr("! %1 has no topic set").arg(P_(1));
+        case Irc::RPL_TOPIC:
+            return tr("! %1 topic is \"%2\"").arg(P_(1), formatHtml(P_(2)));
+        case Irc::RPL_TOPICWHOTIME: {
+            QDateTime dateTime = QDateTime::fromTime_t(P_(3).toInt());
+            return tr("! %1 topic was set %2 by %3").arg(P_(1), dateTime.toString(), formatUser(P_(2), d.stripNicks));
+        }
+        case Irc::RPL_INVITING:
+            return tr("! inviting %1 to %2").arg(formatUser(P_(1)), P_(2));
+        case Irc::RPL_VERSION:
+            return tr("! %1 version is %2").arg(formatSender(message->sender()), P_(1));
+        case Irc::RPL_TIME:
+            return tr("! %1 time is %2").arg(formatUser(P_(1)), P_(2));
+        case Irc::RPL_UNAWAY:
+        case Irc::RPL_NOWAWAY:
+            return tr("! %1").arg(P_(1));
 
-    case Irc::RPL_ENDOFNAMES:
-        if (d.userModel && !d.receivedCodes.mid(0, d.receivedCodes.count() - 1).contains(Irc::RPL_ENDOFNAMES))
-            return tr("! %1 has %2 users").arg(message->parameters().value(1)).arg(d.userModel->rowCount());
-        return QString();
+        case Irc::RPL_NAMREPLY:
+            if (d.receivedCodes.contains(Irc::RPL_ENDOFNAMES)) {
+                int count = message->parameters().count();
+                QString channel = message->parameters().value(count - 2);
+                QStringList names;
+                foreach(const QString & name, message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts))
+                names += IrcSender(name).name();
+                return tr("! %1 users: %2").arg(channel).arg(names.join(" "));
+            }
+            return QString();
 
-    default:
-        return tr("[%1] %2").arg(message->code()).arg(QStringList(message->parameters().mid(1)).join(" "));
+        case Irc::RPL_ENDOFNAMES:
+            if (d.userModel && !d.receivedCodes.mid(0, d.receivedCodes.count() - 1).contains(Irc::RPL_ENDOFNAMES))
+                return tr("! %1 has %2 users").arg(message->parameters().value(1)).arg(d.userModel->rowCount());
+            return QString();
+
+        default:
+            return tr("[%1] %2").arg(message->code()).arg(QStringList(message->parameters().mid(1)).join(" "));
     }
 }
 
@@ -380,9 +376,9 @@ QString MessageFormatter::formatPongMessage(IrcPongMessage* message) const
 
 QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* message) const
 {
-    foreach (const QString& hilite, d.highlights)
-        if (message->message().contains(hilite))
-            d.highlight = true;
+    foreach(const QString & hilite, d.highlights)
+    if (message->message().contains(hilite))
+        d.highlight = true;
     const QString sender = formatSender(message->sender());
     const QString msg = formatHtml(message->message());
     if (message->isAction())
@@ -419,8 +415,7 @@ QString MessageFormatter::formatPingReply(const IrcSender& sender, const QString
 {
     bool ok;
     int seconds = arg.toInt(&ok);
-    if (ok)
-    {
+    if (ok) {
         QDateTime time = QDateTime::fromTime_t(seconds);
         QString result = QString::number(time.secsTo(QDateTime::currentDateTime()));
         return tr("! %1 replied in %2s").arg(formatSender(sender), result);
@@ -431,8 +426,7 @@ QString MessageFormatter::formatPingReply(const IrcSender& sender, const QString
 QString MessageFormatter::formatSender(const IrcSender& sender, bool strip)
 {
     QString name = sender.name();
-    if (sender.isValid())
-    {
+    if (sender.isValid()) {
         QColor color = QColor::fromHsl(qHash(name) % 359, 255, 64);
         name = QString("<strong style='color:%1'>%2</strong>").arg(color.name()).arg(name);
         if (!strip && !sender.user().isEmpty() && !sender.host().isEmpty())
@@ -446,35 +440,29 @@ QString MessageFormatter::formatUser(const QString& user, bool strip)
     return formatSender(IrcSender(user), strip);
 }
 
-QString MessageFormatter::formatHtml(const QString &message) const
+QString MessageFormatter::formatHtml(const QString& message) const
 {
     QString msg = IrcUtil::messageToHtml(message);
-    if (d.userModel)
-    {
-        foreach (const QString& user, d.userModel->users())
-        {
+    if (d.userModel) {
+        foreach(const QString & user, d.userModel->users()) {
             int pos = 0;
-            while ((pos = msg.indexOf(user, pos)) != -1)
-            {
+            while ((pos = msg.indexOf(user, pos)) != -1) {
                 QTextBoundaryFinder finder(QTextBoundaryFinder::Word, msg);
 
                 finder.setPosition(pos);
-                if (!finder.isAtBoundary() || !finder.boundaryReasons().testFlag(QTextBoundaryFinder::StartWord))
-                {
+                if (!finder.isAtBoundary() || !finder.boundaryReasons().testFlag(QTextBoundaryFinder::StartWord)) {
                     pos += user.length();
                     continue;
                 }
 
                 finder.setPosition(pos + user.length());
-                if (!finder.isAtBoundary() || !finder.boundaryReasons().testFlag(QTextBoundaryFinder::EndWord))
-                {
+                if (!finder.isAtBoundary() || !finder.boundaryReasons().testFlag(QTextBoundaryFinder::EndWord)) {
                     pos += user.length();
                     continue;
                 }
 
                 const int anchor = msg.indexOf("</a>", pos + user.length() + 1);
-                if (anchor != -1 && anchor <= msg.indexOf('<', pos + user.length() + 1))
-                {
+                if (anchor != -1 && anchor <= msg.indexOf('<', pos + user.length() + 1)) {
                     pos += user.length();
                     continue;
                 }

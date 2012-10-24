@@ -27,19 +27,17 @@ SessionManager::SessionManager(QDeclarativeContext* context) : m_context(context
 void SessionManager::addSession(Session* session)
 {
     SessionItem* item = new SessionItem(session);
-    connect(item, SIGNAL(childAlerted(QObject*,QString)), SIGNAL(alert(QObject*,QString)));
-    connect(item, SIGNAL(channelKeyRequired(Session*,QString)), SIGNAL(channelKeyRequired(Session*,QString)));
+    connect(item, SIGNAL(childAlerted(QObject*, QString)), SIGNAL(alert(QObject*, QString)));
+    connect(item, SIGNAL(channelKeyRequired(Session*, QString)), SIGNAL(channelKeyRequired(Session*, QString)));
     m_items.append(item);
     updateModel();
 }
 
 void SessionManager::removeSession(Session* session)
 {
-    for (int i = 0; i < m_items.count(); ++i)
-    {
+    for (int i = 0; i < m_items.count(); ++i) {
         SessionItem* item = static_cast<SessionItem*>(m_items.at(i));
-        if (item->session() == session)
-        {
+        if (item->session() == session) {
             m_items.removeAt(i);
             item->deleteLater();
             updateModel();
@@ -51,21 +49,18 @@ void SessionManager::removeSession(Session* session)
 void SessionManager::restore()
 {
     Settings* settings = static_cast<Settings*>(m_context->contextProperty("Settings").value<QObject*>());
-    if (settings)
-    {
-        foreach (const ConnectionInfo& connection, settings->connections())
-            addSession(Session::fromConnection(connection));
+    if (settings) {
+        foreach(const ConnectionInfo & connection, settings->connections())
+        addSession(Session::fromConnection(connection));
     }
 }
 
 void SessionManager::save()
 {
     Settings* settings = static_cast<Settings*>(m_context->contextProperty("Settings").value<QObject*>());
-    if (settings)
-    {
+    if (settings) {
         ConnectionInfos connections;
-        foreach (QObject* item, m_items)
-        {
+        foreach(QObject * item, m_items) {
             SessionItem* sessionItem = static_cast<SessionItem*>(item);
             connections += sessionItem->session()->toConnection();
         }

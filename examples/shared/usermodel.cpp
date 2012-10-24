@@ -43,7 +43,7 @@ QString UserModel::channel() const
     return d.channel;
 }
 
-void UserModel::setChannel(const QString &channel)
+void UserModel::setChannel(const QString& channel)
 {
     d.channel = channel.toLower();
 }
@@ -53,7 +53,7 @@ QStringList UserModel::users() const
     return d.names;
 }
 
-bool UserModel::hasUser(const QString &user) const
+bool UserModel::hasUser(const QString& user) const
 {
     return d.names.contains(user, Qt::CaseInsensitive);
 }
@@ -67,18 +67,15 @@ void UserModel::addUsers(const QStringList& users)
 {
     QStringList unique;
     QSet<QString> nameSet = d.names.toSet();
-    foreach (const QString& user, users)
-    {
+    foreach(const QString & user, users) {
         QString name = d.session->unprefixedUser(user);
         if (!nameSet.contains(name))
             unique += user;
     }
 
-    if (!unique.isEmpty())
-    {
+    if (!unique.isEmpty()) {
         beginInsertRows(QModelIndex(), rowCount(), rowCount() + unique.count() - 1);
-        foreach (const QString& user, unique)
-        {
+        foreach(const QString & user, unique) {
             QString name = d.session->unprefixedUser(user);
             d.names += name;
             d.modes.insert(name, d.session->userPrefix(user));
@@ -91,8 +88,7 @@ void UserModel::removeUser(const QString& user)
 {
     QString name = d.session->unprefixedUser(user);
     int idx = d.names.indexOf(name);
-    if (idx != -1)
-    {
+    if (idx != -1) {
         beginRemoveRows(QModelIndex(), idx, idx);
         d.names.removeAt(idx);
         d.modes.remove(name);
@@ -102,8 +98,7 @@ void UserModel::removeUser(const QString& user)
 
 void UserModel::clearUsers()
 {
-    if (!d.names.isEmpty())
-    {
+    if (!d.names.isEmpty()) {
         beginResetModel();
         d.names.clear();
         endResetModel();
@@ -113,8 +108,7 @@ void UserModel::clearUsers()
 void UserModel::renameUser(const QString& from, const QString& to)
 {
     int idx = d.names.indexOf(from);
-    if (idx != -1)
-    {
+    if (idx != -1) {
         d.names[idx] = to;
         d.modes[to] = d.modes.take(from);
         emit dataChanged(index(idx, 0), index(idx, 0));
@@ -124,16 +118,13 @@ void UserModel::renameUser(const QString& from, const QString& to)
 void UserModel::setUserMode(const QString& user, const QString& mode)
 {
     int idx = d.names.indexOf(user);
-    if (idx != -1)
-    {
+    if (idx != -1) {
         bool add = true;
         QString updated = d.modes.value(user);
-        for (int i = 0; i < mode.size(); ++i)
-        {
+        for (int i = 0; i < mode.size(); ++i) {
             QChar c = mode.at(i);
             QString m = d.session->prefixTypeToMode(c);
-            switch (c.unicode())
-            {
+            switch (c.unicode()) {
                 case '+':
                     add = true;
                     break;
@@ -141,13 +132,10 @@ void UserModel::setUserMode(const QString& user, const QString& mode)
                     add = false;
                     break;
                 default:
-                    if (add)
-                    {
+                    if (add) {
                         if (!updated.contains(m))
                             updated += m;
-                    }
-                    else
-                    {
+                    } else {
                         updated.remove(m);
                     }
                     break;
@@ -171,8 +159,7 @@ QVariant UserModel::data(const QModelIndex& index, int role) const
     if (index.row() < 0 || index.row() >= d.names.count())
         return QVariant();
 
-    if (role == Qt::DisplayRole || role == Qt::EditRole || role == Qt::UserRole)
-    {
+    if (role == Qt::DisplayRole || role == Qt::EditRole || role == Qt::UserRole) {
         QString name = d.names.at(index.row());
         if (role == Qt::DisplayRole)
             return d.modes.value(name).left(1) + name;
@@ -186,52 +173,36 @@ QVariant UserModel::data(const QModelIndex& index, int role) const
 
 void UserModel::processMessage(IrcMessage* message)
 {
-    if (!d.session)
-    {
+    if (!d.session) {
         qWarning() << "UserModel::processMessage(): session is null!";
         return;
     }
 
-    if (message->type() == IrcMessage::Nick)
-    {
+    if (message->type() == IrcMessage::Nick) {
         QString nick = message->sender().name().toLower();
         renameUser(nick, static_cast<IrcNickMessage*>(message)->nick());
-    }
-    else if (message->type() == IrcMessage::Join)
-    {
+    } else if (message->type() == IrcMessage::Join) {
         if (message->isOwn())
             clearUsers();
         else
             addUser(message->sender().name());
-    }
-    else if (message->type() == IrcMessage::Part)
-    {
+    } else if (message->type() == IrcMessage::Part) {
         if (message->isOwn())
             clearUsers();
         else
             removeUser(message->sender().name());
-    }
-    else if (message->type() == IrcMessage::Kick)
-    {
+    } else if (message->type() == IrcMessage::Kick) {
         removeUser(static_cast<IrcKickMessage*>(message)->user());
-    }
-    else if (message->type() == IrcMessage::Quit)
-    {
+    } else if (message->type() == IrcMessage::Quit) {
         removeUser(message->sender().name());
-    }
-    else if (message->type() == IrcMessage::Mode)
-    {
+    } else if (message->type() == IrcMessage::Mode) {
         IrcModeMessage* modeMsg = static_cast<IrcModeMessage*>(message);
         if (modeMsg->sender().name() != modeMsg->target() && !modeMsg->argument().isEmpty())
             setUserMode(modeMsg->argument(), modeMsg->mode());
-    }
-    else if (message->type() == IrcMessage::Numeric)
-    {
-        if (static_cast<IrcNumericMessage*>(message)->code() == Irc::RPL_NAMREPLY)
-        {
+    } else if (message->type() == IrcMessage::Numeric) {
+        if (static_cast<IrcNumericMessage*>(message)->code() == Irc::RPL_NAMREPLY) {
             int count = message->parameters().count();
-            if (!d.channel.isNull() && d.channel == message->parameters().value(count - 2).toLower())
-            {
+            if (!d.channel.isNull() && d.channel == message->parameters().value(count - 2).toLower()) {
                 QString names = message->parameters().value(count - 1);
                 addUsers(names.split(" ", QString::SkipEmptyParts));
             }

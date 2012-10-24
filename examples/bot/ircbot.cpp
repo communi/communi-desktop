@@ -39,17 +39,13 @@ void IrcBot::onConnected()
 
 void IrcBot::onMessageReceived(IrcMessage* message)
 {
-    if (message->type() == IrcMessage::Private)
-    {
+    if (message->type() == IrcMessage::Private) {
         IrcPrivateMessage* msg = static_cast<IrcPrivateMessage*>(message);
 
-        if (!msg->target().compare(nickName(), Qt::CaseInsensitive))
-        {
+        if (!msg->target().compare(nickName(), Qt::CaseInsensitive)) {
             // echo private message
             sendCommand(IrcCommand::createMessage(msg->sender().name(), msg->message()));
-        }
-        else if (msg->message().startsWith(nickName(), Qt::CaseInsensitive))
-        {
+        } else if (msg->message().startsWith(nickName(), Qt::CaseInsensitive)) {
             // echo prefixed channel message
             QString reply = msg->message().mid(msg->message().indexOf(" "));
             sendCommand(IrcCommand::createMessage(m_channel, msg->sender().name() + ":" + reply));

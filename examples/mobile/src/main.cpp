@@ -29,7 +29,7 @@
 #define STRINGIFY(x) XSTRINGIFY(x)
 #define XSTRINGIFY(x) #x
 
-Q_DECL_EXPORT int main(int argc, char *argv[])
+Q_DECL_EXPORT int main(int argc, char* argv[])
 {
     QApplication::setApplicationName("Communi");
     QApplication::setOrganizationName("Communi");
@@ -39,8 +39,8 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     QScopedPointer<QmlApplicationViewer> viewer(QmlApplicationViewer::create());
 
     QString appName = QObject::tr("%1 %2 for %3").arg(QApplication::applicationName())
-                                                 .arg(QApplication::applicationVersion())
-                                                 .arg(STRINGIFY(COMMUNI_PLATFORM));
+                      .arg(QApplication::applicationVersion())
+                      .arg(STRINGIFY(COMMUNI_PLATFORM));
     viewer->rootContext()->setContextProperty("ApplicationName", appName);
 #ifdef COMMUNI_IMPORT_PATH
     viewer->engine()->addImportPath(STRINGIFY(COMMUNI_IMPORT_PATH));

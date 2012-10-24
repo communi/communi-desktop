@@ -67,8 +67,7 @@ private slots:
     void updateTabColors();
 
 private:
-    struct TabWidgetData
-    {
+    struct TabWidgetData {
         int previous;
         bool updatingColors;
         QColor currentAlertColor;

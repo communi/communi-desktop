@@ -54,8 +54,7 @@ protected:
     void setUserMode(const QString& user, const QString& mode);
 
 private:
-    struct Private
-    {
+    struct Private {
         QString channel;
         Session* session;
         QStringList names;

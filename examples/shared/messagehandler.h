@@ -49,7 +49,7 @@ public slots:
 signals:
     void receiverToBeAdded(const QString& name);
     void receiverToBeRenamed(const QString& from, const QString& to);
-    void receiverToBeRemoved(const QString &name);
+    void receiverToBeRemoved(const QString& name);
 
 protected:
     void handleInviteMessage(IrcInviteMessage* message);
@@ -73,8 +73,7 @@ private slots:
     void onSessionDestroyed();
 
 private:
-    struct Private
-    {
+    struct Private {
         Session* session;
         MessageReceiver* defaultReceiver;
         MessageReceiver* currentReceiver;

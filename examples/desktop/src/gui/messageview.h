@@ -39,7 +39,7 @@ public:
     Session* session() const;
 
     QString receiver() const;
-    void setReceiver(const QString &receiver);
+    void setReceiver(const QString& receiver);
 
     QByteArray saveSplitter() const;
     void restoreSplitter(const QByteArray& state);
@@ -56,7 +56,7 @@ signals:
     void splitterChanged(const QByteArray& state);
 
 protected:
-    void hideEvent(QHideEvent *event);
+    void hideEvent(QHideEvent* event);
 
     void receiveMessage(IrcMessage* message);
     bool hasUser(const QString& user) const;
@@ -68,8 +68,7 @@ private slots:
     void onCustomCommand(const QString& command, const QStringList& params);
 
 private:
-    struct MessageViewData : public Ui::MessageView
-    {
+    struct MessageViewData : public Ui::MessageView {
         ViewType viewType;
         QString receiver;
         Session* session;

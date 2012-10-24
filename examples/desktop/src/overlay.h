@@ -43,8 +43,7 @@ private slots:
     void relayout();
 
 private:
-    struct Private
-    {
+    struct Private {
         QToolButton* button;
     } d;
 };

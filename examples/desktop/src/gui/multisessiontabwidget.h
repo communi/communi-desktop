@@ -57,8 +57,7 @@ private slots:
     void onTabMenuRequested(int index, const QPoint& pos);
 
 private:
-    struct MainTabWidgetData
-    {
+    struct MainTabWidgetData {
         Settings settings;
     } d;
 };
