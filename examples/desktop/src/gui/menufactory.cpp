@@ -13,8 +13,10 @@
 */
 
 #include "menufactory.h"
+#include "messageview.h"
 #include "userlistview.h"
 #include "sessiontreeitem.h"
+#include "sessiontabwidget.h"
 #include "sessiontreewidget.h"
 #include "session.h"
 #include <IrcCommand>
@@ -25,6 +27,57 @@ MenuFactory::MenuFactory(QObject* parent) : QObject(parent)
 
 MenuFactory::~MenuFactory()
 {
+}
+
+class TabViewMenu : public QMenu
+{
+    Q_OBJECT
+
+public:
+    TabViewMenu(MessageView* view, SessionTabWidget* tab) :
+        QMenu(tab), view(view), tab(tab)
+    {
+    }
+
+private slots:
+    void onEditSession()
+    {
+        QMetaObject::invokeMethod(tab, "editSession", Q_ARG(Session*, view->session()));
+    }
+
+    void onWhoisTriggered()
+    {
+        IrcCommand* command = IrcCommand::createWhois(view->receiver());
+        view->session()->sendCommand(command);
+    }
+
+    void onCloseView()
+    {
+        tab->removeView(view->receiver());
+    }
+
+private:
+    MessageView* view;
+    SessionTabWidget* tab;
+};
+
+QMenu* MenuFactory::createTabViewMenu(MessageView* view, SessionTabWidget* tab)
+{
+    TabViewMenu* menu = new TabViewMenu(view, tab);
+    if (view->viewType() == MessageView::ServerView) {
+        if (view->session()->isActive())
+            menu->addAction(tr("Disconnect"), view->session(), SLOT(quit()));
+        else
+            menu->addAction(tr("Reconnect"), view->session(), SLOT(reconnect()));
+        menu->addAction(tr("Edit"), menu, SLOT(onEditSession()))->setEnabled(!view->session()->isActive());
+    }
+    if (view->viewType() == MessageView::ChannelView) {
+        menu->addAction(tr("Part"), menu, SLOT(onCloseView()));
+    } else {
+        menu->addAction(tr("Whois"), menu, SLOT(onWhoisTriggered()));
+        menu->addAction(tr("Close"), menu, SLOT(onCloseView()));
+    }
+    return menu;
 }
 
 class UserListMenu : public QMenu

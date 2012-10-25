@@ -17,8 +17,10 @@
 
 #include <QMenu>
 
+class MessageView;
 class UserListView;
 class SessionTreeItem;
+class SessionTabWidget;
 class SessionTreeWidget;
 
 class MenuFactory : public QObject
@@ -29,6 +31,7 @@ public:
     MenuFactory(QObject* parent);
     virtual ~MenuFactory();
 
+    virtual QMenu* createTabViewMenu(MessageView* view, SessionTabWidget* tab);
     virtual QMenu* createUserListMenu(const QString& user, UserListView* listView);
     virtual QMenu* createSessionTreeMenu(SessionTreeItem* item, SessionTreeWidget* tree);
 };
