@@ -21,6 +21,7 @@
 #include "commandparser.h"
 #include "settings.h"
 
+class MenuFactory;
 class IrcMessage;
 class Session;
 
@@ -41,6 +42,9 @@ public:
     QString receiver() const;
     void setReceiver(const QString& receiver);
 
+    MenuFactory* menuFactory() const;
+    void setMenuFactory(MenuFactory* factory);
+
     QByteArray saveSplitter() const;
     void restoreSplitter(const QByteArray& state);
 
@@ -57,6 +61,7 @@ signals:
 
 protected:
     void hideEvent(QHideEvent* event);
+    bool eventFilter(QObject* object, QEvent* event);
 
     void receiveMessage(IrcMessage* message);
     bool hasUser(const QString& user) const;

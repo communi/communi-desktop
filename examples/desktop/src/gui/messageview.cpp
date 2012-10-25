@@ -13,9 +13,11 @@
 */
 
 #include "messageview.h"
+#include "menufactory.h"
 #include "completer.h"
 #include "usermodel.h"
 #include "session.h"
+#include <QAbstractTextDocumentLayout>
 #include <QDesktopServices>
 #include <QStringListModel>
 #include <QTextBlock>
@@ -45,6 +47,7 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
 
     setFocusProxy(d.lineEditor);
     d.textBrowser->setBuddy(d.lineEditor);
+    d.textBrowser->viewport()->installEventFilter(this);
     connect(d.textBrowser, SIGNAL(anchorClicked(QUrl)), SLOT(onAnchorClicked(QUrl)));
 
     d.formatter.setHighlights(QStringList(session->nickName()));
@@ -120,6 +123,16 @@ void MessageView::setReceiver(const QString& receiver)
         d.listView->setChannel(receiver);
 }
 
+MenuFactory* MessageView::menuFactory() const
+{
+    return d.listView->menuFactory();
+}
+
+void MessageView::setMenuFactory(MenuFactory* factory)
+{
+    d.listView->setMenuFactory(factory);
+}
+
 QByteArray MessageView::saveSplitter() const
 {
     if (d.viewType != ServerView)
@@ -185,6 +198,22 @@ void MessageView::hideEvent(QHideEvent* event)
 {
     QWidget::hideEvent(event);
     d.textBrowser->setUnseenBlock(-1);
+}
+
+bool MessageView::eventFilter(QObject* object, QEvent* event)
+{
+    if (object == d.textBrowser->viewport() && event->type() == QEvent::ContextMenu) {
+        QContextMenuEvent* menuEvent = static_cast<QContextMenuEvent*>(event);
+        QAbstractTextDocumentLayout* layout = d.textBrowser->document()->documentLayout();
+        QUrl link(layout->anchorAt(menuEvent->pos()));
+        if (link.scheme() == "nick") {
+            QMenu* menu = d.listView->menuFactory()->createUserViewMenu(link.toString(QUrl::RemoveScheme), this);
+            menu->exec(menuEvent->globalPos());
+            menu->deleteLater();
+            return true;
+        }
+    }
+    return QWidget::eventFilter(object, event);
 }
 
 void MessageView::onEscPressed()
