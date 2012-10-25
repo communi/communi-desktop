@@ -16,12 +16,14 @@
 #include "completer.h"
 #include "usermodel.h"
 #include "session.h"
+#include <QDesktopServices>
 #include <QStringListModel>
 #include <QTextBlock>
 #include <QShortcut>
 #include <QKeyEvent>
 #include <QDateTime>
 #include <QDebug>
+#include <QUrl>
 #include <ircmessage.h>
 #include <irccommand.h>
 #include <ircutil.h>
@@ -43,6 +45,7 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
 
     setFocusProxy(d.lineEditor);
     d.textBrowser->setBuddy(d.lineEditor);
+    connect(d.textBrowser, SIGNAL(anchorClicked(QUrl)), SLOT(onAnchorClicked(QUrl)));
 
     d.formatter.setHighlights(QStringList(session->nickName()));
     d.formatter.setMessageFormat("class='message'");
@@ -128,6 +131,7 @@ void MessageView::restoreSplitter(const QByteArray& state)
 {
     d.splitter->restoreState(state);
 }
+
 void MessageView::showHelp(const QString& text, bool error)
 {
     QString syntax;
@@ -209,6 +213,14 @@ void MessageView::onSend(const QString& text)
     } else if (d.parser.hasError()) {
         showHelp(text, true);
     }
+}
+
+void MessageView::onAnchorClicked(const QUrl& link)
+{
+    if (link.scheme() == "nick")
+        emit queried(link.toString(QUrl::RemoveScheme));
+    else
+        QDesktopServices::openUrl(link);
 }
 
 void MessageView::applySettings(const Settings& settings)

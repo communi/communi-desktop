@@ -65,6 +65,7 @@ private slots:
     void onEscPressed();
     void onSplitterMoved();
     void onSend(const QString& text);
+    void onAnchorClicked(const QUrl& link);
     void onCustomCommand(const QString& command, const QStringList& params);
 
 private:

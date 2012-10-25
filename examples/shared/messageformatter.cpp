@@ -428,7 +428,7 @@ QString MessageFormatter::formatSender(const IrcSender& sender, bool strip)
     QString name = sender.name();
     if (sender.isValid()) {
         QColor color = QColor::fromHsl(qHash(name) % 359, 255, 64);
-        name = QString("<strong style='color:%1'>%2</strong>").arg(color.name()).arg(name);
+        name = QString("<strong><a href='nick:%2' style='text-decoration:none; color:%1'>%2</a></strong>").arg(color.name()).arg(name);
         if (!strip && !sender.user().isEmpty() && !sender.host().isEmpty())
             name = QString("%1 (%2@%3)").arg(name, sender.user(), sender.host());
     }
