@@ -45,6 +45,12 @@ private slots:
         QMetaObject::invokeMethod(tab, "editSession", Q_ARG(Session*, view->session()));
     }
 
+    void onNamesTriggered()
+    {
+        IrcCommand* command = IrcCommand::createNames(view->receiver());
+        view->session()->sendCommand(command);
+    }
+
     void onWhoisTriggered()
     {
         IrcCommand* command = IrcCommand::createWhois(view->receiver());
@@ -72,6 +78,7 @@ QMenu* MenuFactory::createTabViewMenu(MessageView* view, SessionTabWidget* tab)
         menu->addAction(tr("Edit"), menu, SLOT(onEditSession()))->setEnabled(!view->session()->isActive());
     }
     if (view->viewType() == MessageView::ChannelView) {
+        menu->addAction(tr("Names"), menu, SLOT(onNamesTriggered()));
         menu->addAction(tr("Part"), menu, SLOT(onCloseView()));
     } else {
         menu->addAction(tr("Whois"), menu, SLOT(onWhoisTriggered()));
@@ -197,6 +204,12 @@ private slots:
         QMetaObject::invokeMethod(tree, "editSession", Q_ARG(Session*, item->session()));
     }
 
+    void onNamesTriggered()
+    {
+        IrcCommand* command = IrcCommand::createNames(item->text(0));
+        item->session()->sendCommand(command);
+    }
+
     void onWhoisTriggered()
     {
         IrcCommand* command = IrcCommand::createWhois(item->text(0));
@@ -224,6 +237,7 @@ QMenu* MenuFactory::createSessionTreeMenu(SessionTreeItem* item, SessionTreeWidg
         menu->addAction(tr("Edit"), menu, SLOT(onEditSession()))->setEnabled(!item->session()->isActive());
     }
     if (item->session()->isChannel(item->text(0))) {
+        menu->addAction(tr("Names"), menu, SLOT(onNamesTriggered()));
         menu->addAction(tr("Part"), menu, SLOT(onCloseItem()));
     } else {
         menu->addAction(tr("Whois"), menu, SLOT(onWhoisTriggered()));
