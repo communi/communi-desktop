@@ -18,6 +18,8 @@
 #include <QMenu>
 
 class UserListView;
+class SessionTreeItem;
+class SessionTreeWidget;
 
 class MenuFactory : public QObject
 {
@@ -28,6 +30,7 @@ public:
     virtual ~MenuFactory();
 
     virtual QMenu* createUserListMenu(const QString& user, UserListView* listView);
+    virtual QMenu* createSessionTreeMenu(SessionTreeItem* item, SessionTreeWidget* tree);
 };
 
 #endif // MENUFACTORY_H

@@ -14,6 +14,8 @@
 
 #include "menufactory.h"
 #include "userlistview.h"
+#include "sessiontreeitem.h"
+#include "sessiontreewidget.h"
 #include "session.h"
 #include <IrcCommand>
 
@@ -123,6 +125,57 @@ QMenu* MenuFactory::createUserListMenu(const QString& user, UserListView* listVi
     action = menu->addAction(tr("Ban"), menu, SLOT(onBanTriggered()));
     action->setData(name);
 
+    return menu;
+}
+
+class SessionTreeMenu : public QMenu
+{
+    Q_OBJECT
+
+public:
+    SessionTreeMenu(SessionTreeItem* item, SessionTreeWidget* tree) :
+        QMenu(tree), item(item), tree(tree)
+    {
+    }
+
+private slots:
+    void onEditSession()
+    {
+        QMetaObject::invokeMethod(tree, "editSession", Q_ARG(Session*, item->session()));
+    }
+
+    void onWhoisTriggered()
+    {
+        IrcCommand* command = IrcCommand::createWhois(item->text(0));
+        item->session()->sendCommand(command);
+    }
+
+    void onCloseItem()
+    {
+        QMetaObject::invokeMethod(tree, "closeItem", Q_ARG(SessionTreeItem*, item));
+    }
+
+private:
+    SessionTreeItem* item;
+    SessionTreeWidget* tree;
+};
+
+QMenu* MenuFactory::createSessionTreeMenu(SessionTreeItem* item, SessionTreeWidget* tree)
+{
+    SessionTreeMenu* menu = new SessionTreeMenu(item, tree);
+    if (!item->parent()) {
+        if (item->session()->isActive())
+            menu->addAction(tr("Disconnect"), item->session(), SLOT(quit()));
+        else
+            menu->addAction(tr("Reconnect"), item->session(), SLOT(reconnect()));
+        menu->addAction(tr("Edit"), menu, SLOT(onEditSession()))->setEnabled(!item->session()->isActive());
+    }
+    if (item->session()->isChannel(item->text(0))) {
+        menu->addAction(tr("Part"), menu, SLOT(onCloseItem()));
+    } else {
+        menu->addAction(tr("Whois"), menu, SLOT(onWhoisTriggered()));
+        menu->addAction(tr("Close"), menu, SLOT(onCloseItem()));
+    }
     return menu;
 }
 
