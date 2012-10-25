@@ -16,15 +16,16 @@
 #include "addviewdialog.h"
 #include "tabwidget_p.h"
 #include "messageview.h"
+#include "menufactory.h"
 #include "settings.h"
 #include "session.h"
 #include <irccommand.h>
 #include <QShortcut>
-#include <QMenu>
 
 SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     TabWidget(parent)
 {
+    d.menuFactory = 0;
     d.handler.setSession(session);
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
@@ -54,6 +55,22 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
 Session* SessionTabWidget::session() const
 {
     return qobject_cast<Session*>(d.handler.session());
+}
+
+MenuFactory* SessionTabWidget::menuFactory() const
+{
+    if (!d.menuFactory) {
+        SessionTabWidget* that = const_cast<SessionTabWidget*>(this);
+        that->d.menuFactory = new MenuFactory(that);
+    }
+    return d.menuFactory;
+}
+
+void SessionTabWidget::setMenuFactory(MenuFactory* factory)
+{
+    if (d.menuFactory && d.menuFactory->parent() == this)
+        delete d.menuFactory;
+    d.menuFactory = factory;
 }
 
 QByteArray SessionTabWidget::saveSplitter() const
@@ -199,19 +216,12 @@ void SessionTabWidget::onNewTabRequested()
 
 void SessionTabWidget::onTabMenuRequested(int index, const QPoint& pos)
 {
-    QMenu menu;
-    if (index == 0) {
-        if (session()->isActive())
-            menu.addAction(tr("Disconnect"), session(), SLOT(quit()));
-        else
-            menu.addAction(tr("Reconnect"), session(), SLOT(reconnect()));
-        menu.addAction(tr("Edit"), this, SLOT(onEditSession()))->setEnabled(!session()->isActive());
+    MessageView* view = qobject_cast<MessageView*>(widget(index));
+    if (view) {
+        QMenu* menu = menuFactory()->createTabViewMenu(view, this);
+        menu->exec(pos);
+        menu->deleteLater();
     }
-    if (static_cast<MessageView*>(widget(index))->viewType() == MessageView::ChannelView)
-        menu.addAction(tr("Part"), this, SLOT(onTabCloseRequested()))->setData(index);
-    else
-        menu.addAction(tr("Close"), this, SLOT(onTabCloseRequested()))->setData(index);
-    menu.exec(pos);
 }
 
 void SessionTabWidget::onTabCloseRequested()

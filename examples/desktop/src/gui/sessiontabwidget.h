@@ -23,6 +23,7 @@
 class Session;
 class IrcMessage;
 class MessageView;
+class MenuFactory;
 
 class SessionTabWidget : public TabWidget
 {
@@ -32,6 +33,9 @@ public:
     SessionTabWidget(Session* session, QWidget* parent = 0);
 
     Session* session() const;
+
+    MenuFactory* menuFactory() const;
+    void setMenuFactory(MenuFactory* factory);
 
     QByteArray saveSplitter() const;
 
@@ -80,6 +84,7 @@ private:
         MessageHandler handler;
         QHash<QString, MessageView*> views;
         Settings settings;
+        MenuFactory* menuFactory;
     } d;
 };
 
