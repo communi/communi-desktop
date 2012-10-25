@@ -21,6 +21,7 @@ class Session;
 class UserModel;
 class IrcMessage;
 class IrcCommand;
+class MenuFactory;
 
 class UserListView : public QListView
 {
@@ -42,6 +43,9 @@ public:
     UserModel* userModel() const;
     bool hasUser(const QString& user) const;
 
+    MenuFactory* menuFactory() const;
+    void setMenuFactory(MenuFactory* factory);
+
 public slots:
     void processMessage(IrcMessage* message);
 
@@ -56,17 +60,11 @@ protected:
 
 private slots:
     void onDoubleClicked(const QModelIndex& index);
-    void onWhoisTriggered();
-    void onQueryTriggered();
-    void onModeTriggered();
-    void onKickTriggered();
-    void onBanTriggered();
 
 private:
-    QMenu* createMenu(const QModelIndex& index, QWidget* parent = 0);
-
     struct UserListViewData {
         UserModel* userModel;
+        MenuFactory* menuFactory;
     } d;
 };
 
