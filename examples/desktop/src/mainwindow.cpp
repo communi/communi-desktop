@@ -318,6 +318,13 @@ void MainWindow::viewActivated(MessageView* view)
     }
 }
 
+void MainWindow::closeTreeItem(SessionTreeItem* item)
+{
+    SessionTabWidget* tab = tabWidget->sessionWidget(item->session());
+    if (tab)
+        tab->removeView(item->text(0));
+}
+
 void MainWindow::currentTreeItemChanged(Session* session, const QString& view)
 {
     SessionTabWidget* tab = tabWidget->sessionWidget(session);
@@ -328,18 +335,6 @@ void MainWindow::currentTreeItemChanged(Session* session, const QString& view)
         else
             tab->openView(view);
     }
-}
-
-void MainWindow::menuRequested(SessionTreeItem* item, const QPoint& pos)
-{
-    SessionTabWidget* tab = tabWidget->sessionWidget(item->session());
-    SessionTreeItem* parent = static_cast<SessionTreeItem*>(item->parent());
-
-    int index = 0;
-    if (parent)
-        index = parent->indexOfChild(item) + 1;
-
-    QMetaObject::invokeMethod(tab, "onTabMenuRequested", Q_ARG(int, index), Q_ARG(QPoint, pos));
 }
 
 void MainWindow::splitterChanged(const QByteArray& state)
@@ -404,8 +399,9 @@ void MainWindow::createTree()
     treeWidget = new SessionTreeWidget(container);
     treeWidget->setFocusPolicy(Qt::NoFocus);
 
+    connect(treeWidget, SIGNAL(editSession(Session*)), this, SLOT(editSession(Session*)));
+    connect(treeWidget, SIGNAL(closeItem(SessionTreeItem*)), this, SLOT(closeTreeItem(SessionTreeItem*)));
     connect(treeWidget, SIGNAL(currentViewChanged(Session*, QString)), this, SLOT(currentTreeItemChanged(Session*, QString)));
-    connect(treeWidget, SIGNAL(menuRequested(SessionTreeItem*, QPoint)), this, SLOT(menuRequested(SessionTreeItem*, QPoint)));
 
     foreach(Session * session, tabWidget->sessions()) {
         treeWidget->addSession(session);

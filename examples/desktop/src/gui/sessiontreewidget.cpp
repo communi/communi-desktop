@@ -15,6 +15,7 @@
 #include "sessiontreewidget.h"
 #include "sessiontreedelegate.h"
 #include "sessiontreeitem.h"
+#include "menufactory.h"
 #include "sharedtimer.h"
 #include "session.h"
 #include <QContextMenuEvent>
@@ -28,6 +29,8 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     setRootIsDecorated(false);
     setFrameStyle(QFrame::NoFrame);
     setItemDelegate(new SessionTreeDelegate(this));
+
+    d.menuFactory = 0;
 
     d.colors[Active] = palette().color(QPalette::WindowText);
     d.colors[Inactive] = palette().color(QPalette::Disabled, QPalette::Highlight);
@@ -66,6 +69,22 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
 QSize SessionTreeWidget::sizeHint() const
 {
     return QSize(20 * fontMetrics().width('#'), QTreeWidget::sizeHint().height());
+}
+
+MenuFactory* SessionTreeWidget::menuFactory() const
+{
+    if (!d.menuFactory) {
+        SessionTreeWidget* that = const_cast<SessionTreeWidget*>(this);
+        that->d.menuFactory = new MenuFactory(that);
+    }
+    return d.menuFactory;
+}
+
+void SessionTreeWidget::setMenuFactory(MenuFactory* factory)
+{
+    if (d.menuFactory && d.menuFactory->parent() == this)
+        delete d.menuFactory;
+    d.menuFactory = factory;
 }
 
 QColor SessionTreeWidget::statusColor(SessionTreeWidget::ItemStatus status) const
@@ -240,8 +259,11 @@ void SessionTreeWidget::applySettings(const Settings& settings)
 void SessionTreeWidget::contextMenuEvent(QContextMenuEvent* event)
 {
     SessionTreeItem* item = static_cast<SessionTreeItem*>(itemAt(event->pos()));
-    if (item)
-        emit menuRequested(item, event->globalPos());
+    if (item) {
+        QMenu* menu = menuFactory()->createSessionTreeMenu(item, this);
+        menu->exec(event->globalPos());
+        menu->deleteLater();
+    }
 }
 
 bool SessionTreeWidget::event(QEvent* event)

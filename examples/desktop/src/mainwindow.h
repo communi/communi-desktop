@@ -59,8 +59,8 @@ private slots:
     void viewRemoved(MessageView* view);
     void viewRenamed(const QString& from, const QString& to);
     void viewActivated(MessageView* view);
+    void closeTreeItem(SessionTreeItem* item);
     void currentTreeItemChanged(Session* session, const QString& view);
-    void menuRequested(SessionTreeItem* item, const QPoint& pos);
     void splitterChanged(const QByteArray& state);
     void sessionAdded(Session* session);
     void sessionRemoved(Session* session);

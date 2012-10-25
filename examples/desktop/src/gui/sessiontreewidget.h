@@ -23,6 +23,7 @@
 
 class Session;
 struct Settings;
+class MenuFactory;
 class SessionTreeItem;
 
 class SessionTreeWidget : public QTreeWidget
@@ -33,6 +34,9 @@ public:
     SessionTreeWidget(QWidget* parent = 0);
 
     QSize sizeHint() const;
+
+    MenuFactory* menuFactory() const;
+    void setMenuFactory(MenuFactory* factory);
 
     enum ItemStatus { Active, Inactive, Alert, Highlight };
 
@@ -68,8 +72,9 @@ public slots:
     void applySettings(const Settings& settings);
 
 signals:
+    void editSession(Session* session);
+    void closeItem(SessionTreeItem* item);
     void currentViewChanged(Session* session, const QString& view);
-    void menuRequested(SessionTreeItem* item, const QPoint& pos);
 
 protected:
     void contextMenuEvent(QContextMenuEvent* event);
@@ -93,6 +98,7 @@ private:
     struct SessionTreeWidgetData {
         QColor alertColor;
         Settings settings;
+        MenuFactory* menuFactory;
         QShortcut* prevShortcut;
         QShortcut* nextShortcut;
         QShortcut* prevUnreadShortcut;
