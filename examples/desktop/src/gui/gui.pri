@@ -10,6 +10,7 @@ FORMS += $$PWD/messageview.ui
 
 HEADERS += $$PWD/addviewdialog.h
 HEADERS += $$PWD/lineeditor.h
+HEADERS += $$PWD/menufactory.h
 HEADERS += $$PWD/messageview.h
 HEADERS += $$PWD/multisessiontabwidget.h
 HEADERS += $$PWD/searcheditor.h
@@ -24,6 +25,7 @@ HEADERS += $$PWD/userlistview.h
 
 SOURCES += $$PWD/addviewdialog.cpp
 SOURCES += $$PWD/lineeditor.cpp
+SOURCES += $$PWD/menufactory.cpp
 SOURCES += $$PWD/messageview.cpp
 SOURCES += $$PWD/multisessiontabwidget.cpp
 SOURCES += $$PWD/searcheditor.cpp
