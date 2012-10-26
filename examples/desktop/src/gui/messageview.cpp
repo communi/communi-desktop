@@ -207,9 +207,13 @@ bool MessageView::eventFilter(QObject* object, QEvent* event)
         QAbstractTextDocumentLayout* layout = d.textBrowser->document()->documentLayout();
         QUrl link(layout->anchorAt(menuEvent->pos()));
         if (link.scheme() == "nick") {
-            QMenu* menu = d.listView->menuFactory()->createUserViewMenu(link.toString(QUrl::RemoveScheme), this);
-            menu->exec(menuEvent->globalPos());
-            menu->deleteLater();
+            QMenu* standardMenu = d.textBrowser->createStandardContextMenu(menuEvent->pos());
+            QMenu* customMenu = d.listView->menuFactory()->createUserViewMenu(link.toString(QUrl::RemoveScheme), this);
+            customMenu->addSeparator();
+            customMenu->insertActions(0, standardMenu->actions());
+            customMenu->exec(menuEvent->globalPos());
+            customMenu->deleteLater();
+            delete standardMenu;
             return true;
         }
     }
