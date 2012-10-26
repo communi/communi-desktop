@@ -308,8 +308,8 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
             return tr("! %1 was %2@%3 %4 %5").arg(P_(1), P_(2), P_(3), P_(4), P_(5));
         case Irc::RPL_WHOISIDLE: {
             QDateTime signon = QDateTime::fromTime_t(P_(3).toInt());
-            QTime idle = QTime().addSecs(P_(2).toInt());
-            return tr("! %1 has been online since %2 (idle for %3)").arg(P_(1), signon.toString(), idle.toString());
+            QString idle = formatIdleTime(P_(2).toInt());
+            return tr("! %1 has been online since %2 (idle for %3)").arg(P_(1), signon.toString(), idle);
         }
         case Irc::RPL_WHOISCHANNELS:
             return tr("! %1 is on channels %2").arg(P_(1), P_(2));
@@ -438,6 +438,21 @@ QString MessageFormatter::formatSender(const IrcSender& sender, bool strip)
 QString MessageFormatter::formatUser(const QString& user, bool strip)
 {
     return formatSender(IrcSender(user), strip);
+}
+
+QString MessageFormatter::formatIdleTime(int secs)
+{
+    QStringList idle;
+    if (int days = secs / 86400)
+        idle += tr("%1 days").arg(days);
+    secs %= 86400;
+    if (int hours = secs / 3600)
+        idle += tr("%1 hours").arg(hours);
+    secs %= 3600;
+    if (int mins = secs / 60)
+        idle += tr("%1 mins").arg(mins);
+    idle += tr("%1 secs").arg(secs % 60);
+    return idle.join(" ");
 }
 
 QString MessageFormatter::formatHtml(const QString& message) const

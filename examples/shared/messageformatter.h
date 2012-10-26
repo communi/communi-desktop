@@ -91,6 +91,9 @@ protected:
 
     static QString formatSender(const IrcSender& sender, bool strip = true);
     static QString formatUser(const QString& user, bool strip = true);
+
+    static QString formatIdleTime(int secs);
+
     QString formatHtml(const QString& message) const;
 
 private:
