@@ -22,22 +22,31 @@ static QMap<QString, QString>& command_syntaxes()
 {
     static QMap<QString, QString> syntaxes;
     if (syntaxes.isEmpty()) {
+        syntaxes.insert("ADMIN", "(<server>)");
         syntaxes.insert("AWAY", "(<reason>)");
+        syntaxes.insert("INFO", "(<server>)");
         syntaxes.insert("INVITE", "<user>");
         syntaxes.insert("JOIN", "<channel> (<key>)");
         syntaxes.insert("KICK", "<user> (<reason>)");
+        syntaxes.insert("KNOCK", "<channel> (<message>)");
+        syntaxes.insert("LIST", "(<channels>) (<server>)");
         syntaxes.insert("ME", "<message>");
-        syntaxes.insert("MODE", "<channel/user> <mode> (<arg>)");
-        syntaxes.insert("NAMES", "");
+        syntaxes.insert("MODE", "<channel/user> (<mode>) (<arg>)");
+        syntaxes.insert("MOTD", "(<server>)");
+        syntaxes.insert("NAMES", "(<channel>)");
         syntaxes.insert("NICK", "<nick>");
         syntaxes.insert("NOTICE", "<channel/user> <message>");
         syntaxes.insert("PART", "(<reason>)");
         syntaxes.insert("PING", "(<user>)");
         syntaxes.insert("QUIT" , "(<message>)");
         syntaxes.insert("QUOTE" , "<command> (<parameters>)");
+        syntaxes.insert("STATS", "<query> (<server>)");
         syntaxes.insert("TIME", "(<user>)");
         syntaxes.insert("TOPIC", "(<topic>)");
+        syntaxes.insert("TRACE", "(<target>)");
+        syntaxes.insert("USERS", "(<server>)");
         syntaxes.insert("VERSION", "(<user>)");
+        syntaxes.insert("WHO", "<user>");
         syntaxes.insert("WHOIS", "<user>");
         syntaxes.insert("WHOWAS", "<user>");
     }
@@ -98,12 +107,17 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
 
         static QHash<QString, ParseFunc> parseFunctions;
         if (parseFunctions.isEmpty()) {
+            parseFunctions.insert("ADMIN", &CommandParser::parseAdmin);
             parseFunctions.insert("AWAY", &CommandParser::parseAway);
+            parseFunctions.insert("INFO", &CommandParser::parseInfo);
             parseFunctions.insert("INVITE", &CommandParser::parseInvite);
             parseFunctions.insert("JOIN", &CommandParser::parseJoin);
             parseFunctions.insert("KICK", &CommandParser::parseKick);
+            parseFunctions.insert("KNOCK", &CommandParser::parseKnock);
+            parseFunctions.insert("LIST", &CommandParser::parseList);
             parseFunctions.insert("ME", &CommandParser::parseMe);
             parseFunctions.insert("MODE", &CommandParser::parseMode);
+            parseFunctions.insert("MOTD", &CommandParser::parseMotd);
             parseFunctions.insert("NAMES", &CommandParser::parseNames);
             parseFunctions.insert("NICK", &CommandParser::parseNick);
             parseFunctions.insert("NOTICE", &CommandParser::parseNotice);
@@ -111,9 +125,13 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
             parseFunctions.insert("PING", &CommandParser::parsePing);
             parseFunctions.insert("QUIT", &CommandParser::parseQuit);
             parseFunctions.insert("QUOTE", &CommandParser::parseQuote);
+            parseFunctions.insert("STATS", &CommandParser::parseStats);
             parseFunctions.insert("TIME", &CommandParser::parseTime);
             parseFunctions.insert("TOPIC", &CommandParser::parseTopic);
+            parseFunctions.insert("TRACE", &CommandParser::parseTrace);
+            parseFunctions.insert("USERS", &CommandParser::parseUsers);
             parseFunctions.insert("VERSION", &CommandParser::parseVersion);
+            parseFunctions.insert("WHO", &CommandParser::parseWho);
             parseFunctions.insert("WHOIS", &CommandParser::parseWhois);
             parseFunctions.insert("WHOWAS", &CommandParser::parseWhowas);
         }
@@ -140,10 +158,22 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
     return 0;
 }
 
+IrcCommand* CommandParser::parseAdmin(const QString& receiver, const QStringList& params)
+{
+    Q_UNUSED(receiver);
+    return IrcCommand::createAdmin(params.value(0));
+}
+
 IrcCommand* CommandParser::parseAway(const QString& receiver, const QStringList& params)
 {
     Q_UNUSED(receiver);
     return IrcCommand::createAway(params.value(0));
+}
+
+IrcCommand* CommandParser::parseInfo(const QString& receiver, const QStringList& params)
+{
+    Q_UNUSED(receiver);
+    return IrcCommand::createUsers(params.join(" "));
 }
 
 IrcCommand* CommandParser::parseInvite(const QString& receiver, const QStringList& params)
@@ -168,6 +198,20 @@ IrcCommand* CommandParser::parseKick(const QString& receiver, const QStringList&
     return 0;
 }
 
+IrcCommand* CommandParser::parseKnock(const QString& receiver, const QStringList& params)
+{
+    Q_UNUSED(receiver);
+    if (params.count() >= 1)
+        return IrcCommand::createKnock(params.at(0), QStringList(params.mid(1)).join(" "));
+    return 0;
+}
+
+IrcCommand* CommandParser::parseList(const QString& receiver, const QStringList& params)
+{
+    Q_UNUSED(receiver);
+    return IrcCommand::createList(params);
+}
+
 IrcCommand* CommandParser::parseMe(const QString& receiver, const QStringList& params)
 {
     if (!params.isEmpty())
@@ -178,16 +222,22 @@ IrcCommand* CommandParser::parseMe(const QString& receiver, const QStringList& p
 IrcCommand* CommandParser::parseMode(const QString& receiver, const QStringList& params)
 {
     Q_UNUSED(receiver);
-    if (params.count() >= 2 && params.count() <= 4)
-        return IrcCommand::createMode(params.at(0), params.at(1), params.value(2));
+    if (params.count() >= 1 && params.count() <= 4)
+        return IrcCommand::createMode(params.at(0), params.value(1), params.value(2));
     return 0;
+}
+
+IrcCommand* CommandParser::parseMotd(const QString& receiver, const QStringList& params)
+{
+    Q_UNUSED(receiver);
+    return IrcCommand::createMotd(params.join(" "));
 }
 
 IrcCommand* CommandParser::parseNames(const QString& receiver, const QStringList& params)
 {
     if (params.isEmpty())
         return IrcCommand::createNames(receiver);
-    return 0;
+    return IrcCommand::createNames(params);
 }
 
 IrcCommand* CommandParser::parseNick(const QString& receiver, const QStringList& params)
@@ -232,11 +282,19 @@ IrcCommand* CommandParser::parseQuote(const QString& receiver, const QStringList
     return IrcCommand::createQuote(params);
 }
 
+IrcCommand* CommandParser::parseStats(const QString& receiver, const QStringList& params)
+{
+    Q_UNUSED(receiver);
+    if (!params.isEmpty())
+        return IrcCommand::createStats(params.join(" "));
+    return 0;
+}
+
 IrcCommand* CommandParser::parseTime(const QString& receiver, const QStringList& params)
 {
     Q_UNUSED(receiver);
     if (params.isEmpty())
-        return IrcCommand::createQuote(QStringList() << "TIME");
+        return IrcCommand::createTime();
     return IrcCommand::createCtcpRequest(params.at(0), "TIME");
 }
 
@@ -245,12 +303,32 @@ IrcCommand* CommandParser::parseTopic(const QString& receiver, const QStringList
     return IrcCommand::createTopic(receiver, params.join(" "));
 }
 
+IrcCommand* CommandParser::parseTrace(const QString& receiver, const QStringList& params)
+{
+    Q_UNUSED(receiver);
+    return IrcCommand::createTrace(params.join(" "));
+}
+
+IrcCommand* CommandParser::parseUsers(const QString& receiver, const QStringList& params)
+{
+    Q_UNUSED(receiver);
+    return IrcCommand::createUsers(params.join(" "));
+}
+
 IrcCommand* CommandParser::parseVersion(const QString& receiver, const QStringList& params)
 {
     Q_UNUSED(receiver);
     if (params.isEmpty())
-        return IrcCommand::createQuote(QStringList() << "VERSION");
+        return IrcCommand::createVersion();
     return IrcCommand::createCtcpRequest(params.at(0), "VERSION");
+}
+
+IrcCommand* CommandParser::parseWho(const QString& receiver, const QStringList& params)
+{
+    Q_UNUSED(receiver);
+    if (params.count() == 1)
+        return IrcCommand::createWho(params.at(0));
+    return 0;
 }
 
 IrcCommand* CommandParser::parseWhois(const QString& receiver, const QStringList& params)

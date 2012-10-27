@@ -44,12 +44,17 @@ signals:
     void customCommand(const QString& command, const QStringList& params);
 
 private:
+    static IrcCommand* parseAdmin(const QString& receiver, const QStringList& params);
     static IrcCommand* parseAway(const QString& receiver, const QStringList& params);
+    static IrcCommand* parseInfo(const QString& receiver, const QStringList& params);
     static IrcCommand* parseInvite(const QString& receiver, const QStringList& params);
     static IrcCommand* parseJoin(const QString& receiver, const QStringList& params);
     static IrcCommand* parseKick(const QString& receiver, const QStringList& params);
+    static IrcCommand* parseKnock(const QString& receiver, const QStringList& params);
+    static IrcCommand* parseList(const QString& receiver, const QStringList& params);
     static IrcCommand* parseMe(const QString& receiver, const QStringList& params);
     static IrcCommand* parseMode(const QString& receiver, const QStringList& params);
+    static IrcCommand* parseMotd(const QString& receiver, const QStringList& params);
     static IrcCommand* parseNames(const QString& receiver, const QStringList& params);
     static IrcCommand* parseNick(const QString& receiver, const QStringList& params);
     static IrcCommand* parseNotice(const QString& receiver, const QStringList& params);
@@ -57,9 +62,13 @@ private:
     static IrcCommand* parsePing(const QString& receiver, const QStringList& params);
     static IrcCommand* parseQuit(const QString& receiver, const QStringList& params);
     static IrcCommand* parseQuote(const QString& receiver, const QStringList& params);
+    static IrcCommand* parseStats(const QString& receiver, const QStringList& params);
     static IrcCommand* parseTime(const QString& receiver, const QStringList& params);
     static IrcCommand* parseTopic(const QString& receiver, const QStringList& params);
+    static IrcCommand* parseTrace(const QString& receiver, const QStringList& params);
+    static IrcCommand* parseUsers(const QString& receiver, const QStringList& params);
     static IrcCommand* parseVersion(const QString& receiver, const QStringList& params);
+    static IrcCommand* parseWho(const QString& receiver, const QStringList& params);
     static IrcCommand* parseWhois(const QString& receiver, const QStringList& params);
     static IrcCommand* parseWhowas(const QString& receiver, const QStringList& params);
 };
