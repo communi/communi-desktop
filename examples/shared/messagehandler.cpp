@@ -170,23 +170,14 @@ void MessageHandler::handleModeMessage(IrcModeMessage* message)
 
 void MessageHandler::handleNickMessage(IrcNickMessage* message)
 {
-    bool received = false;
     QString nick = message->sender().name().toLower();
-    foreach(MessageReceiver * receiver, d.receivers) {
-        if (receiver->hasUser(nick)) {
-            received = true;
+    foreach(MessageReceiver* receiver, d.receivers) {
+        if (receiver->hasUser(nick))
             receiver->receiveMessage(message);
-        }
-    }
-    if (!received && d.currentReceiver)
-        d.currentReceiver->receiveMessage(message);
-
-    foreach(const QString & receiver, d.receivers.keys()) {
-        if (!nick.compare(receiver, Qt::CaseInsensitive)) {
-            emit receiverToBeRenamed(receiver, message->nick());
+        if (!nick.compare(receiver->receiver(), Qt::CaseInsensitive)) {
+            emit receiverToBeRenamed(receiver->receiver(), message->nick());
             MessageReceiver* object = d.receivers.take(nick);
-            d.receivers.insert(nick, object);
-            sendMessage(message, object);
+            d.receivers.insert(message->nick(), object);
         }
     }
 }
@@ -296,13 +287,10 @@ void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
 void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
 {
     QString nick = message->sender().name();
-    foreach(MessageReceiver * receiver, d.receivers) {
+    foreach(MessageReceiver* receiver, d.receivers) {
         if (receiver->hasUser(nick))
             receiver->receiveMessage(message);
     }
-
-    if (d.receivers.contains(nick.toLower()))
-        sendMessage(message, nick);
 }
 
 void MessageHandler::handleTopicMessage(IrcTopicMessage* message)
