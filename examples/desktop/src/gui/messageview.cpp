@@ -384,7 +384,9 @@ void MessageView::receiveMessage(IrcMessage* message)
 
 bool MessageView::hasUser(const QString& user) const
 {
-    return d.viewType == ChannelView && d.listView->hasUser(user);
+    return (!d.session->nickName().compare(user, Qt::CaseInsensitive)) ||
+           (d.viewType == QueryView && !d.receiver.compare(user, Qt::CaseInsensitive)) ||
+           (d.viewType == ChannelView && d.listView->hasUser(user));
 }
 
 void MessageView::onCustomCommand(const QString& command, const QStringList& params)
