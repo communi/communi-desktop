@@ -71,7 +71,6 @@ private slots:
     void tabActivated(int index);
     void onNewTabRequested();
     void onTabMenuRequested(int index, const QPoint& pos);
-    void onTabCloseRequested();
     void delayedTabReset();
     void delayedTabResetTimeout();
     void onTabAlerted(IrcMessage* message);

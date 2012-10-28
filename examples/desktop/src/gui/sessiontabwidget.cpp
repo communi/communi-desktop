@@ -126,6 +126,8 @@ void SessionTabWidget::removeView(const QString& receiver)
             session()->destructLater();
             emit sessionClosed(session());
         }
+
+        d.handler.removeReceiver(view->receiver());
     }
 }
 
@@ -136,7 +138,7 @@ void SessionTabWidget::closeCurrentView()
 
 void SessionTabWidget::closeView(int index)
 {
-    MessageView* view = d.views.value(tabText(index).replace("&&", "&").toLower());
+    MessageView* view = qobject_cast<MessageView*>(widget(index));
     if (view) {
         QString reason = tr("%1 %2").arg(QApplication::applicationName())
                          .arg(QApplication::applicationVersion());
@@ -222,13 +224,6 @@ void SessionTabWidget::onTabMenuRequested(int index, const QPoint& pos)
         menu->exec(pos);
         menu->deleteLater();
     }
-}
-
-void SessionTabWidget::onTabCloseRequested()
-{
-    QAction* action = qobject_cast<QAction*>(sender());
-    if (action)
-        closeView(action->data().toInt());
 }
 
 void SessionTabWidget::delayedTabReset()
