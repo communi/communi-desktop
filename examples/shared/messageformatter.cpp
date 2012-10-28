@@ -301,7 +301,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
         case Irc::RPL_WHOISUSER:
             return tr("! %1 is %2@%3 (%4)").arg(P_(1), P_(2), P_(3), formatHtml(MID_(5)));
         case Irc::RPL_WHOISSERVER:
-            return tr("! %1 is online via %2 (%3)").arg(P_(1), P_(2), P_(3));
+            return tr("! %1 connected via %2 (%3)").arg(P_(1), P_(2), P_(3));
         case Irc::RPL_WHOISACCOUNT: // nick user is logged in as
             return tr("! %1 %3 %2").arg(P_(1), P_(2), P_(3));
         case Irc::RPL_WHOWASUSER:
