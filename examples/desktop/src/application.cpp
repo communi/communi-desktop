@@ -22,7 +22,7 @@
 #include <QFile>
 #include <Irc>
 
-QByteArray Application::ApplicationData::encoding("UTF-8");
+QByteArray Application::ApplicationData::encoding("ISO-8859-15");
 Settings Application::ApplicationData::settings;
 
 Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
