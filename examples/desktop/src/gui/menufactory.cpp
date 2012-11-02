@@ -251,7 +251,13 @@ private slots:
         item->session()->sendCommand(command);
     }
 
-    void onCloseItem()
+    void onPartTriggered()
+    {
+        IrcCommand* command = IrcCommand::createPart(item->text(0));
+        item->session()->sendCommand(command);
+    }
+
+    void onCloseTriggered()
     {
         QMetaObject::invokeMethod(tree, "closeItem", Q_ARG(SessionTreeItem*, item));
     }
@@ -273,10 +279,10 @@ QMenu* MenuFactory::createSessionTreeMenu(SessionTreeItem* item, SessionTreeWidg
     }
     if (item->session()->isChannel(item->text(0))) {
         menu->addAction(tr("Names"), menu, SLOT(onNamesTriggered()));
-        menu->addAction(tr("Part"), menu, SLOT(onCloseItem()));
+        menu->addAction(tr("Part"), menu, SLOT(onPartTriggered()));
     } else {
         menu->addAction(tr("Whois"), menu, SLOT(onWhoisTriggered()));
-        menu->addAction(tr("Close"), menu, SLOT(onCloseItem()));
+        menu->addAction(tr("Close"), menu, SLOT(onCloseTriggered()));
     }
     return menu;
 }
