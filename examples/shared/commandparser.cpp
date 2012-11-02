@@ -141,13 +141,14 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
         ParseFunc parseFunc = parseFunctions.value(command);
         if (parseFunc) {
             IrcCommand* cmd = parseFunc(receiver, words.mid(1));
-            if (!cmd)
-                *has_error() = true;
-            return cmd;
-        }
-        if (command_syntaxes().contains(command.toUpper())) {
-            emit customCommand(command, words.mid(1));
-            return 0;
+            if (cmd)
+                return cmd;
+        } else if (command_syntaxes().contains(command.toUpper())) {
+            QStringList params = words.mid(1);
+            if (parseCustomCommand(command_syntaxes().value(command.toUpper()), params)) {
+                emit customCommand(command, params);
+                return 0;
+            }
         }
     } else {
         return IrcCommand::createMessage(receiver, text);
@@ -156,6 +157,20 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
     // unknown command
     *has_error() = true;
     return 0;
+}
+
+bool CommandParser::parseCustomCommand(const QString& syntax, const QStringList& params)
+{
+    QStringList tokens = syntax.split(" ", QString::SkipEmptyParts);
+    int min = 0;
+    int max = tokens.count();
+    while (!tokens.isEmpty())
+    {
+        QString p = tokens.takeFirst();
+        if (!p.startsWith("(<"))
+            ++min;
+    }
+    return params.count() >= min && params.count() <= max;
 }
 
 IrcCommand* CommandParser::parseAdmin(const QString& receiver, const QStringList& params)

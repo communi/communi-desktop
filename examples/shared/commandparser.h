@@ -44,6 +44,7 @@ signals:
     void customCommand(const QString& command, const QStringList& params);
 
 private:
+    static bool parseCustomCommand(const QString& command, const QStringList& params);
     static IrcCommand* parseAdmin(const QString& receiver, const QStringList& params);
     static IrcCommand* parseAway(const QString& receiver, const QStringList& params);
     static IrcCommand* parseInfo(const QString& receiver, const QStringList& params);
