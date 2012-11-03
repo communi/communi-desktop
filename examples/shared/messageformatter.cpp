@@ -30,13 +30,17 @@ MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
     d.stripNicks = true;
     d.userModel = 0;
 
-    QStringList colorNames = QStringList()
-            << "navy" << "green" << "red" << "maroon" << "purple" << "olive"
-            << "yellow" << "lime" << "teal" << "aqua" << "royalblue" << "fuchsia";
-    for (int i = IrcPalette::Blue; i <= IrcPalette::Pink; ++i) {
-        QColor color(colorNames.takeFirst());
-        color.setHsl(color.hue(), 100, 64);
-        IrcPalette::setColorName(i, color.name());
+    static bool init = false;
+    if (!init) {
+        init = true;
+        QStringList colorNames = QStringList()
+                << "navy" << "green" << "red" << "maroon" << "purple" << "olive"
+                << "yellow" << "lime" << "teal" << "aqua" << "royalblue" << "fuchsia";
+        for (int i = IrcPalette::Blue; i <= IrcPalette::Pink; ++i) {
+            QColor color(colorNames.takeFirst());
+            color.setHsl(color.hue(), 100, 64);
+            IrcPalette::setColorName(i, color.name());
+        }
     }
 }
 
