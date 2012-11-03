@@ -91,6 +91,8 @@ CommonPage {
     onModelDataChanged: {
         if (modelData) {
             listView.model = modelData.messages;
+            if (modelData.unseenIndex > 0)
+                listView.positionViewAtIndex(modelData.unseenIndex, ListView.Beginning);
             Completer.modelItem = modelData;
         }
         indicator.visible = false;
@@ -152,8 +154,10 @@ CommonPage {
             }
         }
 
-        onCountChanged: if (!positioner.running) positioner.start()
-        onHeightChanged: if (!positioner.running) positioner.start()
+        onCountChanged: {
+            if (listView.visibleArea.yPosition + listView.visibleArea.heightRatio > 0.9)
+                positioner.start();
+        }
 
         currentIndex: modelData ? modelData.unseenIndex : -1
         highlight: Item {
@@ -203,7 +207,6 @@ CommonPage {
 
         onActiveFocusChanged: {
             if (!activeFocus) textField.visible = false;
-            if (!positioner.running) positioner.start();
         }
 
         Keys.onReturnPressed: {
