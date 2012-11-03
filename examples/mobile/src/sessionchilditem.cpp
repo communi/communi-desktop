@@ -49,6 +49,13 @@ QStringList SessionChildItem::users() const
     return names;
 }
 
+bool SessionChildItem::hasUser(const QString& user) const
+{
+    return (!session()->nickName().compare(user, Qt::CaseInsensitive)) ||
+           (!isChannel() && !receiver().compare(user, Qt::CaseInsensitive)) ||
+           (isChannel() && m_usermodel->hasUser(user));
+}
+
 SessionItem* SessionChildItem::sessionItem() const
 {
     return m_parent;

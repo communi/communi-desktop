@@ -35,6 +35,7 @@ public:
 
     bool isChannel() const;
     QStringList users() const;
+    bool hasUser(const QString& user) const;
     SessionItem* sessionItem() const;
 
     QStringList completions(const QString& prefix, const QString& word) const;
