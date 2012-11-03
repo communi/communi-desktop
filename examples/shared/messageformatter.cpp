@@ -14,6 +14,7 @@
 
 #include "messageformatter.h"
 #include "usermodel.h"
+#include <ircpalette.h>
 #include <ircsender.h>
 #include <ircutil.h>
 #include <irc.h>
@@ -32,10 +33,10 @@ MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
     QStringList colorNames = QStringList()
             << "navy" << "green" << "red" << "maroon" << "purple" << "olive"
             << "yellow" << "lime" << "teal" << "aqua" << "royalblue" << "fuchsia";
-    for (int i = IrcUtil::Blue; i <= IrcUtil::Pink; ++i) {
+    for (int i = IrcPalette::Blue; i <= IrcPalette::Pink; ++i) {
         QColor color(colorNames.takeFirst());
         color.setHsl(color.hue(), 100, 64);
-        IrcUtil::setColorName(i, color.name());
+        IrcPalette::setColorName(i, color.name());
     }
 }
 
