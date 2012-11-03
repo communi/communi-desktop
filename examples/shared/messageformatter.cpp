@@ -28,6 +28,20 @@ MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
     d.timeStamp = false;
     d.stripNicks = true;
     d.userModel = 0;
+
+    // desaturated (60%) colors: http://www.mirc.com/colors.html
+    IrcUtil::setColorName(2, QLatin1String("#333380"));
+    IrcUtil::setColorName(3, QLatin1String("#338033"));
+    IrcUtil::setColorName(4, QLatin1String("#ff3333"));
+    IrcUtil::setColorName(5, QLatin1String("#803333"));
+    IrcUtil::setColorName(6, QLatin1String("#803380"));
+    IrcUtil::setColorName(7, QLatin1String("#808033"));
+    IrcUtil::setColorName(8, QLatin1String("#ffff66"));
+    IrcUtil::setColorName(9, QLatin1String("#66ff66"));
+    IrcUtil::setColorName(10, QLatin1String("#338080"));
+    IrcUtil::setColorName(11, QLatin1String("#66ffff"));
+    IrcUtil::setColorName(12, QLatin1String("#5a7ce1"));
+    IrcUtil::setColorName(13, QLatin1String("#ff66ff"));
 }
 
 MessageFormatter::~MessageFormatter()
