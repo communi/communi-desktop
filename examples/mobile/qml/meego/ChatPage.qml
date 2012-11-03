@@ -188,7 +188,7 @@ CommonPage {
         id: textField
         height: screen.currentOrientation === Screen.Landscape ? UI.HTB_LANDSCAPE_HEIGHT : UI.HTB_PORTRAIT_HEIGHT
         visible: false
-        inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhUrlCharactersOnly
+        inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
         platformSipAttributes: SipAttributes {
             actionKeyHighlighted: true
             actionKeyLabel: qsTr("Send")
