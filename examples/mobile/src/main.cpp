@@ -72,6 +72,33 @@ Q_DECL_EXPORT int main(int argc, char* argv[])
 
     QScopedPointer<SessionManager> manager(new SessionManager(appName, viewer->rootContext()));
     viewer->rootContext()->setContextProperty("SessionManager", manager.data());
+
+    foreach (const QString& arg, app->arguments()) {
+        // irc:[ //[ <host>[:<port>] ]/[<target>]
+        QRegExp rx("irc:(?://([^:/]+)(?::(\\d+))?)?(?:/([^/]*))?");
+        if (rx.exactMatch(arg)) {
+            QString host = rx.cap(1);
+            QString port = rx.cap(2);
+            QString target = rx.cap(3);
+
+            ConnectionInfo info;
+            info.host = !host.isEmpty() ? host : "localhost";
+            info.port = !port.isEmpty() ? port.toInt() : 6667;
+            info.nick = Settings::instance()->name();
+            info.user = Settings::instance()->user();
+            info.real = Settings::instance()->real();
+            if (!target.isEmpty()) {
+                ChannelInfo channel;
+                channel.channel = target;
+                info.channels += channel;
+            }
+
+            Session* session = Session::fromConnection(info);
+            manager->addSession(session);
+            session->reconnect();
+        }
+    }
+
     qmlRegisterUncreatableType<SessionItem>("Communi", 1, 0, "SessionItem", "");
     qmlRegisterType<Session>("Communi", 1, 0, "Session");
 
