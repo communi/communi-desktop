@@ -2,5 +2,5 @@
 # Communi
 ######################################################################
 
-COMMUNI_LIBDIR = $$OUT_PWD/../../lib
+COMMUNI_BUILDDIR = $$OUT_PWD/../..
 include(../communi.pri)
