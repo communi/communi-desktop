@@ -1,3 +1,16 @@
+communi (1.3.0.0) unstable; urgency=low
+
+  * New commands: admin/info/knock/list/motd/stats/time/trace/users/version/who
+  * Fixed idle times (whois) to be shown correctly with high idle times
+  * Removed Qt.ImhUrlCharactersOnly IM hint from the input field
+  * Tweaked (desaturated) (m)IRC colors
+  * Revised automatic scrolling
+  * Yet more encoding detection tweaks and fixes
+  * Fixed a potential crash on exit
+  * Associated Communi with irc:// URLs
+
+ -- J-P Nurmi <jpnurmi@gmail.com>  Sun, 4 Nov 2012 19:49:53 +0200
+
 communi (1.2.0.2) unstable; urgency=low
 
   * Fix the default channel
