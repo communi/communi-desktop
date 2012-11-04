@@ -64,14 +64,14 @@ Q_DECL_EXPORT int main(int argc, char* argv[])
 
     viewer->rootContext()->setContextProperty("Settings", Settings::instance());
 
-    CommandParser* parser = new CommandParser(viewer->rootContext());
-    viewer->rootContext()->setContextProperty("CommandParser", parser);
+    QScopedPointer<CommandParser> parser(new CommandParser(viewer->rootContext()));
+    viewer->rootContext()->setContextProperty("CommandParser", parser.data());
 
-    Completer* completer = new Completer(viewer->rootContext());
-    viewer->rootContext()->setContextProperty("Completer", completer);
+    QScopedPointer<Completer> completer(new Completer(viewer->rootContext()));
+    viewer->rootContext()->setContextProperty("Completer", completer.data());
 
-    SessionManager* manager = new SessionManager(viewer->rootContext());
-    viewer->rootContext()->setContextProperty("SessionManager", manager);
+    QScopedPointer<SessionManager> manager(new SessionManager(appName, viewer->rootContext()));
+    viewer->rootContext()->setContextProperty("SessionManager", manager.data());
     qmlRegisterUncreatableType<SessionItem>("Communi", 1, 0, "SessionItem", "");
     qmlRegisterType<Session>("Communi", 1, 0, "Session");
 

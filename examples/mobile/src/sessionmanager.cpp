@@ -19,9 +19,21 @@
 #include "session.h"
 #include <IrcCommand>
 
-SessionManager::SessionManager(QDeclarativeContext* context) : m_context(context)
+SessionManager::SessionManager(const QString& appName, QDeclarativeContext* context) :
+    m_appName(appName), m_context(context)
 {
     updateModel();
+}
+
+SessionManager::~SessionManager()
+{
+    save();
+    foreach(QObject * item, m_items) {
+        SessionItem* sessionItem = static_cast<SessionItem*>(item);
+        sessionItem->session()->quit(m_appName);
+        delete sessionItem;
+    }
+    m_items.clear();
 }
 
 void SessionManager::addSession(Session* session)
@@ -48,27 +60,22 @@ void SessionManager::removeSession(Session* session)
 
 void SessionManager::restore()
 {
-    Settings* settings = static_cast<Settings*>(m_context->contextProperty("Settings").value<QObject*>());
-    if (settings) {
-        foreach(const ConnectionInfo & connection, settings->connections())
+    foreach(const ConnectionInfo & connection, Settings::instance()->connections())
         addSession(Session::fromConnection(connection));
-    }
 }
 
 void SessionManager::save()
 {
-    Settings* settings = static_cast<Settings*>(m_context->contextProperty("Settings").value<QObject*>());
-    if (settings) {
-        ConnectionInfos connections;
-        foreach(QObject * item, m_items) {
-            SessionItem* sessionItem = static_cast<SessionItem*>(item);
-            connections += sessionItem->session()->toConnection();
-        }
-        settings->setConnections(connections);
+    ConnectionInfos connections;
+    foreach(QObject * item, m_items) {
+        SessionItem* sessionItem = static_cast<SessionItem*>(item);
+        connections += sessionItem->session()->toConnection();
     }
+    Settings::instance()->setConnections(connections);
 }
 
 void SessionManager::updateModel()
 {
-    m_context->setContextProperty("SessionModel", QVariant::fromValue(m_items));
+    if (m_context && m_context->isValid())
+        m_context->setContextProperty("SessionModel", QVariant::fromValue(m_items));
 }

@@ -15,6 +15,7 @@
 #ifndef SESSIONMANAGER_H
 #define SESSIONMANAGER_H
 
+#include <QPointer>
 #include <QDeclarativeContext>
 class SessionItem;
 class Session;
@@ -24,7 +25,8 @@ class SessionManager : public QObject
     Q_OBJECT
 
 public:
-    SessionManager(QDeclarativeContext* context);
+    SessionManager(const QString& appName, QDeclarativeContext* context);
+    ~SessionManager();
 
     Q_INVOKABLE void addSession(Session* session);
     Q_INVOKABLE void removeSession(Session* session);
@@ -41,8 +43,9 @@ private slots:
     void updateModel();
 
 private:
+    QString m_appName;
     QObjectList m_items;
-    QDeclarativeContext* m_context;
+    QPointer<QDeclarativeContext> m_context;
 };
 
 #endif // SESSIONMANAGER_H
