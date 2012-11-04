@@ -16,8 +16,17 @@
 #include "mainwindow.h"
 #include <QNetworkProxy>
 #include <QSettings>
+#include <QtPlugin>
 #include <QUrl>
 #include <Irc>
+
+#ifdef COMMUNI_STATIC_ICU_PLUGIN
+    Q_IMPORT_PLUGIN(icuplugin)
+#endif
+
+#ifdef COMMUNI_STATIC_UCHARDET_PLUGIN
+    Q_IMPORT_PLUGIN(uchardetplugin)
+#endif
 
 static void setApplicationProxy(QUrl url)
 {

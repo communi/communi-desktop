@@ -15,6 +15,7 @@
 #include <QApplication>
 #include "qmlapplicationviewer.h"
 
+#include <QtPlugin>
 #include <QtDeclarative>
 #include "messageformatter.h"
 #include "messagehandler.h"
@@ -25,6 +26,14 @@
 #include "session.h"
 #include "settings.h"
 #include <irc.h>
+
+#ifdef COMMUNI_STATIC_ICU_PLUGIN
+    Q_IMPORT_PLUGIN(icuplugin)
+#endif
+
+#ifdef COMMUNI_STATIC_UCHARDET_PLUGIN
+    Q_IMPORT_PLUGIN(uchardetplugin)
+#endif
 
 #define STRINGIFY(x) XSTRINGIFY(x)
 #define XSTRINGIFY(x) #x
