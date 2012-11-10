@@ -469,6 +469,14 @@ QString MessageFormatter::formatIdleTime(int secs)
     return idle.join(" ");
 }
 
+#if QT_VERSION >= 0x050000
+#   define BOUNDARY_REASON_START QTextBoundaryFinder::StartOfItem
+#   define BOUNDARY_REASON_END   QTextBoundaryFinder::EndOfItem
+#else
+#   define BOUNDARY_REASON_START QTextBoundaryFinder::StartWord
+#   define BOUNDARY_REASON_END   QTextBoundaryFinder::EndWord
+#endif
+
 QString MessageFormatter::formatHtml(const QString& message) const
 {
     QString msg = IrcUtil::messageToHtml(message);
@@ -479,13 +487,13 @@ QString MessageFormatter::formatHtml(const QString& message) const
                 QTextBoundaryFinder finder(QTextBoundaryFinder::Word, msg);
 
                 finder.setPosition(pos);
-                if (!finder.isAtBoundary() || !finder.boundaryReasons().testFlag(QTextBoundaryFinder::StartWord)) {
+                if (!finder.isAtBoundary() || !finder.boundaryReasons().testFlag(BOUNDARY_REASON_START)) {
                     pos += user.length();
                     continue;
                 }
 
                 finder.setPosition(pos + user.length());
-                if (!finder.isAtBoundary() || !finder.boundaryReasons().testFlag(QTextBoundaryFinder::EndWord)) {
+                if (!finder.isAtBoundary() || !finder.boundaryReasons().testFlag(BOUNDARY_REASON_END)) {
                     pos += user.length();
                     continue;
                 }
