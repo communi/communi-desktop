@@ -31,6 +31,12 @@
 #include <QSysInfo>
 #include <QPainter>
 
+#if QT_VERSION >= 0x050000
+extern HICON qt_pixmapToWinHICON(const QPixmap &p);
+#else
+#define qt_pixmapToWinHICON(p) p.toWinHICON()
+#endif
+
 static ITaskbarList3 *windowsTaskBar()
 {
     ITaskbarList3 *taskbar = 0;
@@ -78,9 +84,9 @@ void QtDockTilePrivate::setBadge(int badge)
 {
     if (badge > 0) {
         QPixmap pixmap = createBadge(badge, window->palette());
-        setOverlayIcon(window->winId(), pixmap.toWinHICON());
+        setOverlayIcon(reinterpret_cast<HWND>(window->winId()), qt_pixmapToWinHICON(pixmap));
     } else
-        setOverlayIcon(window->winId(), 0);
+        setOverlayIcon(reinterpret_cast<HWND>(window->winId()), 0);
 }
 
 void QtDockTilePrivate::setProgress(int progress)
@@ -89,7 +95,7 @@ void QtDockTilePrivate::setProgress(int progress)
     if (!taskbar)
         return;
     taskbar->HrInit();
-    taskbar->SetProgressValue(window->winId(), progress, 100);
-    taskbar->SetProgressState(window->winId(), progress ? TBPF_NORMAL : TBPF_NOPROGRESS);
+    taskbar->SetProgressValue(reinterpret_cast<HWND>(window->winId()), progress, 100);
+    taskbar->SetProgressState(reinterpret_cast<HWND>(window->winId()), progress ? TBPF_NORMAL : TBPF_NOPROGRESS);
     taskbar->Release();
 }
