@@ -23,6 +23,8 @@
 #include <QColor>
 #include <QTextBoundaryFinder>
 
+static IrcPalette IRC_PALETTE;
+
 MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 {
     d.highlight = false;
@@ -39,7 +41,7 @@ MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
         for (int i = IrcPalette::Blue; i <= IrcPalette::Pink; ++i) {
             QColor color(colorNames.takeFirst());
             color.setHsl(color.hue(), 100, 64);
-            IrcPalette::setColorName(i, color.name());
+            IRC_PALETTE.setColorName(i, color.name());
         }
     }
 }
@@ -479,7 +481,7 @@ QString MessageFormatter::formatIdleTime(int secs)
 
 QString MessageFormatter::formatHtml(const QString& message) const
 {
-    QString msg = IrcUtil::messageToHtml(message);
+    QString msg = IrcUtil::messageToHtml(message, IRC_PALETTE);
     if (d.userModel) {
         foreach(const QString & user, d.userModel->users()) {
             int pos = 0;
