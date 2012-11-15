@@ -14,6 +14,7 @@
 
 #include "addviewdialog.h"
 #include "session.h"
+#include <IrcSessionInfo>
 #include <QDialogButtonBox>
 #include <QRegExpValidator>
 #include <QPushButton>
@@ -36,7 +37,8 @@ AddViewDialog::AddViewDialog(Session* session, QWidget* parent) : QDialog(parent
     connect(d.viewEdit, SIGNAL(textEdited(QString)), this, SLOT(updateUi()));
 
     QLabel* subLabel = new QLabel(this);
-    subLabel->setText(tr("<small>%1 supports channel types: %2<small>").arg(session->network()).arg(session->channelTypes()));
+    IrcSessionInfo info(session);
+    subLabel->setText(tr("<small>%1 supports channel types: %2<small>").arg(info.network()).arg(info.channelTypes().join("")));
     subLabel->setAlignment(Qt::AlignRight);
     subLabel->setDisabled(true);
 
@@ -81,7 +83,8 @@ Session* AddViewDialog::session() const
 void AddViewDialog::updateUi()
 {
     bool valid = false;
-    bool channel = !view().isEmpty() && d.session->channelTypes().contains(view().at(0));
+    IrcSessionInfo info(d.session);
+    bool channel = !view().isEmpty() && info.channelTypes().contains(view().at(0));
     if (channel) {
         valid = view().length() > 1;
         d.viewLabel->setText(tr("Join channel:"));

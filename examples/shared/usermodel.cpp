@@ -78,7 +78,7 @@ void UserModel::addUsers(const QStringList& users)
         foreach(const QString & user, unique) {
             QString name = d.session->unprefixedUser(user);
             d.names += name;
-            d.modes.insert(name, d.session->userPrefix(user));
+            d.prefixes.insert(name, d.session->userPrefix(user));
         }
         endInsertRows();
     }
@@ -91,7 +91,7 @@ void UserModel::removeUser(const QString& user)
     if (idx != -1) {
         beginRemoveRows(QModelIndex(), idx, idx);
         d.names.removeAt(idx);
-        d.modes.remove(name);
+        d.prefixes.remove(name);
         endRemoveRows();
     }
 }
@@ -110,7 +110,7 @@ void UserModel::renameUser(const QString& from, const QString& to)
     int idx = d.names.indexOf(from);
     if (idx != -1) {
         d.names[idx] = to;
-        d.modes[to] = d.modes.take(from);
+        d.prefixes[to] = d.prefixes.take(from);
         emit dataChanged(index(idx, 0), index(idx, 0));
     }
 }
@@ -120,10 +120,11 @@ void UserModel::setUserMode(const QString& user, const QString& mode)
     int idx = d.names.indexOf(user);
     if (idx != -1) {
         bool add = true;
-        QString updated = d.modes.value(user);
+        IrcSessionInfo info(d.session);
+        QString updated = d.prefixes.value(user);
         for (int i = 0; i < mode.size(); ++i) {
             QChar c = mode.at(i);
-            QString m = d.session->prefixTypeToMode(c);
+            QString p = info.modeToPrefix(c);
             switch (c.unicode()) {
                 case '+':
                     add = true;
@@ -133,15 +134,15 @@ void UserModel::setUserMode(const QString& user, const QString& mode)
                     break;
                 default:
                     if (add) {
-                        if (!updated.contains(m))
-                            updated += m;
+                        if (!updated.contains(p))
+                            updated += p;
                     } else {
-                        updated.remove(m);
+                        updated.remove(p);
                     }
                     break;
             }
         }
-        d.modes[user] = updated;
+        d.prefixes[user] = updated;
         emit dataChanged(index(idx, 0), index(idx, 0));
     }
 }
@@ -162,9 +163,9 @@ QVariant UserModel::data(const QModelIndex& index, int role) const
     if (role == Qt::DisplayRole || role == Qt::EditRole || role == Qt::UserRole) {
         QString name = d.names.at(index.row());
         if (role == Qt::DisplayRole)
-            return d.modes.value(name).left(1) + name;
+            return d.prefixes.value(name).left(1) + name;
         if (role == Qt::UserRole)
-            return d.modes.value(name);
+            return d.prefixes.value(name);
         return name;
     }
 

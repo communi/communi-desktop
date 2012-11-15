@@ -46,8 +46,10 @@ Session* UserListView::session() const
 void UserListView::setSession(Session* session)
 {
     delete model();
-    if (session)
-        setModel(new SortedUserModel(session->prefixModes(), d.userModel));
+    if (session) {
+        IrcSessionInfo info(session);
+        setModel(new SortedUserModel(info.prefixes().join(""), d.userModel));
+    }
 
     d.userModel->setSession(session);
 }

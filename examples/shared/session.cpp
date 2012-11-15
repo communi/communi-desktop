@@ -25,12 +25,13 @@
 QNetworkSession* Session::s_network = 0;
 
 Session::Session(QObject* parent) : IrcSession(parent),
-    m_currentLag(-1), m_maxLag(120000), m_quit(false)
+    m_currentLag(-1), m_maxLag(120000), m_info(this), m_quit(false)
 {
     connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(this, SIGNAL(password(QString*)), this, SLOT(onPassword(QString*)));
     connect(this, SIGNAL(capabilities(QStringList, QStringList*)), this, SLOT(onCapabilities(QStringList, QStringList*)));
     connect(this, SIGNAL(messageReceived(IrcMessage*)), SLOT(handleMessage(IrcMessage*)));
+    connect(this, SIGNAL(sessionInfoReceived(IrcSessionInfo)), SLOT(onSessionInfoReceived(IrcSessionInfo)));
 
     setAutoReconnectDelay(15);
     connect(&m_reconnectTimer, SIGNAL(timeout()), this, SLOT(open()));
@@ -54,7 +55,7 @@ void Session::setName(const QString& name)
 
 QString Session::network() const
 {
-    return m_info.value("NETWORK");
+    return IrcSessionInfo(this).network();
 }
 
 int Session::autoReconnectDelay() const
@@ -114,37 +115,14 @@ void Session::setChannels(const ChannelInfos& channels)
     m_channels = channels;
 }
 
-QString Session::channelTypes() const
-{
-    return m_info.value("CHANTYPES", "#&");
-}
-
 bool Session::isChannel(const QString& receiver) const
 {
-    return receiver.length() > 1 && channelTypes().contains(receiver.at(0));
-}
-
-QString Session::prefixTypes() const
-{
-    QString pfx = m_info.value("PREFIX", "(ov)@+");
-    return pfx.mid(1, pfx.indexOf(')') - 1);
-}
-
-QString Session::prefixModes() const
-{
-    QString pfx = m_info.value("PREFIX", "(ov)@+");
-    return pfx.mid(pfx.indexOf(')') + 1);
-}
-
-QString Session::prefixTypeToMode(const QString& type) const
-{
-    int i = prefixTypes().indexOf(type);
-    return prefixModes().mid(i, 1);
+    return receiver.length() > 1 && m_info.channelTypes().contains(receiver.at(0));
 }
 
 QString Session::userPrefix(const QString& user) const
 {
-    QString prefixes = prefixModes();
+    QStringList prefixes = m_info.prefixes();
     int i = 0;
     while (i < user.length() && prefixes.contains(user.at(i)))
         ++i;
@@ -153,7 +131,7 @@ QString Session::userPrefix(const QString& user) const
 
 QString Session::unprefixedUser(const QString& user) const
 {
-    QString prefixes = prefixModes();
+    QStringList prefixes = IrcSessionInfo(this).prefixes();
     QString copy = user;
     while (!copy.isEmpty() && prefixes.contains(copy.at(0)))
         copy.remove(0, 1);
@@ -346,6 +324,12 @@ void Session::onCapabilities(const QStringList& available, QStringList* request)
         request->append("identify-msg");
 }
 
+void Session::onSessionInfoReceived(const IrcSessionInfo& info)
+{
+    m_info = info;
+    emit networkChanged(m_info.network());
+}
+
 void Session::handleMessage(IrcMessage* message)
 {
     // 20s delay since the last message was received
@@ -367,15 +351,7 @@ void Session::handleMessage(IrcMessage* message)
         }
     } else if (message->type() == IrcMessage::Numeric) {
         int code = static_cast<IrcNumericMessage*>(message)->code();
-        if (code == Irc::RPL_ISUPPORT) {
-            foreach(const QString & param, message->parameters().mid(1)) {
-                QStringList keyValue = param.split("=", QString::SkipEmptyParts);
-                m_info.insert(keyValue.value(0), keyValue.value(1));
-            }
-            if (m_info.contains("NETWORK"))
-                emit networkChanged(network());
-            emit serverInfoReceived();
-        } else if (code == Irc::ERR_NICKNAMEINUSE) {
+        if (code == Irc::ERR_NICKNAMEINUSE) {
             if (m_alternateNicks.isEmpty()) {
                 QString currentNick = nickName();
                 m_alternateNicks << (currentNick + "_")

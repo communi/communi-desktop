@@ -58,7 +58,7 @@ private:
         QString channel;
         Session* session;
         QStringList names;
-        QHash<QString, QString> modes;
+        QHash<QString, QString> prefixes;
     } d;
 };
 
