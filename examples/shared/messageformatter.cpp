@@ -359,9 +359,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
             if (d.receivedCodes.contains(Irc::RPL_ENDOFNAMES)) {
                 int count = message->parameters().count();
                 QString channel = message->parameters().value(count - 2);
-                QStringList names;
-                foreach(const QString & name, message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts))
-                names += IrcSender(name).name();
+                QStringList names = message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts);
                 return tr("! %1 users: %2").arg(channel).arg(names.join(" "));
             }
             return QString();
