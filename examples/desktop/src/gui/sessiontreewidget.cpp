@@ -281,6 +281,8 @@ void SessionTreeWidget::updateSession(Session* session)
     if (item) {
         item->setText(0, session->name().isEmpty() ? session->host() : session->name());
         item->setInactive(!session->isActive());
+        for (int i = 0; i < item->childCount(); ++i)
+            static_cast<SessionTreeItem*>(item->child(i))->setInactive(!session->isActive());
     }
 }
 

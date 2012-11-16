@@ -61,13 +61,13 @@ QVariant SessionTreeItem::data(int column, int role) const
 {
     if (role == Qt::ForegroundRole) {
         SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget());
-        if (d.inactive)
+        if (!parent() && d.inactive)
             return tw->statusColor(SessionTreeWidget::Inactive);
         if (d.alerted || (!isExpanded() && !d.alertedChildren.isEmpty()))
             return tw->currentAlertColor();
         if (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty()))
             return tw->statusColor(SessionTreeWidget::Highlight);
-        return tw->statusColor(SessionTreeWidget::Active);
+        return tw->statusColor(d.inactive ? SessionTreeWidget::Inactive : SessionTreeWidget::Active);
     }
     return QTreeWidgetItem::data(column, role);
 }
