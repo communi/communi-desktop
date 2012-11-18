@@ -40,7 +40,7 @@ MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
                 << "yellow" << "lime" << "teal" << "aqua" << "royalblue" << "fuchsia";
         for (int i = IrcPalette::Blue; i <= IrcPalette::Pink; ++i) {
             QColor color(colorNames.takeFirst());
-            color.setHsl(color.hue(), 100, 64);
+            color.setHsl(color.hue(), 100, 82);
             IRC_PALETTE.setColorName(i, color.name());
         }
     }
