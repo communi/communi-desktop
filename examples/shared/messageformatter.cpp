@@ -14,6 +14,7 @@
 
 #include "messageformatter.h"
 #include "usermodel.h"
+#include <irctextformat.h>
 #include <ircpalette.h>
 #include <ircsender.h>
 #include <ircutil.h>
@@ -23,7 +24,7 @@
 #include <QColor>
 #include <QTextBoundaryFinder>
 
-static IrcPalette IRC_PALETTE;
+static IrcTextFormat IRC_TEXT_FORMAT;
 
 MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 {
@@ -35,14 +36,16 @@ MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
     static bool init = false;
     if (!init) {
         init = true;
+        IrcPalette palette;
         QStringList colorNames = QStringList()
                 << "navy" << "green" << "red" << "maroon" << "purple" << "olive"
                 << "yellow" << "lime" << "teal" << "aqua" << "royalblue" << "fuchsia";
         for (int i = IrcPalette::Blue; i <= IrcPalette::Pink; ++i) {
             QColor color(colorNames.takeFirst());
             color.setHsl(color.hue(), 100, 82);
-            IRC_PALETTE.setColorName(i, color.name());
+            palette.setColorName(i, color.name());
         }
+        IRC_TEXT_FORMAT.setPalette(palette);
     }
 }
 
@@ -479,7 +482,7 @@ QString MessageFormatter::formatIdleTime(int secs)
 
 QString MessageFormatter::formatHtml(const QString& message) const
 {
-    QString msg = IrcUtil::messageToHtml(message, IRC_PALETTE);
+    QString msg = IRC_TEXT_FORMAT.messageToHtml(message);
     if (d.userModel) {
         foreach(const QString & user, d.userModel->users()) {
             int pos = 0;

@@ -337,7 +337,7 @@ void MessageView::receiveMessage(IrcMessage* message)
         case IrcMessage::Topic:
             append = d.settings.messages.value(Settings::Topics);
             hilite = d.settings.highlights.value(Settings::Topics);
-            d.topicLabel->setText(IrcUtil::messageToHtml(static_cast<IrcTopicMessage*>(message)->topic()));
+            d.topicLabel->setText(d.formatter.formatHtml(static_cast<IrcTopicMessage*>(message)->topic()));
             if (d.topicLabel->text().isEmpty())
                 d.topicLabel->setText(tr("-"));
             break;
@@ -356,7 +356,7 @@ void MessageView::receiveMessage(IrcMessage* message)
                     d.topicLabel->setText(tr("-"));
                     break;
                 case Irc::RPL_TOPIC:
-                    d.topicLabel->setText(IrcUtil::messageToHtml(message->parameters().value(2)));
+                    d.topicLabel->setText(d.formatter.formatHtml(message->parameters().value(2)));
                     break;
                 case Irc::RPL_TOPICWHOTIME: {
                     QDateTime dateTime = QDateTime::fromTime_t(message->parameters().value(3).toInt());
