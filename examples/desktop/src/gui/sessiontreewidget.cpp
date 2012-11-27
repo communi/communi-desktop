@@ -30,6 +30,10 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     setFrameStyle(QFrame::NoFrame);
     setItemDelegate(new SessionTreeDelegate(this));
 
+    setDragEnabled(true);
+    setDropIndicatorShown(true);
+    setDragDropMode(InternalMove);
+
     d.menuFactory = 0;
 
     d.colors[Active] = palette().color(QPalette::WindowText);
@@ -264,6 +268,15 @@ void SessionTreeWidget::contextMenuEvent(QContextMenuEvent* event)
         menu->exec(event->globalPos());
         menu->deleteLater();
     }
+}
+
+void SessionTreeWidget::dragMoveEvent(QDragMoveEvent* event)
+{
+    QTreeWidgetItem* item = itemAt(event->pos());
+    if (!item || !item->parent())
+        event->ignore();
+    else
+        QTreeWidget::dragMoveEvent(event);
 }
 
 bool SessionTreeWidget::event(QEvent* event)

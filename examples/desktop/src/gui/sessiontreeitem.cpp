@@ -21,6 +21,7 @@ SessionTreeItem::SessionTreeItem(Session* session, QTreeWidget* parent) : QTreeW
     d.alerted = false;
     d.inactive = true;
     d.highlighted = false;
+    setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDropEnabled);
 }
 
 SessionTreeItem::SessionTreeItem(Session* session, QTreeWidgetItem* parent) : QTreeWidgetItem(parent)
@@ -29,6 +30,7 @@ SessionTreeItem::SessionTreeItem(Session* session, QTreeWidgetItem* parent) : QT
     d.alerted = false;
     d.inactive = false;
     d.highlighted = false;
+    setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
 }
 
 SessionTreeItem::~SessionTreeItem()

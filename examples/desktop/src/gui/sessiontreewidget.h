@@ -78,6 +78,7 @@ signals:
 
 protected:
     void contextMenuEvent(QContextMenuEvent* event);
+    void dragMoveEvent(QDragMoveEvent* event);
     bool event(QEvent* event);
 
 private slots:
