@@ -308,53 +308,25 @@ void MessageView::receiveMessage(IrcMessage* message)
     if (d.viewType == ChannelView)
         d.listView->processMessage(message);
 
-    bool append = true;
     bool hilite = false;
     bool matches = false;
 
     switch (message->type()) {
-        case IrcMessage::Join:
-            append = d.settings.messages.value(Settings::Joins);
-            hilite = d.settings.highlights.value(Settings::Joins);
-            break;
-        case IrcMessage::Kick:
-            append = d.settings.messages.value(Settings::Kicks);
-            hilite = d.settings.highlights.value(Settings::Kicks);
-            break;
-        case IrcMessage::Mode:
-            append = d.settings.messages.value(Settings::Modes);
-            hilite = d.settings.highlights.value(Settings::Modes);
-            break;
-        case IrcMessage::Nick:
-            append = d.settings.messages.value(Settings::Nicks);
-            hilite = d.settings.highlights.value(Settings::Nicks);
-            break;
         case IrcMessage::Notice:
             matches = static_cast<IrcNoticeMessage*>(message)->message().contains(d.session->nickName());
             hilite = true;
-            break;
-        case IrcMessage::Part:
-            append = d.settings.messages.value(Settings::Parts);
-            hilite = d.settings.highlights.value(Settings::Parts);
             break;
         case IrcMessage::Private:
             matches = d.viewType != ChannelView || static_cast<IrcPrivateMessage*>(message)->message().contains(d.session->nickName());
             hilite = true;
             break;
-        case IrcMessage::Quit:
-            append = d.settings.messages.value(Settings::Quits);
-            hilite = d.settings.highlights.value(Settings::Quits);
-            break;
         case IrcMessage::Topic:
-            append = d.settings.messages.value(Settings::Topics);
-            hilite = d.settings.highlights.value(Settings::Topics);
             d.topicLabel->setText(d.formatter->formatHtml(static_cast<IrcTopicMessage*>(message)->topic()));
             if (d.topicLabel->text().isEmpty())
                 d.topicLabel->setText(tr("-"));
             break;
         case IrcMessage::Unknown:
             qWarning() << "unknown:" << message;
-            append = false;
             break;
         case IrcMessage::Invite:
         case IrcMessage::Ping:
@@ -383,7 +355,7 @@ void MessageView::receiveMessage(IrcMessage* message)
     }
 
     QString formatted = d.formatter->formatMessage(message, d.listView->userModel());
-    if (append && formatted.length()) {
+    if (formatted.length()) {
         if (matches)
             emit alerted(message);
         else if (hilite) // TODO: || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ServerView))
