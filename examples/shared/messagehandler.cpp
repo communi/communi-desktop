@@ -184,7 +184,10 @@ void MessageHandler::handleNickMessage(IrcNickMessage* message)
 
 void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
 {
-    sendMessage(message, d.currentReceiver);
+    if (message->target() == d.session->nickName())
+        sendMessage(message, d.currentReceiver);
+    else
+        sendMessage(message, message->target());
 }
 
 void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
