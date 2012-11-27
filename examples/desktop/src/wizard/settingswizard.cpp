@@ -16,7 +16,6 @@
 #include "generalwizardpage.h"
 #include "shortcutswizardpage.h"
 #include "colorswizardpage.h"
-#include "messageswizardpage.h"
 
 SettingsWizard::SettingsWizard(QWidget* parent) : QWizard(parent)
 {
@@ -25,7 +24,6 @@ SettingsWizard::SettingsWizard(QWidget* parent) : QWizard(parent)
 
     setPage(GeneralPage, new GeneralWizardPage(this));
     setPage(ShortcutsPage, new ShortcutsWizardPage(this));
-    setPage(MessagesPage, new MessagesWizardPage(this));
     setPage(ColorsPage, new ColorsWizardPage(this));
 
     setOption(HaveCustomButton1, true);
@@ -45,8 +43,6 @@ Settings SettingsWizard::settings() const
     settings.timeStamp = static_cast<GeneralWizardPage*>(page(GeneralPage))->timeStamp();
     settings.stripNicks = static_cast<GeneralWizardPage*>(page(GeneralPage))->stripNicks();
     settings.shortcuts = static_cast<ShortcutsWizardPage*>(page(ShortcutsPage))->shortcuts();
-    settings.messages = static_cast<MessagesWizardPage*>(page(MessagesPage))->messages();
-    settings.highlights = static_cast<MessagesWizardPage*>(page(MessagesPage))->highlights();
     settings.colors = static_cast<ColorsWizardPage*>(page(ColorsPage))->colors();
     return settings;
 }
@@ -55,7 +51,6 @@ void SettingsWizard::setSettings(const Settings& settings)
 {
     setGeneralSettings(settings);
     setShortcutSettings(settings);
-    setMessageSettings(settings);
     setColorSettings(settings);
 }
 
@@ -77,12 +72,6 @@ void SettingsWizard::setShortcutSettings(const Settings& settings)
     static_cast<ShortcutsWizardPage*>(page(ShortcutsPage))->setShortcuts(settings.shortcuts);
 }
 
-void SettingsWizard::setMessageSettings(const Settings& settings)
-{
-    static_cast<MessagesWizardPage*>(page(MessagesPage))->setMessages(settings.messages);
-    static_cast<MessagesWizardPage*>(page(MessagesPage))->setHighlights(settings.highlights);
-}
-
 void SettingsWizard::setColorSettings(const Settings& settings)
 {
     static_cast<ColorsWizardPage*>(page(ColorsPage))->setColors(settings.colors);
@@ -94,7 +83,6 @@ void SettingsWizard::resetCurrentPage()
     switch (currentId()) {
         case GeneralPage: setGeneralSettings(settings); break;
         case ShortcutsPage: setShortcutSettings(settings); break;
-        case MessagesPage: setMessageSettings(settings); break;
         case ColorsPage: setColorSettings(settings); break;
         default: Q_ASSERT(false); break;
     }

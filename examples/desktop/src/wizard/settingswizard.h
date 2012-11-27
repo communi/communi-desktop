@@ -28,7 +28,6 @@ public:
     enum Page {
         GeneralPage,
         ShortcutsPage,
-        MessagesPage,
         ColorsPage
     };
 
@@ -38,7 +37,6 @@ public:
 protected:
     void setGeneralSettings(const Settings& settings);
     void setShortcutSettings(const Settings& settings);
-    void setMessageSettings(const Settings& settings);
     void setColorSettings(const Settings& settings);
 
 private slots:
