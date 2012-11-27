@@ -50,14 +50,15 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     d.textBrowser->viewport()->installEventFilter(this);
     connect(d.textBrowser, SIGNAL(anchorClicked(QUrl)), SLOT(onAnchorClicked(QUrl)));
 
-    d.formatter.setHighlights(QStringList(session->nickName()));
-    d.formatter.setMessageFormat("class='message'");
-    d.formatter.setEventFormat("class='event'");
-    d.formatter.setNoticeFormat("class='notice'");
-    d.formatter.setActionFormat("class='action'");
-    d.formatter.setUnknownFormat("class='unknown'");
-    d.formatter.setHighlightFormat("class='highlight'");
-    d.formatter.setTimeStampFormat("class='timestamp'");
+    d.formatter = new MessageFormatter(this);
+    d.formatter->setHighlights(QStringList(session->nickName()));
+    d.formatter->setMessageFormat("class='message'");
+    d.formatter->setEventFormat("class='event'");
+    d.formatter->setNoticeFormat("class='notice'");
+    d.formatter->setActionFormat("class='action'");
+    d.formatter->setUnknownFormat("class='unknown'");
+    d.formatter->setHighlightFormat("class='highlight'");
+    d.formatter->setTimeStampFormat("class='timestamp'");
 
     d.session = session;
     connect(&d.parser, SIGNAL(customCommand(QString, QStringList)), this, SLOT(onCustomCommand(QString, QStringList)));
@@ -109,6 +110,16 @@ MessageView::ViewType MessageView::viewType() const
 Session* MessageView::session() const
 {
     return d.session;
+}
+
+QTextBrowser* MessageView::textBrowser() const
+{
+    return d.textBrowser;
+}
+
+MessageFormatter* MessageView::messageFormatter() const
+{
+    return d.formatter;
 }
 
 QString MessageView::receiver() const
@@ -258,8 +269,8 @@ void MessageView::onAnchorClicked(const QUrl& link)
 
 void MessageView::applySettings(const Settings& settings)
 {
-    d.formatter.setTimeStamp(settings.timeStamp);
-    d.formatter.setStripNicks(settings.stripNicks);
+    d.formatter->setTimeStamp(settings.timeStamp);
+    d.formatter->setStripNicks(settings.stripNicks);
 
     if (!settings.font.isEmpty())
         d.textBrowser->setFont(settings.font);
@@ -337,7 +348,7 @@ void MessageView::receiveMessage(IrcMessage* message)
         case IrcMessage::Topic:
             append = d.settings.messages.value(Settings::Topics);
             hilite = d.settings.highlights.value(Settings::Topics);
-            d.topicLabel->setText(d.formatter.formatHtml(static_cast<IrcTopicMessage*>(message)->topic()));
+            d.topicLabel->setText(d.formatter->formatHtml(static_cast<IrcTopicMessage*>(message)->topic()));
             if (d.topicLabel->text().isEmpty())
                 d.topicLabel->setText(tr("-"));
             break;
@@ -356,7 +367,7 @@ void MessageView::receiveMessage(IrcMessage* message)
                     d.topicLabel->setText(tr("-"));
                     break;
                 case Irc::RPL_TOPIC:
-                    d.topicLabel->setText(d.formatter.formatHtml(message->parameters().value(2)));
+                    d.topicLabel->setText(d.formatter->formatHtml(message->parameters().value(2)));
                     break;
                 case Irc::RPL_TOPICWHOTIME: {
                     QDateTime dateTime = QDateTime::fromTime_t(message->parameters().value(3).toInt());
@@ -371,7 +382,7 @@ void MessageView::receiveMessage(IrcMessage* message)
             break;
     }
 
-    QString formatted = d.formatter.formatMessage(message, d.listView->userModel());
+    QString formatted = d.formatter->formatMessage(message, d.listView->userModel());
     if (append && formatted.length()) {
         if (matches)
             emit alerted(message);

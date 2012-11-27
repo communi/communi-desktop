@@ -38,6 +38,8 @@ public:
 
     ViewType viewType() const;
     Session* session() const;
+    QTextBrowser* textBrowser() const;
+    MessageFormatter* messageFormatter() const;
 
     QString receiver() const;
     void setReceiver(const QString& receiver);
@@ -79,7 +81,7 @@ private:
         QString receiver;
         Session* session;
         CommandParser parser;
-        MessageFormatter formatter;
+        MessageFormatter* formatter;
         Settings settings;
     } d;
 };
