@@ -167,6 +167,16 @@ void SessionTreeWidget::addView(Session* session, const QString& view)
     }
 }
 
+void SessionTreeWidget::insertView(Session* session, int index, const QString& view)
+{
+    SessionTreeItem* parent = d.sessions.value(session);
+    if (parent) {
+        SessionTreeItem* item = new SessionTreeItem(session, static_cast<QTreeWidgetItem*>(0));
+        parent->insertChild(index, item);
+        item->setText(0, view);
+    }
+}
+
 void SessionTreeWidget::removeView(Session* session, const QString& view)
 {
     SessionTreeItem* parent = d.sessions.value(session);

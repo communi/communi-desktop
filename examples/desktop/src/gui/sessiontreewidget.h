@@ -56,6 +56,7 @@ public slots:
     void removeSession(Session* session);
 
     void addView(Session* session, const QString& view);
+    void insertView(Session* session, int index, const QString& view);
     void removeView(Session* session, const QString& view);
     void renameView(Session* session, const QString& from, const QString& to);
     void setCurrentView(Session* session, const QString& view = QString());
