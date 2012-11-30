@@ -201,7 +201,7 @@ void Session::initFrom(const ConnectionInfo& connection)
     setHost(connection.host);
     setPort(connection.port);
     setNickName(connection.nick);
-    QString appName = QApplication::applicationName();
+    QString appName = QApplication::applicationName().toLower();
     setUserName(connection.user.isEmpty() ? appName : connection.user);
     setRealName(connection.real.isEmpty() ? appName : connection.real);
     setChannels(connection.channels);

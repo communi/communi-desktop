@@ -31,6 +31,9 @@ public:
     QString realName() const;
     void setRealName(const QString& realName);
 
+    QString userName() const;
+    void setUserName(const QString& userName);
+
     bool isComplete() const;
 
 private:
