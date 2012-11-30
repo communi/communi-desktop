@@ -128,3 +128,17 @@ void SessionTreeItem::setHighlighted(bool highlighted)
         emitDataChanged();
     }
 }
+
+bool SessionTreeItem::operator<(const QTreeWidgetItem& other) const
+{
+    Q_ASSERT(parent() && other.parent());
+    QVariantHash state = static_cast<SessionTreeWidget*>(treeWidget())->d.state;
+    QStringList receivers = state.value(parent()->text(0)).toStringList();
+    const int a = receivers.indexOf(text(0));
+    const int b = receivers.indexOf(other.text(0));
+    if (a == -1 && b != -1)
+        return false;
+    if (a != -1 && b == -1)
+        return true;
+    return a < b;
+}

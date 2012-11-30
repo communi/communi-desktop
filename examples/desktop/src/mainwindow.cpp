@@ -161,8 +161,10 @@ void MainWindow::closeEvent(QCloseEvent* event)
 {
     QSettings settings;
     settings.setValue("geometry", saveGeometry());
-    if (treeWidget)
-        settings.setValue("tree", static_cast<QSplitter*>(centralWidget())->saveState());
+    if (treeWidget) {
+        settings.setValue("tree", treeWidget->saveState());
+        settings.setValue("splitter", static_cast<QSplitter*>(centralWidget())->saveState());
+    }
 
     ConnectionInfos connections;
     QList<Session*> sessions = tabWidget->sessions();
@@ -281,12 +283,10 @@ void MainWindow::viewAdded(MessageView* view)
         view->restoreSplitter(settings.value("list").toByteArray());
 
     if (treeWidget) {
-        SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(sender());
-        if (tab) {
-            Session* session = tab->session();
-            treeWidget->addView(session, view->receiver());
-            treeWidget->expandItem(treeWidget->sessionItem(session));
-        }
+        Session* session = view->session();
+        treeWidget->addView(session, view->receiver());
+        treeWidget->restoreState(settings.value("tree").toByteArray());
+        treeWidget->expandItem(treeWidget->sessionItem(session));
     }
 }
 
@@ -434,6 +434,6 @@ void MainWindow::createTree()
     splitter->insertWidget(0, container);
     splitter->setStretchFactor(1, 1);
     QSettings settings;
-    if (settings.contains("tree"))
-        splitter->restoreState(settings.value("tree").toByteArray());
+    if (settings.contains("splitter"))
+        splitter->restoreState(settings.value("splitter").toByteArray());
 }

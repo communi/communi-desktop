@@ -75,6 +75,32 @@ QSize SessionTreeWidget::sizeHint() const
     return QSize(20 * fontMetrics().width('#'), QTreeWidget::sizeHint().height());
 }
 
+QByteArray SessionTreeWidget::saveState() const
+{
+    QByteArray state;
+    QDataStream out(&state, QIODevice::WriteOnly);
+
+    QVariantHash hash;
+    for (int i = 0; i < topLevelItemCount(); ++i) {
+        QTreeWidgetItem* parent = topLevelItem(i);
+        QStringList receivers;
+        for (int j = 0; j < parent->childCount(); ++j)
+            receivers += parent->child(j)->text(0);
+        hash.insert(parent->text(0), receivers);
+    }
+    out << hash;
+    return state;
+}
+
+void SessionTreeWidget::restoreState(const QByteArray& state)
+{
+    QDataStream in(state);
+    in >> d.state;
+
+    for (int i = 0; i < topLevelItemCount(); ++i)
+        topLevelItem(i)->sortChildren(0, Qt::AscendingOrder);
+}
+
 MenuFactory* SessionTreeWidget::menuFactory() const
 {
     if (!d.menuFactory) {

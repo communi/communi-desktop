@@ -40,6 +40,8 @@ public:
     bool isHighlighted() const;
     void setHighlighted(bool highlighted);
 
+    bool operator<(const QTreeWidgetItem& other) const;
+
 private:
     struct Private {
         bool alerted;

@@ -35,6 +35,9 @@ public:
 
     QSize sizeHint() const;
 
+    QByteArray saveState() const;
+    void restoreState(const QByteArray& state);
+
     MenuFactory* menuFactory() const;
     void setMenuFactory(MenuFactory* factory);
 
@@ -110,6 +113,7 @@ private:
         QSet<SessionTreeItem*> alertedItems;
         QSet<SessionTreeItem*> resetedItems;
         QHash<Session*, SessionTreeItem*> sessions;
+        QVariantHash state;
     } d;
     friend class SessionTreeItem;
 };
