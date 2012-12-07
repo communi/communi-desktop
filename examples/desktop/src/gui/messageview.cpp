@@ -245,17 +245,20 @@ void MessageView::onSplitterMoved()
 
 void MessageView::onSend(const QString& text)
 {
-    IrcCommand* cmd = d.parser.parseCommand(receiver(), text);
-    if (cmd) {
-        d.session->sendCommand(cmd);
+    QStringList lines = text.split(QRegExp("[\\r\\n]"), QString::SkipEmptyParts);
+    foreach (const QString& line, lines) {
+        IrcCommand* cmd = d.parser.parseCommand(receiver(), line);
+        if (cmd) {
+            d.session->sendCommand(cmd);
 
-        if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction) {
-            IrcMessage* msg = IrcMessage::fromCommand(d.session->nickName(), cmd, d.session);
-            receiveMessage(msg);
-            delete msg;
+            if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction) {
+                IrcMessage* msg = IrcMessage::fromCommand(d.session->nickName(), cmd, d.session);
+                receiveMessage(msg);
+                delete msg;
+            }
+        } else if (d.parser.hasError()) {
+            showHelp(line, true);
         }
-    } else if (d.parser.hasError()) {
-        showHelp(text, true);
     }
 }
 
