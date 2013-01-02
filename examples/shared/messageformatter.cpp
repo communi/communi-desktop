@@ -277,9 +277,10 @@ QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* message) const
             return tr("! %1 version is %2").arg(formatSender(message->sender()), QStringList(params.mid(1)).join(" "));
     }
 
-    foreach(const QString & hilite, d.highlights)
-    if (message->message().contains(hilite))
-        d.highlight = true;
+    foreach (const QString& hilite, d.highlights) {
+        if (message->message().contains(hilite))
+            d.highlight = true;
+    }
     const QString sender = formatSender(message->sender());
     const QString msg = formatHtml(message->message());
     return tr("[%1] %2").arg(sender, msg);
@@ -393,9 +394,10 @@ QString MessageFormatter::formatPongMessage(IrcPongMessage* message) const
 
 QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* message) const
 {
-    foreach(const QString & hilite, d.highlights)
-    if (message->message().contains(hilite))
-        d.highlight = true;
+    foreach (const QString& hilite, d.highlights) {
+        if (message->message().contains(hilite))
+            d.highlight = true;
+    }
     const QString sender = formatSender(message->sender());
     const QString msg = formatHtml(message->message());
     if (message->isAction())
@@ -484,7 +486,7 @@ QString MessageFormatter::formatHtml(const QString& message) const
 {
     QString msg = IRC_TEXT_FORMAT.messageToHtml(message);
     if (d.userModel) {
-        foreach(const QString & user, d.userModel->users()) {
+        foreach (const QString& user, d.userModel->users()) {
             int pos = 0;
             while ((pos = msg.indexOf(user, pos)) != -1) {
                 QTextBoundaryFinder finder(QTextBoundaryFinder::Word, msg);

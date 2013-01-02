@@ -75,15 +75,16 @@ void SessionTabWidget::setMenuFactory(MenuFactory* factory)
 
 QByteArray SessionTabWidget::saveSplitter() const
 {
-    foreach(MessageView * view, d.views)
-    if (view->viewType() != MessageView::ServerView)
-        return view->saveSplitter();
+    foreach (MessageView* view, d.views) {
+        if (view->viewType() != MessageView::ServerView)
+            return view->saveSplitter();
+    }
     return QByteArray();
 }
 
 void SessionTabWidget::restoreSplitter(const QByteArray& state)
 {
-    foreach(MessageView * view, d.views) {
+    foreach (MessageView* view, d.views) {
         view->blockSignals(true);
         view->restoreSplitter(state);
         view->blockSignals(false);
@@ -282,7 +283,7 @@ void SessionTabWidget::applySettings(const Settings& settings)
     setTabTextColor(Alert, color);
     setTabTextColor(Highlight, color);
 
-    foreach(MessageView * view, d.views)
-    view->applySettings(settings);
+    foreach (MessageView* view, d.views)
+        view->applySettings(settings);
     d.settings = settings;
 }

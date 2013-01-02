@@ -366,8 +366,8 @@ void SessionTreeWidget::delayedItemReset()
 void SessionTreeWidget::delayedItemResetTimeout()
 {
     if (!d.resetedItems.isEmpty()) {
-        foreach(SessionTreeItem * item, d.resetedItems)
-        resetItem(item);
+        foreach (SessionTreeItem* item, d.resetedItems)
+            resetItem(item);
         d.resetedItems.clear();
     }
 }
@@ -377,7 +377,7 @@ void SessionTreeWidget::alertTimeout()
     bool active = d.alertColor == d.colors.value(Active);
     d.alertColor = d.colors.value(active ? Alert : Active);
 
-    foreach(SessionTreeItem * item, d.alertedItems) {
+    foreach (SessionTreeItem* item, d.alertedItems) {
         item->emitDataChanged();
         if (SessionTreeItem* p = static_cast<SessionTreeItem*>(item->parent()))
             if (!p->isExpanded())

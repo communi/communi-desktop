@@ -281,8 +281,8 @@ void TabWidget::alertTimeout()
     else
         d.currentAlertColor = d.colors.value(Alert);
 
-    foreach(int index, d.alertIndexes)
-    colorizeTab(index);
+    foreach (int index, d.alertIndexes)
+        colorizeTab(index);
 }
 
 void TabWidget::colorizeTab(int index)

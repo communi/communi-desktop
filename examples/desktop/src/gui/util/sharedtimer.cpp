@@ -91,8 +91,8 @@ void SharedTimer::resume()
 void SharedTimer::timerEvent(QTimerEvent* event)
 {
     if (event->timerId() == d.timer.timerId()) {
-        foreach(Receiver receiver, d.receivers)
-        QMetaObject::invokeMethod(receiver.first, receiver.second);
+        foreach (Receiver receiver, d.receivers)
+            QMetaObject::invokeMethod(receiver.first, receiver.second);
     }
 }
 

@@ -67,7 +67,7 @@ void UserModel::addUsers(const QStringList& users)
 {
     QStringList unique;
     QSet<QString> nameSet = d.names.toSet();
-    foreach(const QString & user, users) {
+    foreach (const QString& user, users) {
         QString name = d.session->unprefixedUser(user);
         if (!nameSet.contains(name))
             unique += user;
@@ -75,7 +75,7 @@ void UserModel::addUsers(const QStringList& users)
 
     if (!unique.isEmpty()) {
         beginInsertRows(QModelIndex(), rowCount(), rowCount() + unique.count() - 1);
-        foreach(const QString & user, unique) {
+        foreach (const QString& user, unique) {
             QString name = d.session->unprefixedUser(user);
             d.names += name;
             d.prefixes.insert(name, d.session->userPrefix(user));

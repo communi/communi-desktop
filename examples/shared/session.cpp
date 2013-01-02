@@ -76,9 +76,10 @@ ChannelInfos Session::channels() const
 void Session::addChannel(const QString& channel)
 {
     const QString lower = channel.toLower();
-    foreach(const ChannelInfo & info, m_channels)
-    if (info.channel.toLower() == lower)
-        return;
+    foreach (const ChannelInfo& info, m_channels) {
+        if (info.channel.toLower() == lower)
+            return;
+    }
 
     ChannelInfo info;
     info.channel = channel;
@@ -306,7 +307,7 @@ void Session::destructLater()
 
 void Session::onConnected()
 {
-    foreach(const ChannelInfo & channel, m_channels) {
+    foreach (const ChannelInfo& channel, m_channels) {
         if (!channel.channel.isEmpty())
             sendCommand(IrcCommand::createJoin(channel.channel, channel.key));
     }

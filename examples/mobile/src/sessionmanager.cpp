@@ -28,7 +28,7 @@ SessionManager::SessionManager(const QString& appName, QDeclarativeContext* cont
 SessionManager::~SessionManager()
 {
     save();
-    foreach(QObject * item, m_items) {
+    foreach (QObject* item, m_items) {
         SessionItem* sessionItem = static_cast<SessionItem*>(item);
         sessionItem->session()->quit(m_appName);
         delete sessionItem;
@@ -60,14 +60,14 @@ void SessionManager::removeSession(Session* session)
 
 void SessionManager::restore()
 {
-    foreach(const ConnectionInfo & connection, Settings::instance()->connections())
+    foreach (const ConnectionInfo& connection, Settings::instance()->connections())
         addSession(Session::fromConnection(connection));
 }
 
 void SessionManager::save()
 {
     ConnectionInfos connections;
-    foreach(QObject * item, m_items) {
+    foreach (QObject* item, m_items) {
         SessionItem* sessionItem = static_cast<SessionItem*>(item);
         connections += sessionItem->session()->toConnection();
     }

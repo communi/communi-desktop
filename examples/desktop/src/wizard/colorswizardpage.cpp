@@ -60,8 +60,8 @@ public:
             QComboBox* comboBox = new QComboBox(parent);
             comboBox->addItems(COLORS);
             int i = 0;
-            foreach(const QString & color, COLORS)
-            comboBox->setItemData(i++, QColor(color), Qt::DecorationRole);
+            foreach (const QString& color, COLORS)
+                comboBox->setItemData(i++, QColor(color), Qt::DecorationRole);
             return comboBox;
         }
         return 0;

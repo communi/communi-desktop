@@ -167,7 +167,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
     ConnectionInfos connections;
     QList<Session*> sessions = tabWidget->sessions();
-    foreach(Session * session, sessions) {
+    foreach (Session* session, sessions) {
         connections += session->toConnection();
         session->quit();
     }
@@ -194,8 +194,8 @@ void MainWindow::initialize()
     QSettings settings;
     ConnectionInfos connections = settings.value("connections").value<ConnectionInfos>();
 
-    foreach(const ConnectionInfo & connection, connections)
-    connectToImpl(connection);
+    foreach (const ConnectionInfo& connection, connections)
+        connectToImpl(connection);
 
     if (connections.isEmpty())
         connectTo(ConnectionInfo());
@@ -406,7 +406,7 @@ void MainWindow::createTree()
     connect(treeWidget, SIGNAL(closeItem(SessionTreeItem*)), this, SLOT(closeTreeItem(SessionTreeItem*)));
     connect(treeWidget, SIGNAL(currentViewChanged(Session*, QString)), this, SLOT(currentTreeItemChanged(Session*, QString)));
 
-    foreach(Session * session, tabWidget->sessions()) {
+    foreach (Session* session, tabWidget->sessions()) {
         treeWidget->addSession(session);
         SessionTabWidget* tab = tabWidget->sessionWidget(session);
         for (int i = 1; i < tab->count() - 1; ++i) {

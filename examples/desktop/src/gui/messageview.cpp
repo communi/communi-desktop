@@ -76,8 +76,8 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
         CommandParser::addCustomCommand("QUERY", "<user>");
 
         QStringList prefixedCommands;
-        foreach(const QString & command, CommandParser::availableCommands())
-        prefixedCommands += "/" + command;
+        foreach (const QString& command, CommandParser::availableCommands())
+            prefixedCommands += "/" + command;
 
         command_model = new QStringListModel(qApp);
         command_model->setStringList(prefixedCommands);

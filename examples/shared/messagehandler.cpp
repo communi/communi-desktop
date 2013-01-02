@@ -171,7 +171,7 @@ void MessageHandler::handleModeMessage(IrcModeMessage* message)
 void MessageHandler::handleNickMessage(IrcNickMessage* message)
 {
     QString nick = message->sender().name().toLower();
-    foreach(MessageReceiver* receiver, d.receivers) {
+    foreach (MessageReceiver* receiver, d.receivers) {
         if (receiver->hasUser(nick))
             receiver->receiveMessage(message);
         if (!nick.compare(receiver->receiver(), Qt::CaseInsensitive)) {
@@ -290,7 +290,7 @@ void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
 void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
 {
     QString nick = message->sender().name();
-    foreach(MessageReceiver* receiver, d.receivers) {
+    foreach (MessageReceiver* receiver, d.receivers) {
         if (receiver->hasUser(nick))
             receiver->receiveMessage(message);
     }

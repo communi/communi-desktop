@@ -69,9 +69,10 @@ QStringList CommandParser::availableCommands()
 QStringList CommandParser::suggestedCommands(const QString& command, const QStringList& params)
 {
     QStringList suggestions;
-    foreach(const QString & available, availableCommands())
-    if (!command.compare(available, Qt::CaseInsensitive) || (params.isEmpty() && available.startsWith(command, Qt::CaseInsensitive)))
-        suggestions += available;
+    foreach (const QString& available, availableCommands()) {
+        if (!command.compare(available, Qt::CaseInsensitive) || (params.isEmpty() && available.startsWith(command, Qt::CaseInsensitive)))
+            suggestions += available;
+    }
     return suggestions;
 }
 
