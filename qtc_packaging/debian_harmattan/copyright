@@ -9,7 +9,7 @@ Upstream Author(s):
 
 Copyright:
 
-    Copyright (C) 2008-2012 J-P Nurmi
+    Copyright (C) 2008-2013 J-P Nurmi
 
 License:
 
@@ -30,7 +30,7 @@ License:
 On Debian systems, the complete text of the GNU General
 Public License can be found in `/usr/share/common-licenses/GPL'.
 
-The Communi library is (C) 2008-2012, J-P Nurmi <jpnurmi@gmail.com> and
+The Communi library is (C) 2008-2013, J-P Nurmi <jpnurmi@gmail.com> and
 is licensed under the LGPL.
 
     This library is free software; you can redistribute it and/or modify it
@@ -43,5 +43,5 @@ is licensed under the LGPL.
     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
     License for more details.
 
-The Debian packaging is (C) 2011-2012, J-P Nurmi <jpnurmi@gmail.com> and
+The Debian packaging is (C) 2011-2013, J-P Nurmi <jpnurmi@gmail.com> and
 is licensed under the GPL, see above.

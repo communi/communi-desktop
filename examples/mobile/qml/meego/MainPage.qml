@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2008-2012 J-P Nurmi <jpnurmi@gmail.com>
+* Copyright (C) 2008-2013 J-P Nurmi <jpnurmi@gmail.com>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -371,7 +371,7 @@ CommonPage {
 
             titleText: ApplicationName
             message: qsTr("<p>Communi is an IRC (Internet Relay Chat) client used to communicate with others on IRC networks around the world.</p>" +
-                          "<p>Copyright (C) 2012 J-P Nurmi <a href=\"mailto:jpnurmi@gmail.com\">jpnurmi@gmail.com</a><br/></p>" +
+                          "<p>Copyright (C) 2011-2013 J-P Nurmi <a href=\"mailto:jpnurmi@gmail.com\">jpnurmi@gmail.com</a><br/></p>" +
                           "%1").arg(showPolicy ? policy : license)
             onLinkActivated: Qt.openUrlExternally(link)
 
