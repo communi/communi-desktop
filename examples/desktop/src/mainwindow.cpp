@@ -284,7 +284,8 @@ void MainWindow::viewAdded(MessageView* view)
     if (treeWidget) {
         Session* session = view->session();
         treeWidget->addView(session, view->receiver());
-        treeWidget->restoreState(settings.value("tree").toByteArray());
+        if (settings.contains("tree"))
+            treeWidget->restoreState(settings.value("tree").toByteArray());
         treeWidget->expandItem(treeWidget->sessionItem(session));
     }
 }
