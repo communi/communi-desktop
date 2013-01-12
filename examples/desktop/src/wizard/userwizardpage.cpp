@@ -26,7 +26,6 @@ UserWizardPage::UserWizardPage(QWidget* parent) : QWizardPage(parent)
     QSettings settings;
     QStringList nicks = settings.value("nicks").toStringList();
     QStringList names = settings.value("realNames").toStringList();
-    QStringList users = settings.value("userNames").toStringList();
 
     QCompleter* nickCompleter = new QCompleter(nicks, ui.lineEditNick);
     nickCompleter->setCaseSensitivity(Qt::CaseInsensitive);
@@ -38,10 +37,6 @@ UserWizardPage::UserWizardPage(QWidget* parent) : QWizardPage(parent)
     QCompleter* nameCompleter = new QCompleter(names, ui.lineEditName);
     nameCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     ui.lineEditName->setCompleter(nameCompleter);
-
-    QCompleter* userCompleter = new QCompleter(users, ui.lineEditUser);
-    userCompleter->setCaseSensitivity(Qt::CaseInsensitive);
-    ui.lineEditUser->setCompleter(userCompleter);
 }
 
 UserWizardPage::~UserWizardPage()
@@ -49,13 +44,10 @@ UserWizardPage::~UserWizardPage()
     QSettings settings;
     QStringList nicks = settings.value("nicks").toStringList();
     QStringList names = settings.value("realNames").toStringList();
-    QStringList users = settings.value("userNames").toStringList();
     if (!nicks.contains(nickName(), Qt::CaseInsensitive))
         settings.setValue("nicks", nicks << nickName());
     if (!names.contains(realName(), Qt::CaseInsensitive))
         settings.setValue("realNames", names << realName());
-    if (!users.contains(userName(), Qt::CaseInsensitive))
-        settings.setValue("userNames", users << userName());
 }
 
 QString UserWizardPage::nickName() const
@@ -76,16 +68,6 @@ QString UserWizardPage::realName() const
 void UserWizardPage::setRealName(const QString& realName)
 {
     ui.lineEditName->setText(realName);
-}
-
-QString UserWizardPage::userName() const
-{
-    return ui.lineEditUser->text();
-}
-
-void UserWizardPage::setUserName(const QString& userName)
-{
-    ui.lineEditUser->setText(userName);
 }
 
 bool UserWizardPage::isComplete() const

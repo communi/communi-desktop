@@ -55,26 +55,6 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
-    <widget class="QLineEdit" name="lineEditUser">
-     <property name="whatsThis">
-      <string>Entering a user name is optional. The user name identifies You on IRC.</string>
-     </property>
-     <property name="inputMethodHints">
-      <set>Qt::ImhNoAutoUppercase</set>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>&amp;User name:</string>
-     </property>
-     <property name="buddy">
-      <cstring>lineEditUser</cstring>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
  <resources/>

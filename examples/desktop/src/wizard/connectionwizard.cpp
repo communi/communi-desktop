@@ -33,7 +33,7 @@ ConnectionInfo ConnectionWizard::connection() const
     ConnectionInfo conn;
     conn.nick = static_cast<UserWizardPage*>(page(UserPage))->nickName();
     conn.real = static_cast<UserWizardPage*>(page(UserPage))->realName();
-    conn.user = static_cast<UserWizardPage*>(page(UserPage))->userName();
+    conn.user = static_cast<ServerWizardPage*>(page(ServerPage))->userName();
     conn.host = static_cast<ServerWizardPage*>(page(ServerPage))->hostName();
     conn.port = static_cast<ServerWizardPage*>(page(ServerPage))->port();
     conn.secure = static_cast<ServerWizardPage*>(page(ServerPage))->isSecure();
@@ -46,7 +46,7 @@ void ConnectionWizard::setConnection(const ConnectionInfo& conn)
 {
     static_cast<UserWizardPage*>(page(UserPage))->setNickName(conn.nick);
     static_cast<UserWizardPage*>(page(UserPage))->setRealName(conn.real);
-    static_cast<UserWizardPage*>(page(UserPage))->setUserName(conn.user);
+    static_cast<ServerWizardPage*>(page(ServerPage))->setUserName(conn.user);
     static_cast<ServerWizardPage*>(page(ServerPage))->setHostName(conn.host);
     static_cast<ServerWizardPage*>(page(ServerPage))->setPort(conn.port);
     static_cast<ServerWizardPage*>(page(ServerPage))->setSecure(conn.secure);

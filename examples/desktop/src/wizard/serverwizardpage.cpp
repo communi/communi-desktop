@@ -25,18 +25,26 @@ ServerWizardPage::ServerWizardPage(QWidget* parent) : QWizardPage(parent)
 
     QSettings settings;
     QStringList hosts = settings.value("hosts").toStringList();
+    QStringList users = settings.value("userNames").toStringList();
 
     QCompleter* hostCompleter = new QCompleter(hosts, ui.lineEditHost);
     hostCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     ui.lineEditHost->setCompleter(hostCompleter);
+
+    QCompleter* userCompleter = new QCompleter(users, ui.lineEditUser);
+    userCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+    ui.lineEditUser->setCompleter(userCompleter);
 }
 
 ServerWizardPage::~ServerWizardPage()
 {
     QSettings settings;
     QStringList hosts = settings.value("hosts").toStringList();
+    QStringList users = settings.value("userNames").toStringList();
     if (!hosts.contains(hostName(), Qt::CaseInsensitive))
         settings.setValue("hosts", hosts << hostName());
+    if (!users.contains(userName(), Qt::CaseInsensitive))
+        settings.setValue("userNames", users << userName());
 }
 
 QString ServerWizardPage::hostName() const
@@ -67,6 +75,16 @@ bool ServerWizardPage::isSecure() const
 void ServerWizardPage::setSecure(bool secure)
 {
     ui.checkBoxSecure->setChecked(secure);
+}
+
+QString ServerWizardPage::userName() const
+{
+    return ui.lineEditUser->text();
+}
+
+void ServerWizardPage::setUserName(const QString& userName)
+{
+    ui.lineEditUser->setText(userName);
 }
 
 QString ServerWizardPage::password() const

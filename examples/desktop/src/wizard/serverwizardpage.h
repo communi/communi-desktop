@@ -34,6 +34,9 @@ public:
     bool isSecure() const;
     void setSecure(bool secure);
 
+    QString userName() const;
+    void setUserName(const QString& userName);
+
     QString password() const;
     void setPassword(const QString& password);
 
