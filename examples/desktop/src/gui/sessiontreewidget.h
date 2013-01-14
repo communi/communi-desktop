@@ -23,6 +23,7 @@
 
 class Session;
 struct Settings;
+class MessageView;
 class MenuFactory;
 class SessionTreeItem;
 
@@ -48,18 +49,14 @@ public:
 
     QColor currentAlertColor() const;
 
-    QList<Session*> sessions() const;
+    SessionTreeItem* viewItem(MessageView* view) const;
     SessionTreeItem* sessionItem(Session* session) const;
 
 public slots:
-    void addSession(Session* session);
-    void removeSession(Session* session);
-
-    void addView(Session* session, const QString& view);
-    void insertView(Session* session, int index, const QString& view);
-    void removeView(Session* session, const QString& view);
-    void renameView(Session* session, const QString& from, const QString& to);
-    void setCurrentView(Session* session, const QString& view = QString());
+    void addView(MessageView* view);
+    void removeView(MessageView* view);
+    void renameView(MessageView* view);
+    void setCurrentView(MessageView* view);
 
     void moveToNextItem();
     void moveToPrevItem();
@@ -113,7 +110,8 @@ private:
         QHash<ItemStatus, QColor> colors;
         QSet<SessionTreeItem*> alertedItems;
         QSet<SessionTreeItem*> resetedItems;
-        QHash<Session*, SessionTreeItem*> sessions;
+        QHash<MessageView*, SessionTreeItem*> viewItems;
+        QHash<Session*, SessionTreeItem*> sessionItems;
         QVariantHash state;
     } d;
     friend class SessionTreeItem;

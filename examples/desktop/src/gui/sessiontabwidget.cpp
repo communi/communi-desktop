@@ -161,7 +161,7 @@ void SessionTabWidget::renameView(const QString& from, const QString& to)
         int index = indexOf(view);
         if (index != -1)
             setTabText(index, view->receiver().replace("&", "&&"));
-        emit viewRenamed(from, to);
+        emit viewRenamed(view);
     }
 }
 

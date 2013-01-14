@@ -59,7 +59,7 @@ signals:
 
     void viewAdded(MessageView* view);
     void viewRemoved(MessageView* view);
-    void viewRenamed(const QString& from, const QString& to);
+    void viewRenamed(MessageView* view);
     void viewActivated(MessageView* view);
 
 protected:

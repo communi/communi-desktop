@@ -14,22 +14,25 @@
 
 #include "sessiontreeitem.h"
 #include "sessiontreewidget.h"
+#include "messageview.h"
 
-SessionTreeItem::SessionTreeItem(Session* session, QTreeWidget* parent) : QTreeWidgetItem(parent)
+SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidget* parent) : QTreeWidgetItem(parent)
 {
-    d.session = session;
+    d.view = view;
     d.alerted = false;
     d.inactive = true;
     d.highlighted = false;
+    setText(0, view->receiver());
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDropEnabled);
 }
 
-SessionTreeItem::SessionTreeItem(Session* session, QTreeWidgetItem* parent) : QTreeWidgetItem(parent)
+SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidgetItem* parent) : QTreeWidgetItem(parent)
 {
-    d.session = session;
+    d.view = view;
     d.alerted = false;
     d.inactive = false;
     d.highlighted = false;
+    setText(0, view->receiver());
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
 }
 
@@ -48,7 +51,12 @@ SessionTreeItem::~SessionTreeItem()
 
 Session* SessionTreeItem::session() const
 {
-    return d.session;
+    return d.view->session();
+}
+
+MessageView* SessionTreeItem::view() const
+{
+    return d.view;
 }
 
 SessionTreeItem* SessionTreeItem::findChild(const QString& name) const

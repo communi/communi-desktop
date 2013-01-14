@@ -18,15 +18,17 @@
 #include <QTreeWidgetItem>
 
 class Session;
+class MessageView;
 
 class SessionTreeItem : public QTreeWidgetItem
 {
 public:
-    SessionTreeItem(Session* session, QTreeWidget* parent);
-    SessionTreeItem(Session* session, QTreeWidgetItem* parent);
+    SessionTreeItem(MessageView* view, QTreeWidget* parent);
+    SessionTreeItem(MessageView* view, QTreeWidgetItem* parent);
     ~SessionTreeItem();
 
     Session* session() const;
+    MessageView* view() const;
     SessionTreeItem* findChild(const QString& name) const;
 
     QVariant data(int column, int role) const;
@@ -47,7 +49,7 @@ private:
         bool alerted;
         bool inactive;
         bool highlighted;
-        Session* session;
+        MessageView* view;
         QSet<SessionTreeItem*> alertedChildren;
         QSet<SessionTreeItem*> highlightedChildren;
     } d;
