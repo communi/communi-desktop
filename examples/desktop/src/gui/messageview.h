@@ -38,6 +38,7 @@ public:
 
     ViewType viewType() const;
     Session* session() const;
+    UserModel* userModel() const;
     QTextBrowser* textBrowser() const;
     MessageFormatter* messageFormatter() const;
 

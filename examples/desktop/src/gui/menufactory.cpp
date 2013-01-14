@@ -18,6 +18,7 @@
 #include "sessiontreeitem.h"
 #include "sessiontabwidget.h"
 #include "sessiontreewidget.h"
+#include "usermodel.h"
 #include "session.h"
 #include <IrcCommand>
 
@@ -92,7 +93,19 @@ private slots:
         view->session()->sendCommand(command);
     }
 
-    void onCloseView()
+    void onJoinTriggered()
+    {
+        IrcCommand* command = IrcCommand::createJoin(view->receiver());
+        view->session()->sendCommand(command);
+    }
+
+    void onPartTriggered()
+    {
+        IrcCommand* command = IrcCommand::createPart(view->receiver());
+        view->session()->sendCommand(command);
+    }
+
+    void onCloseTriggered()
     {
         tab->removeView(view->receiver());
     }
@@ -111,14 +124,18 @@ QMenu* MenuFactory::createTabViewMenu(MessageView* view, SessionTabWidget* tab)
         else
             menu->addAction(tr("Reconnect"), view->session(), SLOT(reconnect()));
         menu->addAction(tr("Edit"), menu, SLOT(onEditSession()))->setEnabled(!view->session()->isActive());
-    }
-    if (view->viewType() == MessageView::ChannelView) {
-        menu->addAction(tr("Names"), menu, SLOT(onNamesTriggered()));
-        menu->addAction(tr("Part"), menu, SLOT(onCloseView()));
+    } else if (view->viewType() == MessageView::ChannelView) {
+        if (view->userModel()->rowCount()) {
+            menu->addAction(tr("Names"), menu, SLOT(onNamesTriggered()));
+            menu->addAction(tr("Part"), menu, SLOT(onPartTriggered()));
+        } else {
+            menu->addAction(tr("Join"), menu, SLOT(onJoinTriggered()));
+        }
     } else {
         menu->addAction(tr("Whois"), menu, SLOT(onWhoisTriggered()));
-        menu->addAction(tr("Close"), menu, SLOT(onCloseView()));
     }
+    menu->addSeparator();
+    menu->addAction(tr("Close"), menu, SLOT(onCloseTriggered()));
     return menu;
 }
 
@@ -251,6 +268,12 @@ private slots:
         item->session()->sendCommand(command);
     }
 
+    void onJoinTriggered()
+    {
+        IrcCommand* command = IrcCommand::createJoin(item->text(0));
+        item->session()->sendCommand(command);
+    }
+
     void onPartTriggered()
     {
         IrcCommand* command = IrcCommand::createPart(item->text(0));
@@ -276,14 +299,18 @@ QMenu* MenuFactory::createSessionTreeMenu(SessionTreeItem* item, SessionTreeWidg
         else
             menu->addAction(tr("Reconnect"), item->session(), SLOT(reconnect()));
         menu->addAction(tr("Edit"), menu, SLOT(onEditSession()))->setEnabled(!item->session()->isActive());
-    }
-    if (item->session()->isChannel(item->text(0))) {
-        menu->addAction(tr("Names"), menu, SLOT(onNamesTriggered()));
-        menu->addAction(tr("Part"), menu, SLOT(onPartTriggered()));
+    } else if (item->session()->isChannel(item->text(0))) {
+        if (item->view()->userModel()->rowCount()) {
+            menu->addAction(tr("Names"), menu, SLOT(onNamesTriggered()));
+            menu->addAction(tr("Part"), menu, SLOT(onPartTriggered()));
+        } else {
+            menu->addAction(tr("Join"), menu, SLOT(onJoinTriggered()));
+        }
     } else {
         menu->addAction(tr("Whois"), menu, SLOT(onWhoisTriggered()));
-        menu->addAction(tr("Close"), menu, SLOT(onCloseTriggered()));
     }
+    menu->addSeparator();
+    menu->addAction(tr("Close"), menu, SLOT(onCloseTriggered()));
     return menu;
 }
 

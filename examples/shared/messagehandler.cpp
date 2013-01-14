@@ -266,10 +266,7 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
 
 void MessageHandler::handlePartMessage(IrcPartMessage* message)
 {
-    if (message->isOwn())
-        removeReceiver(message->channel());
-    else
-        sendMessage(message, message->channel());
+    sendMessage(message, message->channel());
 }
 
 void MessageHandler::handlePongMessage(IrcPongMessage* message)

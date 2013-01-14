@@ -112,6 +112,11 @@ Session* MessageView::session() const
     return d.session;
 }
 
+UserModel* MessageView::userModel() const
+{
+    return d.listView->userModel();
+}
+
 QTextBrowser* MessageView::textBrowser() const
 {
     return d.textBrowser;
