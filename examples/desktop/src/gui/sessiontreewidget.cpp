@@ -194,7 +194,7 @@ void SessionTreeWidget::moveToPrevItem()
 {
     QTreeWidgetItem* item = previousItem(currentItem());
     if (!item)
-        item = previousItem(lastItem());
+        item = lastItem();
     setCurrentItem(item);
 }
 
