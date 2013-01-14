@@ -117,24 +117,28 @@ private:
 
 QMenu* MenuFactory::createTabViewMenu(MessageView* view, SessionTabWidget* tab)
 {
+    bool active = view->session()->isActive();
     TabViewMenu* menu = new TabViewMenu(view, tab);
     if (view->viewType() == MessageView::ServerView) {
         if (view->session()->isActive())
             menu->addAction(tr("Disconnect"), view->session(), SLOT(quit()));
         else
             menu->addAction(tr("Reconnect"), view->session(), SLOT(reconnect()));
-        menu->addAction(tr("Edit"), menu, SLOT(onEditSession()))->setEnabled(!view->session()->isActive());
-    } else if (view->viewType() == MessageView::ChannelView) {
-        if (view->userModel()->rowCount()) {
-            menu->addAction(tr("Names"), menu, SLOT(onNamesTriggered()));
-            menu->addAction(tr("Part"), menu, SLOT(onPartTriggered()));
+        menu->addAction(tr("Edit"), menu, SLOT(onEditSession()))->setEnabled(!active);
+        menu->addSeparator();
+    } else if (active) {
+        if (view->viewType() == MessageView::ChannelView) {
+            if (view->userModel()->rowCount()) {
+                menu->addAction(tr("Names"), menu, SLOT(onNamesTriggered()))->setEnabled(active);
+                menu->addAction(tr("Part"), menu, SLOT(onPartTriggered()))->setEnabled(active);
+            } else {
+                menu->addAction(tr("Join"), menu, SLOT(onJoinTriggered()))->setEnabled(active);
+            }
         } else {
-            menu->addAction(tr("Join"), menu, SLOT(onJoinTriggered()));
+            menu->addAction(tr("Whois"), menu, SLOT(onWhoisTriggered()))->setEnabled(active);
         }
-    } else {
-        menu->addAction(tr("Whois"), menu, SLOT(onWhoisTriggered()));
+        menu->addSeparator();
     }
-    menu->addSeparator();
     menu->addAction(tr("Close"), menu, SLOT(onCloseTriggered()));
     return menu;
 }
@@ -292,24 +296,28 @@ private:
 
 QMenu* MenuFactory::createSessionTreeMenu(SessionTreeItem* item, SessionTreeWidget* tree)
 {
+    bool active = item->session()->isActive();
     SessionTreeMenu* menu = new SessionTreeMenu(item, tree);
     if (!item->parent()) {
-        if (item->session()->isActive())
+        if (active)
             menu->addAction(tr("Disconnect"), item->session(), SLOT(quit()));
         else
             menu->addAction(tr("Reconnect"), item->session(), SLOT(reconnect()));
-        menu->addAction(tr("Edit"), menu, SLOT(onEditSession()))->setEnabled(!item->session()->isActive());
-    } else if (item->session()->isChannel(item->text(0))) {
-        if (item->view()->userModel()->rowCount()) {
-            menu->addAction(tr("Names"), menu, SLOT(onNamesTriggered()));
-            menu->addAction(tr("Part"), menu, SLOT(onPartTriggered()));
+        menu->addAction(tr("Edit"), menu, SLOT(onEditSession()))->setEnabled(!active);
+        menu->addSeparator();
+    } else if (active){
+        if (item->session()->isChannel(item->text(0))) {
+            if (item->view()->userModel()->rowCount()) {
+                menu->addAction(tr("Names"), menu, SLOT(onNamesTriggered()));
+                menu->addAction(tr("Part"), menu, SLOT(onPartTriggered()));
+            } else {
+                menu->addAction(tr("Join"), menu, SLOT(onJoinTriggered()));
+            }
         } else {
-            menu->addAction(tr("Join"), menu, SLOT(onJoinTriggered()));
+            menu->addAction(tr("Whois"), menu, SLOT(onWhoisTriggered()));
         }
-    } else {
-        menu->addAction(tr("Whois"), menu, SLOT(onWhoisTriggered()));
+        menu->addSeparator();
     }
-    menu->addSeparator();
     menu->addAction(tr("Close"), menu, SLOT(onCloseTriggered()));
     return menu;
 }
