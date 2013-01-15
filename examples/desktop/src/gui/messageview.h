@@ -29,7 +29,7 @@ class MessageView : public QWidget, public MessageReceiver
 {
     Q_OBJECT
     Q_PROPERTY(bool active READ isActive NOTIFY activeChanged)
-    Q_PROPERTY(QString receiver READ receiver WRITE setReceiver)
+    Q_PROPERTY(QString receiver READ receiver WRITE setReceiver NOTIFY receiverChanged)
 
 public:
     enum ViewType { ServerView, ChannelView, QueryView };
@@ -60,6 +60,8 @@ public slots:
 
 signals:
     void activeChanged();
+    void receiverChanged(const QString& receiver);
+
     void highlighted(IrcMessage* message);
     void alerted(IrcMessage* message);
     void queried(const QString& user);

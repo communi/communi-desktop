@@ -145,9 +145,12 @@ QString MessageView::receiver() const
 
 void MessageView::setReceiver(const QString& receiver)
 {
-    d.receiver = receiver;
-    if (d.viewType == ChannelView)
-        d.listView->setChannel(receiver);
+    if (d.receiver != receiver) {
+        d.receiver = receiver;
+        if (d.viewType == ChannelView)
+            d.listView->setChannel(receiver);
+        emit receiverChanged(receiver);
+    }
 }
 
 MenuFactory* MessageView::menuFactory() const
