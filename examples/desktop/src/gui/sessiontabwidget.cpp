@@ -142,13 +142,14 @@ void SessionTabWidget::closeView(int index)
 {
     MessageView* view = qobject_cast<MessageView*>(widget(index));
     if (view) {
-        QString reason = tr("%1 %2").arg(QApplication::applicationName())
-                         .arg(QApplication::applicationVersion());
-        if (indexOf(view) == 0)
-            session()->quit(reason);
-        else if (view->viewType() == MessageView::ChannelView)
-            d.handler.session()->sendCommand(IrcCommand::createPart(view->receiver(), reason));
-
+        if (view->isActive()) {
+            QString reason = tr("%1 %2").arg(QApplication::applicationName())
+                             .arg(QApplication::applicationVersion());
+            if (indexOf(view) == 0)
+                session()->quit(reason);
+            else if (view->viewType() == MessageView::ChannelView)
+                d.handler.session()->sendCommand(IrcCommand::createPart(view->receiver(), reason));
+        }
         d.handler.removeReceiver(view->receiver());
     }
 }
