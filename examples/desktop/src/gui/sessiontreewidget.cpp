@@ -149,16 +149,18 @@ void SessionTreeWidget::addView(MessageView* view)
     if (view->viewType() == MessageView::ServerView) {
         item = new SessionTreeItem(view, this);
         Session* session = view->session();
-        connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateSession()));
         connect(session, SIGNAL(nameChanged(QString)), this, SLOT(updateSession()));
         connect(session, SIGNAL(networkChanged(QString)), this, SLOT(updateSession()));
         d.sessionItems.insert(session, item);
-        updateSession(session);
     } else {
         SessionTreeItem* parent = d.sessionItems.value(view->session());
         item = new SessionTreeItem(view, parent);
     }
+
+    connect(view, SIGNAL(activeChanged()), this, SLOT(updateView()));
+    connect(view, SIGNAL(receiverChanged(QString)), this, SLOT(updateView()));
     d.viewItems.insert(view, item);
+    updateView(view);
 }
 
 void SessionTreeWidget::removeView(MessageView* view)
@@ -302,17 +304,28 @@ bool SessionTreeWidget::event(QEvent* event)
     return QTreeWidget::event(event);
 }
 
+void SessionTreeWidget::updateView(MessageView* view)
+{
+    if (!view)
+        view = qobject_cast<MessageView*>(sender());
+    SessionTreeItem* item = d.viewItems.value(view);
+    if (item) {
+        if (!item->parent())
+            item->setText(0, item->session()->name().isEmpty() ? item->session()->host() : item->session()->name());
+        else
+            item->setText(0, view->receiver());
+        // re-read MessageView::isActive()
+        item->emitDataChanged();
+    }
+}
+
 void SessionTreeWidget::updateSession(Session* session)
 {
     if (!session)
         session = qobject_cast<Session*>(sender());
     SessionTreeItem* item = d.sessionItems.value(session);
-    if (item) {
+    if (item)
         item->setText(0, session->name().isEmpty() ? session->host() : session->name());
-        item->setInactive(!session->isActive());
-        for (int i = 0; i < item->childCount(); ++i)
-            static_cast<SessionTreeItem*>(item->child(i))->setInactive(!session->isActive());
-    }
 }
 
 void SessionTreeWidget::onItemSelectionChanged()

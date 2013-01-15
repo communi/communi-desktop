@@ -36,9 +36,6 @@ public:
     bool isAlerted() const;
     void setAlerted(bool alerted);
 
-    bool isInactive() const;
-    void setInactive(bool inactive);
-
     bool isHighlighted() const;
     void setHighlighted(bool highlighted);
 
@@ -47,7 +44,6 @@ public:
 private:
     struct Private {
         bool alerted;
-        bool inactive;
         bool highlighted;
         MessageView* view;
         QSet<SessionTreeItem*> alertedChildren;

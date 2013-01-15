@@ -83,6 +83,7 @@ protected:
     bool event(QEvent* event);
 
 private slots:
+    void updateView(MessageView* view = 0);
     void updateSession(Session* session = 0);
     void onItemSelectionChanged();
     void onItemExpanded(QTreeWidgetItem* item);

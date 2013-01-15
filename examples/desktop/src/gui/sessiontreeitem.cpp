@@ -20,7 +20,6 @@ SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidget* parent) : QTree
 {
     d.view = view;
     d.alerted = false;
-    d.inactive = true;
     d.highlighted = false;
     setText(0, view->receiver());
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDropEnabled);
@@ -30,7 +29,6 @@ SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidgetItem* parent) : Q
 {
     d.view = view;
     d.alerted = false;
-    d.inactive = false;
     d.highlighted = false;
     setText(0, view->receiver());
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
@@ -71,13 +69,13 @@ QVariant SessionTreeItem::data(int column, int role) const
 {
     if (role == Qt::ForegroundRole) {
         SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget());
-        if (!parent() && d.inactive)
+        if (!d.view->isActive())
             return tw->statusColor(SessionTreeWidget::Inactive);
         if (d.alerted || (!isExpanded() && !d.alertedChildren.isEmpty()))
             return tw->currentAlertColor();
         if (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty()))
             return tw->statusColor(SessionTreeWidget::Highlight);
-        return tw->statusColor(d.inactive ? SessionTreeWidget::Inactive : SessionTreeWidget::Active);
+        return tw->statusColor(SessionTreeWidget::Active);
     }
     return QTreeWidgetItem::data(column, role);
 }
@@ -99,19 +97,6 @@ void SessionTreeItem::setAlerted(bool alerted)
             if (!p->isExpanded())
                 p->emitDataChanged();
         }
-        emitDataChanged();
-    }
-}
-
-bool SessionTreeItem::isInactive() const
-{
-    return d.inactive;
-}
-
-void SessionTreeItem::setInactive(bool inactive)
-{
-    if (d.inactive != inactive) {
-        d.inactive = inactive;
         emitDataChanged();
     }
 }
