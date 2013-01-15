@@ -357,11 +357,10 @@ void MainWindow::sessionRemoved(Session* session)
 {
     if (treeWidget) {
         if (SessionTabWidget* tab = tabWidget->sessionWidget(session)) {
-            if (MessageView* view = qobject_cast<MessageView*>(tab->widget(0))) {
+            if (MessageView* view = qobject_cast<MessageView*>(tab->widget(0)))
                 treeWidget->removeView(view);
-                treeWidget->parentWidget()->setVisible(!tabWidget->sessions().isEmpty());
-            }
         }
+        treeWidget->parentWidget()->setVisible(!tabWidget->sessions().isEmpty());
     }
 }
 
