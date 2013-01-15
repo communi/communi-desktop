@@ -1,4 +1,10 @@
-QAbstractItemView {
+UserListView {
+    border: none;
+    background: palette(alternate-base);
+    selection-background-color: palette(highlight);
+}
+
+SessionTreeWidget {
     border: none;
     background: palette(alternate-base);
     selection-background-color: palette(highlight);
