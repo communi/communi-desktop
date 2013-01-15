@@ -39,6 +39,7 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
 {
     d.setupUi(this);
     d.viewType = type;
+    d.joined = false;
 
     d.topicLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
     d.helpLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
@@ -61,6 +62,7 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     d.formatter->setTimeStampFormat("class='timestamp'");
 
     d.session = session;
+    connect(d.session, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
     connect(&d.parser, SIGNAL(customCommand(QString, QStringList)), this, SLOT(onCustomCommand(QString, QStringList)));
 
     d.topicLabel->setVisible(type == ChannelView);
@@ -100,6 +102,15 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
 
 MessageView::~MessageView()
 {
+}
+
+bool MessageView::isActive() const
+{
+    if (!d.session->isActive())
+        return false;
+    if (d.viewType == ChannelView)
+        return d.joined;
+    return true;
 }
 
 MessageView::ViewType MessageView::viewType() const
@@ -335,6 +346,18 @@ void MessageView::receiveMessage(IrcMessage* message)
             break;
         case IrcMessage::Unknown:
             qWarning() << "unknown:" << message;
+            break;
+        case IrcMessage::Join:
+            if (message->isOwn()) {
+                d.joined = true;
+                emit activeChanged();
+            }
+            break;
+        case IrcMessage::Part:
+            if (message->isOwn()) {
+                d.joined = false;
+                emit activeChanged();
+            }
             break;
         case IrcMessage::Invite:
         case IrcMessage::Ping:

@@ -28,6 +28,7 @@ class Session;
 class MessageView : public QWidget, public MessageReceiver
 {
     Q_OBJECT
+    Q_PROPERTY(bool active READ isActive NOTIFY activeChanged)
     Q_PROPERTY(QString receiver READ receiver WRITE setReceiver)
 
 public:
@@ -36,6 +37,7 @@ public:
     MessageView(ViewType type, Session* session, QWidget* parent = 0);
     ~MessageView();
 
+    bool isActive() const;
     ViewType viewType() const;
     Session* session() const;
     UserModel* userModel() const;
@@ -57,6 +59,7 @@ public slots:
     void applySettings(const Settings& settings);
 
 signals:
+    void activeChanged();
     void highlighted(IrcMessage* message);
     void alerted(IrcMessage* message);
     void queried(const QString& user);
@@ -84,6 +87,7 @@ private:
         CommandParser parser;
         MessageFormatter* formatter;
         Settings settings;
+        bool joined;
     } d;
 };
 
