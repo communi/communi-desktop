@@ -268,7 +268,9 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
 
 void MessageHandler::handlePartMessage(IrcPartMessage* message)
 {
-    sendMessage(message, message->channel());
+    MessageReceiver* receiver = getReceiver(message->channel());
+    if (receiver)
+        sendMessage(message, receiver);
 }
 
 void MessageHandler::handlePongMessage(IrcPongMessage* message)
