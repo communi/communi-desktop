@@ -47,6 +47,7 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
 
     MessageView* view = openView(d.handler.session()->host());
     d.handler.setDefaultReceiver(view);
+    d.handler.setCurrentReceiver(view);
     updateStatus();
 
     applySettings(d.settings);
