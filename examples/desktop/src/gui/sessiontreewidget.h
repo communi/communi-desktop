@@ -81,6 +81,7 @@ protected:
     void contextMenuEvent(QContextMenuEvent* event);
     void dragMoveEvent(QDragMoveEvent* event);
     bool event(QEvent* event);
+    QMimeData* mimeData(const QList<QTreeWidgetItem*> items) const;
 
 private slots:
     void updateView(MessageView* view = 0);
@@ -115,6 +116,7 @@ private:
         QHash<MessageView*, SessionTreeItem*> viewItems;
         QHash<Session*, SessionTreeItem*> sessionItems;
         QVariantHash state;
+        mutable QTreeWidgetItem* dropParent;
     } d;
     friend class SessionTreeItem;
 };

@@ -44,6 +44,7 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     setDropIndicatorShown(true);
     setDragDropMode(InternalMove);
 
+    d.dropParent = 0;
     d.menuFactory = 0;
 
     d.colors[Active] = palette().color(QPalette::WindowText);
@@ -302,7 +303,7 @@ void SessionTreeWidget::contextMenuEvent(QContextMenuEvent* event)
 void SessionTreeWidget::dragMoveEvent(QDragMoveEvent* event)
 {
     QTreeWidgetItem* item = itemAt(event->pos());
-    if (!item || !item->parent())
+    if (!item || !item->parent() || item->parent() != d.dropParent)
         event->ignore();
     else
         QTreeWidget::dragMoveEvent(event);
@@ -313,6 +314,13 @@ bool SessionTreeWidget::event(QEvent* event)
     if (event->type() == QEvent::WindowActivate)
         delayedItemReset();
     return QTreeWidget::event(event);
+}
+
+QMimeData* SessionTreeWidget::mimeData(const QList<QTreeWidgetItem*> items) const
+{
+    QTreeWidgetItem* item = items.value(0);
+    d.dropParent = item ? item->parent() : 0;
+    return QTreeWidget::mimeData(items);
 }
 
 void SessionTreeWidget::updateView(MessageView* view)
