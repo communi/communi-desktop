@@ -29,7 +29,10 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     setHeaderHidden(true);
     setRootIsDecorated(false);
     setFrameStyle(QFrame::NoFrame);
-    setItemDelegate(new SessionTreeDelegate(this));
+
+    SessionTreeDelegate* delegate = new SessionTreeDelegate(this);
+    connect(delegate, SIGNAL(closeRequested(SessionTreeItem*)), SIGNAL(closeItem(SessionTreeItem*)));
+    setItemDelegate(delegate);
 
     setDragEnabled(true);
     setDropIndicatorShown(true);

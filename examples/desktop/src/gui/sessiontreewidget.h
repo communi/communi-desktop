@@ -116,6 +116,7 @@ private:
         QVariantHash state;
     } d;
     friend class SessionTreeItem;
+    friend class SessionTreeDelegate;
 };
 
 #endif // SESSIONTREEWIDGET_H
