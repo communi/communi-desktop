@@ -88,6 +88,7 @@ private slots:
     void onItemSelectionChanged();
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
+    void onItemClicked(QTreeWidgetItem* item, int column);
     void delayedItemReset();
     void delayedItemResetTimeout();
     void alertTimeout();
@@ -116,7 +117,6 @@ private:
         QVariantHash state;
     } d;
     friend class SessionTreeItem;
-    friend class SessionTreeDelegate;
 };
 
 #endif // SESSIONTREEWIDGET_H

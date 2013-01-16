@@ -17,27 +17,15 @@
 
 #include <QStyledItemDelegate>
 
-class SessionTreeItem;
-class SessionTreeWidget;
-
 class SessionTreeDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 
 public:
-    explicit SessionTreeDelegate(SessionTreeWidget* parent = 0);
+    explicit SessionTreeDelegate(QObject* parent = 0);
 
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
-
-signals:
-    void closeRequested(SessionTreeItem* item);
-
-protected:
-    bool eventFilter(QObject* object, QEvent* event);
-
-private:
-    QPersistentModelIndex pressedIndex;
 };
 
 #endif // SESSIONTREEDELEGATE_H

@@ -20,19 +20,25 @@
 #include "sharedtimer.h"
 #include "session.h"
 #include <QContextMenuEvent>
+#include <QHeaderView>
 #include <QTimer>
 
 SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
     setAnimated(true);
+    setColumnCount(2);
     setIndentation(0);
     setHeaderHidden(true);
     setRootIsDecorated(false);
     setFrameStyle(QFrame::NoFrame);
 
-    SessionTreeDelegate* delegate = new SessionTreeDelegate(this);
-    connect(delegate, SIGNAL(closeRequested(SessionTreeItem*)), SIGNAL(closeItem(SessionTreeItem*)));
-    setItemDelegate(delegate);
+    header()->setStretchLastSection(false);
+    header()->setResizeMode(0, QHeaderView::Stretch);
+    header()->setResizeMode(1, QHeaderView::Fixed);
+    header()->resizeSection(1, 18);
+
+    viewport()->setAttribute(Qt::WA_Hover);
+    setItemDelegate(new SessionTreeDelegate(this));
 
     setDragEnabled(true);
     setDropIndicatorShown(true);
@@ -52,6 +58,8 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
             this, SLOT(onItemExpanded(QTreeWidgetItem*)));
     connect(this, SIGNAL(itemCollapsed(QTreeWidgetItem*)),
             this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
+    connect(this, SIGNAL(itemClicked(QTreeWidgetItem*,int)),
+            this, SLOT(onItemClicked(QTreeWidgetItem*,int)));
 
     d.prevShortcut = new QShortcut(this);
     connect(d.prevShortcut, SIGNAL(activated()), this, SLOT(moveToPrevItem()));
@@ -348,6 +356,12 @@ void SessionTreeWidget::onItemExpanded(QTreeWidgetItem* item)
 void SessionTreeWidget::onItemCollapsed(QTreeWidgetItem* item)
 {
     static_cast<SessionTreeItem*>(item)->emitDataChanged();
+}
+
+void SessionTreeWidget::onItemClicked(QTreeWidgetItem* item, int column)
+{
+    if (column == 1)
+        emit closeItem(static_cast<SessionTreeItem*>(item));
 }
 
 void SessionTreeWidget::delayedItemReset()

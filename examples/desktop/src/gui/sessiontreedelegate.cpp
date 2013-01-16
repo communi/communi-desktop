@@ -13,19 +13,14 @@
 */
 
 #include "sessiontreedelegate.h"
-#include "sessiontreewidget.h"
-#include "sessiontreeitem.h"
 #include <QStyleOptionViewItem>
 #include <QApplication>
-#include <QMouseEvent>
 #include <QLineEdit>
 #include <QPalette>
 #include <QPainter>
 
-SessionTreeDelegate::SessionTreeDelegate(SessionTreeWidget* parent) : QStyledItemDelegate(parent)
+SessionTreeDelegate::SessionTreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
 {
-    parent->viewport()->installEventFilter(this);
-    parent->viewport()->setAttribute(Qt::WA_Hover);
 }
 
 QSize SessionTreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -67,47 +62,14 @@ void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
         painter->drawLines(lines);
     }
 
-    if (option.state & QStyle::State_MouseOver) {
-        QRect iconRect = QStyle::alignedRect(option.direction, Qt::AlignRight, QSize(option.decorationSize.width(), option.rect.height()), option.rect);
-        QRect displayRect = option.rect.adjusted(0, 0, -option.decorationSize.width(), 0);
-        const_cast<QStyleOptionViewItem&>(option).rect = QStyle::alignedRect(option.direction, Qt::AlignLeft, displayRect.size(), option.rect);
-
-        if (option.state & QStyle::State_Selected)
-            painter->fillRect(iconRect, option.palette.brush(QPalette::Highlight));
-        static QIcon icon(":/resources/iconmonstr/close.png");
-        icon.paint(painter, iconRect);
-    }
-
     QStyledItemDelegate::paint(painter, option, index);
-}
 
-bool SessionTreeDelegate::eventFilter(QObject* object, QEvent* event)
-{
-    SessionTreeWidget* tree = static_cast<SessionTreeWidget*>(parent());
-    if (event->type() == QEvent::MouseButtonPress) {
-        pressedIndex = QModelIndex();
-        QPoint pos = static_cast<QMouseEvent*>(event)->pos();
-        QModelIndex index = tree->indexAt(pos);
-        if (index.isValid()) {
-            QStyleOptionViewItem option = tree->viewOptions();
-            option.rect = tree->visualRect(index);
-            QRect iconRect = QStyle::alignedRect(option.direction, Qt::AlignRight, QSize(option.decorationSize.width(), option.rect.height()), option.rect);
-            if (iconRect.contains(pos))
-                pressedIndex = index;
-        }
-    } else if (event->type() == QEvent::MouseButtonRelease) {
-        if (pressedIndex.isValid()) {
-            QPoint pos = static_cast<QMouseEvent*>(event)->pos();
-            QModelIndex index = tree->indexAt(pos);
-            if (index == pressedIndex) {
-                QStyleOptionViewItem option = tree->viewOptions();
-                option.rect = tree->visualRect(index);
-                QRect iconRect = QStyle::alignedRect(option.direction, Qt::AlignRight, QSize(option.decorationSize.width(), option.rect.height()), option.rect);
-                if (iconRect.contains(pos))
-                    emit closeRequested(static_cast<SessionTreeItem*>(tree->itemFromIndex(index)));
-            }
-            pressedIndex = QModelIndex();
-        }
+    if (index.column() == 1 && option.state & QStyle::State_MouseOver) {
+        static const QIcon icon(":/resources/iconmonstr/close.png");
+
+        const QRect iconRect(option.rect.right() - option.rect.height(),
+            option.rect.top(), option.rect.height(), option.rect.height());
+
+        icon.paint(painter, iconRect, Qt::AlignCenter);
     }
-    return QStyledItemDelegate::eventFilter(object, event);
 }
