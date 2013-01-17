@@ -65,7 +65,7 @@ void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
     QStyledItemDelegate::paint(painter, option, index);
 
     if (index.column() == 1 && option.state & QStyle::State_MouseOver) {
-        static const QIcon icon(":/resources/iconmonstr/close.png");
+        static const QIcon icon(":/resources/icons/buttons/close.png");
 
         const QRect iconRect(option.rect.right() - option.rect.height(),
             option.rect.top(), option.rect.height(), option.rect.height());
