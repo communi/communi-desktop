@@ -3,4 +3,4 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS += auto benchmarks
+SUBDIRS += benchmarks

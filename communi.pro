@@ -12,6 +12,8 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets
     DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000
 }
+CONFIG += communi
+!verbose:CONFIG += silent
 
 RESOURCES += communi.qrc
 win32:RC_FILE = communi.rc
@@ -22,14 +24,24 @@ else:mac:target.path = /Applications
 else:target.path = /usr/bin
 INSTALLS += target
 
-!mac {
-	icon.path = /usr/share/pixmaps
-	icon.files = resources/icons/128x128/communi.png
-	desktop.path = /usr/share/applications
-	desktop.files = resources/communi.desktop
-	INSTALLS += icon desktop
+unix:!mac {
+    icon.path = /usr/share/pixmaps
+    icon.files = resources/icons/128x128/communi.png
+    desktop.path = /usr/share/applications
+    desktop.files = resources/communi.desktop
+    INSTALLS += icon desktop
+}
+
+CONFIG(debug, debug|release) {
+    OBJECTS_DIR = debug
+    MOC_DIR = debug
+    RCC_DIR = debug
+    UI_DIR = debug
+} else {
+    OBJECTS_DIR = release
+    MOC_DIR = release
+    RCC_DIR = release
+    UI_DIR = release
 }
 
 include(src/src.pri)
-include(../examples.pri)
-include(../shared/shared.pri)
