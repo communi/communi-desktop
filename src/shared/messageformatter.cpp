@@ -17,7 +17,6 @@
 #include <irctextformat.h>
 #include <ircpalette.h>
 #include <ircsender.h>
-#include <ircutil.h>
 #include <irc.h>
 #include <QHash>
 #include <QTime>

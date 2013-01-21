@@ -28,7 +28,6 @@
 #include <QUrl>
 #include <ircmessage.h>
 #include <irccommand.h>
-#include <ircutil.h>
 #include <irc.h>
 
 static QStringListModel* command_model = 0;

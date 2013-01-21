@@ -16,17 +16,8 @@
 #include "mainwindow.h"
 #include <QNetworkProxy>
 #include <QSettings>
-#include <QtPlugin>
 #include <QUrl>
 #include <Irc>
-
-#ifdef COMMUNI_STATIC_ICU_PLUGIN
-    Q_IMPORT_PLUGIN(icuplugin)
-#endif
-
-#ifdef COMMUNI_STATIC_UCHARDET_PLUGIN
-    Q_IMPORT_PLUGIN(uchardetplugin)
-#endif
 
 static void setApplicationProxy(QUrl url)
 {
@@ -61,13 +52,6 @@ int main(int argc, char* argv[])
         encoding = qgetenv("COMMUNI_ENCODING");
     if (!encoding.isEmpty())
         Application::setEncoding(encoding);
-
-    QByteArray codecPlugin;
-    index = args.indexOf("-codec-plugin");
-    if (index != -1)
-        codecPlugin = args.value(index + 1).toLocal8Bit();
-    if (!codecPlugin.isEmpty())
-        irc_set_codec_plugin(codecPlugin);
 
     window.show();
     return app.exec();
