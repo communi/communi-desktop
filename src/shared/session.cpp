@@ -337,10 +337,10 @@ void Session::handleMessage(IrcMessage* message)
     setPingInterval(20);
 
     if (message->type() == IrcMessage::Join) {
-        if (message->isOwn())
+        if (message->flags() & IrcMessage::Own)
             addChannel(static_cast<IrcJoinMessage*>(message)->channel());
     } else if (message->type() == IrcMessage::Part) {
-        if (message->isOwn())
+        if (message->flags() & IrcMessage::Own)
             removeChannel(static_cast<IrcPartMessage*>(message)->channel());
     } else if (message->type() == IrcMessage::Pong) {
         if (message->parameters().contains("_C_o_m_m_u_n_i_")) {

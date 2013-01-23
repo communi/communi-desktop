@@ -183,12 +183,12 @@ void UserModel::processMessage(IrcMessage* message)
         QString nick = message->sender().name().toLower();
         renameUser(nick, static_cast<IrcNickMessage*>(message)->nick());
     } else if (message->type() == IrcMessage::Join) {
-        if (message->isOwn())
+        if (message->flags() & IrcMessage::Own)
             clearUsers();
         else
             addUser(message->sender().name());
     } else if (message->type() == IrcMessage::Part) {
-        if (message->isOwn())
+        if (message->flags() & IrcMessage::Own)
             clearUsers();
         else
             removeUser(message->sender().name());

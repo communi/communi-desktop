@@ -162,7 +162,7 @@ QString MessageFormatter::formatMessage(IrcMessage* message, UserModel* userMode
             formatted = formatInviteMessage(static_cast<IrcInviteMessage*>(message));
             break;
         case IrcMessage::Join:
-            if (message->isOwn())
+            if (message->flags() & IrcMessage::Own)
                 d.receivedCodes.clear();
             formatted = formatJoinMessage(static_cast<IrcJoinMessage*>(message));
             break;

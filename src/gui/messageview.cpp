@@ -270,7 +270,7 @@ void MessageView::onSend(const QString& text)
             d.session->sendCommand(cmd);
 
             if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction) {
-                IrcMessage* msg = IrcMessage::fromCommand(d.session->nickName(), cmd, d.session);
+                IrcMessage* msg = IrcMessage::fromData(":" + d.session->nickName().toUtf8() + " " + cmd->toString().toUtf8(), d.session);
                 receiveMessage(msg);
                 delete msg;
             }
@@ -350,13 +350,13 @@ void MessageView::receiveMessage(IrcMessage* message)
             qWarning() << "unknown:" << message;
             break;
         case IrcMessage::Join:
-            if (message->isOwn()) {
+            if (message->flags() & IrcMessage::Own) {
                 d.joined = true;
                 emit activeChanged();
             }
             break;
         case IrcMessage::Part:
-            if (message->isOwn()) {
+            if (message->flags() & IrcMessage::Own) {
                 d.joined = false;
                 emit activeChanged();
             }
