@@ -90,7 +90,7 @@ void MultiSessionTabWidget::applySettings(const Settings& settings)
 QByteArray MultiSessionTabWidget::saveSplitter() const
 {
     QByteArray state;
-    for (int i = count() - 1; state.isNull() && i >= 0; --i) {
+    for (int i = count(); state.isNull() && i >= 0; --i) {
         SessionTabWidget* tabWidget = qobject_cast<SessionTabWidget*>(widget(i));
         if (tabWidget)
             state = tabWidget->saveSplitter();

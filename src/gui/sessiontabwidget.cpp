@@ -140,15 +140,11 @@ void SessionTabWidget::renameView(const QString& from, const QString& to)
 
 void SessionTabWidget::tabActivated(int index)
 {
-    if (index < count() - 1) {
-        MessageView* view = qobject_cast<MessageView*>(currentWidget());
-        if (view) {
-            if (isVisible()) {
-                d.handler.setCurrentReceiver(view);
-                view->setFocus();
-                emit viewActivated(view);
-            }
-        }
+    MessageView* view = qobject_cast<MessageView*>(widget(index));
+    if (view && isVisible()) {
+        d.handler.setCurrentReceiver(view);
+        view->setFocus();
+        emit viewActivated(view);
     }
 }
 
