@@ -15,7 +15,6 @@
 #include "multisessiontabwidget.h"
 #include "sessiontabwidget.h"
 #include "messageview.h"
-#include "settings.h"
 #include "session.h"
 #include <QShortcut>
 #include <QTabBar>
@@ -26,8 +25,6 @@ MultiSessionTabWidget::MultiSessionTabWidget(QWidget* parent) : QStackedWidget(p
 
     QShortcut* shortcut = new QShortcut(QKeySequence::New, this);
     connect(shortcut, SIGNAL(activated()), this, SIGNAL(newTabRequested()));
-
-    applySettings(d.settings);
 }
 
 QList<Session*> MultiSessionTabWidget::sessions() const
@@ -48,7 +45,6 @@ void MultiSessionTabWidget::addSession(Session* session)
     connect(tab, SIGNAL(highlighted(MessageView*, IrcMessage*)), this, SIGNAL(highlighted(MessageView*, IrcMessage*)));
     connect(tab, SIGNAL(sessionClosed(Session*)), this, SLOT(removeSession(Session*)));
     connect(tab, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
-    tab->applySettings(d.settings);
 
     int index = addWidget(tab);
     setCurrentIndex(index);
@@ -74,17 +70,6 @@ SessionTabWidget* MultiSessionTabWidget::sessionWidget(Session* session) const
             return tabWidget;
     }
     return 0;
-}
-
-void MultiSessionTabWidget::applySettings(const Settings& settings)
-{
-    d.settings = settings;
-
-    for (int i = 0; i < count(); ++i) {
-        SessionTabWidget* tabWidget = qobject_cast<SessionTabWidget*>(widget(i));
-        if (tabWidget)
-            tabWidget->applySettings(settings);
-    }
 }
 
 QByteArray MultiSessionTabWidget::saveSplitter() const

@@ -15,7 +15,6 @@
 #include "sessiontabwidget.h"
 #include "addviewdialog.h"
 #include "messageview.h"
-#include "settings.h"
 #include "session.h"
 #include <irccommand.h>
 #include <QShortcut>
@@ -39,8 +38,6 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) : QStacked
     MessageView* view = openView(d.handler.session()->host());
     d.handler.setDefaultReceiver(view);
     d.handler.setCurrentReceiver(view);
-
-    applySettings(d.settings);
 }
 
 Session* SessionTabWidget::session() const
@@ -75,7 +72,6 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
         if (!d.views.isEmpty())
             type = session()->isChannel(receiver) ? MessageView::ChannelView : MessageView::QueryView;
         view = new MessageView(type, d.handler.session(), this);
-        view->applySettings(d.settings);
         view->setReceiver(receiver);
         connect(view, SIGNAL(alerted(IrcMessage*)), this, SLOT(onTabAlerted(IrcMessage*)));
         connect(view, SIGNAL(highlighted(IrcMessage*)), this, SLOT(onTabHighlighted(IrcMessage*)));
@@ -177,11 +173,4 @@ void SessionTabWidget::onTabHighlighted(IrcMessage* message)
         if (!isVisible() || !isActiveWindow() || index != currentIndex())
             emit highlighted(view, message);
     }
-}
-
-void SessionTabWidget::applySettings(const Settings& settings)
-{
-    foreach (MessageView* view, d.views)
-        view->applySettings(settings);
-    d.settings = settings;
 }

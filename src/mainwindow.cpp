@@ -210,7 +210,8 @@ void MainWindow::editSession(Session* session)
 
 void MainWindow::applySettings(const Settings& settings)
 {
-    tabWidget->applySettings(settings);
+    foreach (MessageView* view, findChildren<MessageView*>())
+        view->applySettings(settings);
     treeWidget->applySettings(settings);
 }
 
@@ -261,6 +262,8 @@ void MainWindow::highlight(MessageView* view, IrcMessage* message)
 
 void MainWindow::viewAdded(MessageView* view)
 {
+    view->applySettings(Application::settings());
+
     QSettings settings;
     if (settings.contains("list"))
         view->restoreSplitter(settings.value("list").toByteArray());

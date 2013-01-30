@@ -16,7 +16,6 @@
 #define MULTISESSIONTABWIDGET_H
 
 #include <QStackedWidget>
-#include "settings.h"
 
 class Session;
 class IrcMessage;
@@ -40,7 +39,6 @@ public slots:
     void removeSession(Session* session);
 
     void restoreSplitter(const QByteArray& state);
-    void applySettings(const Settings& settings);
 
 signals:
     void sessionAdded(Session* session);
@@ -52,11 +50,6 @@ signals:
     void splitterChanged(const QByteArray& state);
 
     void newTabRequested();
-
-private:
-    struct MainTabWidgetData {
-        Settings settings;
-    } d;
 };
 
 #endif // MULTISESSIONTABWIDGET_H
