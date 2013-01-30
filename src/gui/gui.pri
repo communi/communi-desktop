@@ -19,8 +19,6 @@ HEADERS += $$PWD/sessiontreedelegate.h
 HEADERS += $$PWD/sessiontreeitem.h
 HEADERS += $$PWD/sessiontreewidget.h
 HEADERS += $$PWD/settings.h
-HEADERS += $$PWD/tabwidget.h
-HEADERS += $$PWD/tabwidget_p.h
 HEADERS += $$PWD/userlistview.h
 
 SOURCES += $$PWD/addviewdialog.cpp
@@ -34,7 +32,6 @@ SOURCES += $$PWD/sessiontreedelegate.cpp
 SOURCES += $$PWD/sessiontreeitem.cpp
 SOURCES += $$PWD/sessiontreewidget.cpp
 SOURCES += $$PWD/settings.cpp
-SOURCES += $$PWD/tabwidget.cpp
 SOURCES += $$PWD/userlistview.cpp
 
 include(util/util.pri)

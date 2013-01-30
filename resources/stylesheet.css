@@ -60,9 +60,6 @@ QLabel#helpLabel {
 QLabel#topicLabel {
     border: 1px solid transparent;
     border-bottom-color: palette(dark);
-}
-
-QLabel#topicLabel[gradient="true"] {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                 stop: 0.0 palette(light),
                                 stop: 1.0 palette(button));

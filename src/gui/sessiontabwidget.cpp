@@ -14,26 +14,17 @@
 
 #include "sessiontabwidget.h"
 #include "addviewdialog.h"
-#include "tabwidget_p.h"
 #include "messageview.h"
-#include "menufactory.h"
 #include "settings.h"
 #include "session.h"
 #include <irccommand.h>
 #include <QShortcut>
 
-SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
-    TabWidget(parent)
+SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) : QStackedWidget(parent)
 {
-    d.menuFactory = 0;
     d.handler.setSession(session);
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
-    connect(this, SIGNAL(newTabRequested()), this, SLOT(onNewTabRequested()), Qt::QueuedConnection);
-    connect(this, SIGNAL(tabMenuRequested(int, QPoint)), this, SLOT(onTabMenuRequested(int, QPoint)));
-
-    connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateStatus()));
-    connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateStatus()));
 
     connect(&d.handler, SIGNAL(receiverToBeAdded(QString)), this, SLOT(openView(QString)));
     connect(&d.handler, SIGNAL(receiverToBeRemoved(QString)), this, SLOT(removeView(QString)));
@@ -48,7 +39,6 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
     MessageView* view = openView(d.handler.session()->host());
     d.handler.setDefaultReceiver(view);
     d.handler.setCurrentReceiver(view);
-    updateStatus();
 
     applySettings(d.settings);
 }
@@ -56,22 +46,6 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) :
 Session* SessionTabWidget::session() const
 {
     return qobject_cast<Session*>(d.handler.session());
-}
-
-MenuFactory* SessionTabWidget::menuFactory() const
-{
-    if (!d.menuFactory) {
-        SessionTabWidget* that = const_cast<SessionTabWidget*>(this);
-        that->d.menuFactory = new MenuFactory(that);
-    }
-    return d.menuFactory;
-}
-
-void SessionTabWidget::setMenuFactory(MenuFactory* factory)
-{
-    if (d.menuFactory && d.menuFactory->parent() == this)
-        delete d.menuFactory;
-    d.menuFactory = factory;
 }
 
 QByteArray SessionTabWidget::saveSplitter() const
@@ -110,7 +84,7 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
 
         d.handler.addReceiver(receiver, view);
         d.views.insert(receiver.toLower(), view);
-        addTab(view, QString(receiver).replace("&", "&&"));
+        addWidget(view);
         emit viewAdded(view);
     }
     setCurrentWidget(view);
@@ -160,35 +134,7 @@ void SessionTabWidget::renameView(const QString& from, const QString& to)
     if (view) {
         view->setReceiver(to);
         d.views.insert(to.toLower(), view);
-        int index = indexOf(view);
-        if (index != -1)
-            setTabText(index, view->receiver().replace("&", "&&"));
         emit viewRenamed(view);
-    }
-}
-
-bool SessionTabWidget::event(QEvent* event)
-{
-    if (event->type() == QEvent::WindowActivate)
-        delayedTabReset();
-    return TabWidget::event(event);
-}
-
-void SessionTabWidget::updateStatus()
-{
-    bool inactive = !session()->isActive() && !session()->isConnected();
-    setTabInactive(0, inactive);
-    emit inactiveStatusChanged(inactive);
-}
-
-void SessionTabWidget::resetTab(int index)
-{
-    if (index < count() - 1) {
-        MessageView* view = qobject_cast<MessageView*>(widget(index));
-        if (view) {
-            setTabAlert(index, false);
-            setTabHighlight(index, false);
-        }
     }
 }
 
@@ -197,10 +143,8 @@ void SessionTabWidget::tabActivated(int index)
     if (index < count() - 1) {
         MessageView* view = qobject_cast<MessageView*>(currentWidget());
         if (view) {
-            resetTab(index);
             if (isVisible()) {
                 d.handler.setCurrentReceiver(view);
-                window()->setWindowFilePath(tabText(index).replace("&&", "&"));
                 view->setFocus();
                 emit viewActivated(view);
             }
@@ -219,39 +163,13 @@ void SessionTabWidget::onNewTabRequested()
     }
 }
 
-void SessionTabWidget::onTabMenuRequested(int index, const QPoint& pos)
-{
-    MessageView* view = qobject_cast<MessageView*>(widget(index));
-    if (view) {
-        QMenu* menu = menuFactory()->createTabViewMenu(view, this);
-        menu->exec(pos);
-        menu->deleteLater();
-    }
-}
-
-void SessionTabWidget::delayedTabReset()
-{
-    d.delayedIndexes += currentIndex();
-    QTimer::singleShot(500, this, SLOT(delayedTabResetTimeout()));
-}
-
-void SessionTabWidget::delayedTabResetTimeout()
-{
-    if (!d.delayedIndexes.isEmpty()) {
-        resetTab(d.delayedIndexes.takeLast());
-        d.delayedIndexes.clear();
-    }
-}
-
 void SessionTabWidget::onTabAlerted(IrcMessage* message)
 {
     MessageView* view = qobject_cast<MessageView*>(sender());
     int index = indexOf(view);
     if (index != -1) {
-        if (!isVisible() || !isActiveWindow() || index != currentIndex()) {
-            setTabAlert(index, true);
+        if (!isVisible() || !isActiveWindow() || index != currentIndex())
             emit alerted(view, message);
-        }
     }
 }
 
@@ -260,31 +178,13 @@ void SessionTabWidget::onTabHighlighted(IrcMessage* message)
     MessageView* view = qobject_cast<MessageView*>(sender());
     int index = indexOf(view);
     if (index != -1) {
-        if (!isVisible() || !isActiveWindow() || index != currentIndex()) {
-            setTabHighlight(index, true);
+        if (!isVisible() || !isActiveWindow() || index != currentIndex())
             emit highlighted(view, message);
-        }
     }
-}
-
-void SessionTabWidget::onEditSession()
-{
-    emit editSession(session());
 }
 
 void SessionTabWidget::applySettings(const Settings& settings)
 {
-    TabBar* tb = static_cast<TabBar*>(tabBar());
-    tb->setNavigationShortcut(TabBar::Next, QKeySequence(settings.shortcuts.value(Settings::NavigateRight)));
-    tb->setNavigationShortcut(TabBar::Previous, QKeySequence(settings.shortcuts.value(Settings::NavigateLeft)));
-    tb->setNavigationShortcut(TabBar::NextUnread, QKeySequence(settings.shortcuts.value(Settings::NextUnreadRight)));
-    tb->setNavigationShortcut(TabBar::PreviousUnread, QKeySequence(settings.shortcuts.value(Settings::NextUnreadLeft)));
-    tb->setVisible(settings.layout == "tabs");
-
-    QColor color(settings.colors.value(Settings::Highlight));
-    setTabTextColor(Alert, color);
-    setTabTextColor(Highlight, color);
-
     foreach (MessageView* view, d.views)
         view->applySettings(settings);
     d.settings = settings;

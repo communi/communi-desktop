@@ -15,7 +15,7 @@
 #ifndef MULTISESSIONTABWIDGET_H
 #define MULTISESSIONTABWIDGET_H
 
-#include "tabwidget.h"
+#include <QStackedWidget>
 #include "settings.h"
 
 class Session;
@@ -23,7 +23,7 @@ class IrcMessage;
 class MessageView;
 class SessionTabWidget;
 
-class MultiSessionTabWidget : public TabWidget
+class MultiSessionTabWidget : public QStackedWidget
 {
     Q_OBJECT
 
@@ -51,10 +51,7 @@ signals:
 
     void splitterChanged(const QByteArray& state);
 
-private slots:
-    void updateTab(int index = -1);
-    void tabActivated(int index);
-    void onTabMenuRequested(int index, const QPoint& pos);
+    void newTabRequested();
 
 private:
     struct MainTabWidgetData {

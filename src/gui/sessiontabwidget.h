@@ -15,7 +15,7 @@
 #ifndef SESSIONTABWIDGET_H
 #define SESSIONTABWIDGET_H
 
-#include "tabwidget.h"
+#include <QStackedWidget>
 #include "messagehandler.h"
 #include "settings.h"
 #include <QHash>
@@ -23,9 +23,8 @@
 class Session;
 class IrcMessage;
 class MessageView;
-class MenuFactory;
 
-class SessionTabWidget : public TabWidget
+class SessionTabWidget : public QStackedWidget
 {
     Q_OBJECT
 
@@ -33,9 +32,6 @@ public:
     SessionTabWidget(Session* session, QWidget* parent = 0);
 
     Session* session() const;
-
-    MenuFactory* menuFactory() const;
-    void setMenuFactory(MenuFactory* factory);
 
     QByteArray saveSplitter() const;
 
@@ -55,27 +51,17 @@ signals:
     void inactiveStatusChanged(bool inactive);
     void sessionClosed(Session* session);
     void splitterChanged(const QByteArray& state);
-    void editSession(Session* session);
 
     void viewAdded(MessageView* view);
     void viewRemoved(MessageView* view);
     void viewRenamed(MessageView* view);
     void viewActivated(MessageView* view);
 
-protected:
-    bool event(QEvent* event);
-
 private slots:
-    void updateStatus();
-    void resetTab(int index);
     void tabActivated(int index);
     void onNewTabRequested();
-    void onTabMenuRequested(int index, const QPoint& pos);
-    void delayedTabReset();
-    void delayedTabResetTimeout();
     void onTabAlerted(IrcMessage* message);
     void onTabHighlighted(IrcMessage* message);
-    void onEditSession();
 
 private:
     struct SessionTabWidgetData {
@@ -83,7 +69,6 @@ private:
         MessageHandler handler;
         QHash<QString, MessageView*> views;
         Settings settings;
-        MenuFactory* menuFactory;
     } d;
 };
 

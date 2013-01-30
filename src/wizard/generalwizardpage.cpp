@@ -33,16 +33,6 @@ void GeneralWizardPage::setFont(const QFont& font)
     ui.sizeSpinBox->setValue(font.pointSize());
 }
 
-QString GeneralWizardPage::layout() const
-{
-    return ui.layoutComboBox->currentText().toLower();
-}
-
-void GeneralWizardPage::setLayout(const QString& layout)
-{
-    ui.layoutComboBox->setCurrentIndex(ui.layoutComboBox->findText(layout, Qt::MatchFixedString));
-}
-
 QString GeneralWizardPage::language() const
 {
     // TODO

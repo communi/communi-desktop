@@ -45,12 +45,14 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
 
     HomePage* homePage = new HomePage(tabWidget);
     connect(homePage, SIGNAL(connectRequested()), this, SLOT(connectTo()));
-    tabWidget->insertTab(0, homePage, tr("Home"));
+    tabWidget->insertWidget(0, homePage);
 
     QSplitter* splitter = new QSplitter(this);
     splitter->setHandleWidth(1);
     splitter->addWidget(tabWidget);
     setCentralWidget(splitter);
+
+    createTree();
 
     if (QSystemTrayIcon::isSystemTrayAvailable()) {
         trayIcon = new TrayIcon(this);
@@ -147,7 +149,6 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     connect(tab, SIGNAL(viewRemoved(MessageView*)), this, SLOT(viewRemoved(MessageView*)));
     connect(tab, SIGNAL(viewRenamed(MessageView*)), this, SLOT(viewRenamed(MessageView*)));
     connect(tab, SIGNAL(viewActivated(MessageView*)), this, SLOT(viewActivated(MessageView*)));
-    connect(tab, SIGNAL(editSession(Session*)), this, SLOT(editSession(Session*)));
 
     if (treeWidget)
         treeWidget->setCurrentView(qobject_cast<MessageView*>(tab->widget(0)));
@@ -213,18 +214,7 @@ void MainWindow::editSession(Session* session)
 void MainWindow::applySettings(const Settings& settings)
 {
     tabWidget->applySettings(settings);
-    if (settings.layout == "tree") {
-        if (!treeWidget)
-            createTree();
-        treeWidget->applySettings(settings);
-    } else if (treeWidget) {
-        treeWidget->parentWidget()->deleteLater();
-        treeWidget = 0;
-    }
-    // refresh stylesheet (required for styles depending on dynamic properties)
-    QString css = qApp->styleSheet();
-    qApp->setStyleSheet("");
-    qApp->setStyleSheet(css);
+    treeWidget->applySettings(settings);
 }
 
 void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -329,6 +319,7 @@ void MainWindow::currentTreeItemChanged(Session* session, const QString& view)
         else
             tab->openView(view);
     }
+    setWindowFilePath(view);
 }
 
 void MainWindow::splitterChanged(const QByteArray& state)
@@ -395,7 +386,7 @@ void MainWindow::createTree()
     QSplitter* splitter = static_cast<QSplitter*>(centralWidget());
     QWidget* container = new QWidget(this);
     container->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
-    container->setVisible(!tabWidget->sessions().isEmpty());
+    container->setVisible(false);
 
     treeWidget = new SessionTreeWidget(container);
     treeWidget->setFocusPolicy(Qt::NoFocus);
@@ -403,18 +394,6 @@ void MainWindow::createTree()
     connect(treeWidget, SIGNAL(editSession(Session*)), this, SLOT(editSession(Session*)));
     connect(treeWidget, SIGNAL(closeItem(SessionTreeItem*)), this, SLOT(closeTreeItem(SessionTreeItem*)));
     connect(treeWidget, SIGNAL(currentViewChanged(Session*, QString)), this, SLOT(currentTreeItemChanged(Session*, QString)));
-
-    foreach (Session* session, tabWidget->sessions()) {
-        SessionTabWidget* tab = tabWidget->sessionWidget(session);
-        if (MessageView* view = qobject_cast<MessageView*>(tab->widget(0)))
-            treeWidget->addView(view);
-        for (int i = 1; i < tab->count() - 1; ++i) {
-            MessageView* view = qobject_cast<MessageView*>(tab->widget(i));
-            if (view)
-                treeWidget->addView(view);
-        }
-    }
-    treeWidget->expandAll();
 
     ToolBar* toolBar = new ToolBar(container);
     connect(toolBar, SIGNAL(aboutTriggered()), qApp, SLOT(aboutApplication()));

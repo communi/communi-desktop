@@ -14,19 +14,15 @@
 
 #include "multisessiontabwidget.h"
 #include "sessiontabwidget.h"
-#include "tabwidget_p.h"
+#include "messageview.h"
 #include "settings.h"
 #include "session.h"
 #include <QShortcut>
 #include <QTabBar>
 
-MultiSessionTabWidget::MultiSessionTabWidget(QWidget* parent) : TabWidget(parent)
+MultiSessionTabWidget::MultiSessionTabWidget(QWidget* parent) : QStackedWidget(parent)
 {
-    setTabPosition(QTabWidget::West);
-    setStyleSheet(".MainTabWidget::pane { border: 0px; }");
-
-    connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
-    connect(this, SIGNAL(tabMenuRequested(int, QPoint)), this, SLOT(onTabMenuRequested(int, QPoint)));
+    setStyleSheet(".MultiSessionTabWidget::pane { border: 0px; }");
 
     QShortcut* shortcut = new QShortcut(QKeySequence::New, this);
     connect(shortcut, SIGNAL(activated()), this, SIGNAL(newTabRequested()));
@@ -54,15 +50,8 @@ void MultiSessionTabWidget::addSession(Session* session)
     connect(tab, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
     tab->applySettings(d.settings);
 
-    int index = addTab(tab, session->name().isEmpty() ? session->host() : session->name());
+    int index = addWidget(tab);
     setCurrentIndex(index);
-    updateTab(index);
-
-    connect(tab, SIGNAL(highlightStatusChanged(bool)), this, SLOT(updateTab()));
-    connect(tab, SIGNAL(inactiveStatusChanged(bool)), this, SLOT(updateTab()));
-    connect(tab, SIGNAL(alertStatusChanged(bool)), this, SLOT(updateTab()));
-    connect(session, SIGNAL(nameChanged(QString)), this, SLOT(updateTab()));
-    connect(session, SIGNAL(networkChanged(QString)), this, SLOT(updateTab()));
 
     emit sessionAdded(session);
 }
@@ -71,7 +60,7 @@ void MultiSessionTabWidget::removeSession(Session* session)
 {
     SessionTabWidget* tabWidget = sessionWidget(session);
     if (tabWidget) {
-        removeTab(indexOf(tabWidget));
+        removeWidget(tabWidget);
         tabWidget->deleteLater();
         emit sessionRemoved(session);
     }
@@ -87,31 +76,9 @@ SessionTabWidget* MultiSessionTabWidget::sessionWidget(Session* session) const
     return 0;
 }
 
-void MultiSessionTabWidget::tabActivated(int index)
-{
-    if (index < count() - 1) {
-        SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(widget(index));
-        if (tab) {
-            setWindowFilePath(tab->tabText(tab->currentIndex()));
-            QMetaObject::invokeMethod(tab, "delayedTabReset");
-        }
-    }
-}
-
 void MultiSessionTabWidget::applySettings(const Settings& settings)
 {
     d.settings = settings;
-
-    TabBar* tb = static_cast<TabBar*>(tabBar());
-    tb->setNavigationShortcut(TabBar::Next, QKeySequence(settings.shortcuts.value(Settings::NavigateDown)));
-    tb->setNavigationShortcut(TabBar::Previous, QKeySequence(settings.shortcuts.value(Settings::NavigateUp)));
-    tb->setNavigationShortcut(TabBar::NextUnread, QKeySequence(settings.shortcuts.value(Settings::NextUnreadDown)));
-    tb->setNavigationShortcut(TabBar::PreviousUnread, QKeySequence(settings.shortcuts.value(Settings::NextUnreadUp)));
-    tb->setVisible(d.settings.layout == "tabs");
-
-    QColor color(settings.colors.value(Settings::Highlight));
-    setTabTextColor(Alert, color);
-    setTabTextColor(Highlight, color);
 
     for (int i = 0; i < count(); ++i) {
         SessionTabWidget* tabWidget = qobject_cast<SessionTabWidget*>(widget(i));
@@ -142,33 +109,4 @@ void MultiSessionTabWidget::restoreSplitter(const QByteArray& state)
         }
     }
     emit splitterChanged(state);
-}
-
-void MultiSessionTabWidget::updateTab(int index)
-{
-    SessionTabWidget* tab = 0;
-    if (index != -1)
-        tab = qobject_cast<SessionTabWidget*>(widget(index));
-    else if (Session* session = qobject_cast<Session*>(sender()))
-        tab = sessionWidget(session);
-    else
-        tab = qobject_cast<SessionTabWidget*>(sender());
-    index = indexOf(tab);
-
-    if (tab && index != -1 && tab->session()) {
-        setTabAlert(index, tab->hasTabAlert());
-        setTabInactive(index, tab->isTabInactive());
-        setTabHighlight(index, tab->hasTabHighlight());
-        setTabText(index, tab->session()->name().isEmpty() ?
-                   tab->session()->host() : tab->session()->name());
-    }
-}
-
-void MultiSessionTabWidget::onTabMenuRequested(int index, const QPoint& pos)
-{
-    if (index < count() - 1) {
-        SessionTabWidget* tabWidget = qobject_cast<SessionTabWidget*>(widget(index));
-        if (tabWidget)
-            QMetaObject::invokeMethod(tabWidget, "onTabMenuRequested", Q_ARG(int, 0), Q_ARG(QPoint, pos));
-    }
 }

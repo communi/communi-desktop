@@ -16,7 +16,6 @@
 #include "messageview.h"
 #include "userlistview.h"
 #include "sessiontreeitem.h"
-#include "sessiontabwidget.h"
 #include "sessiontreewidget.h"
 #include "usermodel.h"
 #include "session.h"
@@ -62,84 +61,6 @@ QMenu* MenuFactory::createUserViewMenu(const QString& user, MessageView* view)
     UserViewMenu* menu = new UserViewMenu(user, view);
     menu->addAction(tr("Whois"), menu, SLOT(onWhoisTriggered()));
     menu->addAction(tr("Query"), menu, SLOT(onQueryTriggered()));
-    return menu;
-}
-
-class TabViewMenu : public QMenu
-{
-    Q_OBJECT
-
-public:
-    TabViewMenu(MessageView* view, SessionTabWidget* tab) :
-        QMenu(tab), view(view), tab(tab)
-    {
-    }
-
-private slots:
-    void onEditSession()
-    {
-        QMetaObject::invokeMethod(tab, "editSession", Q_ARG(Session*, view->session()));
-    }
-
-    void onNamesTriggered()
-    {
-        IrcCommand* command = IrcCommand::createNames(view->receiver());
-        view->session()->sendCommand(command);
-    }
-
-    void onWhoisTriggered()
-    {
-        IrcCommand* command = IrcCommand::createWhois(view->receiver());
-        view->session()->sendCommand(command);
-    }
-
-    void onJoinTriggered()
-    {
-        IrcCommand* command = IrcCommand::createJoin(view->receiver());
-        view->session()->sendCommand(command);
-    }
-
-    void onPartTriggered()
-    {
-        IrcCommand* command = IrcCommand::createPart(view->receiver());
-        view->session()->sendCommand(command);
-    }
-
-    void onCloseTriggered()
-    {
-        tab->removeView(view->receiver());
-    }
-
-private:
-    MessageView* view;
-    SessionTabWidget* tab;
-};
-
-QMenu* MenuFactory::createTabViewMenu(MessageView* view, SessionTabWidget* tab)
-{
-    bool active = view->session()->isActive();
-    TabViewMenu* menu = new TabViewMenu(view, tab);
-    if (view->viewType() == MessageView::ServerView) {
-        if (view->session()->isActive())
-            menu->addAction(tr("Disconnect"), view->session(), SLOT(quit()));
-        else
-            menu->addAction(tr("Reconnect"), view->session(), SLOT(reconnect()));
-        menu->addAction(tr("Edit"), menu, SLOT(onEditSession()))->setEnabled(!active);
-        menu->addSeparator();
-    } else if (active) {
-        if (view->viewType() == MessageView::ChannelView) {
-            if (view->userModel()->rowCount()) {
-                menu->addAction(tr("Names"), menu, SLOT(onNamesTriggered()))->setEnabled(active);
-                menu->addAction(tr("Part"), menu, SLOT(onPartTriggered()))->setEnabled(active);
-            } else {
-                menu->addAction(tr("Join"), menu, SLOT(onJoinTriggered()))->setEnabled(active);
-            }
-        } else {
-            menu->addAction(tr("Whois"), menu, SLOT(onWhoisTriggered()))->setEnabled(active);
-        }
-        menu->addSeparator();
-    }
-    menu->addAction(tr("Close"), menu, SLOT(onCloseTriggered()));
     return menu;
 }
 

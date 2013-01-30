@@ -296,7 +296,6 @@ void MessageView::applySettings(const Settings& settings)
     if (!settings.font.isEmpty())
         d.textBrowser->setFont(settings.font);
     d.textBrowser->document()->setMaximumBlockCount(settings.maxBlockCount);
-    d.topicLabel->setProperty("gradient", settings.layout == "tree");
 
     QTextDocument* doc = d.topicLabel->findChild<QTextDocument*>();
     if (doc)

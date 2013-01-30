@@ -20,7 +20,6 @@
 class MessageView;
 class UserListView;
 class SessionTreeItem;
-class SessionTabWidget;
 class SessionTreeWidget;
 
 class MenuFactory : public QObject
@@ -32,7 +31,6 @@ public:
     virtual ~MenuFactory();
 
     virtual QMenu* createUserViewMenu(const QString& user, MessageView* view);
-    virtual QMenu* createTabViewMenu(MessageView* view, SessionTabWidget* tab);
     virtual QMenu* createUserListMenu(const QString& user, UserListView* listView);
     virtual QMenu* createSessionTreeMenu(SessionTreeItem* item, SessionTreeWidget* tree);
 };
