@@ -74,6 +74,7 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     }
 
     if (!command_model) {
+        CommandParser::addCustomCommand("CLEAR", "");
         CommandParser::addCustomCommand("QUERY", "<user>");
 
         QStringList prefixedCommands;
@@ -406,6 +407,8 @@ bool MessageView::hasUser(const QString& user) const
 
 void MessageView::onCustomCommand(const QString& command, const QStringList& params)
 {
-    if (command == "QUERY")
+    if (command == "CLEAR")
+        d.textBrowser->clear();
+    else if (command == "QUERY")
         emit queried(params.value(0));
 }
