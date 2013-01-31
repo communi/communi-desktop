@@ -64,6 +64,7 @@ public slots:
 
     void expandCurrentSession();
     void collapseCurrentSession();
+    void moveToMostActiveItem();
 
     void applySettings(const Settings& settings);
 
@@ -102,6 +103,7 @@ private:
         QShortcut* nextUnreadShortcut;
         QShortcut* expandShortcut;
         QShortcut* collapseShortcut;
+        QShortcut* mostActiveShortcut;
         QHash<ItemStatus, QColor> colors;
         QSet<SessionTreeItem*> resetedItems;
         QHash<MessageView*, SessionTreeItem*> viewItems;
