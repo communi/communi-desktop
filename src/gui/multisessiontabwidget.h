@@ -30,6 +30,9 @@ public:
     MultiSessionTabWidget(QWidget* parent = 0);
 
     QList<Session*> sessions() const;
+
+    SessionTabWidget* currentWidget() const;
+    SessionTabWidget* widgetAt(int index) const;
     SessionTabWidget* sessionWidget(Session* session) const;
 
     QByteArray saveSplitter() const;

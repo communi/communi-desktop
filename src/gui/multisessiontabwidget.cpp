@@ -62,10 +62,20 @@ void MultiSessionTabWidget::removeSession(Session* session)
     }
 }
 
+SessionTabWidget* MultiSessionTabWidget::currentWidget() const
+{
+    return qobject_cast<SessionTabWidget*>(QStackedWidget::currentWidget());
+}
+
+SessionTabWidget* MultiSessionTabWidget::widgetAt(int index) const
+{
+    return qobject_cast<SessionTabWidget*>(QStackedWidget::widget(index));
+}
+
 SessionTabWidget* MultiSessionTabWidget::sessionWidget(Session* session) const
 {
     for (int i = 0; i < count(); ++i) {
-        SessionTabWidget* tabWidget = qobject_cast<SessionTabWidget*>(widget(i));
+        SessionTabWidget* tabWidget = widgetAt(i);
         if (tabWidget && tabWidget->session() == session)
             return tabWidget;
     }
@@ -76,7 +86,7 @@ QByteArray MultiSessionTabWidget::saveSplitter() const
 {
     QByteArray state;
     for (int i = count(); state.isNull() && i >= 0; --i) {
-        SessionTabWidget* tabWidget = qobject_cast<SessionTabWidget*>(widget(i));
+        SessionTabWidget* tabWidget = widgetAt(i);
         if (tabWidget)
             state = tabWidget->saveSplitter();
     }
@@ -86,7 +96,7 @@ QByteArray MultiSessionTabWidget::saveSplitter() const
 void MultiSessionTabWidget::restoreSplitter(const QByteArray& state)
 {
     for (int i = 0; i < count(); ++i) {
-        SessionTabWidget* tabWidget = qobject_cast<SessionTabWidget*>(widget(i));
+        SessionTabWidget* tabWidget = widgetAt(i);
         if (tabWidget) {
             tabWidget->blockSignals(true);
             tabWidget->restoreSplitter(state);

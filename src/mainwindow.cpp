@@ -345,7 +345,7 @@ void MainWindow::updateSession(Session* session)
 
 void MainWindow::addView()
 {
-    SessionTabWidget* tab = qobject_cast<SessionTabWidget*>(tabWidget->currentWidget());
+    SessionTabWidget* tab = tabWidget->currentWidget();
     if (tab)
         QMetaObject::invokeMethod(tab, "onNewTabRequested");
 }
