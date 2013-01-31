@@ -88,7 +88,7 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     d.lineEditor->completer()->setDefaultModel(d.listView->userModel());
     d.lineEditor->completer()->setSlashModel(command_model);
 
-    connect(d.lineEditor, SIGNAL(send(QString)), this, SLOT(onSend(QString)));
+    connect(d.lineEditor, SIGNAL(send(QString)), this, SLOT(sendMessage(QString)));
     connect(d.lineEditor, SIGNAL(typed(QString)), this, SLOT(showHelp(QString)));
 
     d.helpLabel->hide();
@@ -202,6 +202,25 @@ void MessageView::showHelp(const QString& text, bool error)
     d.helpLabel->setText(syntax);
 }
 
+void MessageView::sendMessage(const QString& message)
+{
+    QStringList lines = message.split(QRegExp("[\\r\\n]"), QString::SkipEmptyParts);
+    foreach (const QString& line, lines) {
+        IrcCommand* cmd = d.parser.parseCommand(receiver(), line);
+        if (cmd) {
+            d.session->sendCommand(cmd);
+
+            if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction) {
+                IrcMessage* msg = IrcMessage::fromData(":" + d.session->nickName().toUtf8() + " " + cmd->toString().toUtf8(), d.session);
+                receiveMessage(msg);
+                delete msg;
+            }
+        } else if (d.parser.hasError()) {
+            showHelp(line, true);
+        }
+    }
+}
+
 void MessageView::appendMessage(const QString& message)
 {
     if (!message.isEmpty()) {
@@ -260,25 +279,6 @@ void MessageView::onEscPressed()
 void MessageView::onSplitterMoved()
 {
     emit splitterChanged(d.splitter->saveState());
-}
-
-void MessageView::onSend(const QString& text)
-{
-    QStringList lines = text.split(QRegExp("[\\r\\n]"), QString::SkipEmptyParts);
-    foreach (const QString& line, lines) {
-        IrcCommand* cmd = d.parser.parseCommand(receiver(), line);
-        if (cmd) {
-            d.session->sendCommand(cmd);
-
-            if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction) {
-                IrcMessage* msg = IrcMessage::fromData(":" + d.session->nickName().toUtf8() + " " + cmd->toString().toUtf8(), d.session);
-                receiveMessage(msg);
-                delete msg;
-            }
-        } else if (d.parser.hasError()) {
-            showHelp(line, true);
-        }
-    }
 }
 
 void MessageView::onAnchorClicked(const QUrl& link)

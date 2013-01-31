@@ -55,6 +55,7 @@ public:
 
 public slots:
     void showHelp(const QString& text, bool error = false);
+    void sendMessage(const QString& message);
     void appendMessage(const QString& message);
     void applySettings(const Settings& settings);
 
@@ -77,7 +78,6 @@ protected:
 private slots:
     void onEscPressed();
     void onSplitterMoved();
-    void onSend(const QString& text);
     void onAnchorClicked(const QUrl& link);
     void onCustomCommand(const QString& command, const QStringList& params);
 
