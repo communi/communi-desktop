@@ -23,26 +23,26 @@ static QMap<QString, QString>& command_syntaxes()
     static QMap<QString, QString> syntaxes;
     if (syntaxes.isEmpty()) {
         syntaxes.insert("ADMIN", "(<server>)");
-        syntaxes.insert("AWAY", "(<reason>)");
+        syntaxes.insert("AWAY", "(<reason...>)");
         syntaxes.insert("INFO", "(<server>)");
         syntaxes.insert("INVITE", "<user>");
         syntaxes.insert("JOIN", "<channel> (<key>)");
-        syntaxes.insert("KICK", "<user> (<reason>)");
-        syntaxes.insert("KNOCK", "<channel> (<message>)");
+        syntaxes.insert("KICK", "<user> (<reason...>)");
+        syntaxes.insert("KNOCK", "<channel> (<message...>)");
         syntaxes.insert("LIST", "(<channels>) (<server>)");
-        syntaxes.insert("ME", "<message>");
+        syntaxes.insert("ME", "<message...>");
         syntaxes.insert("MODE", "<channel/user> (<mode>) (<arg>)");
         syntaxes.insert("MOTD", "(<server>)");
         syntaxes.insert("NAMES", "(<channel>)");
         syntaxes.insert("NICK", "<nick>");
-        syntaxes.insert("NOTICE", "<channel/user> <message>");
-        syntaxes.insert("PART", "(<reason>)");
+        syntaxes.insert("NOTICE", "<channel/user> <message...>");
+        syntaxes.insert("PART", "(<reason...>)");
         syntaxes.insert("PING", "(<user>)");
-        syntaxes.insert("QUIT" , "(<message>)");
-        syntaxes.insert("QUOTE" , "<command> (<parameters>)");
+        syntaxes.insert("QUIT" , "(<message...>)");
+        syntaxes.insert("QUOTE" , "<command> (<parameters...>)");
         syntaxes.insert("STATS", "<query> (<server>)");
         syntaxes.insert("TIME", "(<user>)");
-        syntaxes.insert("TOPIC", "(<topic>)");
+        syntaxes.insert("TOPIC", "(<topic...>)");
         syntaxes.insert("TRACE", "(<target>)");
         syntaxes.insert("USERS", "(<server>)");
         syntaxes.insert("VERSION", "(<user>)");
@@ -170,6 +170,8 @@ bool CommandParser::parseCustomCommand(const QString& syntax, const QStringList&
         QString p = tokens.takeFirst();
         if (!p.startsWith("(<"))
             ++min;
+        if (tokens.isEmpty() && (p.endsWith("...>") || p.endsWith("...>)")))
+            max = INT_MAX;
     }
     return params.count() >= min && params.count() <= max;
 }
