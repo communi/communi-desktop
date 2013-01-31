@@ -51,8 +51,6 @@ signals:
     void highlighted(MessageView* view, IrcMessage* message);
 
     void splitterChanged(const QByteArray& state);
-
-    void newTabRequested();
 };
 
 #endif // MULTISESSIONTABWIDGET_H

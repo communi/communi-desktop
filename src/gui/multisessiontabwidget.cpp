@@ -16,15 +16,9 @@
 #include "sessiontabwidget.h"
 #include "messageview.h"
 #include "session.h"
-#include <QShortcut>
-#include <QTabBar>
 
 MultiSessionTabWidget::MultiSessionTabWidget(QWidget* parent) : QStackedWidget(parent)
 {
-    setStyleSheet(".MultiSessionTabWidget::pane { border: 0px; }");
-
-    QShortcut* shortcut = new QShortcut(QKeySequence::New, this);
-    connect(shortcut, SIGNAL(activated()), this, SIGNAL(newTabRequested()));
 }
 
 QList<Session*> MultiSessionTabWidget::sessions() const

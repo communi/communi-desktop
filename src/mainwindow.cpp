@@ -36,7 +36,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
 {
     tabWidget = new MultiSessionTabWidget(this);
 
-    connect(tabWidget, SIGNAL(newTabRequested()), this, SLOT(connectTo()), Qt::QueuedConnection);
     connect(tabWidget, SIGNAL(alerted(MessageView*, IrcMessage*)), this, SLOT(alert(MessageView*, IrcMessage*)));
     connect(tabWidget, SIGNAL(highlighted(MessageView*, IrcMessage*)), this, SLOT(highlight(MessageView*, IrcMessage*)));
     connect(tabWidget, SIGNAL(splitterChanged(QByteArray)), this, SLOT(splitterChanged(QByteArray)));
@@ -67,6 +66,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
 
     QShortcut* shortcut = new QShortcut(QKeySequence(tr("Ctrl+Q")), this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(close()));
+
+    shortcut = new QShortcut(QKeySequence::New, this);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(connectTo()), Qt::QueuedConnection);
 
 #ifdef Q_WS_MAC
     QMenu* menu = new QMenu(this);
