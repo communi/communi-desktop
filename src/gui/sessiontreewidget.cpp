@@ -405,6 +405,7 @@ void SessionTreeWidget::alertTimeout()
 void SessionTreeWidget::resetItem(SessionTreeItem* item)
 {
     unalert(item);
+    item->setBadge(0);
     item->setAlerted(false);
     item->setHighlighted(false);
 }
