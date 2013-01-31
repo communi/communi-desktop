@@ -61,6 +61,8 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
             this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
     connect(this, SIGNAL(itemClicked(QTreeWidgetItem*,int)),
             this, SLOT(onItemClicked(QTreeWidgetItem*,int)));
+    connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
+            this, SLOT(onCurrentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
 
     d.prevShortcut = new QShortcut(this);
     connect(d.prevShortcut, SIGNAL(activated()), this, SLOT(moveToPrevItem()));
@@ -370,6 +372,12 @@ void SessionTreeWidget::onItemClicked(QTreeWidgetItem* item, int column)
 {
     if (column == 1)
         emit closeItem(static_cast<SessionTreeItem*>(item));
+}
+
+void SessionTreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
+{
+    Q_UNUSED(previous);
+    static_cast<SessionTreeItem*>(current)->setBadge(0);
 }
 
 void SessionTreeWidget::delayedItemReset()

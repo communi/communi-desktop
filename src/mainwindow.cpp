@@ -257,6 +257,7 @@ void MainWindow::alert(MessageView* view, IrcMessage* message)
         item = item->findChild(view->receiver());
     if (item) {
         item->setAlerted(true);
+        item->setBadge(item->badge() + 1);
         treeWidget->alert(item);
     }
 }
@@ -267,8 +268,10 @@ void MainWindow::highlight(MessageView* view, IrcMessage* message)
     SessionTreeItem* item = treeWidget->sessionItem(view->session());
     if (view->viewType() != MessageView::ServerView)
         item = item->findChild(view->receiver());
-    if (item)
+    if (item) {
         item->setHighlighted(true);
+        item->setBadge(item->badge() + 1);
+    }
 }
 
 void MainWindow::viewAdded(MessageView* view)

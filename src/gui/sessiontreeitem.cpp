@@ -80,6 +80,16 @@ QVariant SessionTreeItem::data(int column, int role) const
     return QTreeWidgetItem::data(column, role);
 }
 
+int SessionTreeItem::badge() const
+{
+    return data(1, Qt::UserRole).toInt();
+}
+
+void SessionTreeItem::setBadge(int badge)
+{
+    setData(1, Qt::UserRole, badge);
+}
+
 bool SessionTreeItem::isAlerted() const
 {
     return d.alerted;

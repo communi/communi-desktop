@@ -33,6 +33,9 @@ public:
 
     QVariant data(int column, int role) const;
 
+    int badge() const;
+    void setBadge(int badget);
+
     bool isAlerted() const;
     void setAlerted(bool alerted);
 
