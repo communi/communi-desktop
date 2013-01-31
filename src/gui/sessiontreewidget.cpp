@@ -37,7 +37,6 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     header()->setResizeMode(1, QHeaderView::Fixed);
     header()->resizeSection(1, 18);
 
-    viewport()->setAttribute(Qt::WA_Hover);
     setItemDelegate(new SessionTreeDelegate(this));
 
     setDragEnabled(true);
@@ -59,8 +58,6 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
             this, SLOT(onItemExpanded(QTreeWidgetItem*)));
     connect(this, SIGNAL(itemCollapsed(QTreeWidgetItem*)),
             this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
-    connect(this, SIGNAL(itemClicked(QTreeWidgetItem*,int)),
-            this, SLOT(onItemClicked(QTreeWidgetItem*,int)));
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
 
@@ -366,12 +363,6 @@ void SessionTreeWidget::onItemExpanded(QTreeWidgetItem* item)
 void SessionTreeWidget::onItemCollapsed(QTreeWidgetItem* item)
 {
     static_cast<SessionTreeItem*>(item)->emitDataChanged();
-}
-
-void SessionTreeWidget::onItemClicked(QTreeWidgetItem* item, int column)
-{
-    if (column == 1)
-        emit closeItem(static_cast<SessionTreeItem*>(item));
 }
 
 void SessionTreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)

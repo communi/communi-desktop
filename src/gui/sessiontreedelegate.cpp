@@ -65,19 +65,10 @@ void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
     QStyledItemDelegate::paint(painter, option, index);
 
     if (index.column() == 1) {
-        if (option.state & QStyle::State_MouseOver) {
-            static const QIcon icon(":/resources/icons/buttons/close.png");
-
-            const QRect iconRect(option.rect.right() - option.rect.height(),
-                option.rect.top(), option.rect.height(), option.rect.height());
-
-            icon.paint(painter, iconRect, Qt::AlignCenter);
-        } else {
-            int badge = index.data(Qt::UserRole).toInt();
-            if (badge > 0) {
-                painter->setPen(index.data(Qt::ForegroundRole).value<QColor>());
-                painter->drawText(option.rect, Qt::AlignCenter, QString::number(badge));
-            }
+        int badge = index.data(Qt::UserRole).toInt();
+        if (badge > 0) {
+            painter->setPen(index.data(Qt::ForegroundRole).value<QColor>());
+            painter->drawText(option.rect, Qt::AlignCenter, QString::number(badge));
         }
     }
 }

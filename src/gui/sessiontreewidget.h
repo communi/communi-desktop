@@ -89,7 +89,6 @@ private slots:
     void onItemSelectionChanged();
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
-    void onItemClicked(QTreeWidgetItem* item, int column);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void delayedItemReset();
     void delayedItemResetTimeout();
