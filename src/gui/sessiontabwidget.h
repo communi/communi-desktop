@@ -42,15 +42,12 @@ public slots:
 
     MessageView* openView(const QString& receiver);
     void removeView(const QString& receiver);
-    void closeCurrentView();
     void closeView(int index);
     void renameView(const QString& from, const QString& to);
 
 signals:
     void alerted(MessageView* view, IrcMessage* message);
     void highlighted(MessageView* view, IrcMessage* message);
-    void inactiveStatusChanged(bool inactive);
-    void sessionClosed(Session* session);
     void splitterChanged(const QByteArray& state);
 
     void viewAdded(MessageView* view);
@@ -65,7 +62,6 @@ private slots:
 
 private:
     struct SessionTabWidgetData {
-        QList<int> delayedIndexes;
         MessageHandler handler;
         QHash<QString, MessageView*> views;
     } d;

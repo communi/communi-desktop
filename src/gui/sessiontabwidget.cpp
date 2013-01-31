@@ -95,19 +95,8 @@ void SessionTabWidget::removeView(const QString& receiver)
     if (view) {
         view->deleteLater();
         emit viewRemoved(view);
-        if (indexOf(view) == 0) {
-            deleteLater();
-            session()->destructLater();
-            emit sessionClosed(session());
-        }
-
         d.handler.removeReceiver(view->receiver());
     }
-}
-
-void SessionTabWidget::closeCurrentView()
-{
-    closeView(currentIndex());
 }
 
 void SessionTabWidget::closeView(int index)

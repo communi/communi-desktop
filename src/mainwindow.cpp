@@ -369,8 +369,12 @@ void MainWindow::addView()
 void MainWindow::closeView()
 {
     SessionTabWidget* tab = tabWidget->currentWidget();
-    if (tab)
-        tab->closeCurrentView();
+    if (tab) {
+        int index = tab->currentIndex();
+        tab->closeView(index);
+        if (index == 0)
+            tabWidget->removeSession(tab->session());
+    }
 }
 
 void MainWindow::createTree()

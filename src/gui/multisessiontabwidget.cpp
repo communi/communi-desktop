@@ -37,7 +37,6 @@ void MultiSessionTabWidget::addSession(Session* session)
     SessionTabWidget* tab = new SessionTabWidget(session, this);
     connect(tab, SIGNAL(alerted(MessageView*, IrcMessage*)), this, SIGNAL(alerted(MessageView*, IrcMessage*)));
     connect(tab, SIGNAL(highlighted(MessageView*, IrcMessage*)), this, SIGNAL(highlighted(MessageView*, IrcMessage*)));
-    connect(tab, SIGNAL(sessionClosed(Session*)), this, SLOT(removeSession(Session*)));
     connect(tab, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
 
     int index = addWidget(tab);
@@ -52,6 +51,7 @@ void MultiSessionTabWidget::removeSession(Session* session)
     if (tabWidget) {
         removeWidget(tabWidget);
         tabWidget->deleteLater();
+        tabWidget->session()->destructLater();
         emit sessionRemoved(session);
     }
 }
