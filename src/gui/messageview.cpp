@@ -211,7 +211,7 @@ void MessageView::sendMessage(const QString& message)
         if (cmd) {
             d.session->sendCommand(cmd);
 
-            if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction) {
+            if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction || cmd->type() == IrcCommand::Notice) {
                 IrcMessage* msg = IrcMessage::fromData(":" + d.session->nickName().toUtf8() + " " + cmd->toString().toUtf8(), d.session);
                 receiveMessage(msg);
                 delete msg;
