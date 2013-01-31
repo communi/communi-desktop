@@ -60,7 +60,6 @@ signals:
 
 private slots:
     void tabActivated(int index);
-    void onNewTabRequested();
     void onTabAlerted(IrcMessage* message);
     void onTabHighlighted(IrcMessage* message);
 

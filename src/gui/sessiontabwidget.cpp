@@ -13,11 +13,9 @@
 */
 
 #include "sessiontabwidget.h"
-#include "addviewdialog.h"
 #include "messageview.h"
 #include "session.h"
 #include <irccommand.h>
-#include <QShortcut>
 
 SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) : QStackedWidget(parent)
 {
@@ -28,12 +26,6 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) : QStacked
     connect(&d.handler, SIGNAL(receiverToBeAdded(QString)), this, SLOT(openView(QString)));
     connect(&d.handler, SIGNAL(receiverToBeRemoved(QString)), this, SLOT(removeView(QString)));
     connect(&d.handler, SIGNAL(receiverToBeRenamed(QString, QString)), this, SLOT(renameView(QString, QString)));
-
-    QShortcut* shortcut = new QShortcut(QKeySequence::AddTab, this);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(onNewTabRequested()));
-
-    shortcut = new QShortcut(QKeySequence::Close, this);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(closeCurrentView()));
 
     MessageView* view = openView(d.handler.session()->host());
     d.handler.setDefaultReceiver(view);
@@ -151,17 +143,6 @@ void SessionTabWidget::tabActivated(int index)
         d.handler.setCurrentReceiver(view);
         view->setFocus();
         emit viewActivated(view);
-    }
-}
-
-void SessionTabWidget::onNewTabRequested()
-{
-    AddViewDialog dialog(session(), this);
-    if (dialog.exec()) {
-        QString view = dialog.view();
-        if (session()->isChannel(view))
-            d.handler.session()->sendCommand(IrcCommand::createJoin(view, dialog.password()));
-        openView(view);
     }
 }
 

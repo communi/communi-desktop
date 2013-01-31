@@ -63,6 +63,7 @@ private slots:
     void sessionRemoved(Session* session);
     void updateSession(Session* session = 0);
     void addView();
+    void closeView();
 
 private:
     void createTree();

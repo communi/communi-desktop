@@ -20,6 +20,7 @@
 #include "sessiontabwidget.h"
 #include "sessiontreeitem.h"
 #include "connectioninfo.h"
+#include "addviewdialog.h"
 #include "messageview.h"
 #include "homepage.h"
 #include "overlay.h"
@@ -69,6 +70,12 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
 
     shortcut = new QShortcut(QKeySequence::New, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(connectTo()), Qt::QueuedConnection);
+
+    shortcut = new QShortcut(QKeySequence::AddTab, this);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(addView()), Qt::QueuedConnection);
+
+    shortcut = new QShortcut(QKeySequence::Close, this);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(closeView()));
 
 #ifdef Q_WS_MAC
     QMenu* menu = new QMenu(this);
@@ -348,8 +355,22 @@ void MainWindow::updateSession(Session* session)
 void MainWindow::addView()
 {
     SessionTabWidget* tab = tabWidget->currentWidget();
+    if (tab && tab->session()->isActive()) {
+        AddViewDialog dialog(tab->session(), this);
+        if (dialog.exec()) {
+            QString view = dialog.view();
+            if (tab->session()->isChannel(view))
+                tab->session()->sendCommand(IrcCommand::createJoin(view, dialog.password()));
+            tab->openView(view);
+        }
+    }
+}
+
+void MainWindow::closeView()
+{
+    SessionTabWidget* tab = tabWidget->currentWidget();
     if (tab)
-        QMetaObject::invokeMethod(tab, "onNewTabRequested");
+        tab->closeCurrentView();
 }
 
 void MainWindow::createTree()
