@@ -76,6 +76,7 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     if (!command_model) {
         CommandParser::addCustomCommand("CLEAR", "");
         CommandParser::addCustomCommand("QUERY", "<user>");
+        CommandParser::addCustomCommand("MSG", "<usr/channel> <message...>");
 
         QStringList prefixedCommands;
         foreach (const QString& command, CommandParser::availableCommands())
@@ -409,6 +410,8 @@ void MessageView::onCustomCommand(const QString& command, const QStringList& par
 {
     if (command == "CLEAR")
         d.textBrowser->clear();
+    else if (command == "MSG")
+        emit messaged(params.value(0), QStringList(params.mid(1)).join(" "));
     else if (command == "QUERY")
         emit queried(params.value(0));
 }

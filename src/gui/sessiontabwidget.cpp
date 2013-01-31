@@ -78,6 +78,7 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
         connect(view, SIGNAL(alerted(IrcMessage*)), this, SLOT(onTabAlerted(IrcMessage*)));
         connect(view, SIGNAL(highlighted(IrcMessage*)), this, SLOT(onTabHighlighted(IrcMessage*)));
         connect(view, SIGNAL(queried(QString)), this, SLOT(openView(QString)));
+        connect(view, SIGNAL(messaged(QString,QString)), this, SLOT(sendMessage(QString,QString)));
         connect(view, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
 
         d.handler.addReceiver(receiver, view);
@@ -123,6 +124,13 @@ void SessionTabWidget::renameView(const QString& from, const QString& to)
         d.views.insert(to.toLower(), view);
         emit viewRenamed(view);
     }
+}
+
+void SessionTabWidget::sendMessage(const QString& receiver, const QString& message)
+{
+    MessageView* view = openView(receiver);
+    if (view)
+        view->sendMessage(message);
 }
 
 void SessionTabWidget::tabActivated(int index)
