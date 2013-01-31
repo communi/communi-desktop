@@ -42,12 +42,10 @@ public:
     MenuFactory* menuFactory() const;
     void setMenuFactory(MenuFactory* factory);
 
-    enum ItemStatus { Active, Inactive, Alert, Highlight };
+    enum ItemStatus { Active, Inactive, Highlight };
 
     QColor statusColor(ItemStatus status) const;
     void setStatusColor(ItemStatus status, const QColor& color);
-
-    QColor currentAlertColor() const;
 
     SessionTreeItem* viewItem(MessageView* view) const;
     SessionTreeItem* sessionItem(Session* session) const;
@@ -66,9 +64,6 @@ public slots:
 
     void expandCurrentSession();
     void collapseCurrentSession();
-
-    void alert(SessionTreeItem* item);
-    void unalert(SessionTreeItem* item);
 
     void applySettings(const Settings& settings);
 
@@ -92,7 +87,6 @@ private slots:
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void delayedItemReset();
     void delayedItemResetTimeout();
-    void alertTimeout();
 
 private:
     void resetItem(SessionTreeItem* item);
@@ -101,7 +95,6 @@ private:
     QTreeWidgetItem* previousItem(QTreeWidgetItem* from) const;
 
     struct SessionTreeWidgetData {
-        QColor alertColor;
         Settings settings;
         MenuFactory* menuFactory;
         QShortcut* prevShortcut;
@@ -111,7 +104,6 @@ private:
         QShortcut* expandShortcut;
         QShortcut* collapseShortcut;
         QHash<ItemStatus, QColor> colors;
-        QSet<SessionTreeItem*> alertedItems;
         QSet<SessionTreeItem*> resetedItems;
         QHash<MessageView*, SessionTreeItem*> viewItems;
         QHash<Session*, SessionTreeItem*> sessionItems;

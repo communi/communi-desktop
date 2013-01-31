@@ -19,7 +19,6 @@
 SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidget* parent) : QTreeWidgetItem(parent)
 {
     d.view = view;
-    d.alerted = false;
     d.highlighted = false;
     setText(0, view->receiver());
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDropEnabled);
@@ -28,7 +27,6 @@ SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidget* parent) : QTree
 SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidgetItem* parent) : QTreeWidgetItem(parent)
 {
     d.view = view;
-    d.alerted = false;
     d.highlighted = false;
     setText(0, view->receiver());
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
@@ -36,15 +34,11 @@ SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidgetItem* parent) : Q
 
 SessionTreeItem::~SessionTreeItem()
 {
-    if (SessionTreeItem* p = static_cast<SessionTreeItem*>(parent())) {
-        p->d.alertedChildren.remove(this);
+    if (SessionTreeItem* p = static_cast<SessionTreeItem*>(parent()))
         p->d.highlightedChildren.remove(this);
-    }
 
-    if (SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget())) {
-        tw->d.alertedItems.remove(this);
+    if (SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget()))
         tw->d.resetedItems.remove(this);
-    }
 }
 
 Session* SessionTreeItem::session() const
@@ -71,8 +65,6 @@ QVariant SessionTreeItem::data(int column, int role) const
         SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget());
         if (!d.view->isActive())
             return tw->statusColor(SessionTreeWidget::Inactive);
-        if (d.alerted || (!isExpanded() && !d.alertedChildren.isEmpty()))
-            return tw->currentAlertColor();
         if (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty()))
             return tw->statusColor(SessionTreeWidget::Highlight);
         return tw->statusColor(SessionTreeWidget::Active);
@@ -88,27 +80,6 @@ int SessionTreeItem::badge() const
 void SessionTreeItem::setBadge(int badge)
 {
     setData(1, Qt::UserRole, badge);
-}
-
-bool SessionTreeItem::isAlerted() const
-{
-    return d.alerted;
-}
-
-void SessionTreeItem::setAlerted(bool alerted)
-{
-    if (d.alerted != alerted) {
-        d.alerted = alerted;
-        if (SessionTreeItem* p = static_cast<SessionTreeItem*>(parent())) {
-            if (alerted)
-                p->d.alertedChildren.insert(this);
-            else
-                p->d.alertedChildren.remove(this);
-            if (!p->isExpanded())
-                p->emitDataChanged();
-        }
-        emitDataChanged();
-    }
 }
 
 bool SessionTreeItem::isHighlighted() const

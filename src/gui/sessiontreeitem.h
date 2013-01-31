@@ -36,9 +36,6 @@ public:
     int badge() const;
     void setBadge(int badget);
 
-    bool isAlerted() const;
-    void setAlerted(bool alerted);
-
     bool isHighlighted() const;
     void setHighlighted(bool highlighted);
 
@@ -46,10 +43,8 @@ public:
 
 private:
     struct Private {
-        bool alerted;
         bool highlighted;
         MessageView* view;
-        QSet<SessionTreeItem*> alertedChildren;
         QSet<SessionTreeItem*> highlightedChildren;
     } d;
     friend class SessionTreeWidget;

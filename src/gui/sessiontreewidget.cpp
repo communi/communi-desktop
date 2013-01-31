@@ -48,9 +48,7 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
 
     d.colors[Active] = palette().color(QPalette::WindowText);
     d.colors[Inactive] = palette().color(QPalette::Disabled, QPalette::Highlight);
-    d.colors[Alert] = palette().color(QPalette::Highlight);
     d.colors[Highlight] = palette().color(QPalette::Highlight);
-    d.alertColor = d.colors.value(Alert);
 
     connect(this, SIGNAL(itemSelectionChanged()),
             this, SLOT(onItemSelectionChanged()));
@@ -139,11 +137,6 @@ void SessionTreeWidget::setStatusColor(SessionTreeWidget::ItemStatus status, con
     d.colors[status] = color;
 }
 
-QColor SessionTreeWidget::currentAlertColor() const
-{
-    return d.alertColor;
-}
-
 SessionTreeItem* SessionTreeWidget::viewItem(MessageView* view) const
 {
     return d.viewItems.value(view);
@@ -218,7 +211,7 @@ void SessionTreeWidget::moveToNextUnreadItem()
         QTreeWidgetItemIterator it(current);
         while (*++it && *it != current) {
             SessionTreeItem* item = static_cast<SessionTreeItem*>(*it);
-            if (item->isAlerted() || item->isHighlighted()) {
+            if (item->badge() > 0) {
                 setCurrentItem(item);
                 break;
             }
@@ -233,7 +226,7 @@ void SessionTreeWidget::moveToPrevUnreadItem()
         QTreeWidgetItemIterator it(current);
         while (*--it && *it != current) {
             SessionTreeItem* item = static_cast<SessionTreeItem*>(*it);
-            if (item->isAlerted() || item->isHighlighted()) {
+            if (item->badge() > 0) {
                 setCurrentItem(item);
                 break;
             }
@@ -261,23 +254,9 @@ void SessionTreeWidget::collapseCurrentSession()
     }
 }
 
-void SessionTreeWidget::alert(SessionTreeItem* item)
-{
-    if (d.alertedItems.isEmpty())
-        SharedTimer::instance()->registerReceiver(this, "alertTimeout");
-    d.alertedItems.insert(item);
-}
-
-void SessionTreeWidget::unalert(SessionTreeItem* item)
-{
-    if (d.alertedItems.remove(item) && d.alertedItems.isEmpty())
-        SharedTimer::instance()->unregisterReceiver(this, "alertTimeout");
-}
-
 void SessionTreeWidget::applySettings(const Settings& settings)
 {
     QColor color(settings.colors.value(Settings::Highlight));
-    setStatusColor(Alert, color);
     setStatusColor(Highlight, color);
 
     d.prevShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NavigateUp)));
@@ -389,24 +368,9 @@ void SessionTreeWidget::delayedItemResetTimeout()
     }
 }
 
-void SessionTreeWidget::alertTimeout()
-{
-    bool active = d.alertColor == d.colors.value(Active);
-    d.alertColor = d.colors.value(active ? Alert : Active);
-
-    foreach (SessionTreeItem* item, d.alertedItems) {
-        item->emitDataChanged();
-        if (SessionTreeItem* p = static_cast<SessionTreeItem*>(item->parent()))
-            if (!p->isExpanded())
-                p->emitDataChanged();
-    }
-}
-
 void SessionTreeWidget::resetItem(SessionTreeItem* item)
 {
-    unalert(item);
     item->setBadge(0);
-    item->setAlerted(false);
     item->setHighlighted(false);
 }
 
