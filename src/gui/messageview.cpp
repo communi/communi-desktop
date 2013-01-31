@@ -408,6 +408,4 @@ void MessageView::onCustomCommand(const QString& command, const QStringList& par
 {
     if (command == "QUERY")
         emit queried(params.value(0));
-    else if (command == "WHOIS")
-        d.session->sendCommand(IrcCommand::createWhois(params.value(0)));
 }
