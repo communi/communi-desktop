@@ -40,8 +40,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     connect(tabWidget, SIGNAL(alerted(MessageView*, IrcMessage*)), this, SLOT(alert(MessageView*, IrcMessage*)));
     connect(tabWidget, SIGNAL(highlighted(MessageView*, IrcMessage*)), this, SLOT(highlight(MessageView*, IrcMessage*)));
     connect(tabWidget, SIGNAL(splitterChanged(QByteArray)), this, SLOT(splitterChanged(QByteArray)));
-    connect(tabWidget, SIGNAL(sessionAdded(Session*)), this, SLOT(sessionAdded(Session*)));
-    connect(tabWidget, SIGNAL(sessionRemoved(Session*)), this, SLOT(sessionRemoved(Session*)));
 
     HomePage* homePage = new HomePage(tabWidget);
     connect(homePage, SIGNAL(connectRequested()), this, SLOT(connectTo()));
@@ -159,7 +157,11 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     connect(tab, SIGNAL(viewRenamed(MessageView*)), treeWidget, SLOT(renameView(MessageView*)));
     connect(tab, SIGNAL(viewActivated(MessageView*)), treeWidget, SLOT(setCurrentView(MessageView*)));
 
-    treeWidget->setCurrentView(tab->viewAt(0));
+    if (MessageView* view = tab->viewAt(0)) {
+        treeWidget->addView(view);
+        treeWidget->setCurrentView(view);
+        treeWidget->parentWidget()->show();
+    }
 
     QSettings settings;
     if (settings.contains("list"))
@@ -310,25 +312,6 @@ void MainWindow::splitterChanged(const QByteArray& state)
     settings.setValue("list", state);
 }
 
-void MainWindow::sessionAdded(Session* session)
-{
-    if (SessionTabWidget* tab = tabWidget->sessionWidget(session)) {
-        if (MessageView* view = tab->viewAt(0)) {
-            treeWidget->addView(view);
-            treeWidget->parentWidget()->show();
-        }
-    }
-}
-
-void MainWindow::sessionRemoved(Session* session)
-{
-    if (SessionTabWidget* tab = tabWidget->sessionWidget(session)) {
-        if (MessageView* view = tab->viewAt(0))
-            treeWidget->removeView(view);
-    }
-    treeWidget->parentWidget()->setVisible(!tabWidget->sessions().isEmpty());
-}
-
 void MainWindow::updateSession(Session* session)
 {
     if (!session)
@@ -372,8 +355,10 @@ void MainWindow::closeView()
     if (tab) {
         int index = tab->currentIndex();
         tab->closeView(index);
-        if (index == 0)
+        if (index == 0) {
             tabWidget->removeSession(tab->session());
+            treeWidget->parentWidget()->setVisible(!tabWidget->sessions().isEmpty());
+        }
     }
 }
 

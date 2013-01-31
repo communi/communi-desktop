@@ -41,8 +41,6 @@ void MultiSessionTabWidget::addSession(Session* session)
 
     int index = addWidget(tab);
     setCurrentIndex(index);
-
-    emit sessionAdded(session);
 }
 
 void MultiSessionTabWidget::removeSession(Session* session)
@@ -52,7 +50,6 @@ void MultiSessionTabWidget::removeSession(Session* session)
         removeWidget(tabWidget);
         tabWidget->deleteLater();
         tabWidget->session()->destructLater();
-        emit sessionRemoved(session);
     }
 }
 

@@ -44,9 +44,6 @@ public slots:
     void restoreSplitter(const QByteArray& state);
 
 signals:
-    void sessionAdded(Session* session);
-    void sessionRemoved(Session* session);
-
     void alerted(MessageView* view, IrcMessage* message);
     void highlighted(MessageView* view, IrcMessage* message);
 
