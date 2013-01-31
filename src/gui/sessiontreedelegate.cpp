@@ -40,8 +40,9 @@ QSize SessionTreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QM
 
 void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
+    const bool selected = option.state & QStyle::State_Selected;
+
     if (!index.parent().isValid()) {
-        const bool selected = option.state & QStyle::State_Selected;
         const_cast<QStyleOptionViewItem&>(option).state &= ~QStyle::State_Selected;
 
         QColor c1 = qApp->palette().color(QPalette::Light);
@@ -67,8 +68,26 @@ void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
     if (index.column() == 1) {
         int badge = index.data(Qt::UserRole).toInt();
         if (badge > 0) {
-            painter->setPen(index.data(Qt::ForegroundRole).value<QColor>());
-            painter->drawText(option.rect, Qt::AlignCenter, QString::number(badge));
+            QRect rect = option.rect.adjusted(1, 3, -1, -3);
+
+            QColor c1 = qApp->palette().color(QPalette::Light);
+            QColor c2 = qApp->palette().color(QPalette::Dark);
+            if (selected)
+                qSwap(c1, c2);
+
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(c2);
+            painter->setRenderHint(QPainter::Antialiasing);
+            painter->drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
+
+            QFont font;
+            font.setPointSize(9);
+            painter->setFont(font);
+
+            QString txt = QFontMetrics(font).elidedText(QString::number(badge), Qt::ElideRight, rect.width());
+
+            painter->setPen(c1);
+            painter->drawText(rect, Qt::AlignCenter, txt);
         }
     }
 }

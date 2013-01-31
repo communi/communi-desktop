@@ -35,7 +35,7 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     header()->setStretchLastSection(false);
     header()->setResizeMode(0, QHeaderView::Stretch);
     header()->setResizeMode(1, QHeaderView::Fixed);
-    header()->resizeSection(1, 18);
+    header()->resizeSection(1, 22);
 
     setItemDelegate(new SessionTreeDelegate(this));
 
