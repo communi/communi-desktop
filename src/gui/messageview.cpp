@@ -51,7 +51,6 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     connect(d.textBrowser, SIGNAL(anchorClicked(QUrl)), SLOT(onAnchorClicked(QUrl)));
 
     d.formatter = new MessageFormatter(this);
-    d.formatter->setHighlights(QStringList(session->nickName()));
     d.formatter->setMessageFormat("class='message'");
     d.formatter->setEventFormat("class='event'");
     d.formatter->setNoticeFormat("class='notice'");
@@ -330,18 +329,17 @@ void MessageView::receiveMessage(IrcMessage* message)
     if (d.viewType == ChannelView)
         d.listView->processMessage(message);
 
-    bool hilite = false;
-    bool matches = false;
-
     switch (message->type()) {
-        case IrcMessage::Notice:
-            matches = static_cast<IrcNoticeMessage*>(message)->message().contains(d.session->nickName());
-            hilite = true;
+        case IrcMessage::Private: {
+            QString content = static_cast<IrcPrivateMessage*>(message)->message();
+            if (message->sender().prefix() == "***!znc@znc.in") {
+                if (content == QLatin1String("Buffer Playback..."))
+                    d.formatter->setZncPlaybackMode(true);
+                else if (content == QLatin1String("Playback Complete."))
+                    d.formatter->setZncPlaybackMode(false);
+            }
             break;
-        case IrcMessage::Private:
-            matches = d.viewType != ChannelView || static_cast<IrcPrivateMessage*>(message)->message().contains(d.session->nickName());
-            hilite = true;
-            break;
+        }
         case IrcMessage::Topic:
             d.topicLabel->setText(d.formatter->formatHtml(static_cast<IrcTopicMessage*>(message)->topic()));
             if (d.topicLabel->text().isEmpty())
@@ -361,11 +359,6 @@ void MessageView::receiveMessage(IrcMessage* message)
                 d.joined = false;
                 emit activeChanged();
             }
-            break;
-        case IrcMessage::Invite:
-        case IrcMessage::Ping:
-        case IrcMessage::Pong:
-        case IrcMessage::Error:
             break;
         case IrcMessage::Numeric:
             switch (static_cast<IrcNumericMessage*>(message)->code()) {
@@ -388,11 +381,12 @@ void MessageView::receiveMessage(IrcMessage* message)
             break;
     }
 
+    d.formatter->setHighlights(QStringList() << d.session->nickName());
     QString formatted = d.formatter->formatMessage(message, d.listView->userModel());
     if (formatted.length()) {
-        if (matches)
+        if (d.formatter->hasHighlight() || (message->type() == IrcMessage::Private && d.viewType != ChannelView))
             emit alerted(message);
-        else if (hilite) // TODO: || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ServerView))
+        else if (message->type() == IrcMessage::Notice || message->type() == IrcMessage::Private) // TODO: || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ServerView))
             emit highlighted(message);
 
         appendMessage(formatted);

@@ -30,6 +30,7 @@ MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
     d.highlight = false;
     d.timeStamp = false;
     d.stripNicks = true;
+    d.zncPlayback = false;
     d.userModel = 0;
 
     static bool init = false;
@@ -50,6 +51,11 @@ MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 
 MessageFormatter::~MessageFormatter()
 {
+}
+
+bool MessageFormatter::hasHighlight() const
+{
+    return d.highlight;
 }
 
 QStringList MessageFormatter::highlights() const
@@ -80,6 +86,16 @@ bool MessageFormatter::stripNicks() const
 void MessageFormatter::setStripNicks(bool strip)
 {
     d.stripNicks = strip;
+}
+
+bool MessageFormatter::zncPlaybackMode() const
+{
+    return d.zncPlayback;
+}
+
+void MessageFormatter::setZncPlaybackMode(bool enabled)
+{
+    d.zncPlayback = enabled;
 }
 
 QString MessageFormatter::timeStampFormat() const
@@ -188,7 +204,10 @@ QString MessageFormatter::formatMessage(IrcMessage* message, UserModel* userMode
             formatted = formatPongMessage(static_cast<IrcPongMessage*>(message));
             break;
         case IrcMessage::Private:
-            formatted = formatPrivateMessage(static_cast<IrcPrivateMessage*>(message));
+            if (d.zncPlayback)
+                formatted = formatZncPlaybackMessage(static_cast<IrcPrivateMessage*>(message));
+            else
+                formatted = formatPrivateMessage(static_cast<IrcPrivateMessage*>(message));
             break;
         case IrcMessage::Quit:
             formatted = formatQuitMessage(static_cast<IrcQuitMessage*>(message));
@@ -203,10 +222,10 @@ QString MessageFormatter::formatMessage(IrcMessage* message, UserModel* userMode
             break;
     }
 
-    return formatMessage(formatted);
+    return formatMessage(message->timeStamp(), formatted);
 }
 
-QString MessageFormatter::formatMessage(const QString& message) const
+QString MessageFormatter::formatMessage(const QDateTime& timeStamp, const QString& message) const
 {
     QString formatted = message;
     if (formatted.isEmpty())
@@ -219,7 +238,7 @@ QString MessageFormatter::formatMessage(const QString& message) const
         format = d.prefixedFormats.value(formatted.left(1));
 
     if (d.timeStamp)
-        formatted = tr("<span %1>[%2]</span> %3").arg(d.timeStampFormat, QTime::currentTime().toString(), formatted);
+        formatted = tr("<span %1>[%2]</span> %3").arg(d.timeStampFormat, timeStamp.time().toString(), formatted);
 
     if (!format.isNull())
         formatted = tr("<span %1>%2</span>").arg(format, formatted);
@@ -427,6 +446,59 @@ QString MessageFormatter::formatUnknownMessage(IrcMessage* message) const
 {
     const QString sender = formatSender(message->sender());
     return tr("? %1 %2 %3").arg(sender, message->command(), message->parameters().join(" "));
+}
+
+QString MessageFormatter::formatZncPlaybackMessage(IrcPrivateMessage* message) const
+{
+    QStringList tokens = message->message().split(" ", QString::SkipEmptyParts);
+    QDateTime timeStamp = QDateTime::fromString(tokens.value(0), "[hh:mm:ss]");
+    if (timeStamp.isValid()) {
+        message->setTimeStamp(timeStamp);
+
+        if (message->sender().name() == "*buffextras") {
+            IrcSender sender(tokens.value(1));
+            QString content = QStringList(tokens.mid(2)).join(" ");
+
+            IrcMessage* tmp = 0;
+            if (content.startsWith("joined")) {
+                tmp = IrcMessage::fromParameters(sender.prefix(), "JOIN", QStringList() << message->target(), message->session());
+                content = formatJoinMessage(static_cast<IrcJoinMessage*>(tmp));
+            } else if (content.startsWith("parted")) {
+                QString reason = content.mid(content.indexOf("[") + 1);
+                reason.chop(1);
+                tmp = IrcMessage::fromParameters(sender.prefix(), "PART", QStringList() << reason , message->session());
+                content = formatPartMessage(static_cast<IrcPartMessage*>(tmp));
+            } else if (content.startsWith("quit")) {
+                QString reason = content.mid(content.indexOf("[") + 1);
+                reason.chop(1);
+                tmp = IrcMessage::fromParameters(sender.prefix(), "QUIT", QStringList() << reason , message->session());
+                content = formatQuitMessage(static_cast<IrcQuitMessage*>(tmp));
+            } else if (content.startsWith("is")) {
+                tmp = IrcMessage::fromParameters(sender.prefix(), "NICK", QStringList() << tokens.last() , message->session());
+                content = formatNickMessage(static_cast<IrcNickMessage*>(tmp));
+            } else if (content.startsWith("set")) {
+                QString user = tokens.takeLast();
+                QString mode = tokens.takeLast();
+                tmp = IrcMessage::fromParameters(sender.prefix(), "MODE", QStringList() << message->target() << mode << user, message->session());
+                content = formatModeMessage(static_cast<IrcModeMessage*>(tmp));
+            } else if (content.startsWith("changed")) {
+                QString topic = content.mid(content.indexOf(":") + 2);
+                tmp = IrcMessage::fromParameters(sender.prefix(), "TOPIC", QStringList() << message->target() << topic, message->session());
+                content = formatTopicMessage(static_cast<IrcTopicMessage*>(tmp));
+            } else if (content.startsWith("kicked")) {
+                QString reason = content.mid(content.indexOf("[") + 1);
+                reason.chop(1);
+                tmp = IrcMessage::fromParameters(sender.prefix(), "KICK", QStringList() << message->target() << tokens.value(3) << reason, message->session());
+                content = formatKickMessage(static_cast<IrcKickMessage*>(tmp));
+            }
+            if (tmp) {
+                delete tmp;
+                return content;
+            }
+        }
+        message->setParameters(QStringList() << message->target() << QStringList(tokens.mid(1)).join(" "));
+    }
+    return formatPrivateMessage(message);
 }
 
 QString MessageFormatter::formatPingReply(const IrcSender& sender, const QString& arg)

@@ -24,6 +24,7 @@ class UserModel;
 class MessageFormatter : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool highlight READ hasHighlight)
     Q_PROPERTY(QStringList highlights READ highlights WRITE setHighlights)
     Q_PROPERTY(bool timeStamp READ timeStamp WRITE setTimeStamp)
     Q_PROPERTY(bool stripNicks READ stripNicks WRITE setStripNicks)
@@ -34,10 +35,13 @@ class MessageFormatter : public QObject
     Q_PROPERTY(QString actionFormat READ actionFormat WRITE setActionFormat)
     Q_PROPERTY(QString unknownFormat READ unknownFormat WRITE setUnknownFormat)
     Q_PROPERTY(QString highlightFormat READ highlightFormat WRITE setHighlightFormat)
+    Q_PROPERTY(bool zncPlaybackMode READ zncPlaybackMode WRITE setZncPlaybackMode)
 
 public:
     explicit MessageFormatter(QObject* parent = 0);
     virtual ~MessageFormatter();
+
+    bool hasHighlight() const;
 
     QStringList highlights() const;
     void setHighlights(const QStringList& highlights);
@@ -47,6 +51,9 @@ public:
 
     bool stripNicks() const;
     void setStripNicks(bool strip);
+
+    bool zncPlaybackMode() const;
+    void setZncPlaybackMode(bool enabled);
 
     QString timeStampFormat() const;
     void setTimeStampFormat(const QString& format);
@@ -70,7 +77,7 @@ public:
     void setHighlightFormat(const QString& format);
 
     Q_INVOKABLE QString formatMessage(IrcMessage* message, UserModel* userModel = 0) const;
-    Q_INVOKABLE QString formatMessage(const QString& message) const;
+    Q_INVOKABLE QString formatMessage(const QDateTime& timeStamp, const QString& message) const;
 
     Q_INVOKABLE QString formatHtml(const QString& message) const;
 
@@ -88,6 +95,7 @@ protected:
     QString formatQuitMessage(IrcQuitMessage* message) const;
     QString formatTopicMessage(IrcTopicMessage* message) const;
     QString formatUnknownMessage(IrcMessage* message) const;
+    QString formatZncPlaybackMessage(IrcPrivateMessage* message) const;
 
     static QString formatPingReply(const IrcSender& sender, const QString& arg);
 
@@ -101,6 +109,7 @@ private:
         bool highlight;
         bool timeStamp;
         bool stripNicks;
+        bool zncPlayback;
         UserModel* userModel;
         QStringList highlights;
         QString timeStampFormat;
