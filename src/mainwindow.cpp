@@ -150,7 +150,7 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     connect(tab, SIGNAL(viewRenamed(MessageView*)), treeWidget, SLOT(renameView(MessageView*)));
     connect(tab, SIGNAL(viewActivated(MessageView*)), treeWidget, SLOT(setCurrentView(MessageView*)));
 
-    treeWidget->setCurrentView(qobject_cast<MessageView*>(tab->widget(0)));
+    treeWidget->setCurrentView(tab->viewAt(0));
 
     QSettings settings;
     if (settings.contains("list"))
@@ -304,7 +304,7 @@ void MainWindow::splitterChanged(const QByteArray& state)
 void MainWindow::sessionAdded(Session* session)
 {
     if (SessionTabWidget* tab = tabWidget->sessionWidget(session)) {
-        if (MessageView* view = qobject_cast<MessageView*>(tab->widget(0))) {
+        if (MessageView* view = tab->viewAt(0)) {
             treeWidget->addView(view);
             treeWidget->parentWidget()->show();
         }
@@ -314,7 +314,7 @@ void MainWindow::sessionAdded(Session* session)
 void MainWindow::sessionRemoved(Session* session)
 {
     if (SessionTabWidget* tab = tabWidget->sessionWidget(session)) {
-        if (MessageView* view = qobject_cast<MessageView*>(tab->widget(0)))
+        if (MessageView* view = tab->viewAt(0))
             treeWidget->removeView(view);
     }
     treeWidget->parentWidget()->setVisible(!tabWidget->sessions().isEmpty());

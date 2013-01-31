@@ -32,6 +32,9 @@ public:
 
     Session* session() const;
 
+    MessageView* currentView() const;
+    MessageView* viewAt(int index) const;
+
     QByteArray saveSplitter() const;
 
 public slots:

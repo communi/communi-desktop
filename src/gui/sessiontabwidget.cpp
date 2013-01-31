@@ -45,6 +45,16 @@ Session* SessionTabWidget::session() const
     return qobject_cast<Session*>(d.handler.session());
 }
 
+MessageView* SessionTabWidget::currentView() const
+{
+    return qobject_cast<MessageView*>(currentWidget());
+}
+
+MessageView* SessionTabWidget::viewAt(int index) const
+{
+    return qobject_cast<MessageView*>(widget(index));
+}
+
 QByteArray SessionTabWidget::saveSplitter() const
 {
     foreach (MessageView* view, d.views) {
@@ -110,7 +120,7 @@ void SessionTabWidget::closeCurrentView()
 
 void SessionTabWidget::closeView(int index)
 {
-    MessageView* view = qobject_cast<MessageView*>(widget(index));
+    MessageView* view = viewAt(index);
     if (view) {
         if (view->isActive()) {
             QString reason = tr("%1 %2").arg(QApplication::applicationName())
@@ -136,7 +146,7 @@ void SessionTabWidget::renameView(const QString& from, const QString& to)
 
 void SessionTabWidget::tabActivated(int index)
 {
-    MessageView* view = qobject_cast<MessageView*>(widget(index));
+    MessageView* view = viewAt(index);
     if (view && isVisible()) {
         d.handler.setCurrentReceiver(view);
         view->setFocus();
