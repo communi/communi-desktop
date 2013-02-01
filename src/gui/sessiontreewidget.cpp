@@ -75,6 +75,9 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     d.collapseShortcut = new QShortcut(this);
     connect(d.collapseShortcut, SIGNAL(activated()), this, SLOT(collapseCurrentSession()));
 
+    d.mostActiveShortcut = new QShortcut(this);
+    connect(d.mostActiveShortcut, SIGNAL(activated()), this, SLOT(moveToMostActiveItem()));
+
     applySettings(d.settings);
 }
 
@@ -232,6 +235,33 @@ void SessionTreeWidget::moveToPrevUnreadItem()
     }
 }
 
+void SessionTreeWidget::moveToMostActiveItem()
+{
+    QTreeWidgetItem *firstHighlight = 0;
+    QTreeWidgetItemIterator it(this);
+    while (*it) {
+        SessionTreeItem* item = static_cast<SessionTreeItem*>(*it);
+
+        if (item->isHighlighted()) {
+            // we found a channel hilight or PM to us
+            setCurrentItem(item);
+            return;
+        }
+
+        // as a backup, also store the first window with any sort of activity
+        if (!firstHighlight && item->badge()) {
+            firstHighlight = item;
+            // can't break in case we find an alerted item
+        }
+
+        it++;
+    }
+
+    if (firstHighlight)
+        setCurrentItem(firstHighlight);
+}
+
+
 void SessionTreeWidget::expandCurrentSession()
 {
     QTreeWidgetItem* item = currentItem();
@@ -263,6 +293,7 @@ void SessionTreeWidget::applySettings(const Settings& settings)
     d.nextUnreadShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NextUnreadDown)));
     d.expandShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NavigateRight)));
     d.collapseShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NavigateLeft)));
+    d.mostActiveShortcut->setKey(QKeySequence("Ctrl+S"));
     d.settings = settings;
 }
 
