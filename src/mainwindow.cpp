@@ -158,6 +158,7 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
         treeWidget->addView(view);
         treeWidget->setCurrentView(view);
         treeWidget->parentWidget()->show();
+        view->applySettings(Application::settings());
     }
 
     QSettings settings;
