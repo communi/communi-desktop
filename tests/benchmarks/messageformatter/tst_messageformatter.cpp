@@ -62,6 +62,9 @@ private slots:
     void testFormatHtml_data();
     void testFormatHtml();
 
+    void testZncPlayback_data();
+    void testZncPlayback();
+
 private:
     TestMessageFormatter formatter;
 };
@@ -132,6 +135,37 @@ void tst_MessageFormatter::testFormatHtml()
     QBENCHMARK {
         formatter.formatHtml(message);
     }
+}
+
+void tst_MessageFormatter::testZncPlayback_data()
+{
+    QTest::addColumn<QByteArray>("data");
+
+    QTest::newRow("join") << QByteArray(":*buffextras!buffextras@znc.in PRIVMSG #channel :[12:34:56] nick!user@host joined");
+    QTest::newRow("part") << QByteArray(":*buffextras!buffextras@znc.in PRIVMSG #channel :[12:34:56] nick!user@host parted with message: [foo bar]");
+    QTest::newRow("quit") << QByteArray(":*buffextras!buffextras@znc.in PRIVMSG #channel :[12:34:56] nick!user@host quit with message: [foo bar]");
+    QTest::newRow("nick") << QByteArray(":*buffextras!buffextras@znc.in PRIVMSG #channel :[12:34:56] nick!user@host is now known as nick|away");
+    QTest::newRow("mode") << QByteArray(":*buffextras!buffextras@znc.in PRIVMSG #channel :[12:34:56] nick!user@host set mode: +v nick");
+    QTest::newRow("kick") << QByteArray(":*buffextras!buffextras@znc.in PRIVMSG #channel :[12:34:56] nick!user@host kicked nick Reason: [foo bar]");
+    QTest::newRow("topic") << QByteArray(":*buffextras!buffextras@znc.in PRIVMSG #channel :[12:34:56] nick!user@host changed the topic to: foo bar");
+
+    QTest::newRow("privmsg") << QByteArray(":nick!user@host PRIVMSG #channel :[12:34:56] foo bar");
+    QTest::newRow("notice") << QByteArray(":nick!user@host NOTICE #channel :[12:34:56] foo bar");
+}
+
+void tst_MessageFormatter::testZncPlayback()
+{
+    QFETCH(QByteArray, data);
+
+    Session session;
+    IrcMessage* msg = IrcMessage::fromData(data, &session);
+    formatter.setTimeStampFormat("[hh:mm:ss]");
+    formatter.setZncPlaybackMode(true);
+    QBENCHMARK {
+        formatter.formatMessage(msg);
+    }
+    formatter.setZncPlaybackMode(false);
+    delete msg;
 }
 
 QTEST_MAIN(tst_MessageFormatter)
