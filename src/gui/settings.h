@@ -66,14 +66,15 @@ struct Settings {
     QString font;
     int maxBlockCount;
     bool timeStamp;
-    QString layout;
+    QString layout; // deprecated
     bool stripNicks;
+    QString timeStampFormat;
 };
 Q_DECLARE_METATYPE(Settings);
 
 inline QDataStream& operator<<(QDataStream& out, const Settings& settings)
 {
-    out << quint32(129); // version
+    out << quint32(130); // version
     out << settings.messages;
     out << settings.highlights;
     out << settings.language;
@@ -82,8 +83,9 @@ inline QDataStream& operator<<(QDataStream& out, const Settings& settings)
     out << settings.shortcuts;
     out << settings.maxBlockCount;
     out << settings.timeStamp;
-    out << settings.layout;
+    out << settings.layout; // deprecated
     out << settings.stripNicks;
+    out << settings.timeStampFormat;
     return out;
 }
 
@@ -98,14 +100,16 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
     settings.shortcuts = readStreamValue< QHash<int, QString> >(in, settings.shortcuts);
     settings.maxBlockCount = readStreamValue<int>(in, settings.maxBlockCount);
     settings.timeStamp = readStreamValue<bool>(in, settings.timeStamp);
-    settings.layout = readStreamValue<QString>(in, settings.layout);
-    settings.stripNicks = readStreamValue<bool>(in, settings.stripNicks);
+    if (version >= 126) // deprecated
+        settings.layout = readStreamValue<QString>(in, settings.layout);
+    if (version >= 129)
+        settings.stripNicks = readStreamValue<bool>(in, settings.stripNicks);
+    if (version >= 130)
+        settings.timeStampFormat = readStreamValue<QString>(in, settings.timeStampFormat);
 
     Settings defaults; // default values
     if (version < 125)
         settings.colors[Settings::TimeStamp] = defaults.colors.value(Settings::TimeStamp);
-    if (version < 126)
-        settings.layout = defaults.layout;
     if (version < 127) {
         settings.shortcuts[Settings::NextUnreadUp] = defaults.shortcuts.value(Settings::NextUnreadUp);
         settings.shortcuts[Settings::NextUnreadDown] = defaults.shortcuts.value(Settings::NextUnreadDown);
@@ -114,8 +118,6 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
     }
     if (version < 128)
         settings.colors[Settings::Link] = defaults.colors.value(Settings::Link);
-    if (version < 129)
-        settings.stripNicks = defaults.stripNicks;
     return in;
 }
 
