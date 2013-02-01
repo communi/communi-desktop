@@ -57,31 +57,28 @@
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QLabel" name="label_4">
+    <widget class="QLabel" name="label">
      <property name="text">
-      <string>&amp;Messages:</string>
+      <string>&amp;Timestamp:</string>
      </property>
      <property name="buddy">
-      <cstring>timeStampCheckBox</cstring>
+      <cstring>timeStampEdit</cstring>
      </property>
     </widget>
    </item>
    <item row="2" column="1">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QCheckBox" name="timeStampCheckBox">
+      <widget class="QLineEdit" name="timeStampEdit">
        <property name="text">
-        <string>Timestamp</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
+        <string>[hh:mm:ss]</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="stripNicksCheckBox">
+      <widget class="QCheckBox" name="timeStampCheckBox">
        <property name="text">
-        <string>Strip nicks</string>
+        <string/>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -90,11 +87,43 @@
      </item>
     </layout>
    </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>&amp;Messages:</string>
+     </property>
+     <property name="buddy">
+      <cstring>stripNicksCheckBox</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QCheckBox" name="stripNicksCheckBox">
+     <property name="text">
+      <string>Strip nicks</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <tabstops>
   <tabstop>fontComboBox</tabstop>
+  <tabstop>sizeSpinBox</tabstop>
+  <tabstop>blockSpinBox</tabstop>
+  <tabstop>timeStampEdit</tabstop>
+  <tabstop>timeStampCheckBox</tabstop>
+  <tabstop>stripNicksCheckBox</tabstop>
  </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>timeStampCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>timeStampEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+  </connection>
+ </connections>
 </ui>

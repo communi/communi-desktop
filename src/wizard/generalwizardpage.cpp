@@ -65,6 +65,16 @@ void GeneralWizardPage::setTimeStamp(bool timeStamp)
     ui.timeStampCheckBox->setChecked(timeStamp);
 }
 
+QString GeneralWizardPage::timeStampFormat() const
+{
+    return ui.timeStampEdit->text();
+}
+
+void GeneralWizardPage::setTimeStampFormat(const QString& format)
+{
+    ui.timeStampEdit->setText(format);
+}
+
 bool GeneralWizardPage::stripNicks() const
 {
     return ui.stripNicksCheckBox->isChecked();

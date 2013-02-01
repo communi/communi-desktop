@@ -37,6 +37,9 @@ public:
     bool timeStamp() const;
     void setTimeStamp(bool timeStamp);
 
+    QString timeStampFormat() const;
+    void setTimeStampFormat(const QString& format);
+
     bool stripNicks() const;
     void setStripNicks(bool strip);
 

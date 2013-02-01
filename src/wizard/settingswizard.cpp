@@ -40,6 +40,7 @@ Settings SettingsWizard::settings() const
     settings.language = static_cast<GeneralWizardPage*>(page(GeneralPage))->language();
     settings.maxBlockCount = static_cast<GeneralWizardPage*>(page(GeneralPage))->maxBlockCount();
     settings.timeStamp = static_cast<GeneralWizardPage*>(page(GeneralPage))->timeStamp();
+    settings.timeStampFormat = static_cast<GeneralWizardPage*>(page(GeneralPage))->timeStampFormat();
     settings.stripNicks = static_cast<GeneralWizardPage*>(page(GeneralPage))->stripNicks();
     settings.shortcuts = static_cast<ShortcutsWizardPage*>(page(ShortcutsPage))->shortcuts();
     settings.colors = static_cast<ColorsWizardPage*>(page(ColorsPage))->colors();
@@ -62,6 +63,7 @@ void SettingsWizard::setGeneralSettings(const Settings& settings)
     static_cast<GeneralWizardPage*>(page(GeneralPage))->setLanguage(settings.language);
     static_cast<GeneralWizardPage*>(page(GeneralPage))->setMaxBlockCount(settings.maxBlockCount);
     static_cast<GeneralWizardPage*>(page(GeneralPage))->setTimeStamp(settings.timeStamp);
+    static_cast<GeneralWizardPage*>(page(GeneralPage))->setTimeStampFormat(settings.timeStampFormat);
     static_cast<GeneralWizardPage*>(page(GeneralPage))->setStripNicks(settings.stripNicks);
 }
 
