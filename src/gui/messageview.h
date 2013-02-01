@@ -64,7 +64,7 @@ signals:
     void receiverChanged(const QString& receiver);
 
     void highlighted(IrcMessage* message);
-    void alerted(IrcMessage* message);
+    void missed(IrcMessage* message);
     void queried(const QString& user);
     void messaged(const QString& user, const QString& message);
     void splitterChanged(const QByteArray& state);

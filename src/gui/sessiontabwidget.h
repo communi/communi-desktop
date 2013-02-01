@@ -47,8 +47,6 @@ public slots:
     void sendMessage(const QString& receiver, const QString& message);
 
 signals:
-    void alerted(MessageView* view, IrcMessage* message);
-    void highlighted(MessageView* view, IrcMessage* message);
     void splitterChanged(const QByteArray& state);
 
     void viewAdded(MessageView* view);
@@ -58,8 +56,6 @@ signals:
 
 private slots:
     void tabActivated(int index);
-    void onTabAlerted(IrcMessage* message);
-    void onTabHighlighted(IrcMessage* message);
 
 private:
     struct SessionTabWidgetData {

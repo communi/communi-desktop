@@ -384,10 +384,12 @@ void MessageView::receiveMessage(IrcMessage* message)
     d.formatter->setHighlights(QStringList() << d.session->nickName());
     QString formatted = d.formatter->formatMessage(message, d.listView->userModel());
     if (formatted.length()) {
-        if (d.formatter->hasHighlight() || (message->type() == IrcMessage::Private && d.viewType != ChannelView))
-            emit alerted(message);
-        else if (message->type() == IrcMessage::Notice || message->type() == IrcMessage::Private) // TODO: || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ServerView))
-            emit highlighted(message);
+        if (!isVisible() || !isActiveWindow()) {
+            if (d.formatter->hasHighlight() || (message->type() == IrcMessage::Private && d.viewType != ChannelView))
+                emit highlighted(message);
+            else if (message->type() == IrcMessage::Notice || message->type() == IrcMessage::Private) // TODO: || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ServerView))
+                emit missed(message);
+        }
 
         appendMessage(formatted);
     }

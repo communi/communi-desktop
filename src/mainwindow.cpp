@@ -36,9 +36,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     treeWidget(0), trayIcon(0), dockTile(0)
 {
     tabWidget = new MultiSessionTabWidget(this);
-
-    connect(tabWidget, SIGNAL(alerted(MessageView*, IrcMessage*)), this, SLOT(alert(MessageView*, IrcMessage*)));
-    connect(tabWidget, SIGNAL(highlighted(MessageView*, IrcMessage*)), this, SLOT(highlight(MessageView*, IrcMessage*)));
     connect(tabWidget, SIGNAL(splitterChanged(QByteArray)), this, SLOT(splitterChanged(QByteArray)));
 
     HomePage* homePage = new HomePage(tabWidget);
@@ -241,7 +238,7 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
-void MainWindow::alert(MessageView* view, IrcMessage* message)
+void MainWindow::highlighted(IrcMessage* message)
 {
     Q_UNUSED(message);
     if (!isActiveWindow()) {
@@ -252,27 +249,36 @@ void MainWindow::alert(MessageView* view, IrcMessage* message)
             dockTile->setBadge(dockTile->badge() + 1);
     }
 
-    SessionTreeItem* item = treeWidget->sessionItem(view->session());
-    if (view->viewType() != MessageView::ServerView)
-        item = item->findChild(view->receiver());
-    if (item) {
-        item->setHighlighted(true);
-        item->setBadge(item->badge() + 1);
+    MessageView* view = qobject_cast<MessageView*>(sender());
+    if (view) {
+        SessionTreeItem* item = treeWidget->sessionItem(view->session());
+        if (view->viewType() != MessageView::ServerView)
+            item = item->findChild(view->receiver());
+        if (item) {
+            item->setHighlighted(true);
+            item->setBadge(item->badge() + 1);
+        }
     }
 }
 
-void MainWindow::highlight(MessageView* view, IrcMessage* message)
+void MainWindow::missed(IrcMessage* message)
 {
     Q_UNUSED(message);
-    SessionTreeItem* item = treeWidget->sessionItem(view->session());
-    if (view->viewType() != MessageView::ServerView)
-        item = item->findChild(view->receiver());
-    if (item)
-        item->setBadge(item->badge() + 1);
+    MessageView* view = qobject_cast<MessageView*>(sender());
+    if (view) {
+        SessionTreeItem* item = treeWidget->sessionItem(view->session());
+        if (view->viewType() != MessageView::ServerView)
+            item = item->findChild(view->receiver());
+        if (item)
+            item->setBadge(item->badge() + 1);
+    }
 }
 
 void MainWindow::viewAdded(MessageView* view)
 {
+    connect(view, SIGNAL(highlighted(IrcMessage*)), this, SLOT(highlighted(IrcMessage*)));
+    connect(view, SIGNAL(missed(IrcMessage*)), this, SLOT(missed(IrcMessage*)));
+
     view->applySettings(Application::settings());
 
     QSettings settings;

@@ -75,8 +75,6 @@ MessageView* SessionTabWidget::openView(const QString& receiver)
             type = session()->isChannel(receiver) ? MessageView::ChannelView : MessageView::QueryView;
         view = new MessageView(type, d.handler.session(), this);
         view->setReceiver(receiver);
-        connect(view, SIGNAL(alerted(IrcMessage*)), this, SLOT(onTabAlerted(IrcMessage*)));
-        connect(view, SIGNAL(highlighted(IrcMessage*)), this, SLOT(onTabHighlighted(IrcMessage*)));
         connect(view, SIGNAL(queried(QString)), this, SLOT(openView(QString)));
         connect(view, SIGNAL(messaged(QString,QString)), this, SLOT(sendMessage(QString,QString)));
         connect(view, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
@@ -140,25 +138,5 @@ void SessionTabWidget::tabActivated(int index)
         d.handler.setCurrentReceiver(view);
         view->setFocus();
         emit viewActivated(view);
-    }
-}
-
-void SessionTabWidget::onTabAlerted(IrcMessage* message)
-{
-    MessageView* view = qobject_cast<MessageView*>(sender());
-    int index = indexOf(view);
-    if (index != -1) {
-        if (!isVisible() || !isActiveWindow() || index != currentIndex())
-            emit alerted(view, message);
-    }
-}
-
-void SessionTabWidget::onTabHighlighted(IrcMessage* message)
-{
-    MessageView* view = qobject_cast<MessageView*>(sender());
-    int index = indexOf(view);
-    if (index != -1) {
-        if (!isVisible() || !isActiveWindow() || index != currentIndex())
-            emit highlighted(view, message);
     }
 }
