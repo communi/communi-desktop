@@ -76,7 +76,8 @@ void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
             painter->drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
 
             QFont font;
-            font.setPointSize(9);
+            if (font.pointSize() != -1)
+                font.setPointSizeF(0.8 * font.pointSizeF());
             painter->setFont(font);
 
             QString txt = QFontMetrics(font).elidedText(QString::number(badge), Qt::ElideRight, rect.width());
