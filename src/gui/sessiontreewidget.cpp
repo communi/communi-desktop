@@ -50,8 +50,6 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     d.colors[Inactive] = palette().color(QPalette::Disabled, QPalette::Highlight);
     d.colors[Highlight] = palette().color(QPalette::Highlight);
 
-    connect(this, SIGNAL(itemSelectionChanged()),
-            this, SLOT(onItemSelectionChanged()));
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)),
             this, SLOT(onItemExpanded(QTreeWidgetItem*)));
     connect(this, SIGNAL(itemCollapsed(QTreeWidgetItem*)),
@@ -325,15 +323,6 @@ void SessionTreeWidget::updateSession(Session* session)
         item->setText(0, session->name().isEmpty() ? session->host() : session->name());
 }
 
-void SessionTreeWidget::onItemSelectionChanged()
-{
-    SessionTreeItem* item = static_cast<SessionTreeItem*>(selectedItems().value(0));
-    if (item) {
-        resetItem(item);
-        emit currentViewChanged(item->session(), item->parent() ? item->text(0) : QString());
-    }
-}
-
 void SessionTreeWidget::onItemExpanded(QTreeWidgetItem* item)
 {
     static_cast<SessionTreeItem*>(item)->emitDataChanged();
@@ -346,8 +335,11 @@ void SessionTreeWidget::onItemCollapsed(QTreeWidgetItem* item)
 
 void SessionTreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
-    Q_UNUSED(previous);
-    static_cast<SessionTreeItem*>(current)->setBadge(0);
+    if (previous)
+        resetItem(static_cast<SessionTreeItem*>(previous));
+    delayedItemReset();
+    SessionTreeItem* item = static_cast<SessionTreeItem*>(current);
+    emit currentViewChanged(item->session(), item->parent() ? item->text(0) : QString());
 }
 
 void SessionTreeWidget::delayedItemReset()

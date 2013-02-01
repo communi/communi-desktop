@@ -81,7 +81,6 @@ protected:
 private slots:
     void updateView(MessageView* view = 0);
     void updateSession(Session* session = 0);
-    void onItemSelectionChanged();
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
