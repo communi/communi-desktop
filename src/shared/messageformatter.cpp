@@ -108,66 +108,6 @@ void MessageFormatter::setTimeStampFormat(const QString& format)
     d.timeStampFormat = format;
 }
 
-QString MessageFormatter::messageFormat() const
-{
-    return d.messageFormat;
-}
-
-void MessageFormatter::setMessageFormat(const QString& format)
-{
-    d.messageFormat = format;
-}
-
-QString MessageFormatter::eventFormat() const
-{
-    return d.prefixedFormats.value("!");
-}
-
-void MessageFormatter::setEventFormat(const QString& format)
-{
-    d.prefixedFormats.insert("!", format);
-}
-
-QString MessageFormatter::noticeFormat() const
-{
-    return d.prefixedFormats.value("[");
-}
-
-void MessageFormatter::setNoticeFormat(const QString& format)
-{
-    d.prefixedFormats.insert("[", format);
-}
-
-QString MessageFormatter::actionFormat() const
-{
-    return d.prefixedFormats.value("*");
-}
-
-void MessageFormatter::setActionFormat(const QString& format)
-{
-    d.prefixedFormats.insert("*", format);
-}
-
-QString MessageFormatter::unknownFormat() const
-{
-    return d.prefixedFormats.value("?");
-}
-
-void MessageFormatter::setUnknownFormat(const QString& format)
-{
-    d.prefixedFormats.insert("?", format);
-}
-
-QString MessageFormatter::highlightFormat() const
-{
-    return d.highlightFormat;
-}
-
-void MessageFormatter::setHighlightFormat(const QString& format)
-{
-    d.highlightFormat = format;
-}
-
 QString MessageFormatter::formatMessage(IrcMessage* message, UserModel* userModel) const
 {
     QString formatted;
@@ -234,19 +174,24 @@ QString MessageFormatter::formatMessage(const QDateTime& timeStamp, const QStrin
     if (formatted.isEmpty())
         return QString();
 
-    QString format = d.messageFormat;
-    if (d.highlight && !d.highlightFormat.isEmpty())
-        format = d.highlightFormat;
-    else if (d.prefixedFormats.contains(formatted.left(1)))
-        format = d.prefixedFormats.value(formatted.left(1));
+    static QHash<QString, QString> classes;
+    if (classes.isEmpty()) {
+        classes.insert("!", "event");
+        classes.insert("[", "notice");
+        classes.insert("*", "action");
+        classes.insert("?", "unknown");
+    }
+
+    QString cls = "message";
+    if (d.highlight)
+        cls = "highlight";
+    else if (classes.contains(formatted.left(1)))
+        cls = classes.value(formatted.left(1));
 
     if (d.timeStamp)
-        formatted = tr("<span %1>[%2]</span> %3").arg(d.timeStampFormat, timeStamp.time().toString(), formatted);
+        formatted = tr("<span class='timestamp'>%1</span> %3").arg(timeStamp.time().toString(d.timeStampFormat), formatted);
 
-    if (!format.isNull())
-        formatted = tr("<span %1>%2</span>").arg(format, formatted);
-
-    return formatted;
+    return tr("<span class='%1'>%2</span>").arg(cls, formatted);
 }
 
 QString MessageFormatter::formatInviteMessage(IrcInviteMessage* message) const
@@ -454,7 +399,7 @@ QString MessageFormatter::formatUnknownMessage(IrcMessage* message) const
 QString MessageFormatter::formatZncPlaybackMessage(IrcPrivateMessage* message) const
 {
     QStringList tokens = message->message().split(" ", QString::SkipEmptyParts);
-    QDateTime timeStamp = QDateTime::fromString(tokens.value(0), "[hh:mm:ss]");
+    QDateTime timeStamp = QDateTime::fromString(tokens.value(0), d.timeStampFormat);
     if (timeStamp.isValid()) {
         message->setTimeStamp(timeStamp);
 
@@ -507,7 +452,7 @@ QString MessageFormatter::formatZncPlaybackMessage(IrcPrivateMessage* message) c
 QString MessageFormatter::formatZncPlaybackMessage(IrcNoticeMessage* message) const
 {
     QStringList tokens = message->message().split(" ", QString::SkipEmptyParts);
-    QDateTime timeStamp = QDateTime::fromString(tokens.value(0), "[hh:mm:ss]");
+    QDateTime timeStamp = QDateTime::fromString(tokens.value(0), d.timeStampFormat);
     if (timeStamp.isValid()) {
         message->setTimeStamp(timeStamp);
         message->setParameters(QStringList() << message->target() << QStringList(tokens.mid(1)).join(" "));

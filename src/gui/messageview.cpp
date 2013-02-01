@@ -51,13 +51,6 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     connect(d.textBrowser, SIGNAL(anchorClicked(QUrl)), SLOT(onAnchorClicked(QUrl)));
 
     d.formatter = new MessageFormatter(this);
-    d.formatter->setMessageFormat("class='message'");
-    d.formatter->setEventFormat("class='event'");
-    d.formatter->setNoticeFormat("class='notice'");
-    d.formatter->setActionFormat("class='action'");
-    d.formatter->setUnknownFormat("class='unknown'");
-    d.formatter->setHighlightFormat("class='highlight'");
-    d.formatter->setTimeStampFormat("class='timestamp'");
 
     d.session = session;
     connect(d.session, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
@@ -292,6 +285,7 @@ void MessageView::onAnchorClicked(const QUrl& link)
 void MessageView::applySettings(const Settings& settings)
 {
     d.formatter->setTimeStamp(settings.timeStamp);
+    d.formatter->setTimeStampFormat(settings.timeStampFormat);
     d.formatter->setStripNicks(settings.stripNicks);
 
     if (!settings.font.isEmpty())

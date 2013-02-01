@@ -29,12 +29,6 @@ class MessageFormatter : public QObject
     Q_PROPERTY(bool timeStamp READ timeStamp WRITE setTimeStamp)
     Q_PROPERTY(bool stripNicks READ stripNicks WRITE setStripNicks)
     Q_PROPERTY(QString timeStampFormat READ timeStampFormat WRITE setTimeStampFormat)
-    Q_PROPERTY(QString messageFormat READ messageFormat WRITE setMessageFormat)
-    Q_PROPERTY(QString eventFormat READ eventFormat WRITE setEventFormat)
-    Q_PROPERTY(QString noticeFormat READ noticeFormat WRITE setNoticeFormat)
-    Q_PROPERTY(QString actionFormat READ actionFormat WRITE setActionFormat)
-    Q_PROPERTY(QString unknownFormat READ unknownFormat WRITE setUnknownFormat)
-    Q_PROPERTY(QString highlightFormat READ highlightFormat WRITE setHighlightFormat)
     Q_PROPERTY(bool zncPlaybackMode READ zncPlaybackMode WRITE setZncPlaybackMode)
 
 public:
@@ -57,24 +51,6 @@ public:
 
     QString timeStampFormat() const;
     void setTimeStampFormat(const QString& format);
-
-    QString messageFormat() const;
-    void setMessageFormat(const QString& format);
-
-    QString eventFormat() const;
-    void setEventFormat(const QString& format);
-
-    QString noticeFormat() const;
-    void setNoticeFormat(const QString& format);
-
-    QString actionFormat() const;
-    void setActionFormat(const QString& format);
-
-    QString unknownFormat() const;
-    void setUnknownFormat(const QString& format);
-
-    QString highlightFormat() const;
-    void setHighlightFormat(const QString& format);
 
     Q_INVOKABLE QString formatMessage(IrcMessage* message, UserModel* userModel = 0) const;
     Q_INVOKABLE QString formatMessage(const QDateTime& timeStamp, const QString& message) const;
@@ -114,9 +90,6 @@ private:
         UserModel* userModel;
         QStringList highlights;
         QString timeStampFormat;
-        QString messageFormat;
-        QString highlightFormat;
-        QHash<QString, QString> prefixedFormats;
         QList<int> receivedCodes;
     } d;
 };
