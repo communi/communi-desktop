@@ -295,8 +295,14 @@ void MainWindow::viewAdded(MessageView* view)
 void MainWindow::closeTreeItem(SessionTreeItem* item)
 {
     SessionTabWidget* tab = tabWidget->sessionWidget(item->session());
-    if (tab)
-        tab->closeView(tab->indexOf(item->view()));
+    if (tab) {
+        int index = tab->indexOf(item->view());
+        tab->closeView(index);
+        if (index == 0) {
+            tabWidget->removeSession(tab->session());
+            treeWidget->parentWidget()->setVisible(!tabWidget->sessions().isEmpty());
+        }
+    }
 }
 
 void MainWindow::currentTreeItemChanged(Session* session, const QString& view)
