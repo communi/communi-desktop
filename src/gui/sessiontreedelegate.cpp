@@ -70,13 +70,8 @@ void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
         if (badge > 0) {
             QRect rect = option.rect.adjusted(1, 3, -1, -3);
 
-            QColor c1 = qApp->palette().color(QPalette::Light);
-            QColor c2 = qApp->palette().color(QPalette::Dark);
-            if (selected)
-                qSwap(c1, c2);
-
             painter->setPen(Qt::NoPen);
-            painter->setBrush(c2);
+            painter->setBrush(qApp->palette().color(QPalette::Dark));
             painter->setRenderHint(QPainter::Antialiasing);
             painter->drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
 
@@ -86,7 +81,7 @@ void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
 
             QString txt = QFontMetrics(font).elidedText(QString::number(badge), Qt::ElideRight, rect.width());
 
-            painter->setPen(c1);
+            painter->setPen(qApp->palette().color(QPalette::Light));
             painter->drawText(rect, Qt::AlignCenter, txt);
         }
     }
