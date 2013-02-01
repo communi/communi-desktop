@@ -96,6 +96,7 @@ protected:
     QString formatTopicMessage(IrcTopicMessage* message) const;
     QString formatUnknownMessage(IrcMessage* message) const;
     QString formatZncPlaybackMessage(IrcPrivateMessage* message) const;
+    QString formatZncPlaybackMessage(IrcNoticeMessage* message) const;
 
     static QString formatPingReply(const IrcSender& sender, const QString& arg);
 

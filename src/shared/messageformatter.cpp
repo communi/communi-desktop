@@ -192,7 +192,10 @@ QString MessageFormatter::formatMessage(IrcMessage* message, UserModel* userMode
             formatted = formatNickMessage(static_cast<IrcNickMessage*>(message));
             break;
         case IrcMessage::Notice:
-            formatted = formatNoticeMessage(static_cast<IrcNoticeMessage*>(message));
+            if (d.zncPlayback)
+                formatted = formatZncPlaybackMessage(static_cast<IrcNoticeMessage*>(message));
+            else
+                formatted = formatNoticeMessage(static_cast<IrcNoticeMessage*>(message));
             break;
         case IrcMessage::Numeric:
             formatted = formatNumericMessage(static_cast<IrcNumericMessage*>(message));
@@ -499,6 +502,17 @@ QString MessageFormatter::formatZncPlaybackMessage(IrcPrivateMessage* message) c
         message->setParameters(QStringList() << message->target() << QStringList(tokens.mid(1)).join(" "));
     }
     return formatPrivateMessage(message);
+}
+
+QString MessageFormatter::formatZncPlaybackMessage(IrcNoticeMessage* message) const
+{
+    QStringList tokens = message->message().split(" ", QString::SkipEmptyParts);
+    QDateTime timeStamp = QDateTime::fromString(tokens.value(0), "[hh:mm:ss]");
+    if (timeStamp.isValid()) {
+        message->setTimeStamp(timeStamp);
+        message->setParameters(QStringList() << message->target() << QStringList(tokens.mid(1)).join(" "));
+    }
+    return formatNoticeMessage(message);
 }
 
 QString MessageFormatter::formatPingReply(const IrcSender& sender, const QString& arg)
