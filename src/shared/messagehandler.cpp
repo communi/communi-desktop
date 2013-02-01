@@ -184,7 +184,7 @@ void MessageHandler::handleNickMessage(IrcNickMessage* message)
 
 void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
 {
-    if (message->target() == "*")
+    if (!d.session->isConnected() || message->target() == "*")
         sendMessage(message, d.defaultReceiver);
     else if (message->target() == d.session->nickName())
         sendMessage(message, d.currentReceiver);
