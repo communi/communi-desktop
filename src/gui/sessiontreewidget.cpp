@@ -238,7 +238,7 @@ void SessionTreeWidget::moveToPrevUnreadItem()
 void SessionTreeWidget::moveToMostActiveItem()
 {
     QTreeWidgetItem *firstHighlight = 0;
-    QTreeWidgetItemIterator it(this);
+    QTreeWidgetItemIterator it(this, QTreeWidgetItemIterator::Unselected);
     while (*it) {
         SessionTreeItem* item = static_cast<SessionTreeItem*>(*it);
 
