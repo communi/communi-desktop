@@ -263,8 +263,6 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
 
     if (message->code() < 300)
         return tr("[INFO] %1").arg(formatHtml(MID_(1)));
-    if (QByteArray(Irc::toString(message->code())).startsWith("ERR_"))
-        return tr("[ERROR] %1").arg(formatHtml(MID_(1)));
 
     switch (message->code()) {
         case Irc::RPL_MOTDSTART:
@@ -340,6 +338,9 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
             return QString();
 
         default:
+            if (QByteArray(Irc::toString(message->code())).startsWith("ERR_"))
+                return tr("[ERROR] %1").arg(formatHtml(MID_(1)));
+
             return tr("[%1] %2").arg(message->code()).arg(QStringList(message->parameters().mid(1)).join(" "));
     }
 }
