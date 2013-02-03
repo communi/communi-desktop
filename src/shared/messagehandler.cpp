@@ -22,7 +22,6 @@
 
 MessageHandler::MessageHandler(QObject* parent) : QObject(parent)
 {
-    d.session = 0;
     d.defaultReceiver = 0;
     d.currentReceiver = 0;
     setSession(qobject_cast<Session*>(parent));
@@ -45,15 +44,11 @@ Session* MessageHandler::session() const
 void MessageHandler::setSession(Session* session)
 {
     if (d.session != session) {
-        if (d.session) {
-            disconnect(d.session, SIGNAL(destroyed()), this, SLOT(onSessionDestroyed()));
+        if (d.session)
             disconnect(d.session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(handleMessage(IrcMessage*)));
-        }
 
-        if (session) {
-            connect(session, SIGNAL(destroyed()), this, SLOT(onSessionDestroyed()));
+        if (session)
             connect(session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(handleMessage(IrcMessage*)));
-        }
 
         d.session = session;
     }
@@ -318,9 +313,4 @@ void MessageHandler::sendMessage(IrcMessage* message, const QString& receiver)
     if (!d.receivers.contains(receiver.toLower()))
         emit receiverToBeAdded(receiver);
     sendMessage(message, getReceiver(receiver));
-}
-
-void MessageHandler::onSessionDestroyed()
-{
-    setSession(0);
 }

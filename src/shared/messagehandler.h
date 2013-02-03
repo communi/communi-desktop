@@ -17,6 +17,7 @@
 
 #include <QHash>
 #include <QObject>
+#include <QPointer>
 #include <IrcMessage>
 
 class Session;
@@ -69,12 +70,9 @@ protected:
     void sendMessage(IrcMessage* message, MessageReceiver* receiver);
     void sendMessage(IrcMessage* message, const QString& receiver);
 
-private slots:
-    void onSessionDestroyed();
-
 private:
     struct Private {
-        Session* session;
+        QPointer<Session> session;
         MessageReceiver* defaultReceiver;
         MessageReceiver* currentReceiver;
         QHash<QString, MessageReceiver*> receivers;
