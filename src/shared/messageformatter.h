@@ -52,6 +52,8 @@ public:
     QString timeStampFormat() const;
     void setTimeStampFormat(const QString& format);
 
+    IrcMessage::Type effectiveMessageType() const;
+
     Q_INVOKABLE QString formatMessage(IrcMessage* message, UserModel* userModel = 0) const;
     Q_INVOKABLE QString formatMessage(const QDateTime& timeStamp, const QString& message) const;
 
@@ -91,6 +93,7 @@ private:
         QStringList highlights;
         QString timeStampFormat;
         QList<int> receivedCodes;
+        IrcMessage::Type messageType;
     } d;
 };
 

@@ -32,6 +32,7 @@ MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
     d.stripNicks = true;
     d.zncPlayback = false;
     d.userModel = 0;
+    d.messageType = IrcMessage::Unknown;
 
     static bool init = false;
     if (!init) {
@@ -98,6 +99,11 @@ void MessageFormatter::setZncPlaybackMode(bool enabled)
     d.zncPlayback = enabled;
 }
 
+IrcMessage::Type MessageFormatter::effectiveMessageType() const
+{
+    return d.messageType;
+}
+
 QString MessageFormatter::timeStampFormat() const
 {
     return d.timeStampFormat;
@@ -113,6 +119,7 @@ QString MessageFormatter::formatMessage(IrcMessage* message, UserModel* userMode
     QString formatted;
     d.highlight = false;
     d.userModel = userModel;
+    d.messageType = IrcMessage::Unknown;
     switch (message->type()) {
         case IrcMessage::Invite:
             formatted = formatInviteMessage(static_cast<IrcInviteMessage*>(message));
@@ -196,18 +203,21 @@ QString MessageFormatter::formatMessage(const QDateTime& timeStamp, const QStrin
 
 QString MessageFormatter::formatInviteMessage(IrcInviteMessage* message) const
 {
+    d.messageType = IrcMessage::Invite;
     const QString sender = formatSender(message->sender());
     return tr("! %1 invited to %3").arg(sender, message->channel());
 }
 
 QString MessageFormatter::formatJoinMessage(IrcJoinMessage* message) const
 {
+    d.messageType = IrcMessage::Join;
     const QString sender = formatSender(message->sender(), d.stripNicks);
     return tr("! %1 joined %2").arg(sender, message->channel());
 }
 
 QString MessageFormatter::formatKickMessage(IrcKickMessage* message) const
 {
+    d.messageType = IrcMessage::Kick;
     const QString sender = formatSender(message->sender());
     const QString user = formatUser(message->user());
     if (!message->reason().isEmpty())
@@ -218,12 +228,14 @@ QString MessageFormatter::formatKickMessage(IrcKickMessage* message) const
 
 QString MessageFormatter::formatModeMessage(IrcModeMessage* message) const
 {
+    d.messageType = IrcMessage::Mode;
     const QString sender = formatSender(message->sender());
     return tr("! %1 sets mode %2 %3").arg(sender, message->mode(), message->argument());
 }
 
 QString MessageFormatter::formatNickMessage(IrcNickMessage* message) const
 {
+    d.messageType = IrcMessage::Nick;
     const QString sender = formatSender(message->sender());
     const QString nick = formatUser(message->nick());
     return tr("! %1 changed nick to %2").arg(sender, nick);
@@ -231,6 +243,7 @@ QString MessageFormatter::formatNickMessage(IrcNickMessage* message) const
 
 QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* message) const
 {
+    d.messageType = IrcMessage::Notice;
     if (message->isReply()) {
         const QStringList params = message->message().split(" ", QString::SkipEmptyParts);
         const QString cmd = params.value(0);
@@ -257,6 +270,7 @@ QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* message) const
 
 QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
 {
+    d.messageType = IrcMessage::Numeric;
     if (message->code() == Irc::RPL_WELCOME)
         d.receivedCodes.clear();
     d.receivedCodes += message->code();
@@ -347,6 +361,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
 
 QString MessageFormatter::formatPartMessage(IrcPartMessage* message) const
 {
+    d.messageType = IrcMessage::Part;
     const QString sender = formatSender(message->sender(), d.stripNicks);
     if (!message->reason().isEmpty())
         return tr("! %1 parted %2 (%3)").arg(sender, message->channel(), formatHtml(message->reason()));
@@ -356,11 +371,13 @@ QString MessageFormatter::formatPartMessage(IrcPartMessage* message) const
 
 QString MessageFormatter::formatPongMessage(IrcPongMessage* message) const
 {
+    d.messageType = IrcMessage::Pong;
     return formatPingReply(message->sender(), message->argument());
 }
 
 QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* message) const
 {
+    d.messageType = IrcMessage::Private;
     foreach (const QString& hilite, d.highlights) {
         if (message->message().contains(hilite))
             d.highlight = true;
@@ -377,6 +394,7 @@ QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* message) const
 
 QString MessageFormatter::formatQuitMessage(IrcQuitMessage* message) const
 {
+    d.messageType = IrcMessage::Quit;
     const QString sender = formatSender(message->sender(), d.stripNicks);
     if (!message->reason().isEmpty())
         return tr("! %1 has quit (%2)").arg(sender, formatHtml(message->reason()));
@@ -386,6 +404,7 @@ QString MessageFormatter::formatQuitMessage(IrcQuitMessage* message) const
 
 QString MessageFormatter::formatTopicMessage(IrcTopicMessage* message) const
 {
+    d.messageType = IrcMessage::Topic;
     const QString sender = formatSender(message->sender());
     const QString topic = formatHtml(message->topic());
     return tr("! %1 sets topic \"%2\" on %3").arg(sender, topic, message->channel());
@@ -393,6 +412,7 @@ QString MessageFormatter::formatTopicMessage(IrcTopicMessage* message) const
 
 QString MessageFormatter::formatUnknownMessage(IrcMessage* message) const
 {
+    d.messageType = IrcMessage::Unknown;
     const QString sender = formatSender(message->sender());
     return tr("? %1 %2 %3").arg(sender, message->command(), message->parameters().join(" "));
 }

@@ -378,9 +378,10 @@ void MessageView::receiveMessage(IrcMessage* message)
     QString formatted = d.formatter->formatMessage(message, d.listView->userModel());
     if (formatted.length()) {
         if (!isVisible() || !isActiveWindow()) {
-            if (d.formatter->hasHighlight() || (message->type() == IrcMessage::Private && d.viewType != ChannelView))
+            IrcMessage::Type type = d.formatter->effectiveMessageType();
+            if (d.formatter->hasHighlight() || (type == IrcMessage::Private && d.viewType != ChannelView))
                 emit highlighted(message);
-            else if (message->type() == IrcMessage::Notice || message->type() == IrcMessage::Private) // TODO: || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ServerView))
+            else if (type == IrcMessage::Notice || type == IrcMessage::Private) // TODO: || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ServerView))
                 emit missed(message);
         }
 
