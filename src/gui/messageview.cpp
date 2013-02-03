@@ -321,15 +321,19 @@ void MessageView::receiveMessage(IrcMessage* message)
     if (d.viewType == ChannelView)
         d.listView->processMessage(message);
 
+    bool ignore = false;
     switch (message->type()) {
         case IrcMessage::Private: {
             IrcSender sender = message->sender();
             if (sender.name() == QLatin1String("***") && sender.user() == QLatin1String("znc")) {
                 QString content = static_cast<IrcPrivateMessage*>(message)->message();
-                if (content == QLatin1String("Buffer Playback..."))
+                if (content == QLatin1String("Buffer Playback...")) {
                     d.formatter->setZncPlaybackMode(true);
-                else if (content == QLatin1String("Playback Complete."))
+                    ignore = true;
+                } else if (content == QLatin1String("Playback Complete.")) {
                     d.formatter->setZncPlaybackMode(false);
+                    ignore = true;
+                }
             }
             break;
         }
@@ -377,7 +381,7 @@ void MessageView::receiveMessage(IrcMessage* message)
     d.formatter->setHighlights(QStringList() << d.session->nickName());
     QString formatted = d.formatter->formatMessage(message, d.listView->userModel());
     if (formatted.length()) {
-        if (!isVisible() || !isActiveWindow()) {
+        if (!ignore && (!isVisible() || !isActiveWindow())) {
             IrcMessage::Type type = d.formatter->effectiveMessageType();
             if (d.formatter->hasHighlight() || (type == IrcMessage::Private && d.viewType != ChannelView))
                 emit highlighted(message);
