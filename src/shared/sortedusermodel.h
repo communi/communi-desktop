@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2008-2013 J-P Nurmi <jpnurmi@gmail.com>
+* Copyright (C) 2008-2013 Communi authors
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
