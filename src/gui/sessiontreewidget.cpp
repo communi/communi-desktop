@@ -237,7 +237,7 @@ void SessionTreeWidget::moveToPrevUnreadItem()
 
 void SessionTreeWidget::moveToMostActiveItem()
 {
-    QTreeWidgetItem *firstHighlight = 0;
+    SessionTreeItem* mostActive = 0;
     QTreeWidgetItemIterator it(this, QTreeWidgetItemIterator::Unselected);
     while (*it) {
         SessionTreeItem* item = static_cast<SessionTreeItem*>(*it);
@@ -248,17 +248,15 @@ void SessionTreeWidget::moveToMostActiveItem()
             return;
         }
 
-        // as a backup, also store the first window with any sort of activity
-        if (!firstHighlight && item->badge()) {
-            firstHighlight = item;
-            // can't break in case we find an alerted item
-        }
+        // as a backup, store the most active window with any sort of activity
+        if (!mostActive || mostActive->badge() < item->badge())
+            mostActive = item;
 
         it++;
     }
 
-    if (firstHighlight)
-        setCurrentItem(firstHighlight);
+    if (mostActive)
+        setCurrentItem(mostActive);
 }
 
 
