@@ -323,8 +323,9 @@ void MessageView::receiveMessage(IrcMessage* message)
 
     switch (message->type()) {
         case IrcMessage::Private: {
-            QString content = static_cast<IrcPrivateMessage*>(message)->message();
-            if (message->sender().prefix() == "***!znc@znc.in") {
+            IrcSender sender = message->sender();
+            if (sender.name() == QLatin1String("***") && sender.user() == QLatin1String("znc")) {
+                QString content = static_cast<IrcPrivateMessage*>(message)->message();
                 if (content == QLatin1String("Buffer Playback..."))
                     d.formatter->setZncPlaybackMode(true);
                 else if (content == QLatin1String("Playback Complete."))
