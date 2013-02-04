@@ -10,7 +10,7 @@ SessionTreeWidget {
     selection-background-color: palette(highlight);
 }
 
-QTreeView::branch {
+SessionTreeWidget::branch {
     border: none;
     background: palette(alternate-base);
 }
