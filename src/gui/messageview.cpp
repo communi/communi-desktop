@@ -13,6 +13,7 @@
 */
 
 #include "messageview.h"
+#include "commandparser.h"
 #include "menufactory.h"
 #include "completer.h"
 #include "usermodel.h"
@@ -54,7 +55,6 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
 
     d.session = session;
     connect(d.session, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
-    connect(&d.parser, SIGNAL(customCommand(QString, QStringList)), this, SLOT(onCustomCommand(QString, QStringList)));
 
     d.topicLabel->setVisible(type == ChannelView);
     d.listView->setVisible(type == ChannelView);
@@ -197,16 +197,28 @@ void MessageView::sendMessage(const QString& message)
 {
     QStringList lines = message.split(QRegExp("[\\r\\n]"), QString::SkipEmptyParts);
     foreach (const QString& line, lines) {
-        IrcCommand* cmd = d.parser.parseCommand(receiver(), line);
+        IrcCommand* cmd = CommandParser::parseCommand(receiver(), line);
         if (cmd) {
-            d.session->sendCommand(cmd);
+            if (cmd->type() == IrcCommand::Custom) {
+                QString command = cmd->parameters().value(0);
+                QStringList params = cmd->parameters().mid(1);
+                if (command == "CLEAR")
+                    d.textBrowser->clear();
+                else if (command == "MSG")
+                    emit messaged(params.value(0), QStringList(params.mid(1)).join(" "));
+                else if (command == "QUERY")
+                    emit queried(params.value(0));
+                delete cmd;
+            } else {
+                d.session->sendCommand(cmd);
 
-            if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction || cmd->type() == IrcCommand::Notice) {
-                IrcMessage* msg = IrcMessage::fromData(":" + d.session->nickName().toUtf8() + " " + cmd->toString().toUtf8(), d.session);
-                receiveMessage(msg);
-                delete msg;
+                if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction || cmd->type() == IrcCommand::Notice) {
+                    IrcMessage* msg = IrcMessage::fromData(":" + d.session->nickName().toUtf8() + " " + cmd->toString().toUtf8(), d.session);
+                    receiveMessage(msg);
+                    delete msg;
+                }
             }
-        } else if (d.parser.hasError()) {
+        } else {
             showHelp(line, true);
         }
     }
@@ -398,14 +410,4 @@ bool MessageView::hasUser(const QString& user) const
     return (!d.session->nickName().compare(user, Qt::CaseInsensitive)) ||
            (d.viewType == QueryView && !d.receiver.compare(user, Qt::CaseInsensitive)) ||
            (d.viewType == ChannelView && d.listView->hasUser(user));
-}
-
-void MessageView::onCustomCommand(const QString& command, const QStringList& params)
-{
-    if (command == "CLEAR")
-        d.textBrowser->clear();
-    else if (command == "MSG")
-        emit messaged(params.value(0), QStringList(params.mid(1)).join(" "));
-    else if (command == "QUERY")
-        emit queried(params.value(0));
 }

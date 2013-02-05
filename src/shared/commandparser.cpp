@@ -53,14 +53,6 @@ static QMap<QString, QString>& command_syntaxes()
     return syntaxes;
 }
 
-CommandParser::CommandParser(QObject* parent) : QObject(parent)
-{
-}
-
-CommandParser::~CommandParser()
-{
-}
-
 QStringList CommandParser::availableCommands()
 {
     return command_syntaxes().keys();
@@ -93,16 +85,8 @@ void CommandParser::removeCustomCommand(const QString& command)
     command_syntaxes().remove(command.toUpper());
 }
 
-Q_GLOBAL_STATIC(bool, has_error)
-
-bool CommandParser::hasError() const
-{
-    return *has_error();
-}
-
 IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& text)
 {
-    *has_error() = false;
     if (text.startsWith("/")) {
         typedef IrcCommand*(*ParseFunc)(const QString&, const QStringList&);
 
@@ -145,22 +129,17 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
             if (cmd)
                 return cmd;
         } else if (command_syntaxes().contains(command.toUpper())) {
-            QStringList params = words.mid(1);
-            if (parseCustomCommand(command_syntaxes().value(command.toUpper()), params)) {
-                emit customCommand(command, params);
-                return 0;
-            }
+            return parseCustomCommand(command, words.mid(1), command_syntaxes().value(command.toUpper()));
         }
     } else {
         return IrcCommand::createMessage(receiver, text);
     }
 
     // unknown command
-    *has_error() = true;
     return 0;
 }
 
-bool CommandParser::parseCustomCommand(const QString& syntax, const QStringList& params)
+IrcCommand* CommandParser::parseCustomCommand(const QString& command, const QStringList& params, const QString& syntax)
 {
     QStringList tokens = syntax.split(" ", QString::SkipEmptyParts);
     int min = 0;
@@ -173,7 +152,13 @@ bool CommandParser::parseCustomCommand(const QString& syntax, const QStringList&
         if (tokens.isEmpty() && (p.endsWith("...>") || p.endsWith("...>)")))
             max = INT_MAX;
     }
-    return params.count() >= min && params.count() <= max;
+    if (params.count() >= min && params.count() <= max) {
+        IrcCommand* cmd = new IrcCommand;
+        cmd->setType(IrcCommand::Custom);
+        cmd->setParameters(QStringList(command) + params);
+        return cmd;
+    }
+    return 0;
 }
 
 IrcCommand* CommandParser::parseAdmin(const QString& receiver, const QStringList& params)

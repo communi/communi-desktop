@@ -18,7 +18,6 @@
 #include "ui_messageview.h"
 #include "messagereceiver.h"
 #include "messageformatter.h"
-#include "commandparser.h"
 #include "settings.h"
 
 class MenuFactory;
@@ -80,14 +79,12 @@ private slots:
     void onEscPressed();
     void onSplitterMoved();
     void onAnchorClicked(const QUrl& link);
-    void onCustomCommand(const QString& command, const QStringList& params);
 
 private:
     struct MessageViewData : public Ui::MessageView {
         ViewType viewType;
         QString receiver;
         Session* session;
-        CommandParser parser;
         MessageFormatter* formatter;
         Settings settings;
         bool joined;
