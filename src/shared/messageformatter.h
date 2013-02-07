@@ -19,13 +19,12 @@
 #include <QObject>
 #include <IrcMessage>
 
-class UserModel;
-
 class MessageFormatter : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool highlight READ hasHighlight)
     Q_PROPERTY(QStringList highlights READ highlights WRITE setHighlights)
+    Q_PROPERTY(QStringList users READ users WRITE setUsers)
     Q_PROPERTY(bool timeStamp READ timeStamp WRITE setTimeStamp)
     Q_PROPERTY(bool stripNicks READ stripNicks WRITE setStripNicks)
     Q_PROPERTY(QString timeStampFormat READ timeStampFormat WRITE setTimeStampFormat)
@@ -39,6 +38,9 @@ public:
 
     QStringList highlights() const;
     void setHighlights(const QStringList& highlights);
+
+    QStringList users() const;
+    void setUsers(const QStringList& users);
 
     bool timeStamp() const;
     void setTimeStamp(bool timeStamp);
@@ -54,7 +56,7 @@ public:
 
     IrcMessage::Type effectiveMessageType() const;
 
-    Q_INVOKABLE QString formatMessage(IrcMessage* message, UserModel* userModel = 0) const;
+    Q_INVOKABLE QString formatMessage(IrcMessage* message) const;
     Q_INVOKABLE QString formatMessage(const QDateTime& timeStamp, const QString& message) const;
 
     Q_INVOKABLE QString formatHtml(const QString& message) const;
@@ -89,7 +91,7 @@ private:
         bool timeStamp;
         bool stripNicks;
         bool zncPlayback;
-        UserModel* userModel;
+        QStringList users;
         QStringList highlights;
         QString timeStampFormat;
         QList<int> receivedCodes;

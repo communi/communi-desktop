@@ -392,8 +392,9 @@ void MessageView::receiveMessage(IrcMessage* message)
             break;
     }
 
+    d.formatter->setUsers(d.listView->userModel()->users());
     d.formatter->setHighlights(QStringList() << d.session->nickName());
-    QString formatted = d.formatter->formatMessage(message, d.listView->userModel());
+    QString formatted = d.formatter->formatMessage(message);
     if (formatted.length()) {
         if (!ignore && (!isVisible() || !isActiveWindow())) {
             IrcMessage::Type type = d.formatter->effectiveMessageType();
