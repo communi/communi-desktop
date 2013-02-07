@@ -15,6 +15,8 @@
 #ifndef COMMANDPARSER_H
 #define COMMANDPARSER_H
 
+#include <QMap>
+#include <QString>
 #include <QStringList>
 
 class IrcCommand;
@@ -28,6 +30,9 @@ public:
 
     static void addCustomCommand(const QString& command, const QString& syntax);
     static void removeCustomCommand(const QString& command);
+
+    static QMap<QString, QString> aliases();
+    static void setAliases(const QMap<QString, QString>& aliases);
 
     static IrcCommand* parseCommand(const QString& receiver, const QString& text);
 
@@ -60,6 +65,10 @@ private:
     static IrcCommand* parseWho(const QString& receiver, const QStringList& params);
     static IrcCommand* parseWhois(const QString& receiver, const QStringList& params);
     static IrcCommand* parseWhowas(const QString& receiver, const QStringList& params);
+
+    static struct Private {
+        QMap<QString, QString> aliases;
+    } d;
 };
 
 #endif // COMMANDPARSER_H
