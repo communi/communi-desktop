@@ -9,7 +9,6 @@
  */
 
 #include "messageformatter.h"
-#include "usermodel.h"
 #include "session.h"
 #include <QtTest/QtTest>
 #include <QtCore/QStringList>
@@ -45,13 +44,6 @@ static const QStringList USERS_100 = QStringList()
 class TestMessageFormatter : public MessageFormatter
 {
     friend class tst_MessageFormatter;
-};
-
-class TestUserModel : public UserModel
-{
-    friend class tst_MessageFormatter;
-public:
-    TestUserModel(Session* session) : UserModel(session) { }
 };
 
 class tst_MessageFormatter : public QObject
@@ -125,12 +117,9 @@ void tst_MessageFormatter::testFormatHtml()
     QFETCH(QStringList, users);
 
     Session session;
-    TestUserModel model(&session);
-    model.addUsers(users);
-    QCOMPARE(model.rowCount(), users.count());
-
     IrcMessage* dummy = new IrcMessage(&session);
-    formatter.formatMessage(dummy, &model);
+    formatter.setUsers(users);
+    formatter.formatMessage(dummy);
 
     QBENCHMARK {
         formatter.formatHtml(message);
