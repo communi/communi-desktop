@@ -15,6 +15,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include <QMap>
 #include <QHash>
 #include <QVariant>
 #include <QMetaType>
@@ -69,12 +70,13 @@ struct Settings {
     QString layout; // deprecated
     bool stripNicks;
     QString timeStampFormat;
+    QMap<QString, QString> aliases;
 };
 Q_DECLARE_METATYPE(Settings);
 
 inline QDataStream& operator<<(QDataStream& out, const Settings& settings)
 {
-    out << quint32(130); // version
+    out << quint32(131); // version
     out << settings.messages;
     out << settings.highlights;
     out << settings.language;
@@ -86,6 +88,7 @@ inline QDataStream& operator<<(QDataStream& out, const Settings& settings)
     out << settings.layout; // deprecated
     out << settings.stripNicks;
     out << settings.timeStampFormat;
+    out << settings.aliases;
     return out;
 }
 
@@ -106,6 +109,8 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
         settings.stripNicks = readStreamValue<bool>(in, settings.stripNicks);
     if (version >= 130)
         settings.timeStampFormat = readStreamValue<QString>(in, settings.timeStampFormat);
+    if (version >= 131)
+        settings.aliases = readStreamValue< QMap<QString, QString> >(in, settings.aliases);
 
     Settings defaults; // default values
     if (version < 125)

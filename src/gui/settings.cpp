@@ -59,6 +59,9 @@ Settings::Settings() : maxBlockCount(-1), timeStamp(true), stripNicks(true), tim
     colors[Highlight] = "#ff4040";
     colors[TimeStamp] = "#808080";
     colors[Link] = "#4040ff";
+
+    aliases["CS"] = "MSG ChanServ $*";
+    aliases["NS"] = "MSG NickServ $*";
 }
 
 Settings::operator QVariant() const
@@ -72,7 +75,7 @@ bool Settings::operator==(const Settings& other) const
            && language == other.language && font == other.font && colors == other.colors
            && shortcuts == other.shortcuts && maxBlockCount == other.maxBlockCount
            && timeStamp == other.timeStamp && timeStampFormat == other.timeStampFormat
-           && stripNicks == other.stripNicks;
+           && stripNicks == other.stripNicks && aliases == other.aliases;
 }
 
 bool Settings::operator!=(const Settings& other) const
