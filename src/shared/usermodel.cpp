@@ -180,8 +180,9 @@ void UserModel::processMessage(IrcMessage* message)
     }
 
     if (message->type() == IrcMessage::Nick) {
-        QString nick = message->sender().name().toLower();
-        renameUser(nick, static_cast<IrcNickMessage*>(message)->nick());
+        QString from = message->sender().name();
+        QString to = static_cast<IrcNickMessage*>(message)->nick();
+        renameUser(from, to);
     } else if (message->type() == IrcMessage::Join) {
         if (message->flags() & IrcMessage::Own)
             clearUsers();
