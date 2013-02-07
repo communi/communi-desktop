@@ -66,16 +66,11 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     }
 
     if (!command_model) {
+        command_model = new QStringListModel(qApp);
+
         CommandParser::addCustomCommand("CLEAR", "");
         CommandParser::addCustomCommand("QUERY", "<user>");
         CommandParser::addCustomCommand("MSG", "<usr/channel> <message...>");
-
-        QStringList prefixedCommands;
-        foreach (const QString& command, CommandParser::availableCommands())
-            prefixedCommands += "/" + command;
-
-        command_model = new QStringListModel(qApp);
-        command_model->setStringList(prefixedCommands);
     }
 
     d.lineEditor->completer()->setDefaultModel(d.listView->userModel());
@@ -197,7 +192,7 @@ void MessageView::sendMessage(const QString& message)
 {
     QStringList lines = message.split(QRegExp("[\\r\\n]"), QString::SkipEmptyParts);
     foreach (const QString& line, lines) {
-        IrcCommand* cmd = CommandParser::parseCommand(receiver(), line);
+        IrcCommand* cmd = CommandParser::parseCommand(d.receiver, line);
         if (cmd) {
             if (cmd->type() == IrcCommand::Custom) {
                 QString command = cmd->parameters().value(0);
@@ -294,6 +289,13 @@ void MessageView::onAnchorClicked(const QUrl& link)
 
 void MessageView::applySettings(const Settings& settings)
 {
+    CommandParser::setAliases(settings.aliases);
+
+    QStringList commands;
+    foreach (const QString& command, CommandParser::availableCommands())
+        commands += "/" + command;
+    command_model->setStringList(commands);
+
     d.formatter->setTimeStamp(settings.timeStamp);
     d.formatter->setTimeStampFormat(settings.timeStampFormat);
     d.formatter->setStripNicks(settings.stripNicks);
