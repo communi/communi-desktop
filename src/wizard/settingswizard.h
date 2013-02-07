@@ -28,7 +28,8 @@ public:
     enum Page {
         GeneralPage,
         ShortcutsPage,
-        ColorsPage
+        ColorsPage,
+        AliasesPage
     };
 
     Settings settings() const;
@@ -38,6 +39,7 @@ protected:
     void setGeneralSettings(const Settings& settings);
     void setShortcutSettings(const Settings& settings);
     void setColorSettings(const Settings& settings);
+    void setAliasSettings(const Settings& settings);
 
 private slots:
     void resetCurrentPage();

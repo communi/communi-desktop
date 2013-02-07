@@ -15,6 +15,7 @@
 #include "settingswizard.h"
 #include "generalwizardpage.h"
 #include "shortcutswizardpage.h"
+#include "aliaseswizardpage.h"
 #include "colorswizardpage.h"
 
 SettingsWizard::SettingsWizard(QWidget* parent) : QWizard(parent)
@@ -25,6 +26,7 @@ SettingsWizard::SettingsWizard(QWidget* parent) : QWizard(parent)
     setPage(GeneralPage, new GeneralWizardPage(this));
     setPage(ShortcutsPage, new ShortcutsWizardPage(this));
     setPage(ColorsPage, new ColorsWizardPage(this));
+    setPage(AliasesPage, new AliasesWizardPage(this));
 
     setOption(HaveCustomButton1, true);
     setButtonText(QWizard::CustomButton1, tr("Reset"));
@@ -44,6 +46,7 @@ Settings SettingsWizard::settings() const
     settings.stripNicks = static_cast<GeneralWizardPage*>(page(GeneralPage))->stripNicks();
     settings.shortcuts = static_cast<ShortcutsWizardPage*>(page(ShortcutsPage))->shortcuts();
     settings.colors = static_cast<ColorsWizardPage*>(page(ColorsPage))->colors();
+    settings.aliases = static_cast<AliasesWizardPage*>(page(AliasesPage))->aliases();
     return settings;
 }
 
@@ -52,6 +55,7 @@ void SettingsWizard::setSettings(const Settings& settings)
     setGeneralSettings(settings);
     setShortcutSettings(settings);
     setColorSettings(settings);
+    setAliasSettings(settings);
 }
 
 void SettingsWizard::setGeneralSettings(const Settings& settings)
@@ -77,6 +81,11 @@ void SettingsWizard::setColorSettings(const Settings& settings)
     static_cast<ColorsWizardPage*>(page(ColorsPage))->setColors(settings.colors);
 }
 
+void SettingsWizard::setAliasSettings(const Settings& settings)
+{
+    static_cast<AliasesWizardPage*>(page(AliasesPage))->setAliases(settings.aliases);
+}
+
 void SettingsWizard::resetCurrentPage()
 {
     Settings settings; // default values
@@ -84,6 +93,7 @@ void SettingsWizard::resetCurrentPage()
         case GeneralPage: setGeneralSettings(settings); break;
         case ShortcutsPage: setShortcutSettings(settings); break;
         case ColorsPage: setColorSettings(settings); break;
+        case AliasesPage: setAliasSettings(settings); break;
         default: Q_ASSERT(false); break;
     }
 }
