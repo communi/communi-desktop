@@ -74,10 +74,10 @@ void UserModel::addUsers(const QStringList& users)
     }
 
     if (!unique.isEmpty()) {
-        beginInsertRows(QModelIndex(), rowCount(), rowCount() + unique.count() - 1);
+        beginInsertRows(QModelIndex(), 0, unique.count() - 1);
         foreach (const QString& user, unique) {
             QString name = d.session->unprefixedUser(user);
-            d.names += name;
+            d.names.prepend(name);
             d.prefixes.insert(name, d.session->userPrefix(user));
         }
         endInsertRows();
@@ -109,9 +109,35 @@ void UserModel::renameUser(const QString& from, const QString& to)
 {
     int idx = d.names.indexOf(from);
     if (idx != -1) {
-        d.names[idx] = to;
-        d.prefixes[to] = d.prefixes.take(from);
-        emit dataChanged(index(idx, 0), index(idx, 0));
+        beginRemoveRows(QModelIndex(), idx, idx);
+        d.names.removeAt(idx);
+        QString prefix = d.prefixes.take(from);
+        endRemoveRows();
+
+        beginInsertRows(QModelIndex(), 0, 0);
+        d.names.prepend(to);
+        d.prefixes[to] = prefix;
+        endInsertRows();
+    }
+}
+
+void UserModel::promoteUser(const QString& user)
+{
+    QString name = d.session->unprefixedUser(user);
+    int idx = d.names.indexOf(name);
+    if (idx > 0) {
+        // TODO: fix QCompleter to listen QAIM::rowsMoved()
+        //beginMoveRows(QModelIndex(), idx, idx, QModelIndex(), 0);
+        //d.names.move(idx, 0);
+        //endMoveRows();
+
+        beginRemoveRows(QModelIndex(), idx, idx);
+        d.names.removeAt(idx);
+        endRemoveRows();
+
+        beginInsertRows(QModelIndex(), 0, 0);
+        d.names.prepend(name);
+        endInsertRows();
     }
 }
 
@@ -209,5 +235,7 @@ void UserModel::processMessage(IrcMessage* message)
                 addUsers(names.split(" ", QString::SkipEmptyParts));
             }
         }
+    } else {
+        promoteUser(message->sender().name());
     }
 }

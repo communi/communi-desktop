@@ -51,6 +51,7 @@ protected:
     void removeUser(const QString& user);
     void clearUsers();
     void renameUser(const QString& from, const QString& to);
+    void promoteUser(const QString& user);
     void setUserMode(const QString& user, const QString& mode);
 
 private:
