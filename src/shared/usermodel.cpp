@@ -86,12 +86,11 @@ void UserModel::addUsers(const QStringList& users)
 
 void UserModel::removeUser(const QString& user)
 {
-    QString name = d.session->unprefixedUser(user);
-    int idx = d.names.indexOf(name);
+    int idx = d.names.indexOf(user);
     if (idx != -1) {
         beginRemoveRows(QModelIndex(), idx, idx);
         d.names.removeAt(idx);
-        d.prefixes.remove(name);
+        d.prefixes.remove(user);
         endRemoveRows();
     }
 }
@@ -123,8 +122,7 @@ void UserModel::renameUser(const QString& from, const QString& to)
 
 void UserModel::promoteUser(const QString& user)
 {
-    QString name = d.session->unprefixedUser(user);
-    int idx = d.names.indexOf(name);
+    int idx = d.names.indexOf(user);
     if (idx > 0) {
         // TODO: fix QCompleter to listen QAIM::rowsMoved()
         //beginMoveRows(QModelIndex(), idx, idx, QModelIndex(), 0);
@@ -136,7 +134,7 @@ void UserModel::promoteUser(const QString& user)
         endRemoveRows();
 
         beginInsertRows(QModelIndex(), 0, 0);
-        d.names.prepend(name);
+        d.names.prepend(user);
         endInsertRows();
     }
 }
