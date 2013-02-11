@@ -40,9 +40,8 @@ QSize SessionTreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QM
 
 void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    const bool selected = option.state & QStyle::State_Selected;
-
     if (!index.parent().isValid()) {
+        const bool selected = option.state & QStyle::State_Selected;
         const_cast<QStyleOptionViewItem&>(option).state &= ~QStyle::State_Selected;
 
         QColor c1 = qApp->palette().color(QPalette::Light);
@@ -59,8 +58,10 @@ void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
         if (index.row() > 0)
             lines += QLine(option.rect.topLeft(), option.rect.topRight());
         lines += QLine(option.rect.bottomLeft(), option.rect.bottomRight());
+        QPen oldPen = painter->pen();
         painter->setPen(qApp->palette().color(QPalette::Dark));
         painter->drawLines(lines);
+        painter->setPen(oldPen);
     }
 
     QStyledItemDelegate::paint(painter, option, index);
@@ -70,6 +71,7 @@ void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
         if (badge > 0) {
             QRect rect = option.rect.adjusted(1, 3, -1, -3);
 
+            painter->save();
             painter->setPen(Qt::NoPen);
             painter->setBrush(qApp->palette().color(QPalette::Dark));
             painter->setRenderHint(QPainter::Antialiasing);
@@ -84,6 +86,7 @@ void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
 
             painter->setPen(qApp->palette().color(QPalette::Light));
             painter->drawText(rect, Qt::AlignCenter, txt);
+            painter->restore();
         }
     }
 }
