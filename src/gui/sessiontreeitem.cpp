@@ -106,10 +106,9 @@ void SessionTreeItem::setHighlighted(bool highlighted)
 bool SessionTreeItem::operator<(const QTreeWidgetItem& other) const
 {
     Q_ASSERT(parent() && other.parent());
-    QVariantHash state = static_cast<SessionTreeWidget*>(treeWidget())->d.state;
-    QStringList receivers = state.value(parent()->text(0)).toStringList();
-    const int a = receivers.indexOf(text(0));
-    const int b = receivers.indexOf(other.text(0));
+    QStringList sortOrder = static_cast<SessionTreeItem*>(parent())->d.sortOrder;
+    const int a = sortOrder.indexOf(text(0));
+    const int b = sortOrder.indexOf(other.text(0));
     if (a == -1 && b != -1)
         return false;
     if (a != -1 && b == -1)

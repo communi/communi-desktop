@@ -46,6 +46,7 @@ private:
         bool highlighted;
         MessageView* view;
         QSet<SessionTreeItem*> highlightedChildren;
+        QStringList sortOrder;
     } d;
     friend class SessionTreeWidget;
 };

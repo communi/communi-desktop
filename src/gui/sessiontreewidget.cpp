@@ -105,11 +105,15 @@ QByteArray SessionTreeWidget::saveState() const
 
 void SessionTreeWidget::restoreState(const QByteArray& state)
 {
+    QVariantHash sortOrders;
     QDataStream in(state);
-    in >> d.state;
+    in >> sortOrders;
 
-    for (int i = 0; i < topLevelItemCount(); ++i)
-        topLevelItem(i)->sortChildren(0, Qt::AscendingOrder);
+    for (int i = 0; i < topLevelItemCount(); ++i) {
+        SessionTreeItem* item = static_cast<SessionTreeItem*>(topLevelItem(i));
+        item->d.sortOrder = sortOrders.value(item->text(0)).toStringList();
+        item->sortChildren(0, Qt::AscendingOrder);
+    }
 }
 
 MenuFactory* SessionTreeWidget::menuFactory() const
