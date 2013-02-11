@@ -65,20 +65,21 @@ void UserModel::addUser(const QString& user)
 
 void UserModel::addUsers(const QStringList& users)
 {
-    QStringList unique;
+    QHash<QString, QString> unique;
     QSet<QString> nameSet = d.names.toSet();
     foreach (const QString& user, users) {
         QString name = d.session->unprefixedUser(user);
         if (!nameSet.contains(name))
-            unique += user;
+            unique.insert(name, d.session->userPrefix(user));
     }
 
     if (!unique.isEmpty()) {
         beginInsertRows(QModelIndex(), 0, unique.count() - 1);
-        foreach (const QString& user, unique) {
-            QString name = d.session->unprefixedUser(user);
-            d.names.prepend(name);
-            d.prefixes.insert(name, d.session->userPrefix(user));
+        QHash<QString, QString>::const_iterator it = unique.constBegin();
+        while (it != unique.constEnd()) {
+            d.names.prepend(it.key());
+            d.prefixes.insert(it.key(), it.value());
+            ++it;
         }
         endInsertRows();
     }
