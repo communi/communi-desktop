@@ -71,6 +71,31 @@ void HistoryLineEdit::clearHistory()
     history.clear();
 }
 
+bool HistoryLineEdit::event(QEvent* event)
+{
+    if (event->type() == QEvent::ShortcutOverride) {
+        QKeyEvent* ke = static_cast<QKeyEvent*>(event);
+        if (ke == QKeySequence::MoveToStartOfDocument) {
+            emit scrollToTop();
+            event->accept();
+            return true;
+        } else if (ke == QKeySequence::MoveToEndOfDocument) {
+            emit scrollToBottom();
+            event->accept();
+            return true;
+        } else if (ke == QKeySequence::MoveToNextPage) {
+            emit scrollToNextPage();
+            event->accept();
+            return true;
+        } else if (ke == QKeySequence::MoveToPreviousPage) {
+            emit scrollToPreviousPage();
+            event->accept();
+            return true;
+        }
+    }
+    return FancyLineEdit::event(event);
+}
+
 void HistoryLineEdit::keyPressEvent(QKeyEvent* event)
 {
     switch (event->key()) {

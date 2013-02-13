@@ -79,6 +79,11 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     connect(d.lineEditor, SIGNAL(send(QString)), this, SLOT(sendMessage(QString)));
     connect(d.lineEditor, SIGNAL(typed(QString)), this, SLOT(showHelp(QString)));
 
+    connect(d.lineEditor, SIGNAL(scrollToTop()), d.textBrowser, SLOT(scrollToTop()));
+    connect(d.lineEditor, SIGNAL(scrollToBottom()), d.textBrowser, SLOT(scrollToBottom()));
+    connect(d.lineEditor, SIGNAL(scrollToNextPage()), d.textBrowser, SLOT(scrollToNextPage()));
+    connect(d.lineEditor, SIGNAL(scrollToPreviousPage()), d.textBrowser, SLOT(scrollToPreviousPage()));
+
     d.helpLabel->hide();
     d.searchEditor->setTextEdit(d.textBrowser);
 
