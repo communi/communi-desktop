@@ -32,14 +32,7 @@ public slots:
     void goForward();
     void clearHistory();
 
-signals:
-    void scrollToTop();
-    void scrollToBottom();
-    void scrollToNextPage();
-    void scrollToPreviousPage();
-
 protected:
-    bool event(QEvent* event);
     void keyPressEvent(QKeyEvent* event);
 
 private:

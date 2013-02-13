@@ -30,6 +30,13 @@ public:
 signals:
     void send(const QString& text);
     void typed(const QString& text);
+    void scrollToTop();
+    void scrollToBottom();
+    void scrollToNextPage();
+    void scrollToPreviousPage();
+
+protected:
+    bool event(QEvent* event);
 
 private slots:
     void onSend();

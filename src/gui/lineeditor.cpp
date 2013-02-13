@@ -15,6 +15,7 @@
 #include "lineeditor.h"
 #include "completer.h"
 #include <QStyleFactory>
+#include <QKeyEvent>
 #include <QShortcut>
 #include <QStyle>
 
@@ -58,6 +59,31 @@ LineEditor::LineEditor(QWidget* parent) : HistoryLineEdit(parent)
 Completer* LineEditor::completer() const
 {
     return d.completer;
+}
+
+bool LineEditor::event(QEvent* event)
+{
+    if (event->type() == QEvent::ShortcutOverride) {
+        QKeyEvent* ke = static_cast<QKeyEvent*>(event);
+        if (ke == QKeySequence::MoveToStartOfDocument) {
+            emit scrollToTop();
+            event->accept();
+            return true;
+        } else if (ke == QKeySequence::MoveToEndOfDocument) {
+            emit scrollToBottom();
+            event->accept();
+            return true;
+        } else if (ke == QKeySequence::MoveToNextPage) {
+            emit scrollToNextPage();
+            event->accept();
+            return true;
+        } else if (ke == QKeySequence::MoveToPreviousPage) {
+            emit scrollToPreviousPage();
+            event->accept();
+            return true;
+        }
+    }
+    return HistoryLineEdit::event(event);
 }
 
 void LineEditor::onSend()
