@@ -130,7 +130,12 @@ void CommandParser::setAliases(const QMap<QString, QString>& aliases)
 
 IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& text)
 {
-    if (text.startsWith("/")) {
+    if (text.startsWith("//") || text.startsWith("/ ") || !text.startsWith('/')) {
+        QString message = text;
+        if (message.startsWith('/'))
+            message.remove(0, 1);
+        return IrcCommand::createMessage(receiver, message.trimmed());
+    } else {
         typedef IrcCommand*(*ParseFunc)(const QString&, const QStringList&);
 
         static QHash<QString, ParseFunc> parseFunctions;
@@ -175,8 +180,6 @@ IrcCommand* CommandParser::parseCommand(const QString& receiver, const QString& 
         } else if (command_syntaxes().contains(command.toUpper())) {
             return parseCustomCommand(command, words.mid(1), command_syntaxes().value(command.toUpper()));
         }
-    } else {
-        return IrcCommand::createMessage(receiver, text);
     }
 
     // unknown command
