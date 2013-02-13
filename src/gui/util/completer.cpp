@@ -87,9 +87,12 @@ void Completer::onTabPressed()
             setModel(d.userModel);
     }
 
+    bool repeat = true;
     QString prefix = completionPrefix();
-    if (prefix.isEmpty() || !word.startsWith(prefix, Qt::CaseInsensitive))
+    if (prefix.isEmpty() || !word.startsWith(prefix, Qt::CaseInsensitive)) {
+        repeat = false;
         setCompletionPrefix(word);
+    }
 
     // restore selection
     d.lineEdit->setCursorPosition(pos);
@@ -101,9 +104,11 @@ void Completer::onTabPressed()
         complete();
 
         int count = completionCount();
-        if (count > 0) {
+        if (count > 1) {
             int next = currentRow() + 1;
             setCurrentRow(next % count);
+        } else if (count == 1 && repeat && word.startsWith('/')) {
+            emit commandCompletion(word.mid(1));
         }
     }
 }

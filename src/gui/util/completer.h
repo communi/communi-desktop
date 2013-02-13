@@ -34,6 +34,9 @@ public:
     QAbstractItemModel* commandModel() const;
     void setCommandModel(QAbstractItemModel* model);
 
+signals:
+    void commandCompletion(const QString& command);
+
 private slots:
     void onTabPressed();
     void onTextEdited();

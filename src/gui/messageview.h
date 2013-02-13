@@ -79,6 +79,7 @@ private slots:
     void onEscPressed();
     void onSplitterMoved();
     void onAnchorClicked(const QUrl& link);
+    void completeCommand(const QString& command);
 
 private:
     struct MessageViewData : public Ui::MessageView {
@@ -87,6 +88,7 @@ private:
         Session* session;
         MessageFormatter* formatter;
         Settings settings;
+        QString topic;
         bool joined;
     } d;
 };

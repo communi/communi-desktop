@@ -75,6 +75,7 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
 
     d.lineEditor->completer()->setUserModel(d.listView->userModel());
     d.lineEditor->completer()->setCommandModel(command_model);
+    connect(d.lineEditor->completer(), SIGNAL(commandCompletion(QString)), this, SLOT(completeCommand(QString)));
 
     connect(d.lineEditor, SIGNAL(send(QString)), this, SLOT(sendMessage(QString)));
     connect(d.lineEditor, SIGNAL(typed(QString)), this, SLOT(showHelp(QString)));
@@ -292,6 +293,12 @@ void MessageView::onAnchorClicked(const QUrl& link)
         QDesktopServices::openUrl(link);
 }
 
+void MessageView::completeCommand(const QString& command)
+{
+    if (command == "TOPIC")
+        d.lineEditor->insert(d.topic);
+}
+
 void MessageView::applySettings(const Settings& settings)
 {
     CommandParser::setAliases(settings.aliases);
@@ -357,7 +364,8 @@ void MessageView::receiveMessage(IrcMessage* message)
             break;
         }
         case IrcMessage::Topic:
-            d.topicLabel->setText(d.formatter->formatHtml(static_cast<IrcTopicMessage*>(message)->topic()));
+            d.topic = static_cast<IrcTopicMessage*>(message)->topic();
+            d.topicLabel->setText(d.formatter->formatHtml(d.topic));
             if (d.topicLabel->text().isEmpty())
                 d.topicLabel->setText(tr("-"));
             break;
@@ -379,10 +387,12 @@ void MessageView::receiveMessage(IrcMessage* message)
         case IrcMessage::Numeric:
             switch (static_cast<IrcNumericMessage*>(message)->code()) {
                 case Irc::RPL_NOTOPIC:
+                    d.topic.clear();
                     d.topicLabel->setText(tr("-"));
                     break;
                 case Irc::RPL_TOPIC:
-                    d.topicLabel->setText(d.formatter->formatHtml(message->parameters().value(2)));
+                    d.topic = message->parameters().value(2);
+                    d.topicLabel->setText(d.formatter->formatHtml(d.topic));
                     break;
                 case Irc::RPL_TOPICWHOTIME: {
                     QDateTime dateTime = QDateTime::fromTime_t(message->parameters().value(3).toInt());
