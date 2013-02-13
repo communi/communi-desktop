@@ -28,11 +28,11 @@ public:
     HistoryLineEdit* lineEdit() const;
     void setLineEdit(HistoryLineEdit* lineEdit);
 
-    QAbstractItemModel* defaultModel() const;
-    void setDefaultModel(QAbstractItemModel* model);
+    QAbstractItemModel* userModel() const;
+    void setUserModel(QAbstractItemModel* model);
 
-    QAbstractItemModel* slashModel() const;
-    void setSlashModel(QAbstractItemModel* model);
+    QAbstractItemModel* commandModel() const;
+    void setCommandModel(QAbstractItemModel* model);
 
 private slots:
     void onTabPressed();
@@ -42,8 +42,8 @@ private slots:
 private:
     struct CompleterData {
         HistoryLineEdit* lineEdit;
-        QAbstractItemModel* defaultModel;
-        QAbstractItemModel* slashModel;
+        QAbstractItemModel* userModel;
+        QAbstractItemModel* commandModel;
     } d;
 };
 

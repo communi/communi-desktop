@@ -73,8 +73,8 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
         CommandParser::addCustomCommand("MSG", "<usr/channel> <message...>");
     }
 
-    d.lineEditor->completer()->setDefaultModel(d.listView->userModel());
-    d.lineEditor->completer()->setSlashModel(command_model);
+    d.lineEditor->completer()->setUserModel(d.listView->userModel());
+    d.lineEditor->completer()->setCommandModel(command_model);
 
     connect(d.lineEditor, SIGNAL(send(QString)), this, SLOT(sendMessage(QString)));
     connect(d.lineEditor, SIGNAL(typed(QString)), this, SLOT(showHelp(QString)));

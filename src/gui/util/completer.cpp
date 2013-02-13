@@ -18,8 +18,8 @@
 Completer::Completer(QObject* parent) : QCompleter(parent)
 {
     d.lineEdit = 0;
-    d.defaultModel = 0;
-    d.slashModel = 0;
+    d.userModel = 0;
+    d.commandModel = 0;
     setCaseSensitivity(Qt::CaseInsensitive);
     setCompletionMode(InlineCompletion);
     connect(this, SIGNAL(highlighted(QString)), this, SLOT(insertCompletion(QString)));
@@ -43,24 +43,24 @@ void Completer::setLineEdit(HistoryLineEdit* lineEdit)
     }
 }
 
-QAbstractItemModel* Completer::defaultModel() const
+QAbstractItemModel* Completer::userModel() const
 {
-    return d.defaultModel;
+    return d.userModel;
 }
 
-void Completer::setDefaultModel(QAbstractItemModel* model)
+void Completer::setUserModel(QAbstractItemModel* model)
 {
-    d.defaultModel = model;
+    d.userModel = model;
 }
 
-QAbstractItemModel* Completer::slashModel() const
+QAbstractItemModel* Completer::commandModel() const
 {
-    return d.slashModel;
+    return d.commandModel;
 }
 
-void Completer::setSlashModel(QAbstractItemModel* model)
+void Completer::setCommandModel(QAbstractItemModel* model)
 {
-    d.slashModel = model;
+    d.commandModel = model;
 }
 
 void Completer::onTabPressed()
@@ -80,11 +80,11 @@ void Completer::onTabPressed()
 
     // choose model
     if (word.startsWith('/')) {
-        if (model() != d.slashModel)
-            setModel(d.slashModel);
+        if (model() != d.commandModel)
+            setModel(d.commandModel);
     } else {
-        if (model() != d.defaultModel)
-            setModel(d.defaultModel);
+        if (model() != d.userModel)
+            setModel(d.userModel);
     }
 
     QString prefix = completionPrefix();
