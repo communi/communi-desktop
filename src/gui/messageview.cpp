@@ -203,12 +203,17 @@ void MessageView::sendMessage(const QString& message)
             if (cmd->type() == IrcCommand::Custom) {
                 QString command = cmd->parameters().value(0);
                 QStringList params = cmd->parameters().mid(1);
-                if (command == "CLEAR")
+                if (command == "CLEAR") {
                     d.textBrowser->clear();
-                else if (command == "MSG")
-                    emit messaged(params.value(0), QStringList(params.mid(1)).join(" "));
-                else if (command == "QUERY")
+                } else if (command == "MSG") {
+                    // support "/msg foo /cmd" without executing /cmd
+                    QString msg = QStringList(params.mid(1)).join(" ");
+                    if (msg.startsWith('/') && !msg.startsWith("//") && !msg.startsWith("/ "))
+                        msg.prepend('/');
+                    emit messaged(params.value(0), msg);
+                } else if (command == "QUERY") {
                     emit queried(params.value(0));
+                }
                 delete cmd;
             } else {
                 d.session->sendCommand(cmd);
