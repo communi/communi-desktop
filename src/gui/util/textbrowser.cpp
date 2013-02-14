@@ -57,7 +57,7 @@ void TextBrowser::keyPressEvent(QKeyEvent* event)
         case Qt::Key_AltGr:
             break;
         default:
-            if (!event->matches(QKeySequence::Copy)) {
+            if (!event->matches(QKeySequence::Copy) && !event->matches(QKeySequence::SelectAll)) {
                 QApplication::sendEvent(bud, event);
                 bud->setFocus();
                 return;
