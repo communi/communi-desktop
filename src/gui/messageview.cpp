@@ -230,28 +230,6 @@ void MessageView::sendMessage(const QString& message)
     }
 }
 
-void MessageView::appendMessage(const QString& message)
-{
-    if (!message.isEmpty()) {
-        // workaround the link activation merge char format bug
-        QString copy = message;
-        if (copy.endsWith("</a>"))
-            copy += " ";
-
-        d.textBrowser->append(copy);
-        if (!isVisible() && d.textBrowser->unseenBlock() == -1)
-            d.textBrowser->setUnseenBlock(d.textBrowser->document()->blockCount() - 1);
-
-#if QT_VERSION >= 0x040800
-        QTextBlock block = d.textBrowser->document()->lastBlock();
-        QTextBlockFormat format = block.blockFormat();
-        format.setLineHeight(120, QTextBlockFormat::ProportionalHeight);
-        QTextCursor cursor(block);
-        cursor.setBlockFormat(format);
-#endif // QT_VERSION
-    }
-}
-
 void MessageView::hideEvent(QHideEvent* event)
 {
     QWidget::hideEvent(event);
@@ -424,7 +402,7 @@ void MessageView::receiveMessage(IrcMessage* message)
                 emit missed(message);
         }
 
-        appendMessage(formatted);
+        d.textBrowser->append(formatted);
     }
 }
 

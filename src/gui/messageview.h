@@ -55,7 +55,6 @@ public:
 public slots:
     void showHelp(const QString& text, bool error = false);
     void sendMessage(const QString& message);
-    void appendMessage(const QString& message);
     void applySettings(const Settings& settings);
 
 signals:
