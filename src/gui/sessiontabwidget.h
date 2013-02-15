@@ -40,7 +40,8 @@ public:
 public slots:
     void restoreSplitter(const QByteArray& state);
 
-    MessageView* openView(const QString& receiver);
+    MessageView* addView(const QString& receiver);
+    void openView(const QString& receiver);
     void removeView(const QString& receiver);
     void closeView(int index);
     void renameView(const QString& from, const QString& to);
