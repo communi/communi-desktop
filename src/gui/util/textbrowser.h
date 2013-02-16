@@ -31,6 +31,8 @@ public:
     int unseenBlock() const;
     void setUnseenBlock(int block);
 
+    QTextDocument* document() const;
+
 public slots:
     void append(const QString& text);
 
@@ -40,6 +42,7 @@ public slots:
     void scrollToPreviousPage();
 
 protected:
+    void showEvent(QShowEvent* event);
     void keyPressEvent(QKeyEvent* event);
     void paintEvent(QPaintEvent* event);
     void resizeEvent(QResizeEvent* event);
@@ -52,6 +55,7 @@ private:
     int ub;
     QWidget* bud;
     QStringList buffer;
+    QTextDocument* doc;
 };
 
 #endif // TEXTBROWSER_H
