@@ -57,6 +57,7 @@ signals:
 protected:
     void contextMenuEvent(QContextMenuEvent* event);
     void mousePressEvent(QMouseEvent* event);
+    void showEvent(QShowEvent* event);
 
 private slots:
     void onDoubleClicked(const QModelIndex& index);

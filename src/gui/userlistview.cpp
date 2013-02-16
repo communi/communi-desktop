@@ -45,12 +45,6 @@ Session* UserListView::session() const
 
 void UserListView::setSession(Session* session)
 {
-    delete model();
-    if (session) {
-        IrcSessionInfo info(session);
-        setModel(new SortedUserModel(info.prefixes().join(""), d.userModel));
-    }
-
     d.userModel->setSession(session);
 }
 
@@ -110,6 +104,16 @@ void UserListView::mousePressEvent(QMouseEvent* event)
     QListView::mousePressEvent(event);
     if (!indexAt(event->pos()).isValid())
         selectionModel()->clear();
+}
+
+void UserListView::showEvent(QShowEvent* event)
+{
+    QListView::showEvent(event);
+    if (!model()) {
+        Session* session = d.userModel->session();
+        IrcSessionInfo info(session);
+        setModel(new SortedUserModel(info.prefixes().join(""), d.userModel));
+    }
 }
 
 void UserListView::onDoubleClicked(const QModelIndex& index)
