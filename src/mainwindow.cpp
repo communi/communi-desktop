@@ -103,7 +103,12 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     applySettings(Application::settings());
     connect(qApp, SIGNAL(settingsChanged(Settings)), this, SLOT(applySettings(Settings)));
 
-    QTimer::singleShot(1000, this, SLOT(initialize()));
+    ConnectionInfos connections = settings.value("connections").value<ConnectionInfos>();
+    foreach (const ConnectionInfo& connection, connections)
+        connectToImpl(connection);
+
+    if (connections.isEmpty())
+        QTimer::singleShot(600, this, SLOT(initialize()));
 }
 
 MainWindow::~MainWindow()
@@ -199,14 +204,7 @@ void MainWindow::changeEvent(QEvent* event)
 
 void MainWindow::initialize()
 {
-    QSettings settings;
-    ConnectionInfos connections = settings.value("connections").value<ConnectionInfos>();
-
-    foreach (const ConnectionInfo& connection, connections)
-        connectToImpl(connection);
-
-    if (connections.isEmpty())
-        connectTo(ConnectionInfo());
+    connectTo(ConnectionInfo());
 }
 
 void MainWindow::editSession(Session* session)
