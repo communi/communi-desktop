@@ -41,7 +41,6 @@ public:
     void setCurrentReceiver(MessageReceiver* receiver);
 
     void addReceiver(const QString& name, MessageReceiver* receiver);
-    MessageReceiver* getReceiver(const QString& name) const;
     void removeReceiver(const QString& name);
 
 public slots:
