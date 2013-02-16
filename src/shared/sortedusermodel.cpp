@@ -38,5 +38,5 @@ bool SortedUserModel::lessThan(const QModelIndex& left, const QModelIndex& right
     if (i1 >= 0 && i2 >= 0 && i1 != i2)
         return i1 < i2;
 
-    return QString::localeAwareCompare(u1.toLower(), u2.toLower()) < 0;
+    return u1.compare(u2, Qt::CaseInsensitive) < 0;
 }

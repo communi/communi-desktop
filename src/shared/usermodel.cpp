@@ -45,7 +45,7 @@ QString UserModel::channel() const
 
 void UserModel::setChannel(const QString& channel)
 {
-    d.channel = channel.toLower();
+    d.channel = channel;
 }
 
 QStringList UserModel::users() const
@@ -229,7 +229,7 @@ void UserModel::processMessage(IrcMessage* message)
     } else if (message->type() == IrcMessage::Numeric) {
         if (static_cast<IrcNumericMessage*>(message)->code() == Irc::RPL_NAMREPLY) {
             int count = message->parameters().count();
-            if (!d.channel.isNull() && d.channel == message->parameters().value(count - 2).toLower()) {
+            if (!d.channel.isNull() && !d.channel.compare(message->parameters().value(count - 2), Qt::CaseInsensitive)) {
                 QString names = message->parameters().value(count - 1);
                 addUsers(names.split(" ", QString::SkipEmptyParts));
             }
