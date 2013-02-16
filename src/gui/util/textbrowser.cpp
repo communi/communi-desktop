@@ -51,7 +51,7 @@ QTextDocument* TextBrowser::document() const
 void TextBrowser::append(const QString& text)
 {
     if (!text.isEmpty()) {
-        if (buffer.isEmpty())
+        if (buffer.isEmpty() && isVisible())
             QMetaObject::invokeMethod(this, "appendBuffer", Qt::QueuedConnection);
 
         buffer += text;
@@ -64,6 +64,8 @@ void TextBrowser::append(const QString& text)
 void TextBrowser::showEvent(QShowEvent* event)
 {
     QTextBrowser::showEvent(event);
+    if (!buffer.isEmpty())
+        appendBuffer();
     if (QTextBrowser::document() != doc)
         setDocument(doc);
 }
