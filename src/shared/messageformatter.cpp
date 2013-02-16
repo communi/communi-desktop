@@ -425,74 +425,83 @@ QString MessageFormatter::formatUnknownMessage(IrcMessage* message) const
 
 QString MessageFormatter::formatZncPlaybackMessage(IrcPrivateMessage* message) const
 {
-    QStringList tokens = message->message().split(" ", QString::SkipEmptyParts);
-    QDateTime timeStamp = QDateTime::fromString(tokens.value(0), d.timeStampFormat);
-    if (timeStamp.isValid()) {
-        message->setTimeStamp(timeStamp);
+    QString msg = message->message();
+    int idx = msg.indexOf(" ");
+    if (idx != -1) {
+        QDateTime timeStamp = QDateTime::fromString(msg.left(idx), d.timeStampFormat);
+        if (timeStamp.isValid()) {
+            message->setTimeStamp(timeStamp);
+            msg.remove(0, idx + 1);
 
-        if (message->sender().name() == "*buffextras") {
-            IrcSender sender(tokens.value(1));
-            QString content = QStringList(tokens.mid(2)).join(" ");
+            if (message->sender().name() == "*buffextras") {
+                idx = msg.indexOf(" ");
+                IrcSender sender(msg.left(idx));
+                QString content = msg.mid(idx + 1);
 
-            IrcMessage* tmp = 0;
-            if (content.startsWith("joined")) {
-                tmp = IrcMessage::fromParameters(sender.prefix(), "JOIN", QStringList() << message->target(), message->session());
-                content = formatJoinMessage(static_cast<IrcJoinMessage*>(tmp));
-            } else if (content.startsWith("parted")) {
-                QString reason = content.mid(content.indexOf("[") + 1);
-                reason.chop(1);
-                tmp = IrcMessage::fromParameters(sender.prefix(), "PART", QStringList() << reason , message->session());
-                content = formatPartMessage(static_cast<IrcPartMessage*>(tmp));
-            } else if (content.startsWith("quit")) {
-                QString reason = content.mid(content.indexOf("[") + 1);
-                reason.chop(1);
-                tmp = IrcMessage::fromParameters(sender.prefix(), "QUIT", QStringList() << reason , message->session());
-                content = formatQuitMessage(static_cast<IrcQuitMessage*>(tmp));
-            } else if (content.startsWith("is")) {
-                tmp = IrcMessage::fromParameters(sender.prefix(), "NICK", QStringList() << tokens.last() , message->session());
-                content = formatNickMessage(static_cast<IrcNickMessage*>(tmp));
-            } else if (content.startsWith("set")) {
-                QString user = tokens.takeLast();
-                QString mode = tokens.takeLast();
-                tmp = IrcMessage::fromParameters(sender.prefix(), "MODE", QStringList() << message->target() << mode << user, message->session());
-                content = formatModeMessage(static_cast<IrcModeMessage*>(tmp));
-            } else if (content.startsWith("changed")) {
-                QString topic = content.mid(content.indexOf(":") + 2);
-                tmp = IrcMessage::fromParameters(sender.prefix(), "TOPIC", QStringList() << message->target() << topic, message->session());
-                content = formatTopicMessage(static_cast<IrcTopicMessage*>(tmp));
-            } else if (content.startsWith("kicked")) {
-                QString reason = content.mid(content.indexOf("[") + 1);
-                reason.chop(1);
-                tmp = IrcMessage::fromParameters(sender.prefix(), "KICK", QStringList() << message->target() << tokens.value(3) << reason, message->session());
-                content = formatKickMessage(static_cast<IrcKickMessage*>(tmp));
+                IrcMessage* tmp = 0;
+                if (content.startsWith("joined")) {
+                    tmp = IrcMessage::fromParameters(sender.prefix(), "JOIN", QStringList() << message->target(), message->session());
+                    content = formatJoinMessage(static_cast<IrcJoinMessage*>(tmp));
+                } else if (content.startsWith("parted")) {
+                    QString reason = content.mid(content.indexOf("[") + 1);
+                    reason.chop(1);
+                    tmp = IrcMessage::fromParameters(sender.prefix(), "PART", QStringList() << reason , message->session());
+                    content = formatPartMessage(static_cast<IrcPartMessage*>(tmp));
+                } else if (content.startsWith("quit")) {
+                    QString reason = content.mid(content.indexOf("[") + 1);
+                    reason.chop(1);
+                    tmp = IrcMessage::fromParameters(sender.prefix(), "QUIT", QStringList() << reason , message->session());
+                    content = formatQuitMessage(static_cast<IrcQuitMessage*>(tmp));
+                } else if (content.startsWith("is")) {
+                    QStringList tokens = content.split(" ", QString::SkipEmptyParts);
+                    tmp = IrcMessage::fromParameters(sender.prefix(), "NICK", QStringList() << tokens.last() , message->session());
+                    content = formatNickMessage(static_cast<IrcNickMessage*>(tmp));
+                } else if (content.startsWith("set")) {
+                    QStringList tokens = content.split(" ", QString::SkipEmptyParts);
+                    QString user = tokens.takeLast();
+                    QString mode = tokens.takeLast();
+                    tmp = IrcMessage::fromParameters(sender.prefix(), "MODE", QStringList() << message->target() << mode << user, message->session());
+                    content = formatModeMessage(static_cast<IrcModeMessage*>(tmp));
+                } else if (content.startsWith("changed")) {
+                    QString topic = content.mid(content.indexOf(":") + 2);
+                    tmp = IrcMessage::fromParameters(sender.prefix(), "TOPIC", QStringList() << message->target() << topic, message->session());
+                    content = formatTopicMessage(static_cast<IrcTopicMessage*>(tmp));
+                } else if (content.startsWith("kicked")) {
+                    QString reason = content.mid(content.indexOf("[") + 1);
+                    reason.chop(1);
+                    QStringList tokens = content.split(" ", QString::SkipEmptyParts);
+                    tmp = IrcMessage::fromParameters(sender.prefix(), "KICK", QStringList() << message->target() << tokens.value(2) << reason, message->session());
+                    content = formatKickMessage(static_cast<IrcKickMessage*>(tmp));
+                }
+                if (tmp) {
+                    delete tmp;
+                    return content;
+                }
             }
-            if (tmp) {
-                delete tmp;
-                return content;
-            }
+
+            if (message->isAction())
+                msg = QString("\1ACTION %1\1").arg(msg);
+            else if (message->isRequest())
+                msg = QString("\1%1\1").arg(msg);
+            message->setParameters(QStringList() << message->target() << msg);
         }
-
-        QString content = QStringList(tokens.mid(1)).join(" ");
-        if (message->isAction())
-            content = QString("\1ACTION %1\1").arg(content);
-        else if (message->isRequest())
-            content = QString("\1%1\1").arg(content);
-        message->setParameters(QStringList() << message->target() << content);
     }
     return formatPrivateMessage(message);
 }
 
 QString MessageFormatter::formatZncPlaybackMessage(IrcNoticeMessage* message) const
 {
-    QStringList tokens = message->message().split(" ", QString::SkipEmptyParts);
-    QDateTime timeStamp = QDateTime::fromString(tokens.value(0), d.timeStampFormat);
-    if (timeStamp.isValid()) {
-        message->setTimeStamp(timeStamp);
-
-        QString content = QStringList(tokens.mid(1)).join(" ");
-        if (message->isReply())
-            content = QString("\1%1\1").arg(content);
-        message->setParameters(QStringList() << message->target() << content);
+    QString msg = message->message();
+    int idx = msg.indexOf(" ");
+    if (idx != -1) {
+        QDateTime timeStamp = QDateTime::fromString(msg.left(idx), d.timeStampFormat);
+        if (timeStamp.isValid()) {
+            message->setTimeStamp(timeStamp);
+            msg.remove(0, idx + 1);
+            if (message->isReply())
+                msg = QString("\1%1\1").arg(msg);
+            message->setParameters(QStringList() << message->target() << msg);
+        }
     }
     return formatNoticeMessage(message);
 }
