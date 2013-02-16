@@ -32,8 +32,6 @@ MessageHandler::~MessageHandler()
     d.defaultReceiver = 0;
     d.currentReceiver = 0;
     d.receivers.clear();
-    if (d.session && d.session->isActive())
-        d.session->socket()->waitForDisconnected(500);
 }
 
 Session* MessageHandler::session() const

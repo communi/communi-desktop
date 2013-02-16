@@ -40,6 +40,12 @@ Session::Session(QObject* parent) : IrcSession(parent),
     connect(this, SIGNAL(connectedChanged(bool)), SLOT(togglePingTimer(bool)));
 }
 
+Session::~Session()
+{
+    if (isActive() && socket())
+        socket()->waitForDisconnected(500);
+}
+
 QString Session::name() const
 {
     return m_name;

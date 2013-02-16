@@ -42,6 +42,7 @@ class Session : public IrcSession
 
 public:
     explicit Session(QObject* parent = 0);
+    ~Session();
 
     QString name() const;
     void setName(const QString& name);
