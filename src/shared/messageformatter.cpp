@@ -560,7 +560,7 @@ QString MessageFormatter::formatIdleTime(int secs)
 
 QString MessageFormatter::formatHtml(const QString& message) const
 {
-    QString msg = IRC_TEXT_FORMAT.messageToHtml(message);
+    QString msg = IRC_TEXT_FORMAT.toHtml(message);
     foreach (const QString& user, d.users) {
         int pos = 0;
         while ((pos = msg.indexOf(user, pos)) != -1) {
