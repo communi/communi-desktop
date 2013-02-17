@@ -19,7 +19,7 @@
 #include <QTextBlock>
 #include <QAbstractTextDocumentLayout>
 
-TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent), ub(-1), bud(0), doc(new QTextDocument(this))
+TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent), ub(-1), bud(0)
 {
 }
 
@@ -43,31 +43,17 @@ void TextBrowser::setUnseenBlock(int block)
     ub = block;
 }
 
-QTextDocument* TextBrowser::document() const
-{
-    return doc;
-}
-
 void TextBrowser::append(const QString& text)
 {
     if (!text.isEmpty()) {
-        if (buffer.isEmpty() && isVisible())
+        if (buffer.isEmpty())
             QMetaObject::invokeMethod(this, "appendBuffer", Qt::QueuedConnection);
 
         buffer += text;
 
         if (!isVisible() && ub == -1)
-            ub = doc->blockCount() - 1;
+            ub = document()->blockCount() - 1;
     }
-}
-
-void TextBrowser::showEvent(QShowEvent* event)
-{
-    QTextBrowser::showEvent(event);
-    if (!buffer.isEmpty())
-        appendBuffer();
-    if (QTextBrowser::document() != doc)
-        setDocument(doc);
 }
 
 void TextBrowser::keyPressEvent(QKeyEvent* event)
@@ -130,14 +116,14 @@ void TextBrowser::paintEvent(QPaintEvent* event)
 
     QTextBlock block;
     if (ub > 0)
-        block = doc->findBlockByNumber(ub);
+        block = document()->findBlockByNumber(ub);
 
     if (block.isValid()) {
         painter.save();
         painter.setPen(Qt::DashLine);
         painter.translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
 
-        QRectF br = doc->documentLayout()->blockBoundingRect(block);
+        QRectF br = document()->documentLayout()->blockBoundingRect(block);
         painter.drawLine(br.topLeft(), br.topRight());
         painter.restore();
     }
@@ -163,6 +149,7 @@ void TextBrowser::appendBuffer()
     QScrollBar* vbar = verticalScrollBar();
     const bool atBottom = vbar->value() >= vbar->maximum();
 
+    QTextDocument* doc = document();
     QTextCursor cursor(doc);
     cursor.movePosition(QTextCursor::End);
 
