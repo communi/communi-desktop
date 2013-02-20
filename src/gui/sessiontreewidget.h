@@ -66,6 +66,9 @@ public slots:
     void collapseCurrentSession();
     void moveToMostActiveItem();
 
+    void search(const QString& search);
+    void searchAgain(const QString& search);
+
     void applySettings(const Settings& settings);
 
 signals:

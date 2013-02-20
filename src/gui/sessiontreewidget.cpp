@@ -263,6 +263,34 @@ void SessionTreeWidget::moveToMostActiveItem()
         setCurrentItem(mostActive);
 }
 
+void SessionTreeWidget::search(const QString& search)
+{
+    if (!search.isEmpty()) {
+        QList<QTreeWidgetItem*> items = findItems(search, Qt::MatchContains | Qt::MatchWrap | Qt::MatchRecursive);
+        if (!items.isEmpty() && !items.contains(currentItem()))
+            setCurrentItem(items.first());
+    }
+}
+
+void SessionTreeWidget::searchAgain(const QString& search)
+{
+    QTreeWidgetItem* item = currentItem();
+    if (item && !search.isEmpty()) {
+        QTreeWidgetItemIterator it(item, QTreeWidgetItemIterator::Unselected);
+        bool wrapped = false;
+        while (*it) {
+            if ((*it)->text(0).contains(search, Qt::CaseInsensitive)) {
+                setCurrentItem(*it);
+                return;
+            }
+            ++it;
+            if (!(*it) && !wrapped) {
+                it = QTreeWidgetItemIterator(this, QTreeWidgetItemIterator::Unselected);
+                wrapped = true;
+            }
+        }
+    }
+}
 
 void SessionTreeWidget::expandCurrentSession()
 {

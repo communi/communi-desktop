@@ -21,6 +21,7 @@
 #include "sessiontreeitem.h"
 #include "connectioninfo.h"
 #include "addviewdialog.h"
+#include "searchpopup.h"
 #include "messageview.h"
 #include "homepage.h"
 #include "overlay.h"
@@ -71,6 +72,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
 
     shortcut = new QShortcut(QKeySequence::Close, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(closeView()));
+
+    shortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(searchView()));
 
 #ifdef Q_WS_MAC
     QMenu* menu = new QMenu(this);
@@ -371,6 +375,14 @@ void MainWindow::closeView()
             treeWidget->parentWidget()->setVisible(!tabWidget->sessions().isEmpty());
         }
     }
+}
+
+void MainWindow::searchView()
+{
+    SearchPopup* search = new SearchPopup(this);
+    connect(search, SIGNAL(searched(QString)), treeWidget, SLOT(search(QString)));
+    connect(search, SIGNAL(searchedAgain(QString)), treeWidget, SLOT(searchAgain(QString)));
+    search->popup();
 }
 
 void MainWindow::createTree()
