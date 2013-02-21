@@ -323,7 +323,8 @@ void SessionTreeWidget::applySettings(const Settings& settings)
     d.nextUnreadShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NextUnreadDown)));
     d.expandShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NavigateRight)));
     d.collapseShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NavigateLeft)));
-    d.mostActiveShortcut->setKey(QKeySequence("Ctrl+S"));
+    // TODO: make Ctrl+L configurable
+    d.mostActiveShortcut->setKey(QKeySequence("Ctrl+L"));
     d.settings = settings;
 }
 

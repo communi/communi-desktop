@@ -61,7 +61,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     if (QtDockTile::isAvailable())
         dockTile = new QtDockTile(this);
 
-    QShortcut* shortcut = new QShortcut(QKeySequence(tr("Ctrl+Q")), this);
+    QShortcut* shortcut = new QShortcut(QKeySequence::Quit, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(close()));
 
     shortcut = new QShortcut(QKeySequence::New, this);
@@ -73,7 +73,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     shortcut = new QShortcut(QKeySequence::Close, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(closeView()));
 
-    shortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
+    // TODO: make Ctrl+S configurable
+    shortcut = new QShortcut(QKeySequence("Ctrl+S"), this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(searchView()));
 
 #ifdef Q_WS_MAC
