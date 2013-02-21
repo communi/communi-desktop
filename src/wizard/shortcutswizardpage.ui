@@ -41,95 +41,79 @@
      </column>
      <item>
       <property name="text">
-       <string>Navigate</string>
+       <string>Next view</string>
       </property>
       <property name="text">
        <string/>
       </property>
       <property name="flags">
-       <set>ItemIsSelectable|ItemIsEnabled</set>
+       <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
       </property>
-      <item>
-       <property name="text">
-        <string>Up</string>
-       </property>
-       <property name="flags">
-        <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Down</string>
-       </property>
-       <property name="flags">
-        <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Left</string>
-       </property>
-       <property name="flags">
-        <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Right</string>
-       </property>
-       <property name="flags">
-        <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
-       </property>
-      </item>
      </item>
      <item>
       <property name="text">
-       <string>Next unread</string>
+       <string>Previous view</string>
+      </property>
+      <property name="flags">
+       <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Next unread view</string>
+      </property>
+      <property name="flags">
+       <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Previous unread view</string>
+      </property>
+      <property name="flags">
+       <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Expand view</string>
+      </property>
+      <property name="flags">
+       <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Collapse view</string>
       </property>
       <property name="text">
        <string/>
       </property>
       <property name="flags">
-       <set>ItemIsSelectable|ItemIsEnabled</set>
+       <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
       </property>
-      <item>
-       <property name="text">
-        <string>Up</string>
-       </property>
-       <property name="flags">
-        <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Down</string>
-       </property>
-       <property name="flags">
-        <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Left</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="flags">
-        <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Right</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="flags">
-        <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
-       </property>
-      </item>
+     </item>
+     <item>
+      <property name="text">
+       <string>Switch to most live view</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="flags">
+       <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Search view by name</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="flags">
+       <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
+      </property>
      </item>
     </widget>
    </item>

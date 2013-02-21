@@ -317,14 +317,13 @@ void SessionTreeWidget::applySettings(const Settings& settings)
     QColor color(settings.colors.value(Settings::Highlight));
     setStatusColor(Highlight, color);
 
-    d.prevShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NavigateUp)));
-    d.nextShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NavigateDown)));
-    d.prevUnreadShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NextUnreadUp)));
-    d.nextUnreadShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NextUnreadDown)));
-    d.expandShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NavigateRight)));
-    d.collapseShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NavigateLeft)));
-    // TODO: make Ctrl+L configurable
-    d.mostActiveShortcut->setKey(QKeySequence("Ctrl+L"));
+    d.prevShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::PreviousView)));
+    d.nextShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NextView)));
+    d.prevUnreadShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::PreviousUnreadView)));
+    d.nextUnreadShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NextUnreadView)));
+    d.expandShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::ExpandView)));
+    d.collapseShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::CollapseView)));
+    d.mostActiveShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::MostActiveView)));
     d.settings = settings;
 }
 

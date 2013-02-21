@@ -27,6 +27,7 @@ class IrcMessage;
 class QtDockTile;
 struct Settings;
 class Session;
+class QShortcut;
 
 class MainWindow : public QMainWindow
 {
@@ -71,6 +72,7 @@ private:
     MultiSessionTabWidget* tabWidget;
     TrayIcon* trayIcon;
     QtDockTile* dockTile;
+    QShortcut* searchShortcut;
 };
 
 #endif // MAINWINDOW_H

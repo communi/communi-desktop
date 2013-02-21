@@ -73,9 +73,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     shortcut = new QShortcut(QKeySequence::Close, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(closeView()));
 
-    // TODO: make Ctrl+S configurable
-    shortcut = new QShortcut(QKeySequence("Ctrl+S"), this);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(searchView()));
+    searchShortcut = new QShortcut(this);
+    connect(searchShortcut, SIGNAL(activated()), this, SLOT(searchView()));
 
 #ifdef Q_WS_MAC
     QMenu* menu = new QMenu(this);
@@ -222,6 +221,8 @@ void MainWindow::editSession(Session* session)
 
 void MainWindow::applySettings(const Settings& settings)
 {
+    searchShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::SearchView)));
+
     foreach (MessageView* view, findChildren<MessageView*>())
         view->applySettings(settings);
     treeWidget->applySettings(settings);

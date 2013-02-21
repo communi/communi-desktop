@@ -24,15 +24,15 @@ Settings::Settings() : maxBlockCount(-1), timeStamp(true), stripNicks(true), tim
     QString navigate("Alt+%1");
     QString nextUnread("Shift+Alt+%1");
 #endif
-    shortcuts[NavigateUp] = navigate.arg("Up");
-    shortcuts[NavigateDown] = navigate.arg("Down");
-    shortcuts[NavigateLeft] = navigate.arg("Left");
-    shortcuts[NavigateRight] = navigate.arg("Right");
 
-    shortcuts[NextUnreadUp] = nextUnread.arg("Up");
-    shortcuts[NextUnreadDown] = nextUnread.arg("Down");
-    shortcuts[NextUnreadLeft] = nextUnread.arg("Left");
-    shortcuts[NextUnreadRight] = nextUnread.arg("Right");
+    shortcuts[PreviousView] = navigate.arg("Up");
+    shortcuts[NextView] = navigate.arg("Down");
+    shortcuts[CollapseView] = navigate.arg("Left");
+    shortcuts[ExpandView] = navigate.arg("Right");
+    shortcuts[PreviousUnreadView] = nextUnread.arg("Up");
+    shortcuts[NextUnreadView] = nextUnread.arg("Down");
+    shortcuts[MostActiveView] = "Ctrl+L";
+    shortcuts[SearchView] = "Ctrl+S";
 
     messages[Joins] = true;
     messages[Parts] = true;

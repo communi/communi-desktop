@@ -48,35 +48,27 @@ ShortcutsWizardPage::ShortcutsWizardPage(QWidget* parent) : QWizardPage(parent)
 QHash<int, QString> ShortcutsWizardPage::shortcuts() const
 {
     QHash<int, QString> shortcuts;
-
-    QTreeWidgetItem* navigate = ui.treeWidget->topLevelItem(0);
-    for (int i = Settings::NavigateUp; i <= Settings::NavigateRight; ++i) {
-        QTreeWidgetItem* item = navigate->child(i);
-        shortcuts.insert(i, item->text(Shortcut));
-    }
-
-    QTreeWidgetItem* unread = ui.treeWidget->topLevelItem(1);
-    for (int i = Settings::NextUnreadUp; i <= Settings::NextUnreadRight; ++i) {
-        QTreeWidgetItem* item = unread->child(i - Settings::NextUnreadUp);
-        shortcuts.insert(i, item->text(Shortcut));
-    }
-
+    shortcuts.insert(Settings::NextView, ui.treeWidget->topLevelItem(0)->text(Shortcut));
+    shortcuts.insert(Settings::PreviousView, ui.treeWidget->topLevelItem(1)->text(Shortcut));
+    shortcuts.insert(Settings::NextUnreadView, ui.treeWidget->topLevelItem(2)->text(Shortcut));
+    shortcuts.insert(Settings::PreviousUnreadView, ui.treeWidget->topLevelItem(3)->text(Shortcut));
+    shortcuts.insert(Settings::ExpandView, ui.treeWidget->topLevelItem(4)->text(Shortcut));
+    shortcuts.insert(Settings::CollapseView, ui.treeWidget->topLevelItem(5)->text(Shortcut));
+    shortcuts.insert(Settings::MostActiveView, ui.treeWidget->topLevelItem(6)->text(Shortcut));
+    shortcuts.insert(Settings::SearchView, ui.treeWidget->topLevelItem(7)->text(Shortcut));
     return shortcuts;
 }
 
 void ShortcutsWizardPage::setShortcuts(const QHash<int, QString>& shortcuts)
 {
-    QTreeWidgetItem* navigate = ui.treeWidget->topLevelItem(0);
-    for (int i = Settings::NavigateUp; i <= Settings::NavigateRight; ++i) {
-        QTreeWidgetItem* item = navigate->child(i);
-        item->setText(Shortcut, shortcuts.value(i));
-    }
-
-    QTreeWidgetItem* unread = ui.treeWidget->topLevelItem(1);
-    for (int i = Settings::NextUnreadUp; i <= Settings::NextUnreadRight; ++i) {
-        QTreeWidgetItem* item = unread->child(i - Settings::NextUnreadUp);
-        item->setText(Shortcut, shortcuts.value(i));
-    }
+    ui.treeWidget->topLevelItem(0)->setText(Shortcut, shortcuts.value(Settings::NextView));
+    ui.treeWidget->topLevelItem(1)->setText(Shortcut, shortcuts.value(Settings::PreviousView));
+    ui.treeWidget->topLevelItem(2)->setText(Shortcut, shortcuts.value(Settings::NextUnreadView));
+    ui.treeWidget->topLevelItem(3)->setText(Shortcut, shortcuts.value(Settings::PreviousUnreadView));
+    ui.treeWidget->topLevelItem(4)->setText(Shortcut, shortcuts.value(Settings::ExpandView));
+    ui.treeWidget->topLevelItem(5)->setText(Shortcut, shortcuts.value(Settings::CollapseView));
+    ui.treeWidget->topLevelItem(6)->setText(Shortcut, shortcuts.value(Settings::MostActiveView));
+    ui.treeWidget->topLevelItem(7)->setText(Shortcut, shortcuts.value(Settings::SearchView));
 }
 
 void ShortcutsWizardPage::updateUi()

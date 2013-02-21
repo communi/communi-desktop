@@ -49,14 +49,16 @@ struct Settings {
     };
 
     enum ShortcutType {
-        NavigateUp,
-        NavigateDown,
-        NavigateLeft,
-        NavigateRight,
-        NextUnreadUp,
-        NextUnreadDown,
-        NextUnreadLeft,
-        NextUnreadRight
+        PreviousView = 0, // was NavigateUp
+        NextView = 1, // was NavigateDown
+        CollapseView = 2, // was NavigateLeft
+        ExpandView = 3, // was NavigateRight
+        PreviousUnreadView = 4, // was NextUnreadUp
+        NextUnreadView = 5, // was NextUnreadDown
+        // 6 was NextUnreadLeft
+        // 7 was NextUnreadRight
+        MostActiveView = 8,
+        SearchView = 9
     };
 
     QHash<int, bool> messages;
@@ -76,7 +78,7 @@ Q_DECLARE_METATYPE(Settings);
 
 inline QDataStream& operator<<(QDataStream& out, const Settings& settings)
 {
-    out << quint32(131); // version
+    out << quint32(132); // version
     out << settings.messages;
     out << settings.highlights;
     out << settings.language;
@@ -116,13 +118,15 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
     if (version < 125)
         settings.colors[Settings::TimeStamp] = defaults.colors.value(Settings::TimeStamp);
     if (version < 127) {
-        settings.shortcuts[Settings::NextUnreadUp] = defaults.shortcuts.value(Settings::NextUnreadUp);
-        settings.shortcuts[Settings::NextUnreadDown] = defaults.shortcuts.value(Settings::NextUnreadDown);
-        settings.shortcuts[Settings::NextUnreadLeft] = defaults.shortcuts.value(Settings::NextUnreadLeft);
-        settings.shortcuts[Settings::NextUnreadRight] = defaults.shortcuts.value(Settings::NextUnreadRight);
+        settings.shortcuts[Settings::NextUnreadView] = defaults.shortcuts.value(Settings::NextUnreadView);
+        settings.shortcuts[Settings::PreviousUnreadView] = defaults.shortcuts.value(Settings::PreviousUnreadView);
     }
     if (version < 128)
         settings.colors[Settings::Link] = defaults.colors.value(Settings::Link);
+    if (version < 132) {
+        settings.shortcuts[Settings::MostActiveView] = defaults.shortcuts.value(Settings::MostActiveView);
+        settings.shortcuts[Settings::SearchView] = defaults.shortcuts.value(Settings::SearchView);
+    }
     return in;
 }
 
