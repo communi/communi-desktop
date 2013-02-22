@@ -31,6 +31,9 @@ private slots:
     void updateUi();
 
 private:
+    QString logicalShortcut(int index) const;
+    void setVisualShortcut(int index, const QString& text);
+
     Ui::ShortcutsWizardPage ui;
 };
 

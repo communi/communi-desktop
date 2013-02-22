@@ -48,27 +48,27 @@ ShortcutsWizardPage::ShortcutsWizardPage(QWidget* parent) : QWizardPage(parent)
 QHash<int, QString> ShortcutsWizardPage::shortcuts() const
 {
     QHash<int, QString> shortcuts;
-    shortcuts.insert(Settings::NextView, ui.treeWidget->topLevelItem(0)->text(Shortcut));
-    shortcuts.insert(Settings::PreviousView, ui.treeWidget->topLevelItem(1)->text(Shortcut));
-    shortcuts.insert(Settings::NextUnreadView, ui.treeWidget->topLevelItem(2)->text(Shortcut));
-    shortcuts.insert(Settings::PreviousUnreadView, ui.treeWidget->topLevelItem(3)->text(Shortcut));
-    shortcuts.insert(Settings::ExpandView, ui.treeWidget->topLevelItem(4)->text(Shortcut));
-    shortcuts.insert(Settings::CollapseView, ui.treeWidget->topLevelItem(5)->text(Shortcut));
-    shortcuts.insert(Settings::MostActiveView, ui.treeWidget->topLevelItem(6)->text(Shortcut));
-    shortcuts.insert(Settings::SearchView, ui.treeWidget->topLevelItem(7)->text(Shortcut));
+    shortcuts.insert(Settings::NextView, logicalShortcut(0));
+    shortcuts.insert(Settings::PreviousView, logicalShortcut(1));
+    shortcuts.insert(Settings::NextUnreadView, logicalShortcut(2));
+    shortcuts.insert(Settings::PreviousUnreadView, logicalShortcut(3));
+    shortcuts.insert(Settings::ExpandView, logicalShortcut(4));
+    shortcuts.insert(Settings::CollapseView, logicalShortcut(5));
+    shortcuts.insert(Settings::MostActiveView, logicalShortcut(6));
+    shortcuts.insert(Settings::SearchView, logicalShortcut(7));
     return shortcuts;
 }
 
 void ShortcutsWizardPage::setShortcuts(const QHash<int, QString>& shortcuts)
 {
-    ui.treeWidget->topLevelItem(0)->setText(Shortcut, shortcuts.value(Settings::NextView));
-    ui.treeWidget->topLevelItem(1)->setText(Shortcut, shortcuts.value(Settings::PreviousView));
-    ui.treeWidget->topLevelItem(2)->setText(Shortcut, shortcuts.value(Settings::NextUnreadView));
-    ui.treeWidget->topLevelItem(3)->setText(Shortcut, shortcuts.value(Settings::PreviousUnreadView));
-    ui.treeWidget->topLevelItem(4)->setText(Shortcut, shortcuts.value(Settings::ExpandView));
-    ui.treeWidget->topLevelItem(5)->setText(Shortcut, shortcuts.value(Settings::CollapseView));
-    ui.treeWidget->topLevelItem(6)->setText(Shortcut, shortcuts.value(Settings::MostActiveView));
-    ui.treeWidget->topLevelItem(7)->setText(Shortcut, shortcuts.value(Settings::SearchView));
+    setVisualShortcut(0, shortcuts.value(Settings::NextView));
+    setVisualShortcut(1, shortcuts.value(Settings::PreviousView));
+    setVisualShortcut(2, shortcuts.value(Settings::NextUnreadView));
+    setVisualShortcut(3, shortcuts.value(Settings::PreviousUnreadView));
+    setVisualShortcut(4, shortcuts.value(Settings::ExpandView));
+    setVisualShortcut(5, shortcuts.value(Settings::CollapseView));
+    setVisualShortcut(6, shortcuts.value(Settings::MostActiveView));
+    setVisualShortcut(7, shortcuts.value(Settings::SearchView));
 }
 
 void ShortcutsWizardPage::updateUi()
@@ -76,4 +76,25 @@ void ShortcutsWizardPage::updateUi()
     //bool hasCurrent = ui.treeView->currentIndex().isValid();
     //ui.toolButtonEdit->setEnabled(hasCurrent);
     //ui.toolButtonRemove->setEnabled(hasCurrent);
+}
+
+QString ShortcutsWizardPage::logicalShortcut(int index) const
+{
+    //QString text = ui.treeWidget->topLevelItem(index)->text(Shortcut);
+    //QString shortcut = QKeySequence(text).toString(QKeySequence::PortableText);
+    QString shortcut = ui.treeWidget->topLevelItem(index)->text(Shortcut);
+#ifdef Q_OS_MAC
+    shortcut.replace("Cmd", "Ctrl");
+#endif
+    return shortcut;
+}
+
+void ShortcutsWizardPage::setVisualShortcut(int index, const QString& text)
+{
+    //QString shortcut = QKeySequence(text, QKeySequence::PortableText).toString(QKeySequence::NativeText);
+    QString shortcut = text;
+#ifdef Q_OS_MAC
+    shortcut.replace("Ctrl", "Cmd");
+#endif
+    ui.treeWidget->topLevelItem(index)->setText(Shortcut, shortcut);
 }
