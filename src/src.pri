@@ -27,6 +27,6 @@ SOURCES += $$PWD/trayicon.cpp
 
 include(gui/gui.pri)
 include(model/model.pri)
-include(shared/shared.pri)
+include(util/util.pri)
 include(wizard/wizard.pri)
 include(3rdparty/qtdocktile/qtdocktile.pri)
