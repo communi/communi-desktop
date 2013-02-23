@@ -67,6 +67,8 @@ MessageView::MessageView(SessionItem* item, QWidget* parent) :
         connect(d.listView, SIGNAL(queried(QString)), this, SIGNAL(queried(QString)));
         connect(d.listView, SIGNAL(doubleClicked(QString)), this, SIGNAL(queried(QString)));
         connect(d.listView, SIGNAL(commandRequested(IrcCommand*)), session, SLOT(sendCommand(IrcCommand*)));
+
+        connect(d.item, SIGNAL(topicChanged(QString)), this, SLOT(onTopicChanged(QString)));
     }
 
     if (!command_model) {
@@ -267,8 +269,8 @@ void MessageView::onAnchorClicked(const QUrl& link)
 
 void MessageView::completeCommand(const QString& command)
 {
-    if (command == "TOPIC")
-        d.lineEditor->insert(d.topic);
+    if (command == "TOPIC" && viewType() == ChannelView)
+        d.lineEditor->insert(static_cast<ChannelItem*>(d.item)->topic());
 }
 
 void MessageView::applySettings(const Settings& settings)
@@ -332,31 +334,6 @@ void MessageView::receiveMessage(IrcMessage* message)
             }
             break;
         }
-        case IrcMessage::Topic:
-            d.topic = static_cast<IrcTopicMessage*>(message)->topic();
-            d.topicLabel->setText(d.formatter->formatHtml(d.topic));
-            if (d.topicLabel->text().isEmpty())
-                d.topicLabel->setText(tr("-"));
-            break;
-        case IrcMessage::Numeric:
-            switch (static_cast<IrcNumericMessage*>(message)->code()) {
-                case Irc::RPL_NOTOPIC:
-                    d.topic.clear();
-                    d.topicLabel->setText(tr("-"));
-                    break;
-                case Irc::RPL_TOPIC:
-                    d.topic = message->parameters().value(2);
-                    d.topicLabel->setText(d.formatter->formatHtml(d.topic));
-                    break;
-                case Irc::RPL_TOPICWHOTIME: {
-                    QDateTime dateTime = QDateTime::fromTime_t(message->parameters().value(3).toInt());
-                    d.topicLabel->setToolTip(tr("Set %1 by %2").arg(dateTime.toString(), message->parameters().value(2)));
-                    break;
-                }
-                default:
-                    break;
-            }
-            break;
         default:
             break;
     }
@@ -376,4 +353,11 @@ void MessageView::receiveMessage(IrcMessage* message)
 
         d.textBrowser->append(formatted);
     }
+}
+
+void MessageView::onTopicChanged(const QString &topic)
+{
+    d.topicLabel->setText(d.formatter->formatHtml(topic));
+    if (d.topicLabel->text().isEmpty())
+        d.topicLabel->setText(tr("-"));
 }

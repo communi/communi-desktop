@@ -14,6 +14,7 @@
 
 #include "channelitem.h"
 #include <IrcMessage>
+#include <Irc>
 
 ChannelItem::ChannelItem(const QString& name, SessionModel* model) : SessionItem(model)
 {
@@ -28,6 +29,11 @@ ChannelItem::ChannelItem(const QString& name, SessionModel* model) : SessionItem
 
 ChannelItem::~ChannelItem()
 {
+}
+
+QString ChannelItem::topic() const
+{
+    return d.topic;
 }
 
 UserModel* ChannelItem::userModel() const
@@ -62,6 +68,23 @@ void ChannelItem::receiveMessage(IrcMessage* message)
                 emit activeChanged(isActive());
             }
             break;
+        case IrcMessage::Topic:
+            d.topic = static_cast<IrcTopicMessage*>(message)->topic();
+            emit topicChanged(d.topic);
+            break;
+        case IrcMessage::Numeric:
+            switch (static_cast<IrcNumericMessage*>(message)->code()) {
+                case Irc::RPL_NOTOPIC:
+                    d.topic.clear();
+                    emit topicChanged(d.topic);
+                    break;
+                case Irc::RPL_TOPIC:
+                    d.topic = message->parameters().value(2);
+                    emit topicChanged(d.topic);
+                    break;
+                default:
+                    break;
+            }
         default:
             break;
     }

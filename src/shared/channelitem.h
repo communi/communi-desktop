@@ -21,21 +21,27 @@
 class ChannelItem : public SessionItem
 {
     Q_OBJECT
+    Q_PROPERTY(QString topic READ topic NOTIFY topicChanged)
     Q_PROPERTY(UserModel* userModel READ userModel CONSTANT)
 
 public:
     ChannelItem(const QString& name, SessionModel* model);
     ~ChannelItem();
 
+    QString topic() const;
     UserModel* userModel() const;
 
     virtual bool isActive() const;
     virtual bool hasUser(const QString& user) const;
     virtual void receiveMessage(IrcMessage* message);
 
+signals:
+    void topicChanged(const QString& topic);
+
 private:
     struct Private {
         UserModel* userModel;
+        QString topic;
         bool joined;
     } d;
 };

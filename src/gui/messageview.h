@@ -70,13 +70,13 @@ private slots:
     void onSplitterMoved();
     void onAnchorClicked(const QUrl& link);
     void completeCommand(const QString& command);
+    void onTopicChanged(const QString& topic);
 
 private:
     struct MessageViewData : public Ui::MessageView {
         SessionItem* item;
         MessageFormatter* formatter;
         Settings settings;
-        QString topic;
     } d;
 };
 
