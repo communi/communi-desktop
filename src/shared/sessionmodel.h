@@ -12,8 +12,8 @@
 * GNU General Public License for more details.
 */
 
-#ifndef MESSAGEHANDLER_H
-#define MESSAGEHANDLER_H
+#ifndef SESSIONMODEL_H
+#define SESSIONMODEL_H
 
 #include <QHash>
 #include <QObject>
@@ -23,13 +23,13 @@
 class Session;
 class MessageReceiver;
 
-class MessageHandler : public QObject
+class SessionModel : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit MessageHandler(QObject* parent = 0);
-    virtual ~MessageHandler();
+    explicit SessionModel(QObject* parent = 0);
+    virtual ~SessionModel();
 
     Session* session() const;
     void setSession(Session* session);
@@ -78,4 +78,4 @@ private:
     } d;
 };
 
-#endif // MESSAGEHANDLER_H
+#endif // SESSIONMODEL_H

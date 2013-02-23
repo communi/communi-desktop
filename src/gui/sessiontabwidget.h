@@ -15,9 +15,9 @@
 #ifndef SESSIONTABWIDGET_H
 #define SESSIONTABWIDGET_H
 
-#include <QStackedWidget>
-#include "messagehandler.h"
 #include <QHash>
+#include <QStackedWidget>
+#include "sessionmodel.h"
 
 class Session;
 class IrcMessage;
@@ -60,7 +60,7 @@ private slots:
 
 private:
     struct SessionTabWidgetData {
-        MessageHandler handler;
+        SessionModel model;
         QHash<QString, MessageView*> views;
     } d;
 };
