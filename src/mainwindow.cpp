@@ -23,6 +23,7 @@
 #include "addviewdialog.h"
 #include "searchpopup.h"
 #include "messageview.h"
+#include "sessionitem.h"
 #include "homepage.h"
 #include "overlay.h"
 #include "toolbar.h"
@@ -258,7 +259,7 @@ void MainWindow::highlighted(IrcMessage* message)
     if (view) {
         SessionTreeItem* item = treeWidget->sessionItem(view->session());
         if (view->viewType() != MessageView::ServerView)
-            item = item->findChild(view->receiver());
+            item = item->findChild(view->item()->name());
         if (item) {
             item->setHighlighted(true);
             item->setBadge(item->badge() + 1);
@@ -273,7 +274,7 @@ void MainWindow::missed(IrcMessage* message)
     if (view) {
         SessionTreeItem* item = treeWidget->sessionItem(view->session());
         if (view->viewType() != MessageView::ServerView)
-            item = item->findChild(view->receiver());
+            item = item->findChild(view->item()->name());
         if (item)
             item->setBadge(item->badge() + 1);
     }

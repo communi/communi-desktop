@@ -24,8 +24,8 @@
 
 UserListView::UserListView(QWidget* parent) : QListView(parent)
 {
+    d.userModel = 0;
     d.menuFactory = 0;
-    d.userModel = new UserModel(this);
     connect(this, SIGNAL(doubleClicked(QModelIndex)), SLOT(onDoubleClicked(QModelIndex)));
 }
 
@@ -43,11 +43,6 @@ Session* UserListView::session() const
     return d.userModel->session();
 }
 
-void UserListView::setSession(Session* session)
-{
-    d.userModel->setSession(session);
-}
-
 QString UserListView::channel() const
 {
     return d.userModel->channel();
@@ -63,9 +58,9 @@ UserModel* UserListView::userModel() const
     return d.userModel;
 }
 
-bool UserListView::hasUser(const QString& user) const
+void UserListView::setUserModel(UserModel* model)
 {
-    return d.userModel->hasUser(user);
+    d.userModel = model;
 }
 
 MenuFactory* UserListView::menuFactory() const
@@ -82,11 +77,6 @@ void UserListView::setMenuFactory(MenuFactory* factory)
     if (d.menuFactory && d.menuFactory->parent() == this)
         delete d.menuFactory;
     d.menuFactory = factory;
-}
-
-void UserListView::processMessage(IrcMessage* message)
-{
-    d.userModel->processMessage(message);
 }
 
 void UserListView::contextMenuEvent(QContextMenuEvent* event)

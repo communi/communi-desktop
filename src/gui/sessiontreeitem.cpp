@@ -14,13 +14,14 @@
 
 #include "sessiontreeitem.h"
 #include "sessiontreewidget.h"
+#include "sessionitem.h"
 #include "messageview.h"
 
 SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidget* parent) : QTreeWidgetItem(parent)
 {
     d.view = view;
     d.highlighted = false;
-    setText(0, view->receiver());
+    setText(0, view->item()->name());
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDropEnabled);
 }
 
@@ -28,7 +29,7 @@ SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidgetItem* parent) : Q
 {
     d.view = view;
     d.highlighted = false;
-    setText(0, view->receiver());
+    setText(0, view->item()->name());
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
 }
 
@@ -63,7 +64,7 @@ QVariant SessionTreeItem::data(int column, int role) const
 {
     if (role == Qt::ForegroundRole) {
         SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget());
-        if (!d.view->isActive())
+        if (!d.view->item()->isActive())
             return tw->statusColor(SessionTreeWidget::Inactive);
         if (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty()))
             return tw->statusColor(SessionTreeWidget::Highlight);

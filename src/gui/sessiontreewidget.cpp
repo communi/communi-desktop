@@ -15,6 +15,7 @@
 #include "sessiontreewidget.h"
 #include "sessiontreedelegate.h"
 #include "sessiontreeitem.h"
+#include "sessionitem.h"
 #include "messageview.h"
 #include "menufactory.h"
 #include "sharedtimer.h"
@@ -166,8 +167,8 @@ void SessionTreeWidget::addView(MessageView* view)
         item = new SessionTreeItem(view, parent);
     }
 
-    connect(view, SIGNAL(activeChanged()), this, SLOT(updateView()));
-    connect(view, SIGNAL(receiverChanged(QString)), this, SLOT(updateView()));
+    connect(view->item(), SIGNAL(activeChanged(bool)), this, SLOT(updateView()));
+    connect(view->item(), SIGNAL(nameChanged(QString)), this, SLOT(updateView()));
     d.viewItems.insert(view, item);
     updateView(view);
 }
@@ -183,7 +184,7 @@ void SessionTreeWidget::renameView(MessageView* view)
 {
     SessionTreeItem* item = d.viewItems.value(view);
     if (item)
-        item->setText(0, view->receiver());
+        item->setText(0, view->item()->name());
 }
 
 void SessionTreeWidget::setCurrentView(MessageView* view)
@@ -369,7 +370,7 @@ void SessionTreeWidget::updateView(MessageView* view)
         if (!item->parent())
             item->setText(0, item->session()->name().isEmpty() ? item->session()->host() : item->session()->name());
         else
-            item->setText(0, view->receiver());
+            item->setText(0, view->item()->name());
         // re-read MessageView::isActive()
         item->emitDataChanged();
     }

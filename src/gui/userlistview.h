@@ -35,19 +35,15 @@ public:
     QSize sizeHint() const;
 
     Session* session() const;
-    void setSession(Session* session);
 
     QString channel() const;
     void setChannel(const QString& channel);
 
     UserModel* userModel() const;
-    bool hasUser(const QString& user) const;
+    void setUserModel(UserModel* model);
 
     MenuFactory* menuFactory() const;
     void setMenuFactory(MenuFactory* factory);
-
-public slots:
-    void processMessage(IrcMessage* message);
 
 signals:
     void queried(const QString& user);

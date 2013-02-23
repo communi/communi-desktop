@@ -16,35 +16,31 @@
 #define MESSAGEVIEW_H
 
 #include "ui_messageview.h"
-#include "messagereceiver.h"
 #include "messageformatter.h"
 #include "settings.h"
 
 class MenuFactory;
 class IrcMessage;
 class Session;
+class SessionItem;
 
-class MessageView : public QWidget, public MessageReceiver
+class MessageView : public QWidget
 {
     Q_OBJECT
-    Q_PROPERTY(bool active READ isActive NOTIFY activeChanged)
-    Q_PROPERTY(QString receiver READ receiver WRITE setReceiver NOTIFY receiverChanged)
 
 public:
     enum ViewType { ServerView, ChannelView, QueryView };
 
-    MessageView(ViewType type, Session* session, QWidget* parent = 0);
+    MessageView(SessionItem* item, QWidget* parent = 0);
     ~MessageView();
 
-    bool isActive() const;
-    ViewType viewType() const;
+    SessionItem* item() const;
     Session* session() const;
+
+    ViewType viewType() const;
     UserModel* userModel() const;
     QTextBrowser* textBrowser() const;
     MessageFormatter* messageFormatter() const;
-
-    QString receiver() const;
-    void setReceiver(const QString& receiver);
 
     MenuFactory* menuFactory() const;
     void setMenuFactory(MenuFactory* factory);
@@ -58,9 +54,6 @@ public slots:
     void applySettings(const Settings& settings);
 
 signals:
-    void activeChanged();
-    void receiverChanged(const QString& receiver);
-
     void highlighted(IrcMessage* message);
     void missed(IrcMessage* message);
     void queried(const QString& user);
@@ -71,10 +64,8 @@ protected:
     void hideEvent(QHideEvent* event);
     bool eventFilter(QObject* object, QEvent* event);
 
-    void receiveMessage(IrcMessage* message);
-    bool hasUser(const QString& user) const;
-
 private slots:
+    void receiveMessage(IrcMessage* message);
     void onEscPressed();
     void onSplitterMoved();
     void onAnchorClicked(const QUrl& link);
@@ -82,13 +73,10 @@ private slots:
 
 private:
     struct MessageViewData : public Ui::MessageView {
-        ViewType viewType;
-        QString receiver;
-        Session* session;
+        SessionItem* item;
         MessageFormatter* formatter;
         Settings settings;
         QString topic;
-        bool joined;
     } d;
 };
 

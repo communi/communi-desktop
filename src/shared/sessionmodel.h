@@ -21,7 +21,10 @@
 #include <IrcMessage>
 
 class Session;
-class MessageReceiver;
+class QueryItem;
+class ServerItem;
+class ChannelItem;
+class SessionItem;
 
 class SessionModel : public QObject
 {
@@ -34,22 +37,28 @@ public:
     Session* session() const;
     void setSession(Session* session);
 
-    MessageReceiver* defaultReceiver() const;
-    void setDefaultReceiver(MessageReceiver* receiver);
+    ServerItem* server() const;
 
-    MessageReceiver* currentReceiver() const;
-    void setCurrentReceiver(MessageReceiver* receiver);
+    QList<ChannelItem*> channels() const;
+    ChannelItem* channel(const QString& name) const;
 
-    void addReceiver(const QString& name, MessageReceiver* receiver);
-    void removeReceiver(const QString& name);
+    QList<QueryItem*> queries() const;
+    QueryItem* query(const QString& name) const;
+
+    SessionItem* item(const QString& name);
+    SessionItem* addItem(const QString& name);
+    void removeItem(const QString& name);
+    void removeItem(SessionItem* item);
+
+    SessionItem* currentItem() const;
+    void setCurrentItem(SessionItem* item);
 
 public slots:
     void handleMessage(IrcMessage* message);
 
 signals:
-    void receiverToBeAdded(const QString& name);
-    void receiverToBeRenamed(const QString& from, const QString& to);
-    void receiverToBeRemoved(const QString& name);
+    void itemAdded(SessionItem* item);
+    void itemRemoved(SessionItem* item);
 
 protected:
     void handleInviteMessage(IrcInviteMessage* message);
@@ -66,15 +75,16 @@ protected:
     void handleTopicMessage(IrcTopicMessage* message);
     void handleUnknownMessage(IrcMessage* message);
 
-    void sendMessage(IrcMessage* message, MessageReceiver* receiver);
     void sendMessage(IrcMessage* message, const QString& receiver);
 
 private:
     struct Private {
         QPointer<Session> session;
-        MessageReceiver* defaultReceiver;
-        MessageReceiver* currentReceiver;
-        QHash<QString, MessageReceiver*> receivers;
+        ServerItem* server;
+        QList<ChannelItem*> channels;
+        QList<QueryItem*> queries;
+        QHash<QString, SessionItem*> items;
+        SessionItem* current;
     } d;
 };
 

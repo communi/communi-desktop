@@ -13,6 +13,10 @@
 */
 
 #include "messageview.h"
+#include "sessionitem.h"
+#include "channelitem.h"
+#include "queryitem.h"
+#include "serveritem.h"
 #include "commandparser.h"
 #include "menufactory.h"
 #include "completer.h"
@@ -34,12 +38,11 @@
 static QStringListModel* command_model = 0;
 static const int VERTICAL_MARGIN = 1; // matches qlineedit_p.cpp
 
-MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* parent) :
+MessageView::MessageView(SessionItem* item, QWidget* parent) :
     QWidget(parent)
 {
     d.setupUi(this);
-    d.viewType = type;
-    d.joined = false;
+    d.item = item;
 
     d.topicLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
     d.helpLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
@@ -53,16 +56,17 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
 
     d.formatter = new MessageFormatter(this);
 
-    d.session = session;
-    connect(d.session, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
+    Session* session = d.item->session();
+    connect(item, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
 
+    ViewType type = viewType();
     d.topicLabel->setVisible(type == ChannelView);
     d.listView->setVisible(type == ChannelView);
     if (type == ChannelView) {
-        d.listView->setSession(session);
+        d.listView->setUserModel(static_cast<ChannelItem*>(item)->userModel());
         connect(d.listView, SIGNAL(queried(QString)), this, SIGNAL(queried(QString)));
         connect(d.listView, SIGNAL(doubleClicked(QString)), this, SIGNAL(queried(QString)));
-        connect(d.listView, SIGNAL(commandRequested(IrcCommand*)), d.session, SLOT(sendCommand(IrcCommand*)));
+        connect(d.listView, SIGNAL(commandRequested(IrcCommand*)), session, SLOT(sendCommand(IrcCommand*)));
     }
 
     if (!command_model) {
@@ -96,23 +100,23 @@ MessageView::~MessageView()
 {
 }
 
-bool MessageView::isActive() const
+SessionItem* MessageView::item() const
 {
-    if (!d.session->isActive())
-        return false;
-    if (d.viewType == ChannelView)
-        return d.joined;
-    return true;
-}
-
-MessageView::ViewType MessageView::viewType() const
-{
-    return d.viewType;
+    return d.item;
 }
 
 Session* MessageView::session() const
 {
-    return d.session;
+    return d.item->session();
+}
+
+MessageView::ViewType MessageView::viewType() const
+{
+    if (qobject_cast<ChannelItem*>(d.item))
+        return ChannelView;
+    if (qobject_cast<QueryItem*>(d.item))
+        return QueryView;
+    return ServerView;
 }
 
 UserModel* MessageView::userModel() const
@@ -130,21 +134,6 @@ MessageFormatter* MessageView::messageFormatter() const
     return d.formatter;
 }
 
-QString MessageView::receiver() const
-{
-    return d.receiver;
-}
-
-void MessageView::setReceiver(const QString& receiver)
-{
-    if (d.receiver != receiver) {
-        d.receiver = receiver;
-        if (d.viewType == ChannelView)
-            d.listView->setChannel(receiver);
-        emit receiverChanged(receiver);
-    }
-}
-
 MenuFactory* MessageView::menuFactory() const
 {
     return d.listView->menuFactory();
@@ -157,7 +146,7 @@ void MessageView::setMenuFactory(MenuFactory* factory)
 
 QByteArray MessageView::saveSplitter() const
 {
-    if (d.viewType != ServerView)
+    if (viewType() != ServerView)
         return d.splitter->saveState();
     return QByteArray();
 }
@@ -198,7 +187,7 @@ void MessageView::sendMessage(const QString& message)
 {
     QStringList lines = message.split(QRegExp("[\\r\\n]"), QString::SkipEmptyParts);
     foreach (const QString& line, lines) {
-        IrcCommand* cmd = CommandParser::parseCommand(d.receiver, line);
+        IrcCommand* cmd = CommandParser::parseCommand(d.item->name(), line);
         if (cmd) {
             if (cmd->type() == IrcCommand::Custom) {
                 QString command = cmd->parameters().value(0);
@@ -216,10 +205,10 @@ void MessageView::sendMessage(const QString& message)
                 }
                 delete cmd;
             } else {
-                d.session->sendCommand(cmd);
+                session()->sendCommand(cmd);
 
                 if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction || cmd->type() == IrcCommand::Notice) {
-                    IrcMessage* msg = IrcMessage::fromData(":" + d.session->nickName().toUtf8() + " " + cmd->toString().toUtf8(), d.session);
+                    IrcMessage* msg = IrcMessage::fromData(":" + session()->nickName().toUtf8() + " " + cmd->toString().toUtf8(), session());
                     receiveMessage(msg);
                     delete msg;
                 }
@@ -327,9 +316,6 @@ void MessageView::applySettings(const Settings& settings)
 
 void MessageView::receiveMessage(IrcMessage* message)
 {
-    if (d.viewType == ChannelView)
-        d.listView->processMessage(message);
-
     bool ignore = false;
     switch (message->type()) {
         case IrcMessage::Private: {
@@ -351,21 +337,6 @@ void MessageView::receiveMessage(IrcMessage* message)
             d.topicLabel->setText(d.formatter->formatHtml(d.topic));
             if (d.topicLabel->text().isEmpty())
                 d.topicLabel->setText(tr("-"));
-            break;
-        case IrcMessage::Unknown:
-            qWarning() << "unknown:" << message;
-            break;
-        case IrcMessage::Join:
-            if (message->flags() & IrcMessage::Own) {
-                d.joined = true;
-                emit activeChanged();
-            }
-            break;
-        case IrcMessage::Part:
-            if (message->flags() & IrcMessage::Own) {
-                d.joined = false;
-                emit activeChanged();
-            }
             break;
         case IrcMessage::Numeric:
             switch (static_cast<IrcNumericMessage*>(message)->code()) {
@@ -390,13 +361,14 @@ void MessageView::receiveMessage(IrcMessage* message)
             break;
     }
 
-    d.formatter->setUsers(d.listView->userModel()->users());
-    d.formatter->setHighlights(QStringList() << d.session->nickName());
+    if (d.listView->userModel())
+        d.formatter->setUsers(d.listView->userModel()->users());
+    d.formatter->setHighlights(QStringList() << session()->nickName());
     QString formatted = d.formatter->formatMessage(message);
     if (formatted.length()) {
         if (!ignore && (!isVisible() || !isActiveWindow())) {
             IrcMessage::Type type = d.formatter->effectiveMessageType();
-            if (d.formatter->hasHighlight() || (type == IrcMessage::Private && d.viewType != ChannelView))
+            if (d.formatter->hasHighlight() || (type == IrcMessage::Private && viewType() != ChannelView))
                 emit highlighted(message);
             else if (type == IrcMessage::Notice || type == IrcMessage::Private) // TODO: || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ServerView))
                 emit missed(message);
@@ -404,11 +376,4 @@ void MessageView::receiveMessage(IrcMessage* message)
 
         d.textBrowser->append(formatted);
     }
-}
-
-bool MessageView::hasUser(const QString& user) const
-{
-    return (!d.session->nickName().compare(user, Qt::CaseInsensitive)) ||
-           (d.viewType == QueryView && !d.receiver.compare(user, Qt::CaseInsensitive)) ||
-           (d.viewType == ChannelView && d.listView->hasUser(user));
 }

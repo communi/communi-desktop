@@ -13,25 +13,28 @@
 */
 
 #include "sessionmodel.h"
-#include "messagereceiver.h"
+#include "channelitem.h"
+#include "serveritem.h"
+#include "queryitem.h"
 #include "session.h"
-#include <qabstractsocket.h>
-#include <qvariant.h>
+
 #include <qdebug.h>
 #include <irc.h>
 
 SessionModel::SessionModel(QObject* parent) : QObject(parent)
 {
-    d.defaultReceiver = 0;
-    d.currentReceiver = 0;
+    d.server = 0;
+    d.current = 0;
     setSession(qobject_cast<Session*>(parent));
 }
 
 SessionModel::~SessionModel()
 {
-    d.defaultReceiver = 0;
-    d.currentReceiver = 0;
-    d.receivers.clear();
+    d.server = 0;
+    d.current = 0;
+    d.channels.clear();
+    d.queries.clear();
+    d.items.clear();
 }
 
 Session* SessionModel::session() const
@@ -42,48 +45,90 @@ Session* SessionModel::session() const
 void SessionModel::setSession(Session* session)
 {
     if (d.session != session) {
-        if (d.session)
+        if (d.session) {
+            delete d.server;
             disconnect(d.session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(handleMessage(IrcMessage*)));
-
-        if (session)
-            connect(session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(handleMessage(IrcMessage*)));
+        }
 
         d.session = session;
+
+        if (d.session) {
+            d.current = d.server = new ServerItem(this);
+            connect(d.session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(handleMessage(IrcMessage*)));
+        }
     }
 }
 
-MessageReceiver* SessionModel::defaultReceiver() const
+ServerItem* SessionModel::server() const
 {
-    return d.defaultReceiver;
+    return d.server;
 }
 
-void SessionModel::setDefaultReceiver(MessageReceiver* receiver)
+QList<ChannelItem*> SessionModel::channels() const
 {
-    d.defaultReceiver = receiver;
+    return d.channels;
 }
 
-MessageReceiver* SessionModel::currentReceiver() const
+ChannelItem* SessionModel::channel(const QString& name) const
 {
-    return d.currentReceiver;
+    return qobject_cast<ChannelItem*>(d.items.value(name.toLower()));
 }
 
-void SessionModel::setCurrentReceiver(MessageReceiver* receiver)
+QList<QueryItem*> SessionModel::queries() const
 {
-    d.currentReceiver = receiver;
+    return d.queries;
 }
 
-void SessionModel::addReceiver(const QString& name, MessageReceiver* receiver)
+QueryItem* SessionModel::query(const QString& name) const
 {
-    d.receivers.insert(name.toLower(), receiver);
+    return qobject_cast<QueryItem*>(d.items.value(name.toLower()));
 }
 
-void SessionModel::removeReceiver(const QString& name)
+SessionItem* SessionModel::item(const QString& name)
 {
-    const QString lower = name.toLower();
-    if (d.receivers.contains(lower)) {
-        d.receivers.remove(lower);
-        emit receiverToBeRemoved(name);
+    return d.items.value(name.toLower());
+}
+
+SessionItem* SessionModel::addItem(const QString& name)
+{
+    QString lower = name.toLower();
+    SessionItem* item = d.items.value(lower);
+    if (!item) {
+        if (d.session->isChannel(name))
+            item = new ChannelItem(name, this);
+        else
+            item = new QueryItem(name, this);
+        emit itemAdded(item);
+        d.items.insert(lower, item);
     }
+    return item;
+}
+
+void SessionModel::removeItem(const QString& name)
+{
+    SessionItem* item = d.items.take(name.toLower());
+    if (item)
+        removeItem(item);
+}
+
+void SessionModel::removeItem(SessionItem* item)
+{
+    if (ChannelItem* channel = qobject_cast<ChannelItem*>(item))
+        d.channels.removeOne(channel);
+    else if (QueryItem* query = qobject_cast<QueryItem*>(item))
+        d.queries.removeOne(query);
+    emit itemRemoved(item);
+    item->deleteLater();
+}
+
+SessionItem* SessionModel::currentItem() const
+{
+    return d.current;
+}
+
+void SessionModel::setCurrentItem(SessionItem* item)
+{
+    d.current = item ? item : d.server;
 }
 
 void SessionModel::handleMessage(IrcMessage* message)
@@ -135,7 +180,7 @@ void SessionModel::handleMessage(IrcMessage* message)
 
 void SessionModel::handleInviteMessage(IrcInviteMessage* message)
 {
-    sendMessage(message, d.currentReceiver);
+    d.current->receiveMessage(message);
 }
 
 void SessionModel::handleJoinMessage(IrcJoinMessage* message)
@@ -151,7 +196,7 @@ void SessionModel::handleKickMessage(IrcKickMessage* message)
 void SessionModel::handleModeMessage(IrcModeMessage* message)
 {
     if (message->sender().name() == message->target())
-        sendMessage(message, d.defaultReceiver);
+        d.server->receiveMessage(message);
     else
         sendMessage(message, message->target());
 }
@@ -159,13 +204,12 @@ void SessionModel::handleModeMessage(IrcModeMessage* message)
 void SessionModel::handleNickMessage(IrcNickMessage* message)
 {
     QString nick = message->sender().name().toLower();
-    foreach (MessageReceiver* receiver, d.receivers) {
-        if (receiver->hasUser(nick))
-            receiver->receiveMessage(message);
-        if (!nick.compare(receiver->receiver(), Qt::CaseInsensitive)) {
-            emit receiverToBeRenamed(receiver->receiver(), message->nick());
-            MessageReceiver* object = d.receivers.take(nick);
-            d.receivers.insert(message->nick(), object);
+    foreach (SessionItem* item, d.items) {
+        if (item->hasUser(nick))
+            item->receiveMessage(message);
+        if (!nick.compare(item->name(), Qt::CaseInsensitive)) {
+            SessionItem* query = d.items.take(nick);
+            d.items.insert(message->nick(), query);
         }
     }
 }
@@ -173,9 +217,9 @@ void SessionModel::handleNickMessage(IrcNickMessage* message)
 void SessionModel::handleNoticeMessage(IrcNoticeMessage* message)
 {
     if (!d.session->isConnected() || message->target() == "*")
-        sendMessage(message, d.defaultReceiver);
+        d.server->receiveMessage(message);
     else if (message->target() == d.session->nickName())
-        sendMessage(message, d.currentReceiver);
+        d.current->receiveMessage(message);
     else
         sendMessage(message, message->target());
 }
@@ -183,7 +227,7 @@ void SessionModel::handleNoticeMessage(IrcNoticeMessage* message)
 void SessionModel::handleNumericMessage(IrcNumericMessage* message)
 {
     if (QByteArray(Irc::toString(message->code())).startsWith("ERR_")) {
-        sendMessage(message, d.currentReceiver);
+        d.current->receiveMessage(message);
         return;
     }
 
@@ -210,7 +254,7 @@ void SessionModel::handleNumericMessage(IrcNumericMessage* message)
         case Irc::RPL_INVITING:
         case Irc::RPL_VERSION:
         case Irc::RPL_TIME:
-            sendMessage(message, d.currentReceiver);
+            d.current->receiveMessage(message);
             break;
 
         case Irc::RPL_ENDOFBANLIST:
@@ -234,42 +278,40 @@ void SessionModel::handleNumericMessage(IrcNumericMessage* message)
 
         case Irc::RPL_NAMREPLY: {
             const int count = message->parameters().count();
-            const QString channel = message->parameters().value(count - 2);
-            MessageReceiver* receiver = d.receivers.value(channel.toLower());
-            if (receiver)
-                receiver->receiveMessage(message);
-            else if (d.currentReceiver)
-                d.currentReceiver->receiveMessage(message);
+            ChannelItem* item = channel(message->parameters().value(count - 2));
+            if (item)
+                item->receiveMessage(message);
+            else
+                d.current->receiveMessage(message);
             break;
         }
 
         case Irc::RPL_ENDOFNAMES:
-            if (d.receivers.contains(message->parameters().value(1).toLower()))
+            if (d.items.contains(message->parameters().value(1).toLower()))
                 sendMessage(message, message->parameters().value(1));
             break;
 
         default:
-            sendMessage(message, d.defaultReceiver);
+            d.server->receiveMessage(message);
             break;
     }
 }
 
 void SessionModel::handlePartMessage(IrcPartMessage* message)
 {
-    MessageReceiver* receiver = d.receivers.value(message->channel().toLower());
-    if (receiver)
-        sendMessage(message, receiver);
+    if (SessionItem* item = channel(message->channel()))
+        item->receiveMessage(message);
 }
 
 void SessionModel::handlePongMessage(IrcPongMessage* message)
 {
-    sendMessage(message, d.currentReceiver);
+    d.current->receiveMessage(message);
 }
 
 void SessionModel::handlePrivateMessage(IrcPrivateMessage* message)
 {
     if (message->isRequest())
-        sendMessage(message, d.currentReceiver);
+        d.current->receiveMessage(message);
     else if (message->target() == d.session->nickName())
         sendMessage(message, message->sender().name());
     else
@@ -279,9 +321,9 @@ void SessionModel::handlePrivateMessage(IrcPrivateMessage* message)
 void SessionModel::handleQuitMessage(IrcQuitMessage* message)
 {
     QString nick = message->sender().name();
-    foreach (MessageReceiver* receiver, d.receivers) {
-        if (receiver->hasUser(nick))
-            receiver->receiveMessage(message);
+    foreach (SessionItem* item, d.items) {
+        if (item->hasUser(nick))
+            item->receiveMessage(message);
     }
 }
 
@@ -292,19 +334,11 @@ void SessionModel::handleTopicMessage(IrcTopicMessage* message)
 
 void SessionModel::handleUnknownMessage(IrcMessage* message)
 {
-    sendMessage(message, d.defaultReceiver);
-}
-
-void SessionModel::sendMessage(IrcMessage* message, MessageReceiver* receiver)
-{
-    if (receiver)
-        receiver->receiveMessage(message);
+    d.server->receiveMessage(message);
 }
 
 void SessionModel::sendMessage(IrcMessage* message, const QString& receiver)
 {
-    QString lower = receiver.toLower();
-    if (!d.receivers.contains(lower))
-        emit receiverToBeAdded(receiver);
-    sendMessage(message, d.receivers.value(lower));
+    SessionItem* item = addItem(receiver);
+    item->receiveMessage(message);
 }
