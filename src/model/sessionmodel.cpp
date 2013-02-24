@@ -94,12 +94,15 @@ SessionItem* SessionModel::addItem(const QString& name)
     QString lower = name.toLower();
     SessionItem* item = d.items.value(lower);
     if (!item) {
-        if (d.session->isChannel(name))
+        if (d.session->isChannel(name)) {
             item = new ChannelItem(name, this);
-        else
+            d.channels += static_cast<ChannelItem*>(item);
+        } else {
             item = new QueryItem(name, this);
-        emit itemAdded(item);
+            d.queries += static_cast<QueryItem*>(item);
+        }
         d.items.insert(lower, item);
+        emit itemAdded(item);
     }
     return item;
 }
@@ -107,18 +110,14 @@ SessionItem* SessionModel::addItem(const QString& name)
 void SessionModel::removeItem(const QString& name)
 {
     SessionItem* item = d.items.take(name.toLower());
-    if (item)
-        removeItem(item);
-}
-
-void SessionModel::removeItem(SessionItem* item)
-{
-    if (ChannelItem* channel = qobject_cast<ChannelItem*>(item))
-        d.channels.removeOne(channel);
-    else if (QueryItem* query = qobject_cast<QueryItem*>(item))
-        d.queries.removeOne(query);
-    emit itemRemoved(item);
-    item->deleteLater();
+    if (item) {
+        if (ChannelItem* channel = qobject_cast<ChannelItem*>(item))
+            d.channels.removeOne(channel);
+        else if (QueryItem* query = qobject_cast<QueryItem*>(item))
+            d.queries.removeOne(query);
+        emit itemRemoved(item);
+        item->deleteLater();
+    }
 }
 
 SessionItem* SessionModel::currentItem() const

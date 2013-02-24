@@ -48,7 +48,6 @@ public:
     SessionItem* item(const QString& name);
     SessionItem* addItem(const QString& name);
     void removeItem(const QString& name);
-    void removeItem(SessionItem* item);
 
     SessionItem* currentItem() const;
     void setCurrentItem(SessionItem* item);
