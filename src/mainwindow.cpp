@@ -160,8 +160,6 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
 
     SessionTabWidget* tab = tabWidget->sessionWidget(session);
     connect(tab, SIGNAL(viewAdded(MessageView*)), this, SLOT(viewAdded(MessageView*)));
-    connect(tab, SIGNAL(viewRemoved(MessageView*)), this, SLOT(viewRemoved(MessageView*)));
-    connect(tab, SIGNAL(viewRenamed(MessageView*)), this, SLOT(viewRenamed(MessageView*)));
 
     if (MessageView* view = tab->viewAt(0)) {
         treeWidget->addView(view->item());
@@ -289,21 +287,6 @@ void MainWindow::viewAdded(MessageView* view)
     QSettings settings;
     if (settings.contains("list"))
         view->restoreSplitter(settings.value("list").toByteArray());
-
-    treeWidget->addView(view->item());
-    if (settings.contains("tree"))
-        treeWidget->restoreState(settings.value("tree").toByteArray());
-    treeWidget->expandItem(treeWidget->sessionItem(view->item()->model()));
-}
-
-void MainWindow::viewRemoved(MessageView* view)
-{
-    treeWidget->removeView(view->item());
-}
-
-void MainWindow::viewRenamed(MessageView* view)
-{
-    treeWidget->removeView(view->item());
 }
 
 void MainWindow::closeTreeItem(SessionTreeItem* item)
@@ -422,7 +405,10 @@ void MainWindow::createTree()
     container->setMinimumWidth(toolBar->sizeHint().width());
     splitter->insertWidget(0, container);
     splitter->setStretchFactor(1, 1);
+
     QSettings settings;
+    if (settings.contains("tree"))
+        treeWidget->restoreState(settings.value("tree").toByteArray());
     if (settings.contains("splitter"))
         splitter->restoreState(settings.value("splitter").toByteArray());
 }

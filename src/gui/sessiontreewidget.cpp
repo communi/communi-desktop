@@ -107,15 +107,8 @@ QByteArray SessionTreeWidget::saveState() const
 
 void SessionTreeWidget::restoreState(const QByteArray& state)
 {
-    QVariantHash sortOrders;
     QDataStream in(state);
-    in >> sortOrders;
-
-    for (int i = 0; i < topLevelItemCount(); ++i) {
-        SessionTreeItem* item = static_cast<SessionTreeItem*>(topLevelItem(i));
-        item->d.sortOrder = sortOrders.value(item->text(0)).toStringList();
-        item->sortChildren(0, Qt::AscendingOrder);
-    }
+    in >> d.sortOrders;
 }
 
 MenuFactory* SessionTreeWidget::menuFactory() const
@@ -154,11 +147,15 @@ void SessionTreeWidget::addView(SessionItem* view)
     SessionTreeItem* item = 0;
     if (qobject_cast<ServerItem*>(view)) {
         item = new SessionTreeItem(view, this);
+        connect(view->model(), SIGNAL(itemAdded(SessionItem*)), this, SLOT(addView(SessionItem*)));
+        connect(view->model(), SIGNAL(itemRemoved(SessionItem*)), this, SLOT(removeView(SessionItem*)));
         connect(view->model(), SIGNAL(currentItemChanged(SessionItem*)), this, SLOT(setCurrentView(SessionItem*)));
         d.sessionItems.insert(view->model(), item);
     } else {
         SessionTreeItem* parent = d.sessionItems.value(view->model());
         item = new SessionTreeItem(view, parent);
+        parent->sortChildren(0, Qt::AscendingOrder);
+        expandItem(parent);
     }
 
     connect(view, SIGNAL(activeChanged(bool)), this, SLOT(updateView()));
@@ -361,10 +358,12 @@ void SessionTreeWidget::updateView(SessionItem* view)
         view = qobject_cast<SessionItem*>(sender());
     SessionTreeItem* item = d.viewItems.value(view);
     if (item) {
-        if (!item->parent())
+        if (!item->parent()) {
             item->setText(0, item->session()->name().isEmpty() ? item->session()->host() : item->session()->name());
-        else
+            item->d.sortOrder = d.sortOrders.value(item->text(0)).toStringList();
+        } else {
             item->setText(0, view->name());
+        }
         // re-read SessionItem::isActive()
         item->emitDataChanged();
     }

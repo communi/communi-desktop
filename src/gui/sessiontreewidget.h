@@ -111,6 +111,7 @@ private:
         QHash<SessionItem*, SessionTreeItem*> viewItems;
         QHash<SessionModel*, SessionTreeItem*> sessionItems;
         mutable QTreeWidgetItem* dropParent;
+        QVariantHash sortOrders;
     } d;
     friend class SessionTreeItem;
 };
