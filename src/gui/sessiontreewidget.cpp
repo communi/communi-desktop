@@ -15,6 +15,7 @@
 #include "sessiontreewidget.h"
 #include "sessiontreedelegate.h"
 #include "sessiontreeitem.h"
+#include "sessionmodel.h"
 #include "sessionitem.h"
 #include "serveritem.h"
 #include "menufactory.h"
@@ -148,7 +149,7 @@ SessionTreeItem* SessionTreeWidget::viewItem(SessionItem* view) const
     return d.viewItems.value(view);
 }
 
-SessionTreeItem* SessionTreeWidget::sessionItem(Session* session) const
+SessionTreeItem* SessionTreeWidget::sessionItem(SessionModel* session) const
 {
     return d.sessionItems.value(session);
 }
@@ -158,12 +159,9 @@ void SessionTreeWidget::addView(SessionItem* view)
     SessionTreeItem* item = 0;
     if (qobject_cast<ServerItem*>(view)) {
         item = new SessionTreeItem(view, this);
-        Session* session = view->session();
-        connect(session, SIGNAL(nameChanged(QString)), this, SLOT(updateSession()));
-        connect(session, SIGNAL(networkChanged(QString)), this, SLOT(updateSession()));
-        d.sessionItems.insert(session, item);
+        d.sessionItems.insert(view->model(), item);
     } else {
-        SessionTreeItem* parent = d.sessionItems.value(view->session());
+        SessionTreeItem* parent = d.sessionItems.value(view->model());
         item = new SessionTreeItem(view, parent);
     }
 
@@ -176,7 +174,7 @@ void SessionTreeWidget::addView(SessionItem* view)
 void SessionTreeWidget::removeView(SessionItem* view)
 {
     if (qobject_cast<ServerItem*>(view))
-        d.sessionItems.remove(view->session());
+        d.sessionItems.remove(view->model());
     delete d.viewItems.take(view);
 }
 
@@ -374,15 +372,6 @@ void SessionTreeWidget::updateView(SessionItem* view)
         // re-read SessionItem::isActive()
         item->emitDataChanged();
     }
-}
-
-void SessionTreeWidget::updateSession(Session* session)
-{
-    if (!session)
-        session = qobject_cast<Session*>(sender());
-    SessionTreeItem* item = d.sessionItems.value(session);
-    if (item)
-        item->setText(0, session->name().isEmpty() ? session->host() : session->name());
 }
 
 void SessionTreeWidget::onItemExpanded(QTreeWidgetItem* item)

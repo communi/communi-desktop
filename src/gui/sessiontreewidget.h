@@ -25,6 +25,7 @@ class Session;
 struct Settings;
 class SessionItem;
 class MenuFactory;
+class SessionModel;
 class SessionTreeItem;
 
 class SessionTreeWidget : public QTreeWidget
@@ -48,7 +49,7 @@ public:
     void setStatusColor(ItemStatus status, const QColor& color);
 
     SessionTreeItem* viewItem(SessionItem* view) const;
-    SessionTreeItem* sessionItem(Session* session) const;
+    SessionTreeItem* sessionItem(SessionModel* session) const;
 
 public slots:
     void addView(SessionItem* view);
@@ -84,7 +85,6 @@ protected:
 
 private slots:
     void updateView(SessionItem* view = 0);
-    void updateSession(Session* session = 0);
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
@@ -110,7 +110,7 @@ private:
         QHash<ItemStatus, QColor> colors;
         QSet<SessionTreeItem*> resetedItems;
         QHash<SessionItem*, SessionTreeItem*> viewItems;
-        QHash<Session*, SessionTreeItem*> sessionItems;
+        QHash<SessionModel*, SessionTreeItem*> sessionItems;
         mutable QTreeWidgetItem* dropParent;
     } d;
     friend class SessionTreeItem;

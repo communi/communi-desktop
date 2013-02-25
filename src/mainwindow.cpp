@@ -257,7 +257,7 @@ void MainWindow::highlighted(IrcMessage* message)
 
     MessageView* view = qobject_cast<MessageView*>(sender());
     if (view) {
-        SessionTreeItem* item = treeWidget->sessionItem(view->session());
+        SessionTreeItem* item = treeWidget->sessionItem(view->item()->model());
         if (view->viewType() != MessageView::ServerView)
             item = item->findChild(view->item()->name());
         if (item) {
@@ -272,7 +272,7 @@ void MainWindow::missed(IrcMessage* message)
     Q_UNUSED(message);
     MessageView* view = qobject_cast<MessageView*>(sender());
     if (view) {
-        SessionTreeItem* item = treeWidget->sessionItem(view->session());
+        SessionTreeItem* item = treeWidget->sessionItem(view->item()->model());
         if (view->viewType() != MessageView::ServerView)
             item = item->findChild(view->item()->name());
         if (item)
@@ -291,11 +291,10 @@ void MainWindow::viewAdded(MessageView* view)
     if (settings.contains("list"))
         view->restoreSplitter(settings.value("list").toByteArray());
 
-    Session* session = view->session();
     treeWidget->addView(view->item());
     if (settings.contains("tree"))
         treeWidget->restoreState(settings.value("tree").toByteArray());
-    treeWidget->expandItem(treeWidget->sessionItem(session));
+    treeWidget->expandItem(treeWidget->sessionItem(view->item()->model()));
 }
 
 void MainWindow::viewRemoved(MessageView* view)
