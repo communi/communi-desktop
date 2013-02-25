@@ -16,7 +16,7 @@
 #include "sessiontreedelegate.h"
 #include "sessiontreeitem.h"
 #include "sessionitem.h"
-#include "messageview.h"
+#include "serveritem.h"
 #include "menufactory.h"
 #include "sharedtimer.h"
 #include "session.h"
@@ -143,7 +143,7 @@ void SessionTreeWidget::setStatusColor(SessionTreeWidget::ItemStatus status, con
     d.colors[status] = color;
 }
 
-SessionTreeItem* SessionTreeWidget::viewItem(MessageView* view) const
+SessionTreeItem* SessionTreeWidget::viewItem(SessionItem* view) const
 {
     return d.viewItems.value(view);
 }
@@ -153,41 +153,41 @@ SessionTreeItem* SessionTreeWidget::sessionItem(Session* session) const
     return d.sessionItems.value(session);
 }
 
-void SessionTreeWidget::addView(MessageView* view)
+void SessionTreeWidget::addView(SessionItem* view)
 {
     SessionTreeItem* item = 0;
-    if (view->viewType() == MessageView::ServerView) {
-        item = new SessionTreeItem(view->item(), this);
+    if (qobject_cast<ServerItem*>(view)) {
+        item = new SessionTreeItem(view, this);
         Session* session = view->session();
         connect(session, SIGNAL(nameChanged(QString)), this, SLOT(updateSession()));
         connect(session, SIGNAL(networkChanged(QString)), this, SLOT(updateSession()));
         d.sessionItems.insert(session, item);
     } else {
         SessionTreeItem* parent = d.sessionItems.value(view->session());
-        item = new SessionTreeItem(view->item(), parent);
+        item = new SessionTreeItem(view, parent);
     }
 
-    connect(view->item(), SIGNAL(activeChanged(bool)), this, SLOT(updateView()));
-    connect(view->item(), SIGNAL(nameChanged(QString)), this, SLOT(updateView()));
+    connect(view, SIGNAL(activeChanged(bool)), this, SLOT(updateView()));
+    connect(view, SIGNAL(nameChanged(QString)), this, SLOT(updateView()));
     d.viewItems.insert(view, item);
     updateView(view);
 }
 
-void SessionTreeWidget::removeView(MessageView* view)
+void SessionTreeWidget::removeView(SessionItem* view)
 {
-    if (view->viewType() == MessageView::ServerView)
+    if (qobject_cast<ServerItem*>(view))
         d.sessionItems.remove(view->session());
     delete d.viewItems.take(view);
 }
 
-void SessionTreeWidget::renameView(MessageView* view)
+void SessionTreeWidget::renameView(SessionItem* view)
 {
     SessionTreeItem* item = d.viewItems.value(view);
     if (item)
-        item->setText(0, view->item()->name());
+        item->setText(0, view->name());
 }
 
-void SessionTreeWidget::setCurrentView(MessageView* view)
+void SessionTreeWidget::setCurrentView(SessionItem* view)
 {
     SessionTreeItem* item = d.viewItems.value(view);
     if (item)
@@ -361,17 +361,17 @@ QMimeData* SessionTreeWidget::mimeData(const QList<QTreeWidgetItem*> items) cons
     return QTreeWidget::mimeData(items);
 }
 
-void SessionTreeWidget::updateView(MessageView* view)
+void SessionTreeWidget::updateView(SessionItem* view)
 {
     if (!view)
-        view = qobject_cast<MessageView*>(sender());
+        view = qobject_cast<SessionItem*>(sender());
     SessionTreeItem* item = d.viewItems.value(view);
     if (item) {
         if (!item->parent())
             item->setText(0, item->session()->name().isEmpty() ? item->session()->host() : item->session()->name());
         else
-            item->setText(0, view->item()->name());
-        // re-read MessageView::isActive()
+            item->setText(0, view->name());
+        // re-read SessionItem::isActive()
         item->emitDataChanged();
     }
 }

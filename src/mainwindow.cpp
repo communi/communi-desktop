@@ -160,13 +160,13 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
 
     SessionTabWidget* tab = tabWidget->sessionWidget(session);
     connect(tab, SIGNAL(viewAdded(MessageView*)), this, SLOT(viewAdded(MessageView*)));
-    connect(tab, SIGNAL(viewRemoved(MessageView*)), treeWidget, SLOT(removeView(MessageView*)));
-    connect(tab, SIGNAL(viewRenamed(MessageView*)), treeWidget, SLOT(renameView(MessageView*)));
-    connect(tab, SIGNAL(viewActivated(MessageView*)), treeWidget, SLOT(setCurrentView(MessageView*)));
+    connect(tab, SIGNAL(viewRemoved(MessageView*)), this, SLOT(viewRemoved(MessageView*)));
+    connect(tab, SIGNAL(viewRenamed(MessageView*)), this, SLOT(viewRenamed(MessageView*)));
+    connect(tab, SIGNAL(viewActivated(MessageView*)), this, SLOT(viewActivated(MessageView*)));
 
     if (MessageView* view = tab->viewAt(0)) {
-        treeWidget->addView(view);
-        treeWidget->setCurrentView(view);
+        treeWidget->addView(view->item());
+        treeWidget->setCurrentView(view->item());
         treeWidget->parentWidget()->show();
         view->applySettings(Application::settings());
     }
@@ -292,10 +292,25 @@ void MainWindow::viewAdded(MessageView* view)
         view->restoreSplitter(settings.value("list").toByteArray());
 
     Session* session = view->session();
-    treeWidget->addView(view);
+    treeWidget->addView(view->item());
     if (settings.contains("tree"))
         treeWidget->restoreState(settings.value("tree").toByteArray());
     treeWidget->expandItem(treeWidget->sessionItem(session));
+}
+
+void MainWindow::viewRemoved(MessageView* view)
+{
+    treeWidget->removeView(view->item());
+}
+
+void MainWindow::viewRenamed(MessageView* view)
+{
+    treeWidget->removeView(view->item());
+}
+
+void MainWindow::viewActivated(MessageView* view)
+{
+    treeWidget->setCurrentView(view->item());
 }
 
 void MainWindow::closeTreeItem(SessionTreeItem* item)

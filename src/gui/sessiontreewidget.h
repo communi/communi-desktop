@@ -23,7 +23,7 @@
 
 class Session;
 struct Settings;
-class MessageView;
+class SessionItem;
 class MenuFactory;
 class SessionTreeItem;
 
@@ -47,14 +47,14 @@ public:
     QColor statusColor(ItemStatus status) const;
     void setStatusColor(ItemStatus status, const QColor& color);
 
-    SessionTreeItem* viewItem(MessageView* view) const;
+    SessionTreeItem* viewItem(SessionItem* view) const;
     SessionTreeItem* sessionItem(Session* session) const;
 
 public slots:
-    void addView(MessageView* view);
-    void removeView(MessageView* view);
-    void renameView(MessageView* view);
-    void setCurrentView(MessageView* view);
+    void addView(SessionItem* view);
+    void removeView(SessionItem* view);
+    void renameView(SessionItem* view);
+    void setCurrentView(SessionItem* view);
 
     void moveToNextItem();
     void moveToPrevItem();
@@ -83,7 +83,7 @@ protected:
     QMimeData* mimeData(const QList<QTreeWidgetItem*> items) const;
 
 private slots:
-    void updateView(MessageView* view = 0);
+    void updateView(SessionItem* view = 0);
     void updateSession(Session* session = 0);
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
@@ -109,7 +109,7 @@ private:
         QShortcut* mostActiveShortcut;
         QHash<ItemStatus, QColor> colors;
         QSet<SessionTreeItem*> resetedItems;
-        QHash<MessageView*, SessionTreeItem*> viewItems;
+        QHash<SessionItem*, SessionTreeItem*> viewItems;
         QHash<Session*, SessionTreeItem*> sessionItems;
         mutable QTreeWidgetItem* dropParent;
     } d;
