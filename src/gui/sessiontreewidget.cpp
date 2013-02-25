@@ -144,11 +144,6 @@ void SessionTreeWidget::setStatusColor(SessionTreeWidget::ItemStatus status, con
     d.colors[status] = color;
 }
 
-SessionTreeItem* SessionTreeWidget::viewItem(SessionItem* view) const
-{
-    return d.viewItems.value(view);
-}
-
 SessionTreeItem* SessionTreeWidget::sessionItem(SessionModel* session) const
 {
     return d.sessionItems.value(session);

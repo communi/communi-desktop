@@ -48,7 +48,6 @@ public:
     QColor statusColor(ItemStatus status) const;
     void setStatusColor(ItemStatus status, const QColor& color);
 
-    SessionTreeItem* viewItem(SessionItem* view) const;
     SessionTreeItem* sessionItem(SessionModel* session) const;
 
 public slots:
