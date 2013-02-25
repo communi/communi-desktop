@@ -154,6 +154,5 @@ void SessionTabWidget::tabActivated(int index)
     if (view && isVisible()) {
         d.model.setCurrentItem(view->item());
         view->setFocus();
-        emit viewActivated(view);
     }
 }

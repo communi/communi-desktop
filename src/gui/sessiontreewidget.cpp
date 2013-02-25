@@ -154,6 +154,7 @@ void SessionTreeWidget::addView(SessionItem* view)
     SessionTreeItem* item = 0;
     if (qobject_cast<ServerItem*>(view)) {
         item = new SessionTreeItem(view, this);
+        connect(view->model(), SIGNAL(currentItemChanged(SessionItem*)), this, SLOT(setCurrentView(SessionItem*)));
         d.sessionItems.insert(view->model(), item);
     } else {
         SessionTreeItem* parent = d.sessionItems.value(view->model());

@@ -54,7 +54,6 @@ signals:
     void viewAdded(MessageView* view);
     void viewRemoved(MessageView* view);
     void viewRenamed(MessageView* view);
-    void viewActivated(MessageView* view);
 
 private slots:
     void tabActivated(int index);

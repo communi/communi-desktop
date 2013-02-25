@@ -162,7 +162,6 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     connect(tab, SIGNAL(viewAdded(MessageView*)), this, SLOT(viewAdded(MessageView*)));
     connect(tab, SIGNAL(viewRemoved(MessageView*)), this, SLOT(viewRemoved(MessageView*)));
     connect(tab, SIGNAL(viewRenamed(MessageView*)), this, SLOT(viewRenamed(MessageView*)));
-    connect(tab, SIGNAL(viewActivated(MessageView*)), this, SLOT(viewActivated(MessageView*)));
 
     if (MessageView* view = tab->viewAt(0)) {
         treeWidget->addView(view->item());
@@ -305,11 +304,6 @@ void MainWindow::viewRemoved(MessageView* view)
 void MainWindow::viewRenamed(MessageView* view)
 {
     treeWidget->removeView(view->item());
-}
-
-void MainWindow::viewActivated(MessageView* view)
-{
-    treeWidget->setCurrentView(view->item());
 }
 
 void MainWindow::closeTreeItem(SessionTreeItem* item)
