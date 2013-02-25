@@ -300,14 +300,11 @@ void MainWindow::viewAdded(MessageView* view)
 
 void MainWindow::closeTreeItem(SessionTreeItem* item)
 {
-    SessionTabWidget* tab = tabWidget->sessionWidget(item->session());
-    if (tab) {
-        int index = tab->indexOf(item->view());
-        tab->closeView(index);
-        if (index == 0) {
-            tabWidget->removeSession(tab->session());
-            treeWidget->parentWidget()->setVisible(!tabWidget->sessions().isEmpty());
-        }
+    if (!item->parent()) {
+        tabWidget->removeSession(item->session());
+        treeWidget->parentWidget()->setVisible(!tabWidget->sessions().isEmpty());
+    } else if (SessionTabWidget* tab = tabWidget->sessionWidget(item->session())) {
+        tab->removeView(item->modelItem()->name());
     }
 }
 

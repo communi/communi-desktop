@@ -157,14 +157,14 @@ void SessionTreeWidget::addView(MessageView* view)
 {
     SessionTreeItem* item = 0;
     if (view->viewType() == MessageView::ServerView) {
-        item = new SessionTreeItem(view, this);
+        item = new SessionTreeItem(view->item(), this);
         Session* session = view->session();
         connect(session, SIGNAL(nameChanged(QString)), this, SLOT(updateSession()));
         connect(session, SIGNAL(networkChanged(QString)), this, SLOT(updateSession()));
         d.sessionItems.insert(session, item);
     } else {
         SessionTreeItem* parent = d.sessionItems.value(view->session());
-        item = new SessionTreeItem(view, parent);
+        item = new SessionTreeItem(view->item(), parent);
     }
 
     connect(view->item(), SIGNAL(activeChanged(bool)), this, SLOT(updateView()));
