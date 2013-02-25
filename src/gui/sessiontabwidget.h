@@ -31,6 +31,7 @@ public:
     SessionTabWidget(Session* session, QWidget* parent = 0);
 
     Session* session() const;
+    SessionModel* model() const;
 
     MessageView* currentView() const;
     MessageView* viewAt(int index) const;

@@ -36,6 +36,11 @@ Session* SessionTabWidget::session() const
     return qobject_cast<Session*>(d.model.session());
 }
 
+SessionModel* SessionTabWidget::model() const
+{
+    return const_cast<SessionModel*>(&d.model);
+}
+
 MessageView* SessionTabWidget::currentView() const
 {
     return qobject_cast<MessageView*>(currentWidget());
