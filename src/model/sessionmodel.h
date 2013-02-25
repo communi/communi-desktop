@@ -58,6 +58,7 @@ public slots:
 signals:
     void itemAdded(SessionItem* item);
     void itemRemoved(SessionItem* item);
+    void currentItemChanged(SessionItem* item);
 
 protected:
     void handleInviteMessage(IrcInviteMessage* message);

@@ -127,7 +127,13 @@ SessionItem* SessionModel::currentItem() const
 
 void SessionModel::setCurrentItem(SessionItem* item)
 {
-    d.current = item ? item : d.server;
+    if (!item)
+        item = d.server;
+
+    if (d.current != item) {
+        d.current = item;
+        emit currentItemChanged(item);
+    }
 }
 
 void SessionModel::handleMessage(IrcMessage* message)
