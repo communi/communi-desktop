@@ -254,9 +254,7 @@ void MainWindow::highlighted(IrcMessage* message)
 
     MessageView* view = qobject_cast<MessageView*>(sender());
     if (view) {
-        SessionTreeItem* item = treeWidget->sessionItem(view->item()->model());
-        if (view->viewType() != MessageView::ServerView)
-            item = item->findChild(view->item()->name());
+        SessionTreeItem* item = treeWidget->treeItem(view->item());
         if (item) {
             item->setHighlighted(true);
             item->setBadge(item->badge() + 1);
@@ -269,9 +267,7 @@ void MainWindow::missed(IrcMessage* message)
     Q_UNUSED(message);
     MessageView* view = qobject_cast<MessageView*>(sender());
     if (view) {
-        SessionTreeItem* item = treeWidget->sessionItem(view->item()->model());
-        if (view->viewType() != MessageView::ServerView)
-            item = item->findChild(view->item()->name());
+        SessionTreeItem* item = treeWidget->treeItem(view->item());
         if (item)
             item->setBadge(item->badge() + 1);
     }
