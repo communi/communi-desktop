@@ -108,7 +108,6 @@ void SessionTabWidget::removeView(const QString& receiver)
     MessageView* view = d.views.take(receiver.toLower());
     if (view) {
         view->deleteLater();
-        emit viewRemoved(view);
         d.model.removeItem(view->item()->name());
     }
 }
@@ -135,7 +134,6 @@ void SessionTabWidget::renameView(const QString& from, const QString& to)
     if (view) {
         view->item()->setName(to);
         d.views.insert(to.toLower(), view);
-        emit viewRenamed(view);
     }
 }
 

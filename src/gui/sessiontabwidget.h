@@ -52,8 +52,6 @@ signals:
     void splitterChanged(const QByteArray& state);
 
     void viewAdded(MessageView* view);
-    void viewRemoved(MessageView* view);
-    void viewRenamed(MessageView* view);
 
 private slots:
     void tabActivated(int index);
