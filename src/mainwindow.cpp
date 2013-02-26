@@ -285,16 +285,6 @@ void MainWindow::viewAdded(MessageView* view)
         view->restoreSplitter(settings.value("list").toByteArray());
 }
 
-void MainWindow::closeTreeItem(SessionTreeItem* item)
-{
-    if (!item->parent()) {
-        tabWidget->removeSession(item->session());
-        treeWidget->parentWidget()->setVisible(!tabWidget->sessions().isEmpty());
-    } else if (SessionTabWidget* tab = tabWidget->sessionWidget(item->session())) {
-        tab->removeView(item->modelItem()->name());
-    }
-}
-
 void MainWindow::currentTreeItemChanged(Session* session, const QString& view)
 {
     SessionTabWidget* tab = tabWidget->sessionWidget(session);
@@ -383,7 +373,6 @@ void MainWindow::createTree()
     treeWidget->setFocusPolicy(Qt::NoFocus);
 
     connect(treeWidget, SIGNAL(editSession(Session*)), this, SLOT(editSession(Session*)));
-    connect(treeWidget, SIGNAL(closeItem(SessionTreeItem*)), this, SLOT(closeTreeItem(SessionTreeItem*)));
     connect(treeWidget, SIGNAL(currentViewChanged(Session*, QString)), this, SLOT(currentTreeItemChanged(Session*, QString)));
 
     ToolBar* toolBar = new ToolBar(container);

@@ -208,7 +208,7 @@ private slots:
 
     void onCloseTriggered()
     {
-        QMetaObject::invokeMethod(tree, "closeItem", Q_ARG(SessionTreeItem*, item));
+        tree->removeView(item->modelItem());
     }
 
 private:

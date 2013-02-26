@@ -55,6 +55,7 @@ signals:
 private slots:
     void tabActivated(int index);
     MessageView* addView(SessionItem* item);
+    void removeView(SessionItem* item);
 
 private:
     struct SessionTabWidgetData {

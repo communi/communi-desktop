@@ -26,6 +26,7 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) : QStacked
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
 
     connect(&d.model, SIGNAL(itemAdded(SessionItem*)), this, SLOT(addView(SessionItem*)));
+    connect(&d.model, SIGNAL(itemRemoved(SessionItem*)), this, SLOT(removeView(SessionItem*)));
 
     MessageView* view = addView(d.model.server());
     setCurrentWidget(view);
@@ -108,7 +109,16 @@ void SessionTabWidget::removeView(const QString& receiver)
     MessageView* view = d.views.take(receiver.toLower());
     if (view) {
         view->deleteLater();
-        d.model.removeItem(view->item()->name());
+        d.model.removeItem(receiver);
+    }
+}
+
+void SessionTabWidget::removeView(SessionItem* item)
+{
+    // TODO: refactor
+    for (int i = 0; i < count(); ++i) {
+        if (viewAt(i)->item() == item)
+            closeView(i);
     }
 }
 

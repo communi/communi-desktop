@@ -168,6 +168,7 @@ void SessionTreeWidget::removeView(SessionItem* view)
 {
     if (qobject_cast<ServerItem*>(view))
         d.sessionItems.remove(view->model());
+    view->model()->removeItem(view->name());
     delete d.viewItems.take(view);
 }
 

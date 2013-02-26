@@ -72,7 +72,6 @@ public slots:
 
 signals:
     void editSession(Session* session);
-    void closeItem(SessionTreeItem* item);
     void currentViewChanged(Session* session, const QString& view);
 
 protected:
