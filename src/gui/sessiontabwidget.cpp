@@ -128,15 +128,6 @@ void SessionTabWidget::closeView(int index)
     }
 }
 
-void SessionTabWidget::renameView(const QString& from, const QString& to)
-{
-    MessageView* view = d.views.take(from.toLower());
-    if (view) {
-        view->item()->setName(to);
-        d.views.insert(to.toLower(), view);
-    }
-}
-
 void SessionTabWidget::sendMessage(const QString& receiver, const QString& message)
 {
     MessageView* view = addView(receiver);

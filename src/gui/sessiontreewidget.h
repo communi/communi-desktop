@@ -53,7 +53,6 @@ public:
 public slots:
     void addView(SessionItem* view);
     void removeView(SessionItem* view);
-    void renameView(SessionItem* view);
     void setCurrentView(SessionItem* view);
 
     void moveToNextItem();

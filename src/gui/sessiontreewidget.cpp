@@ -171,13 +171,6 @@ void SessionTreeWidget::removeView(SessionItem* view)
     delete d.viewItems.take(view);
 }
 
-void SessionTreeWidget::renameView(SessionItem* view)
-{
-    SessionTreeItem* item = d.viewItems.value(view);
-    if (item)
-        item->setText(0, view->name());
-}
-
 void SessionTreeWidget::setCurrentView(SessionItem* view)
 {
     SessionTreeItem* item = d.viewItems.value(view);

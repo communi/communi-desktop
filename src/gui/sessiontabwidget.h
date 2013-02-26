@@ -45,7 +45,6 @@ public slots:
     void openView(const QString& receiver);
     void removeView(const QString& receiver);
     void closeView(int index);
-    void renameView(const QString& from, const QString& to);
     void sendMessage(const QString& receiver, const QString& message);
 
 signals:
