@@ -17,7 +17,6 @@
 #include "userlistview.h"
 #include "sessiontreeitem.h"
 #include "sessiontreewidget.h"
-#include "channelitem.h"
 #include "usermodel.h"
 #include "session.h"
 #include <IrcCommand>
@@ -208,7 +207,7 @@ private slots:
 
     void onCloseTriggered()
     {
-        tree->removeView(item->modelItem());
+        QMetaObject::invokeMethod(tree, "closeItem", Q_ARG(SessionTreeItem*, item));
     }
 
 private:
@@ -229,7 +228,7 @@ QMenu* MenuFactory::createSessionTreeMenu(SessionTreeItem* item, SessionTreeWidg
         menu->addSeparator();
     } else if (active){
         if (item->session()->isChannel(item->text(0))) {
-            if (static_cast<ChannelItem*>(item->modelItem())->userModel()->rowCount()) {
+            if (item->view()->userModel()->rowCount()) {
                 menu->addAction(tr("Names"), menu, SLOT(onNamesTriggered()));
                 menu->addAction(tr("Part"), menu, SLOT(onPartTriggered()));
             } else {

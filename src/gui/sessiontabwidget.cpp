@@ -13,33 +13,29 @@
 */
 
 #include "sessiontabwidget.h"
-#include "channelitem.h"
-#include "serveritem.h"
 #include "messageview.h"
 #include "session.h"
 #include <irccommand.h>
 
 SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) : QStackedWidget(parent)
 {
-    d.model.setSession(session);
+    d.handler.setSession(session);
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
 
-    connect(&d.model, SIGNAL(itemAdded(SessionItem*)), this, SLOT(addView(SessionItem*)));
-    connect(&d.model, SIGNAL(itemRemoved(SessionItem*)), this, SLOT(removeView(SessionItem*)));
+    connect(&d.handler, SIGNAL(receiverToBeAdded(QString)), this, SLOT(addView(QString)));
+    connect(&d.handler, SIGNAL(receiverToBeRemoved(QString)), this, SLOT(removeView(QString)));
+    connect(&d.handler, SIGNAL(receiverToBeRenamed(QString, QString)), this, SLOT(renameView(QString, QString)));
 
-    MessageView* view = addView(d.model.server());
+    MessageView* view = addView(d.handler.session()->host());
+    d.handler.setDefaultReceiver(view);
+    d.handler.setCurrentReceiver(view);
     setCurrentWidget(view);
 }
 
 Session* SessionTabWidget::session() const
 {
-    return qobject_cast<Session*>(d.model.session());
-}
-
-SessionModel* SessionTabWidget::model() const
-{
-    return const_cast<SessionModel*>(&d.model);
+    return qobject_cast<Session*>(d.handler.session());
 }
 
 MessageView* SessionTabWidget::currentView() const
@@ -73,27 +69,26 @@ void SessionTabWidget::restoreSplitter(const QByteArray& state)
 
 MessageView* SessionTabWidget::addView(const QString& receiver)
 {
-    QString lower = receiver.toLower();
-    if (!d.views.contains(lower))
-        d.model.addItem(receiver);
-    return d.views.value(lower);
-}
+    MessageView* view = d.views.value(receiver.toLower());
+    if (!view) {
+        MessageView::ViewType type = MessageView::ServerView;
+        if (!d.views.isEmpty())
+            type = session()->isChannel(receiver) ? MessageView::ChannelView : MessageView::QueryView;
+        view = new MessageView(type, d.handler.session(), this);
+        view->setReceiver(receiver);
+        connect(view, SIGNAL(queried(QString)), this, SLOT(addView(QString)));
+        connect(view, SIGNAL(queried(QString)), this, SLOT(openView(QString)));
+        connect(view, SIGNAL(messaged(QString,QString)), this, SLOT(sendMessage(QString,QString)));
+        connect(view, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
 
-MessageView* SessionTabWidget::addView(SessionItem* item)
-{
-    MessageView* view = new MessageView(item, this);
-    connect(view, SIGNAL(queried(QString)), this, SLOT(addView(QString)));
-    connect(view, SIGNAL(queried(QString)), this, SLOT(openView(QString)));
-    connect(view, SIGNAL(messaged(QString,QString)), this, SLOT(sendMessage(QString,QString)));
-    connect(view, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
+        d.handler.addReceiver(receiver, view);
+        d.views.insert(receiver.toLower(), view);
+        addWidget(view);
+        emit viewAdded(view);
 
-    d.views.insert(item->name().toLower(), view);
-    addWidget(view);
-    emit viewAdded(view);
-
-    if (qobject_cast<ChannelItem*>(item))
-        openView(item->name());
-
+        if (d.handler.session()->isChannel(receiver))
+            openView(receiver);
+    }
     return view;
 }
 
@@ -109,16 +104,8 @@ void SessionTabWidget::removeView(const QString& receiver)
     MessageView* view = d.views.take(receiver.toLower());
     if (view) {
         view->deleteLater();
-        d.model.removeItem(receiver);
-    }
-}
-
-void SessionTabWidget::removeView(SessionItem* item)
-{
-    // TODO: refactor
-    for (int i = 0; i < count(); ++i) {
-        if (viewAt(i)->item() == item)
-            closeView(i);
+        emit viewRemoved(view);
+        d.handler.removeReceiver(view->receiver());
     }
 }
 
@@ -126,15 +113,25 @@ void SessionTabWidget::closeView(int index)
 {
     MessageView* view = viewAt(index);
     if (view) {
-        if (view->item()->isActive()) {
+        if (view->isActive()) {
             QString reason = tr("%1 %2").arg(QApplication::applicationName())
                              .arg(QApplication::applicationVersion());
             if (indexOf(view) == 0)
                 session()->quit(reason);
             else if (view->viewType() == MessageView::ChannelView)
-                d.model.session()->sendCommand(IrcCommand::createPart(view->item()->name(), reason));
+                d.handler.session()->sendCommand(IrcCommand::createPart(view->receiver(), reason));
         }
-        removeView(view->item()->name());
+        d.handler.removeReceiver(view->receiver());
+    }
+}
+
+void SessionTabWidget::renameView(const QString& from, const QString& to)
+{
+    MessageView* view = d.views.take(from.toLower());
+    if (view) {
+        view->setReceiver(to);
+        d.views.insert(to.toLower(), view);
+        emit viewRenamed(view);
     }
 }
 
@@ -151,7 +148,8 @@ void SessionTabWidget::tabActivated(int index)
 {
     MessageView* view = viewAt(index);
     if (view && isVisible()) {
-        d.model.setCurrentItem(view->item());
+        d.handler.setCurrentReceiver(view);
         view->setFocus();
+        emit viewActivated(view);
     }
 }

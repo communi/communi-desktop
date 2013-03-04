@@ -15,9 +15,7 @@
 #include "sessiontreewidget.h"
 #include "sessiontreedelegate.h"
 #include "sessiontreeitem.h"
-#include "sessionmodel.h"
-#include "sessionitem.h"
-#include "serveritem.h"
+#include "messageview.h"
 #include "menufactory.h"
 #include "sharedtimer.h"
 #include "session.h"
@@ -107,8 +105,15 @@ QByteArray SessionTreeWidget::saveState() const
 
 void SessionTreeWidget::restoreState(const QByteArray& state)
 {
+    QVariantHash sortOrders;
     QDataStream in(state);
-    in >> d.sortOrders;
+    in >> sortOrders;
+
+    for (int i = 0; i < topLevelItemCount(); ++i) {
+        SessionTreeItem* item = static_cast<SessionTreeItem*>(topLevelItem(i));
+        item->d.sortOrder = sortOrders.value(item->text(0)).toStringList();
+        item->sortChildren(0, Qt::AscendingOrder);
+    }
 }
 
 MenuFactory* SessionTreeWidget::menuFactory() const
@@ -137,42 +142,51 @@ void SessionTreeWidget::setStatusColor(SessionTreeWidget::ItemStatus status, con
     d.colors[status] = color;
 }
 
-SessionTreeItem* SessionTreeWidget::treeItem(SessionItem* item) const
+SessionTreeItem* SessionTreeWidget::viewItem(MessageView* view) const
 {
-    return d.viewItems.value(item);
+    return d.viewItems.value(view);
 }
 
-void SessionTreeWidget::addView(SessionItem* view)
+SessionTreeItem* SessionTreeWidget::sessionItem(Session* session) const
+{
+    return d.sessionItems.value(session);
+}
+
+void SessionTreeWidget::addView(MessageView* view)
 {
     SessionTreeItem* item = 0;
-    if (qobject_cast<ServerItem*>(view)) {
+    if (view->viewType() == MessageView::ServerView) {
         item = new SessionTreeItem(view, this);
-        connect(view->model(), SIGNAL(itemAdded(SessionItem*)), this, SLOT(addView(SessionItem*)));
-        connect(view->model(), SIGNAL(itemRemoved(SessionItem*)), this, SLOT(removeView(SessionItem*)));
-        connect(view->model(), SIGNAL(currentItemChanged(SessionItem*)), this, SLOT(setCurrentView(SessionItem*)));
-        d.sessionItems.insert(view->model(), item);
+        Session* session = view->session();
+        connect(session, SIGNAL(nameChanged(QString)), this, SLOT(updateSession()));
+        connect(session, SIGNAL(networkChanged(QString)), this, SLOT(updateSession()));
+        d.sessionItems.insert(session, item);
     } else {
-        SessionTreeItem* parent = d.sessionItems.value(view->model());
+        SessionTreeItem* parent = d.sessionItems.value(view->session());
         item = new SessionTreeItem(view, parent);
-        parent->sortChildren(0, Qt::AscendingOrder);
-        expandItem(parent);
     }
 
-    connect(view, SIGNAL(activeChanged(bool)), this, SLOT(updateView()));
-    connect(view, SIGNAL(nameChanged(QString)), this, SLOT(updateView()));
+    connect(view, SIGNAL(activeChanged()), this, SLOT(updateView()));
+    connect(view, SIGNAL(receiverChanged(QString)), this, SLOT(updateView()));
     d.viewItems.insert(view, item);
     updateView(view);
 }
 
-void SessionTreeWidget::removeView(SessionItem* view)
+void SessionTreeWidget::removeView(MessageView* view)
 {
-    if (qobject_cast<ServerItem*>(view))
-        d.sessionItems.remove(view->model());
-    view->model()->removeItem(view->name());
+    if (view->viewType() == MessageView::ServerView)
+        d.sessionItems.remove(view->session());
     delete d.viewItems.take(view);
 }
 
-void SessionTreeWidget::setCurrentView(SessionItem* view)
+void SessionTreeWidget::renameView(MessageView* view)
+{
+    SessionTreeItem* item = d.viewItems.value(view);
+    if (item)
+        item->setText(0, view->receiver());
+}
+
+void SessionTreeWidget::setCurrentView(MessageView* view)
 {
     SessionTreeItem* item = d.viewItems.value(view);
     if (item)
@@ -346,21 +360,28 @@ QMimeData* SessionTreeWidget::mimeData(const QList<QTreeWidgetItem*> items) cons
     return QTreeWidget::mimeData(items);
 }
 
-void SessionTreeWidget::updateView(SessionItem* view)
+void SessionTreeWidget::updateView(MessageView* view)
 {
     if (!view)
-        view = qobject_cast<SessionItem*>(sender());
+        view = qobject_cast<MessageView*>(sender());
     SessionTreeItem* item = d.viewItems.value(view);
     if (item) {
-        if (!item->parent()) {
+        if (!item->parent())
             item->setText(0, item->session()->name().isEmpty() ? item->session()->host() : item->session()->name());
-            item->d.sortOrder = d.sortOrders.value(item->text(0)).toStringList();
-        } else {
-            item->setText(0, view->name());
-        }
-        // re-read SessionItem::isActive()
+        else
+            item->setText(0, view->receiver());
+        // re-read MessageView::isActive()
         item->emitDataChanged();
     }
+}
+
+void SessionTreeWidget::updateSession(Session* session)
+{
+    if (!session)
+        session = qobject_cast<Session*>(sender());
+    SessionTreeItem* item = d.sessionItems.value(session);
+    if (item)
+        item->setText(0, session->name().isEmpty() ? session->host() : session->name());
 }
 
 void SessionTreeWidget::onItemExpanded(QTreeWidgetItem* item)

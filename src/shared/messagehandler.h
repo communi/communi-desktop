@@ -12,8 +12,8 @@
 * GNU General Public License for more details.
 */
 
-#ifndef SESSIONMODEL_H
-#define SESSIONMODEL_H
+#ifndef MESSAGEHANDLER_H
+#define MESSAGEHANDLER_H
 
 #include <QHash>
 #include <QObject>
@@ -21,44 +21,35 @@
 #include <IrcMessage>
 
 class Session;
-class QueryItem;
-class ServerItem;
-class ChannelItem;
-class SessionItem;
+class MessageReceiver;
 
-class SessionModel : public QObject
+class MessageHandler : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit SessionModel(QObject* parent = 0);
-    virtual ~SessionModel();
+    explicit MessageHandler(QObject* parent = 0);
+    virtual ~MessageHandler();
 
     Session* session() const;
     void setSession(Session* session);
 
-    ServerItem* server() const;
+    MessageReceiver* defaultReceiver() const;
+    void setDefaultReceiver(MessageReceiver* receiver);
 
-    QList<ChannelItem*> channels() const;
-    ChannelItem* channel(const QString& name) const;
+    MessageReceiver* currentReceiver() const;
+    void setCurrentReceiver(MessageReceiver* receiver);
 
-    QList<QueryItem*> queries() const;
-    QueryItem* query(const QString& name) const;
-
-    SessionItem* item(const QString& name);
-    SessionItem* addItem(const QString& name);
-    void removeItem(const QString& name);
-
-    SessionItem* currentItem() const;
-    void setCurrentItem(SessionItem* item);
+    void addReceiver(const QString& name, MessageReceiver* receiver);
+    void removeReceiver(const QString& name);
 
 public slots:
     void handleMessage(IrcMessage* message);
 
 signals:
-    void itemAdded(SessionItem* item);
-    void itemRemoved(SessionItem* item);
-    void currentItemChanged(SessionItem* item);
+    void receiverToBeAdded(const QString& name);
+    void receiverToBeRenamed(const QString& from, const QString& to);
+    void receiverToBeRemoved(const QString& name);
 
 protected:
     void handleInviteMessage(IrcInviteMessage* message);
@@ -75,17 +66,16 @@ protected:
     void handleTopicMessage(IrcTopicMessage* message);
     void handleUnknownMessage(IrcMessage* message);
 
+    void sendMessage(IrcMessage* message, MessageReceiver* receiver);
     void sendMessage(IrcMessage* message, const QString& receiver);
 
 private:
     struct Private {
         QPointer<Session> session;
-        ServerItem* server;
-        QList<ChannelItem*> channels;
-        QList<QueryItem*> queries;
-        QHash<QString, SessionItem*> items;
-        SessionItem* current;
+        MessageReceiver* defaultReceiver;
+        MessageReceiver* currentReceiver;
+        QHash<QString, MessageReceiver*> receivers;
     } d;
 };
 
-#endif // SESSIONMODEL_H
+#endif // MESSAGEHANDLER_H

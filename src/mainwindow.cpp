@@ -23,7 +23,6 @@
 #include "addviewdialog.h"
 #include "searchpopup.h"
 #include "messageview.h"
-#include "sessionitem.h"
 #include "homepage.h"
 #include "overlay.h"
 #include "toolbar.h"
@@ -160,10 +159,13 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
 
     SessionTabWidget* tab = tabWidget->sessionWidget(session);
     connect(tab, SIGNAL(viewAdded(MessageView*)), this, SLOT(viewAdded(MessageView*)));
+    connect(tab, SIGNAL(viewRemoved(MessageView*)), treeWidget, SLOT(removeView(MessageView*)));
+    connect(tab, SIGNAL(viewRenamed(MessageView*)), treeWidget, SLOT(renameView(MessageView*)));
+    connect(tab, SIGNAL(viewActivated(MessageView*)), treeWidget, SLOT(setCurrentView(MessageView*)));
 
     if (MessageView* view = tab->viewAt(0)) {
-        treeWidget->addView(view->item());
-        treeWidget->setCurrentView(view->item());
+        treeWidget->addView(view);
+        treeWidget->setCurrentView(view);
         treeWidget->parentWidget()->show();
         view->applySettings(Application::settings());
     }
@@ -254,7 +256,9 @@ void MainWindow::highlighted(IrcMessage* message)
 
     MessageView* view = qobject_cast<MessageView*>(sender());
     if (view) {
-        SessionTreeItem* item = treeWidget->treeItem(view->item());
+        SessionTreeItem* item = treeWidget->sessionItem(view->session());
+        if (view->viewType() != MessageView::ServerView)
+            item = item->findChild(view->receiver());
         if (item) {
             item->setHighlighted(true);
             item->setBadge(item->badge() + 1);
@@ -267,7 +271,9 @@ void MainWindow::missed(IrcMessage* message)
     Q_UNUSED(message);
     MessageView* view = qobject_cast<MessageView*>(sender());
     if (view) {
-        SessionTreeItem* item = treeWidget->treeItem(view->item());
+        SessionTreeItem* item = treeWidget->sessionItem(view->session());
+        if (view->viewType() != MessageView::ServerView)
+            item = item->findChild(view->receiver());
         if (item)
             item->setBadge(item->badge() + 1);
     }
@@ -283,6 +289,25 @@ void MainWindow::viewAdded(MessageView* view)
     QSettings settings;
     if (settings.contains("list"))
         view->restoreSplitter(settings.value("list").toByteArray());
+
+    Session* session = view->session();
+    treeWidget->addView(view);
+    if (settings.contains("tree"))
+        treeWidget->restoreState(settings.value("tree").toByteArray());
+    treeWidget->expandItem(treeWidget->sessionItem(session));
+}
+
+void MainWindow::closeTreeItem(SessionTreeItem* item)
+{
+    SessionTabWidget* tab = tabWidget->sessionWidget(item->session());
+    if (tab) {
+        int index = tab->indexOf(item->view());
+        tab->closeView(index);
+        if (index == 0) {
+            tabWidget->removeSession(tab->session());
+            treeWidget->parentWidget()->setVisible(!tabWidget->sessions().isEmpty());
+        }
+    }
 }
 
 void MainWindow::currentTreeItemChanged(Session* session, const QString& view)
@@ -373,6 +398,7 @@ void MainWindow::createTree()
     treeWidget->setFocusPolicy(Qt::NoFocus);
 
     connect(treeWidget, SIGNAL(editSession(Session*)), this, SLOT(editSession(Session*)));
+    connect(treeWidget, SIGNAL(closeItem(SessionTreeItem*)), this, SLOT(closeTreeItem(SessionTreeItem*)));
     connect(treeWidget, SIGNAL(currentViewChanged(Session*, QString)), this, SLOT(currentTreeItemChanged(Session*, QString)));
 
     ToolBar* toolBar = new ToolBar(container);
@@ -390,10 +416,7 @@ void MainWindow::createTree()
     container->setMinimumWidth(toolBar->sizeHint().width());
     splitter->insertWidget(0, container);
     splitter->setStretchFactor(1, 1);
-
     QSettings settings;
-    if (settings.contains("tree"))
-        treeWidget->restoreState(settings.value("tree").toByteArray());
     if (settings.contains("splitter"))
         splitter->restoreState(settings.value("splitter").toByteArray());
 }

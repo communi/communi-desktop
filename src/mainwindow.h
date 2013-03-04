@@ -57,6 +57,7 @@ private slots:
     void highlighted(IrcMessage* message);
     void missed(IrcMessage* message);
     void viewAdded(MessageView* view);
+    void closeTreeItem(SessionTreeItem* item);
     void currentTreeItemChanged(Session* session, const QString& view);
     void splitterChanged(const QByteArray& state);
     void updateSession(Session* session = 0);

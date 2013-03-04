@@ -15,9 +15,9 @@
 #ifndef SESSIONTABWIDGET_H
 #define SESSIONTABWIDGET_H
 
-#include <QHash>
 #include <QStackedWidget>
-#include "sessionmodel.h"
+#include "messagehandler.h"
+#include <QHash>
 
 class Session;
 class IrcMessage;
@@ -31,7 +31,6 @@ public:
     SessionTabWidget(Session* session, QWidget* parent = 0);
 
     Session* session() const;
-    SessionModel* model() const;
 
     MessageView* currentView() const;
     MessageView* viewAt(int index) const;
@@ -45,21 +44,23 @@ public slots:
     void openView(const QString& receiver);
     void removeView(const QString& receiver);
     void closeView(int index);
+    void renameView(const QString& from, const QString& to);
     void sendMessage(const QString& receiver, const QString& message);
 
 signals:
     void splitterChanged(const QByteArray& state);
 
     void viewAdded(MessageView* view);
+    void viewRemoved(MessageView* view);
+    void viewRenamed(MessageView* view);
+    void viewActivated(MessageView* view);
 
 private slots:
     void tabActivated(int index);
-    MessageView* addView(SessionItem* item);
-    void removeView(SessionItem* item);
 
 private:
     struct SessionTabWidgetData {
-        SessionModel model;
+        MessageHandler handler;
         QHash<QString, MessageView*> views;
     } d;
 };

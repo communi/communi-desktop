@@ -14,21 +14,21 @@
 
 #include "sessiontreeitem.h"
 #include "sessiontreewidget.h"
-#include "sessionitem.h"
+#include "messageview.h"
 
-SessionTreeItem::SessionTreeItem(SessionItem* modelItem, QTreeWidget* parent) : QTreeWidgetItem(parent)
+SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidget* parent) : QTreeWidgetItem(parent)
 {
-    d.modelItem = modelItem;
+    d.view = view;
     d.highlighted = false;
-    setText(0, modelItem->name());
+    setText(0, view->receiver());
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDropEnabled);
 }
 
-SessionTreeItem::SessionTreeItem(SessionItem* modelItem, QTreeWidgetItem* parent) : QTreeWidgetItem(parent)
+SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidgetItem* parent) : QTreeWidgetItem(parent)
 {
-    d.modelItem = modelItem;
+    d.view = view;
     d.highlighted = false;
-    setText(0, modelItem->name());
+    setText(0, view->receiver());
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
 }
 
@@ -43,12 +43,12 @@ SessionTreeItem::~SessionTreeItem()
 
 Session* SessionTreeItem::session() const
 {
-    return d.modelItem->session();
+    return d.view->session();
 }
 
-SessionItem* SessionTreeItem::modelItem() const
+MessageView* SessionTreeItem::view() const
 {
-    return d.modelItem;
+    return d.view;
 }
 
 SessionTreeItem* SessionTreeItem::findChild(const QString& name) const
@@ -63,7 +63,7 @@ QVariant SessionTreeItem::data(int column, int role) const
 {
     if (role == Qt::ForegroundRole) {
         SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget());
-        if (!d.modelItem->isActive())
+        if (!d.view->isActive())
             return tw->statusColor(SessionTreeWidget::Inactive);
         if (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty()))
             return tw->statusColor(SessionTreeWidget::Highlight);

@@ -23,9 +23,8 @@
 
 class Session;
 struct Settings;
-class SessionItem;
+class MessageView;
 class MenuFactory;
-class SessionModel;
 class SessionTreeItem;
 
 class SessionTreeWidget : public QTreeWidget
@@ -48,12 +47,14 @@ public:
     QColor statusColor(ItemStatus status) const;
     void setStatusColor(ItemStatus status, const QColor& color);
 
-    SessionTreeItem* treeItem(SessionItem* item) const;
+    SessionTreeItem* viewItem(MessageView* view) const;
+    SessionTreeItem* sessionItem(Session* session) const;
 
 public slots:
-    void addView(SessionItem* view);
-    void removeView(SessionItem* view);
-    void setCurrentView(SessionItem* view);
+    void addView(MessageView* view);
+    void removeView(MessageView* view);
+    void renameView(MessageView* view);
+    void setCurrentView(MessageView* view);
 
     void moveToNextItem();
     void moveToPrevItem();
@@ -72,6 +73,7 @@ public slots:
 
 signals:
     void editSession(Session* session);
+    void closeItem(SessionTreeItem* item);
     void currentViewChanged(Session* session, const QString& view);
 
 protected:
@@ -81,7 +83,8 @@ protected:
     QMimeData* mimeData(const QList<QTreeWidgetItem*> items) const;
 
 private slots:
-    void updateView(SessionItem* view = 0);
+    void updateView(MessageView* view = 0);
+    void updateSession(Session* session = 0);
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
@@ -106,10 +109,9 @@ private:
         QShortcut* mostActiveShortcut;
         QHash<ItemStatus, QColor> colors;
         QSet<SessionTreeItem*> resetedItems;
-        QHash<SessionItem*, SessionTreeItem*> viewItems;
-        QHash<SessionModel*, SessionTreeItem*> sessionItems;
+        QHash<MessageView*, SessionTreeItem*> viewItems;
+        QHash<Session*, SessionTreeItem*> sessionItems;
         mutable QTreeWidgetItem* dropParent;
-        QVariantHash sortOrders;
     } d;
     friend class SessionTreeItem;
 };

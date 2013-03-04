@@ -12,20 +12,23 @@
 * GNU General Public License for more details.
 */
 
-#ifndef SERVERITEM_H
-#define SERVERITEM_H
+#ifndef MESSAGERECEIVER_H
+#define MESSAGERECEIVER_H
 
-#include "sessionitem.h"
+#include <QString>
 
-class ServerItem : public SessionItem
+class IrcMessage;
+
+class MessageReceiver
 {
-    Q_OBJECT
-
 public:
-    ServerItem(SessionModel* model);
-    ~ServerItem();
+    virtual ~MessageReceiver() {}
 
-    virtual void receiveMessage(IrcMessage* message);
+    virtual QString receiver() const = 0;
+    virtual void setReceiver(const QString& receiver) = 0;
+
+    virtual void receiveMessage(IrcMessage* message) = 0;
+    virtual bool hasUser(const QString& user) const = 0;
 };
 
-#endif // SERVERITEM_H
+#endif // MESSAGERECEIVER_H
