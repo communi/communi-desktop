@@ -17,8 +17,6 @@
 #include <QAction>
 #include <QIcon>
 
-static const int VERTICAL_MARGIN = 1; // matches qlineedit_p.cpp
-
 ToolBar::ToolBar(QWidget* parent) : QToolBar(parent)
 {
     setIconSize(QSize(12, 12));

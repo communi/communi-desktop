@@ -32,7 +32,6 @@
 #include <irc.h>
 
 static QStringListModel* command_model = 0;
-static const int VERTICAL_MARGIN = 1; // matches qlineedit_p.cpp
 
 MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* parent) :
     QWidget(parent)
