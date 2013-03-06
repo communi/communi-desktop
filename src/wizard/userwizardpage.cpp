@@ -20,7 +20,6 @@
 UserWizardPage::UserWizardPage(QWidget* parent) : QWizardPage(parent)
 {
     ui.setupUi(this);
-    setPixmap(QWizard::LogoPixmap, QPixmap(":/resources/oxygen/64x64/actions/user.png"));
     connect(ui.lineEditNick, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
 
     QSettings settings;

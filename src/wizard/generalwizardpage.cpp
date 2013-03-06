@@ -17,7 +17,6 @@
 GeneralWizardPage::GeneralWizardPage(QWidget* parent) : QWizardPage(parent)
 {
     ui.setupUi(this);
-    setPixmap(QWizard::LogoPixmap, QPixmap(":/resources/oxygen/64x64/actions/configure.png"));
 }
 
 QFont GeneralWizardPage::font() const

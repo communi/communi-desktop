@@ -61,7 +61,6 @@ public:
 AliasesWizardPage::AliasesWizardPage(QWidget* parent) : QWizardPage(parent)
 {
     ui.setupUi(this);
-    setPixmap(QWizard::LogoPixmap, QPixmap(":/resources/oxygen/64x64/actions/forward.png"));
 
     proxyModel = new SortFilterProxyModel(ui.treeView);
     sourceModel = new QStandardItemModel(proxyModel);

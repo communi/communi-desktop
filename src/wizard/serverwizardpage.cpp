@@ -19,7 +19,6 @@
 ServerWizardPage::ServerWizardPage(QWidget* parent) : QWizardPage(parent)
 {
     ui.setupUi(this);
-    setPixmap(QWizard::LogoPixmap, QPixmap(":/resources/oxygen/64x64/actions/network.png"));
     connect(ui.lineEditHost, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
     connect(ui.spinBoxPort, SIGNAL(valueChanged(int)), this, SIGNAL(completeChanged()));
 

@@ -36,7 +36,6 @@ public:
 ShortcutsWizardPage::ShortcutsWizardPage(QWidget* parent) : QWizardPage(parent)
 {
     ui.setupUi(this);
-    setPixmap(QWizard::LogoPixmap, QPixmap(":/resources/oxygen/64x64/actions/forward.png"));
     ui.treeWidget->setItemDelegate(new ItemDelegate(ui.treeWidget));
     ui.treeWidget->header()->setResizeMode(0, QHeaderView::ResizeToContents);
     ui.treeWidget->expandItem(ui.treeWidget->topLevelItem(0));

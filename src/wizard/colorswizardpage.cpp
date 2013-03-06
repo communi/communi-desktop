@@ -87,7 +87,6 @@ public:
 ColorsWizardPage::ColorsWizardPage(QWidget* parent) : QWizardPage(parent)
 {
     ui.setupUi(this);
-    setPixmap(QWizard::LogoPixmap, QPixmap(":/resources/oxygen/64x64/actions/color_line.png"));
     ui.treeWidget->setItemDelegate(new ColorItemDelegate(ui.treeWidget));
     ui.treeWidget->header()->setResizeMode(Message, QHeaderView::ResizeToContents);
 }
