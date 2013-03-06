@@ -63,7 +63,7 @@ private slots:
     void onDoubleClicked(const QModelIndex& index);
 
 private:
-    struct UserListViewData {
+    struct Private {
         UserModel* userModel;
         MenuFactory* menuFactory;
     } d;

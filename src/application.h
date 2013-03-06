@@ -43,7 +43,7 @@ signals:
     void settingsChanged(const Settings& settings);
 
 private:
-    struct ApplicationData {
+    struct Private {
         static QByteArray encoding;
         static Settings settings;
     };

@@ -22,8 +22,8 @@
 #include <QFile>
 #include <Irc>
 
-QByteArray Application::ApplicationData::encoding("ISO-8859-15");
-Settings Application::ApplicationData::settings;
+QByteArray Application::Private::encoding("ISO-8859-15");
+Settings Application::Private::settings;
 
 Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
 {
@@ -47,7 +47,7 @@ Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
     QSettings settings;
     if (arguments().contains("-reset"))
         settings.clear();
-    ApplicationData::settings = settings.value("settings").value<Settings>();
+    Private::settings = settings.value("settings").value<Settings>();
 
     QFile file(":resources/stylesheet.css");
     if (file.open(QFile::ReadOnly | QIODevice::Text))
@@ -57,7 +57,7 @@ Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
 Application::~Application()
 {
     QSettings settings;
-    settings.setValue("settings", ApplicationData::settings);
+    settings.setValue("settings", Private::settings);
 }
 
 QString Application::applicationSlogan()
@@ -67,23 +67,23 @@ QString Application::applicationSlogan()
 
 QByteArray Application::encoding()
 {
-    return ApplicationData::encoding;
+    return Private::encoding;
 }
 
 void Application::setEncoding(const QByteArray& encoding)
 {
-    ApplicationData::encoding = encoding;
+    Private::encoding = encoding;
 }
 
 Settings Application::settings()
 {
-    return ApplicationData::settings;
+    return Private::settings;
 }
 
 void Application::setSettings(const Settings& settings)
 {
-    if (ApplicationData::settings != settings) {
-        ApplicationData::settings = settings;
+    if (Private::settings != settings) {
+        Private::settings = settings;
         QMetaObject::invokeMethod(qApp, "settingsChanged", Q_ARG(Settings, settings));
     }
 }

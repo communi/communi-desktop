@@ -46,7 +46,7 @@ private:
     SharedTimer(QObject* parent = 0);
 
     typedef QPair<QObject*, const char*> Receiver;
-    struct SharedTimerData {
+    struct Private {
         int interval;
         QBasicTimer timer;
         QList<Receiver> receivers;

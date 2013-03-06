@@ -81,7 +81,7 @@ private slots:
     void completeCommand(const QString& command);
 
 private:
-    struct MessageViewData : public Ui::MessageView {
+    struct Private : public Ui::MessageView {
         ViewType viewType;
         QString receiver;
         Session* session;

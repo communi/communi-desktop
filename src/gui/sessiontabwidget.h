@@ -59,7 +59,7 @@ private slots:
     void tabActivated(int index);
 
 private:
-    struct SessionTabWidgetData {
+    struct Private {
         MessageHandler handler;
         QHash<QString, MessageView*> views;
     } d;

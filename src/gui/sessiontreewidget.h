@@ -97,7 +97,7 @@ private:
     QTreeWidgetItem* nextItem(QTreeWidgetItem* from) const;
     QTreeWidgetItem* previousItem(QTreeWidgetItem* from) const;
 
-    struct SessionTreeWidgetData {
+    struct Private {
         Settings settings;
         MenuFactory* menuFactory;
         QShortcut* prevShortcut;
