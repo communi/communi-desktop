@@ -107,20 +107,6 @@ void Application::aboutApplication()
     );
 }
 
-void Application::aboutOxygen()
-{
-    QMessageBox::about(
-#ifdef Q_WS_MAC
-        0,
-#else
-        activeWindow(),
-#endif // Q_WS_MAC
-        "Oxygen", QString(
-            "<h3>%1</h3>"
-            "<p><a href='http://www.oxygen-icons.org/'>http://www.oxygen-icons.org/</a></p>"
-        ).arg(tr("About %1").arg("Oxygen")));
-}
-
 void Application::showSettings()
 {
     SettingsWizard wizard(activeWindow());

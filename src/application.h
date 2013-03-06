@@ -36,7 +36,6 @@ public:
 
 public slots:
     static void aboutApplication();
-    static void aboutOxygen();
     static void showSettings();
 
 signals:
