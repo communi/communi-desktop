@@ -22,7 +22,7 @@
 #include <QColor>
 #include <QTextBoundaryFinder>
 
-static IrcTextFormat IRC_TEXT_FORMAT;
+Q_GLOBAL_STATIC(IrcTextFormat, irc_text_format)
 
 MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 {
@@ -44,7 +44,7 @@ MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
             color.setHsl(color.hue(), 100, 82);
             palette.setColorName(i, color.name());
         }
-        IRC_TEXT_FORMAT.setPalette(palette);
+        irc_text_format()->setPalette(palette);
     }
 }
 
@@ -560,7 +560,7 @@ QString MessageFormatter::formatIdleTime(int secs)
 
 QString MessageFormatter::formatHtml(const QString& message) const
 {
-    QString msg = IRC_TEXT_FORMAT.toHtml(message);
+    QString msg = irc_text_format()->toHtml(message);
     foreach (const QString& user, d.users) {
         int pos = 0;
         while ((pos = msg.indexOf(user, pos)) != -1) {
