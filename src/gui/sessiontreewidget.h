@@ -69,6 +69,9 @@ public slots:
     void search(const QString& search);
     void searchAgain(const QString& search);
 
+    void blockItemReset();
+    void unblockItemReset();
+
     void applySettings(const Settings& settings);
 
 signals:
@@ -99,6 +102,7 @@ private:
 
     struct Private {
         Settings settings;
+        bool itemResetBlocked;
         MenuFactory* menuFactory;
         QShortcut* prevShortcut;
         QShortcut* nextShortcut;

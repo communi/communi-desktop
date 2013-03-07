@@ -45,6 +45,7 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
 
     d.dropParent = 0;
     d.menuFactory = 0;
+    d.itemResetBlocked = false;
 
     d.colors[Active] = palette().color(QPalette::WindowText);
     d.colors[Inactive] = palette().color(QPalette::Disabled, QPalette::Highlight);
@@ -292,6 +293,17 @@ void SessionTreeWidget::searchAgain(const QString& search)
     }
 }
 
+void SessionTreeWidget::blockItemReset()
+{
+    d.itemResetBlocked = true;
+}
+
+void SessionTreeWidget::unblockItemReset()
+{
+    d.itemResetBlocked = false;
+    delayedItemReset();
+}
+
 void SessionTreeWidget::expandCurrentSession()
 {
     QTreeWidgetItem* item = currentItem();
@@ -396,9 +408,11 @@ void SessionTreeWidget::onItemCollapsed(QTreeWidgetItem* item)
 
 void SessionTreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
-    if (previous)
-        resetItem(static_cast<SessionTreeItem*>(previous));
-    delayedItemReset();
+    if (!d.itemResetBlocked) {
+        if (previous)
+            resetItem(static_cast<SessionTreeItem*>(previous));
+        delayedItemReset();
+    }
     SessionTreeItem* item = static_cast<SessionTreeItem*>(current);
     if (item)
         emit currentViewChanged(item->session(), item->parent() ? item->text(0) : QString());
