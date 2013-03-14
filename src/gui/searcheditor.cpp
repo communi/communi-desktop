@@ -57,12 +57,12 @@ void SearchEditor::setTextEdit(QTextEdit* textEdit)
 
 void SearchEditor::findNext()
 {
-    find(text(), true, false);
+    find(text(), true, false, false);
 }
 
 void SearchEditor::findPrevious()
 {
-    find(text(), false, true);
+    find(text(), false, true, false);
 }
 
 void SearchEditor::find()
@@ -72,7 +72,7 @@ void SearchEditor::find()
     selectAll();
 }
 
-void SearchEditor::find(const QString& text, bool forward, bool backward)
+void SearchEditor::find(const QString& text, bool forward, bool backward, bool typed)
 {
     if (!d.textEdit)
         return;
@@ -84,13 +84,13 @@ void SearchEditor::find(const QString& text, bool forward, bool backward)
     QTextDocument::FindFlags options;
 
     if (cursor.hasSelection())
-        cursor.setPosition(forward ? cursor.position() : cursor.anchor(), QTextCursor::MoveAnchor);
+        cursor.setPosition(typed ? cursor.selectionEnd() : forward ? cursor.position() : cursor.anchor(), QTextCursor::MoveAnchor);
 
     QTextCursor newCursor = cursor;
     QList<QTextEdit::ExtraSelection> extraSelections;
 
     if (!text.isEmpty()) {
-        if (backward)
+        if (typed || backward)
             options |= QTextDocument::FindBackward;
 
         newCursor = doc->find(text, cursor, options);

@@ -34,7 +34,7 @@ public slots:
     void findPrevious();
 
 protected slots:
-    void find(const QString& text, bool forward = false, bool backward = false);
+    void find(const QString& text, bool forward = false, bool backward = false, bool typed = true);
 
 private:
     struct Private {
