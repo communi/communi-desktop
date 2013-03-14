@@ -404,7 +404,7 @@ void MessageView::receiveMessage(IrcMessage* message)
     if (formatted.length()) {
         if (!ignore && (!isVisible() || !isActiveWindow())) {
             IrcMessage::Type type = d.formatter->effectiveMessageType();
-            if (d.formatter->hasHighlight() || (type == IrcMessage::Private && d.viewType != ChannelView))
+            if (d.formatter->hasHighlight() || ((type == IrcMessage::Notice || type == IrcMessage::Private) && d.viewType != ChannelView))
                 emit highlighted(message);
             else if (type == IrcMessage::Notice || type == IrcMessage::Private) // TODO: || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ServerView))
                 emit missed(message);

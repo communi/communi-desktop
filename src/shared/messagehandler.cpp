@@ -174,6 +174,8 @@ void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
 {
     if (!d.session->isConnected() || message->target() == "*")
         sendMessage(message, d.defaultReceiver);
+    else if (MessageReceiver* receiver = d.receivers.value(message->sender().name().toLower()))
+        sendMessage(message, receiver);
     else if (message->target() == d.session->nickName())
         sendMessage(message, d.currentReceiver);
     else
