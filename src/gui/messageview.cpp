@@ -54,6 +54,8 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
 
     d.session = session;
     connect(d.session, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
+    if (type == ServerView)
+        connect(d.session, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onSocketError()));
 
     d.topicLabel->setVisible(type == ChannelView);
     d.listView->setVisible(type == ChannelView);
@@ -279,6 +281,13 @@ void MessageView::completeCommand(const QString& command)
 {
     if (command == "TOPIC")
         d.lineEditor->insert(d.topic);
+}
+
+void MessageView::onSocketError()
+{
+    QString msg = tr("[ERROR] %1").arg(d.session->socket()->errorString());
+    QString formatted = d.formatter->formatMessage(QDateTime::currentDateTime(), msg);
+    d.textBrowser->append(formatted);
 }
 
 void MessageView::applySettings(const Settings& settings)

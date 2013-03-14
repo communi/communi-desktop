@@ -79,6 +79,7 @@ private slots:
     void onSplitterMoved();
     void onAnchorClicked(const QUrl& link);
     void completeCommand(const QString& command);
+    void onSocketError();
 
 private:
     struct Private : public Ui::MessageView {
