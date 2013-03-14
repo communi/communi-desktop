@@ -36,6 +36,9 @@ public slots:
 protected slots:
     void find(const QString& text, bool forward = false, bool backward = false, bool typed = true);
 
+protected:
+    void hideEvent(QHideEvent* event);
+
 private:
     struct Private {
         QTextEdit* textEdit;

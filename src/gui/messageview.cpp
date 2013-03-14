@@ -235,6 +235,7 @@ void MessageView::hideEvent(QHideEvent* event)
 {
     QWidget::hideEvent(event);
     d.textBrowser->setUnseenBlock(-1);
+    onEscPressed();
 }
 
 bool MessageView::eventFilter(QObject* object, QEvent* event)

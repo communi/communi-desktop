@@ -121,3 +121,14 @@ void SearchEditor::find(const QString& text, bool forward, bool backward, bool t
     d.textEdit->setExtraSelections(extraSelections);
     setStyleSheet(error ? "background: #ff7a7a" : "");
 }
+
+void SearchEditor::hideEvent(QHideEvent* event)
+{
+    HistoryLineEdit::hideEvent(event);
+    QTextCursor cursor = d.textEdit->textCursor();
+    if (cursor.hasSelection()) {
+        cursor.clearSelection();
+        d.textEdit->setTextCursor(cursor);
+    }
+    d.textEdit->setExtraSelections(QList<QTextEdit::ExtraSelection>());
+}
