@@ -107,11 +107,11 @@ void SearchEditor::find(const QString& text, bool forward, bool backward)
             }
         }
 
-        d.textEdit->moveCursor(QTextCursor::Start);
-        while (d.textEdit->find(text)) {
+        QTextCursor findCursor(doc);
+        while (!(findCursor = doc->find(text, findCursor)).isNull()) {
             QTextEdit::ExtraSelection extra;
             extra.format.setBackground(Qt::yellow);
-            extra.cursor = d.textEdit->textCursor();
+            extra.cursor = findCursor;
             extraSelections.append(extra);
         }
     }
