@@ -29,6 +29,8 @@ ToolBar {
 
 TextBrowser {
     border: none;
+    selection-color: palette(highlighted-text);
+    selection-background-color: palette(highlight);
 }
 
 MessageView > QLineEdit {
