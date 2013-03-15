@@ -385,6 +385,7 @@ void MainWindow::searchView()
     connect(search, SIGNAL(searched(QString)), treeWidget, SLOT(search(QString)));
     connect(search, SIGNAL(searchedAgain(QString)), treeWidget, SLOT(searchAgain(QString)));
     connect(search, SIGNAL(destroyed()), treeWidget, SLOT(unblockItemReset()));
+    connect(treeWidget, SIGNAL(searched(bool)), search, SLOT(onSearched(bool)));
     treeWidget->blockItemReset();
     search->popup();
 }

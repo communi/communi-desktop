@@ -270,6 +270,7 @@ void SessionTreeWidget::search(const QString& search)
         QList<QTreeWidgetItem*> items = findItems(search, Qt::MatchContains | Qt::MatchWrap | Qt::MatchRecursive);
         if (!items.isEmpty() && !items.contains(currentItem()))
             setCurrentItem(items.first());
+        emit searched(!items.isEmpty());
     }
 }
 

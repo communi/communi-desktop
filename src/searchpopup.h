@@ -37,6 +37,7 @@ protected:
 
 private slots:
     void onReturnPressed();
+    void onSearched(bool result);
 };
 
 #endif // SEARCHPOPUP_H

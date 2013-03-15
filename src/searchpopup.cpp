@@ -54,3 +54,8 @@ void SearchPopup::onReturnPressed()
     if (!text().isEmpty())
         emit searchedAgain(text());
 }
+
+void SearchPopup::onSearched(bool result)
+{
+    setStyleSheet(result ? "" : "background: #ff7a7a");
+}

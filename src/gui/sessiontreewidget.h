@@ -78,6 +78,7 @@ signals:
     void editSession(Session* session);
     void closeItem(SessionTreeItem* item);
     void currentViewChanged(Session* session, const QString& view);
+    void searched(bool result);
 
 protected:
     void contextMenuEvent(QContextMenuEvent* event);
