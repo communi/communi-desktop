@@ -16,6 +16,7 @@
 #define OVERLAY_H
 
 #include <QLabel>
+#include <QPointer>
 #include <QToolButton>
 
 class Overlay : public QLabel
@@ -37,14 +38,17 @@ signals:
     void refresh();
 
 protected:
+    bool event(QEvent* event);
     bool eventFilter(QObject* object, QEvent* event);
 
 private slots:
     void relayout();
+    void reparent();
 
 private:
     struct Private {
         QToolButton* button;
+        QPointer<QWidget> prevParent;
     } d;
 };
 

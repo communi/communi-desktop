@@ -40,6 +40,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     tabWidget = new MultiSessionTabWidget(this);
     connect(tabWidget, SIGNAL(splitterChanged(QByteArray)), this, SLOT(splitterChanged(QByteArray)));
 
+    overlay = new Overlay(tabWidget);
+    connect(overlay, SIGNAL(refresh()), this, SLOT(reconnectSession()));
+
     HomePage* homePage = new HomePage(tabWidget);
     connect(homePage, SIGNAL(connectRequested()), this, SLOT(connectTo()));
     tabWidget->insertWidget(0, homePage);
@@ -154,9 +157,9 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
         session->open();
     tabWidget->addSession(session);
 
-    connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateSession()));
-    connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateSession()));
-    updateSession(session);
+    connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateOverlay()));
+    connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateOverlay()));
+    updateOverlay();
 
     SessionTabWidget* tab = tabWidget->sessionWidget(session);
     connect(tab, SIGNAL(viewAdded(MessageView*)), this, SLOT(viewAdded(MessageView*)));
@@ -330,6 +333,7 @@ void MainWindow::currentTreeItemChanged(Session* session, const QString& view)
             tab->openView(view);
     }
     setWindowFilePath(view);
+    updateOverlay();
 }
 
 void MainWindow::splitterChanged(const QByteArray& state)
@@ -338,27 +342,23 @@ void MainWindow::splitterChanged(const QByteArray& state)
     settings.setValue("list", state);
 }
 
-void MainWindow::updateSession(Session* session)
+void MainWindow::updateOverlay()
 {
-    if (!session)
-        session = qobject_cast<Session*>(sender());
-    SessionTabWidget* tab = tabWidget->sessionWidget(session);
+    SessionTabWidget* tab = tabWidget->currentWidget();
     if (tab) {
-        if (!tab->session()->isConnected()) {
-            QObject* overlay = tab->property("_communi_overlay_").value<QObject*>();
-            if (!overlay) {
-                overlay = new Overlay(tab);
-                tab->setProperty("_communi_overlay_", QVariant::fromValue(overlay));
-                connect(overlay, SIGNAL(refresh()), tab->session(), SLOT(reconnect()));
-            }
-            overlay->setProperty("visible", true);
-            overlay->setProperty("busy", tab->session()->isActive());
-            overlay->setProperty("refresh", !tab->session()->isActive());
-        } else {
-            delete tab->property("_communi_overlay_").value<QObject*>();
-            tab->setProperty("_communi_overlay_", QVariant());
-        }
+        Session* session = tab->session();
+        overlay->setParent(tab->currentWidget());
+        overlay->setBusy(session->isActive());
+        overlay->setRefresh(!session->isActive());
+        overlay->setVisible(!session->isConnected());
     }
+}
+
+void MainWindow::reconnectSession()
+{
+    SessionTabWidget* tab = tabWidget->currentWidget();
+    if (tab)
+        tab->session()->reconnect();
 }
 
 void MainWindow::addView()

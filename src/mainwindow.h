@@ -28,6 +28,7 @@ class QtDockTile;
 struct Settings;
 class Session;
 class QShortcut;
+class Overlay;
 
 class MainWindow : public QMainWindow
 {
@@ -60,7 +61,8 @@ private slots:
     void closeTreeItem(SessionTreeItem* item);
     void currentTreeItemChanged(Session* session, const QString& view);
     void splitterChanged(const QByteArray& state);
-    void updateSession(Session* session = 0);
+    void updateOverlay();
+    void reconnectSession();
     void addView();
     void closeView();
     void searchView();
@@ -73,6 +75,7 @@ private:
     TrayIcon* trayIcon;
     QtDockTile* dockTile;
     QShortcut* searchShortcut;
+    Overlay* overlay;
 };
 
 #endif // MAINWINDOW_H

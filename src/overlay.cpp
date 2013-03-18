@@ -19,6 +19,12 @@
 Overlay::Overlay(QWidget* parent) : QLabel(parent)
 {
     d.button = 0;
+    d.prevParent = 0;
+
+    d.button = new QToolButton(this);
+    d.button->setObjectName("reconnectButton");
+    d.button->setFixedSize(32, 32);
+    connect(d.button, SIGNAL(clicked()), this, SIGNAL(refresh()));
 
     setVisible(false);
     setEnabled(false);
@@ -31,9 +37,6 @@ Overlay::Overlay(QWidget* parent) : QLabel(parent)
     col.setAlpha(100);
     pal.setColor(QPalette::Window, col);
     setPalette(pal);
-
-    parent->installEventFilter(this);
-    relayout();
 }
 
 bool Overlay::isBusy() const
@@ -58,20 +61,14 @@ bool Overlay::hasRefresh() const
 
 void Overlay::setRefresh(bool enabled)
 {
-    if (enabled) {
-        if (!d.button) {
-            d.button = new QToolButton(parentWidget());
-            d.button->setObjectName("reconnectButton");
-            d.button->setFixedSize(32, 32);
-            connect(d.button, SIGNAL(clicked()), this, SIGNAL(refresh()));
-            relayout();
-        }
-        d.button->show();
-    } else {
-        if (d.button)
-            d.button->deleteLater();
-        d.button = 0;
-    }
+    d.button->setVisible(enabled);
+}
+
+bool Overlay::event(QEvent* event)
+{
+    if (event->type() == QEvent::ParentChange)
+        reparent();
+    return QLabel::event(event);
 }
 
 bool Overlay::eventFilter(QObject* object, QEvent* event)
@@ -87,4 +84,15 @@ void Overlay::relayout()
     resize(parentWidget()->size());
     if (d.button)
         d.button->move(rect().center() - d.button->rect().center());
+}
+
+void Overlay::reparent()
+{
+    if (d.prevParent)
+        d.prevParent->removeEventFilter(this);
+    Q_ASSERT(parentWidget());
+    parentWidget()->installEventFilter(this);
+    d.button->setParent(parentWidget());
+    d.prevParent = parentWidget();
+    relayout();
 }
