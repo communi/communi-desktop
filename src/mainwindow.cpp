@@ -189,6 +189,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
         foreach (Session* session, sessions) {
             connections += session->toConnection();
             session->quit();
+            session->destructLater();
         }
         settings.setValue("connections", QVariant::fromValue(connections));
 

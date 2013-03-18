@@ -296,7 +296,6 @@ void Session::quit(const QString& reason)
     else
         close();
     m_quit = true;
-    destructLater();
 }
 
 void Session::destructLater()
