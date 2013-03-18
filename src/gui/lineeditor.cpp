@@ -17,10 +17,13 @@
 #include <QStyleFactory>
 #include <QKeyEvent>
 #include <QShortcut>
+#include <QPainter>
 #include <QStyle>
 
 LineEditor::LineEditor(QWidget* parent) : HistoryLineEdit(parent)
 {
+    d.lag = -1;
+
     d.completer = new Completer(this);
     d.completer->setWidget(this);
     d.completer->setLineEdit(this);
@@ -61,6 +64,19 @@ Completer* LineEditor::completer() const
     return d.completer;
 }
 
+int LineEditor::lag() const
+{
+    return d.lag;
+}
+
+void LineEditor::setLag(int lag)
+{
+    if (d.lag != lag) {
+        d.lag = lag;
+        update();
+    }
+}
+
 bool LineEditor::event(QEvent* event)
 {
     if (event->type() == QEvent::ShortcutOverride) {
@@ -84,6 +100,25 @@ bool LineEditor::event(QEvent* event)
         }
     }
     return HistoryLineEdit::event(event);
+}
+
+void LineEditor::paintEvent(QPaintEvent* event)
+{
+    HistoryLineEdit::paintEvent(event);
+
+    if (d.lag > 0 && text().isEmpty()) {
+        QPainter painter(this);
+        QColor color = palette().text().color();
+        color.setAlpha(128);
+        painter.setPen(color);
+        QFont font;
+        if (font.pointSize() != -1)
+            font.setPointSizeF(0.8 * font.pointSizeF());
+        painter.setFont(font);
+        int l, t, r, b;
+        getTextMargins(&l, &t, &r, &b);
+        painter.drawText(rect().adjusted(l, t, -r, -b), Qt::AlignVCenter | Qt::AlignRight, tr("%1ms").arg(d.lag));
+    }
 }
 
 void LineEditor::onSend()

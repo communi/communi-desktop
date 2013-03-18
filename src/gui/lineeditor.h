@@ -21,11 +21,17 @@ class Completer;
 class LineEditor : public HistoryLineEdit
 {
     Q_OBJECT
+    Q_PROPERTY(int lag READ lag WRITE setLag)
 
 public:
     LineEditor(QWidget* parent = 0);
 
     Completer* completer() const;
+
+    int lag() const;
+
+public slots:
+    void setLag(int lag);
 
 signals:
     void send(const QString& text);
@@ -37,12 +43,14 @@ signals:
 
 protected:
     bool event(QEvent* event);
+    void paintEvent(QPaintEvent* event);
 
 private slots:
     void onSend();
 
 private:
     struct Private {
+        int lag;
         Completer* completer;
     } d;
 };
