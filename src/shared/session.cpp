@@ -28,6 +28,7 @@ Session::Session(QObject* parent) : IrcSession(parent),
     m_currentLag(-1), m_maxLag(120000), m_info(this), m_quit(false)
 {
     connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
+    connect(this, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
     connect(this, SIGNAL(password(QString*)), this, SLOT(onPassword(QString*)));
     connect(this, SIGNAL(capabilities(QStringList, QStringList*)), this, SLOT(onCapabilities(QStringList, QStringList*)));
     connect(this, SIGNAL(messageReceived(IrcMessage*)), SLOT(handleMessage(IrcMessage*)));
@@ -37,7 +38,6 @@ Session::Session(QObject* parent) : IrcSession(parent),
     connect(&m_reconnectTimer, SIGNAL(timeout()), this, SLOT(open()));
 
     connect(&m_pingTimer, SIGNAL(timeout()), this, SLOT(pingServer()));
-    connect(this, SIGNAL(connectedChanged(bool)), SLOT(togglePingTimer(bool)));
 }
 
 Session::~Session()
@@ -316,6 +316,16 @@ void Session::onConnected()
             sendCommand(IrcCommand::createJoin(channel.channel, channel.key));
     }
     m_quit = false;
+
+    m_lagTimer.invalidate();
+    m_pingTimer.start();
+    QTimer::singleShot(2000, this, SLOT(pingServer()));
+}
+
+void Session::onDisconnected()
+{
+    m_pingTimer.stop();
+    updateLag(-1);
 }
 
 void Session::onPassword(QString* password)
@@ -399,17 +409,5 @@ void Session::updateLag(int lag)
 //            if (ensureNetwork())
 //                open();
 //        }
-    }
-}
-
-void Session::togglePingTimer(bool enabled)
-{
-    if (enabled) {
-        m_lagTimer.invalidate();
-        m_pingTimer.start();
-        pingServer();
-    } else {
-        m_pingTimer.stop();
-        updateLag(-1);
     }
 }

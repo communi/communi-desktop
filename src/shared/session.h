@@ -96,11 +96,11 @@ signals:
 
 private slots:
     void onConnected();
+    void onDisconnected();
     void onPassword(QString* password);
     void onCapabilities(const QStringList& available, QStringList* request);
     void onSessionInfoReceived(const IrcSessionInfo& info);
     void handleMessage(IrcMessage* message);
-    void togglePingTimer(bool enabled);
     void pingServer();
 
 private:
