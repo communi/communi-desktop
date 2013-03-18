@@ -42,8 +42,6 @@ Session::Session(QObject* parent) : IrcSession(parent),
 
 Session::~Session()
 {
-    if (isActive() && socket())
-        socket()->waitForDisconnected(500);
 }
 
 QString Session::name() const
@@ -295,9 +293,10 @@ void Session::quit(const QString& reason)
 
     if (isConnected())
         sendCommand(IrcCommand::createQuit(message));
-    socket()->waitForDisconnected(1000);
-    close();
+    else
+        close();
     m_quit = true;
+    destructLater();
 }
 
 void Session::destructLater()

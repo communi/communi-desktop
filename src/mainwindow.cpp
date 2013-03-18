@@ -28,6 +28,7 @@
 #include "toolbar.h"
 #include "session.h"
 #include "qtdocktile.h"
+#include <QCloseEvent>
 #include <QSettings>
 #include <QToolBar>
 #include <QMenuBar>
@@ -177,20 +178,27 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    QSettings settings;
-    settings.setValue("geometry", saveGeometry());
-    settings.setValue("tree", treeWidget->saveState());
-    settings.setValue("splitter", static_cast<QSplitter*>(centralWidget())->saveState());
+    if (isVisible()) {
+        QSettings settings;
+        settings.setValue("geometry", saveGeometry());
+        settings.setValue("tree", treeWidget->saveState());
+        settings.setValue("splitter", static_cast<QSplitter*>(centralWidget())->saveState());
 
-    ConnectionInfos connections;
-    QList<Session*> sessions = tabWidget->sessions();
-    foreach (Session* session, sessions) {
-        connections += session->toConnection();
-        session->quit();
+        ConnectionInfos connections;
+        QList<Session*> sessions = tabWidget->sessions();
+        foreach (Session* session, sessions) {
+            connections += session->toConnection();
+            session->quit();
+        }
+        settings.setValue("connections", QVariant::fromValue(connections));
+
+        // let the sessions close in the background
+        hide();
+        event->ignore();
+        QTimer::singleShot(1000, this, SLOT(close()));
+    } else {
+        QMainWindow::closeEvent(event);
     }
-    settings.setValue("connections", QVariant::fromValue(connections));
-
-    QMainWindow::closeEvent(event);
 }
 
 void MainWindow::changeEvent(QEvent* event)
