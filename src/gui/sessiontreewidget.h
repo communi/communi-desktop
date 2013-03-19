@@ -47,6 +47,8 @@ public:
     QColor statusColor(ItemStatus status) const;
     void setStatusColor(ItemStatus status, const QColor& color);
 
+    QColor currentHighlightColor() const;
+
     SessionTreeItem* viewItem(MessageView* view) const;
     SessionTreeItem* sessionItem(Session* session) const;
 
@@ -72,6 +74,9 @@ public slots:
     void blockItemReset();
     void unblockItemReset();
 
+    void highlight(SessionTreeItem* item);
+    void unhighlight(SessionTreeItem* item);
+
     void applySettings(const Settings& settings);
 
 signals:
@@ -94,6 +99,7 @@ private slots:
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void delayedItemReset();
     void delayedItemResetTimeout();
+    void highlightTimeout();
 
 private:
     void resetItem(SessionTreeItem* item);
@@ -104,6 +110,7 @@ private:
     struct Private {
         Settings settings;
         bool itemResetBlocked;
+        QColor highlightColor;
         MenuFactory* menuFactory;
         QShortcut* prevShortcut;
         QShortcut* nextShortcut;
@@ -114,6 +121,7 @@ private:
         QShortcut* mostActiveShortcut;
         QHash<ItemStatus, QColor> colors;
         QSet<SessionTreeItem*> resetedItems;
+        QSet<SessionTreeItem*> highlightedItems;
         QHash<MessageView*, SessionTreeItem*> viewItems;
         QHash<Session*, SessionTreeItem*> sessionItems;
         mutable QTreeWidgetItem* dropParent;

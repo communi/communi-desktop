@@ -272,7 +272,7 @@ void MainWindow::highlighted(IrcMessage* message)
         if (view->viewType() != MessageView::ServerView)
             item = item->findChild(view->receiver());
         if (item) {
-            item->setHighlighted(true);
+            treeWidget->highlight(item);
             item->setBadge(item->badge() + 1);
         }
     }

@@ -143,6 +143,13 @@ void SessionTreeWidget::setStatusColor(SessionTreeWidget::ItemStatus status, con
     d.colors[status] = color;
 }
 
+QColor SessionTreeWidget::currentHighlightColor() const
+{
+    if (!d.highlightColor.isValid())
+        return d.colors.value(Highlight);
+    return d.highlightColor;
+}
+
 SessionTreeItem* SessionTreeWidget::viewItem(MessageView* view) const
 {
     return d.viewItems.value(view);
@@ -325,6 +332,21 @@ void SessionTreeWidget::collapseCurrentSession()
     }
 }
 
+void SessionTreeWidget::highlight(SessionTreeItem* item)
+{
+    if (d.highlightedItems.isEmpty())
+        SharedTimer::instance()->registerReceiver(this, "highlightTimeout");
+    d.highlightedItems.insert(item);
+    item->setHighlighted(true);
+}
+
+void SessionTreeWidget::unhighlight(SessionTreeItem* item)
+{
+    if (d.highlightedItems.remove(item) && d.highlightedItems.isEmpty())
+        SharedTimer::instance()->unregisterReceiver(this, "highlightTimeout");
+    item->setHighlighted(false);
+}
+
 void SessionTreeWidget::applySettings(const Settings& settings)
 {
     QColor color(settings.colors.value(Settings::Highlight));
@@ -437,10 +459,23 @@ void SessionTreeWidget::delayedItemResetTimeout()
     }
 }
 
+void SessionTreeWidget::highlightTimeout()
+{
+    bool active = d.highlightColor == d.colors.value(Active);
+    d.highlightColor = d.colors.value(active ? Highlight : Active);
+
+    foreach (SessionTreeItem* item, d.highlightedItems) {
+        item->emitDataChanged();
+        if (SessionTreeItem* p = static_cast<SessionTreeItem*>(item->parent()))
+            if (!p->isExpanded())
+                p->emitDataChanged();
+    }
+}
+
 void SessionTreeWidget::resetItem(SessionTreeItem* item)
 {
     item->setBadge(0);
-    item->setHighlighted(false);
+    unhighlight(item);
 }
 
 QTreeWidgetItem* SessionTreeWidget::lastItem() const
