@@ -44,6 +44,8 @@ MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
             color.setHsl(color.hue(), 100, 82);
             palette.setColorName(i, color.name());
         }
+        palette.setColorName(IrcPalette::Gray, "#606060");
+        palette.setColorName(IrcPalette::LightGray, "#808080");
         irc_text_format()->setPalette(palette);
     }
 }
