@@ -20,6 +20,7 @@
 #include "messageformatter.h"
 #include "settings.h"
 
+class SyntaxHighlighter;
 class MenuFactory;
 class IrcMessage;
 class Session;
@@ -87,9 +88,11 @@ private:
         QString receiver;
         Session* session;
         MessageFormatter* formatter;
+        SyntaxHighlighter* highlighter;
         Settings settings;
         QString topic;
         bool joined;
+        int sentId;
     } d;
 };
 

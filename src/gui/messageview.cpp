@@ -13,6 +13,7 @@
 */
 
 #include "messageview.h"
+#include "syntaxhighlighter.h"
 #include "commandparser.h"
 #include "menufactory.h"
 #include "completer.h"
@@ -39,6 +40,7 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     d.setupUi(this);
     d.viewType = type;
     d.joined = false;
+    d.sentId = 1;
 
     d.topicLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
     d.helpLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
@@ -51,6 +53,7 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     connect(d.textBrowser, SIGNAL(anchorClicked(QUrl)), SLOT(onAnchorClicked(QUrl)));
 
     d.formatter = new MessageFormatter(this);
+    d.highlighter = new SyntaxHighlighter(d.textBrowser->document());
 
     d.session = session;
     connect(d.session, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
@@ -224,6 +227,13 @@ void MessageView::sendMessage(const QString& message)
                     IrcMessage* msg = IrcMessage::fromData(":" + d.session->nickName().toUtf8() + " " + cmd->toString().toUtf8(), d.session);
                     receiveMessage(msg);
                     delete msg;
+
+                    // highlight as gray until acked
+                    d.session->sendData("PING _communi_msg_" + d.receiver.toUtf8() + "_" + QByteArray::number(d.sentId));
+                    QTextBlock block = d.textBrowser->document()->lastBlock();
+                    block.setUserState(d.sentId);
+                    d.highlighter->rehighlightBlock(block);
+                    d.sentId++;
                 }
             }
         } else {
@@ -305,6 +315,9 @@ void MessageView::applySettings(const Settings& settings)
     d.formatter->setTimeStampFormat(settings.timeStampFormat);
     d.formatter->setStripNicks(settings.stripNicks);
 
+    // TODO: dedicated color?
+    d.highlighter->setHighlightColor(settings.colors.value(Settings::TimeStamp));
+
     if (!settings.font.isEmpty())
         d.textBrowser->setFont(settings.font);
     d.textBrowser->document()->setMaximumBlockCount(settings.maxBlockCount);
@@ -377,6 +390,24 @@ void MessageView::receiveMessage(IrcMessage* message)
                 emit activeChanged();
             }
             break;
+        case IrcMessage::Pong: {
+            QString arg = static_cast<IrcPongMessage*>(message)->argument();
+            if (arg.startsWith("_communi_msg_")) {
+                int id = arg.mid(arg.lastIndexOf("_") + 1).toInt();
+                if (id > 0) {
+                    QTextBlock block = d.textBrowser->document()->lastBlock();
+                    while (block.isValid()) {
+                        if (block.userState() == id) {
+                            block.setUserState(-1);
+                            d.highlighter->rehighlightBlock(block);
+                            break;
+                        }
+                        block = block.previous();
+                    }
+                }
+            }
+            break;
+        }
         case IrcMessage::Numeric:
             switch (static_cast<IrcNumericMessage*>(message)->code()) {
                 case Irc::RPL_NOTOPIC:

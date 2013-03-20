@@ -265,6 +265,17 @@ void MessageHandler::handlePartMessage(IrcPartMessage* message)
 
 void MessageHandler::handlePongMessage(IrcPongMessage* message)
 {
+    QString arg = message->argument();
+    if (arg.startsWith("_communi_msg_")) {
+        arg = arg.mid(13);
+        int idx = arg.lastIndexOf("_");
+        QString receiver = arg.left(idx);
+        int id = arg.mid(idx + 1).toInt();
+        if (id > 0 && receiver.isEmpty()) {
+            sendMessage(message, receiver);
+            return;
+        }
+    }
     sendMessage(message, d.currentReceiver);
 }
 
