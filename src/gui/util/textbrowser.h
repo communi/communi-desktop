@@ -45,13 +45,9 @@ protected:
     void resizeEvent(QResizeEvent* event);
     void wheelEvent(QWheelEvent* event);
 
-private slots:
-    void appendBuffer();
-
 private:
     int ub;
     QWidget* bud;
-    QStringList buffer;
 };
 
 #endif // TEXTBROWSER_H

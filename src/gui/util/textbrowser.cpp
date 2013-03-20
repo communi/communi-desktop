@@ -46,10 +46,16 @@ void TextBrowser::setUnseenBlock(int block)
 void TextBrowser::append(const QString& text)
 {
     if (!text.isEmpty()) {
-        if (buffer.isEmpty())
-            QMetaObject::invokeMethod(this, "appendBuffer", Qt::QueuedConnection);
 
-        buffer += text;
+        QTextBrowser::append(text);
+
+#if QT_VERSION >= 0x040800
+        QTextCursor cursor(document());
+        cursor.movePosition(QTextCursor::End);
+        QTextBlockFormat format = cursor.blockFormat();
+        format.setLineHeight(120, QTextBlockFormat::ProportionalHeight);
+        cursor.setBlockFormat(format);
+#endif // QT_VERSION
 
         if (!isVisible() && ub == -1)
             ub = document()->blockCount() - 1;
@@ -142,34 +148,4 @@ void TextBrowser::wheelEvent(QWheelEvent* event)
 #else
     QTextBrowser::wheelEvent(event);
 #endif // Q_WS_MACX
-}
-
-void TextBrowser::appendBuffer()
-{
-    QScrollBar* vbar = verticalScrollBar();
-    const bool atBottom = vbar->value() >= vbar->maximum();
-
-    QTextDocument* doc = document();
-    QTextCursor cursor(doc);
-    cursor.movePosition(QTextCursor::End);
-
-    foreach (const QString& line, buffer) {
-        cursor.beginEditBlock();
-
-        if (!doc->isEmpty())
-            cursor.insertBlock();
-
-#if QT_VERSION >= 0x040800
-        QTextBlockFormat format = cursor.blockFormat();
-        format.setLineHeight(120, QTextBlockFormat::ProportionalHeight);
-        cursor.setBlockFormat(format);
-#endif // QT_VERSION
-
-        cursor.insertHtml(line);
-        cursor.endEditBlock();
-    }
-    buffer.clear();
-
-    if (atBottom)
-        vbar->setValue(vbar->maximum());
 }
