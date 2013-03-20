@@ -16,13 +16,16 @@
 #include <QApplication>
 #include <IrcCommand>
 #include <IrcMessage>
-#include <QNetworkConfigurationManager>
 #include <Irc>
 #ifndef QT_NO_OPENSSL
 #include <QSslSocket>
 #endif // QT_NO_OPENSSL
 
+#if QT_VERSION >= 0x040700
+#include <QNetworkConfigurationManager>
+
 QNetworkSession* Session::s_network = 0;
+#endif // QT_VERSION
 
 Session::Session(QObject* parent) : IrcSession(parent),
     m_currentLag(-1), m_maxLag(120000), m_info(this), m_quit(false)
@@ -37,7 +40,9 @@ Session::Session(QObject* parent) : IrcSession(parent),
     setAutoReconnectDelay(15);
     connect(&m_reconnectTimer, SIGNAL(timeout()), this, SLOT(open()));
 
+#if QT_VERSION >= 0x040700
     connect(&m_pingTimer, SIGNAL(timeout()), this, SLOT(pingServer()));
+#endif // QT_VERSION
 }
 
 Session::~Session()
@@ -222,12 +227,20 @@ Session* Session::fromConnection(const ConnectionInfo& connection, QObject* pare
 
 int Session::pingInterval() const
 {
+#if QT_VERSION >= 0x040700
     return m_pingTimer.interval() / 1000;
+#else
+    return -1;
+#endif // QT_VERSION
 }
 
 void Session::setPingInterval(int interval)
 {
+#if QT_VERSION >= 0x040700
     m_pingTimer.start(interval * 1000);
+#else
+    Q_UNUSED(interval);
+#endif // QT_VERSION
 }
 
 int Session::currentLag() const
@@ -252,12 +265,14 @@ bool Session::hasQuit() const
 
 bool Session::ensureNetwork()
 {
+#if QT_VERSION >= 0x040700
     QNetworkConfigurationManager manager;
     if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired) {
         if (!s_network)
             s_network = new QNetworkSession(manager.defaultConfiguration(), qApp);
         s_network->open();
     }
+#endif // QT_VERSION
     // TODO: return value?
     return true;
 }
@@ -317,15 +332,19 @@ void Session::onConnected()
     }
     m_quit = false;
 
+#if QT_VERSION >= 0x040700
     m_lagTimer.invalidate();
     m_pingTimer.start();
     QTimer::singleShot(2000, this, SLOT(pingServer()));
+#endif // QT_VERSION
 }
 
 void Session::onDisconnected()
 {
+#if QT_VERSION >= 0x040700
     m_pingTimer.stop();
     updateLag(-1);
+#endif // QT_VERSION
 }
 
 void Session::onPassword(QString* password)
@@ -361,8 +380,10 @@ void Session::handleMessage(IrcMessage* message)
             // slow down to 60s intervals
             setPingInterval(60);
 
+#if QT_VERSION >= 0x040700
             updateLag(static_cast<int>(m_lagTimer.elapsed()));
             m_lagTimer.invalidate();
+#endif // QT_VERSION
         }
     } else if (message->type() == IrcMessage::Numeric) {
         int code = static_cast<IrcNumericMessage*>(message)->code();
@@ -381,6 +402,7 @@ void Session::handleMessage(IrcMessage* message)
 
 void Session::pingServer()
 {
+#if QT_VERSION >= 0x040700
     if (m_lagTimer.isValid()) {
         // still lagging (no response since last PING)
         updateLag(static_cast<int>(m_lagTimer.elapsed()));
@@ -394,6 +416,7 @@ void Session::pingServer()
         m_lagTimer.start();
         sendData("PING _C_o_m_m_u_n_i_");
     }
+#endif // QT_VERSION
 }
 
 void Session::updateLag(int lag)

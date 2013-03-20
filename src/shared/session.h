@@ -20,11 +20,14 @@
 #include <IrcSession>
 #include <IrcCommand>
 #include <QStringList>
-#include <QElapsedTimer>
 #include <IrcSessionInfo>
 #include <QAbstractSocket>
-#include <QNetworkSession>
 #include "connectioninfo.h"
+
+#if QT_VERSION >= 0x040700
+#include <QNetworkSession>
+#include <QElapsedTimer>
+#endif // QT_VERSION
 
 class Session : public IrcSession
 {
@@ -110,14 +113,16 @@ private:
     QTimer m_reconnectTimer;
     QString m_password;
     ChannelInfos m_channels;
-    QElapsedTimer m_lagTimer;
-    QTimer m_pingTimer;
     int m_currentLag;
     int m_maxLag;
     IrcSessionInfo m_info;
     bool m_quit;
     QStringList m_alternateNicks;
+#if QT_VERSION >= 0x040700
+    QTimer m_pingTimer;
+    QElapsedTimer m_lagTimer;
     static QNetworkSession* s_network;
+#endif // QT_VERSION
 };
 
 #endif // SESSION_H

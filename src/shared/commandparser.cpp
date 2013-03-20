@@ -17,6 +17,7 @@
 #include <QDateTime>
 #include <QHash>
 #include <QMap>
+#include <climits>
 
 CommandParser::Private CommandParser::d;
 
