@@ -21,6 +21,7 @@
 #include "sessiontreeitem.h"
 #include "connectioninfo.h"
 #include "addviewdialog.h"
+#include "powernotifier.h"
 #include "searchpopup.h"
 #include "messageview.h"
 #include "homepage.h"
@@ -156,6 +157,9 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     if (!session->hasQuit() && session->ensureNetwork())
         session->open();
     tabWidget->addSession(session);
+
+    connect(PowerNotifier::instance(), SIGNAL(sleep()), session, SLOT(quit()));
+    connect(PowerNotifier::instance(), SIGNAL(wake()), session, SLOT(reconnect()));
 
     connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateOverlay()));
     connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateOverlay()));
