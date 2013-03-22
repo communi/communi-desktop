@@ -103,7 +103,7 @@ MessageView::~MessageView()
 
 bool MessageView::isActive() const
 {
-    if (!d.session->isActive())
+    if (!d.session || !d.session->isActive())
         return false;
     if (d.viewType == ChannelView)
         return d.joined;

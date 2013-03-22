@@ -349,7 +349,7 @@ void MainWindow::splitterChanged(const QByteArray& state)
 void MainWindow::updateOverlay()
 {
     SessionTabWidget* tab = tabWidget->currentWidget();
-    if (tab) {
+    if (tab && tab->session()) {
         Session* session = tab->session();
         overlay->setParent(tab->currentWidget());
         overlay->setBusy(session->isActive());

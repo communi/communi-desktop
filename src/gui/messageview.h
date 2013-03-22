@@ -19,6 +19,7 @@
 #include "messagereceiver.h"
 #include "messageformatter.h"
 #include "settings.h"
+#include <QPointer>
 
 class SyntaxHighlighter;
 class MenuFactory;
@@ -86,7 +87,7 @@ private:
     struct Private : public Ui::MessageView {
         ViewType viewType;
         QString receiver;
-        Session* session;
+        QPointer<Session> session;
         MessageFormatter* formatter;
         SyntaxHighlighter* highlighter;
         Settings settings;
