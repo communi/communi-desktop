@@ -352,7 +352,7 @@ void MainWindow::updateOverlay()
     if (tab && tab->session()) {
         Session* session = tab->session();
         overlay->setParent(tab->currentWidget());
-        overlay->setBusy(session->isActive());
+        overlay->setBusy(session->isActive() && !session->isConnected());
         overlay->setRefresh(!session->isActive());
         overlay->setVisible(!session->isConnected());
     }
