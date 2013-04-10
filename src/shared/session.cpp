@@ -42,6 +42,7 @@ Session::Session(QObject* parent) : IrcSession(parent),
 
 #if QT_VERSION >= 0x040700
     connect(&m_pingTimer, SIGNAL(timeout()), this, SLOT(pingServer()));
+    QTimer::singleShot(60000, &m_pingTimer, SLOT(start()));
 #endif // QT_VERSION
 }
 
@@ -236,10 +237,10 @@ int Session::pingInterval() const
 
 void Session::setPingInterval(int interval)
 {
+    if (interval == pingInterval())
+        return;
 #if QT_VERSION >= 0x040700
-    m_pingTimer.start(interval * 1000);
-#else
-    Q_UNUSED(interval);
+    m_pingTimer.setInterval(interval * 1000);
 #endif // QT_VERSION
 }
 
@@ -366,9 +367,6 @@ void Session::onSessionInfoReceived(const IrcSessionInfo& info)
 
 void Session::handleMessage(IrcMessage* message)
 {
-    // 20s delay since the last message was received
-    setPingInterval(20);
-
     if (message->type() == IrcMessage::Join) {
         if (message->flags() & IrcMessage::Own)
             addChannel(static_cast<IrcJoinMessage*>(message)->channel());
@@ -377,9 +375,6 @@ void Session::handleMessage(IrcMessage* message)
             removeChannel(static_cast<IrcPartMessage*>(message)->channel());
     } else if (message->type() == IrcMessage::Pong) {
         if (message->parameters().contains("_C_o_m_m_u_n_i_")) {
-            // slow down to 60s intervals
-            setPingInterval(60);
-
 #if QT_VERSION >= 0x040700
             updateLag(static_cast<int>(m_lagTimer.elapsed()));
             m_lagTimer.invalidate();
@@ -413,6 +408,7 @@ void Session::pingServer()
             setPingInterval(interval / 3);
     } else {
         // (re-)PING!
+        setPingInterval(60);
         m_lagTimer.start();
         sendData("PING _C_o_m_m_u_n_i_");
     }
