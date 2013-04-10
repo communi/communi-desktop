@@ -58,6 +58,7 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     d.session = session;
     connect(d.session, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
     connect(d.session, SIGNAL(currentLagChanged(int)), d.lineEditor, SLOT(setLag(int)));
+    d.lineEditor->setLag(d.session->currentLag());
     if (type == ServerView)
         connect(d.session, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onSocketError()));
 
