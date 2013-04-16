@@ -271,7 +271,7 @@ void MessageHandler::handlePongMessage(IrcPongMessage* message)
         int idx = arg.lastIndexOf("_");
         QString receiver = arg.left(idx);
         int id = arg.mid(idx + 1).toInt();
-        if (id > 0 && receiver.isEmpty()) {
+        if (id > 0 && !receiver.isEmpty()) {
             sendMessage(message, receiver);
             return;
         }
