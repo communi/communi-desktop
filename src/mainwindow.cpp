@@ -41,9 +41,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     tabWidget = new MultiSessionTabWidget(this);
     connect(tabWidget, SIGNAL(splitterChanged(QByteArray)), this, SLOT(splitterChanged(QByteArray)));
 
-    overlay = new Overlay(tabWidget);
-    connect(overlay, SIGNAL(refresh()), this, SLOT(reconnectSession()));
-
     HomePage* homePage = new HomePage(tabWidget);
     connect(homePage, SIGNAL(connectRequested()), this, SLOT(connectTo()));
     tabWidget->insertWidget(0, homePage);
@@ -350,6 +347,10 @@ void MainWindow::updateOverlay()
 {
     SessionTabWidget* tab = tabWidget->currentWidget();
     if (tab && tab->session()) {
+        if (!overlay) {
+            overlay = new Overlay(tabWidget);
+            connect(overlay, SIGNAL(refresh()), this, SLOT(reconnectSession()));
+        }
         Session* session = tab->session();
         overlay->setParent(tab->currentWidget());
         overlay->setBusy(session->isActive() && !session->isConnected());

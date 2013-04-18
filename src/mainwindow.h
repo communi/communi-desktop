@@ -16,6 +16,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QPointer>
 #include "trayicon.h"
 
 class MultiSessionTabWidget;
@@ -75,7 +76,7 @@ private:
     TrayIcon* trayIcon;
     QtDockTile* dockTile;
     QShortcut* searchShortcut;
-    Overlay* overlay;
+    QPointer<Overlay> overlay;
 };
 
 #endif // MAINWINDOW_H
