@@ -14,6 +14,7 @@
 
 #include "sessiontabwidget.h"
 #include "messageview.h"
+#include "completer.h"
 #include "session.h"
 #include <irccommand.h>
 
@@ -75,6 +76,8 @@ MessageView* SessionTabWidget::addView(const QString& receiver)
         if (!d.views.isEmpty())
             type = session()->isChannel(receiver) ? MessageView::ChannelView : MessageView::QueryView;
         view = new MessageView(type, d.handler.session(), this);
+        view->completer()->setChannelPrefixes(IrcSessionInfo(session()).channelTypes().join(""));
+        view->completer()->setChannelModel(&d.viewModel);
         view->setReceiver(receiver);
         connect(view, SIGNAL(queried(QString)), this, SLOT(addView(QString)));
         connect(view, SIGNAL(queried(QString)), this, SLOT(openView(QString)));
@@ -84,6 +87,7 @@ MessageView* SessionTabWidget::addView(const QString& receiver)
         d.handler.addReceiver(receiver, view);
         d.views.insert(receiver.toLower(), view);
         addWidget(view);
+        d.viewModel.setStringList(d.viewModel.stringList() << receiver);
         emit viewAdded(view);
 
         if (d.handler.session()->isChannel(receiver))
@@ -104,6 +108,9 @@ void SessionTabWidget::removeView(const QString& receiver)
     MessageView* view = d.views.take(receiver.toLower());
     if (view) {
         view->deleteLater();
+        QStringList views = d.viewModel.stringList();
+        if (views.removeOne(receiver))
+            d.viewModel.setStringList(views);
         emit viewRemoved(view);
         d.handler.removeReceiver(view->receiver());
     }

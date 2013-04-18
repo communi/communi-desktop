@@ -126,6 +126,11 @@ UserModel* MessageView::userModel() const
     return d.listView->userModel();
 }
 
+Completer* MessageView::completer() const
+{
+    return d.lineEditor->completer();
+}
+
 QTextBrowser* MessageView::textBrowser() const
 {
     return d.textBrowser;

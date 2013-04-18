@@ -31,8 +31,17 @@ public:
     QAbstractItemModel* userModel() const;
     void setUserModel(QAbstractItemModel* model);
 
+    QAbstractItemModel* channelModel() const;
+    void setChannelModel(QAbstractItemModel* model);
+
     QAbstractItemModel* commandModel() const;
     void setCommandModel(QAbstractItemModel* model);
+
+    QString channelPrefixes() const;
+    void setChannelPrefixes(const QString& prefixes);
+
+    QString commandPrefixes() const;
+    void setCommandPrefixes(const QString& prefixes);
 
 signals:
     void commandCompletion(const QString& command);
@@ -46,7 +55,10 @@ private:
     struct Private {
         HistoryLineEdit* lineEdit;
         QAbstractItemModel* userModel;
+        QAbstractItemModel* channelModel;
         QAbstractItemModel* commandModel;
+        QString channelPrefixes;
+        QString commandPrefixes;
     } d;
 };
 

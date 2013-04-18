@@ -19,7 +19,10 @@ Completer::Completer(QObject* parent) : QCompleter(parent)
 {
     d.lineEdit = 0;
     d.userModel = 0;
+    d.channelModel = 0;
     d.commandModel = 0;
+    d.channelPrefixes = QLatin1String("#");
+    d.commandPrefixes = QLatin1String("/");
     setCaseSensitivity(Qt::CaseInsensitive);
     setCompletionMode(InlineCompletion);
     connect(this, SIGNAL(highlighted(QString)), this, SLOT(insertCompletion(QString)));
@@ -53,6 +56,16 @@ void Completer::setUserModel(QAbstractItemModel* model)
     d.userModel = model;
 }
 
+QAbstractItemModel* Completer::channelModel() const
+{
+    return d.channelModel;
+}
+
+void Completer::setChannelModel(QAbstractItemModel* model)
+{
+    d.channelModel = model;
+}
+
 QAbstractItemModel* Completer::commandModel() const
 {
     return d.commandModel;
@@ -61,6 +74,26 @@ QAbstractItemModel* Completer::commandModel() const
 void Completer::setCommandModel(QAbstractItemModel* model)
 {
     d.commandModel = model;
+}
+
+QString Completer::channelPrefixes() const
+{
+    return d.channelPrefixes;
+}
+
+void Completer::setChannelPrefixes(const QString& prefixes)
+{
+    d.channelPrefixes = prefixes;
+}
+
+QString Completer::commandPrefixes() const
+{
+    return d.commandPrefixes;
+}
+
+void Completer::setCommandPrefixes(const QString& prefixes)
+{
+    d.commandPrefixes = prefixes;
 }
 
 void Completer::onTabPressed()
@@ -79,9 +112,12 @@ void Completer::onTabPressed()
     QString word = d.lineEdit->selectedText();
 
     // choose model
-    if (word.startsWith('/')) {
+    if (!word.isEmpty() && d.commandPrefixes.contains(word.at(0))) {
         if (model() != d.commandModel)
             setModel(d.commandModel);
+    } else if (!word.isEmpty() && d.channelPrefixes.contains(word.at(0))) {
+        if (model() != d.channelModel)
+            setModel(d.channelModel);
     } else {
         if (model() != d.userModel)
             setModel(d.userModel);
@@ -107,7 +143,7 @@ void Completer::onTabPressed()
         if (count > 1) {
             int next = currentRow() + 1;
             setCurrentRow(next % count);
-        } else if (count == 1 && repeat && word.startsWith('/')) {
+        } else if (count == 1 && repeat && d.commandPrefixes.contains(word.at(0))) {
             emit commandCompletion(word.mid(1));
         }
     }
@@ -120,7 +156,7 @@ void Completer::onTextEdited()
 
 void Completer::insertCompletion(const QString& completion)
 {
-    if (!d.lineEdit)
+    if (!d.lineEdit || completion.isEmpty())
         return;
 
     int pos = d.lineEdit->cursorPosition();
@@ -131,7 +167,8 @@ void Completer::insertCompletion(const QString& completion)
     pos = d.lineEdit->cursorPosition();
 
     QString tmp = completion;
-    if (pos == 0 && !completion.startsWith("/"))
+    if (pos == 0 && !d.channelPrefixes.contains(completion.at(0))
+                 && !d.commandPrefixes.contains(completion.at(0)))
         tmp.append(":");
     d.lineEdit->insert(tmp);
 
