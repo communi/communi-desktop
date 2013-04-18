@@ -37,8 +37,12 @@ SessionTreeItem::~SessionTreeItem()
     if (SessionTreeItem* p = static_cast<SessionTreeItem*>(parent()))
         p->d.highlightedChildren.remove(this);
 
-    if (SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget()))
+    if (SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget())) {
         tw->d.resetedItems.remove(this);
+        tw->unhighlight(this);
+        for (int i = 0; i < childCount(); ++i)
+            tw->unhighlight(static_cast<SessionTreeItem*>(child(i)));
+    }
 }
 
 Session* SessionTreeItem::session() const
