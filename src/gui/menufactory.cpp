@@ -220,7 +220,9 @@ QMenu* MenuFactory::createSessionTreeMenu(SessionTreeItem* item, SessionTreeWidg
     bool active = item->session()->isActive();
     SessionTreeMenu* menu = new SessionTreeMenu(item, tree);
     if (!item->parent()) {
-        if (active)
+        if (item->session()->isReconnecting())
+            menu->addAction(tr("Stop"), item->session(), SLOT(stopReconnecting()));
+        else if (active)
             menu->addAction(tr("Disconnect"), item->session(), SLOT(quit()));
         else
             menu->addAction(tr("Reconnect"), item->session(), SLOT(reconnect()));

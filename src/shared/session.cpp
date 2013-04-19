@@ -330,6 +330,11 @@ void Session::destructLater()
     }
 }
 
+void Session::stopReconnecting()
+{
+    m_reconnectTimer.stop();
+}
+
 void Session::onConnected()
 {
     foreach (const ChannelInfo& channel, m_channels) {

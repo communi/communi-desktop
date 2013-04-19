@@ -93,6 +93,7 @@ public slots:
     void reconnect();
     void quit(const QString& reason = QString());
     void destructLater();
+    void stopReconnecting();
 
 signals:
     void nameChanged(const QString& name);
