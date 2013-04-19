@@ -291,8 +291,8 @@ bool Session::sendUiCommand(IrcCommand* command)
 
 void Session::reconnect()
 {
-    connect(this, SIGNAL(connecting()), &m_reconnectTimer, SLOT(stop()));
-    connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), &m_reconnectTimer, SLOT(start()));
+    connect(this, SIGNAL(connecting()), &m_reconnectTimer, SLOT(stop()), Qt::UniqueConnection);
+    connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), &m_reconnectTimer, SLOT(start()), Qt::UniqueConnection);
 
     if (ensureNetwork())
         open();
