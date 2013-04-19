@@ -302,20 +302,9 @@ void Session::reconnect()
         open();
 }
 
-void Session::quit(const QString& reason)
+void Session::quit()
 {
-    disconnect(this, SIGNAL(connecting()), &m_reconnectTimer, SLOT(stop()));
-    disconnect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), &m_reconnectTimer, SLOT(start()));
-
-    QString message = reason;
-    if (message.isEmpty())
-        message = tr("%1 %2").arg(QApplication::applicationName())
-                  .arg(QApplication::applicationVersion());
-
-    if (isConnected())
-        sendCommand(IrcCommand::createQuit(message));
-    else
-        close();
+    sleep();
     m_quit = true;
 }
 
@@ -333,6 +322,26 @@ void Session::destructLater()
 void Session::stopReconnecting()
 {
     m_reconnectTimer.stop();
+}
+
+void Session::sleep()
+{
+    disconnect(this, SIGNAL(connecting()), &m_reconnectTimer, SLOT(stop()));
+    disconnect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), &m_reconnectTimer, SLOT(start()));
+
+    QString message = tr("%1 %2").arg(QApplication::applicationName())
+                                 .arg(QApplication::applicationVersion());
+
+    if (isConnected())
+        sendCommand(IrcCommand::createQuit(message));
+    else
+        close();
+}
+
+void Session::wake()
+{
+    if (!m_quit)
+        reconnect();
 }
 
 void Session::onConnected()

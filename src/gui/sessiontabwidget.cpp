@@ -121,12 +121,10 @@ void SessionTabWidget::closeView(int index)
     MessageView* view = viewAt(index);
     if (view) {
         if (view->isActive()) {
-            QString reason = tr("%1 %2").arg(QApplication::applicationName())
-                             .arg(QApplication::applicationVersion());
             if (indexOf(view) == 0)
-                session()->quit(reason);
+                session()->quit();
             else if (view->viewType() == MessageView::ChannelView)
-                d.handler.session()->sendCommand(IrcCommand::createPart(view->receiver(), reason));
+                d.handler.session()->sendCommand(IrcCommand::createPart(view->receiver()));
         }
         d.handler.removeReceiver(view->receiver());
     }

@@ -155,8 +155,8 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
         session->open();
     tabWidget->addSession(session);
 
-    connect(PowerNotifier::instance(), SIGNAL(sleep()), session, SLOT(quit()));
-    connect(PowerNotifier::instance(), SIGNAL(wake()), session, SLOT(reconnect()));
+    connect(PowerNotifier::instance(), SIGNAL(sleep()), session, SLOT(sleep()));
+    connect(PowerNotifier::instance(), SIGNAL(wake()), session, SLOT(wake()));
 
     connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateOverlay()));
     connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateOverlay()));
