@@ -43,7 +43,6 @@ Session::Session(QObject* parent) : IrcSession(parent),
 #if QT_VERSION >= 0x040700
     setPingInterval(60);
     connect(&m_pingTimer, SIGNAL(timeout()), this, SLOT(pingServer()));
-    QTimer::singleShot(60000, &m_pingTimer, SLOT(start()));
 #endif // QT_VERSION
 }
 
@@ -342,7 +341,7 @@ void Session::onConnected()
 #if QT_VERSION >= 0x040700
     m_lagTimer.invalidate();
     m_pingTimer.start();
-    QTimer::singleShot(2000, this, SLOT(pingServer()));
+    QTimer::singleShot(6000, this, SLOT(pingServer()));
 #endif // QT_VERSION
 }
 
