@@ -265,6 +265,11 @@ bool Session::hasQuit() const
     return m_quit;
 }
 
+bool Session::isReconnecting() const
+{
+    return m_reconnectTimer.isActive();
+}
+
 bool Session::ensureNetwork()
 {
 #if QT_VERSION >= 0x040700

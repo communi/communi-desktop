@@ -41,6 +41,7 @@ class Session : public IrcSession
     Q_PROPERTY(int pingInterval READ pingInterval WRITE setPingInterval)
     Q_PROPERTY(int currentLag READ currentLag NOTIFY currentLagChanged)
     Q_PROPERTY(int maximumLag READ maximumLag WRITE setMaximumLag)
+    Q_PROPERTY(bool reconnecting READ isReconnecting)
     Q_PROPERTY(bool hasQuit READ hasQuit)
 
 public:
@@ -83,6 +84,7 @@ public:
     void setMaximumLag(int lag);
 
     bool hasQuit() const;
+    bool isReconnecting() const;
     Q_INVOKABLE bool ensureNetwork();
 
     Q_INVOKABLE bool sendUiCommand(IrcCommand* command);
