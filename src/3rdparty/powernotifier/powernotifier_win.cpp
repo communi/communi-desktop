@@ -53,10 +53,11 @@ void PowerNotifier::initialize()
 void PowerNotifier::uninitialize()
 {
     PowerEventFilter* filter = static_cast<PowerEventFilter*>(d);
+    if (QAbstractEventDispatcher::instance())
 #if QT_VERSION >= 0x050000
-    QAbstractEventDispatcher::instance()->removeNativeEventFilter(filter);
+        QAbstractEventDispatcher::instance()->removeNativeEventFilter(filter);
 #else
-    QAbstractEventDispatcher::instance()->setEventFilter(filter->prev);
+        QAbstractEventDispatcher::instance()->setEventFilter(filter->prev);
 #endif // QT_VERSION
     delete filter;
 }
