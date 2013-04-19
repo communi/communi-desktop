@@ -395,6 +395,22 @@ QMimeData* SessionTreeWidget::mimeData(const QList<QTreeWidgetItem*> items) cons
     return QTreeWidget::mimeData(items);
 }
 
+void SessionTreeWidget::rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end)
+{
+    QTreeWidget::rowsAboutToBeRemoved(parent, start, end);
+    SessionTreeItem* item = static_cast<SessionTreeItem*>(itemFromIndex(parent));
+    if (item) {
+        for (int i = start; i <= end; ++i) {
+            SessionTreeItem* child = static_cast<SessionTreeItem*>(item->child(i));
+            if (child) {
+                item->d.highlightedChildren.remove(child);
+                d.resetedItems.remove(child);
+                unhighlight(child);
+            }
+        }
+    }
+}
+
 void SessionTreeWidget::updateView(MessageView* view)
 {
     if (!view)

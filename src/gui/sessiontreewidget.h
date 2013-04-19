@@ -90,6 +90,7 @@ protected:
     void dragMoveEvent(QDragMoveEvent* event);
     bool event(QEvent* event);
     QMimeData* mimeData(const QList<QTreeWidgetItem*> items) const;
+    void rowsAboutToBeRemoved(const QModelIndex & parent, int start, int end);
 
 private slots:
     void updateView(MessageView* view = 0);
