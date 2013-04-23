@@ -123,7 +123,10 @@ private:
     IrcSessionInfo m_info;
     bool m_quit;
     QStringList m_alternateNicks;
+    bool m_capable;
+    long m_timestamp;
 #if QT_VERSION >= 0x040700
+    QElapsedTimer m_timestamper;
     QTimer m_pingTimer;
     QElapsedTimer m_lagTimer;
     static QNetworkSession* s_network;

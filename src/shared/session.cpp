@@ -28,7 +28,7 @@ QNetworkSession* Session::s_network = 0;
 #endif // QT_VERSION
 
 Session::Session(QObject* parent) : IrcSession(parent),
-    m_currentLag(-1), m_maxLag(120000), m_info(this), m_quit(false)
+    m_currentLag(-1), m_maxLag(120000), m_info(this), m_quit(false), m_capable(false), m_timestamp(0)
 {
     connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(this, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
@@ -353,6 +353,7 @@ void Session::onConnected()
     m_quit = false;
 
 #if QT_VERSION >= 0x040700
+    m_timestamper.invalidate();
     m_lagTimer.invalidate();
     m_pingTimer.start();
     QTimer::singleShot(6000, this, SLOT(pingServer()));
@@ -376,6 +377,11 @@ void Session::onCapabilities(const QStringList& available, QStringList* request)
 {
     if (available.contains("identify-msg"))
         request->append("identify-msg");
+    if (available.contains("communi")) {
+        request->append("communi");
+        request->append(QString("communi/%1").arg(m_timestamp));
+        m_capable = true;
+    }
 }
 
 void Session::onSessionInfoReceived(const IrcSessionInfo& info)
@@ -386,6 +392,16 @@ void Session::onSessionInfoReceived(const IrcSessionInfo& info)
 
 void Session::handleMessage(IrcMessage* message)
 {
+#if QT_VERSION >= 0x040700
+    if (m_timestamp > 0 && m_timestamper.isValid()) {
+        long elapsed = m_timestamper.elapsed() / 1000;
+        if (elapsed > 0) {
+            m_timestamp += elapsed;
+            m_timestamper.restart();
+        }
+    }
+#endif // QT_VERSION
+
     if (message->type() == IrcMessage::Join) {
         if (message->flags() & IrcMessage::Own)
             addChannel(static_cast<IrcJoinMessage*>(message)->channel());
@@ -410,6 +426,13 @@ void Session::handleMessage(IrcMessage* message)
                                  <<  currentNick;
             }
             setNickName(m_alternateNicks.takeFirst());
+        }
+    } else if (message->type() == IrcMessage::Notice) {
+        if (message->sender().name() == "*communi") {
+            m_timestamp = static_cast<IrcNoticeMessage*>(message)->message().toLong();
+#if QT_VERSION >= 0x040700
+            m_timestamper.restart();
+#endif // QT_VERSION
         }
     }
 }
