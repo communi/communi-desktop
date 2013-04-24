@@ -438,8 +438,8 @@ void MessageView::receiveMessage(IrcMessage* message)
                     d.topicLabel->setToolTip(tr("Set %1 by %2").arg(dateTime.toString(), message->parameters().value(2)));
                     break;
                 }
-                case Irc::RPL_AWAY: // TODO: configurable
 #if QT_VERSION >= 0x040700
+                case Irc::RPL_AWAY: // TODO: configurable
                     if (d.awayReply.isValid() && d.awayReply.elapsed() < 1800000
                             && message->parameters().last() == d.awayMessage) {
                         return;
