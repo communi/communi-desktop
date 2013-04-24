@@ -21,6 +21,10 @@
 #include "settings.h"
 #include <QPointer>
 
+#if QT_VERSION >= 0x040700
+#include <QElapsedTimer>
+#endif // QT_VERSION
+
 class SyntaxHighlighter;
 class MenuFactory;
 class IrcMessage;
@@ -95,6 +99,10 @@ private:
         QString topic;
         bool joined;
         int sentId;
+#if QT_VERSION >= 0x040700
+        QString awayMessage;
+        QElapsedTimer awayReply;
+#endif // QT_VERSION
     } d;
 };
 

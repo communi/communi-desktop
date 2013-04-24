@@ -429,6 +429,14 @@ void MessageView::receiveMessage(IrcMessage* message)
                     d.topicLabel->setToolTip(tr("Set %1 by %2").arg(dateTime.toString(), message->parameters().value(2)));
                     break;
                 }
+                case Irc::RPL_AWAY: // TODO: configurable
+                    if (d.awayReply.isValid() && d.awayReply.elapsed() < 1800000
+                            && message->parameters().last() == d.awayMessage) {
+                        return;
+                    }
+                    d.awayReply.restart();
+                    d.awayMessage = message->parameters().last();
+                    break;
                 default:
                     break;
             }
