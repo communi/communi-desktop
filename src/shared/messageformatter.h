@@ -87,6 +87,7 @@ protected:
 
 private:
     mutable struct Private {
+        int joins;
         bool highlight;
         bool timeStamp;
         bool stripNicks;

@@ -26,6 +26,7 @@ Q_GLOBAL_STATIC(IrcTextFormat, irc_text_format)
 
 MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 {
+    d.joins = 0;
     d.highlight = false;
     d.timeStamp = false;
     d.stripNicks = true;
@@ -220,7 +221,10 @@ QString MessageFormatter::formatJoinMessage(IrcJoinMessage* message) const
 {
     d.messageType = IrcMessage::Join;
     const QString sender = formatSender(message->sender(), d.stripNicks);
-    return tr("! %1 joined %2").arg(sender, message->channel());
+    QString formatted = tr("! %1 joined %2").arg(sender, message->channel());
+    if (message->flags() & IrcMessage::Own && ++d.joins > 1)
+        formatted = tr("! %1 rejoined %2").arg(sender, message->channel());
+    return formatted;
 }
 
 QString MessageFormatter::formatKickMessage(IrcKickMessage* message) const
@@ -319,22 +323,28 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
         }
         case Irc::RPL_WHOISCHANNELS:
             return tr("! %1 is on channels %2").arg(P_(1), P_(2));
+
         case Irc::RPL_CHANNELMODEIS:
-            return tr("! %1 mode is %2").arg(P_(1), P_(2));
+            return d.joins < 2 ? tr("! %1 mode is %2").arg(P_(1), P_(2)) : QString();
         case Irc::RPL_CHANNEL_URL:
-            return tr("! %1 url is %2").arg(P_(1), formatHtml(P_(2)));
-        case Irc::RPL_CREATIONTIME: {
-            QDateTime dateTime = QDateTime::fromTime_t(P_(2).toInt());
-            return tr("! %1 was created %2").arg(P_(1), dateTime.toString());
-        }
+            return d.joins < 2 ? tr("! %1 url is %2").arg(P_(1), formatHtml(P_(2))) : QString();
+        case Irc::RPL_CREATIONTIME:
+            if (d.joins < 2) {
+                QDateTime dateTime = QDateTime::fromTime_t(P_(2).toInt());
+                return tr("! %1 was created %2").arg(P_(1), dateTime.toString());
+            }
+            return QString();
         case Irc::RPL_NOTOPIC:
-            return tr("! %1 has no topic set").arg(P_(1));
+            return d.joins < 2 ? tr("! %1 has no topic set").arg(P_(1)) : QString();
         case Irc::RPL_TOPIC:
-            return tr("! %1 topic is \"%2\"").arg(P_(1), formatHtml(P_(2)));
-        case Irc::RPL_TOPICWHOTIME: {
-            QDateTime dateTime = QDateTime::fromTime_t(P_(3).toInt());
-            return tr("! %1 topic was set %2 by %3").arg(P_(1), dateTime.toString(), formatUser(P_(2), d.stripNicks));
-        }
+            return d.joins < 2 ? tr("! %1 topic is \"%2\"").arg(P_(1), formatHtml(P_(2))) : QString();
+        case Irc::RPL_TOPICWHOTIME:
+            if (d.joins < 2) {
+                QDateTime dateTime = QDateTime::fromTime_t(P_(3).toInt());
+                return tr("! %1 topic was set %2 by %3").arg(P_(1), dateTime.toString(), formatUser(P_(2), d.stripNicks));
+            }
+            return QString();
+
         case Irc::RPL_INVITING:
             return tr("! inviting %1 to %2").arg(formatUser(P_(1)), P_(2));
         case Irc::RPL_VERSION:
@@ -346,7 +356,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
             return tr("! %1").arg(P_(1));
 
         case Irc::RPL_NAMREPLY:
-            if (d.receivedCodes.contains(Irc::RPL_ENDOFNAMES)) {
+            if (d.joins < 2 && d.receivedCodes.contains(Irc::RPL_ENDOFNAMES)) {
                 int count = message->parameters().count();
                 QString channel = message->parameters().value(count - 2);
                 QStringList names = message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts);
@@ -355,7 +365,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
             return QString();
 
         case Irc::RPL_ENDOFNAMES:
-            if (!d.users.isEmpty() && !d.receivedCodes.mid(0, d.receivedCodes.count() - 1).contains(Irc::RPL_ENDOFNAMES))
+            if (d.joins < 2 && !d.users.isEmpty() && !d.receivedCodes.mid(0, d.receivedCodes.count() - 1).contains(Irc::RPL_ENDOFNAMES))
                 return tr("! %1 has %2 users").arg(message->parameters().value(1)).arg(d.users.count());
             return QString();
 
