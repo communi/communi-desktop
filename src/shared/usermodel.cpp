@@ -214,9 +214,7 @@ void UserModel::processMessage(IrcMessage* message)
         else
             addUser(message->sender().name());
     } else if (message->type() == IrcMessage::Part) {
-        if (message->flags() & IrcMessage::Own)
-            clearUsers();
-        else
+        if (!(message->flags() & IrcMessage::Own))
             removeUser(message->sender().name());
     } else if (message->type() == IrcMessage::Kick) {
         removeUser(static_cast<IrcKickMessage*>(message)->user());
