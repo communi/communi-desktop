@@ -430,6 +430,7 @@ void MessageView::receiveMessage(IrcMessage* message)
                     break;
                 }
                 case Irc::RPL_AWAY: // TODO: configurable
+#if QT_VERSION >= 0x040700
                     if (d.awayReply.isValid() && d.awayReply.elapsed() < 1800000
                             && message->parameters().last() == d.awayMessage) {
                         return;
@@ -437,6 +438,7 @@ void MessageView::receiveMessage(IrcMessage* message)
                     d.awayReply.restart();
                     d.awayMessage = message->parameters().last();
                     break;
+#endif // QT_VERSION
                 default:
                     break;
             }
