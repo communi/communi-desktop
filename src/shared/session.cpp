@@ -20,12 +20,9 @@
 #ifndef QT_NO_OPENSSL
 #include <QSslSocket>
 #endif // QT_NO_OPENSSL
-
-#if QT_VERSION >= 0x040700
 #include <QNetworkConfigurationManager>
 
 QNetworkSession* Session::s_network = 0;
-#endif // QT_VERSION
 
 Session::Session(QObject* parent) : IrcSession(parent),
     m_currentLag(-1), m_maxLag(120000), m_info(this), m_quit(false), m_capable(false), m_timestamp(0)
@@ -40,13 +37,11 @@ Session::Session(QObject* parent) : IrcSession(parent),
     setAutoReconnectDelay(15);
     connect(&m_reconnectTimer, SIGNAL(timeout()), this, SLOT(open()));
 
-#if QT_VERSION >= 0x040700
     setPingInterval(60);
     connect(&m_pingTimer, SIGNAL(timeout()), this, SLOT(pingServer()));
 
     m_timestamper.invalidate();
     m_lagTimer.invalidate();
-#endif // QT_VERSION
 }
 
 Session::~Session()
@@ -231,20 +226,14 @@ Session* Session::fromConnection(const ConnectionInfo& connection, QObject* pare
 
 int Session::pingInterval() const
 {
-#if QT_VERSION >= 0x040700
     return m_pingTimer.interval() / 1000;
-#else
-    return -1;
-#endif // QT_VERSION
 }
 
 void Session::setPingInterval(int interval)
 {
     if (interval == pingInterval())
         return;
-#if QT_VERSION >= 0x040700
     m_pingTimer.setInterval(interval * 1000);
-#endif // QT_VERSION
 }
 
 int Session::currentLag() const
@@ -274,14 +263,12 @@ bool Session::isReconnecting() const
 
 bool Session::ensureNetwork()
 {
-#if QT_VERSION >= 0x040700
     QNetworkConfigurationManager manager;
     if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired) {
         if (!s_network)
             s_network = new QNetworkSession(manager.defaultConfiguration(), qApp);
         s_network->open();
     }
-#endif // QT_VERSION
     // TODO: return value?
     return true;
 }
@@ -358,20 +345,16 @@ void Session::onConnected()
     }
     m_quit = false;
 
-#if QT_VERSION >= 0x040700
     m_timestamper.invalidate();
     m_lagTimer.invalidate();
     m_pingTimer.start();
     QTimer::singleShot(6000, this, SLOT(pingServer()));
-#endif // QT_VERSION
 }
 
 void Session::onDisconnected()
 {
-#if QT_VERSION >= 0x040700
     m_pingTimer.stop();
     updateLag(-1);
-#endif // QT_VERSION
 }
 
 void Session::onPassword(QString* password)
@@ -398,7 +381,6 @@ void Session::onSessionInfoReceived(const IrcSessionInfo& info)
 
 void Session::handleMessage(IrcMessage* message)
 {
-#if QT_VERSION >= 0x040700
     if (m_timestamp > 0 && m_timestamper.isValid()) {
         long elapsed = m_timestamper.elapsed() / 1000;
         if (elapsed > 0) {
@@ -406,7 +388,6 @@ void Session::handleMessage(IrcMessage* message)
             m_timestamper.restart();
         }
     }
-#endif // QT_VERSION
 
     if (message->type() == IrcMessage::Join) {
         if (message->flags() & IrcMessage::Own)
@@ -416,10 +397,8 @@ void Session::handleMessage(IrcMessage* message)
             removeChannel(static_cast<IrcPartMessage*>(message)->channel());
     } else if (message->type() == IrcMessage::Pong) {
         if (message->parameters().contains("_C_o_m_m_u_n_i_")) {
-#if QT_VERSION >= 0x040700
             updateLag(static_cast<int>(m_lagTimer.elapsed()));
             m_lagTimer.invalidate();
-#endif // QT_VERSION
         }
     } else if (message->type() == IrcMessage::Numeric) {
         int code = static_cast<IrcNumericMessage*>(message)->code();
@@ -436,16 +415,13 @@ void Session::handleMessage(IrcMessage* message)
     } else if (message->type() == IrcMessage::Notice) {
         if (message->sender().name() == "*communi") {
             m_timestamp = static_cast<IrcNoticeMessage*>(message)->message().toLong();
-#if QT_VERSION >= 0x040700
             m_timestamper.restart();
-#endif // QT_VERSION
         }
     }
 }
 
 void Session::pingServer()
 {
-#if QT_VERSION >= 0x040700
     if (m_lagTimer.isValid()) {
         // still lagging (no response since last PING)
         updateLag(static_cast<int>(m_lagTimer.elapsed()));
@@ -460,7 +436,6 @@ void Session::pingServer()
         m_lagTimer.start();
         sendData("PING _C_o_m_m_u_n_i_");
     }
-#endif // QT_VERSION
 }
 
 void Session::updateLag(int lag)

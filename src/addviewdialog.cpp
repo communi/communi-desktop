@@ -45,9 +45,7 @@ AddViewDialog::AddViewDialog(Session* session, QWidget* parent) : QDialog(parent
     d.passLabel = new QLabel(this);
     d.passLabel->setText("Password:");
     d.passEdit = new QLineEdit(this);
-#if QT_VERSION >= 0x040700
     d.passEdit->setPlaceholderText(tr("Optional..."));
-#endif // QT_VERSION
 
     d.buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     connect(d.buttonBox, SIGNAL(accepted()), this, SLOT(accept()));

@@ -41,9 +41,7 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     d.viewType = type;
     d.joined = false;
     d.sentId = 1;
-#if QT_VERSION >= 0x040700
     d.awayReply.invalidate();
-#endif // QT_VERSION
 
     d.topicLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
     d.helpLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
@@ -438,7 +436,6 @@ void MessageView::receiveMessage(IrcMessage* message)
                     d.topicLabel->setToolTip(tr("Set %1 by %2").arg(dateTime.toString(), message->parameters().value(2)));
                     break;
                 }
-#if QT_VERSION >= 0x040700
                 case Irc::RPL_AWAY: // TODO: configurable
                     if (d.awayReply.isValid() && d.awayReply.elapsed() < 1800000
                             && message->parameters().last() == d.awayMessage) {
@@ -447,7 +444,6 @@ void MessageView::receiveMessage(IrcMessage* message)
                     d.awayReply.restart();
                     d.awayMessage = message->parameters().last();
                     break;
-#endif // QT_VERSION
                 default:
                     break;
             }

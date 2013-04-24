@@ -22,12 +22,9 @@
 #include <QStringList>
 #include <IrcSessionInfo>
 #include <QAbstractSocket>
-#include "connectioninfo.h"
-
-#if QT_VERSION >= 0x040700
 #include <QNetworkSession>
 #include <QElapsedTimer>
-#endif // QT_VERSION
+#include "connectioninfo.h"
 
 class Session : public IrcSession
 {
@@ -125,12 +122,10 @@ private:
     QStringList m_alternateNicks;
     bool m_capable;
     long m_timestamp;
-#if QT_VERSION >= 0x040700
     QElapsedTimer m_timestamper;
     QTimer m_pingTimer;
     QElapsedTimer m_lagTimer;
     static QNetworkSession* s_network;
-#endif // QT_VERSION
 };
 
 #endif // SESSION_H
