@@ -332,10 +332,13 @@ void Session::sleep()
     QString message = tr("%1 %2").arg(QApplication::applicationName())
                                  .arg(QApplication::applicationVersion());
 
-    if (isConnected())
+    if (isConnected()) {
+        if (m_capable)
+            sendCommand(IrcCommand::createCtcpRequest("*communi", "TIME"));
         sendCommand(IrcCommand::createQuit(message));
-    else
+    } else {
         close();
+    }
 }
 
 void Session::wake()
