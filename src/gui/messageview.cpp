@@ -41,6 +41,9 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     d.viewType = type;
     d.joined = false;
     d.sentId = 1;
+#if QT_VERSION >= 0x040700
+    d.awayReply.invalidate();
+#endif // QT_VERSION
 
     d.topicLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
     d.helpLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
