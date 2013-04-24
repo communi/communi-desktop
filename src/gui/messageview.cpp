@@ -72,6 +72,7 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
         connect(d.listView, SIGNAL(queried(QString)), this, SIGNAL(queried(QString)));
         connect(d.listView, SIGNAL(doubleClicked(QString)), this, SIGNAL(queried(QString)));
         connect(d.listView, SIGNAL(commandRequested(IrcCommand*)), d.session, SLOT(sendCommand(IrcCommand*)));
+        connect(d.topicLabel, SIGNAL(edited(QString)), this, SLOT(onTopicEdited(QString)));
     }
 
     if (!command_model) {
@@ -302,6 +303,11 @@ void MessageView::completeCommand(const QString& command)
 {
     if (command == "TOPIC")
         d.lineEditor->insert(d.topic);
+}
+
+void MessageView::onTopicEdited(const QString& topic)
+{
+    d.session->sendCommand(IrcCommand::createTopic(d.receiver, topic));
 }
 
 void MessageView::onSocketError()

@@ -33,6 +33,13 @@ TextBrowser {
     selection-background-color: palette(highlight);
 }
 
+QLabel#topicLabel > QTextEdit {
+    border: 1px solid transparent;
+    border-bottom-color: palette(dark);
+    selection-color: palette(highlighted-text);
+    selection-background-color: palette(highlight);
+}
+
 MessageView > QLineEdit {
     border: 1px solid transparent;
     border-top-color: palette(dark);
