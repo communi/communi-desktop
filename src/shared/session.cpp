@@ -27,11 +27,12 @@ QNetworkSession* Session::s_network = 0;
 Session::Session(QObject* parent) : IrcSession(parent),
     m_currentLag(-1), m_maxLag(120000), m_info(this), m_quit(false), m_capable(false), m_timestamp(0)
 {
+    installMessageFilter(this);
+
     connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(this, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
     connect(this, SIGNAL(password(QString*)), this, SLOT(onPassword(QString*)));
     connect(this, SIGNAL(capabilities(QStringList, QStringList*)), this, SLOT(onCapabilities(QStringList, QStringList*)));
-    connect(this, SIGNAL(messageReceived(IrcMessage*)), SLOT(handleMessage(IrcMessage*)));
     connect(this, SIGNAL(sessionInfoReceived(IrcSessionInfo)), SLOT(onSessionInfoReceived(IrcSessionInfo)));
 
     setAutoReconnectDelay(15);
@@ -379,7 +380,25 @@ void Session::onSessionInfoReceived(const IrcSessionInfo& info)
     emit networkChanged(m_info.network());
 }
 
-void Session::handleMessage(IrcMessage* message)
+void Session::pingServer()
+{
+    if (m_lagTimer.isValid()) {
+        // still lagging (no response since last PING)
+        updateLag(static_cast<int>(m_lagTimer.elapsed()));
+
+        // decrease the interval (60s => 20s => 6s => 2s)
+        int interval = pingInterval();
+        if (interval >= 6)
+            setPingInterval(interval / 3);
+    } else {
+        // (re-)PING!
+        setPingInterval(60);
+        m_lagTimer.start();
+        sendData("PING _C_o_m_m_u_n_i_");
+    }
+}
+
+bool Session::messageFilter(IrcMessage* message)
 {
     if (m_timestamp > 0 && m_timestamper.isValid()) {
         long elapsed = m_timestamper.elapsed() / 1000;
@@ -399,6 +418,7 @@ void Session::handleMessage(IrcMessage* message)
         if (message->parameters().contains("_C_o_m_m_u_n_i_")) {
             updateLag(static_cast<int>(m_lagTimer.elapsed()));
             m_lagTimer.invalidate();
+            return true;
         }
     } else if (message->type() == IrcMessage::Numeric) {
         int code = static_cast<IrcNumericMessage*>(message)->code();
@@ -416,26 +436,10 @@ void Session::handleMessage(IrcMessage* message)
         if (message->sender().name() == "*communi") {
             m_timestamp = static_cast<IrcNoticeMessage*>(message)->message().toLong();
             m_timestamper.restart();
+            return true;
         }
     }
-}
-
-void Session::pingServer()
-{
-    if (m_lagTimer.isValid()) {
-        // still lagging (no response since last PING)
-        updateLag(static_cast<int>(m_lagTimer.elapsed()));
-
-        // decrease the interval (60s => 20s => 6s => 2s)
-        int interval = pingInterval();
-        if (interval >= 6)
-            setPingInterval(interval / 3);
-    } else {
-        // (re-)PING!
-        setPingInterval(60);
-        m_lagTimer.start();
-        sendData("PING _C_o_m_m_u_n_i_");
-    }
+    return false;
 }
 
 void Session::updateLag(int lag)

@@ -23,10 +23,11 @@
 #include <IrcSessionInfo>
 #include <QAbstractSocket>
 #include <QNetworkSession>
+#include <IrcMessageFilter>
 #include <QElapsedTimer>
 #include "connectioninfo.h"
 
-class Session : public IrcSession
+class Session : public IrcSession, IrcMessageFilter
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
@@ -105,10 +106,10 @@ private slots:
     void onPassword(QString* password);
     void onCapabilities(const QStringList& available, QStringList* request);
     void onSessionInfoReceived(const IrcSessionInfo& info);
-    void handleMessage(IrcMessage* message);
     void pingServer();
 
 private:
+    bool messageFilter(IrcMessage* message);
     void updateLag(int lag);
 
     QString m_name;
