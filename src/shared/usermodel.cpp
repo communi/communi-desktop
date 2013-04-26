@@ -213,15 +213,17 @@ void UserModel::processMessage(IrcMessage* message)
             clearUsers();
         else
             addUser(message->sender().name());
-    } else if (message->type() == IrcMessage::Part) {
+    } else if (message->type() == IrcMessage::Part || message->type() == IrcMessage::Quit) {
         if (message->flags() & IrcMessage::Own)
             clearUsers();
         else
             removeUser(message->sender().name());
     } else if (message->type() == IrcMessage::Kick) {
-        removeUser(static_cast<IrcKickMessage*>(message)->user());
-    } else if (message->type() == IrcMessage::Quit) {
-        removeUser(message->sender().name());
+        QString user = static_cast<IrcKickMessage*>(message)->user();
+        if (!user.compare(d.session->nickName(), Qt::CaseInsensitive))
+            clearUsers();
+        else
+            removeUser(user);
     } else if (message->type() == IrcMessage::Mode) {
         IrcModeMessage* modeMsg = static_cast<IrcModeMessage*>(message);
         if (modeMsg->sender().name() != modeMsg->target() && !modeMsg->argument().isEmpty())
