@@ -25,7 +25,7 @@
 QNetworkSession* Session::s_network = 0;
 
 Session::Session(QObject* parent) : IrcSession(parent),
-    m_info(this), m_quit(false), m_capable(false), m_timestamp(0), m_meter(new IrcLagMeter(this))
+    m_info(this), m_quit(false), m_timestamp(0), m_meter(new IrcLagMeter(this))
 {
     installMessageFilter(this);
 
@@ -298,7 +298,7 @@ void Session::sleep()
                                  .arg(QApplication::applicationVersion());
 
     if (isConnected()) {
-        if (m_capable)
+        if (m_info.activeCapabilities().contains("communi"))
             sendCommand(IrcCommand::createCtcpRequest("*communi", "TIME"));
         sendCommand(IrcCommand::createQuit(message));
     } else {
@@ -339,7 +339,6 @@ void Session::onCapabilities(const QStringList& available, QStringList* request)
     if (available.contains("communi")) {
         request->append("communi");
         request->append(QString("communi/%1").arg(m_timestamp));
-        m_capable = true;
     }
 }
 

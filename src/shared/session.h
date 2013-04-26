@@ -109,7 +109,6 @@ private:
     IrcSessionInfo m_info;
     bool m_quit;
     QStringList m_alternateNicks;
-    bool m_capable;
     long m_timestamp;
     QElapsedTimer m_timestamper;
     IrcLagMeter* m_meter;
