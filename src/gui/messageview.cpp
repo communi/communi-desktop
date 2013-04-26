@@ -58,6 +58,7 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
 
     d.session = session;
     connect(d.session, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
+    connect(d.session, SIGNAL(connectedChanged(bool)), this, SIGNAL(activeChanged()));
     connect(d.session->lagMeter(), SIGNAL(lagChanged(int)), d.lineEditor, SLOT(setLag(int)));
     d.lineEditor->setLag(d.session->lagMeter()->lag());
     if (type == ServerView)
@@ -106,11 +107,12 @@ MessageView::~MessageView()
 
 bool MessageView::isActive() const
 {
-    if (!d.session || !d.session->isActive())
-        return false;
-    if (d.viewType == ChannelView)
-        return d.joined;
-    return true;
+    switch (d.viewType) {
+    case ChannelView: return d.joined;
+    case ServerView: return d.session && d.session->isActive();
+    case QueryView: return d.session && d.session->isConnected();
+    default: return false;
+    }
 }
 
 MessageView::ViewType MessageView::viewType() const
@@ -388,17 +390,21 @@ void MessageView::receiveMessage(IrcMessage* message)
             if (d.topicLabel->text().isEmpty())
                 d.topicLabel->setText(tr("-"));
             break;
-        case IrcMessage::Unknown:
-            qWarning() << "unknown:" << message;
-            break;
         case IrcMessage::Join:
             if (message->flags() & IrcMessage::Own) {
                 d.joined = true;
                 emit activeChanged();
             }
             break;
+        case IrcMessage::Quit:
         case IrcMessage::Part:
             if (message->flags() & IrcMessage::Own) {
+                d.joined = false;
+                emit activeChanged();
+            }
+            break;
+        case IrcMessage::Kick:
+            if (!static_cast<IrcKickMessage*>(message)->user().compare(d.session->nickName(), Qt::CaseInsensitive)) {
                 d.joined = false;
                 emit activeChanged();
             }
@@ -470,7 +476,7 @@ void MessageView::receiveMessage(IrcMessage* message)
 
 bool MessageView::hasUser(const QString& user) const
 {
-    return (!d.session->nickName().compare(user, Qt::CaseInsensitive)) ||
+    return (!d.session->nickName().compare(user, Qt::CaseInsensitive) && d.viewType != QueryView) ||
            (d.viewType == QueryView && !d.receiver.compare(user, Qt::CaseInsensitive)) ||
            (d.viewType == ChannelView && d.listView->hasUser(user));
 }
