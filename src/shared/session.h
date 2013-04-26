@@ -19,6 +19,7 @@
 #include <QTimer>
 #include <IrcSession>
 #include <IrcCommand>
+#include <IrcLagMeter>
 #include <QStringList>
 #include <IrcSessionInfo>
 #include <QAbstractSocket>
@@ -36,9 +37,6 @@ class Session : public IrcSession, IrcMessageFilter
     Q_PROPERTY(ChannelInfos channels READ channels WRITE setChannels)
     Q_PROPERTY(bool secure READ isSecure WRITE setSecure)
     Q_PROPERTY(QString password READ password WRITE setPassword)
-    Q_PROPERTY(int pingInterval READ pingInterval WRITE setPingInterval)
-    Q_PROPERTY(int currentLag READ currentLag NOTIFY currentLagChanged)
-    Q_PROPERTY(int maximumLag READ maximumLag WRITE setMaximumLag)
     Q_PROPERTY(bool reconnecting READ isReconnecting)
     Q_PROPERTY(bool hasQuit READ hasQuit)
 
@@ -50,6 +48,8 @@ public:
     void setName(const QString& name);
 
     QString network() const;
+
+    IrcLagMeter* lagMeter() const;
 
     int autoReconnectDelay() const;
     void setAutoReconnectDelay(int delay);
@@ -74,13 +74,6 @@ public:
     void initFrom(const ConnectionInfo& connection);
     static Session* fromConnection(const ConnectionInfo& connection, QObject* parent = 0);
 
-    int pingInterval() const;
-    void setPingInterval(int interval);
-
-    int currentLag() const;
-    int maximumLag() const;
-    void setMaximumLag(int lag);
-
     bool hasQuit() const;
     bool isReconnecting() const;
     Q_INVOKABLE bool ensureNetwork();
@@ -97,7 +90,6 @@ public slots:
 
 signals:
     void nameChanged(const QString& name);
-    void currentLagChanged(int lag);
     void networkChanged(const QString& network);
 
 private slots:
@@ -106,26 +98,21 @@ private slots:
     void onPassword(QString* password);
     void onCapabilities(const QStringList& available, QStringList* request);
     void onSessionInfoReceived(const IrcSessionInfo& info);
-    void pingServer();
 
 private:
     bool messageFilter(IrcMessage* message);
-    void updateLag(int lag);
 
     QString m_name;
     QTimer m_reconnectTimer;
     QString m_password;
     ChannelInfos m_channels;
-    int m_currentLag;
-    int m_maxLag;
     IrcSessionInfo m_info;
     bool m_quit;
     QStringList m_alternateNicks;
     bool m_capable;
     long m_timestamp;
     QElapsedTimer m_timestamper;
-    QTimer m_pingTimer;
-    QElapsedTimer m_lagTimer;
+    IrcLagMeter* m_meter;
     static QNetworkSession* s_network;
 };
 

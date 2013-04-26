@@ -25,7 +25,7 @@
 QNetworkSession* Session::s_network = 0;
 
 Session::Session(QObject* parent) : IrcSession(parent),
-    m_currentLag(-1), m_maxLag(120000), m_info(this), m_quit(false), m_capable(false), m_timestamp(0)
+    m_info(this), m_quit(false), m_capable(false), m_timestamp(0), m_meter(new IrcLagMeter(this))
 {
     installMessageFilter(this);
 
@@ -38,11 +38,7 @@ Session::Session(QObject* parent) : IrcSession(parent),
     setAutoReconnectDelay(15);
     connect(&m_reconnectTimer, SIGNAL(timeout()), this, SLOT(open()));
 
-    setPingInterval(60);
-    connect(&m_pingTimer, SIGNAL(timeout()), this, SLOT(pingServer()));
-
     m_timestamper.invalidate();
-    m_lagTimer.invalidate();
 }
 
 Session::~Session()
@@ -65,6 +61,11 @@ void Session::setName(const QString& name)
 QString Session::network() const
 {
     return IrcSessionInfo(this).network();
+}
+
+IrcLagMeter* Session::lagMeter() const
+{
+    return m_meter;
 }
 
 int Session::autoReconnectDelay() const
@@ -225,33 +226,6 @@ Session* Session::fromConnection(const ConnectionInfo& connection, QObject* pare
     return session;
 }
 
-int Session::pingInterval() const
-{
-    return m_pingTimer.interval() / 1000;
-}
-
-void Session::setPingInterval(int interval)
-{
-    if (interval == pingInterval())
-        return;
-    m_pingTimer.setInterval(interval * 1000);
-}
-
-int Session::currentLag() const
-{
-    return m_currentLag;
-}
-
-int Session::maximumLag() const
-{
-    return m_maxLag;
-}
-
-void Session::setMaximumLag(int lag)
-{
-    m_maxLag = lag;
-}
-
 bool Session::hasQuit() const
 {
     return m_quit;
@@ -347,15 +321,10 @@ void Session::onConnected()
     m_quit = false;
 
     m_timestamper.invalidate();
-    m_lagTimer.invalidate();
-    m_pingTimer.start();
-    QTimer::singleShot(6000, this, SLOT(pingServer()));
 }
 
 void Session::onDisconnected()
 {
-    m_pingTimer.stop();
-    updateLag(-1);
 }
 
 void Session::onPassword(QString* password)
@@ -380,24 +349,6 @@ void Session::onSessionInfoReceived(const IrcSessionInfo& info)
     emit networkChanged(m_info.network());
 }
 
-void Session::pingServer()
-{
-    if (m_lagTimer.isValid()) {
-        // still lagging (no response since last PING)
-        updateLag(static_cast<int>(m_lagTimer.elapsed()));
-
-        // decrease the interval (60s => 20s => 6s => 2s)
-        int interval = pingInterval();
-        if (interval >= 6)
-            setPingInterval(interval / 3);
-    } else {
-        // (re-)PING!
-        setPingInterval(60);
-        m_lagTimer.start();
-        sendData("PING _C_o_m_m_u_n_i_");
-    }
-}
-
 bool Session::messageFilter(IrcMessage* message)
 {
     if (m_timestamp > 0 && m_timestamper.isValid()) {
@@ -414,12 +365,6 @@ bool Session::messageFilter(IrcMessage* message)
     } else if (message->type() == IrcMessage::Part) {
         if (message->flags() & IrcMessage::Own)
             removeChannel(static_cast<IrcPartMessage*>(message)->channel());
-    } else if (message->type() == IrcMessage::Pong) {
-        if (message->parameters().contains("_C_o_m_m_u_n_i_")) {
-            updateLag(static_cast<int>(m_lagTimer.elapsed()));
-            m_lagTimer.invalidate();
-            return true;
-        }
     } else if (message->type() == IrcMessage::Numeric) {
         int code = static_cast<IrcNumericMessage*>(message)->code();
         if (code == Irc::ERR_NICKNAMEINUSE) {
@@ -440,20 +385,4 @@ bool Session::messageFilter(IrcMessage* message)
         }
     }
     return false;
-}
-
-void Session::updateLag(int lag)
-{
-    if (m_currentLag != lag) {
-        m_currentLag = lag;
-        emit currentLagChanged(lag);
-
-        // TODO: https://github.com/communi/communi/issues/6
-//        if (lag > m_maxLag)
-//        {
-//            close();
-//            if (ensureNetwork())
-//                open();
-//        }
-    }
 }
