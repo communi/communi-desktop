@@ -78,54 +78,6 @@ void Session::setAutoReconnectDelay(int delay)
     m_reconnectTimer.setInterval(delay * 1000);
 }
 
-ChannelInfos Session::channels() const
-{
-    return m_channels;
-}
-
-void Session::addChannel(const QString& channel)
-{
-    const QString lower = channel.toLower();
-    foreach (const ChannelInfo& info, m_channels) {
-        if (info.channel.toLower() == lower)
-            return;
-    }
-
-    ChannelInfo info;
-    info.channel = channel;
-    m_channels.append(info);
-}
-
-void Session::setChannelKey(const QString& channel, const QString& key)
-{
-    int idx = -1;
-    const QString lower = channel.toLower();
-    for (int i = 0; idx == -1 && i < m_channels.count(); ++i)
-        if (m_channels.at(i).channel.toLower() == lower)
-            idx = i;
-    if (idx != -1) {
-        ChannelInfo info = m_channels.at(idx);
-        info.key = key;
-        m_channels.replace(idx, info);
-    }
-}
-
-void Session::removeChannel(const QString& channel)
-{
-    int idx = -1;
-    const QString lower = channel.toLower();
-    for (int i = 0; idx == -1 && i < m_channels.count(); ++i)
-        if (m_channels.at(i).channel.toLower() == lower)
-            idx = i;
-    if (idx != -1)
-        m_channels.removeAt(idx);
-}
-
-void Session::setChannels(const ChannelInfos& channels)
-{
-    m_channels = channels;
-}
-
 bool Session::isChannel(const QString& receiver) const
 {
     return receiver.length() > 1 && m_info.channelTypes().contains(receiver.at(0));
@@ -199,7 +151,6 @@ ConnectionInfo Session::toConnection() const
     connection.nick = nickName();
     connection.real = realName();
     connection.pass = password();
-    connection.channels = channels();
     connection.quit = m_quit;
     return connection;
 }
@@ -215,7 +166,7 @@ void Session::initFrom(const ConnectionInfo& connection)
     QString appName = QApplication::applicationName().toLower();
     setUserName(connection.user.isEmpty() ? appName : connection.user);
     setRealName(connection.real.isEmpty() ? appName : connection.real);
-    setChannels(connection.channels);
+    m_views = connection.views;
     m_quit = connection.quit;
 }
 
@@ -250,11 +201,12 @@ bool Session::ensureNetwork()
 
 bool Session::sendUiCommand(IrcCommand* command)
 {
-    if (command->type() == IrcCommand::Join) {
-        QString key = command->parameters().value(1);
-        if (!key.isEmpty())
-            setChannelKey(command->parameters().value(0), key);
-    }
+//    TODO:
+//    if (command->type() == IrcCommand::Join) {
+//        QString key = command->parameters().value(1);
+//        if (!key.isEmpty())
+//            setChannelKey(command->parameters().value(0), key);
+//    }
     return sendCommand(command);
 }
 
@@ -314,12 +266,18 @@ void Session::wake()
 
 void Session::onConnected()
 {
-    foreach (const ChannelInfo& channel, m_channels) {
-        if (!channel.channel.isEmpty())
-            sendCommand(IrcCommand::createJoin(channel.channel, channel.key));
+    QStringList channels;
+    foreach (const ViewInfo& view, m_views) {
+        if (view.active && view.type == ViewInfo::Channel)
+            channels += view.name;
     }
-    m_quit = false;
+    // send join commands in batches of max 10 channels
+    while (!channels.isEmpty()) {
+        sendCommand(IrcCommand::createJoin(QStringList(channels.mid(0, 10)).join(",")));
+        channels = channels.mid(10);
+    }
 
+    m_quit = false;
     m_timestamper.invalidate();
 }
 
@@ -384,4 +342,29 @@ bool Session::messageFilter(IrcMessage* message)
         }
     }
     return false;
+}
+
+void Session::addChannel(const QString& channel)
+{
+    foreach (const ViewInfo& view, m_views) {
+        if (view.type == ViewInfo::Channel && !view.name.compare(channel, Qt::CaseInsensitive))
+            return;
+    }
+
+    ViewInfo view;
+    view.active = true;
+    view.name = channel;
+    view.type = ViewInfo::Channel;
+    m_views += view;
+}
+
+void Session::removeChannel(const QString& channel)
+{
+    for (int i = 0; i < m_views.count(); ++i) {
+        ViewInfo view = m_views.at(i);
+        if (view.type == ViewInfo::Channel && !view.name.compare(channel, Qt::CaseInsensitive)) {
+            m_views.removeAt(i);
+            return;
+        }
+    }
 }

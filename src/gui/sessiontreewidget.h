@@ -20,6 +20,7 @@
 #include <QColor>
 #include <QHash>
 #include "settings.h"
+#include "viewinfo.h"
 
 class Session;
 struct Settings;
@@ -51,6 +52,8 @@ public:
 
     SessionTreeItem* viewItem(MessageView* view) const;
     SessionTreeItem* sessionItem(Session* session) const;
+
+    ViewInfos viewInfos(Session* session) const;
 
 public slots:
     void addView(MessageView* view);

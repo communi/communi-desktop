@@ -19,6 +19,8 @@
 #include <QStackedWidget>
 #include <QStringListModel>
 #include "messagehandler.h"
+#include "messageview.h"
+#include "viewinfo.h"
 
 class Session;
 class IrcMessage;
@@ -42,6 +44,7 @@ public slots:
     void restoreSplitter(const QByteArray& state);
 
     MessageView* addView(const QString& receiver);
+    void restoreView(const ViewInfo& view);
     void openView(const QString& receiver);
     void removeView(const QString& receiver);
     void closeView(int index);
@@ -60,6 +63,8 @@ private slots:
     void tabActivated(int index);
 
 private:
+    MessageView* createView(MessageView::ViewType type, const QString& receiver);
+
     struct Private {
         MessageHandler handler;
         QStringListModel viewModel;

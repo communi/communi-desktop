@@ -160,6 +160,23 @@ SessionTreeItem* SessionTreeWidget::sessionItem(Session* session) const
     return d.sessionItems.value(session);
 }
 
+ViewInfos SessionTreeWidget::viewInfos(Session* session) const
+{
+    ViewInfos views;
+    SessionTreeItem* item = d.sessionItems.value(session);
+    if (item) {
+        for (int i = 0; i < item->childCount(); ++i) {
+            SessionTreeItem* child = static_cast<SessionTreeItem*>(item->child(i));
+            ViewInfo view;
+            view.type = child->view()->viewType();
+            view.name = child->view()->receiver();
+            view.active = child->view()->isActive();
+            views += view;
+        }
+    }
+    return views;
+}
+
 void SessionTreeWidget::addView(MessageView* view)
 {
     SessionTreeItem* item = 0;

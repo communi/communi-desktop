@@ -13,7 +13,6 @@
 */
 
 #include "sessiontabwidget.h"
-#include "messageview.h"
 #include "completer.h"
 #include "session.h"
 #include <irccommand.h>
@@ -75,24 +74,36 @@ MessageView* SessionTabWidget::addView(const QString& receiver)
         MessageView::ViewType type = MessageView::ServerView;
         if (!d.views.isEmpty())
             type = session()->isChannel(receiver) ? MessageView::ChannelView : MessageView::QueryView;
-        view = new MessageView(type, d.handler.session(), this);
-        view->completer()->setChannelPrefixes(IrcSessionInfo(session()).channelTypes().join(""));
-        view->completer()->setChannelModel(&d.viewModel);
-        view->setReceiver(receiver);
-        connect(view, SIGNAL(queried(QString)), this, SLOT(addView(QString)));
-        connect(view, SIGNAL(queried(QString)), this, SLOT(openView(QString)));
-        connect(view, SIGNAL(messaged(QString,QString)), this, SLOT(sendMessage(QString,QString)));
-        connect(view, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
-
-        d.handler.addReceiver(receiver, view);
-        d.views.insert(receiver.toLower(), view);
-        addWidget(view);
-        d.viewModel.setStringList(d.viewModel.stringList() << receiver);
-        emit viewAdded(view);
-
+        view = createView(type, receiver);
         if (d.handler.session()->isChannel(receiver))
             openView(receiver);
     }
+    return view;
+}
+
+void SessionTabWidget::restoreView(const ViewInfo& view)
+{
+    createView(MessageView::ViewType(view.type), view.name);
+}
+
+MessageView* SessionTabWidget::createView(MessageView::ViewType type, const QString& receiver)
+{
+    MessageView* view = new MessageView(type, d.handler.session(), this);
+    // TODO:
+    if (IrcSessionInfo(session()).isValid())
+        view->completer()->setChannelPrefixes(IrcSessionInfo(session()).channelTypes().join(""));
+    view->completer()->setChannelModel(&d.viewModel);
+    view->setReceiver(receiver);
+    connect(view, SIGNAL(queried(QString)), this, SLOT(addView(QString)));
+    connect(view, SIGNAL(queried(QString)), this, SLOT(openView(QString)));
+    connect(view, SIGNAL(messaged(QString,QString)), this, SLOT(sendMessage(QString,QString)));
+    connect(view, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
+
+    d.handler.addReceiver(receiver, view);
+    d.views.insert(receiver.toLower(), view);
+    addWidget(view);
+    d.viewModel.setStringList(d.viewModel.stringList() << receiver);
+    emit viewAdded(view);
     return view;
 }
 

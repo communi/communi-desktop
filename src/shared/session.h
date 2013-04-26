@@ -34,7 +34,6 @@ class Session : public IrcSession, IrcMessageFilter
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString network READ network NOTIFY networkChanged)
     Q_PROPERTY(int autoReconnectDelay READ autoReconnectDelay WRITE setAutoReconnectDelay)
-    Q_PROPERTY(ChannelInfos channels READ channels WRITE setChannels)
     Q_PROPERTY(bool secure READ isSecure WRITE setSecure)
     Q_PROPERTY(QString password READ password WRITE setPassword)
     Q_PROPERTY(bool reconnecting READ isReconnecting)
@@ -53,12 +52,6 @@ public:
 
     int autoReconnectDelay() const;
     void setAutoReconnectDelay(int delay);
-
-    ChannelInfos channels() const;
-    Q_INVOKABLE void addChannel(const QString& channel);
-    Q_INVOKABLE void setChannelKey(const QString& channel, const QString& key);
-    Q_INVOKABLE void removeChannel(const QString& channel);
-    void setChannels(const ChannelInfos& channels);
 
     Q_INVOKABLE bool isChannel(const QString& receiver) const;
     Q_INVOKABLE QString userPrefix(const QString& user) const;
@@ -101,11 +94,13 @@ private slots:
 
 private:
     bool messageFilter(IrcMessage* message);
+    void addChannel(const QString& channel);
+    void removeChannel(const QString& channel);
 
     QString m_name;
     QTimer m_reconnectTimer;
     QString m_password;
-    ChannelInfos m_channels;
+    ViewInfos m_views;
     IrcSessionInfo m_info;
     bool m_quit;
     QStringList m_alternateNicks;

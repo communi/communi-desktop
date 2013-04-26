@@ -175,6 +175,11 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
         view->applySettings(Application::settings());
     }
 
+    foreach (const ViewInfo& view, connection.views) {
+        if (view.type != -1)
+            tab->restoreView(view);
+    }
+
     QSettings settings;
     if (settings.contains("list"))
         tab->restoreSplitter(settings.value("list").toByteArray());
@@ -191,7 +196,9 @@ void MainWindow::closeEvent(QCloseEvent* event)
         ConnectionInfos connections;
         QList<Session*> sessions = tabWidget->sessions();
         foreach (Session* session, sessions) {
-            connections += session->toConnection();
+            ConnectionInfo connection = session->toConnection();
+            connection.views = treeWidget->viewInfos(session);
+            connections += connection;
             session->quit();
             session->destructLater();
         }

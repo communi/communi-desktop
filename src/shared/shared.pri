@@ -6,7 +6,6 @@ DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 QMAKE_CLEAN += $$PWD/*~
 
-HEADERS += $$PWD/channelinfo.h
 HEADERS += $$PWD/commandparser.h
 HEADERS += $$PWD/connectioninfo.h
 HEADERS += $$PWD/messageformatter.h
@@ -16,6 +15,7 @@ HEADERS += $$PWD/session.h
 HEADERS += $$PWD/sortedusermodel.h
 HEADERS += $$PWD/streamer.h
 HEADERS += $$PWD/usermodel.h
+HEADERS += $$PWD/viewinfo.h
 
 SOURCES += $$PWD/commandparser.cpp
 SOURCES += $$PWD/messageformatter.cpp

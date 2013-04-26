@@ -20,7 +20,7 @@
 #include <QVariant>
 #include <QMetaType>
 #include <QDataStream>
-#include "channelinfo.h"
+#include "viewinfo.h"
 #include "streamer.h"
 
 struct ConnectionInfo {
@@ -34,7 +34,7 @@ struct ConnectionInfo {
     QString real;
     QString pass;
     bool secure;
-    ChannelInfos channels;
+    ViewInfos views;
     QString user;
     bool quit;
 };
@@ -50,7 +50,7 @@ inline QDataStream& operator<<(QDataStream& out, const ConnectionInfo& connectio
     out << connection.real;
     out << connection.pass;
     out << connection.secure;
-    out << connection.channels;
+    out << connection.views;
     out << connection.user;
     out << connection.quit;
     return out;
@@ -66,7 +66,7 @@ inline QDataStream& operator>>(QDataStream& in, ConnectionInfo& connection)
     connection.real = readStreamValue<QString>(in, connection.real);
     connection.pass = readStreamValue<QString>(in, connection.pass);
     connection.secure = readStreamValue<bool>(in, connection.secure);
-    connection.channels = readStreamValue<ChannelInfos>(in, connection.channels);
+    connection.views = readStreamValue<ViewInfos>(in, connection.views);
     connection.user = readStreamValue<QString>(in, connection.user);
     connection.quit = readStreamValue<bool>(in, connection.quit);
     Q_UNUSED(version);
