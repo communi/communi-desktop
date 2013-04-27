@@ -21,7 +21,7 @@ MessageStackView::MessageStackView(Session* session, QWidget* parent) : QStacked
 {
     d.handler.setSession(session);
 
-    connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabActivated(int)));
+    connect(this, SIGNAL(currentChanged(int)), this, SLOT(activateView(int)));
 
     connect(&d.handler, SIGNAL(receiverToBeAdded(QString)), this, SLOT(addView(QString)));
     connect(&d.handler, SIGNAL(receiverToBeRemoved(QString)), this, SLOT(removeView(QString)));
@@ -160,7 +160,7 @@ void MessageStackView::sendMessage(const QString& receiver, const QString& messa
     }
 }
 
-void MessageStackView::tabActivated(int index)
+void MessageStackView::activateView(int index)
 {
     MessageView* view = viewAt(index);
     if (view && isVisible()) {

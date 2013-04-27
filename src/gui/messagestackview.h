@@ -60,7 +60,7 @@ signals:
     void viewActivated(MessageView* view);
 
 private slots:
-    void tabActivated(int index);
+    void activateView(int index);
 
 private:
     MessageView* createView(MessageView::ViewType type, const QString& receiver);

@@ -25,27 +25,27 @@ QList<Session*> SessionStackView::sessions() const
 {
     QList<Session*> list;
     for (int i = 0; i < count(); ++i) {
-        MessageStackView* tabWidget = qobject_cast<MessageStackView*>(widget(i));
-        if (tabWidget)
-            list += tabWidget->session();
+        MessageStackView* widget = widgetAt(i);
+        if (widget)
+            list += widget->session();
     }
     return list;
 }
 
 int SessionStackView::addSession(Session* session)
 {
-    MessageStackView* tab = new MessageStackView(session, this);
-    connect(tab, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
-    return addWidget(tab);
+    MessageStackView* widget = new MessageStackView(session, this);
+    connect(widget, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
+    return addWidget(widget);
 }
 
 void SessionStackView::removeSession(Session* session)
 {
-    MessageStackView* tabWidget = sessionWidget(session);
-    if (tabWidget) {
-        removeWidget(tabWidget);
-        tabWidget->deleteLater();
-        tabWidget->session()->destructLater();
+    MessageStackView* widget = sessionWidget(session);
+    if (widget) {
+        removeWidget(widget);
+        widget->deleteLater();
+        widget->session()->destructLater();
     }
 }
 
@@ -62,9 +62,9 @@ MessageStackView* SessionStackView::widgetAt(int index) const
 MessageStackView* SessionStackView::sessionWidget(Session* session) const
 {
     for (int i = 0; i < count(); ++i) {
-        MessageStackView* tabWidget = widgetAt(i);
-        if (tabWidget && tabWidget->session() == session)
-            return tabWidget;
+        MessageStackView* widget = widgetAt(i);
+        if (widget && widget->session() == session)
+            return widget;
     }
     return 0;
 }
@@ -73,9 +73,9 @@ QByteArray SessionStackView::saveSplitter() const
 {
     QByteArray state;
     for (int i = count(); state.isNull() && i >= 0; --i) {
-        MessageStackView* tabWidget = widgetAt(i);
-        if (tabWidget)
-            state = tabWidget->saveSplitter();
+        MessageStackView* widget = widgetAt(i);
+        if (widget)
+            state = widget->saveSplitter();
     }
     return state;
 }
@@ -83,11 +83,11 @@ QByteArray SessionStackView::saveSplitter() const
 void SessionStackView::restoreSplitter(const QByteArray& state)
 {
     for (int i = 0; i < count(); ++i) {
-        MessageStackView* tabWidget = widgetAt(i);
-        if (tabWidget) {
-            tabWidget->blockSignals(true);
-            tabWidget->restoreSplitter(state);
-            tabWidget->blockSignals(false);
+        MessageStackView* widget = widgetAt(i);
+        if (widget) {
+            widget->blockSignals(true);
+            widget->restoreSplitter(state);
+            widget->blockSignals(false);
         }
     }
     emit splitterChanged(state);
