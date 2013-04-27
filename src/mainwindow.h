@@ -72,7 +72,7 @@ private:
     void createTree();
 
     SessionTreeWidget* treeWidget;
-    SessionStackView* tabWidget;
+    SessionStackView* stackView;
     TrayIcon* trayIcon;
     QtDockTile* dockTile;
     QShortcut* searchShortcut;

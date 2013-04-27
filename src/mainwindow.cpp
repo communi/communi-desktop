@@ -38,16 +38,16 @@
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     treeWidget(0), trayIcon(0), dockTile(0)
 {
-    tabWidget = new SessionStackView(this);
-    connect(tabWidget, SIGNAL(splitterChanged(QByteArray)), this, SLOT(splitterChanged(QByteArray)));
+    stackView = new SessionStackView(this);
+    connect(stackView, SIGNAL(splitterChanged(QByteArray)), this, SLOT(splitterChanged(QByteArray)));
 
-    HomePage* homePage = new HomePage(tabWidget);
+    HomePage* homePage = new HomePage(stackView);
     connect(homePage, SIGNAL(connectRequested()), this, SLOT(connectTo()));
-    tabWidget->insertWidget(0, homePage);
+    stackView->insertWidget(0, homePage);
 
     QSplitter* splitter = new QSplitter(this);
     splitter->setHandleWidth(1);
-    splitter->addWidget(tabWidget);
+    splitter->addWidget(stackView);
     setCentralWidget(splitter);
 
     createTree();
@@ -151,11 +151,11 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
 {
     Session* session = Session::fromConnection(connection, this);
     session->setEncoding(Application::encoding());
-    int index = tabWidget->addSession(session);
+    int index = stackView->addSession(session);
     if (!session->hasQuit()) {
         session->open();
         if (!treeWidget->hasRestoredCurrent())
-            tabWidget->setCurrentIndex(index);
+            stackView->setCurrentIndex(index);
     }
 
     connect(PowerNotifier::instance(), SIGNAL(sleep()), session, SLOT(sleep()));
@@ -165,15 +165,15 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateOverlay()));
     updateOverlay();
 
-    MessageStackView* tab = tabWidget->sessionWidget(session);
-    connect(tab, SIGNAL(viewAdded(MessageView*)), this, SLOT(viewAdded(MessageView*)));
-    connect(tab, SIGNAL(viewRemoved(MessageView*)), treeWidget, SLOT(removeView(MessageView*)));
-    connect(tab, SIGNAL(viewRenamed(MessageView*)), treeWidget, SLOT(renameView(MessageView*)));
-    connect(tab, SIGNAL(viewActivated(MessageView*)), treeWidget, SLOT(setCurrentView(MessageView*)));
+    MessageStackView* stack = stackView->sessionWidget(session);
+    connect(stack, SIGNAL(viewAdded(MessageView*)), this, SLOT(viewAdded(MessageView*)));
+    connect(stack, SIGNAL(viewRemoved(MessageView*)), treeWidget, SLOT(removeView(MessageView*)));
+    connect(stack, SIGNAL(viewRenamed(MessageView*)), treeWidget, SLOT(renameView(MessageView*)));
+    connect(stack, SIGNAL(viewActivated(MessageView*)), treeWidget, SLOT(setCurrentView(MessageView*)));
 
-    if (MessageView* view = tab->viewAt(0)) {
+    if (MessageView* view = stack->viewAt(0)) {
         treeWidget->addView(view);
-        if (!treeWidget->hasRestoredCurrent() && (!session->hasQuit() || tabWidget->count() == 1))
+        if (!treeWidget->hasRestoredCurrent() && (!session->hasQuit() || stackView->count() == 1))
             treeWidget->setCurrentView(view);
         treeWidget->parentWidget()->show();
         view->applySettings(Application::settings());
@@ -181,12 +181,12 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
 
     foreach (const ViewInfo& view, connection.views) {
         if (view.type != -1)
-            tab->restoreView(view);
+            stack->restoreView(view);
     }
 
     QSettings settings;
     if (settings.contains("list"))
-        tab->restoreSplitter(settings.value("list").toByteArray());
+        stack->restoreSplitter(settings.value("list").toByteArray());
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
@@ -198,7 +198,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
         settings.setValue("splitter", static_cast<QSplitter*>(centralWidget())->saveState());
 
         ConnectionInfos connections;
-        QList<Session*> sessions = tabWidget->sessions();
+        QList<Session*> sessions = stackView->sessions();
         foreach (Session* session, sessions) {
             ConnectionInfo connection = session->toConnection();
             connection.views = treeWidget->viewInfos(session);
@@ -323,26 +323,26 @@ void MainWindow::viewAdded(MessageView* view)
 
 void MainWindow::closeTreeItem(SessionTreeItem* item)
 {
-    MessageStackView* tab = tabWidget->sessionWidget(item->session());
-    if (tab) {
-        int index = tab->indexOf(item->view());
-        tab->closeView(index);
+    MessageStackView* stack = stackView->sessionWidget(item->session());
+    if (stack) {
+        int index = stack->indexOf(item->view());
+        stack->closeView(index);
         if (index == 0) {
-            tabWidget->removeSession(tab->session());
-            treeWidget->parentWidget()->setVisible(!tabWidget->sessions().isEmpty());
+            stackView->removeSession(stack->session());
+            treeWidget->parentWidget()->setVisible(!stackView->sessions().isEmpty());
         }
     }
 }
 
 void MainWindow::currentTreeItemChanged(Session* session, const QString& view)
 {
-    MessageStackView* tab = tabWidget->sessionWidget(session);
-    if (tab) {
-        tabWidget->setCurrentWidget(tab);
+    MessageStackView* stack = stackView->sessionWidget(session);
+    if (stack) {
+        stackView->setCurrentWidget(stack);
         if (view.isEmpty())
-            tab->setCurrentIndex(0);
+            stack->setCurrentIndex(0);
         else
-            tab->openView(view);
+            stack->openView(view);
     }
     setWindowFilePath(view);
     updateOverlay();
@@ -356,14 +356,14 @@ void MainWindow::splitterChanged(const QByteArray& state)
 
 void MainWindow::updateOverlay()
 {
-    MessageStackView* tab = tabWidget->currentWidget();
-    if (tab && tab->session()) {
+    MessageStackView* stack = stackView->currentWidget();
+    if (stack && stack->session()) {
         if (!overlay) {
-            overlay = new Overlay(tabWidget);
+            overlay = new Overlay(stackView);
             connect(overlay, SIGNAL(refresh()), this, SLOT(reconnectSession()));
         }
-        Session* session = tab->session();
-        overlay->setParent(tab->currentWidget());
+        Session* session = stack->session();
+        overlay->setParent(stack->currentWidget());
         overlay->setBusy(session->isActive() && !session->isConnected());
         overlay->setRefresh(!session->isActive());
         overlay->setVisible(!session->isConnected());
@@ -372,34 +372,34 @@ void MainWindow::updateOverlay()
 
 void MainWindow::reconnectSession()
 {
-    MessageStackView* tab = tabWidget->currentWidget();
-    if (tab)
-        tab->session()->reconnect();
+    MessageStackView* stack = stackView->currentWidget();
+    if (stack)
+        stack->session()->reconnect();
 }
 
 void MainWindow::addView()
 {
-    MessageStackView* tab = tabWidget->currentWidget();
-    if (tab && tab->session()->isActive()) {
-        AddViewDialog dialog(tab->session(), this);
+    MessageStackView* stack = stackView->currentWidget();
+    if (stack && stack->session()->isActive()) {
+        AddViewDialog dialog(stack->session(), this);
         if (dialog.exec()) {
             QString view = dialog.view();
-            if (tab->session()->isChannel(view))
-                tab->session()->sendCommand(IrcCommand::createJoin(view, dialog.password()));
-            tab->openView(view);
+            if (stack->session()->isChannel(view))
+                stack->session()->sendCommand(IrcCommand::createJoin(view, dialog.password()));
+            stack->openView(view);
         }
     }
 }
 
 void MainWindow::closeView()
 {
-    MessageStackView* tab = tabWidget->currentWidget();
-    if (tab) {
-        int index = tab->currentIndex();
-        tab->closeView(index);
+    MessageStackView* stack = stackView->currentWidget();
+    if (stack) {
+        int index = stack->currentIndex();
+        stack->closeView(index);
         if (index == 0) {
-            tabWidget->removeSession(tab->session());
-            treeWidget->parentWidget()->setVisible(!tabWidget->sessions().isEmpty());
+            stackView->removeSession(stack->session());
+            treeWidget->parentWidget()->setVisible(!stackView->sessions().isEmpty());
         }
     }
 }
