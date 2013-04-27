@@ -153,8 +153,9 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     session->setEncoding(Application::encoding());
     int index = tabWidget->addSession(session);
     if (!session->hasQuit()) {
-        tabWidget->setCurrentIndex(index);
         session->open();
+        if (!treeWidget->hasRestoredCurrent())
+            tabWidget->setCurrentIndex(index);
     }
 
     connect(PowerNotifier::instance(), SIGNAL(sleep()), session, SLOT(sleep()));
