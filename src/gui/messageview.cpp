@@ -255,7 +255,6 @@ void MessageView::sendMessage(const QString& message)
 void MessageView::hideEvent(QHideEvent* event)
 {
     QWidget::hideEvent(event);
-    d.textBrowser->setUnseenBlock(-1);
     onEscPressed();
 }
 

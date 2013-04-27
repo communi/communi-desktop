@@ -20,7 +20,6 @@
 class TextBrowser : public QTextBrowser
 {
     Q_OBJECT
-    Q_PROPERTY(int unseenBlock READ unseenBlock WRITE setUnseenBlock)
 
 public:
     TextBrowser(QWidget* parent = 0);
@@ -28,8 +27,8 @@ public:
     QWidget* buddy() const;
     void setBuddy(QWidget* buddy);
 
-    int unseenBlock() const;
-    void setUnseenBlock(int block);
+    void addMarker(int block);
+    void removeMarker(int block);
 
 public slots:
     void append(const QString& text);
@@ -40,14 +39,18 @@ public slots:
     void scrollToPreviousPage();
 
 protected:
+    void hideEvent(QHideEvent* event);
     void keyPressEvent(QKeyEvent* event);
     void paintEvent(QPaintEvent* event);
     void resizeEvent(QResizeEvent* event);
     void wheelEvent(QWheelEvent* event);
 
+    void paintMarker(QPainter* painter, const QTextBlock& block);
+
 private:
     int ub;
     QWidget* bud;
+    QList<int> markers;
 };
 
 #endif // TEXTBROWSER_H

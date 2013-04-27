@@ -33,14 +33,16 @@ void TextBrowser::setBuddy(QWidget* buddy)
     bud = buddy;
 }
 
-int TextBrowser::unseenBlock() const
+void TextBrowser::addMarker(int block)
 {
-    return ub;
+    markers.append(block);
+    update();
 }
 
-void TextBrowser::setUnseenBlock(int block)
+void TextBrowser::removeMarker(int block)
 {
-    ub = block;
+    markers.removeOne(block);
+    update();
 }
 
 void TextBrowser::append(const QString& text)
@@ -60,6 +62,12 @@ void TextBrowser::append(const QString& text)
         if (!isVisible() && ub == -1)
             ub = document()->blockCount() - 1;
     }
+}
+
+void TextBrowser::hideEvent(QHideEvent* event)
+{
+    QTextBrowser::hideEvent(event);
+    ub = -1;
 }
 
 void TextBrowser::keyPressEvent(QKeyEvent* event)
@@ -120,19 +128,11 @@ void TextBrowser::paintEvent(QPaintEvent* event)
 
     QPainter painter(viewport());
 
-    QTextBlock block;
     if (ub > 0)
-        block = document()->findBlockByNumber(ub);
+        paintMarker(&painter, document()->findBlockByNumber(ub));
 
-    if (block.isValid()) {
-        painter.save();
-        painter.setPen(Qt::DashLine);
-        painter.translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
-
-        QRectF br = document()->documentLayout()->blockBoundingRect(block);
-        painter.drawLine(br.topLeft(), br.topRight());
-        painter.restore();
-    }
+    foreach (int marker, markers)
+        paintMarker(&painter, document()->findBlockByNumber(marker));
 
     QLinearGradient gradient(0, 0, 0, 3);
     gradient.setColorAt(0.0, palette().color(QPalette::Dark));
@@ -148,4 +148,17 @@ void TextBrowser::wheelEvent(QWheelEvent* event)
 #else
     QTextBrowser::wheelEvent(event);
 #endif // Q_WS_MACX
+}
+
+void TextBrowser::paintMarker(QPainter* painter, const QTextBlock& block)
+{
+    if (block.isValid()) {
+        painter->save();
+        painter->setPen(Qt::DashLine);
+        painter->translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
+
+        QRectF br = document()->documentLayout()->blockBoundingRect(block);
+        painter->drawLine(br.topLeft(), br.topRight());
+        painter->restore();
+    }
 }
