@@ -108,7 +108,7 @@ MessageView::~MessageView()
 bool MessageView::isActive() const
 {
     switch (d.viewType) {
-    case ViewInfo::Channel: return d.joined;
+    case ViewInfo::Channel: return d.joined && d.session && d.session->isConnected();
     case ViewInfo::Server: return d.session && d.session->isActive();
     case ViewInfo::Query: return d.session && d.session->isConnected();
     default: return false;
