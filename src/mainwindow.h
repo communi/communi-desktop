@@ -19,7 +19,7 @@
 #include <QPointer>
 #include "trayicon.h"
 
-class MultiSessionTabWidget;
+class MultiMessageStackView;
 class SessionTreeWidget;
 class SessionTreeItem;
 struct ConnectionInfo;
@@ -72,7 +72,7 @@ private:
     void createTree();
 
     SessionTreeWidget* treeWidget;
-    MultiSessionTabWidget* tabWidget;
+    MultiMessageStackView* tabWidget;
     TrayIcon* trayIcon;
     QtDockTile* dockTile;
     QShortcut* searchShortcut;

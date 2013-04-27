@@ -20,20 +20,20 @@
 class Session;
 class IrcMessage;
 class MessageView;
-class SessionTabWidget;
+class MessageStackView;
 
-class MultiSessionTabWidget : public QStackedWidget
+class MultiMessageStackView : public QStackedWidget
 {
     Q_OBJECT
 
 public:
-    MultiSessionTabWidget(QWidget* parent = 0);
+    MultiMessageStackView(QWidget* parent = 0);
 
     QList<Session*> sessions() const;
 
-    SessionTabWidget* currentWidget() const;
-    SessionTabWidget* widgetAt(int index) const;
-    SessionTabWidget* sessionWidget(Session* session) const;
+    MessageStackView* currentWidget() const;
+    MessageStackView* widgetAt(int index) const;
+    MessageStackView* sessionWidget(Session* session) const;
 
     QByteArray saveSplitter() const;
 

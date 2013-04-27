@@ -12,8 +12,8 @@
 * GNU General Public License for more details.
 */
 
-#ifndef SESSIONTABWIDGET_H
-#define SESSIONTABWIDGET_H
+#ifndef MESSAGESTACKVIEW_H
+#define MESSAGESTACKVIEW_H
 
 #include <QHash>
 #include <QStackedWidget>
@@ -26,12 +26,12 @@ class Session;
 class IrcMessage;
 class MessageView;
 
-class SessionTabWidget : public QStackedWidget
+class MessageStackView : public QStackedWidget
 {
     Q_OBJECT
 
 public:
-    SessionTabWidget(Session* session, QWidget* parent = 0);
+    MessageStackView(Session* session, QWidget* parent = 0);
 
     Session* session() const;
 
@@ -72,4 +72,4 @@ private:
     } d;
 };
 
-#endif // SESSIONTABWIDGET_H
+#endif // MESSAGESTACKVIEW_H

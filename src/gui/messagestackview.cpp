@@ -12,12 +12,12 @@
 * GNU General Public License for more details.
 */
 
-#include "sessiontabwidget.h"
+#include "messagestackview.h"
 #include "completer.h"
 #include "session.h"
 #include <irccommand.h>
 
-SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) : QStackedWidget(parent)
+MessageStackView::MessageStackView(Session* session, QWidget* parent) : QStackedWidget(parent)
 {
     d.handler.setSession(session);
 
@@ -33,22 +33,22 @@ SessionTabWidget::SessionTabWidget(Session* session, QWidget* parent) : QStacked
     setCurrentWidget(view);
 }
 
-Session* SessionTabWidget::session() const
+Session* MessageStackView::session() const
 {
     return qobject_cast<Session*>(d.handler.session());
 }
 
-MessageView* SessionTabWidget::currentView() const
+MessageView* MessageStackView::currentView() const
 {
     return qobject_cast<MessageView*>(currentWidget());
 }
 
-MessageView* SessionTabWidget::viewAt(int index) const
+MessageView* MessageStackView::viewAt(int index) const
 {
     return qobject_cast<MessageView*>(widget(index));
 }
 
-QByteArray SessionTabWidget::saveSplitter() const
+QByteArray MessageStackView::saveSplitter() const
 {
     foreach (MessageView* view, d.views) {
         if (view->viewType() != MessageView::ServerView)
@@ -57,7 +57,7 @@ QByteArray SessionTabWidget::saveSplitter() const
     return QByteArray();
 }
 
-void SessionTabWidget::restoreSplitter(const QByteArray& state)
+void MessageStackView::restoreSplitter(const QByteArray& state)
 {
     foreach (MessageView* view, d.views) {
         view->blockSignals(true);
@@ -67,7 +67,7 @@ void SessionTabWidget::restoreSplitter(const QByteArray& state)
     emit splitterChanged(state);
 }
 
-MessageView* SessionTabWidget::addView(const QString& receiver)
+MessageView* MessageStackView::addView(const QString& receiver)
 {
     MessageView* view = d.views.value(receiver.toLower());
     if (!view) {
@@ -81,12 +81,12 @@ MessageView* SessionTabWidget::addView(const QString& receiver)
     return view;
 }
 
-void SessionTabWidget::restoreView(const ViewInfo& view)
+void MessageStackView::restoreView(const ViewInfo& view)
 {
     createView(MessageView::ViewType(view.type), view.name);
 }
 
-MessageView* SessionTabWidget::createView(MessageView::ViewType type, const QString& receiver)
+MessageView* MessageStackView::createView(MessageView::ViewType type, const QString& receiver)
 {
     MessageView* view = new MessageView(type, d.handler.session(), this);
     // TODO:
@@ -107,14 +107,14 @@ MessageView* SessionTabWidget::createView(MessageView::ViewType type, const QStr
     return view;
 }
 
-void SessionTabWidget::openView(const QString& receiver)
+void MessageStackView::openView(const QString& receiver)
 {
     MessageView* view = d.views.value(receiver.toLower());
     if (view)
         setCurrentWidget(view);
 }
 
-void SessionTabWidget::removeView(const QString& receiver)
+void MessageStackView::removeView(const QString& receiver)
 {
     MessageView* view = d.views.take(receiver.toLower());
     if (view) {
@@ -127,7 +127,7 @@ void SessionTabWidget::removeView(const QString& receiver)
     }
 }
 
-void SessionTabWidget::closeView(int index)
+void MessageStackView::closeView(int index)
 {
     MessageView* view = viewAt(index);
     if (view) {
@@ -141,7 +141,7 @@ void SessionTabWidget::closeView(int index)
     }
 }
 
-void SessionTabWidget::renameView(const QString& from, const QString& to)
+void MessageStackView::renameView(const QString& from, const QString& to)
 {
     MessageView* view = d.views.take(from.toLower());
     if (view) {
@@ -151,7 +151,7 @@ void SessionTabWidget::renameView(const QString& from, const QString& to)
     }
 }
 
-void SessionTabWidget::sendMessage(const QString& receiver, const QString& message)
+void MessageStackView::sendMessage(const QString& receiver, const QString& message)
 {
     MessageView* view = addView(receiver);
     if (view) {
@@ -160,7 +160,7 @@ void SessionTabWidget::sendMessage(const QString& receiver, const QString& messa
     }
 }
 
-void SessionTabWidget::tabActivated(int index)
+void MessageStackView::tabActivated(int index)
 {
     MessageView* view = viewAt(index);
     if (view && isVisible()) {

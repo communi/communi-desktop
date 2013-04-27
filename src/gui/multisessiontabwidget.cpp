@@ -13,35 +13,35 @@
 */
 
 #include "multisessiontabwidget.h"
-#include "sessiontabwidget.h"
+#include "messagestackview.h"
 #include "messageview.h"
 #include "session.h"
 
-MultiSessionTabWidget::MultiSessionTabWidget(QWidget* parent) : QStackedWidget(parent)
+MultiMessageStackView::MultiMessageStackView(QWidget* parent) : QStackedWidget(parent)
 {
 }
 
-QList<Session*> MultiSessionTabWidget::sessions() const
+QList<Session*> MultiMessageStackView::sessions() const
 {
     QList<Session*> list;
     for (int i = 0; i < count(); ++i) {
-        SessionTabWidget* tabWidget = qobject_cast<SessionTabWidget*>(widget(i));
+        MessageStackView* tabWidget = qobject_cast<MessageStackView*>(widget(i));
         if (tabWidget)
             list += tabWidget->session();
     }
     return list;
 }
 
-int MultiSessionTabWidget::addSession(Session* session)
+int MultiMessageStackView::addSession(Session* session)
 {
-    SessionTabWidget* tab = new SessionTabWidget(session, this);
+    MessageStackView* tab = new MessageStackView(session, this);
     connect(tab, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
     return addWidget(tab);
 }
 
-void MultiSessionTabWidget::removeSession(Session* session)
+void MultiMessageStackView::removeSession(Session* session)
 {
-    SessionTabWidget* tabWidget = sessionWidget(session);
+    MessageStackView* tabWidget = sessionWidget(session);
     if (tabWidget) {
         removeWidget(tabWidget);
         tabWidget->deleteLater();
@@ -49,41 +49,41 @@ void MultiSessionTabWidget::removeSession(Session* session)
     }
 }
 
-SessionTabWidget* MultiSessionTabWidget::currentWidget() const
+MessageStackView* MultiMessageStackView::currentWidget() const
 {
-    return qobject_cast<SessionTabWidget*>(QStackedWidget::currentWidget());
+    return qobject_cast<MessageStackView*>(QStackedWidget::currentWidget());
 }
 
-SessionTabWidget* MultiSessionTabWidget::widgetAt(int index) const
+MessageStackView* MultiMessageStackView::widgetAt(int index) const
 {
-    return qobject_cast<SessionTabWidget*>(QStackedWidget::widget(index));
+    return qobject_cast<MessageStackView*>(QStackedWidget::widget(index));
 }
 
-SessionTabWidget* MultiSessionTabWidget::sessionWidget(Session* session) const
+MessageStackView* MultiMessageStackView::sessionWidget(Session* session) const
 {
     for (int i = 0; i < count(); ++i) {
-        SessionTabWidget* tabWidget = widgetAt(i);
+        MessageStackView* tabWidget = widgetAt(i);
         if (tabWidget && tabWidget->session() == session)
             return tabWidget;
     }
     return 0;
 }
 
-QByteArray MultiSessionTabWidget::saveSplitter() const
+QByteArray MultiMessageStackView::saveSplitter() const
 {
     QByteArray state;
     for (int i = count(); state.isNull() && i >= 0; --i) {
-        SessionTabWidget* tabWidget = widgetAt(i);
+        MessageStackView* tabWidget = widgetAt(i);
         if (tabWidget)
             state = tabWidget->saveSplitter();
     }
     return state;
 }
 
-void MultiSessionTabWidget::restoreSplitter(const QByteArray& state)
+void MultiMessageStackView::restoreSplitter(const QByteArray& state)
 {
     for (int i = 0; i < count(); ++i) {
-        SessionTabWidget* tabWidget = widgetAt(i);
+        MessageStackView* tabWidget = widgetAt(i);
         if (tabWidget) {
             tabWidget->blockSignals(true);
             tabWidget->restoreSplitter(state);

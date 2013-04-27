@@ -17,7 +17,7 @@
 #include "connectionwizard.h"
 #include "multisessiontabwidget.h"
 #include "sessiontreewidget.h"
-#include "sessiontabwidget.h"
+#include "messagestackview.h"
 #include "sessiontreeitem.h"
 #include "connectioninfo.h"
 #include "addviewdialog.h"
@@ -38,7 +38,7 @@
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     treeWidget(0), trayIcon(0), dockTile(0)
 {
-    tabWidget = new MultiSessionTabWidget(this);
+    tabWidget = new MultiMessageStackView(this);
     connect(tabWidget, SIGNAL(splitterChanged(QByteArray)), this, SLOT(splitterChanged(QByteArray)));
 
     HomePage* homePage = new HomePage(tabWidget);
@@ -165,7 +165,7 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateOverlay()));
     updateOverlay();
 
-    SessionTabWidget* tab = tabWidget->sessionWidget(session);
+    MessageStackView* tab = tabWidget->sessionWidget(session);
     connect(tab, SIGNAL(viewAdded(MessageView*)), this, SLOT(viewAdded(MessageView*)));
     connect(tab, SIGNAL(viewRemoved(MessageView*)), treeWidget, SLOT(removeView(MessageView*)));
     connect(tab, SIGNAL(viewRenamed(MessageView*)), treeWidget, SLOT(renameView(MessageView*)));
@@ -323,7 +323,7 @@ void MainWindow::viewAdded(MessageView* view)
 
 void MainWindow::closeTreeItem(SessionTreeItem* item)
 {
-    SessionTabWidget* tab = tabWidget->sessionWidget(item->session());
+    MessageStackView* tab = tabWidget->sessionWidget(item->session());
     if (tab) {
         int index = tab->indexOf(item->view());
         tab->closeView(index);
@@ -336,7 +336,7 @@ void MainWindow::closeTreeItem(SessionTreeItem* item)
 
 void MainWindow::currentTreeItemChanged(Session* session, const QString& view)
 {
-    SessionTabWidget* tab = tabWidget->sessionWidget(session);
+    MessageStackView* tab = tabWidget->sessionWidget(session);
     if (tab) {
         tabWidget->setCurrentWidget(tab);
         if (view.isEmpty())
@@ -356,7 +356,7 @@ void MainWindow::splitterChanged(const QByteArray& state)
 
 void MainWindow::updateOverlay()
 {
-    SessionTabWidget* tab = tabWidget->currentWidget();
+    MessageStackView* tab = tabWidget->currentWidget();
     if (tab && tab->session()) {
         if (!overlay) {
             overlay = new Overlay(tabWidget);
@@ -372,14 +372,14 @@ void MainWindow::updateOverlay()
 
 void MainWindow::reconnectSession()
 {
-    SessionTabWidget* tab = tabWidget->currentWidget();
+    MessageStackView* tab = tabWidget->currentWidget();
     if (tab)
         tab->session()->reconnect();
 }
 
 void MainWindow::addView()
 {
-    SessionTabWidget* tab = tabWidget->currentWidget();
+    MessageStackView* tab = tabWidget->currentWidget();
     if (tab && tab->session()->isActive()) {
         AddViewDialog dialog(tab->session(), this);
         if (dialog.exec()) {
@@ -393,7 +393,7 @@ void MainWindow::addView()
 
 void MainWindow::closeView()
 {
-    SessionTabWidget* tab = tabWidget->currentWidget();
+    MessageStackView* tab = tabWidget->currentWidget();
     if (tab) {
         int index = tab->currentIndex();
         tab->closeView(index);
