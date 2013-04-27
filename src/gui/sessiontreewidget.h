@@ -53,6 +53,7 @@ public:
     SessionTreeItem* viewItem(MessageView* view) const;
     SessionTreeItem* sessionItem(Session* session) const;
 
+    bool hasRestoredCurrent() const;
     ViewInfos viewInfos(Session* session) const;
 
 public slots:

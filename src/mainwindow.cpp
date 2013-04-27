@@ -172,7 +172,7 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
 
     if (MessageView* view = tab->viewAt(0)) {
         treeWidget->addView(view);
-        if (!session->hasQuit() || tabWidget->count() == 1)
+        if (!treeWidget->hasRestoredCurrent() && (!session->hasQuit() || tabWidget->count() == 1))
             treeWidget->setCurrentView(view);
         treeWidget->parentWidget()->show();
         view->applySettings(Application::settings());

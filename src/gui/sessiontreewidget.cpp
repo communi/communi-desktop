@@ -185,6 +185,11 @@ SessionTreeItem* SessionTreeWidget::sessionItem(Session* session) const
     return d.sessionItems.value(session);
 }
 
+bool SessionTreeWidget::hasRestoredCurrent() const
+{
+    return d.currentRestored;
+}
+
 ViewInfos SessionTreeWidget::viewInfos(Session* session) const
 {
     ViewInfos views;
