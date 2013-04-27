@@ -57,7 +57,7 @@ private slots:
     void activateView(int index);
 
 private:
-    MessageView* createView(MessageView::ViewType type, const QString& receiver);
+    MessageView* createView(ViewInfo::Type type, const QString& receiver);
 
     struct Private {
         MessageHandler handler;

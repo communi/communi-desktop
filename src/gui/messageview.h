@@ -19,6 +19,7 @@
 #include "messagereceiver.h"
 #include "messageformatter.h"
 #include "settings.h"
+#include "viewinfo.h"
 #include <QPointer>
 #include <QElapsedTimer>
 
@@ -34,13 +35,11 @@ class MessageView : public QWidget, public MessageReceiver
     Q_PROPERTY(QString receiver READ receiver WRITE setReceiver NOTIFY receiverChanged)
 
 public:
-    enum ViewType { ServerView, ChannelView, QueryView };
-
-    MessageView(ViewType type, Session* session, QWidget* parent = 0);
+    MessageView(ViewInfo::Type type, Session* session, QWidget* parent = 0);
     ~MessageView();
 
     bool isActive() const;
-    ViewType viewType() const;
+    ViewInfo::Type viewType() const;
     Session* session() const;
     UserModel* userModel() const;
     Completer* completer() const;
@@ -88,7 +87,7 @@ private slots:
 
 private:
     struct Private : public Ui::MessageView {
-        ViewType viewType;
+        ViewInfo::Type viewType;
         QString receiver;
         QPointer<Session> session;
         MessageFormatter* formatter;

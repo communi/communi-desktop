@@ -52,9 +52,9 @@ MessageView* MessageStackView::addView(const QString& receiver)
 {
     MessageView* view = d.views.value(receiver.toLower());
     if (!view) {
-        MessageView::ViewType type = MessageView::ServerView;
+        ViewInfo::Type type = ViewInfo::Server;
         if (!d.views.isEmpty())
-            type = session()->isChannel(receiver) ? MessageView::ChannelView : MessageView::QueryView;
+            type = session()->isChannel(receiver) ? ViewInfo::Channel : ViewInfo::Query;
         view = createView(type, receiver);
     }
     if (!view->isActive() && d.handler.session()->isChannel(receiver))
@@ -64,10 +64,10 @@ MessageView* MessageStackView::addView(const QString& receiver)
 
 void MessageStackView::restoreView(const ViewInfo& view)
 {
-    createView(MessageView::ViewType(view.type), view.name);
+    createView(static_cast<ViewInfo::Type>(view.type), view.name);
 }
 
-MessageView* MessageStackView::createView(MessageView::ViewType type, const QString& receiver)
+MessageView* MessageStackView::createView(ViewInfo::Type type, const QString& receiver)
 {
     MessageView* view = new MessageView(type, d.handler.session(), this);
     // TODO:
@@ -114,7 +114,7 @@ void MessageStackView::closeView(int index)
         if (view->isActive()) {
             if (indexOf(view) == 0)
                 session()->quit();
-            else if (view->viewType() == MessageView::ChannelView)
+            else if (view->viewType() == ViewInfo::Channel)
                 d.handler.session()->sendCommand(IrcCommand::createPart(view->receiver()));
         }
         d.handler.removeReceiver(view->receiver());

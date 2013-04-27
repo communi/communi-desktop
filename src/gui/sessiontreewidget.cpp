@@ -210,7 +210,7 @@ ViewInfos SessionTreeWidget::viewInfos(Session* session) const
 void SessionTreeWidget::addView(MessageView* view)
 {
     SessionTreeItem* item = 0;
-    if (view->viewType() == MessageView::ServerView) {
+    if (view->viewType() == ViewInfo::Server) {
         item = new SessionTreeItem(view, this);
         Session* session = view->session();
         connect(session, SIGNAL(nameChanged(QString)), this, SLOT(updateSession()));
@@ -229,7 +229,7 @@ void SessionTreeWidget::addView(MessageView* view)
 
 void SessionTreeWidget::removeView(MessageView* view)
 {
-    if (view->viewType() == MessageView::ServerView)
+    if (view->viewType() == ViewInfo::Server)
         d.sessionItems.remove(view->session());
     delete d.viewItems.take(view);
 }

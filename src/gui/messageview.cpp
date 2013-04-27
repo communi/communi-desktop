@@ -34,7 +34,7 @@
 
 static QStringListModel* command_model = 0;
 
-MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* parent) :
+MessageView::MessageView(ViewInfo::Type type, Session* session, QWidget* parent) :
     QWidget(parent)
 {
     d.setupUi(this);
@@ -61,12 +61,12 @@ MessageView::MessageView(MessageView::ViewType type, Session* session, QWidget* 
     connect(d.session, SIGNAL(connectedChanged(bool)), this, SIGNAL(activeChanged()));
     connect(d.session->lagMeter(), SIGNAL(lagChanged(int)), d.lineEditor, SLOT(setLag(int)));
     d.lineEditor->setLag(d.session->lagMeter()->lag());
-    if (type == ServerView)
+    if (type == ViewInfo::Server)
         connect(d.session, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onSocketError()));
 
-    d.topicLabel->setVisible(type == ChannelView);
-    d.listView->setVisible(type == ChannelView);
-    if (type == ChannelView) {
+    d.topicLabel->setVisible(type == ViewInfo::Channel);
+    d.listView->setVisible(type == ViewInfo::Channel);
+    if (type == ViewInfo::Channel) {
         d.listView->setSession(session);
         connect(d.listView, SIGNAL(queried(QString)), this, SIGNAL(queried(QString)));
         connect(d.listView, SIGNAL(doubleClicked(QString)), this, SIGNAL(queried(QString)));
@@ -108,14 +108,14 @@ MessageView::~MessageView()
 bool MessageView::isActive() const
 {
     switch (d.viewType) {
-    case ChannelView: return d.joined;
-    case ServerView: return d.session && d.session->isActive();
-    case QueryView: return d.session && d.session->isConnected();
+    case ViewInfo::Channel: return d.joined;
+    case ViewInfo::Server: return d.session && d.session->isActive();
+    case ViewInfo::Query: return d.session && d.session->isConnected();
     default: return false;
     }
 }
 
-MessageView::ViewType MessageView::viewType() const
+ViewInfo::Type MessageView::viewType() const
 {
     return d.viewType;
 }
@@ -154,7 +154,7 @@ void MessageView::setReceiver(const QString& receiver)
 {
     if (d.receiver != receiver) {
         d.receiver = receiver;
-        if (d.viewType == ChannelView)
+        if (d.viewType == ViewInfo::Channel)
             d.listView->setChannel(receiver);
         emit receiverChanged(receiver);
     }
@@ -172,7 +172,7 @@ void MessageView::setMenuFactory(MenuFactory* factory)
 
 QByteArray MessageView::saveSplitter() const
 {
-    if (d.viewType != ServerView)
+    if (d.viewType != ViewInfo::Server)
         return d.splitter->saveState();
     return QByteArray();
 }
@@ -365,7 +365,7 @@ void MessageView::applySettings(const Settings& settings)
 
 void MessageView::receiveMessage(IrcMessage* message)
 {
-    if (d.viewType == ChannelView)
+    if (d.viewType == ViewInfo::Channel)
         d.listView->processMessage(message);
 
     bool ignore = false;
@@ -464,9 +464,9 @@ void MessageView::receiveMessage(IrcMessage* message)
     if (formatted.length()) {
         if (!ignore && (!isVisible() || !isActiveWindow())) {
             IrcMessage::Type type = d.formatter->effectiveMessageType();
-            if (d.formatter->hasHighlight() || ((type == IrcMessage::Notice || type == IrcMessage::Private) && d.viewType != ChannelView))
+            if (d.formatter->hasHighlight() || ((type == IrcMessage::Notice || type == IrcMessage::Private) && d.viewType != ViewInfo::Channel))
                 emit highlighted(message);
-            else if (type == IrcMessage::Notice || type == IrcMessage::Private) // TODO: || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ServerView))
+            else if (type == IrcMessage::Notice || type == IrcMessage::Private) // TODO: || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ViewInfo::Server))
                 emit missed(message);
         }
 
@@ -476,7 +476,7 @@ void MessageView::receiveMessage(IrcMessage* message)
 
 bool MessageView::hasUser(const QString& user) const
 {
-    return (!d.session->nickName().compare(user, Qt::CaseInsensitive) && d.viewType != QueryView) ||
-           (d.viewType == QueryView && !d.receiver.compare(user, Qt::CaseInsensitive)) ||
-           (d.viewType == ChannelView && d.listView->hasUser(user));
+    return (!d.session->nickName().compare(user, Qt::CaseInsensitive) && d.viewType != ViewInfo::Query) ||
+           (d.viewType == ViewInfo::Query && !d.receiver.compare(user, Qt::CaseInsensitive)) ||
+           (d.viewType == ViewInfo::Channel && d.listView->hasUser(user));
 }
