@@ -143,34 +143,38 @@ void TextBrowser::scrollToPreviousPage()
 
 void TextBrowser::paintEvent(QPaintEvent* event)
 {
-    QPainter painter(viewport());
-    painter.translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
+    {
+        QPainter painter(viewport());
+        painter.translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
 
-    foreach (int highlight, d.highlights) {
-        QTextBlock block = document()->findBlockByNumber(highlight);
-        QRectF br = document()->documentLayout()->blockBoundingRect(block);
-        int margin = qCeil(document()->documentMargin());
-        painter.fillRect(br.adjusted(-margin, 0, margin, 0), d.highlightColor);
+        foreach (int highlight, d.highlights) {
+            QTextBlock block = document()->findBlockByNumber(highlight);
+            QRectF br = document()->documentLayout()->blockBoundingRect(block);
+            int margin = qCeil(document()->documentMargin());
+            painter.fillRect(br.adjusted(-margin, 0, margin, 0), d.highlightColor);
+        }
     }
-    painter.end();
 
     QTextBrowser::paintEvent(event);
 
-    painter.begin(viewport());
+    {
+        QPainter painter(viewport());
+        painter.translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
 
-    int last = -1;
-    foreach (int marker, d.markers) {
-        last = qMax(marker, last);
-        paintMarker(&painter, document()->findBlockByNumber(marker), Qt::gray);
+        int last = -1;
+        foreach (int marker, d.markers) {
+            last = qMax(marker, last);
+            paintMarker(&painter, document()->findBlockByNumber(marker), Qt::gray);
+        }
+
+        if (d.ub > 0 && d.ub > last)
+            paintMarker(&painter, document()->findBlockByNumber(d.ub), Qt::black);
+
+        QLinearGradient gradient(0, 0, 0, 3);
+        gradient.setColorAt(0.0, palette().color(QPalette::Dark));
+        gradient.setColorAt(1.0, Qt::transparent);
+        painter.fillRect(0, 0, width(), 3, gradient);
     }
-
-    if (d.ub > 0 && d.ub > last)
-        paintMarker(&painter, document()->findBlockByNumber(d.ub), Qt::black);
-
-    QLinearGradient gradient(0, 0, 0, 3);
-    gradient.setColorAt(0.0, palette().color(QPalette::Dark));
-    gradient.setColorAt(1.0, Qt::transparent);
-    painter.fillRect(0, 0, width(), 3, gradient);
 }
 
 void TextBrowser::wheelEvent(QWheelEvent* event)
