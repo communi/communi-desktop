@@ -48,25 +48,6 @@ MessageView* MessageStackView::viewAt(int index) const
     return qobject_cast<MessageView*>(widget(index));
 }
 
-QByteArray MessageStackView::saveSplitter() const
-{
-    foreach (MessageView* view, d.views) {
-        if (view->viewType() != MessageView::ServerView)
-            return view->saveSplitter();
-    }
-    return QByteArray();
-}
-
-void MessageStackView::restoreSplitter(const QByteArray& state)
-{
-    foreach (MessageView* view, d.views) {
-        view->blockSignals(true);
-        view->restoreSplitter(state);
-        view->blockSignals(false);
-    }
-    emit splitterChanged(state);
-}
-
 MessageView* MessageStackView::addView(const QString& receiver)
 {
     MessageView* view = d.views.value(receiver.toLower());
@@ -97,7 +78,6 @@ MessageView* MessageStackView::createView(MessageView::ViewType type, const QStr
     connect(view, SIGNAL(queried(QString)), this, SLOT(addView(QString)));
     connect(view, SIGNAL(queried(QString)), this, SLOT(openView(QString)));
     connect(view, SIGNAL(messaged(QString,QString)), this, SLOT(sendMessage(QString,QString)));
-    connect(view, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
 
     d.handler.addReceiver(receiver, view);
     d.views.insert(receiver.toLower(), view);

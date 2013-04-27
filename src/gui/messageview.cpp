@@ -288,7 +288,7 @@ void MessageView::onEscPressed()
 
 void MessageView::onSplitterMoved()
 {
-    emit splitterChanged(d.splitter->saveState());
+    emit splitterChanged(saveSplitter());
 }
 
 void MessageView::onAnchorClicked(const QUrl& link)

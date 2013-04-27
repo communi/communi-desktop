@@ -35,7 +35,6 @@ QList<Session*> SessionStackView::sessions() const
 int SessionStackView::addSession(Session* session)
 {
     MessageStackView* widget = new MessageStackView(session, this);
-    connect(widget, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
     return addWidget(widget);
 }
 
@@ -67,28 +66,4 @@ MessageStackView* SessionStackView::sessionWidget(Session* session) const
             return widget;
     }
     return 0;
-}
-
-QByteArray SessionStackView::saveSplitter() const
-{
-    QByteArray state;
-    for (int i = count(); state.isNull() && i >= 0; --i) {
-        MessageStackView* widget = widgetAt(i);
-        if (widget)
-            state = widget->saveSplitter();
-    }
-    return state;
-}
-
-void SessionStackView::restoreSplitter(const QByteArray& state)
-{
-    for (int i = 0; i < count(); ++i) {
-        MessageStackView* widget = widgetAt(i);
-        if (widget) {
-            widget->blockSignals(true);
-            widget->restoreSplitter(state);
-            widget->blockSignals(false);
-        }
-    }
-    emit splitterChanged(state);
 }

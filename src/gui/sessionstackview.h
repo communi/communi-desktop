@@ -35,16 +35,9 @@ public:
     MessageStackView* widgetAt(int index) const;
     MessageStackView* sessionWidget(Session* session) const;
 
-    QByteArray saveSplitter() const;
-
 public slots:
     int addSession(Session* session);
     void removeSession(Session* session);
-
-    void restoreSplitter(const QByteArray& state);
-
-signals:
-    void splitterChanged(const QByteArray& state);
 };
 
 #endif // SESSIONSTACKVIEW_H

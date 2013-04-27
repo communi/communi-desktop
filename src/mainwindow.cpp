@@ -39,7 +39,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     treeWidget(0), trayIcon(0), dockTile(0)
 {
     stackView = new SessionStackView(this);
-    connect(stackView, SIGNAL(splitterChanged(QByteArray)), this, SLOT(splitterChanged(QByteArray)));
 
     HomePage* homePage = new HomePage(stackView);
     connect(homePage, SIGNAL(connectRequested()), this, SLOT(connectTo()));
@@ -169,7 +168,7 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     connect(stack, SIGNAL(viewAdded(MessageView*)), this, SLOT(viewAdded(MessageView*)));
     connect(stack, SIGNAL(viewRemoved(MessageView*)), treeWidget, SLOT(removeView(MessageView*)));
     connect(stack, SIGNAL(viewRenamed(MessageView*)), treeWidget, SLOT(renameView(MessageView*)));
-    connect(stack, SIGNAL(viewActivated(MessageView*)), treeWidget, SLOT(setCurrentView(MessageView*)));
+    connect(stack, SIGNAL(viewActivated(MessageView*)), this, SLOT(viewActivated(MessageView*)));
 
     if (MessageView* view = stack->viewAt(0)) {
         treeWidget->addView(view);
@@ -183,10 +182,6 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
         if (view.type != -1)
             stack->restoreView(view);
     }
-
-    QSettings settings;
-    if (settings.contains("list"))
-        stack->restoreSplitter(settings.value("list").toByteArray());
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
@@ -305,6 +300,7 @@ void MainWindow::missed(IrcMessage* message)
 
 void MainWindow::viewAdded(MessageView* view)
 {
+    connect(view, SIGNAL(splitterChanged(QByteArray)), this, SLOT(splitterChanged(QByteArray)));
     connect(view, SIGNAL(highlighted(IrcMessage*)), this, SLOT(highlighted(IrcMessage*)));
     connect(view, SIGNAL(missed(IrcMessage*)), this, SLOT(missed(IrcMessage*)));
 
@@ -319,6 +315,15 @@ void MainWindow::viewAdded(MessageView* view)
     if (settings.contains("tree"))
         treeWidget->restoreState(settings.value("tree").toByteArray());
     treeWidget->expandItem(treeWidget->sessionItem(session));
+}
+
+void MainWindow::viewActivated(MessageView* view)
+{
+    QSettings settings;
+    if (settings.contains("list"))
+        view->restoreSplitter(settings.value("list").toByteArray());
+
+    treeWidget->setCurrentView(view);
 }
 
 void MainWindow::closeTreeItem(SessionTreeItem* item)

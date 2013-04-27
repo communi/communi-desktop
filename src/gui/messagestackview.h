@@ -38,11 +38,7 @@ public:
     MessageView* currentView() const;
     MessageView* viewAt(int index) const;
 
-    QByteArray saveSplitter() const;
-
 public slots:
-    void restoreSplitter(const QByteArray& state);
-
     MessageView* addView(const QString& receiver);
     void restoreView(const ViewInfo& view);
     void openView(const QString& receiver);
@@ -52,8 +48,6 @@ public slots:
     void sendMessage(const QString& receiver, const QString& message);
 
 signals:
-    void splitterChanged(const QByteArray& state);
-
     void viewAdded(MessageView* view);
     void viewRemoved(MessageView* view);
     void viewRenamed(MessageView* view);
