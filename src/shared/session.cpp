@@ -20,9 +20,6 @@
 #ifndef QT_NO_OPENSSL
 #include <QSslSocket>
 #endif // QT_NO_OPENSSL
-#include <QNetworkConfigurationManager>
-
-QNetworkSession* Session::s_network = 0;
 
 Session::Session(QObject* parent) : IrcSession(parent),
     m_info(this), m_quit(false), m_timestamp(0), m_meter(new IrcLagMeter(this))
@@ -187,18 +184,6 @@ bool Session::isReconnecting() const
     return m_reconnectTimer.isActive();
 }
 
-bool Session::ensureNetwork()
-{
-    QNetworkConfigurationManager manager;
-    if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired) {
-        if (!s_network)
-            s_network = new QNetworkSession(manager.defaultConfiguration(), qApp);
-        s_network->open();
-    }
-    // TODO: return value?
-    return true;
-}
-
 bool Session::sendUiCommand(IrcCommand* command)
 {
 //    TODO:
@@ -215,8 +200,7 @@ void Session::reconnect()
     connect(this, SIGNAL(connecting()), &m_reconnectTimer, SLOT(stop()), Qt::UniqueConnection);
     connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), &m_reconnectTimer, SLOT(start()), Qt::UniqueConnection);
 
-    if (ensureNetwork())
-        open();
+    open();
 }
 
 void Session::quit()

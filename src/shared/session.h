@@ -23,7 +23,6 @@
 #include <QStringList>
 #include <IrcSessionInfo>
 #include <QAbstractSocket>
-#include <QNetworkSession>
 #include <IrcMessageFilter>
 #include <QElapsedTimer>
 #include "connectioninfo.h"
@@ -69,7 +68,6 @@ public:
 
     bool hasQuit() const;
     bool isReconnecting() const;
-    Q_INVOKABLE bool ensureNetwork();
 
     Q_INVOKABLE bool sendUiCommand(IrcCommand* command);
 
@@ -107,7 +105,6 @@ private:
     long m_timestamp;
     QElapsedTimer m_timestamper;
     IrcLagMeter* m_meter;
-    static QNetworkSession* s_network;
 };
 
 #endif // SESSION_H

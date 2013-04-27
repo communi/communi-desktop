@@ -151,7 +151,7 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
 {
     Session* session = Session::fromConnection(connection, this);
     session->setEncoding(Application::encoding());
-    if (!session->hasQuit() && session->ensureNetwork())
+    if (!session->hasQuit())
         session->open();
     tabWidget->addSession(session);
 
