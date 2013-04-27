@@ -45,6 +45,7 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
 
     d.dropParent = 0;
     d.menuFactory = 0;
+    d.currentRestored = false;
     d.itemResetBlocked = false;
 
     d.colors[Active] = palette().color(QPalette::WindowText);
@@ -100,20 +101,44 @@ QByteArray SessionTreeWidget::saveState() const
             receivers += parent->child(j)->text(0);
         hash.insert(parent->text(0), receivers);
     }
+
+    if (QTreeWidgetItem* item = currentItem()) {
+        hash.insert("_currentText_", currentItem()->text(0));
+        QTreeWidgetItem* parent = item->parent();
+        if (!parent)
+            parent = invisibleRootItem();
+        hash.insert("_currentIndex_", parent->indexOfChild(item));
+        hash.insert("_currentParent_", parent->text(0));
+    }
     out << hash;
     return state;
 }
 
 void SessionTreeWidget::restoreState(const QByteArray& state)
 {
-    QVariantHash sortOrders;
+    QVariantHash hash;
     QDataStream in(state);
-    in >> sortOrders;
+    in >> hash;
 
     for (int i = 0; i < topLevelItemCount(); ++i) {
         SessionTreeItem* item = static_cast<SessionTreeItem*>(topLevelItem(i));
-        item->d.sortOrder = sortOrders.value(item->text(0)).toStringList();
+        item->d.sortOrder = hash.value(item->text(0)).toStringList();
         item->sortChildren(0, Qt::AscendingOrder);
+    }
+
+    if (!d.currentRestored && hash.contains("_currentText_")) {
+        QList<QTreeWidgetItem*> candidates = findItems(hash.value("_currentText_").toString(), Qt::MatchFixedString | Qt::MatchCaseSensitive | Qt::MatchRecursive);
+        foreach (QTreeWidgetItem* candidate, candidates) {
+            QTreeWidgetItem* parent = candidate->parent();
+            if (!parent)
+                parent = invisibleRootItem();
+            if (parent->indexOfChild(candidate) == hash.value("_currentIndex_").toInt()
+                    && parent->text(0) == hash.value("_currentParent_").toString()) {
+                setCurrentItem(candidate);
+                d.currentRestored = true;
+                break;
+            }
+        }
     }
 }
 

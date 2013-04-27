@@ -113,6 +113,7 @@ private:
 
     struct Private {
         Settings settings;
+        bool currentRestored;
         bool itemResetBlocked;
         QColor highlightColor;
         MenuFactory* menuFactory;

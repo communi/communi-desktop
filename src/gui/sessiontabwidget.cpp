@@ -75,9 +75,9 @@ MessageView* SessionTabWidget::addView(const QString& receiver)
         if (!d.views.isEmpty())
             type = session()->isChannel(receiver) ? MessageView::ChannelView : MessageView::QueryView;
         view = createView(type, receiver);
-        if (d.handler.session()->isChannel(receiver))
-            openView(receiver);
     }
+    if (!view->isActive() && d.handler.session()->isChannel(receiver))
+        openView(receiver);
     return view;
 }
 

@@ -38,7 +38,7 @@ public:
     QByteArray saveSplitter() const;
 
 public slots:
-    void addSession(Session* session);
+    int addSession(Session* session);
     void removeSession(Session* session);
 
     void restoreSplitter(const QByteArray& state);

@@ -32,13 +32,11 @@ QList<Session*> MultiSessionTabWidget::sessions() const
     return list;
 }
 
-void MultiSessionTabWidget::addSession(Session* session)
+int MultiSessionTabWidget::addSession(Session* session)
 {
     SessionTabWidget* tab = new SessionTabWidget(session, this);
     connect(tab, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
-
-    int index = addWidget(tab);
-    setCurrentIndex(index);
+    return addWidget(tab);
 }
 
 void MultiSessionTabWidget::removeSession(Session* session)

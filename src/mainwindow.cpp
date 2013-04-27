@@ -151,9 +151,11 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
 {
     Session* session = Session::fromConnection(connection, this);
     session->setEncoding(Application::encoding());
-    if (!session->hasQuit())
+    int index = tabWidget->addSession(session);
+    if (!session->hasQuit()) {
+        tabWidget->setCurrentIndex(index);
         session->open();
-    tabWidget->addSession(session);
+    }
 
     connect(PowerNotifier::instance(), SIGNAL(sleep()), session, SLOT(sleep()));
     connect(PowerNotifier::instance(), SIGNAL(wake()), session, SLOT(wake()));
@@ -170,7 +172,8 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
 
     if (MessageView* view = tab->viewAt(0)) {
         treeWidget->addView(view);
-        treeWidget->setCurrentView(view);
+        if (!session->hasQuit() || tabWidget->count() == 1)
+            treeWidget->setCurrentView(view);
         treeWidget->parentWidget()->show();
         view->applySettings(Application::settings());
     }
