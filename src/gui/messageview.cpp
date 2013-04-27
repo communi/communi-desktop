@@ -392,6 +392,9 @@ void MessageView::receiveMessage(IrcMessage* message)
         case IrcMessage::Join:
             if (message->flags() & IrcMessage::Own) {
                 d.joined = true;
+                int blocks = d.textBrowser->document()->blockCount();
+                if (blocks > 1)
+                    d.textBrowser->addMarker(blocks);
                 emit activeChanged();
             }
             break;
