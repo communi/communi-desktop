@@ -12,16 +12,16 @@
 * GNU General Public License for more details.
 */
 
-#include "multisessiontabwidget.h"
+#include "sessionstackview.h"
 #include "messagestackview.h"
 #include "messageview.h"
 #include "session.h"
 
-MultiMessageStackView::MultiMessageStackView(QWidget* parent) : QStackedWidget(parent)
+SessionStackView::SessionStackView(QWidget* parent) : QStackedWidget(parent)
 {
 }
 
-QList<Session*> MultiMessageStackView::sessions() const
+QList<Session*> SessionStackView::sessions() const
 {
     QList<Session*> list;
     for (int i = 0; i < count(); ++i) {
@@ -32,14 +32,14 @@ QList<Session*> MultiMessageStackView::sessions() const
     return list;
 }
 
-int MultiMessageStackView::addSession(Session* session)
+int SessionStackView::addSession(Session* session)
 {
     MessageStackView* tab = new MessageStackView(session, this);
     connect(tab, SIGNAL(splitterChanged(QByteArray)), this, SLOT(restoreSplitter(QByteArray)));
     return addWidget(tab);
 }
 
-void MultiMessageStackView::removeSession(Session* session)
+void SessionStackView::removeSession(Session* session)
 {
     MessageStackView* tabWidget = sessionWidget(session);
     if (tabWidget) {
@@ -49,17 +49,17 @@ void MultiMessageStackView::removeSession(Session* session)
     }
 }
 
-MessageStackView* MultiMessageStackView::currentWidget() const
+MessageStackView* SessionStackView::currentWidget() const
 {
     return qobject_cast<MessageStackView*>(QStackedWidget::currentWidget());
 }
 
-MessageStackView* MultiMessageStackView::widgetAt(int index) const
+MessageStackView* SessionStackView::widgetAt(int index) const
 {
     return qobject_cast<MessageStackView*>(QStackedWidget::widget(index));
 }
 
-MessageStackView* MultiMessageStackView::sessionWidget(Session* session) const
+MessageStackView* SessionStackView::sessionWidget(Session* session) const
 {
     for (int i = 0; i < count(); ++i) {
         MessageStackView* tabWidget = widgetAt(i);
@@ -69,7 +69,7 @@ MessageStackView* MultiMessageStackView::sessionWidget(Session* session) const
     return 0;
 }
 
-QByteArray MultiMessageStackView::saveSplitter() const
+QByteArray SessionStackView::saveSplitter() const
 {
     QByteArray state;
     for (int i = count(); state.isNull() && i >= 0; --i) {
@@ -80,7 +80,7 @@ QByteArray MultiMessageStackView::saveSplitter() const
     return state;
 }
 
-void MultiMessageStackView::restoreSplitter(const QByteArray& state)
+void SessionStackView::restoreSplitter(const QByteArray& state)
 {
     for (int i = 0; i < count(); ++i) {
         MessageStackView* tabWidget = widgetAt(i);

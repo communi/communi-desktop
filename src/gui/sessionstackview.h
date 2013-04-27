@@ -12,8 +12,8 @@
 * GNU General Public License for more details.
 */
 
-#ifndef MULTISESSIONTABWIDGET_H
-#define MULTISESSIONTABWIDGET_H
+#ifndef SESSIONSTACKVIEW_H
+#define SESSIONSTACKVIEW_H
 
 #include <QStackedWidget>
 
@@ -22,12 +22,12 @@ class IrcMessage;
 class MessageView;
 class MessageStackView;
 
-class MultiMessageStackView : public QStackedWidget
+class SessionStackView : public QStackedWidget
 {
     Q_OBJECT
 
 public:
-    MultiMessageStackView(QWidget* parent = 0);
+    SessionStackView(QWidget* parent = 0);
 
     QList<Session*> sessions() const;
 
@@ -47,4 +47,4 @@ signals:
     void splitterChanged(const QByteArray& state);
 };
 
-#endif // MULTISESSIONTABWIDGET_H
+#endif // SESSIONSTACKVIEW_H

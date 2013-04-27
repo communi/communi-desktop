@@ -15,7 +15,7 @@
 #include "mainwindow.h"
 #include "application.h"
 #include "connectionwizard.h"
-#include "multisessiontabwidget.h"
+#include "sessionstackview.h"
 #include "sessiontreewidget.h"
 #include "messagestackview.h"
 #include "sessiontreeitem.h"
@@ -38,7 +38,7 @@
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     treeWidget(0), trayIcon(0), dockTile(0)
 {
-    tabWidget = new MultiMessageStackView(this);
+    tabWidget = new SessionStackView(this);
     connect(tabWidget, SIGNAL(splitterChanged(QByteArray)), this, SLOT(splitterChanged(QByteArray)));
 
     HomePage* homePage = new HomePage(tabWidget);
