@@ -168,6 +168,13 @@ void SessionTreeWidget::setStatusColor(SessionTreeWidget::ItemStatus status, con
     d.colors[status] = color;
 }
 
+QColor SessionTreeWidget::currentBadgeColor() const
+{
+    if (!d.highlightColor.isValid() || d.highlightColor != d.colors.value(Active))
+        return d.colors.value(Highlight).lighter(125);
+    return qApp->palette().color(QPalette::Dark);
+}
+
 QColor SessionTreeWidget::currentHighlightColor() const
 {
     if (!d.highlightColor.isValid())

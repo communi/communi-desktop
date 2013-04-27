@@ -48,6 +48,7 @@ public:
     QColor statusColor(ItemStatus status) const;
     void setStatusColor(ItemStatus status, const QColor& color);
 
+    QColor currentBadgeColor() const;
     QColor currentHighlightColor() const;
 
     SessionTreeItem* viewItem(MessageView* view) const;

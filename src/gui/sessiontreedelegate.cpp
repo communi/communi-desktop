@@ -73,12 +73,7 @@ void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
 
             painter->save();
             painter->setPen(Qt::NoPen);
-            // if the text is highlighted, highlight the badge as well
-            QBrush highlight = qvariant_cast<QBrush>(index.data(Qt::ForegroundRole));
-            if (highlight != qApp->palette().brush(QPalette::Text))
-                painter->setBrush(highlight.color().lighter(120));
-            else
-                painter->setBrush(qApp->palette().color(QPalette::Dark));
+            painter->setBrush(qvariant_cast<QBrush>(index.data(Qt::UserRole + 1)));
             painter->setRenderHint(QPainter::Antialiasing);
             painter->drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
 

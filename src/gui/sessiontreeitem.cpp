@@ -63,6 +63,13 @@ QVariant SessionTreeItem::data(int column, int role) const
         if (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty()))
             return tw->currentHighlightColor();
         return tw->statusColor(SessionTreeWidget::Active);
+    } else if (role == Qt::UserRole + 1) {
+        SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget());
+        if (!d.view->isActive())
+            return tw->statusColor(SessionTreeWidget::Inactive);
+        if (d.highlighted)
+            return tw->currentBadgeColor();
+        return qApp->palette().color(QPalette::Dark);
     }
     return QTreeWidgetItem::data(column, role);
 }
