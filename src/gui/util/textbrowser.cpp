@@ -128,11 +128,14 @@ void TextBrowser::paintEvent(QPaintEvent* event)
 
     QPainter painter(viewport());
 
-    if (ub > 0)
-        paintMarker(&painter, document()->findBlockByNumber(ub));
+    int last = -1;
+    foreach (int marker, markers) {
+        last = qMax(marker, last);
+        paintMarker(&painter, document()->findBlockByNumber(marker), Qt::gray);
+    }
 
-    foreach (int marker, markers)
-        paintMarker(&painter, document()->findBlockByNumber(marker));
+    if (ub > 0 && ub > last)
+        paintMarker(&painter, document()->findBlockByNumber(ub), Qt::black);
 
     QLinearGradient gradient(0, 0, 0, 3);
     gradient.setColorAt(0.0, palette().color(QPalette::Dark));
@@ -150,11 +153,11 @@ void TextBrowser::wheelEvent(QWheelEvent* event)
 #endif // Q_WS_MACX
 }
 
-void TextBrowser::paintMarker(QPainter* painter, const QTextBlock& block)
+void TextBrowser::paintMarker(QPainter* painter, const QTextBlock& block, const QColor& color)
 {
     if (block.isValid()) {
         painter->save();
-        painter->setPen(Qt::DashLine);
+        painter->setPen(QPen(color, 1, Qt::DashLine));
         painter->translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
 
         QRectF br = document()->documentLayout()->blockBoundingRect(block);

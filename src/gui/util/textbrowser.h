@@ -45,7 +45,7 @@ protected:
     void resizeEvent(QResizeEvent* event);
     void wheelEvent(QWheelEvent* event);
 
-    void paintMarker(QPainter* painter, const QTextBlock& block);
+    void paintMarker(QPainter* painter, const QTextBlock& block, const QColor& color);
 
 private:
     int ub;
