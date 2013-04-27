@@ -49,8 +49,8 @@ QHash<int, QString> ShortcutsWizardPage::shortcuts() const
     QHash<int, QString> shortcuts;
     shortcuts.insert(Settings::NextView, logicalShortcut(0));
     shortcuts.insert(Settings::PreviousView, logicalShortcut(1));
-    shortcuts.insert(Settings::NextUnreadView, logicalShortcut(2));
-    shortcuts.insert(Settings::PreviousUnreadView, logicalShortcut(3));
+    shortcuts.insert(Settings::NextActiveView, logicalShortcut(2));
+    shortcuts.insert(Settings::PreviousActiveView, logicalShortcut(3));
     shortcuts.insert(Settings::ExpandView, logicalShortcut(4));
     shortcuts.insert(Settings::CollapseView, logicalShortcut(5));
     shortcuts.insert(Settings::MostActiveView, logicalShortcut(6));
@@ -62,8 +62,8 @@ void ShortcutsWizardPage::setShortcuts(const QHash<int, QString>& shortcuts)
 {
     setVisualShortcut(0, shortcuts.value(Settings::NextView));
     setVisualShortcut(1, shortcuts.value(Settings::PreviousView));
-    setVisualShortcut(2, shortcuts.value(Settings::NextUnreadView));
-    setVisualShortcut(3, shortcuts.value(Settings::PreviousUnreadView));
+    setVisualShortcut(2, shortcuts.value(Settings::NextActiveView));
+    setVisualShortcut(3, shortcuts.value(Settings::PreviousActiveView));
     setVisualShortcut(4, shortcuts.value(Settings::ExpandView));
     setVisualShortcut(5, shortcuts.value(Settings::CollapseView));
     setVisualShortcut(6, shortcuts.value(Settings::MostActiveView));

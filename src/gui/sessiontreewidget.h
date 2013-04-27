@@ -66,8 +66,8 @@ public slots:
     void moveToNextItem();
     void moveToPrevItem();
 
-    void moveToNextUnreadItem();
-    void moveToPrevUnreadItem();
+    void moveToNextActiveItem();
+    void moveToPrevActiveItem();
 
     void expandCurrentSession();
     void collapseCurrentSession();
@@ -112,6 +112,8 @@ private:
     QTreeWidgetItem* lastItem() const;
     QTreeWidgetItem* nextItem(QTreeWidgetItem* from) const;
     QTreeWidgetItem* previousItem(QTreeWidgetItem* from) const;
+    QTreeWidgetItem* findNextItem(QTreeWidgetItem* from, int column, int role) const;
+    QTreeWidgetItem* findPrevItem(QTreeWidgetItem* from, int column, int role) const;
 
     struct Private {
         Settings settings;
@@ -121,8 +123,8 @@ private:
         MenuFactory* menuFactory;
         QShortcut* prevShortcut;
         QShortcut* nextShortcut;
-        QShortcut* prevUnreadShortcut;
-        QShortcut* nextUnreadShortcut;
+        QShortcut* prevActiveShortcut;
+        QShortcut* nextActiveShortcut;
         QShortcut* expandShortcut;
         QShortcut* collapseShortcut;
         QShortcut* mostActiveShortcut;

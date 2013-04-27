@@ -63,25 +63,27 @@ QVariant SessionTreeItem::data(int column, int role) const
         if (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty()))
             return tw->currentHighlightColor();
         return tw->statusColor(SessionTreeWidget::Active);
-    } else if (role == Qt::UserRole + 1) {
+    } else if (role == BadgeColorRole) {
         SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget());
         if (!d.view->isActive())
             return tw->statusColor(SessionTreeWidget::Inactive);
         if (d.highlighted)
             return tw->currentBadgeColor();
         return qApp->palette().color(QPalette::Dark);
+    } else if (role == HighlightRole) {
+        return d.highlighted;
     }
     return QTreeWidgetItem::data(column, role);
 }
 
 int SessionTreeItem::badge() const
 {
-    return data(1, Qt::UserRole).toInt();
+    return data(1, BadgeRole).toInt();
 }
 
 void SessionTreeItem::setBadge(int badge)
 {
-    setData(1, Qt::UserRole, badge);
+    setData(1, BadgeRole, badge);
 }
 
 bool SessionTreeItem::isHighlighted() const

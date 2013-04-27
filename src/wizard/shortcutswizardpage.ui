@@ -60,7 +60,7 @@
      </item>
      <item>
       <property name="text">
-       <string>Next unread view</string>
+       <string>Next active view</string>
       </property>
       <property name="flags">
        <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>
@@ -68,7 +68,7 @@
      </item>
      <item>
       <property name="text">
-       <string>Previous unread view</string>
+       <string>Previous active view</string>
       </property>
       <property name="flags">
        <set>ItemIsSelectable|ItemIsEditable|ItemIsEnabled</set>

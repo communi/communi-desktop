@@ -53,8 +53,8 @@ struct Settings {
         NextView = 1, // was NavigateDown
         CollapseView = 2, // was NavigateLeft
         ExpandView = 3, // was NavigateRight
-        PreviousUnreadView = 4, // was NextUnreadUp
-        NextUnreadView = 5, // was NextUnreadDown
+        PreviousActiveView = 4, // was NextUnreadUp
+        NextActiveView = 5, // was NextUnreadDown
         // 6 was NextUnreadLeft
         // 7 was NextUnreadRight
         MostActiveView = 8,
@@ -118,8 +118,8 @@ inline QDataStream& operator>>(QDataStream& in, Settings& settings)
     if (version < 125)
         settings.colors[Settings::TimeStamp] = defaults.colors.value(Settings::TimeStamp);
     if (version < 127) {
-        settings.shortcuts[Settings::NextUnreadView] = defaults.shortcuts.value(Settings::NextUnreadView);
-        settings.shortcuts[Settings::PreviousUnreadView] = defaults.shortcuts.value(Settings::PreviousUnreadView);
+        settings.shortcuts[Settings::NextActiveView] = defaults.shortcuts.value(Settings::NextActiveView);
+        settings.shortcuts[Settings::PreviousActiveView] = defaults.shortcuts.value(Settings::PreviousActiveView);
     }
     if (version < 128)
         settings.colors[Settings::Link] = defaults.colors.value(Settings::Link);

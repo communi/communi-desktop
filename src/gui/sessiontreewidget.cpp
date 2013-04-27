@@ -65,11 +65,11 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     d.nextShortcut = new QShortcut(this);
     connect(d.nextShortcut, SIGNAL(activated()), this, SLOT(moveToNextItem()));
 
-    d.prevUnreadShortcut = new QShortcut(this);
-    connect(d.prevUnreadShortcut, SIGNAL(activated()), this, SLOT(moveToPrevUnreadItem()));
+    d.prevActiveShortcut = new QShortcut(this);
+    connect(d.prevActiveShortcut, SIGNAL(activated()), this, SLOT(moveToPrevActiveItem()));
 
-    d.nextUnreadShortcut = new QShortcut(this);
-    connect(d.nextUnreadShortcut, SIGNAL(activated()), this, SLOT(moveToNextUnreadItem()));
+    d.nextActiveShortcut = new QShortcut(this);
+    connect(d.nextActiveShortcut, SIGNAL(activated()), this, SLOT(moveToNextActiveItem()));
 
     d.expandShortcut = new QShortcut(this);
     connect(d.expandShortcut, SIGNAL(activated()), this, SLOT(expandCurrentSession()));
@@ -271,34 +271,22 @@ void SessionTreeWidget::moveToPrevItem()
     setCurrentItem(item);
 }
 
-void SessionTreeWidget::moveToNextUnreadItem()
+void SessionTreeWidget::moveToNextActiveItem()
 {
-    QTreeWidgetItem* current = currentItem();
-    if (current) {
-        QTreeWidgetItemIterator it(current);
-        while (*++it && *it != current) {
-            SessionTreeItem* item = static_cast<SessionTreeItem*>(*it);
-            if (item->badge() > 0) {
-                setCurrentItem(item);
-                break;
-            }
-        }
-    }
+    QTreeWidgetItem* item = findNextItem(currentItem(), 0, SessionTreeItem::HighlightRole);
+    if (!item)
+        item = findNextItem(currentItem(), 1, SessionTreeItem::BadgeRole);
+    if (item)
+        setCurrentItem(item);
 }
 
-void SessionTreeWidget::moveToPrevUnreadItem()
+void SessionTreeWidget::moveToPrevActiveItem()
 {
-    QTreeWidgetItem* current = currentItem();
-    if (current) {
-        QTreeWidgetItemIterator it(current);
-        while (*--it && *it != current) {
-            SessionTreeItem* item = static_cast<SessionTreeItem*>(*it);
-            if (item->badge() > 0) {
-                setCurrentItem(item);
-                break;
-            }
-        }
-    }
+    QTreeWidgetItem* item = findPrevItem(currentItem(), 0, SessionTreeItem::HighlightRole);
+    if (!item)
+        item = findPrevItem(currentItem(), 1, SessionTreeItem::BadgeRole);
+    if (item)
+        setCurrentItem(item);
 }
 
 void SessionTreeWidget::moveToMostActiveItem()
@@ -408,8 +396,8 @@ void SessionTreeWidget::applySettings(const Settings& settings)
 
     d.prevShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::PreviousView)));
     d.nextShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NextView)));
-    d.prevUnreadShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::PreviousUnreadView)));
-    d.nextUnreadShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NextUnreadView)));
+    d.prevActiveShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::PreviousActiveView)));
+    d.nextActiveShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NextActiveView)));
     d.expandShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::ExpandView)));
     d.collapseShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::CollapseView)));
     d.mostActiveShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::MostActiveView)));
@@ -578,4 +566,30 @@ QTreeWidgetItem* SessionTreeWidget::previousItem(QTreeWidgetItem* from) const
             break;
     }
     return *it;
+}
+
+QTreeWidgetItem* SessionTreeWidget::findNextItem(QTreeWidgetItem* from, int column, int role) const
+{
+    if (from) {
+        QTreeWidgetItemIterator it(from);
+        while (*++it && *it != from) {
+            SessionTreeItem* item = static_cast<SessionTreeItem*>(*it);
+            if (item->data(column, role).toBool())
+                return item;
+        }
+    }
+    return 0;
+}
+
+QTreeWidgetItem* SessionTreeWidget::findPrevItem(QTreeWidgetItem* from, int column, int role) const
+{
+    if (from) {
+        QTreeWidgetItemIterator it(from);
+        while (*--it && *it != from) {
+            SessionTreeItem* item = static_cast<SessionTreeItem*>(*it);
+            if (item->data(column, role).toBool())
+                return item;
+        }
+    }
+    return 0;
 }

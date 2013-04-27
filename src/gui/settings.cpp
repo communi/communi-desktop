@@ -19,18 +19,18 @@ Settings::Settings() : maxBlockCount(-1), timeStamp(true), stripNicks(true), tim
 {
 #ifdef Q_OS_MAC
     QString navigate("Ctrl+Alt+%1");
-    QString nextUnread("Shift+Ctrl+Alt+%1");
+    QString nextActive("Shift+Ctrl+Alt+%1");
 #else
     QString navigate("Alt+%1");
-    QString nextUnread("Shift+Alt+%1");
+    QString nextActive("Shift+Alt+%1");
 #endif
 
     shortcuts[PreviousView] = navigate.arg("Up");
     shortcuts[NextView] = navigate.arg("Down");
     shortcuts[CollapseView] = navigate.arg("Left");
     shortcuts[ExpandView] = navigate.arg("Right");
-    shortcuts[PreviousUnreadView] = nextUnread.arg("Up");
-    shortcuts[NextUnreadView] = nextUnread.arg("Down");
+    shortcuts[PreviousActiveView] = nextActive.arg("Up");
+    shortcuts[NextActiveView] = nextActive.arg("Down");
     shortcuts[MostActiveView] = "Ctrl+L";
     shortcuts[SearchView] = "Ctrl+S";
 

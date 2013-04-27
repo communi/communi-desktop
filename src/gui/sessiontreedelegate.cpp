@@ -13,6 +13,7 @@
 */
 
 #include "sessiontreedelegate.h"
+#include "sessiontreeitem.h"
 #include <QStyleOptionViewItem>
 #include <QApplication>
 #include <QLineEdit>
@@ -67,13 +68,13 @@ void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
     QStyledItemDelegate::paint(painter, option, index);
 
     if (index.column() == 1) {
-        int badge = index.data(Qt::UserRole).toInt();
+        int badge = index.data(SessionTreeItem::BadgeRole).toInt();
         if (badge > 0) {
             QRect rect = option.rect.adjusted(1, 3, -1, -3);
 
             painter->save();
             painter->setPen(Qt::NoPen);
-            painter->setBrush(qvariant_cast<QBrush>(index.data(Qt::UserRole + 1)));
+            painter->setBrush(qvariant_cast<QBrush>(index.data(SessionTreeItem::BadgeColorRole)));
             painter->setRenderHint(QPainter::Antialiasing);
             painter->drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
 

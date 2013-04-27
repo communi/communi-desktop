@@ -31,6 +31,8 @@ public:
     MessageView* view() const;
     SessionTreeItem* findChild(const QString& name) const;
 
+    enum { BadgeRole = Qt::UserRole, BadgeColorRole, HighlightRole };
+
     QVariant data(int column, int role) const;
 
     int badge() const;
