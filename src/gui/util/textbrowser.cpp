@@ -18,34 +18,50 @@
 #include <QPainter>
 #include <QTextBlock>
 #include <QAbstractTextDocumentLayout>
+#include <qmath.h>
 
-TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent), ub(-1), bud(0)
+TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent)
 {
+    d.ub = -1;
+    d.bud = 0;
 }
 
 QWidget* TextBrowser::buddy() const
 {
-    return bud;
+    return d.bud;
 }
 
 void TextBrowser::setBuddy(QWidget* buddy)
 {
-    bud = buddy;
+    d.bud = buddy;
 }
 
 void TextBrowser::addMarker(int block)
 {
-    markers.append(block);
+    d.markers.append(block);
     update();
 }
 
 void TextBrowser::removeMarker(int block)
 {
-    markers.removeOne(block);
-    update();
+    if (d.markers.removeOne(block))
+        update();
 }
 
-void TextBrowser::append(const QString& text)
+QColor TextBrowser::highlightColor() const
+{
+    return d.highlightColor;
+}
+
+void TextBrowser::setHighlightColor(const QColor& color)
+{
+    if (d.highlightColor != color) {
+        d.highlightColor = color;
+        update();
+    }
+}
+
+void TextBrowser::append(const QString& text, bool highlight)
 {
     if (!text.isEmpty()) {
 
@@ -59,15 +75,18 @@ void TextBrowser::append(const QString& text)
         cursor.setBlockFormat(format);
 #endif // QT_VERSION
 
-        if (!isVisible() && ub == -1)
-            ub = document()->blockCount() - 1;
+        if (!isVisible() && d.ub == -1)
+            d.ub = document()->blockCount() - 1;
+
+        if (highlight)
+            d.highlights.append(document()->blockCount() - 1);
     }
 }
 
 void TextBrowser::hideEvent(QHideEvent* event)
 {
     QTextBrowser::hideEvent(event);
-    ub = -1;
+    d.ub = -1;
 }
 
 void TextBrowser::keyPressEvent(QKeyEvent* event)
@@ -85,8 +104,8 @@ void TextBrowser::keyPressEvent(QKeyEvent* event)
             break;
         default:
             if (!event->matches(QKeySequence::Copy) && !event->matches(QKeySequence::SelectAll)) {
-                QApplication::sendEvent(bud, event);
-                bud->setFocus();
+                QApplication::sendEvent(d.bud, event);
+                d.bud->setFocus();
                 return;
             }
             break;
@@ -124,18 +143,29 @@ void TextBrowser::scrollToPreviousPage()
 
 void TextBrowser::paintEvent(QPaintEvent* event)
 {
+    QPainter painter(viewport());
+    painter.translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
+
+    foreach (int highlight, d.highlights) {
+        QTextBlock block = document()->findBlockByNumber(highlight);
+        QRectF br = document()->documentLayout()->blockBoundingRect(block);
+        int margin = qCeil(document()->documentMargin());
+        painter.fillRect(br.adjusted(-margin, 0, margin, 0), d.highlightColor);
+    }
+    painter.end();
+
     QTextBrowser::paintEvent(event);
 
-    QPainter painter(viewport());
+    painter.begin(viewport());
 
     int last = -1;
-    foreach (int marker, markers) {
+    foreach (int marker, d.markers) {
         last = qMax(marker, last);
         paintMarker(&painter, document()->findBlockByNumber(marker), Qt::gray);
     }
 
-    if (ub > 0 && ub > last)
-        paintMarker(&painter, document()->findBlockByNumber(ub), Qt::black);
+    if (d.ub > 0 && d.ub > last)
+        paintMarker(&painter, document()->findBlockByNumber(d.ub), Qt::black);
 
     QLinearGradient gradient(0, 0, 0, 3);
     gradient.setColorAt(0.0, palette().color(QPalette::Dark));
@@ -156,12 +186,8 @@ void TextBrowser::wheelEvent(QWheelEvent* event)
 void TextBrowser::paintMarker(QPainter* painter, const QTextBlock& block, const QColor& color)
 {
     if (block.isValid()) {
-        painter->save();
-        painter->setPen(QPen(color, 1, Qt::DashLine));
-        painter->translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
-
         QRectF br = document()->documentLayout()->blockBoundingRect(block);
+        painter->setPen(QPen(color, 1, Qt::DashLine));
         painter->drawLine(br.topLeft(), br.topRight());
-        painter->restore();
     }
 }

@@ -30,8 +30,11 @@ public:
     void addMarker(int block);
     void removeMarker(int block);
 
+    QColor highlightColor() const;
+    void setHighlightColor(const QColor& color);
+
 public slots:
-    void append(const QString& text);
+    void append(const QString& text, bool highlight = false);
 
     void scrollToTop();
     void scrollToBottom();
@@ -48,9 +51,13 @@ protected:
     void paintMarker(QPainter* painter, const QTextBlock& block, const QColor& color);
 
 private:
-    int ub;
-    QWidget* bud;
-    QList<int> markers;
+    struct Private {
+        int ub;
+        QWidget* bud;
+        QList<int> markers;
+        QList<int> highlights;
+        QColor highlightColor;
+    } d;
 };
 
 #endif // TEXTBROWSER_H

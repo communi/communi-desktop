@@ -329,8 +329,9 @@ void MessageView::applySettings(const Settings& settings)
     d.formatter->setTimeStampFormat(settings.timeStampFormat);
     d.formatter->setStripNicks(settings.stripNicks);
 
-    // TODO: dedicated color?
+    // TODO: dedicated colors?
     d.highlighter->setHighlightColor(settings.colors.value(Settings::TimeStamp));
+    d.textBrowser->setHighlightColor(QColor(settings.colors.value(Settings::Highlight)).lighter(165));
 
     if (!settings.font.isEmpty())
         d.textBrowser->setFont(settings.font);
@@ -472,7 +473,7 @@ void MessageView::receiveMessage(IrcMessage* message)
                 emit missed(message);
         }
 
-        d.textBrowser->append(formatted);
+        d.textBrowser->append(formatted, d.formatter->hasHighlight());
     }
 }
 
