@@ -160,6 +160,9 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     connect(SystemNotifier::instance(), SIGNAL(sleep()), session, SLOT(sleep()));
     connect(SystemNotifier::instance(), SIGNAL(wake()), session, SLOT(wake()));
 
+    connect(SystemNotifier::instance(), SIGNAL(online()), session, SLOT(reconnect()));
+    connect(SystemNotifier::instance(), SIGNAL(offline()), session, SLOT(close()));
+
     connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateOverlay()));
     connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateOverlay()));
     updateOverlay();

@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+class SystemNotifierPrivate;
+
 class SystemNotifier : public QObject
 {
     Q_OBJECT
@@ -13,6 +15,8 @@ public:
 signals:
     void sleep();
     void wake();
+    void online();
+    void offline();
 
 protected:
     SystemNotifier(QObject* parent = 0);
@@ -22,7 +26,7 @@ protected:
     void uninitialize();
 
 private:
-    void* d;
+    SystemNotifierPrivate* d;
 };
 
 #endif // SYSTEMNOTIFIER_H
