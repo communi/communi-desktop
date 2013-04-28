@@ -19,6 +19,8 @@
 SearchEditor::SearchEditor(QWidget* parent) : HistoryLineEdit(parent)
 {
     Q_ASSERT(parent);
+    d.textEdit = 0;
+
     QShortcut* shortcut = new QShortcut(QKeySequence::Find, parent);
     connect(shortcut, SIGNAL(activated()), this, SLOT(find()));
 
@@ -125,10 +127,12 @@ void SearchEditor::find(const QString& text, bool forward, bool backward, bool t
 void SearchEditor::hideEvent(QHideEvent* event)
 {
     HistoryLineEdit::hideEvent(event);
-    QTextCursor cursor = d.textEdit->textCursor();
-    if (cursor.hasSelection()) {
-        cursor.clearSelection();
-        d.textEdit->setTextCursor(cursor);
+    if (d.textEdit) {
+        QTextCursor cursor = d.textEdit->textCursor();
+        if (cursor.hasSelection()) {
+            cursor.clearSelection();
+            d.textEdit->setTextCursor(cursor);
+        }
+        d.textEdit->setExtraSelections(QList<QTextEdit::ExtraSelection>());
     }
-    d.textEdit->setExtraSelections(QList<QTextEdit::ExtraSelection>());
 }
