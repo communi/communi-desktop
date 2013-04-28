@@ -6,6 +6,16 @@ class SystemNotifierPrivate : public QObject
     Q_OBJECT
 
 private slots:
+    void sleeping()
+    {
+        QMetaObject::invokeMethod(SystemNotifier::instance(), "sleep");
+    }
+
+    void resuming()
+    {
+        QMetaObject::invokeMethod(SystemNotifier::instance(), "wake");
+    }
+
     void networkStateChanged(uint state)
     {
         static const uint NM_STATE_DISCONNECTED = 20;
@@ -25,6 +35,11 @@ void SystemNotifier::initialize()
     QDBusConnection bus = QDBusConnection::systemBus();
     bus.connect("org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager",
                 "org.freedesktop.NetworkManager", "StateChanged", d, SLOT(networkStateChanged(uint)));
+
+    bus.connect("org.freedesktop.UPower", "/org/freedesktop/UPower",
+                "org.freedesktop.UPower", "Sleeping", d, SLOT(sleeping()));
+    bus.connect("org.freedesktop.UPower", "/org/freedesktop/UPower",
+                "org.freedesktop.UPower", "Resuming", d, SLOT(resuming()));
 }
 
 void SystemNotifier::uninitialize()
