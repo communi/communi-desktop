@@ -21,7 +21,7 @@
 #include "sessiontreeitem.h"
 #include "connectioninfo.h"
 #include "addviewdialog.h"
-#include "powernotifier.h"
+#include "systemnotifier.h"
 #include "searchpopup.h"
 #include "messageview.h"
 #include "homepage.h"
@@ -157,8 +157,8 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
             stackView->setCurrentIndex(index);
     }
 
-    connect(PowerNotifier::instance(), SIGNAL(sleep()), session, SLOT(sleep()));
-    connect(PowerNotifier::instance(), SIGNAL(wake()), session, SLOT(wake()));
+    connect(SystemNotifier::instance(), SIGNAL(sleep()), session, SLOT(sleep()));
+    connect(SystemNotifier::instance(), SIGNAL(wake()), session, SLOT(wake()));
 
     connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateOverlay()));
     connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateOverlay()));

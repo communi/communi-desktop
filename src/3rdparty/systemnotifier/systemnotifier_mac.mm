@@ -1,11 +1,11 @@
-#include "powernotifier.h"
+#include "systemnotifier.h"
 
 #include <Cocoa/Cocoa.h>
 
-@interface CocoaPowerNotifier : NSObject
+@interface CocoaSystemNotifier : NSObject
 @end
 
-@implementation CocoaPowerNotifier
+@implementation CocoaSystemNotifier
 - (id)init
 {
     self = [super init];
@@ -24,24 +24,24 @@
 - (void) receiveSleepNote: (NSNotification*) note
 {
     Q_UNUSED(note);
-    QMetaObject::invokeMethod(PowerNotifier::instance(), "sleep");
+    QMetaObject::invokeMethod(SystemNotifier::instance(), "sleep");
 }
 
 - (void) receiveWakeNote: (NSNotification*) note
 {
     Q_UNUSED(note);
-    QMetaObject::invokeMethod(PowerNotifier::instance(), "wake");
+    QMetaObject::invokeMethod(SystemNotifier::instance(), "wake");
 }
 @end
 
-void PowerNotifier::initialize()
+void SystemNotifier::initialize()
 {
-    d = [[CocoaPowerNotifier alloc] init];
+    d = [[CocoaSystemNotifier alloc] init];
     CFRetain(d);
-    [static_cast<CocoaPowerNotifier *>(d) release];
+    [static_cast<CocoaSystemNotifier *>(d) release];
 }
 
-void PowerNotifier::uninitialize()
+void SystemNotifier::uninitialize()
 {
     CFRelease(d);
 }

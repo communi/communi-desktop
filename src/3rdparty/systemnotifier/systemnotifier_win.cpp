@@ -1,4 +1,4 @@
-#include "powernotifier.h"
+#include "systemnotifier.h"
 
 #include <qt_windows.h>
 #include <qabstracteventdispatcher.h>
@@ -23,10 +23,10 @@ public:
         if (msg && msg->message == WM_POWERBROADCAST) {
             switch (msg->wParam) {
             case PBT_APMSUSPEND:
-                QMetaObject::invokeMethod(PowerNotifier::instance(), "sleep");
+                QMetaObject::invokeMethod(SystemNotifier::instance(), "sleep");
                 break;
             case PBT_APMRESUMESUSPEND:
-                QMetaObject::invokeMethod(PowerNotifier::instance(), "wake");
+                QMetaObject::invokeMethod(SystemNotifier::instance(), "wake");
                 break;
             default:
                 break;
@@ -39,7 +39,7 @@ public:
 #endif
 };
 
-void PowerNotifier::initialize()
+void SystemNotifier::initialize()
 {
     PowerEventFilter* filter = new PowerEventFilter;
 #if QT_VERSION >= 0x050000
@@ -50,7 +50,7 @@ void PowerNotifier::initialize()
     d = filter;
 }
 
-void PowerNotifier::uninitialize()
+void SystemNotifier::uninitialize()
 {
     PowerEventFilter* filter = static_cast<PowerEventFilter*>(d);
     if (QAbstractEventDispatcher::instance())
