@@ -143,38 +143,52 @@ void TextBrowser::scrollToPreviousPage()
 
 void TextBrowser::paintEvent(QPaintEvent* event)
 {
-    {
+    const QRect bounds = rect().translated(horizontalScrollBar()->value(),
+                                           verticalScrollBar()->value());
+
+    if (!d.highlights.isEmpty()) {
         QPainter painter(viewport());
         painter.translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
 
+        int margin = qCeil(document()->documentMargin());
         foreach (int highlight, d.highlights) {
             QTextBlock block = document()->findBlockByNumber(highlight);
             QRectF br = document()->documentLayout()->blockBoundingRect(block);
-            int margin = qCeil(document()->documentMargin());
-            painter.fillRect(br.adjusted(-margin, 0, margin, 0), d.highlightColor);
+            if (bounds.intersects(br.toAlignedRect()))
+                painter.fillRect(br.adjusted(-margin, 0, margin, 0), d.highlightColor);
         }
     }
 
     QTextBrowser::paintEvent(event);
 
-    {
-        QPainter painter(viewport());
-        painter.translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
+    QPainter painter(viewport());
+    painter.translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
 
-        int last = -1;
+    int last = -1;
+    if (!d.markers.isEmpty()) {
+        painter.setPen(QPen(Qt::gray, 1, Qt::DashLine));
         foreach (int marker, d.markers) {
-            last = qMax(marker, last);
-            paintMarker(&painter, document()->findBlockByNumber(marker), Qt::gray);
+            QTextBlock block = document()->findBlockByNumber(marker);
+            QRectF br = document()->documentLayout()->blockBoundingRect(block);
+            if (bounds.intersects(br.toAlignedRect())) {
+                painter.drawLine(br.topLeft(), br.topRight());
+                last = qMax(marker, last);
+            }
         }
-
-        if (d.ub > 0 && d.ub > last)
-            paintMarker(&painter, document()->findBlockByNumber(d.ub), Qt::black);
-
-        QLinearGradient gradient(0, 0, 0, 3);
-        gradient.setColorAt(0.0, palette().color(QPalette::Dark));
-        gradient.setColorAt(1.0, Qt::transparent);
-        painter.fillRect(0, 0, width(), 3, gradient);
     }
+
+    if (d.ub > 0 && d.ub >= last) {
+        painter.setPen(QPen(Qt::black, 1, Qt::DashLine));
+        QTextBlock block = document()->findBlockByNumber(d.ub);
+        QRectF br = document()->documentLayout()->blockBoundingRect(block);
+        if (bounds.intersects(br.toAlignedRect()))
+            painter.drawLine(br.topLeft(), br.topRight());
+    }
+
+    QLinearGradient gradient(0, 0, 0, 3);
+    gradient.setColorAt(0.0, palette().color(QPalette::Dark));
+    gradient.setColorAt(1.0, Qt::transparent);
+    painter.fillRect(0, 0, width(), 3, gradient);
 }
 
 void TextBrowser::wheelEvent(QWheelEvent* event)
@@ -187,11 +201,3 @@ void TextBrowser::wheelEvent(QWheelEvent* event)
 #endif // Q_WS_MACX
 }
 
-void TextBrowser::paintMarker(QPainter* painter, const QTextBlock& block, const QColor& color)
-{
-    if (block.isValid()) {
-        QRectF br = document()->documentLayout()->blockBoundingRect(block);
-        painter->setPen(QPen(color, 1, Qt::DashLine));
-        painter->drawLine(br.topLeft(), br.topRight());
-    }
-}
