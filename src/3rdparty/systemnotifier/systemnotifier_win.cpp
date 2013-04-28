@@ -7,7 +7,7 @@
 #include <qabstractnativeeventfilter.h>
 #endif // QT_VERSION
 
-class PowerEventFilter
+class SystemNotifierPrivate
 #if QT_VERSION >= 0x050000
                        : public QAbstractNativeEventFilter
 #endif
@@ -41,23 +41,21 @@ public:
 
 void SystemNotifier::initialize()
 {
-    PowerEventFilter* filter = new PowerEventFilter;
+    d = new SystemNotifierPrivate;
 #if QT_VERSION >= 0x050000
-    QAbstractEventDispatcher::instance()->installNativeEventFilter(filter);
+    QAbstractEventDispatcher::instance()->installNativeEventFilter(d);
 #else
-    filter->prev = QAbstractEventDispatcher::instance()->setEventFilter(PowerEventFilter::nativeEventFilter);
+    d->prev = QAbstractEventDispatcher::instance()->setEventFilter(SystemNotifierPrivate::nativeEventFilter);
 #endif // QT_VERSION
-    d = filter;
 }
 
 void SystemNotifier::uninitialize()
 {
-    PowerEventFilter* filter = static_cast<PowerEventFilter*>(d);
     if (QAbstractEventDispatcher::instance())
 #if QT_VERSION >= 0x050000
-        QAbstractEventDispatcher::instance()->removeNativeEventFilter(filter);
+        QAbstractEventDispatcher::instance()->removeNativeEventFilter(d);
 #else
-        QAbstractEventDispatcher::instance()->setEventFilter(filter->prev);
+        QAbstractEventDispatcher::instance()->setEventFilter(d->prev);
 #endif // QT_VERSION
-    delete filter;
+    delete d;
 }
