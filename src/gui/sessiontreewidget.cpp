@@ -49,7 +49,7 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     d.itemResetBlocked = false;
 
     d.colors[Active] = palette().color(QPalette::WindowText);
-    d.colors[Inactive] = palette().color(QPalette::Disabled, QPalette::Highlight);
+    d.colors[Inactive] = palette().color(QPalette::Disabled, QPalette::WindowText);
     d.colors[Highlight] = palette().color(QPalette::Highlight);
 
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)),
