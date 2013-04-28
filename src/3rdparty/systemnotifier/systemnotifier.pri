@@ -11,10 +11,12 @@ SOURCES += $$PWD/systemnotifier.cpp
 
 mac:OBJECTIVE_SOURCES += $$PWD/systemnotifier_mac.mm
 else:win32:SOURCES += $$PWD/systemnotifier_win.cpp
-else:SOURCES += $$PWD/systemnotifier_dummy.cpp
+else:SOURCES += $$PWD/systemnotifier_dbus.cpp
 
 mac {
     LIBS += -framework SystemConfiguration
     HEADERS += $$PWD/Reachability.h
     OBJECTIVE_SOURCES += $$PWD/Reachability.m
+} else:unix {
+    QT += dbus
 }
