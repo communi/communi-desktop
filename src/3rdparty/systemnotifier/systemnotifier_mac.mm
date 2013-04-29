@@ -1,5 +1,5 @@
 #include "systemnotifier.h"
-#include "Reachability.h"
+#include "mac/Reachability.h"
 #include <Cocoa/Cocoa.h>
 
 @interface CocoaSystemNotifier : NSObject
