@@ -123,7 +123,7 @@ void LineEditor::paintEvent(QPaintEvent* event)
 
 void LineEditor::onSend()
 {
-    const QString input = text();
+    const QString input = text().trimmed();
     if (!input.isEmpty()) {
         clear();
         emit send(input);
