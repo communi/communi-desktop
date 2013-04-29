@@ -433,6 +433,12 @@ void MessageView::receiveMessage(IrcMessage* message)
         }
         case IrcMessage::Numeric:
             switch (static_cast<IrcNumericMessage*>(message)->code()) {
+                case Irc::RPL_WELCOME: {
+                    int blocks = d.textBrowser->document()->blockCount();
+                    if (blocks > 10) // TODO
+                        d.textBrowser->addMarker(blocks);
+                    break;
+                }
                 case Irc::RPL_NOTOPIC:
                     d.topic.clear();
                     d.topicLabel->setText(tr("-"));

@@ -15,6 +15,7 @@
 #include "messageformatter.h"
 #include <irctextformat.h>
 #include <ircpalette.h>
+#include <ircsession.h>
 #include <ircsender.h>
 #include <irc.h>
 #include <QHash>
@@ -26,6 +27,7 @@ Q_GLOBAL_STATIC(IrcTextFormat, irc_text_format)
 
 MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
 {
+    d.conns = 0;
     d.joins = 0;
     d.highlight = false;
     d.timeStamp = false;
@@ -283,18 +285,24 @@ QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* message) const
 QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
 {
     d.messageType = IrcMessage::Numeric;
-    if (message->code() == Irc::RPL_WELCOME)
+    if (message->code() == Irc::RPL_WELCOME) {
+        ++d.conns;
         d.receivedCodes.clear();
+    }
     d.receivedCodes += message->code();
 
     if (message->code() < 300)
-        return tr("[INFO] %1").arg(formatHtml(MID_(1)));
+        return d.conns <= 1 ? tr("[INFO] %1").arg(formatHtml(MID_(1))) : QString();
 
     switch (message->code()) {
         case Irc::RPL_MOTDSTART:
         case Irc::RPL_MOTD:
-            return tr("[MOTD] %1").arg(formatHtml(MID_(1)));
+            if (d.conns <= 1)
+                return tr("[MOTD] %1").arg(formatHtml(MID_(1)));
+            return QString();
         case Irc::RPL_ENDOFMOTD:
+            if (d.conns > 1)
+                return tr("! %1 reconnected").arg(message->session()->nickName());
             return QString();
         case Irc::RPL_AWAY:
             return tr("! %1 is away (%2)").arg(P_(1), MID_(2));
