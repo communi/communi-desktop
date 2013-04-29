@@ -22,7 +22,7 @@
 #endif // QT_NO_OPENSSL
 
 Session::Session(QObject* parent) : IrcSession(parent),
-    m_info(this), m_quit(false), m_timestamp(0), m_meter(new IrcLagMeter(this))
+    m_info(this), m_quit(false), m_timestamp(0), m_lag(new IrcLagTimer(this))
 {
     installMessageFilter(this);
 
@@ -60,9 +60,9 @@ QString Session::network() const
     return IrcSessionInfo(this).network();
 }
 
-IrcLagMeter* Session::lagMeter() const
+IrcLagTimer* Session::lagTimer() const
 {
-    return m_meter;
+    return m_lag;
 }
 
 int Session::autoReconnectDelay() const

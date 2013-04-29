@@ -19,7 +19,7 @@
 #include <QTimer>
 #include <IrcSession>
 #include <IrcCommand>
-#include <IrcLagMeter>
+#include <IrcLagTimer>
 #include <QStringList>
 #include <IrcSessionInfo>
 #include <QAbstractSocket>
@@ -47,7 +47,7 @@ public:
 
     QString network() const;
 
-    IrcLagMeter* lagMeter() const;
+    IrcLagTimer* lagTimer() const;
 
     int autoReconnectDelay() const;
     void setAutoReconnectDelay(int delay);
@@ -104,7 +104,7 @@ private:
     QStringList m_alternateNicks;
     long m_timestamp;
     QElapsedTimer m_timestamper;
-    IrcLagMeter* m_meter;
+    IrcLagTimer* m_lag;
 };
 
 #endif // SESSION_H

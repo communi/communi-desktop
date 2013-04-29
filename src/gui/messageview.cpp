@@ -59,8 +59,8 @@ MessageView::MessageView(ViewInfo::Type type, Session* session, QWidget* parent)
     d.session = session;
     connect(d.session, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
     connect(d.session, SIGNAL(connectedChanged(bool)), this, SIGNAL(activeChanged()));
-    connect(d.session->lagMeter(), SIGNAL(lagChanged(int)), d.lineEditor, SLOT(setLag(int)));
-    d.lineEditor->setLag(d.session->lagMeter()->lag());
+    connect(d.session->lagTimer(), SIGNAL(lagChanged(int)), d.lineEditor, SLOT(setLag(int)));
+    d.lineEditor->setLag(d.session->lagTimer()->lag());
     if (type == ViewInfo::Server)
         connect(d.session, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onSocketError()));
 
