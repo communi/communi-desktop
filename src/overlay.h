@@ -47,6 +47,7 @@ private slots:
 
 private:
     struct Private {
+        bool forwarding;
         QToolButton* button;
         QPointer<QWidget> prevParent;
     } d;

@@ -14,12 +14,14 @@
 
 #include "overlay.h"
 #include <QResizeEvent>
+#include <QApplication>
 #include <QMovie>
 
 Overlay::Overlay(QWidget* parent) : QLabel(parent)
 {
     d.button = 0;
     d.prevParent = 0;
+    d.forwarding = false;
 
     d.button = new QToolButton(this);
     d.button->setObjectName("reconnectButton");
@@ -56,12 +58,16 @@ void Overlay::setBusy(bool busy)
 
 bool Overlay::hasRefresh() const
 {
-    return d.button;
+    return d.button->isVisible();
 }
 
 void Overlay::setRefresh(bool enabled)
 {
     d.button->setVisible(enabled);
+    if (enabled)
+        qApp->installEventFilter(this);
+    else
+        qApp->removeEventFilter(this);
 }
 
 bool Overlay::event(QEvent* event)
@@ -73,9 +79,16 @@ bool Overlay::event(QEvent* event)
 
 bool Overlay::eventFilter(QObject* object, QEvent* event)
 {
-    Q_UNUSED(object);
-    if (event->type() == QEvent::Resize)
+    if (object == parentWidget() && event->type() == QEvent::Resize) {
         relayout();
+    } else if (d.button->isVisible() && (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)) {
+        if (!d.forwarding) {
+            d.forwarding = true;
+            qApp->sendEvent(d.button, event);
+            d.forwarding = false;
+            return true;
+        }
+    }
     return false;
 }
 
