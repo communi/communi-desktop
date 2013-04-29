@@ -1,4 +1,5 @@
 #include "systemnotifier.h"
+#include "win/networknotifier.h"
 
 #include <qt_windows.h>
 #include <qabstracteventdispatcher.h>
@@ -9,7 +10,7 @@
 
 class SystemNotifierPrivate
 #if QT_VERSION >= 0x050000
-                       : public QAbstractNativeEventFilter
+                            : public QAbstractNativeEventFilter
 #endif
 {
 public:
@@ -37,6 +38,7 @@ public:
 #if QT_VERSION < 0x050000
     QAbstractEventDispatcher::EventFilter prev;
 #endif
+    NetworkNotifier network;
 };
 
 void SystemNotifier::initialize()
@@ -47,6 +49,9 @@ void SystemNotifier::initialize()
 #else
     d->prev = QAbstractEventDispatcher::instance()->setEventFilter(SystemNotifierPrivate::nativeEventFilter);
 #endif // QT_VERSION
+
+    connect(&d->network, SIGNAL(online()), this, SIGNAL(online()));
+    connect(&d->network, SIGNAL(offline()), this, SIGNAL(offline()));
 }
 
 void SystemNotifier::uninitialize()

@@ -19,4 +19,7 @@ mac {
     OBJECTIVE_SOURCES += $$PWD/Reachability.m
 } else:unix {
     QT += dbus
+} else:win32 {
+    HEADERS += $$PWD/win/networknotifier.h
+    SOURCES += $$PWD/win/networknotifier.cpp
 }
