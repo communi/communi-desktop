@@ -26,8 +26,10 @@ Overlay::Overlay(QWidget* parent) : QLabel(parent)
     d.button->setFixedSize(32, 32);
     connect(d.button, SIGNAL(clicked()), this, SIGNAL(refresh()));
 
+    setFocusProxy(d.button);
+    setFocusPolicy(Qt::StrongFocus);
+
     setVisible(false);
-    setEnabled(false);
     setAutoFillBackground(true);
     setAlignment(Qt::AlignCenter);
     setAttribute(Qt::WA_TransparentForMouseEvents);

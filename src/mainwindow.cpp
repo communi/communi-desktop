@@ -239,6 +239,7 @@ void MainWindow::editSession(Session* session)
     wizard.setConnection(session->toConnection());
     if (wizard.exec())
         session->initFrom(wizard.connection());
+    updateOverlay();
 }
 
 void MainWindow::applySettings(const Settings& settings)
@@ -375,6 +376,8 @@ void MainWindow::updateOverlay()
         overlay->setBusy(session->isActive() && !session->isConnected());
         overlay->setRefresh(!session->isActive());
         overlay->setVisible(!session->isConnected());
+        if (!session->isConnected())
+            overlay->setFocus();
     }
 }
 

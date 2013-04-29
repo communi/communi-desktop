@@ -83,6 +83,7 @@ private slots:
     void onAnchorClicked(const QUrl& link);
     void completeCommand(const QString& command);
     void onTopicEdited(const QString& topic);
+    void onSessionStatusChanged();
     void onSocketError();
 
 private:
