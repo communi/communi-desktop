@@ -123,9 +123,14 @@ void LineEditor::paintEvent(QPaintEvent* event)
 
 void LineEditor::onSend()
 {
-    const QString input = text().trimmed();
-    if (!input.isEmpty()) {
-        clear();
-        emit send(input);
+    bool ignore = true;
+    const QStringList lines = text().split(QRegExp("[\\r\\n]"), QString::SkipEmptyParts);
+    foreach (const QString& line, lines) {
+        if (!line.trimmed().isEmpty()) {
+            ignore = false;
+            emit send(line);
+        }
     }
+    if (!ignore)
+        clear();
 }

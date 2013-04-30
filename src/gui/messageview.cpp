@@ -211,44 +211,41 @@ void MessageView::showHelp(const QString& text, bool error)
 
 void MessageView::sendMessage(const QString& message)
 {
-    QStringList lines = message.split(QRegExp("[\\r\\n]"), QString::SkipEmptyParts);
-    foreach (const QString& line, lines) {
-        IrcCommand* cmd = CommandParser::parseCommand(d.receiver, line);
-        if (cmd) {
-            if (cmd->type() == IrcCommand::Custom) {
-                QString command = cmd->parameters().value(0);
-                QStringList params = cmd->parameters().mid(1);
-                if (command == "CLEAR") {
-                    d.textBrowser->clear();
-                } else if (command == "MSG") {
-                    // support "/msg foo /cmd" without executing /cmd
-                    QString msg = QStringList(params.mid(1)).join(" ");
-                    if (msg.startsWith('/') && !msg.startsWith("//") && !msg.startsWith("/ "))
-                        msg.prepend('/');
-                    emit messaged(params.value(0), msg);
-                } else if (command == "QUERY") {
-                    emit queried(params.value(0));
-                }
-                delete cmd;
-            } else {
-                d.session->sendCommand(cmd);
-
-                if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction || cmd->type() == IrcCommand::Notice) {
-                    IrcMessage* msg = IrcMessage::fromData(":" + d.session->nickName().toUtf8() + " " + cmd->toString().toUtf8(), d.session);
-                    receiveMessage(msg);
-                    delete msg;
-
-                    // highlight as gray until acked
-                    d.session->sendData("PING _communi_msg_" + d.receiver.toUtf8() + "_" + QByteArray::number(d.sentId));
-                    QTextBlock block = d.textBrowser->document()->lastBlock();
-                    block.setUserState(d.sentId);
-                    d.highlighter->rehighlightBlock(block);
-                    d.sentId++;
-                }
+    IrcCommand* cmd = CommandParser::parseCommand(d.receiver, message);
+    if (cmd) {
+        if (cmd->type() == IrcCommand::Custom) {
+            QString command = cmd->parameters().value(0);
+            QStringList params = cmd->parameters().mid(1);
+            if (command == "CLEAR") {
+                d.textBrowser->clear();
+            } else if (command == "MSG") {
+                // support "/msg foo /cmd" without executing /cmd
+                QString msg = QStringList(params.mid(1)).join(" ");
+                if (msg.startsWith('/') && !msg.startsWith("//") && !msg.startsWith("/ "))
+                    msg.prepend('/');
+                emit messaged(params.value(0), msg);
+            } else if (command == "QUERY") {
+                emit queried(params.value(0));
             }
+            delete cmd;
         } else {
-            showHelp(line, true);
+            d.session->sendCommand(cmd);
+
+            if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction || cmd->type() == IrcCommand::Notice) {
+                IrcMessage* msg = IrcMessage::fromData(":" + d.session->nickName().toUtf8() + " " + cmd->toString().toUtf8(), d.session);
+                receiveMessage(msg);
+                delete msg;
+
+                // highlight as gray until acked
+                d.session->sendData("PING _communi_msg_" + d.receiver.toUtf8() + "_" + QByteArray::number(d.sentId));
+                QTextBlock block = d.textBrowser->document()->lastBlock();
+                block.setUserState(d.sentId);
+                d.highlighter->rehighlightBlock(block);
+                d.sentId++;
+            }
         }
+    } else {
+        showHelp(message, true);
     }
 }
 
