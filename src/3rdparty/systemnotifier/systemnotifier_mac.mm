@@ -55,16 +55,14 @@ public:
 void SystemNotifier::initialize()
 {
     d = new SystemNotifierPrivate;
-
     d->notifier = [[CocoaSystemNotifier alloc] init];
-    CFRetain(d->notifier);
-    [d->notifier release];
-
     d->reachability = [[Reachability reachabilityForInternetConnection] retain];
     [d->reachability startNotifier];
 }
 
 void SystemNotifier::uninitialize()
 {
-    CFRelease(d->notifier);
+    [d->notifier release];
+    [d->reachability release];
+    delete d;
 }
