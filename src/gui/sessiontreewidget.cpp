@@ -172,7 +172,7 @@ QColor SessionTreeWidget::currentBadgeColor() const
 {
     if (!d.highlightColor.isValid() || d.highlightColor != d.colors.value(Active))
         return d.colors.value(Highlight).lighter(125);
-    return qApp->palette().color(QPalette::Dark);
+    return qApp->palette().color(QPalette::AlternateBase).darker(125);
 }
 
 QColor SessionTreeWidget::currentHighlightColor() const

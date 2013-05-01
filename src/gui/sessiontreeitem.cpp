@@ -67,7 +67,7 @@ QVariant SessionTreeItem::data(int column, int role) const
         SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget());
         if (d.view->isActive() && d.highlighted)
             return tw->currentBadgeColor();
-        return qApp->palette().color(QPalette::Dark);
+        return qApp->palette().color(QPalette::AlternateBase).darker(125);
     } else if (role == HighlightRole) {
         return d.highlighted;
     }
