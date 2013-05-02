@@ -1,3 +1,6 @@
 [submodule "src/3rdparty/qtsystemnotifier"]
 	path = src/3rdparty/qtsystemnotifier
 	url = git://github.com/jpnurmi/qtsystemnofitier.git
+[submodule "src/3rdparty/communi"]
+	path = src/3rdparty/communi
+	url = git://github.com/communi/communi.git

@@ -28,5 +28,6 @@ SOURCES += $$PWD/trayicon.cpp
 include(gui/gui.pri)
 include(shared/shared.pri)
 include(wizard/wizard.pri)
+include(3rdparty/communi/src/src.pri)
 include(3rdparty/qtdocktile/qtdocktile.pri)
 include(3rdparty/qtsystemnotifier/systemnotifier.pri)
