@@ -4,13 +4,6 @@ compiler:
   - clang
 before_install:
   - git submodule update --init --recursive
-before_script:
-  - git clone --depth 50 git://github.com/communi/communi.git
-  - cd communi
-  - ./configure -nomake tests -nomake examples
-  - make
-  - sudo make install
-  - cd ..
 script:
   - qmake -v
   - qmake
