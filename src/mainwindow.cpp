@@ -209,9 +209,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
         // let the sessions close in the background
         hide();
         event->ignore();
-        QTimer::singleShot(1000, this, SLOT(close()));
-    } else {
-        QMainWindow::closeEvent(event);
+        QTimer::singleShot(1000, qApp, SLOT(quit()));
     }
 }
 
