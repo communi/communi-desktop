@@ -101,6 +101,9 @@ void MessageHandler::handleMessage(IrcMessage* message)
         case IrcMessage::Mode:
             handleModeMessage(static_cast<IrcModeMessage*>(message));
             break;
+        case IrcMessage::Names:
+            handleNamesMessage(static_cast<IrcNamesMessage*>(message));
+            break;
         case IrcMessage::Nick:
             handleNickMessage(static_cast<IrcNickMessage*>(message));
             break;
@@ -154,6 +157,11 @@ void MessageHandler::handleModeMessage(IrcModeMessage* message)
         sendMessage(message, d.defaultReceiver);
     else
         sendMessage(message, message->target());
+}
+
+void MessageHandler::handleNamesMessage(IrcNamesMessage* message)
+{
+    sendMessage(message, message->channel());
 }
 
 void MessageHandler::handleNickMessage(IrcNickMessage* message)

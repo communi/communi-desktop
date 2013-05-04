@@ -56,6 +56,7 @@ protected:
     void handleJoinMessage(IrcJoinMessage* message);
     void handleKickMessage(IrcKickMessage* message);
     void handleModeMessage(IrcModeMessage* message);
+    void handleNamesMessage(IrcNamesMessage* message);
     void handleNickMessage(IrcNickMessage* message);
     void handleNoticeMessage(IrcNoticeMessage* message);
     void handleNumericMessage(IrcNumericMessage* message);

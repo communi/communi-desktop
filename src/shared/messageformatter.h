@@ -66,6 +66,7 @@ protected:
     QString formatJoinMessage(IrcJoinMessage* message) const;
     QString formatKickMessage(IrcKickMessage* message) const;
     QString formatModeMessage(IrcModeMessage* message) const;
+    QString formatNamesMessage(IrcNamesMessage* message) const;
     QString formatNickMessage(IrcNickMessage* message) const;
     QString formatNoticeMessage(IrcNoticeMessage* message) const;
     QString formatNumericMessage(IrcNumericMessage* message) const;

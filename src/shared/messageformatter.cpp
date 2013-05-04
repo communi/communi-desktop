@@ -147,6 +147,9 @@ QString MessageFormatter::formatMessage(IrcMessage* message) const
         case IrcMessage::Mode:
             formatted = formatModeMessage(static_cast<IrcModeMessage*>(message));
             break;
+        case IrcMessage::Names:
+            formatted = formatNamesMessage(static_cast<IrcNamesMessage*>(message));
+            break;
         case IrcMessage::Nick:
             formatted = formatNickMessage(static_cast<IrcNickMessage*>(message));
             break;
@@ -245,6 +248,14 @@ QString MessageFormatter::formatModeMessage(IrcModeMessage* message) const
     d.messageType = IrcMessage::Mode;
     const QString sender = formatSender(message->sender());
     return tr("! %1 sets mode %2 %3").arg(sender, message->mode(), message->argument());
+}
+
+QString MessageFormatter::formatNamesMessage(IrcNamesMessage* message) const
+{
+    d.messageType = IrcMessage::Names;
+    if (d.joins < 2 && !message->names().isEmpty())
+        return tr("! %1 has %2 users").arg(message->channel()).arg(message->names().count());
+    return QString();
 }
 
 QString MessageFormatter::formatNickMessage(IrcNickMessage* message) const
@@ -364,17 +375,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
             return tr("! %1").arg(P_(1));
 
         case Irc::RPL_NAMREPLY:
-            if (d.joins < 2 && d.receivedCodes.contains(Irc::RPL_ENDOFNAMES)) {
-                int count = message->parameters().count();
-                QString channel = message->parameters().value(count - 2);
-                QStringList names = message->parameters().value(count - 1).split(" ", QString::SkipEmptyParts);
-                return tr("! %1 users: %2").arg(channel).arg(names.join(" "));
-            }
-            return QString();
-
         case Irc::RPL_ENDOFNAMES:
-            if (d.joins < 2 && !d.users.isEmpty() && !d.receivedCodes.mid(0, d.receivedCodes.count() - 1).contains(Irc::RPL_ENDOFNAMES))
-                return tr("! %1 has %2 users").arg(message->parameters().value(1)).arg(d.users.count());
             return QString();
 
         default:
