@@ -21,7 +21,7 @@
 #include <IrcMessage>
 
 class Session;
-class MessageReceiver;
+class MessageView;
 
 class MessageHandler : public QObject
 {
@@ -34,22 +34,22 @@ public:
     Session* session() const;
     void setSession(Session* session);
 
-    MessageReceiver* defaultReceiver() const;
-    void setDefaultReceiver(MessageReceiver* receiver);
+    MessageView* defaultView() const;
+    void setDefaultView(MessageView* view);
 
-    MessageReceiver* currentReceiver() const;
-    void setCurrentReceiver(MessageReceiver* receiver);
+    MessageView* currentView() const;
+    void setCurrentView(MessageView* view);
 
-    void addReceiver(const QString& name, MessageReceiver* receiver);
-    void removeReceiver(const QString& name);
+    void addView(const QString& name, MessageView* view);
+    void removeView(const QString& name);
 
 public slots:
     void handleMessage(IrcMessage* message);
 
 signals:
-    void receiverToBeAdded(const QString& name);
-    void receiverToBeRenamed(const QString& from, const QString& to);
-    void receiverToBeRemoved(const QString& name);
+    void viewToBeAdded(const QString& name);
+    void viewToBeRenamed(const QString& from, const QString& to);
+    void viewToBeRemoved(const QString& name);
 
 protected:
     void handleInviteMessage(IrcInviteMessage* message);
@@ -67,15 +67,15 @@ protected:
     void handleTopicMessage(IrcTopicMessage* message);
     void handleUnknownMessage(IrcMessage* message);
 
-    void sendMessage(IrcMessage* message, MessageReceiver* receiver);
+    void sendMessage(IrcMessage* message, MessageView* view);
     void sendMessage(IrcMessage* message, const QString& receiver);
 
 private:
     struct Private {
         QPointer<Session> session;
-        MessageReceiver* defaultReceiver;
-        MessageReceiver* currentReceiver;
-        QHash<QString, MessageReceiver*> receivers;
+        MessageView* defaultView;
+        MessageView* currentView;
+        QHash<QString, MessageView*> views;
     } d;
 };
 

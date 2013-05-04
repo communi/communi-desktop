@@ -13,7 +13,7 @@
 */
 
 #include "messagehandler.h"
-#include "messagereceiver.h"
+#include "messageview.h"
 #include "session.h"
 #include <qabstractsocket.h>
 #include <qvariant.h>
@@ -22,16 +22,16 @@
 
 MessageHandler::MessageHandler(QObject* parent) : QObject(parent)
 {
-    d.defaultReceiver = 0;
-    d.currentReceiver = 0;
+    d.defaultView = 0;
+    d.currentView = 0;
     setSession(qobject_cast<Session*>(parent));
 }
 
 MessageHandler::~MessageHandler()
 {
-    d.defaultReceiver = 0;
-    d.currentReceiver = 0;
-    d.receivers.clear();
+    d.defaultView = 0;
+    d.currentView = 0;
+    d.views.clear();
 }
 
 Session* MessageHandler::session() const
@@ -52,37 +52,37 @@ void MessageHandler::setSession(Session* session)
     }
 }
 
-MessageReceiver* MessageHandler::defaultReceiver() const
+MessageView* MessageHandler::defaultView() const
 {
-    return d.defaultReceiver;
+    return d.defaultView;
 }
 
-void MessageHandler::setDefaultReceiver(MessageReceiver* receiver)
+void MessageHandler::setDefaultView(MessageView* view)
 {
-    d.defaultReceiver = receiver;
+    d.defaultView = view;
 }
 
-MessageReceiver* MessageHandler::currentReceiver() const
+MessageView* MessageHandler::currentView() const
 {
-    return d.currentReceiver;
+    return d.currentView;
 }
 
-void MessageHandler::setCurrentReceiver(MessageReceiver* receiver)
+void MessageHandler::setCurrentView(MessageView* view)
 {
-    d.currentReceiver = receiver;
+    d.currentView = view;
 }
 
-void MessageHandler::addReceiver(const QString& name, MessageReceiver* receiver)
+void MessageHandler::addView(const QString& name, MessageView* view)
 {
-    d.receivers.insert(name.toLower(), receiver);
+    d.views.insert(name.toLower(), view);
 }
 
-void MessageHandler::removeReceiver(const QString& name)
+void MessageHandler::removeView(const QString& name)
 {
     const QString lower = name.toLower();
-    if (d.receivers.contains(lower)) {
-        d.receivers.remove(lower);
-        emit receiverToBeRemoved(name);
+    if (d.views.contains(lower)) {
+        d.views.remove(lower);
+        emit viewToBeRemoved(name);
     }
 }
 
@@ -138,7 +138,7 @@ void MessageHandler::handleMessage(IrcMessage* message)
 
 void MessageHandler::handleInviteMessage(IrcInviteMessage* message)
 {
-    sendMessage(message, d.currentReceiver);
+    sendMessage(message, d.currentView);
 }
 
 void MessageHandler::handleJoinMessage(IrcJoinMessage* message)
@@ -154,7 +154,7 @@ void MessageHandler::handleKickMessage(IrcKickMessage* message)
 void MessageHandler::handleModeMessage(IrcModeMessage* message)
 {
     if (message->sender().name() == message->target())
-        sendMessage(message, d.defaultReceiver);
+        sendMessage(message, d.defaultView);
     else
         sendMessage(message, message->target());
 }
@@ -167,13 +167,13 @@ void MessageHandler::handleNamesMessage(IrcNamesMessage* message)
 void MessageHandler::handleNickMessage(IrcNickMessage* message)
 {
     QString nick = message->sender().name().toLower();
-    foreach (MessageReceiver* receiver, d.receivers) {
-        if (receiver->hasUser(nick))
-            receiver->receiveMessage(message);
-        if (!nick.compare(receiver->receiver(), Qt::CaseInsensitive)) {
-            emit receiverToBeRenamed(receiver->receiver(), message->nick());
-            MessageReceiver* object = d.receivers.take(nick);
-            d.receivers.insert(message->nick(), object);
+    foreach (MessageView* view, d.views) {
+        if (view->hasUser(nick))
+            view->receiveMessage(message);
+        if (!nick.compare(view->receiver(), Qt::CaseInsensitive)) {
+            emit viewToBeRenamed(view->receiver(), message->nick());
+            MessageView* object = d.views.take(nick);
+            d.views.insert(message->nick(), object);
         }
     }
 }
@@ -181,11 +181,11 @@ void MessageHandler::handleNickMessage(IrcNickMessage* message)
 void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
 {
     if (!d.session->isConnected() || message->target() == "*")
-        sendMessage(message, d.defaultReceiver);
-    else if (MessageReceiver* receiver = d.receivers.value(message->sender().name().toLower()))
-        sendMessage(message, receiver);
+        sendMessage(message, d.defaultView);
+    else if (MessageView* view = d.views.value(message->sender().name().toLower()))
+        sendMessage(message, view);
     else if (message->target() == d.session->nickName())
-        sendMessage(message, d.currentReceiver);
+        sendMessage(message, d.currentView);
     else
         sendMessage(message, message->target());
 }
@@ -193,7 +193,7 @@ void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
 void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
 {
     if (QByteArray(Irc::toString(message->code())).startsWith("ERR_")) {
-        sendMessage(message, d.currentReceiver);
+        sendMessage(message, d.currentView);
         return;
     }
 
@@ -220,7 +220,7 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
         case Irc::RPL_INVITING:
         case Irc::RPL_VERSION:
         case Irc::RPL_TIME:
-            sendMessage(message, d.currentReceiver);
+            sendMessage(message, d.currentView);
             break;
 
         case Irc::RPL_ENDOFBANLIST:
@@ -245,30 +245,30 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
         case Irc::RPL_NAMREPLY: {
             const int count = message->parameters().count();
             const QString channel = message->parameters().value(count - 2);
-            MessageReceiver* receiver = d.receivers.value(channel.toLower());
-            if (receiver)
-                receiver->receiveMessage(message);
-            else if (d.currentReceiver)
-                d.currentReceiver->receiveMessage(message);
+            MessageView* view = d.views.value(channel.toLower());
+            if (view)
+                view->receiveMessage(message);
+            else if (d.currentView)
+                d.currentView->receiveMessage(message);
             break;
         }
 
         case Irc::RPL_ENDOFNAMES:
-            if (d.receivers.contains(message->parameters().value(1).toLower()))
+            if (d.views.contains(message->parameters().value(1).toLower()))
                 sendMessage(message, message->parameters().value(1));
             break;
 
         default:
-            sendMessage(message, d.defaultReceiver);
+            sendMessage(message, d.defaultView);
             break;
     }
 }
 
 void MessageHandler::handlePartMessage(IrcPartMessage* message)
 {
-    MessageReceiver* receiver = d.receivers.value(message->channel().toLower());
-    if (receiver)
-        sendMessage(message, receiver);
+    MessageView* view = d.views.value(message->channel().toLower());
+    if (view)
+        sendMessage(message, view);
 }
 
 void MessageHandler::handlePongMessage(IrcPongMessage* message)
@@ -284,13 +284,13 @@ void MessageHandler::handlePongMessage(IrcPongMessage* message)
             return;
         }
     }
-    sendMessage(message, d.currentReceiver);
+    sendMessage(message, d.currentView);
 }
 
 void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
 {
     if (message->isRequest())
-        sendMessage(message, d.currentReceiver);
+        sendMessage(message, d.currentView);
     else if (message->target() == d.session->nickName())
         sendMessage(message, message->sender().name());
     else
@@ -300,9 +300,9 @@ void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
 void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
 {
     QString nick = message->sender().name();
-    foreach (MessageReceiver* receiver, d.receivers) {
-        if (receiver->hasUser(nick))
-            receiver->receiveMessage(message);
+    foreach (MessageView* view, d.views) {
+        if (view->hasUser(nick))
+            view->receiveMessage(message);
     }
 }
 
@@ -313,19 +313,19 @@ void MessageHandler::handleTopicMessage(IrcTopicMessage* message)
 
 void MessageHandler::handleUnknownMessage(IrcMessage* message)
 {
-    sendMessage(message, d.defaultReceiver);
+    sendMessage(message, d.defaultView);
 }
 
-void MessageHandler::sendMessage(IrcMessage* message, MessageReceiver* receiver)
+void MessageHandler::sendMessage(IrcMessage* message, MessageView* view)
 {
-    if (receiver)
-        receiver->receiveMessage(message);
+    if (view)
+        view->receiveMessage(message);
 }
 
 void MessageHandler::sendMessage(IrcMessage* message, const QString& receiver)
 {
     QString lower = receiver.toLower();
-    if (!d.receivers.contains(lower))
-        emit receiverToBeAdded(receiver);
-    sendMessage(message, d.receivers.value(lower));
+    if (!d.views.contains(lower))
+        emit viewToBeAdded(receiver);
+    sendMessage(message, d.views.value(lower));
 }

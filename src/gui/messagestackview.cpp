@@ -23,13 +23,13 @@ MessageStackView::MessageStackView(Session* session, QWidget* parent) : QStacked
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(activateView(int)));
 
-    connect(&d.handler, SIGNAL(receiverToBeAdded(QString)), this, SLOT(addView(QString)));
-    connect(&d.handler, SIGNAL(receiverToBeRemoved(QString)), this, SLOT(removeView(QString)));
-    connect(&d.handler, SIGNAL(receiverToBeRenamed(QString, QString)), this, SLOT(renameView(QString, QString)));
+    connect(&d.handler, SIGNAL(viewToBeAdded(QString)), this, SLOT(addView(QString)));
+    connect(&d.handler, SIGNAL(viewToBeRemoved(QString)), this, SLOT(removeView(QString)));
+    connect(&d.handler, SIGNAL(viewToBeRenamed(QString, QString)), this, SLOT(renameView(QString, QString)));
 
     MessageView* view = addView(d.handler.session()->host());
-    d.handler.setDefaultReceiver(view);
-    d.handler.setCurrentReceiver(view);
+    d.handler.setDefaultView(view);
+    d.handler.setCurrentView(view);
     setCurrentWidget(view);
 }
 
@@ -79,7 +79,7 @@ MessageView* MessageStackView::createView(ViewInfo::Type type, const QString& re
     connect(view, SIGNAL(queried(QString)), this, SLOT(openView(QString)));
     connect(view, SIGNAL(messaged(QString,QString)), this, SLOT(sendMessage(QString,QString)));
 
-    d.handler.addReceiver(receiver, view);
+    d.handler.addView(receiver, view);
     d.views.insert(receiver.toLower(), view);
     addWidget(view);
     d.viewModel.setStringList(d.viewModel.stringList() << receiver);
@@ -103,7 +103,7 @@ void MessageStackView::removeView(const QString& receiver)
         if (views.removeOne(receiver))
             d.viewModel.setStringList(views);
         emit viewRemoved(view);
-        d.handler.removeReceiver(view->receiver());
+        d.handler.removeView(view->receiver());
     }
 }
 
@@ -117,7 +117,7 @@ void MessageStackView::closeView(int index)
             else if (view->viewType() == ViewInfo::Channel)
                 d.handler.session()->sendCommand(IrcCommand::createPart(view->receiver()));
         }
-        d.handler.removeReceiver(view->receiver());
+        d.handler.removeView(view->receiver());
     }
 }
 
@@ -144,7 +144,7 @@ void MessageStackView::activateView(int index)
 {
     MessageView* view = viewAt(index);
     if (view && isVisible()) {
-        d.handler.setCurrentReceiver(view);
+        d.handler.setCurrentView(view);
         view->setFocus();
         emit viewActivated(view);
     }

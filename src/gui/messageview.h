@@ -16,7 +16,6 @@
 #define MESSAGEVIEW_H
 
 #include "ui_messageview.h"
-#include "messagereceiver.h"
 #include "messageformatter.h"
 #include "settings.h"
 #include "viewinfo.h"
@@ -28,7 +27,7 @@ class MenuFactory;
 class IrcMessage;
 class Session;
 
-class MessageView : public QWidget, public MessageReceiver
+class MessageView : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(bool active READ isActive NOTIFY activeChanged)
@@ -55,10 +54,13 @@ public:
     QByteArray saveSplitter() const;
     void restoreSplitter(const QByteArray& state);
 
+    bool hasUser(const QString& user) const;
+
 public slots:
     void showHelp(const QString& text, bool error = false);
     void sendMessage(const QString& message);
     void applySettings(const Settings& settings);
+    void receiveMessage(IrcMessage* message);
 
 signals:
     void activeChanged();
@@ -73,9 +75,6 @@ signals:
 protected:
     void hideEvent(QHideEvent* event);
     bool eventFilter(QObject* object, QEvent* event);
-
-    void receiveMessage(IrcMessage* message);
-    bool hasUser(const QString& user) const;
 
 private slots:
     void onEscPressed();
