@@ -97,7 +97,6 @@ private:
         QStringList users;
         QStringList highlights;
         QString timeStampFormat;
-        QList<int> receivedCodes;
         IrcMessage::Type messageType;
     } d;
 };

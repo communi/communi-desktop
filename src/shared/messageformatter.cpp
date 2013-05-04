@@ -137,8 +137,6 @@ QString MessageFormatter::formatMessage(IrcMessage* message) const
             formatted = formatInviteMessage(static_cast<IrcInviteMessage*>(message));
             break;
         case IrcMessage::Join:
-            if (message->flags() & IrcMessage::Own)
-                d.receivedCodes.clear();
             formatted = formatJoinMessage(static_cast<IrcJoinMessage*>(message));
             break;
         case IrcMessage::Kick:
@@ -296,11 +294,8 @@ QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* message) const
 QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message) const
 {
     d.messageType = IrcMessage::Numeric;
-    if (message->code() == Irc::RPL_WELCOME) {
+    if (message->code() == Irc::RPL_WELCOME)
         ++d.conns;
-        d.receivedCodes.clear();
-    }
-    d.receivedCodes += message->code();
 
     if (message->code() < 300)
         return d.conns <= 1 ? tr("[INFO] %1").arg(formatHtml(MID_(1))) : QString();
