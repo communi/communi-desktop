@@ -16,7 +16,6 @@
 #define MESSAGEVIEW_H
 
 #include "ui_messageview.h"
-#include "messageformatter.h"
 #include "settings.h"
 #include "viewinfo.h"
 #include <QPointer>
@@ -43,7 +42,6 @@ public:
     UserModel* userModel() const;
     Completer* completer() const;
     QTextBrowser* textBrowser() const;
-    MessageFormatter* messageFormatter() const;
 
     QString receiver() const;
     void setReceiver(const QString& receiver);
@@ -80,6 +78,8 @@ protected:
     bool eventFilter(QObject* object, QEvent* event);
 
 private slots:
+    void onConnected();
+    void onDisconnected();
     void onEscPressed();
     void onSplitterMoved();
     void onAnchorClicked(const QUrl& link);
@@ -93,15 +93,15 @@ private:
         ViewInfo::Type viewType;
         QString receiver;
         QPointer<Session> session;
-        MessageFormatter* formatter;
         SyntaxHighlighter* highlighter;
         Settings settings;
         QString topic;
-        bool joined;
         int sentId;
         QString awayMessage;
         QElapsedTimer awayReply;
         bool playback;
+        int joined, parted;
+        int connected, disconnected;
     } d;
 };
 

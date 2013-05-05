@@ -14,6 +14,7 @@
 
 #include "messageview.h"
 #include "syntaxhighlighter.h"
+#include "messageformatter.h"
 #include "commandparser.h"
 #include "menufactory.h"
 #include "completer.h"
@@ -28,21 +29,28 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QUrl>
+#include <irctextformat.h>
+#include <ircpalette.h>
 #include <ircmessage.h>
 #include <irccommand.h>
 #include <irc.h>
 
 static QStringListModel* command_model = 0;
+Q_GLOBAL_STATIC(IrcTextFormat, irc_text_format)
 
 MessageView::MessageView(ViewInfo::Type type, Session* session, QWidget* parent) :
     QWidget(parent)
 {
     d.setupUi(this);
     d.viewType = type;
-    d.joined = false;
     d.sentId = 1;
     d.awayReply.invalidate();
     d.playback = false;
+
+    d.joined = 0;
+    d.parted = 0;
+    d.connected = 0;
+    d.disconnected = 0;
 
     d.topicLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
     d.helpLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
@@ -54,7 +62,6 @@ MessageView::MessageView(ViewInfo::Type type, Session* session, QWidget* parent)
     d.textBrowser->viewport()->installEventFilter(this);
     connect(d.textBrowser, SIGNAL(anchorClicked(QUrl)), SLOT(onAnchorClicked(QUrl)));
 
-    d.formatter = new MessageFormatter(this);
     d.highlighter = new SyntaxHighlighter(d.textBrowser->document());
 
     d.session = session;
@@ -73,6 +80,9 @@ MessageView::MessageView(ViewInfo::Type type, Session* session, QWidget* parent)
         connect(d.listView, SIGNAL(doubleClicked(QString)), this, SIGNAL(queried(QString)));
         connect(d.listView, SIGNAL(commandRequested(IrcCommand*)), d.session, SLOT(sendCommand(IrcCommand*)));
         connect(d.topicLabel, SIGNAL(edited(QString)), this, SLOT(onTopicEdited(QString)));
+    } else if (type == ViewInfo::Server) {
+        connect(d.session, SIGNAL(connected()), this, SLOT(onConnected()));
+        connect(d.session, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
     }
 
     if (!command_model) {
@@ -81,6 +91,23 @@ MessageView::MessageView(ViewInfo::Type type, Session* session, QWidget* parent)
         CommandParser::addCustomCommand("CLEAR", "");
         CommandParser::addCustomCommand("QUERY", "<user>");
         CommandParser::addCustomCommand("MSG", "<usr/channel> <message...>");
+    }
+
+    static bool init = false;
+    if (!init) {
+        init = true;
+        IrcPalette palette;
+        QStringList colorNames = QStringList()
+                << "navy" << "green" << "red" << "maroon" << "purple" << "olive"
+                << "yellow" << "lime" << "teal" << "aqua" << "royalblue" << "fuchsia";
+        for (int i = IrcPalette::Blue; i <= IrcPalette::Pink; ++i) {
+            QColor color(colorNames.takeFirst());
+            color.setHsl(color.hue(), 100, 82);
+            palette.setColorName(i, color.name());
+        }
+        palette.setColorName(IrcPalette::Gray, "#606060");
+        palette.setColorName(IrcPalette::LightGray, "#808080");
+        irc_text_format()->setPalette(palette);
     }
 
     d.lineEditor->completer()->setUserModel(d.listView->userModel());
@@ -109,7 +136,7 @@ MessageView::~MessageView()
 bool MessageView::isActive() const
 {
     switch (d.viewType) {
-    case ViewInfo::Channel: return d.joined && d.session && d.session->isConnected();
+    case ViewInfo::Channel: return (d.joined > d.parted) && d.session && d.session->isConnected();
     case ViewInfo::Server: return d.session && d.session->isActive();
     case ViewInfo::Query: return d.session && d.session->isConnected();
     default: return false;
@@ -139,11 +166,6 @@ Completer* MessageView::completer() const
 QTextBrowser* MessageView::textBrowser() const
 {
     return d.textBrowser;
-}
-
-MessageFormatter* MessageView::messageFormatter() const
-{
-    return d.formatter;
 }
 
 QString MessageView::receiver() const
@@ -286,6 +308,16 @@ bool MessageView::eventFilter(QObject* object, QEvent* event)
     return QWidget::eventFilter(object, event);
 }
 
+void MessageView::onConnected()
+{
+    ++d.connected;
+}
+
+void MessageView::onDisconnected()
+{
+    ++d.disconnected;
+}
+
 void MessageView::onEscPressed()
 {
     d.helpLabel->hide();
@@ -327,8 +359,7 @@ void MessageView::onSessionStatusChanged()
 void MessageView::onSocketError()
 {
     QString msg = tr("[ERROR] %1").arg(d.session->socket()->errorString());
-    QString formatted = d.formatter->formatMessage(QDateTime::currentDateTime(), msg);
-    d.textBrowser->append(formatted);
+    d.textBrowser->append(MessageFormatter::formatLine(msg));
 }
 
 void MessageView::applySettings(const Settings& settings)
@@ -339,10 +370,6 @@ void MessageView::applySettings(const Settings& settings)
     foreach (const QString& command, CommandParser::availableCommands())
         commands += "/" + command;
     command_model->setStringList(commands);
-
-    d.formatter->setTimeStamp(settings.timeStamp);
-    d.formatter->setTimeStampFormat(settings.timeStampFormat);
-    d.formatter->setStripNicks(settings.stripNicks);
 
     // TODO: dedicated colors?
     d.highlighter->setHighlightColor(settings.colors.value(Settings::TimeStamp));
@@ -384,6 +411,8 @@ void MessageView::receiveMessage(IrcMessage* message)
         d.listView->processMessage(message);
 
     bool ignore = false;
+    MessageFormatter::Options options;
+
     switch (message->type()) {
         case IrcMessage::Private: {
             IrcSender sender = message->sender();
@@ -394,17 +423,23 @@ void MessageView::receiveMessage(IrcMessage* message)
                 else if (content == QLatin1String("Playback Complete."))
                     ignore = true;
             }
+            if (static_cast<IrcPrivateMessage*>(message)->message().contains(d.session->nickName()))
+                options.highlight = true;
             break;
         }
+        case IrcMessage::Notice:
+            if (static_cast<IrcNoticeMessage*>(message)->message().contains(d.session->nickName()))
+                options.highlight = true;
+            break;
         case IrcMessage::Topic:
             d.topic = static_cast<IrcTopicMessage*>(message)->topic();
-            d.topicLabel->setText(d.formatter->formatHtml(d.topic));
+            d.topicLabel->setText(MessageFormatter::formatHtml(d.topic));
             if (d.topicLabel->text().isEmpty())
                 d.topicLabel->setText(tr("-"));
             break;
         case IrcMessage::Join:
             if (!d.playback && message->flags() & IrcMessage::Own) {
-                d.joined = true;
+                ++d.joined;
                 int blocks = d.textBrowser->document()->blockCount();
                 if (blocks > 1)
                     d.textBrowser->addMarker(blocks);
@@ -414,13 +449,13 @@ void MessageView::receiveMessage(IrcMessage* message)
         case IrcMessage::Quit:
         case IrcMessage::Part:
             if (!d.playback && message->flags() & IrcMessage::Own) {
-                d.joined = false;
+                ++d.parted;
                 emit activeChanged();
             }
             break;
         case IrcMessage::Kick:
             if (!d.playback && !static_cast<IrcKickMessage*>(message)->user().compare(d.session->nickName(), Qt::CaseInsensitive)) {
-                d.joined = false;
+                ++d.parted;
                 emit activeChanged();
             }
             break;
@@ -456,7 +491,7 @@ void MessageView::receiveMessage(IrcMessage* message)
                     break;
                 case Irc::RPL_TOPIC:
                     d.topic = message->parameters().value(2);
-                    d.topicLabel->setText(d.formatter->formatHtml(d.topic));
+                    d.topicLabel->setText(MessageFormatter::formatHtml(d.topic));
                     break;
                 case Irc::RPL_TOPICWHOTIME: {
                     QDateTime dateTime = QDateTime::fromTime_t(message->parameters().value(3).toInt());
@@ -479,19 +514,27 @@ void MessageView::receiveMessage(IrcMessage* message)
             break;
     }
 
-    d.formatter->setUsers(d.listView->userModel()->users());
-    d.formatter->setHighlights(QStringList() << d.session->nickName());
-    QString formatted = d.formatter->formatMessage(message);
+    options.nickName = d.session->nickName();
+    options.users = d.listView->userModel()->users();
+    options.timeStampFormat = d.settings.timeStamp ? d.settings.timeStampFormat : QString();
+    options.stripNicks = d.settings.stripNicks;
+    options.textFormat = *irc_text_format();
+    if (d.viewType == ViewInfo::Channel)
+        options.repeat = (d.joined > d.parted);
+    else if (d.viewType == ViewInfo::Server)
+        options.repeat = (d.connected > 1);
+
+    QString formatted = MessageFormatter::formatMessage(message, options);
     if (formatted.length()) {
         if (!ignore && (!isVisible() || !isActiveWindow())) {
             IrcMessage::Type type = message->type();
-            if (d.formatter->hasHighlight() || ((type == IrcMessage::Notice || type == IrcMessage::Private) && d.viewType != ViewInfo::Channel))
+            if (options.highlight || ((type == IrcMessage::Notice || type == IrcMessage::Private) && d.viewType != ViewInfo::Channel))
                 emit highlighted(message);
             else if (type == IrcMessage::Notice || type == IrcMessage::Private) // TODO: || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ViewInfo::Server))
                 emit missed(message);
         }
 
-        d.textBrowser->append(formatted, d.formatter->hasHighlight());
+        d.textBrowser->append(formatted, options.highlight);
     }
 }
 
