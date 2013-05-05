@@ -14,6 +14,7 @@
 
 #include "messagehandler.h"
 #include "messageview.h"
+#include "zncplayback.h"
 #include "session.h"
 #include <qabstractsocket.h>
 #include <qvariant.h>
@@ -22,6 +23,10 @@
 
 MessageHandler::MessageHandler(QObject* parent) : QObject(parent)
 {
+    d.zncPlayback = new ZncPlayback(this);
+    connect(d.zncPlayback, SIGNAL(messagePlayed(IrcMessage*)), this, SLOT(handleMessage(IrcMessage*)));
+    connect(d.zncPlayback, SIGNAL(targetChanged(QString,bool)), this, SLOT(playbackView(QString,bool)));
+
     d.defaultView = 0;
     d.currentView = 0;
     setSession(qobject_cast<Session*>(parent));
@@ -42,14 +47,23 @@ Session* MessageHandler::session() const
 void MessageHandler::setSession(Session* session)
 {
     if (d.session != session) {
-        if (d.session)
+        if (d.session) {
+            d.session->removeMessageFilter(d.zncPlayback);
             disconnect(d.session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(handleMessage(IrcMessage*)));
+        }
 
-        if (session)
+        if (session) {
+            session->installMessageFilter(d.zncPlayback);
             connect(session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(handleMessage(IrcMessage*)));
+        }
 
         d.session = session;
     }
+}
+
+ZncPlayback* MessageHandler::zncPlayback() const
+{
+    return d.zncPlayback;
 }
 
 MessageView* MessageHandler::defaultView() const
@@ -167,13 +181,17 @@ void MessageHandler::handleNamesMessage(IrcNamesMessage* message)
 void MessageHandler::handleNickMessage(IrcNickMessage* message)
 {
     QString nick = message->sender().name().toLower();
-    foreach (MessageView* view, d.views) {
-        if (view->hasUser(nick))
-            view->receiveMessage(message);
-        if (!nick.compare(view->receiver(), Qt::CaseInsensitive)) {
-            emit viewToBeRenamed(view->receiver(), message->nick());
-            MessageView* object = d.views.take(nick);
-            d.views.insert(message->nick(), object);
+    if (d.zncPlayback->isActive()) {
+        sendMessage(message, d.zncPlayback->target());
+    } else {
+        foreach (MessageView* view, d.views) {
+            if (view->hasUser(nick))
+                view->receiveMessage(message);
+            if (!nick.compare(view->receiver(), Qt::CaseInsensitive)) {
+                emit viewToBeRenamed(view->receiver(), message->nick());
+                MessageView* object = d.views.take(nick);
+                d.views.insert(message->nick(), object);
+            }
         }
     }
 }
@@ -300,9 +318,13 @@ void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
 void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
 {
     QString nick = message->sender().name();
-    foreach (MessageView* view, d.views) {
-        if (view->hasUser(nick))
-            view->receiveMessage(message);
+    if (d.zncPlayback->isActive()) {
+        sendMessage(message, d.zncPlayback->target());
+    } else {
+        foreach (MessageView* view, d.views) {
+            if (view->hasUser(nick))
+                view->receiveMessage(message);
+        }
     }
 }
 
@@ -328,4 +350,11 @@ void MessageHandler::sendMessage(IrcMessage* message, const QString& receiver)
     if (!d.views.contains(lower))
         emit viewToBeAdded(receiver);
     sendMessage(message, d.views.value(lower));
+}
+
+void MessageHandler::playbackView(const QString& name, bool active)
+{
+    MessageView* view = d.views.value(name.toLower());
+    if (view)
+        view->setPlaybackMode(active);
 }

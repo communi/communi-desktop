@@ -42,6 +42,7 @@ MessageView::MessageView(ViewInfo::Type type, Session* session, QWidget* parent)
     d.joined = false;
     d.sentId = 1;
     d.awayReply.invalidate();
+    d.playback = false;
 
     d.topicLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
     d.helpLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
@@ -158,6 +159,16 @@ void MessageView::setReceiver(const QString& receiver)
             d.listView->setChannel(receiver);
         emit receiverChanged(receiver);
     }
+}
+
+bool MessageView::playbackMode() const
+{
+    return d.playback;
+}
+
+void MessageView::setPlaybackMode(bool enabled)
+{
+    d.playback = enabled;
 }
 
 MenuFactory* MessageView::menuFactory() const
@@ -369,7 +380,7 @@ void MessageView::applySettings(const Settings& settings)
 
 void MessageView::receiveMessage(IrcMessage* message)
 {
-    if (d.viewType == ViewInfo::Channel)
+    if (!d.playback && d.viewType == ViewInfo::Channel)
         d.listView->processMessage(message);
 
     bool ignore = false;
@@ -378,13 +389,10 @@ void MessageView::receiveMessage(IrcMessage* message)
             IrcSender sender = message->sender();
             if (sender.name() == QLatin1String("***") && sender.user() == QLatin1String("znc")) {
                 QString content = static_cast<IrcPrivateMessage*>(message)->message();
-                if (content == QLatin1String("Buffer Playback...")) {
-                    d.formatter->setZncPlaybackMode(true);
+                if (content == QLatin1String("Buffer Playback..."))
                     ignore = true;
-                } else if (content == QLatin1String("Playback Complete.")) {
-                    d.formatter->setZncPlaybackMode(false);
+                else if (content == QLatin1String("Playback Complete."))
                     ignore = true;
-                }
             }
             break;
         }
@@ -395,7 +403,7 @@ void MessageView::receiveMessage(IrcMessage* message)
                 d.topicLabel->setText(tr("-"));
             break;
         case IrcMessage::Join:
-            if (message->flags() & IrcMessage::Own) {
+            if (!d.playback && message->flags() & IrcMessage::Own) {
                 d.joined = true;
                 int blocks = d.textBrowser->document()->blockCount();
                 if (blocks > 1)
@@ -405,13 +413,13 @@ void MessageView::receiveMessage(IrcMessage* message)
             break;
         case IrcMessage::Quit:
         case IrcMessage::Part:
-            if (message->flags() & IrcMessage::Own) {
+            if (!d.playback && message->flags() & IrcMessage::Own) {
                 d.joined = false;
                 emit activeChanged();
             }
             break;
         case IrcMessage::Kick:
-            if (!static_cast<IrcKickMessage*>(message)->user().compare(d.session->nickName(), Qt::CaseInsensitive)) {
+            if (!d.playback && !static_cast<IrcKickMessage*>(message)->user().compare(d.session->nickName(), Qt::CaseInsensitive)) {
                 d.joined = false;
                 emit activeChanged();
             }
@@ -476,7 +484,7 @@ void MessageView::receiveMessage(IrcMessage* message)
     QString formatted = d.formatter->formatMessage(message);
     if (formatted.length()) {
         if (!ignore && (!isVisible() || !isActiveWindow())) {
-            IrcMessage::Type type = d.formatter->effectiveMessageType();
+            IrcMessage::Type type = message->type();
             if (d.formatter->hasHighlight() || ((type == IrcMessage::Notice || type == IrcMessage::Private) && d.viewType != ViewInfo::Channel))
                 emit highlighted(message);
             else if (type == IrcMessage::Notice || type == IrcMessage::Private) // TODO: || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ViewInfo::Server))

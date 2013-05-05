@@ -22,6 +22,7 @@
 
 class Session;
 class MessageView;
+class ZncPlayback;
 
 class MessageHandler : public QObject
 {
@@ -33,6 +34,8 @@ public:
 
     Session* session() const;
     void setSession(Session* session);
+
+    ZncPlayback* zncPlayback() const;
 
     MessageView* defaultView() const;
     void setDefaultView(MessageView* view);
@@ -70,8 +73,12 @@ protected:
     void sendMessage(IrcMessage* message, MessageView* view);
     void sendMessage(IrcMessage* message, const QString& receiver);
 
+private slots:
+    void playbackView(const QString& view, bool active);
+
 private:
     struct Private {
+        ZncPlayback* zncPlayback;
         QPointer<Session> session;
         MessageView* defaultView;
         MessageView* currentView;

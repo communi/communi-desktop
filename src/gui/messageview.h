@@ -48,6 +48,9 @@ public:
     QString receiver() const;
     void setReceiver(const QString& receiver);
 
+    bool playbackMode() const;
+    void setPlaybackMode(bool enabled);
+
     MenuFactory* menuFactory() const;
     void setMenuFactory(MenuFactory* factory);
 
@@ -98,6 +101,7 @@ private:
         int sentId;
         QString awayMessage;
         QElapsedTimer awayReply;
+        bool playback;
     } d;
 };
 

@@ -28,7 +28,6 @@ class MessageFormatter : public QObject
     Q_PROPERTY(bool timeStamp READ timeStamp WRITE setTimeStamp)
     Q_PROPERTY(bool stripNicks READ stripNicks WRITE setStripNicks)
     Q_PROPERTY(QString timeStampFormat READ timeStampFormat WRITE setTimeStampFormat)
-    Q_PROPERTY(bool zncPlaybackMode READ zncPlaybackMode WRITE setZncPlaybackMode)
 
 public:
     explicit MessageFormatter(QObject* parent = 0);
@@ -48,13 +47,8 @@ public:
     bool stripNicks() const;
     void setStripNicks(bool strip);
 
-    bool zncPlaybackMode() const;
-    void setZncPlaybackMode(bool enabled);
-
     QString timeStampFormat() const;
     void setTimeStampFormat(const QString& format);
-
-    IrcMessage::Type effectiveMessageType() const;
 
     Q_INVOKABLE QString formatMessage(IrcMessage* message) const;
     Q_INVOKABLE QString formatMessage(const QDateTime& timeStamp, const QString& message) const;
@@ -76,8 +70,6 @@ protected:
     QString formatQuitMessage(IrcQuitMessage* message) const;
     QString formatTopicMessage(IrcTopicMessage* message) const;
     QString formatUnknownMessage(IrcMessage* message) const;
-    QString formatZncPlaybackMessage(IrcPrivateMessage* message) const;
-    QString formatZncPlaybackMessage(IrcNoticeMessage* message) const;
 
     static QString formatPingReply(const IrcSender& sender, const QString& arg);
 
@@ -93,11 +85,9 @@ private:
         bool highlight;
         bool timeStamp;
         bool stripNicks;
-        bool zncPlayback;
         QStringList users;
         QStringList highlights;
         QString timeStampFormat;
-        IrcMessage::Type messageType;
     } d;
 };
 
