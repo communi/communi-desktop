@@ -28,12 +28,13 @@ Session::Session(QObject* parent) : IrcSession(parent),
 
     connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(this, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+    connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onDisconnected()));
     connect(this, SIGNAL(password(QString*)), this, SLOT(onPassword(QString*)));
     connect(this, SIGNAL(capabilities(QStringList, QStringList*)), this, SLOT(onCapabilities(QStringList, QStringList*)));
     connect(this, SIGNAL(sessionInfoReceived(IrcSessionInfo)), SLOT(onSessionInfoReceived(IrcSessionInfo)));
 
     setAutoReconnectDelay(15);
-    connect(&m_reconnectTimer, SIGNAL(timeout()), this, SLOT(open()));
+    connect(&m_reconnectTimer, SIGNAL(timeout()), this, SLOT(reconnect()));
 
     m_timestamper.invalidate();
 }
@@ -197,10 +198,11 @@ bool Session::sendUiCommand(IrcCommand* command)
 
 void Session::reconnect()
 {
-    connect(this, SIGNAL(connecting()), &m_reconnectTimer, SLOT(stop()), Qt::UniqueConnection);
-    connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), &m_reconnectTimer, SLOT(start()), Qt::UniqueConnection);
-
-    open();
+    m_quit = false;
+    if (!isActive()) {
+        m_reconnectTimer.stop();
+        open();
+    }
 }
 
 void Session::quit()
@@ -227,9 +229,6 @@ void Session::stopReconnecting()
 
 void Session::sleep()
 {
-    disconnect(this, SIGNAL(connecting()), &m_reconnectTimer, SLOT(stop()));
-    disconnect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), &m_reconnectTimer, SLOT(start()));
-
     QString message = tr("%1 %2").arg(QApplication::applicationName())
                                  .arg(QApplication::applicationVersion());
 
@@ -261,12 +260,13 @@ void Session::onConnected()
         channels = channels.mid(10);
     }
 
-    m_quit = false;
     m_timestamper.invalidate();
 }
 
 void Session::onDisconnected()
 {
+    if (!m_quit && !m_reconnectTimer.isActive())
+        m_reconnectTimer.start();
 }
 
 void Session::onPassword(QString* password)
