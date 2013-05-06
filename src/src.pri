@@ -25,6 +25,10 @@ SOURCES += $$PWD/searchpopup.cpp
 SOURCES += $$PWD/toolbar.cpp
 SOURCES += $$PWD/trayicon.cpp
 
+!exists(3rdparty/communi/src/src.pri)|!exists(3rdparty/qtsystemnotifier/systemnotifier.pri) {
+    error(Git submodules are missing. Run \'git submodule update --init\' in $${_PRO_FILE_PWD_}.)
+}
+
 include(gui/gui.pri)
 include(shared/shared.pri)
 include(wizard/wizard.pri)
