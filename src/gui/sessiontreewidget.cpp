@@ -38,7 +38,9 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     header()->setResizeMode(1, QHeaderView::Fixed);
     header()->resizeSection(1, 22);
 
-    setItemDelegate(new ItemDelegate(this));
+    ItemDelegate* delegate = new ItemDelegate(this);
+    delegate->setRootIsDecorated(true);
+    setItemDelegate(delegate);
 
     setDragEnabled(true);
     setDropIndicatorShown(true);

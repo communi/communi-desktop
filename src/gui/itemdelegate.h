@@ -20,14 +20,23 @@
 class ItemDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
+    Q_PROPERTY(bool rootIsDecorated READ rootIsDecorated WRITE setRootIsDecorated)
 
 public:
     explicit ItemDelegate(QObject* parent = 0);
+
+    bool rootIsDecorated() const;
+    void setRootIsDecorated(bool decorated);
 
     enum { BadgeRole = Qt::UserRole, BadgeColorRole, HighlightRole };
 
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+
+private:
+    struct Private {
+        bool rootIsDecorated;
+    } d;
 };
 
 #endif // ITEMDELEGATE_H

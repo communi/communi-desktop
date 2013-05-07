@@ -21,6 +21,17 @@
 
 ItemDelegate::ItemDelegate(QObject* parent) : QStyledItemDelegate(parent)
 {
+    d.rootIsDecorated = false;
+}
+
+bool ItemDelegate::rootIsDecorated() const
+{
+    return d.rootIsDecorated;
+}
+
+void ItemDelegate::setRootIsDecorated(bool decorated)
+{
+    d.rootIsDecorated = decorated;
 }
 
 QSize ItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -38,7 +49,7 @@ QSize ItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelInd
 
 void ItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    if (!index.parent().isValid()) {
+    if (d.rootIsDecorated && !index.parent().isValid()) {
         const bool selected = option.state & QStyle::State_Selected;
         const_cast<QStyleOptionViewItem&>(option).state &= ~QStyle::State_Selected;
 
