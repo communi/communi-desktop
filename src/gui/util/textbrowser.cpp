@@ -162,6 +162,7 @@ void TextBrowser::paintEvent(QPaintEvent* event)
     QTextBrowser::paintEvent(event);
 
     QPainter painter(viewport());
+    painter.save();
     painter.translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
 
     int last = -1;
@@ -188,6 +189,7 @@ void TextBrowser::paintEvent(QPaintEvent* event)
     QLinearGradient gradient(0, 0, 0, 3);
     gradient.setColorAt(0.0, palette().color(QPalette::Dark));
     gradient.setColorAt(1.0, Qt::transparent);
+    painter.restore();
     painter.fillRect(0, 0, width(), 3, gradient);
 }
 
