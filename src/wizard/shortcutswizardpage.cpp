@@ -21,10 +21,10 @@ enum Columns {
     Shortcut
 };
 
-class ItemDelegate : public QStyledItemDelegate
+class ShortcutDelegate : public QStyledItemDelegate
 {
 public:
-    ItemDelegate(QObject* parent = 0) : QStyledItemDelegate(parent) { }
+    ShortcutDelegate(QObject* parent = 0) : QStyledItemDelegate(parent) { }
     QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& opt, const QModelIndex& index) const {
         QWidget* editor = 0;
         if (index.column() == Shortcut)
@@ -36,7 +36,7 @@ public:
 ShortcutsWizardPage::ShortcutsWizardPage(QWidget* parent) : QWizardPage(parent)
 {
     ui.setupUi(this);
-    ui.treeWidget->setItemDelegate(new ItemDelegate(ui.treeWidget));
+    ui.treeWidget->setItemDelegate(new ShortcutDelegate(ui.treeWidget));
     ui.treeWidget->header()->setResizeMode(0, QHeaderView::ResizeToContents);
     ui.treeWidget->expandItem(ui.treeWidget->topLevelItem(0));
     ui.treeWidget->expandItem(ui.treeWidget->topLevelItem(1));
