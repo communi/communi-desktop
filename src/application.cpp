@@ -16,6 +16,7 @@
 #include "settingswizard.h"
 #include "sharedtimer.h"
 #include "connectioninfo.h"
+#include <QDesktopServices>
 #include <QMessageBox>
 #include <QSettings>
 #include <QIcon>
@@ -52,6 +53,13 @@ Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
     QFile file(":resources/stylesheet.css");
     if (file.open(QFile::ReadOnly | QIODevice::Text))
         setStyleSheet(QString::fromUtf8(file.readAll()));
+
+    QDir dir = dataDir();
+    if (dir.exists() || dir.mkpath(".")) {
+        QString filePath = dir.filePath("notify.mp3");
+        if (!QFile::exists(filePath))
+            QFile::copy(":/resources/notify.mp3", filePath);
+    }
 }
 
 Application::~Application()
@@ -86,6 +94,11 @@ void Application::setSettings(const Settings& settings)
         Private::settings = settings;
         QMetaObject::invokeMethod(qApp, "settingsChanged", Q_ARG(Settings, settings));
     }
+}
+
+QDir Application::dataDir()
+{
+    return QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
 }
 
 void Application::aboutApplication()

@@ -21,6 +21,7 @@
 
 class SessionStackView;
 class SessionTreeWidget;
+class SoundNotification;
 class SessionTreeItem;
 struct ConnectionInfo;
 class MessageView;
@@ -78,6 +79,7 @@ private:
     QtDockTile* dockTile;
     QShortcut* searchShortcut;
     QPointer<Overlay> overlay;
+    SoundNotification* sound;
 };
 
 #endif // MAINWINDOW_H

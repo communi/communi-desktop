@@ -17,6 +17,7 @@
 
 #include <QApplication>
 #include "settings.h"
+#include <QDir>
 
 class Application : public QApplication
 {
@@ -33,6 +34,8 @@ public:
 
     static Settings settings();
     static void setSettings(const Settings& settings);
+
+    static QDir dataDir();
 
 public slots:
     static void aboutApplication();

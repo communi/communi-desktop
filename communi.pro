@@ -11,6 +11,9 @@ QT += network
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets
     DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000
+    qtHaveModule(multimedia):QT += multimedia
+} else:CONFIG(phonon, phonon|no_phonon) {
+    QT += phonon
 }
 !verbose:CONFIG += silent
 

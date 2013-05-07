@@ -16,6 +16,7 @@
 #include "application.h"
 #include "connectionwizard.h"
 #include "sessionstackview.h"
+#include "soundnotification.h"
 #include "sessiontreewidget.h"
 #include "messagestackview.h"
 #include "sessiontreeitem.h"
@@ -36,7 +37,7 @@
 #include <QMenu>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
-    treeWidget(0), trayIcon(0), dockTile(0)
+    treeWidget(0), trayIcon(0), dockTile(0), sound(0)
 {
     stackView = new SessionStackView(this);
 
@@ -61,6 +62,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
 
     if (QtDockTile::isAvailable())
         dockTile = new QtDockTile(this);
+
+    if (SoundNotification::isAvailable())
+        sound = new SoundNotification(this);
 
     QShortcut* shortcut = new QShortcut(QKeySequence::Quit, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(close()));
@@ -273,6 +277,8 @@ void MainWindow::highlighted(IrcMessage* message)
             trayIcon->alert();
         if (dockTile)
             dockTile->setBadge(dockTile->badge() + 1);
+        if (sound)
+            sound->play();
     }
 
     MessageView* view = qobject_cast<MessageView*>(sender());
