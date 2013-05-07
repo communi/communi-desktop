@@ -12,20 +12,22 @@
 * GNU General Public License for more details.
 */
 
-#ifndef SESSIONTREEDELEGATE_H
-#define SESSIONTREEDELEGATE_H
+#ifndef ITEMDELEGATE_H
+#define ITEMDELEGATE_H
 
 #include <QStyledItemDelegate>
 
-class SessionTreeDelegate : public QStyledItemDelegate
+class ItemDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 
 public:
-    explicit SessionTreeDelegate(QObject* parent = 0);
+    explicit ItemDelegate(QObject* parent = 0);
+
+    enum { BadgeRole = Qt::UserRole, BadgeColorRole, HighlightRole };
 
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 };
 
-#endif // SESSIONTREEDELEGATE_H
+#endif // ITEMDELEGATE_H

@@ -13,7 +13,7 @@
 */
 
 #include "sessiontreewidget.h"
-#include "sessiontreedelegate.h"
+#include "itemdelegate.h"
 #include "sessiontreeitem.h"
 #include "messageview.h"
 #include "menufactory.h"
@@ -37,7 +37,7 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     header()->setResizeMode(1, QHeaderView::Fixed);
     header()->resizeSection(1, 22);
 
-    setItemDelegate(new SessionTreeDelegate(this));
+    setItemDelegate(new ItemDelegate(this));
 
     setDragEnabled(true);
     setDropIndicatorShown(true);
@@ -273,18 +273,18 @@ void SessionTreeWidget::moveToPrevItem()
 
 void SessionTreeWidget::moveToNextActiveItem()
 {
-    QTreeWidgetItem* item = findNextItem(currentItem(), 0, SessionTreeItem::HighlightRole);
+    QTreeWidgetItem* item = findNextItem(currentItem(), 0, ItemDelegate::HighlightRole);
     if (!item)
-        item = findNextItem(currentItem(), 1, SessionTreeItem::BadgeRole);
+        item = findNextItem(currentItem(), 1, ItemDelegate::BadgeRole);
     if (item)
         setCurrentItem(item);
 }
 
 void SessionTreeWidget::moveToPrevActiveItem()
 {
-    QTreeWidgetItem* item = findPrevItem(currentItem(), 0, SessionTreeItem::HighlightRole);
+    QTreeWidgetItem* item = findPrevItem(currentItem(), 0, ItemDelegate::HighlightRole);
     if (!item)
-        item = findPrevItem(currentItem(), 1, SessionTreeItem::BadgeRole);
+        item = findPrevItem(currentItem(), 1, ItemDelegate::BadgeRole);
     if (item)
         setCurrentItem(item);
 }

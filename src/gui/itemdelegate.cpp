@@ -12,19 +12,18 @@
 * GNU General Public License for more details.
 */
 
-#include "sessiontreedelegate.h"
-#include "sessiontreeitem.h"
+#include "itemdelegate.h"
 #include <QStyleOptionViewItem>
 #include <QApplication>
 #include <QLineEdit>
 #include <QPalette>
 #include <QPainter>
 
-SessionTreeDelegate::SessionTreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
+ItemDelegate::ItemDelegate(QObject* parent) : QStyledItemDelegate(parent)
 {
 }
 
-QSize SessionTreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+QSize ItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     QSize size = QStyledItemDelegate::sizeHint(option, index);
     if (!index.parent().isValid()) {
@@ -39,7 +38,7 @@ QSize SessionTreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QM
     return size;
 }
 
-void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+void ItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     if (!index.parent().isValid()) {
         const bool selected = option.state & QStyle::State_Selected;
@@ -68,13 +67,13 @@ void SessionTreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o
     QStyledItemDelegate::paint(painter, option, index);
 
     if (index.column() == 1) {
-        int badge = index.data(SessionTreeItem::BadgeRole).toInt();
+        int badge = index.data(BadgeRole).toInt();
         if (badge > 0) {
             QRect rect = option.rect.adjusted(1, 3, -1, -3);
 
             painter->save();
             painter->setPen(Qt::NoPen);
-            painter->setBrush(qvariant_cast<QBrush>(index.data(SessionTreeItem::BadgeColorRole)));
+            painter->setBrush(qvariant_cast<QBrush>(index.data(BadgeColorRole)));
             painter->setRenderHint(QPainter::Antialiasing);
             painter->drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
 

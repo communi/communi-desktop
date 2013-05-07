@@ -14,6 +14,7 @@
 
 #include "sessiontreeitem.h"
 #include "sessiontreewidget.h"
+#include "itemdelegate.h"
 #include "messageview.h"
 
 SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidget* parent) : QTreeWidgetItem(parent)
@@ -63,12 +64,12 @@ QVariant SessionTreeItem::data(int column, int role) const
         if (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty()))
             return tw->currentHighlightColor();
         return tw->statusColor(SessionTreeWidget::Active);
-    } else if (role == BadgeColorRole) {
+    } else if (role == ItemDelegate::BadgeColorRole) {
         SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget());
         if (d.view->isActive() && d.highlighted)
             return tw->currentBadgeColor();
         return qApp->palette().color(QPalette::AlternateBase).darker(125);
-    } else if (role == HighlightRole) {
+    } else if (role == ItemDelegate::HighlightRole) {
         return d.highlighted;
     }
     return QTreeWidgetItem::data(column, role);
@@ -76,12 +77,12 @@ QVariant SessionTreeItem::data(int column, int role) const
 
 int SessionTreeItem::badge() const
 {
-    return data(1, BadgeRole).toInt();
+    return data(1, ItemDelegate::BadgeRole).toInt();
 }
 
 void SessionTreeItem::setBadge(int badge)
 {
-    setData(1, BadgeRole, badge);
+    setData(1, ItemDelegate::BadgeRole, badge);
 }
 
 bool SessionTreeItem::isHighlighted() const
