@@ -13,6 +13,7 @@
 */
 
 #include "userlistview.h"
+#include "itemdelegate.h"
 #include "sortedusermodel.h"
 #include "menufactory.h"
 #include "usermodel.h"
@@ -26,6 +27,7 @@ UserListView::UserListView(QWidget* parent) : QListView(parent)
 {
     d.menuFactory = 0;
     d.userModel = new UserModel(this);
+    setItemDelegate(new ItemDelegate(this));
     connect(this, SIGNAL(doubleClicked(QModelIndex)), SLOT(onDoubleClicked(QModelIndex)));
 }
 
