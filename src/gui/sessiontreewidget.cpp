@@ -30,6 +30,7 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     setIndentation(0);
     setHeaderHidden(true);
     setRootIsDecorated(false);
+    setUniformRowHeights(true);
     setFrameStyle(QFrame::NoFrame);
 
     header()->setStretchLastSection(false);

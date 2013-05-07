@@ -26,15 +26,13 @@ ItemDelegate::ItemDelegate(QObject* parent) : QStyledItemDelegate(parent)
 QSize ItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     QSize size = QStyledItemDelegate::sizeHint(option, index);
-    if (!index.parent().isValid()) {
-        static int height = 0;
-        if (!height) {
-            QLineEdit lineEdit;
-            lineEdit.setStyleSheet("QLineEdit { border: 1px solid transparent; }");
-            height = lineEdit.sizeHint().height();
-        }
-        size.setHeight(height);
+    static int height = 0;
+    if (!height) {
+        QLineEdit lineEdit;
+        lineEdit.setStyleSheet("QLineEdit { border: 1px solid transparent; }");
+        height = lineEdit.sizeHint().height();
     }
+    size.setHeight(height);
     return size;
 }
 
