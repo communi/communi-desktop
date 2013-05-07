@@ -520,7 +520,7 @@ void MessageView::receiveMessage(IrcMessage* message)
     options.stripNicks = d.settings.stripNicks;
     options.textFormat = *irc_text_format();
     if (d.viewType == ViewInfo::Channel)
-        options.repeat = (d.joined > d.parted);
+        options.repeat = (d.joined > 1 && d.joined > d.parted);
     else if (d.viewType == ViewInfo::Server)
         options.repeat = (d.connected > 1);
 
