@@ -27,7 +27,6 @@ struct ConnectionInfo;
 class MessageView;
 class IrcMessage;
 class QtDockTile;
-struct Settings;
 class Session;
 class QShortcut;
 class Overlay;
@@ -55,7 +54,7 @@ protected:
 private slots:
     void initialize();
     void editSession(Session* session);
-    void applySettings(const Settings& settings);
+    void applySettings();
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void highlighted(IrcMessage* message);
     void missed(IrcMessage* message);

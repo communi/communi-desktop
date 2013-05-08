@@ -17,7 +17,6 @@ HEADERS += $$PWD/searcheditor.h
 HEADERS += $$PWD/sessionstackview.h
 HEADERS += $$PWD/sessiontreeitem.h
 HEADERS += $$PWD/sessiontreewidget.h
-HEADERS += $$PWD/settings.h
 HEADERS += $$PWD/userlistview.h
 
 SOURCES += $$PWD/itemdelegate.cpp
@@ -29,8 +28,8 @@ SOURCES += $$PWD/searcheditor.cpp
 SOURCES += $$PWD/sessionstackview.cpp
 SOURCES += $$PWD/sessiontreeitem.cpp
 SOURCES += $$PWD/sessiontreewidget.cpp
-SOURCES += $$PWD/settings.cpp
 SOURCES += $$PWD/userlistview.cpp
 
 include(util/util.pri)
+include(settings/settings.pri)
 include(3rdparty/3rdparty.pri)

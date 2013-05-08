@@ -12,20 +12,30 @@
 * GNU General Public License for more details.
 */
 
-#ifndef WIZARDTREEWIDGET_H
-#define WIZARDTREEWIDGET_H
+#ifndef BASICSETTINGSPAGE_H
+#define BASICSETTINGSPAGE_H
 
-#include <QTreeWidget>
+#include "ui_basicsettingspage.h"
 
-class WizardTreeWidget : public QTreeWidget
+class SettingsModel;
+
+class BasicSettingsPage : public QWidget
 {
     Q_OBJECT
 
 public:
-    WizardTreeWidget(QWidget* parent = 0);
+    BasicSettingsPage(QWidget* parent = 0);
 
-protected:
-    virtual bool edit(const QModelIndex& index, EditTrigger trigger, QEvent* event);
+    void setSettings(SettingsModel* settings);
+
+private slots:
+    void updateUi();
+    void updateModel();
+
+private:
+    bool block;
+    SettingsModel* model;
+    Ui::BasicSettingsPage ui;
 };
 
-#endif // WIZARDTREEWIDGET_H
+#endif // BASICSETTINGSPAGE_H

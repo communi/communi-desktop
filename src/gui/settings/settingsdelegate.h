@@ -12,29 +12,21 @@
 * GNU General Public License for more details.
 */
 
-#ifndef SHORTCUTSSWIZARDPAGE_H
-#define SHORTCUTSSWIZARDPAGE_H
+#ifndef SETTINGSDELEGATE_H
+#define SETTINGSDELEGATE_H
 
-#include "ui_shortcutswizardpage.h"
+#include <QStyledItemDelegate>
 
-class ShortcutsWizardPage : public QWizardPage
+class SettingsDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 
 public:
-    ShortcutsWizardPage(QWidget* parent = 0);
+    explicit SettingsDelegate(QObject* parent = 0);
 
-    QHash<int, QString> shortcuts() const;
-    void setShortcuts(const QHash<int, QString>& shortcuts);
-
-private slots:
-    void updateUi();
-
-private:
-    QString logicalShortcut(int index) const;
-    void setVisualShortcut(int index, const QString& text);
-
-    Ui::ShortcutsWizardPage ui;
+    QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    void setEditorData(QWidget* editor, const QModelIndex& index) const;
+    void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const;
 };
 
-#endif // SHORTCUTSSWIZARDPAGE_H
+#endif // SETTINGSDELEGATE_H

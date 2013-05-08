@@ -13,6 +13,8 @@
 */
 
 #include "messageview.h"
+#include "application.h"
+#include "settingsmodel.h"
 #include "syntaxhighlighter.h"
 #include "messageformatter.h"
 #include "commandparser.h"
@@ -127,6 +129,9 @@ MessageView::MessageView(ViewInfo::Type type, Session* session, QWidget* parent)
 
     QShortcut* shortcut = new QShortcut(Qt::Key_Escape, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(onEscPressed()));
+
+    applySettings();
+    connect(Application::settings(), SIGNAL(changed()), this, SLOT(applySettings()));
 }
 
 MessageView::~MessageView()
@@ -236,8 +241,12 @@ void MessageView::showHelp(const QString& text, bool error)
 
     d.helpLabel->setVisible(!syntax.isEmpty());
     QPalette pal;
-    if (error)
-        pal.setColor(QPalette::WindowText, d.settings.colors[Settings::Highlight]);
+    if (error) {
+        SettingsModel* settings = Application::settings();
+        QString theme =  settings->value("ui.theme").toString();
+        QString key = QString("themes.%1.highlight").arg(theme);
+        pal.setColor(QPalette::WindowText, settings->value(key).value<QColor>());
+    }
     d.helpLabel->setPalette(pal);
     d.helpLabel->setText(syntax);
 }
@@ -362,9 +371,20 @@ void MessageView::onSocketError()
     d.textBrowser->append(MessageFormatter::formatLine(msg));
 }
 
-void MessageView::applySettings(const Settings& settings)
+void MessageView::applySettings()
 {
-    CommandParser::setAliases(settings.aliases);
+    SettingsModel* settings = Application::settings();
+    QString theme =  settings->value("ui.theme").toString();
+
+    // TODO: CommandParser is static => apply aliases once...
+    QMap<QString,QString> aliases;
+    QVariantMap values = settings->values("aliases.*");
+    QMapIterator<QString,QVariant> it(values);
+    while (it.hasNext()) {
+        it.next();
+        aliases[it.key().mid(8).toUpper()] = it.value().toString();
+    }
+    CommandParser::setAliases(aliases);
 
     QStringList commands;
     foreach (const QString& command, CommandParser::availableCommands())
@@ -372,18 +392,17 @@ void MessageView::applySettings(const Settings& settings)
     command_model->setStringList(commands);
 
     // TODO: dedicated colors?
-    d.highlighter->setHighlightColor(settings.colors.value(Settings::TimeStamp));
-    d.textBrowser->setHighlightColor(QColor(settings.colors.value(Settings::Highlight)).lighter(165));
+    d.highlighter->setHighlightColor(settings->value(QString("themes.%1.timeStamp").arg(theme)).value<QColor>());
+    d.textBrowser->setHighlightColor(settings->value(QString("themes.%1.highlight").arg(theme)).value<QColor>().lighter(165));
 
-    if (!settings.font.isEmpty())
-        d.textBrowser->setFont(settings.font);
-    d.textBrowser->document()->setMaximumBlockCount(settings.maxBlockCount);
+    d.textBrowser->setFont(settings->value("ui.font").value<QFont>());
+    d.textBrowser->document()->setMaximumBlockCount(settings->value("ui.scrollback").toInt());
 
     QTextDocument* doc = d.topicLabel->findChild<QTextDocument*>();
     if (doc)
-        doc->setDefaultStyleSheet(QString("a { color: %1 }").arg(settings.colors.value(Settings::Link)));
+        doc->setDefaultStyleSheet(QString("a { color: %1 }").arg(settings->value(QString("themes.%1.link").arg(theme)).toString()));
 
-    QString backgroundColor = settings.colors.value(Settings::Background);
+    QString backgroundColor = settings->value(QString("themes.%1.background").arg(theme)).toString();
     d.textBrowser->setStyleSheet(QString("QTextBrowser { background-color: %1 }").arg(backgroundColor));
 
     d.textBrowser->document()->setDefaultStyleSheet(
@@ -395,14 +414,13 @@ void MessageView::applySettings(const Settings& settings)
             ".event     { color: %5 }"
             ".timestamp { color: %6; font-size: small }"
             "a { color: %7 }"
-        ).arg(settings.colors.value(Settings::Highlight))
-        .arg(settings.colors.value(Settings::Message))
-        .arg(settings.colors.value(Settings::Notice))
-        .arg(settings.colors.value(Settings::Action))
-        .arg(settings.colors.value(Settings::Event))
-        .arg(settings.colors.value(Settings::TimeStamp))
-        .arg(settings.colors.value(Settings::Link)));
-    d.settings = settings;
+        ).arg(settings->value(QString("themes.%1.highlight").arg(theme)).toString())
+         .arg(settings->value(QString("themes.%1.message").arg(theme)).toString())
+         .arg(settings->value(QString("themes.%1.notice").arg(theme)).toString())
+         .arg(settings->value(QString("themes.%1.action").arg(theme)).toString())
+         .arg(settings->value(QString("themes.%1.event").arg(theme)).toString())
+         .arg(settings->value(QString("themes.%1.timestamp").arg(theme)).toString())
+         .arg(settings->value(QString("themes.%1.link").arg(theme)).toString()));
 }
 
 void MessageView::receiveMessage(IrcMessage* message)
@@ -516,8 +534,9 @@ void MessageView::receiveMessage(IrcMessage* message)
 
     options.nickName = d.session->nickName();
     options.users = d.listView->userModel()->users();
-    options.timeStampFormat = d.settings.timeStamp ? d.settings.timeStampFormat : QString();
-    options.stripNicks = d.settings.stripNicks;
+    // TODO: cache
+    options.stripNicks = Application::settings()->value("format.stripNicks").toBool();
+    options.timeStampFormat = Application::settings()->value("format.timeStamp").toString();
     options.textFormat = *irc_text_format();
     if (d.viewType == ViewInfo::Channel)
         options.repeat = (d.joined > 1 && d.joined > d.parted);

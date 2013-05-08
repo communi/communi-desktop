@@ -16,33 +16,18 @@
 #define SETTINGSWIZARD_H
 
 #include <QWizard>
-#include "settings.h"
+
+class SettingsModel;
 
 class SettingsWizard : public QWizard
 {
     Q_OBJECT
 
 public:
-    SettingsWizard(QWidget* parent = 0);
+    SettingsWizard(SettingsModel* settings, QWidget* parent = 0);
 
-    enum Page {
-        GeneralPage,
-        ShortcutsPage,
-        ColorsPage,
-        AliasesPage
-    };
-
-    Settings settings() const;
-    void setSettings(const Settings& settings);
-
-protected:
-    void setGeneralSettings(const Settings& settings);
-    void setShortcutSettings(const Settings& settings);
-    void setColorSettings(const Settings& settings);
-    void setAliasSettings(const Settings& settings);
-
-private slots:
-    void resetCurrentPage();
+private:
+    SettingsModel* model;
 };
 
 #endif // SETTINGSWIZARD_H

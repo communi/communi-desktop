@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingsWizardPage</class>
+ <widget class="QWizardPage" name="SettingsWizardPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>40</width>
+    <height>40</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QStackedWidget" name="stackedWidget">
+     <widget class="BasicSettingsPage" name="basicPage"/>
+     <widget class="AdvancedSettingsPage" name="advancedPage"/>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>AdvancedSettingsPage</class>
+   <extends>QWidget</extends>
+   <header>advancedsettingspage.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BasicSettingsPage</class>
+   <extends>QWidget</extends>
+   <header>basicsettingspage.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

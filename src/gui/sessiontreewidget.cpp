@@ -13,8 +13,10 @@
 */
 
 #include "sessiontreewidget.h"
-#include "itemdelegate.h"
 #include "sessiontreeitem.h"
+#include "settingsmodel.h"
+#include "itemdelegate.h"
+#include "application.h"
 #include "messageview.h"
 #include "menufactory.h"
 #include "sharedtimer.h"
@@ -83,7 +85,8 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     d.mostActiveShortcut = new QShortcut(this);
     connect(d.mostActiveShortcut, SIGNAL(activated()), this, SLOT(moveToMostActiveItem()));
 
-    applySettings(d.settings);
+    applySettings();
+    connect(Application::settings(), SIGNAL(changed()), this, SLOT(applySettings()));
 }
 
 QSize SessionTreeWidget::sizeHint() const
@@ -392,19 +395,21 @@ void SessionTreeWidget::unhighlight(SessionTreeItem* item)
     item->setHighlighted(false);
 }
 
-void SessionTreeWidget::applySettings(const Settings& settings)
+void SessionTreeWidget::applySettings()
 {
-    QColor color(settings.colors.value(Settings::Highlight));
-    setStatusColor(Highlight, color);
+    SettingsModel* settings = Application::settings();
 
-    d.prevShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::PreviousView)));
-    d.nextShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NextView)));
-    d.prevActiveShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::PreviousActiveView)));
-    d.nextActiveShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::NextActiveView)));
-    d.expandShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::ExpandView)));
-    d.collapseShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::CollapseView)));
-    d.mostActiveShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::MostActiveView)));
-    d.settings = settings;
+    QString theme =  settings->value("ui.theme").toString();
+    QString key = QString("themes.%1.highlight").arg(theme);
+    setStatusColor(Highlight, settings->value(key).value<QColor>());
+
+    d.nextShortcut->setKey(QKeySequence(settings->value("shortcuts.nextView").toString()));
+    d.prevShortcut->setKey(QKeySequence(settings->value("shortcuts.previousView").toString()));
+    d.nextActiveShortcut->setKey(QKeySequence(settings->value("shortcuts.nextActiveView").toString()));
+    d.prevActiveShortcut->setKey(QKeySequence(settings->value("shortcuts.previousActiveView").toString()));
+    d.expandShortcut->setKey(QKeySequence(settings->value("shortcuts.expandView").toString()));
+    d.collapseShortcut->setKey(QKeySequence(settings->value("shortcuts.collapseView").toString()));
+    d.mostActiveShortcut->setKey(QKeySequence(settings->value("shortcuts.mostActiveView").toString()));
 }
 
 void SessionTreeWidget::contextMenuEvent(QContextMenuEvent* event)

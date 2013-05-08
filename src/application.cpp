@@ -14,17 +14,18 @@
 
 #include "application.h"
 #include "settingswizard.h"
-#include "sharedtimer.h"
 #include "connectioninfo.h"
+#include "settingsmodel.h"
+#include "sharedtimer.h"
 #include <QDesktopServices>
 #include <QMessageBox>
 #include <QSettings>
+#include <QDebug>
 #include <QIcon>
 #include <QFile>
 #include <Irc>
 
 QByteArray Application::Private::encoding("ISO-8859-15");
-Settings Application::Private::settings;
 
 Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
 {
@@ -41,14 +42,18 @@ Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
     icon.addFile(":/resources/icons/128x128/communi.png");
     setWindowIcon(icon);
 
-    qRegisterMetaTypeStreamOperators<Settings>("Settings");
     qRegisterMetaTypeStreamOperators<ConnectionInfo>("ConnectionInfo");
     qRegisterMetaTypeStreamOperators<ConnectionInfos>("ConnectionInfos");
 
     QSettings settings;
     if (arguments().contains("-reset"))
         settings.clear();
-    Private::settings = settings.value("settings").value<Settings>();
+
+    if (settings.contains("settings")) {
+        QVariant value = settings.value("settings");
+        if (value.canConvert<QVariantMap>())
+            Application::settings()->setValues(value.toMap());
+    }
 
     QFile file(":resources/stylesheet.css");
     if (file.open(QFile::ReadOnly | QIODevice::Text))
@@ -65,7 +70,7 @@ Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
 Application::~Application()
 {
     QSettings settings;
-    settings.setValue("settings", Private::settings);
+    settings.setValue("settings", Application::settings()->values());
 }
 
 QString Application::applicationSlogan()
@@ -83,17 +88,64 @@ void Application::setEncoding(const QByteArray& encoding)
     Private::encoding = encoding;
 }
 
-Settings Application::settings()
+SettingsModel* Application::settings()
 {
-    return Private::settings;
+    static SettingsModel model;
+    if (model.rowCount() == 0)
+        model.setValues(defaultSettings());
+    return &model;
 }
 
-void Application::setSettings(const Settings& settings)
+QVariantMap Application::defaultSettings()
 {
-    if (Private::settings != settings) {
-        Private::settings = settings;
-        QMetaObject::invokeMethod(qApp, "settingsChanged", Q_ARG(Settings, settings));
-    }
+    QVariantMap settings;
+
+    settings["ui.font"] = QFont();
+    settings["ui.theme"] = "light";
+    settings["ui.scrollback"] = 0;
+
+    settings["formatting.timeStamp"] = "[hh:mm:ss]";
+    settings["formatting.hideUserHosts"] = false;
+
+#ifdef Q_OS_MAC
+    QString navigate("Ctrl+Alt+%1");
+    QString nextActive("Shift+Ctrl+Alt+%1");
+#else
+    QString navigate("Alt+%1");
+    QString nextActive("Shift+Alt+%1");
+#endif
+
+    settings["shortcuts.previousView"] = navigate.arg("Up");
+    settings["shortcuts.nextView"] = navigate.arg("Down");
+    settings["shortcuts.collapseView"] = navigate.arg("Left");
+    settings["shortcuts.expandView"] = navigate.arg("Right");
+    settings["shortcuts.previousActiveView"] = nextActive.arg("Up");
+    settings["shortcuts.nextActiveView"] = nextActive.arg("Down");
+    settings["shortcuts.mostActiveView"] = "Ctrl+L";
+    settings["shortcuts.searchView"] = "Ctrl+S";
+
+    // TODO:
+//    settings["messages.joins"] = true;
+//    settings["messages.parts"] = true;
+//    settings["messages.nicks"] = true;
+//    settings["messages.modes"] = true;
+//    settings["messages.kicks"] = true;
+//    settings["messages.quits"] = true;
+//    settings["messages.topics"] = true;
+
+    settings["themes.light.background"] = QColor("#ffffff");
+    settings["themes.light.message"] = QColor("#000000");
+    settings["themes.light.event"] = QColor("#808080");
+    settings["themes.light.notice"] = QColor("#a54242");
+    settings["themes.light.action"] = QColor("#8b388b");
+    settings["themes.light.highlight"] = QColor("#ff4040");
+    settings["themes.light.timestamp"] = QColor("#808080");
+    settings["themes.light.link"] = QColor("#4040ff");
+
+    settings["aliases.chanserv"] = "MSG ChanServ $*";
+    settings["aliases.nickserv"] = "MSG NickServ $*";
+
+    return settings;
 }
 
 QDir Application::dataDir()
@@ -122,8 +174,9 @@ void Application::aboutApplication()
 
 void Application::showSettings()
 {
-    SettingsWizard wizard(activeWindow());
-    wizard.setSettings(settings());
+    SettingsModel model;
+    model.setValues(settings()->values());
+    SettingsWizard wizard(&model, activeWindow());
     if (wizard.exec())
-        setSettings(wizard.settings());
+        settings()->setValues(model.values());
 }

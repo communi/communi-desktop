@@ -12,24 +12,24 @@
 * GNU General Public License for more details.
 */
 
-#ifndef COLORSWIZARDPAGE_H
-#define COLORSWIZARDPAGE_H
+#ifndef ADVANCEDSETTINGSPAGE_H
+#define ADVANCEDSETTINGSPAGE_H
 
-#include "ui_colorswizardpage.h"
-#include "settings.h"
+#include "ui_advancedsettingspage.h"
 
-class ColorsWizardPage : public QWizardPage
+class SettingsModel;
+
+class AdvancedSettingsPage : public QWidget
 {
     Q_OBJECT
 
 public:
-    ColorsWizardPage(QWidget* parent = 0);
+    AdvancedSettingsPage(QWidget* parent = 0);
 
-    QHash<int, QString> colors() const;
-    void setColors(const QHash<int, QString>& colors);
+    void setSettings(SettingsModel* settings);
 
 private:
-    Ui::ColorsWizardPage ui;
+    Ui::AdvancedSettingsPage ui;
 };
 
-#endif // COLORSWIZARDPAGE_H
+#endif // ADVANCEDSETTINGSPAGE_H

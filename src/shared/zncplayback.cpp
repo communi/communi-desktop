@@ -20,7 +20,7 @@
 ZncPlayback::ZncPlayback(QObject* parent) : QObject(parent)
 {
     d.active = false;
-    d.timeStampFormat = "[hh:mm:ss]"; // TODO
+    d.timeStampFormat = "[hh:mm:ss]";
 }
 
 ZncPlayback::~ZncPlayback()

@@ -12,33 +12,24 @@
 * GNU General Public License for more details.
 */
 
-#ifndef ALIASESWIZARDPAGE_H
-#define ALIASESWIZARDPAGE_H
+#ifndef SETTINGSVIEW_H
+#define SETTINGSVIEW_H
 
-#include "ui_aliaseswizardpage.h"
+#include <QTreeView>
+
 class QSortFilterProxyModel;
-class QStandardItemModel;
 
-class AliasesWizardPage : public QWizardPage
+class SettingsView : public QTreeView
 {
     Q_OBJECT
 
 public:
-    AliasesWizardPage(QWidget* parent = 0);
+    explicit SettingsView(QWidget* parent = 0);
 
-    QMap<QString, QString> aliases() const;
-    void setAliases(const QMap<QString, QString>& aliases);
-
-private slots:
-    void addAlias();
-    void onClicked(const QModelIndex& index);
+    void setModel(QAbstractItemModel* model);
 
 private:
-    QModelIndex addRow(const QString& alias, const QString& command);
-
-    Ui::AliasesWizardPage ui;
-    QStandardItemModel* sourceModel;
-    QSortFilterProxyModel* proxyModel;
+    QSortFilterProxyModel* proxy;
 };
 
-#endif // ALIASESWIZARDPAGE_H
+#endif // SETTINGSVIEW_H

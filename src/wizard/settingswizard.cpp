@@ -13,87 +13,30 @@
 */
 
 #include "settingswizard.h"
-#include "generalwizardpage.h"
-#include "shortcutswizardpage.h"
-#include "aliaseswizardpage.h"
-#include "colorswizardpage.h"
+#include "settingswizardpage.h"
 
-SettingsWizard::SettingsWizard(QWidget* parent) : QWizard(parent)
+SettingsWizard::SettingsWizard(SettingsModel* settings, QWidget* parent)
+    : QWizard(parent), model(settings)
 {
     setWindowTitle(tr("Settings"));
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    setPage(GeneralPage, new GeneralWizardPage(this));
-    setPage(ShortcutsPage, new ShortcutsWizardPage(this));
-    setPage(ColorsPage, new ColorsWizardPage(this));
-    setPage(AliasesPage, new AliasesWizardPage(this));
+    SettingsWizardPage* page = new SettingsWizardPage(settings, this);
+    setPage(0, page);
+
+    setOption(NoCancelButton, false);
+    setOption(NoDefaultButton, false);
+    setOption(NoBackButtonOnLastPage, true);
+    setOption(NoBackButtonOnStartPage, true);
+    setOption(HaveFinishButtonOnEarlyPages, true);
 
     setOption(HaveCustomButton1, true);
-    setButtonText(QWizard::CustomButton1, tr("Reset"));
-    connect(button(QWizard::CustomButton1), SIGNAL(clicked()), this, SLOT(resetCurrentPage()));
+    button(CustomButton1)->setCheckable(true);
+    setButtonText(CustomButton1, tr("Advanced"));
+    connect(button(CustomButton1), SIGNAL(toggled(bool)), page, SLOT(setAdvancedPage(bool)));
 
-    setOption(NoDefaultButton, false);
-}
-
-Settings SettingsWizard::settings() const
-{
-    Settings settings;
-    settings.font = static_cast<GeneralWizardPage*>(page(GeneralPage))->font().toString();
-    settings.language = static_cast<GeneralWizardPage*>(page(GeneralPage))->language();
-    settings.maxBlockCount = static_cast<GeneralWizardPage*>(page(GeneralPage))->maxBlockCount();
-    settings.timeStamp = static_cast<GeneralWizardPage*>(page(GeneralPage))->timeStamp();
-    settings.timeStampFormat = static_cast<GeneralWizardPage*>(page(GeneralPage))->timeStampFormat();
-    settings.stripNicks = static_cast<GeneralWizardPage*>(page(GeneralPage))->stripNicks();
-    settings.shortcuts = static_cast<ShortcutsWizardPage*>(page(ShortcutsPage))->shortcuts();
-    settings.colors = static_cast<ColorsWizardPage*>(page(ColorsPage))->colors();
-    settings.aliases = static_cast<AliasesWizardPage*>(page(AliasesPage))->aliases();
-    return settings;
-}
-
-void SettingsWizard::setSettings(const Settings& settings)
-{
-    setGeneralSettings(settings);
-    setShortcutSettings(settings);
-    setColorSettings(settings);
-    setAliasSettings(settings);
-}
-
-void SettingsWizard::setGeneralSettings(const Settings& settings)
-{
-    QFont font;
-    if (!settings.font.isEmpty())
-        font.fromString(settings.font);
-    static_cast<GeneralWizardPage*>(page(GeneralPage))->setFont(font);
-    static_cast<GeneralWizardPage*>(page(GeneralPage))->setLanguage(settings.language);
-    static_cast<GeneralWizardPage*>(page(GeneralPage))->setMaxBlockCount(settings.maxBlockCount);
-    static_cast<GeneralWizardPage*>(page(GeneralPage))->setTimeStamp(settings.timeStamp);
-    static_cast<GeneralWizardPage*>(page(GeneralPage))->setTimeStampFormat(settings.timeStampFormat);
-    static_cast<GeneralWizardPage*>(page(GeneralPage))->setStripNicks(settings.stripNicks);
-}
-
-void SettingsWizard::setShortcutSettings(const Settings& settings)
-{
-    static_cast<ShortcutsWizardPage*>(page(ShortcutsPage))->setShortcuts(settings.shortcuts);
-}
-
-void SettingsWizard::setColorSettings(const Settings& settings)
-{
-    static_cast<ColorsWizardPage*>(page(ColorsPage))->setColors(settings.colors);
-}
-
-void SettingsWizard::setAliasSettings(const Settings& settings)
-{
-    static_cast<AliasesWizardPage*>(page(AliasesPage))->setAliases(settings.aliases);
-}
-
-void SettingsWizard::resetCurrentPage()
-{
-    Settings settings; // default values
-    switch (currentId()) {
-        case GeneralPage: setGeneralSettings(settings); break;
-        case ShortcutsPage: setShortcutSettings(settings); break;
-        case ColorsPage: setColorSettings(settings); break;
-        case AliasesPage: setAliasSettings(settings); break;
-        default: Q_ASSERT(false); break;
-    }
+    if (testOption(CancelButtonOnLeft))
+        setButtonLayout(QList<WizardButton>() << CustomButton1 << Stretch << CancelButton << FinishButton);
+    else
+        setButtonLayout(QList<WizardButton>() << CustomButton1 << Stretch << FinishButton << CancelButton);
 }

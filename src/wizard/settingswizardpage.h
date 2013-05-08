@@ -12,39 +12,26 @@
 * GNU General Public License for more details.
 */
 
-#ifndef APPLICATION_H
-#define APPLICATION_H
+#ifndef SETTINGSWIZARDPAGE_H
+#define SETTINGSWIZARDPAGE_H
 
-#include <QApplication>
-#include <QDir>
+#include "ui_settingswizardpage.h"
 
 class SettingsModel;
 
-class Application : public QApplication
+class SettingsWizardPage : public QWizardPage
 {
     Q_OBJECT
 
 public:
-    Application(int& argc, char* argv[]);
-    ~Application();
-
-    static QString applicationSlogan();
-
-    static QByteArray encoding();
-    static void setEncoding(const QByteArray& encoding);
-
-    static SettingsModel* settings();
-    static QVariantMap defaultSettings();
-    static QDir dataDir();
+    SettingsWizardPage(SettingsModel* settings, QWidget* parent = 0);
 
 public slots:
-    static void aboutApplication();
-    static void showSettings();
+    void setAdvancedPage(bool advanced);
 
 private:
-    struct Private {
-        static QByteArray encoding;
-    };
+    SettingsModel* settings;
+    Ui::SettingsWizardPage ui;
 };
 
-#endif // APPLICATION_H
+#endif // SETTINGSWIZARDPAGE_H

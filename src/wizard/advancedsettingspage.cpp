@@ -12,14 +12,15 @@
 * GNU General Public License for more details.
 */
 
-#include "wizardtreewidget.h"
+#include "advancedsettingspage.h"
+#include "settingsmodel.h"
 
-WizardTreeWidget::WizardTreeWidget(QWidget* parent) : QTreeWidget(parent)
+AdvancedSettingsPage::AdvancedSettingsPage(QWidget* parent) : QWidget(parent)
 {
+    ui.setupUi(this);
 }
 
-bool WizardTreeWidget::edit(const QModelIndex& index, EditTrigger trigger, QEvent* event)
+void AdvancedSettingsPage::setSettings(SettingsModel* settings)
 {
-    QModelIndex sibling = index.sibling(index.row(), 1);
-    return QTreeWidget::edit(sibling, trigger, event);
+    ui.view->setModel(settings);
 }

@@ -14,6 +14,7 @@
 
 #include "mainwindow.h"
 #include "application.h"
+#include "settingsmodel.h"
 #include "connectionwizard.h"
 #include "sessionstackview.h"
 #include "soundnotification.h"
@@ -105,12 +106,12 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     menu->addAction(action);
 #endif // Q_WS_MAC
 
+    applySettings();
+    connect(Application::settings(), SIGNAL(changed()), this, SLOT(applySettings()));
+
     QSettings settings;
     if (settings.contains("geometry"))
         restoreGeometry(settings.value("geometry").toByteArray());
-
-    applySettings(Application::settings());
-    connect(qApp, SIGNAL(settingsChanged(Settings)), this, SLOT(applySettings(Settings)));
 
     ConnectionInfos connections = settings.value("connections").value<ConnectionInfos>();
     foreach (const ConnectionInfo& connection, connections)
@@ -182,7 +183,6 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
         if (!treeWidget->hasRestoredCurrent() && (!session->hasQuit() || stackView->count() == 1))
             treeWidget->setCurrentView(view);
         treeWidget->parentWidget()->show();
-        view->applySettings(Application::settings());
     }
 
     foreach (const ViewInfo& view, connection.views) {
@@ -244,13 +244,10 @@ void MainWindow::editSession(Session* session)
     updateOverlay();
 }
 
-void MainWindow::applySettings(const Settings& settings)
+void MainWindow::applySettings()
 {
-    searchShortcut->setKey(QKeySequence(settings.shortcuts.value(Settings::SearchView)));
-
-    foreach (MessageView* view, findChildren<MessageView*>())
-        view->applySettings(settings);
-    treeWidget->applySettings(settings);
+    SettingsModel* settings = Application::settings();
+    searchShortcut->setKey(QKeySequence(settings->value("shortcuts.searchView").toString()));
 }
 
 void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -311,8 +308,6 @@ void MainWindow::viewAdded(MessageView* view)
     connect(view, SIGNAL(splitterChanged(QByteArray)), this, SLOT(splitterChanged(QByteArray)));
     connect(view, SIGNAL(highlighted(IrcMessage*)), this, SLOT(highlighted(IrcMessage*)));
     connect(view, SIGNAL(missed(IrcMessage*)), this, SLOT(missed(IrcMessage*)));
-
-    view->applySettings(Application::settings());
 
     QSettings settings;
     if (settings.contains("list"))

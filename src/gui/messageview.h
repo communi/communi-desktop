@@ -16,7 +16,6 @@
 #define MESSAGEVIEW_H
 
 #include "ui_messageview.h"
-#include "settings.h"
 #include "viewinfo.h"
 #include <QPointer>
 #include <QElapsedTimer>
@@ -60,7 +59,6 @@ public:
 public slots:
     void showHelp(const QString& text, bool error = false);
     void sendMessage(const QString& message);
-    void applySettings(const Settings& settings);
     void receiveMessage(IrcMessage* message);
 
 signals:
@@ -87,6 +85,7 @@ private slots:
     void onTopicEdited(const QString& topic);
     void onSessionStatusChanged();
     void onSocketError();
+    void applySettings();
 
 private:
     struct Private : public Ui::MessageView {
@@ -94,7 +93,6 @@ private:
         QString receiver;
         QPointer<Session> session;
         SyntaxHighlighter* highlighter;
-        Settings settings;
         QString topic;
         int sentId;
         QString awayMessage;

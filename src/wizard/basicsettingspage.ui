@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GeneralWizardPage</class>
- <widget class="QWizardPage" name="GeneralWizardPage">
-  <property name="title">
-   <string>General settings</string>
-  </property>
-  <property name="subTitle">
-   <string>Adjust general settings</string>
-  </property>
+ <class>BasicSettingsPage</class>
+ <widget class="QWidget" name="BasicSettingsPage">
   <layout class="QFormLayout" name="formLayout">
    <item row="0" column="0">
     <widget class="QLabel" name="label_2">
@@ -48,11 +42,17 @@
    </item>
    <item row="1" column="1">
     <widget class="QSpinBox" name="blockSpinBox">
+     <property name="specialValueText">
+      <string>Unlimited</string>
+     </property>
      <property name="maximum">
-      <number>9999</number>
+      <number>10000</number>
      </property>
      <property name="singleStep">
       <number>10</number>
+     </property>
+     <property name="value">
+      <number>0</number>
      </property>
     </widget>
    </item>
@@ -67,25 +67,11 @@
     </widget>
    </item>
    <item row="2" column="1">
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="QLineEdit" name="timeStampEdit">
-       <property name="text">
-        <string>[hh:mm:ss]</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="timeStampCheckBox">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QLineEdit" name="timeStampEdit">
+     <property name="text">
+      <string>[hh:mm:ss]</string>
+     </property>
+    </widget>
    </item>
    <item row="3" column="0">
     <widget class="QLabel" name="label_4">
@@ -114,16 +100,8 @@
   <tabstop>sizeSpinBox</tabstop>
   <tabstop>blockSpinBox</tabstop>
   <tabstop>timeStampEdit</tabstop>
-  <tabstop>timeStampCheckBox</tabstop>
   <tabstop>stripNicksCheckBox</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>timeStampCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>timeStampEdit</receiver>
-   <slot>setEnabled(bool)</slot>
-  </connection>
- </connections>
+ <connections/>
 </ui>

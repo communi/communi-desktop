@@ -19,11 +19,9 @@
 #include <QShortcut>
 #include <QColor>
 #include <QHash>
-#include "settings.h"
 #include "viewinfo.h"
 
 class Session;
-struct Settings;
 class MessageView;
 class MenuFactory;
 class SessionTreeItem;
@@ -82,8 +80,6 @@ public slots:
     void highlight(SessionTreeItem* item);
     void unhighlight(SessionTreeItem* item);
 
-    void applySettings(const Settings& settings);
-
 signals:
     void editSession(Session* session);
     void closeItem(SessionTreeItem* item);
@@ -106,6 +102,7 @@ private slots:
     void delayedItemReset();
     void delayedItemResetTimeout();
     void highlightTimeout();
+    void applySettings();
 
 private:
     void resetItem(SessionTreeItem* item);
@@ -116,7 +113,6 @@ private:
     QTreeWidgetItem* findPrevItem(QTreeWidgetItem* from, int column, int role) const;
 
     struct Private {
-        Settings settings;
         bool currentRestored;
         bool itemResetBlocked;
         QColor highlightColor;

@@ -13,6 +13,9 @@
 */
 
 #include "messagestackview.h"
+#include "settingsmodel.h"
+#include "application.h"
+#include "zncplayback.h"
 #include "completer.h"
 #include "session.h"
 #include <irccommand.h>
@@ -31,6 +34,9 @@ MessageStackView::MessageStackView(Session* session, QWidget* parent) : QStacked
     d.handler.setDefaultView(view);
     d.handler.setCurrentView(view);
     setCurrentWidget(view);
+
+    applySettings();
+    connect(Application::settings(), SIGNAL(changed()), this, SLOT(applySettings()));
 }
 
 Session* MessageStackView::session() const
@@ -138,6 +144,12 @@ void MessageStackView::sendMessage(const QString& receiver, const QString& messa
         setCurrentWidget(view);
         view->sendMessage(message);
     }
+}
+
+void MessageStackView::applySettings()
+{
+    SettingsModel* settings = Application::settings();
+    d.handler.zncPlayback()->setTimeStampFormat(settings->value("format.timeStamp").toString());
 }
 
 void MessageStackView::activateView(int index)

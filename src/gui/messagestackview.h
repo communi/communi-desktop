@@ -54,6 +54,7 @@ signals:
     void viewActivated(MessageView* view);
 
 private slots:
+    void applySettings();
     void activateView(int index);
 
 private:
