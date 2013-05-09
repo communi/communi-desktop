@@ -535,8 +535,8 @@ void MessageView::receiveMessage(IrcMessage* message)
     options.nickName = d.session->nickName();
     options.users = d.listView->userModel()->users();
     // TODO: cache
-    options.stripNicks = Application::settings()->value("format.stripNicks").toBool();
-    options.timeStampFormat = Application::settings()->value("format.timeStamp").toString();
+    options.stripNicks = Application::settings()->value("format.hideUserHosts").toBool();
+    options.timeStampFormat = Application::settings()->value("formatting.timeStamp").toString();
     options.textFormat = *irc_text_format();
     if (d.viewType == ViewInfo::Channel)
         options.repeat = (d.joined > 1 && d.joined > d.parted);

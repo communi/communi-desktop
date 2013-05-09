@@ -16,6 +16,7 @@
 #define APPLICATION_H
 
 #include <QApplication>
+#include <QVariantMap>
 #include <QDir>
 
 class SettingsModel;

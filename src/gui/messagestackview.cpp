@@ -149,7 +149,7 @@ void MessageStackView::sendMessage(const QString& receiver, const QString& messa
 void MessageStackView::applySettings()
 {
     SettingsModel* settings = Application::settings();
-    d.handler.zncPlayback()->setTimeStampFormat(settings->value("format.timeStamp").toString());
+    d.handler.zncPlayback()->setTimeStampFormat(settings->value("formatting.timeStamp").toString());
 }
 
 void MessageStackView::activateView(int index)

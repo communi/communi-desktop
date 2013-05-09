@@ -42,8 +42,8 @@ void BasicSettingsPage::updateUi()
         ui.fontComboBox->setCurrentFont(font);
         ui.sizeSpinBox->setValue(font.pointSize());
         ui.blockSpinBox->setValue(model->value("ui.scrollback").toInt());
-        ui.stripNicksCheckBox->setChecked(model->value("format.stripNicks").toBool());
-        ui.timeStampEdit->setText(model->value("format.timeStamp").toString());
+        ui.stripNicksCheckBox->setChecked(model->value("formatting.hideUserHosts").toBool());
+        ui.timeStampEdit->setText(model->value("formatting.timeStamp").toString());
         block = false;
     }
 }
@@ -56,8 +56,8 @@ void BasicSettingsPage::updateModel()
         font.setPointSize(ui.sizeSpinBox->value());
         model->setValue("ui.font", font);
         model->setValue("ui.scrollback", ui.blockSpinBox->value());
-        model->setValue("format.stripNicks", ui.stripNicksCheckBox->isChecked());
-        model->setValue("format.timeStamp", ui.timeStampEdit->text());
+        model->setValue("formatting.hideUserHosts", ui.stripNicksCheckBox->isChecked());
+        model->setValue("formatting.timeStamp", ui.timeStampEdit->text());
         block = false;
     }
 }

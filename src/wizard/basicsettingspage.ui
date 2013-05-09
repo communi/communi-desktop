@@ -86,10 +86,7 @@
    <item row="3" column="1">
     <widget class="QCheckBox" name="stripNicksCheckBox">
      <property name="text">
-      <string>Strip nicks</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
+      <string>Hide user hosts</string>
      </property>
     </widget>
    </item>
