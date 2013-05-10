@@ -89,6 +89,7 @@ private slots:
     void onPassword(QString* password);
     void onCapabilities(const QStringList& available, QStringList* request);
     void onSessionInfoReceived(const IrcSessionInfo& info);
+    void applySettings();
 
 private:
     bool messageFilter(IrcMessage* message);
@@ -105,6 +106,7 @@ private:
     long m_timestamp;
     QElapsedTimer m_timestamper;
     IrcLagTimer* m_lag;
+    int m_rejoin;
 };
 
 #endif // SESSION_H

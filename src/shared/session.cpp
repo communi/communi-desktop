@@ -13,7 +13,8 @@
 */
 
 #include "session.h"
-#include <QApplication>
+#include "application.h"
+#include "settingsmodel.h"
 #include <IrcCommand>
 #include <IrcMessage>
 #include <Irc>
@@ -22,7 +23,7 @@
 #endif // QT_NO_OPENSSL
 
 Session::Session(QObject* parent) : IrcSession(parent),
-    m_info(this), m_quit(false), m_timestamp(0), m_lag(new IrcLagTimer(this))
+    m_info(this), m_quit(false), m_timestamp(0), m_lag(new IrcLagTimer(this)), m_rejoin(10)
 {
     installMessageFilter(this);
 
@@ -33,10 +34,12 @@ Session::Session(QObject* parent) : IrcSession(parent),
     connect(this, SIGNAL(capabilities(QStringList, QStringList*)), this, SLOT(onCapabilities(QStringList, QStringList*)));
     connect(this, SIGNAL(sessionInfoReceived(IrcSessionInfo)), SLOT(onSessionInfoReceived(IrcSessionInfo)));
 
-    setAutoReconnectDelay(15);
     connect(&m_reconnectTimer, SIGNAL(timeout()), this, SLOT(reconnect()));
 
     m_timestamper.invalidate();
+
+    applySettings();
+    connect(Application::settings(), SIGNAL(changed()), this, SLOT(applySettings()));
 }
 
 Session::~Session()
@@ -73,7 +76,7 @@ int Session::autoReconnectDelay() const
 
 void Session::setAutoReconnectDelay(int delay)
 {
-    m_reconnectTimer.setInterval(delay * 1000);
+    m_reconnectTimer.setInterval(qMax(0, delay) * 1000);
 }
 
 bool Session::isChannel(const QString& receiver) const
@@ -249,15 +252,17 @@ void Session::wake()
 
 void Session::onConnected()
 {
-    QStringList channels;
-    foreach (const ViewInfo& view, m_views) {
-        if (view.active && view.type == ViewInfo::Channel)
-            channels += view.name;
-    }
-    // send join commands in batches of max 10 channels
-    while (!channels.isEmpty()) {
-        sendCommand(IrcCommand::createJoin(QStringList(channels.mid(0, 10)).join(",")));
-        channels = channels.mid(10);
+    if (m_rejoin > 0) {
+        QStringList channels;
+        foreach (const ViewInfo& view, m_views) {
+            if (view.active && view.type == ViewInfo::Channel)
+                channels += view.name;
+        }
+        // send join commands in batches of max N channels
+        while (!channels.isEmpty()) {
+            sendCommand(IrcCommand::createJoin(QStringList(channels.mid(0, m_rejoin)).join(",")));
+            channels = channels.mid(m_rejoin);
+        }
     }
 
     m_timestamper.invalidate();
@@ -265,7 +270,7 @@ void Session::onConnected()
 
 void Session::onDisconnected()
 {
-    if (!m_quit && !m_reconnectTimer.isActive())
+    if (!m_quit && !m_reconnectTimer.isActive() && m_reconnectTimer.interval() > 0)
         m_reconnectTimer.start();
 }
 
@@ -288,6 +293,14 @@ void Session::onSessionInfoReceived(const IrcSessionInfo& info)
 {
     m_info = info;
     emit networkChanged(m_info.network());
+}
+
+void Session::applySettings()
+{
+    SettingsModel* settings = Application::settings();
+    lagTimer()->setInterval(settings->value("session.lagTimerInterval").toInt());
+    setAutoReconnectDelay(settings->value("session.reconnectDelay").toInt());
+    m_rejoin = settings->value("session.channelRejoinBatch").toInt();
 }
 
 bool Session::messageFilter(IrcMessage* message)
