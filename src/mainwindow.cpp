@@ -324,7 +324,6 @@ void MainWindow::viewAdded(MessageView* view)
     if (settings.contains("list"))
         view->restoreSplitter(settings.value("list").toByteArray());
 
-    Session* session = view->session();
     treeWidget->addView(view);
     if (settings.contains("tree"))
         treeWidget->restoreState(settings.value("tree").toByteArray());
