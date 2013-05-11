@@ -50,7 +50,7 @@ void UserModel::setChannel(const QString& channel)
 
 QStringList UserModel::users() const
 {
-    return d.names;
+    return d.prefixes.keys();
 }
 
 bool UserModel::hasUser(const QString& user) const

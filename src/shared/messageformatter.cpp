@@ -362,7 +362,8 @@ QString MessageFormatter::formatIdleTime(int secs)
 QString MessageFormatter::formatHtml(const QString& message, const Options& options)
 {
     QString msg = options.textFormat.toHtml(message);
-    foreach (const QString& user, options.users) {
+    for (int i = options.users.count() - 1; i >= 0; --i) {
+        const QString& user = options.users.at(i);
         int pos = 0;
         while ((pos = msg.indexOf(user, pos)) != -1) {
             QTextBoundaryFinder finder(QTextBoundaryFinder::Word, msg);
@@ -374,7 +375,7 @@ QString MessageFormatter::formatHtml(const QString& message, const Options& opti
             }
 
             finder.setPosition(pos + user.length());
-            if (!finder.isAtBoundary() || !finder.boundaryReasons().testFlag(BOUNDARY_REASON_END)) {
+            if (!finder.isAtBoundary()) { // || !finder.boundaryReasons().testFlag(BOUNDARY_REASON_END)) {
                 pos += user.length();
                 continue;
             }

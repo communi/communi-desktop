@@ -59,7 +59,7 @@ private:
         QString channel;
         Session* session;
         QStringList names;
-        QHash<QString, QString> prefixes;
+        QMap<QString, QString> prefixes;
     } d;
 };
 
