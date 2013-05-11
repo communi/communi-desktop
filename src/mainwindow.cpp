@@ -186,8 +186,11 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
     }
 
     foreach (const ViewInfo& view, connection.views) {
-        if (view.type != -1)
+        if (view.type != -1) {
             stack->restoreView(view);
+            if (view.expanded)
+                treeWidget->expandItem(treeWidget->sessionItem(session));
+        }
     }
 }
 
@@ -317,7 +320,6 @@ void MainWindow::viewAdded(MessageView* view)
     treeWidget->addView(view);
     if (settings.contains("tree"))
         treeWidget->restoreState(settings.value("tree").toByteArray());
-    treeWidget->expandItem(treeWidget->sessionItem(session));
 }
 
 void MainWindow::viewActivated(MessageView* view)

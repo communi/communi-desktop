@@ -214,6 +214,7 @@ ViewInfos SessionTreeWidget::viewInfos(Session* session) const
             view.type = child->view()->viewType();
             view.name = child->view()->receiver();
             view.active = child->view()->isActive();
+            view.expanded = item->isExpanded();
             views += view;
         }
     }
