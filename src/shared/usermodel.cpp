@@ -101,6 +101,7 @@ void UserModel::clearUsers()
     if (!d.names.isEmpty()) {
         beginResetModel();
         d.names.clear();
+        d.prefixes();
         endResetModel();
     }
 }
