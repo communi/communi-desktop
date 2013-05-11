@@ -105,6 +105,7 @@ QVariantMap Application::defaultSettings()
     QVariantMap settings;
 
     settings["ui.font"] = QFont();
+    settings["ui.mute"] = false;
     settings["ui.theme"] = "light";
     settings["ui.scrollback"] = 0;
 

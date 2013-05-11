@@ -38,7 +38,7 @@
 #include <QMenu>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
-    treeWidget(0), trayIcon(0), dockTile(0), sound(0)
+    treeWidget(0), trayIcon(0), muteAction(0), dockTile(0), sound(0)
 {
     stackView = new SessionStackView(this);
 
@@ -59,6 +59,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
         trayIcon->setVisible(true);
         connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
                 this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+        trayIcon->setContextMenu(new QMenu(this));
+        muteAction = trayIcon->contextMenu()->addAction(tr("Mute"));
+        muteAction->setCheckable(true);
     }
 
     if (QtDockTile::isAvailable())
@@ -202,6 +205,9 @@ void MainWindow::closeEvent(QCloseEvent* event)
         settings.setValue("tree", treeWidget->saveState());
         settings.setValue("splitter", static_cast<QSplitter*>(centralWidget())->saveState());
 
+        if (muteAction)
+            Application::settings()->setValue("ui.mute", muteAction->isChecked());
+
         ConnectionInfos connections;
         QList<Session*> sessions = stackView->sessions();
         foreach (Session* session, sessions) {
@@ -251,6 +257,8 @@ void MainWindow::applySettings()
 {
     SettingsModel* settings = Application::settings();
     searchShortcut->setKey(QKeySequence(settings->value("shortcuts.searchView").toString()));
+    if (muteAction)
+        muteAction->setChecked(settings->value("ui.mute").toBool());
 }
 
 void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -277,7 +285,7 @@ void MainWindow::highlighted(IrcMessage* message)
             trayIcon->alert();
         if (dockTile)
             dockTile->setBadge(dockTile->badge() + 1);
-        if (sound)
+        if (sound && (!muteAction || !muteAction->isChecked()))
             sound->play();
     }
 

@@ -75,6 +75,7 @@ private:
     SessionTreeWidget* treeWidget;
     SessionStackView* stackView;
     TrayIcon* trayIcon;
+    QAction* muteAction;
     QtDockTile* dockTile;
     QShortcut* searchShortcut;
     QPointer<Overlay> overlay;
