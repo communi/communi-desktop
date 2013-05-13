@@ -188,7 +188,7 @@ bool Session::isReconnecting() const
     return m_reconnectTimer.isActive();
 }
 
-bool Session::sendUiCommand(IrcCommand* command)
+bool Session::sendUiCommand(IrcCommand* command, const QString& identifier)
 {
 //    TODO:
 //    if (command->type() == IrcCommand::Join) {
@@ -196,7 +196,10 @@ bool Session::sendUiCommand(IrcCommand* command)
 //        if (!key.isEmpty())
 //            setChannelKey(command->parameters().value(0), key);
 //    }
-    return sendCommand(command);
+    m_commands.insert(identifier, command);
+    command->setParent(this); // take ownership
+    return sendCommand(command) &&
+           sendCommand(IrcCommand::createPing(identifier));
 }
 
 void Session::reconnect()
@@ -264,6 +267,12 @@ void Session::onConnected()
             channels = channels.mid(m_rejoin);
         }
     }
+
+    // send pending commands
+    QHash<QString, IrcCommand*> cmds = m_commands;
+    m_commands.clear();
+    foreach (IrcCommand* cmd, cmds)
+        sendUiCommand(cmd, cmds.key(cmd));
 
     m_timestamper.invalidate();
 }
@@ -337,6 +346,9 @@ bool Session::messageFilter(IrcMessage* message)
             m_timestamper.restart();
             return true;
         }
+    } else if (message->type() == IrcMessage::Pong) {
+        QString identifier = static_cast<IrcPongMessage*>(message)->argument();
+        delete m_commands.take(identifier);
     }
     return false;
 }

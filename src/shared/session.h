@@ -69,7 +69,7 @@ public:
     bool hasQuit() const;
     bool isReconnecting() const;
 
-    Q_INVOKABLE bool sendUiCommand(IrcCommand* command);
+    Q_INVOKABLE bool sendUiCommand(IrcCommand* command, const QString& identifier);
 
 public slots:
     void reconnect();
@@ -107,6 +107,7 @@ private:
     QElapsedTimer m_timestamper;
     IrcLagTimer* m_lag;
     int m_rejoin;
+    QHash<QString, IrcCommand*> m_commands;
 };
 
 #endif // SESSION_H

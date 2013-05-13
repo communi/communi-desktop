@@ -270,21 +270,19 @@ void MessageView::sendMessage(const QString& message)
                 emit queried(params.value(0));
             }
             delete cmd;
+        } else if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction || cmd->type() == IrcCommand::Notice) {
+            d.session->sendUiCommand(cmd, QString("_communi_msg_%1_%2").arg(d.receiver).arg(++d.sentId));
+
+            IrcMessage* msg = IrcMessage::fromData(":" + d.session->nickName().toUtf8() + " " + cmd->toString().toUtf8(), d.session);
+            receiveMessage(msg);
+            delete msg;
+
+            // highlight as gray until acked
+            QTextBlock block = d.textBrowser->document()->lastBlock();
+            block.setUserState(d.sentId);
+            d.highlighter->rehighlightBlock(block);
         } else {
             d.session->sendCommand(cmd);
-
-            if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction || cmd->type() == IrcCommand::Notice) {
-                IrcMessage* msg = IrcMessage::fromData(":" + d.session->nickName().toUtf8() + " " + cmd->toString().toUtf8(), d.session);
-                receiveMessage(msg);
-                delete msg;
-
-                // highlight as gray until acked
-                d.session->sendData("PING _communi_msg_" + d.receiver.toUtf8() + "_" + QByteArray::number(d.sentId));
-                QTextBlock block = d.textBrowser->document()->lastBlock();
-                block.setUserState(d.sentId);
-                d.highlighter->rehighlightBlock(block);
-                d.sentId++;
-            }
         }
     } else {
         showHelp(message, true);
