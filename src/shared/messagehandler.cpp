@@ -202,7 +202,7 @@ void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
         sendMessage(message, d.defaultView);
     else if (MessageView* view = d.views.value(message->sender().name().toLower()))
         sendMessage(message, view);
-    else if (message->target() == d.session->nickName())
+    else if (message->target() == d.session->nickName() || message->target().contains("*"))
         sendMessage(message, d.currentView);
     else
         sendMessage(message, message->target());
