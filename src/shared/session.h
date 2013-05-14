@@ -96,18 +96,19 @@ private:
     void addChannel(const QString& channel);
     void removeChannel(const QString& channel);
 
-    QString m_name;
-    QTimer m_reconnectTimer;
-    QString m_password;
-    ViewInfos m_views;
-    IrcSessionInfo m_info;
-    bool m_quit;
-    QStringList m_alternateNicks;
-    long m_timestamp;
-    QElapsedTimer m_timestamper;
-    IrcLagTimer* m_lag;
-    int m_rejoin;
-    QHash<QString, IrcCommand*> m_commands;
+    struct Private {
+        QString name;
+        QTimer reconnectTimer;
+        QString password;
+        ViewInfos views;
+        bool quit;
+        QStringList alternateNicks;
+        long timestamp;
+        QElapsedTimer timestamper;
+        IrcLagTimer* lag;
+        int rejoin;
+        QHash<QString, IrcCommand*> commands;
+    } d;
 };
 
 #endif // SESSION_H

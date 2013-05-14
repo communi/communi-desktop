@@ -22,9 +22,14 @@
 #include <QSslSocket>
 #endif // QT_NO_OPENSSL
 
-Session::Session(QObject* parent) : IrcSession(parent),
-    m_info(this), m_quit(false), m_timestamp(0), m_lag(new IrcLagTimer(this)), m_rejoin(10)
+Session::Session(QObject* parent) : IrcSession(parent)
 {
+    d.rejoin = 10;
+    d.quit = false;
+    d.timestamp = 0;
+    d.lag = new IrcLagTimer(this);
+    d.timestamper.invalidate();
+
     installMessageFilter(this);
 
     connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
@@ -34,9 +39,7 @@ Session::Session(QObject* parent) : IrcSession(parent),
     connect(this, SIGNAL(capabilities(QStringList, QStringList*)), this, SLOT(onCapabilities(QStringList, QStringList*)));
     connect(this, SIGNAL(sessionInfoReceived(IrcSessionInfo)), SLOT(onSessionInfoReceived(IrcSessionInfo)));
 
-    connect(&m_reconnectTimer, SIGNAL(timeout()), this, SLOT(reconnect()));
-
-    m_timestamper.invalidate();
+    connect(&d.reconnectTimer, SIGNAL(timeout()), this, SLOT(reconnect()));
 
     applySettings();
     connect(Application::settings(), SIGNAL(changed()), this, SLOT(applySettings()));
@@ -48,13 +51,13 @@ Session::~Session()
 
 QString Session::name() const
 {
-    return m_name;
+    return d.name;
 }
 
 void Session::setName(const QString& name)
 {
-    if (m_name != name) {
-        m_name = name;
+    if (d.name != name) {
+        d.name = name;
         emit nameChanged(name);
     }
 }
@@ -66,27 +69,29 @@ QString Session::network() const
 
 IrcLagTimer* Session::lagTimer() const
 {
-    return m_lag;
+    return d.lag;
 }
 
 int Session::autoReconnectDelay() const
 {
-    return m_reconnectTimer.interval() / 1000;
+    return d.reconnectTimer.interval() / 1000;
 }
 
 void Session::setAutoReconnectDelay(int delay)
 {
-    m_reconnectTimer.setInterval(qMax(0, delay) * 1000);
+    d.reconnectTimer.setInterval(qMax(0, delay) * 1000);
 }
 
 bool Session::isChannel(const QString& receiver) const
 {
-    return receiver.length() > 1 && m_info.channelTypes().contains(receiver.at(0));
+    IrcSessionInfo info(this);
+    return receiver.length() > 1 && info.channelTypes().contains(receiver.at(0));
 }
 
 QString Session::userPrefix(const QString& user) const
 {
-    QStringList prefixes = m_info.prefixes();
+    IrcSessionInfo info(this);
+    QStringList prefixes = info.prefixes();
     int i = 0;
     while (i < user.length() && prefixes.contains(user.at(i)))
         ++i;
@@ -133,12 +138,12 @@ void Session::setSecure(bool secure)
 
 QString Session::password() const
 {
-    return m_password;
+    return d.password;
 }
 
 void Session::setPassword(const QString& password)
 {
-    m_password = password;
+    d.password = password;
 }
 
 ConnectionInfo Session::toConnection() const
@@ -152,7 +157,7 @@ ConnectionInfo Session::toConnection() const
     connection.nick = nickName();
     connection.real = realName();
     connection.pass = password();
-    connection.quit = m_quit;
+    connection.quit = d.quit;
     return connection;
 }
 
@@ -167,8 +172,8 @@ void Session::initFrom(const ConnectionInfo& connection)
     QString appName = QApplication::applicationName().toLower();
     setUserName(connection.user.isEmpty() ? appName : connection.user);
     setRealName(connection.real.isEmpty() ? appName : connection.real);
-    m_views = connection.views;
-    m_quit = connection.quit;
+    d.views = connection.views;
+    d.quit = connection.quit;
 }
 
 Session* Session::fromConnection(const ConnectionInfo& connection, QObject* parent)
@@ -180,12 +185,12 @@ Session* Session::fromConnection(const ConnectionInfo& connection, QObject* pare
 
 bool Session::hasQuit() const
 {
-    return m_quit;
+    return d.quit;
 }
 
 bool Session::isReconnecting() const
 {
-    return m_reconnectTimer.isActive();
+    return d.reconnectTimer.isActive();
 }
 
 bool Session::sendUiCommand(IrcCommand* command, const QString& identifier)
@@ -196,7 +201,7 @@ bool Session::sendUiCommand(IrcCommand* command, const QString& identifier)
 //        if (!key.isEmpty())
 //            setChannelKey(command->parameters().value(0), key);
 //    }
-    m_commands.insert(identifier, command);
+    d.commands.insert(identifier, command);
     command->setParent(this); // take ownership
     return sendCommand(command) &&
            sendCommand(IrcCommand::createPing(identifier));
@@ -204,9 +209,9 @@ bool Session::sendUiCommand(IrcCommand* command, const QString& identifier)
 
 void Session::reconnect()
 {
-    m_quit = false;
+    d.quit = false;
     if (!isActive()) {
-        m_reconnectTimer.stop();
+        d.reconnectTimer.stop();
         open();
     }
 }
@@ -214,7 +219,7 @@ void Session::reconnect()
 void Session::quit()
 {
     sleep();
-    m_quit = true;
+    d.quit = true;
 }
 
 void Session::destructLater()
@@ -230,7 +235,7 @@ void Session::destructLater()
 
 void Session::stopReconnecting()
 {
-    m_reconnectTimer.stop();
+    d.reconnectTimer.stop();
 }
 
 void Session::sleep()
@@ -239,7 +244,8 @@ void Session::sleep()
                                  .arg(QApplication::applicationVersion());
 
     if (isConnected()) {
-        if (m_info.activeCapabilities().contains("communi"))
+        IrcSessionInfo info(this);
+        if (info.activeCapabilities().contains("communi"))
             sendCommand(IrcCommand::createCtcpRequest("*communi", "TIME"));
         sendCommand(IrcCommand::createQuit(message));
     } else {
@@ -249,43 +255,43 @@ void Session::sleep()
 
 void Session::wake()
 {
-    if (!m_quit)
+    if (!d.quit)
         reconnect();
 }
 
 void Session::onConnected()
 {
-    if (m_rejoin > 0) {
+    if (d.rejoin > 0) {
         QStringList channels;
-        foreach (const ViewInfo& view, m_views) {
+        foreach (const ViewInfo& view, d.views) {
             if (view.active && view.type == ViewInfo::Channel)
                 channels += view.name;
         }
         // send join commands in batches of max N channels
         while (!channels.isEmpty()) {
-            sendCommand(IrcCommand::createJoin(QStringList(channels.mid(0, m_rejoin)).join(",")));
-            channels = channels.mid(m_rejoin);
+            sendCommand(IrcCommand::createJoin(QStringList(channels.mid(0, d.rejoin)).join(",")));
+            channels = channels.mid(d.rejoin);
         }
     }
 
     // send pending commands
-    QHash<QString, IrcCommand*> cmds = m_commands;
-    m_commands.clear();
+    QHash<QString, IrcCommand*> cmds = d.commands;
+    d.commands.clear();
     foreach (IrcCommand* cmd, cmds)
         sendUiCommand(cmd, cmds.key(cmd));
 
-    m_timestamper.invalidate();
+    d.timestamper.invalidate();
 }
 
 void Session::onDisconnected()
 {
-    if (!m_quit && !m_reconnectTimer.isActive() && m_reconnectTimer.interval() > 0)
-        m_reconnectTimer.start();
+    if (!d.quit && !d.reconnectTimer.isActive() && d.reconnectTimer.interval() > 0)
+        d.reconnectTimer.start();
 }
 
 void Session::onPassword(QString* password)
 {
-    *password = m_password;
+    *password = d.password;
 }
 
 void Session::onCapabilities(const QStringList& available, QStringList* request)
@@ -294,14 +300,13 @@ void Session::onCapabilities(const QStringList& available, QStringList* request)
         request->append("identify-msg");
     if (available.contains("communi")) {
         request->append("communi");
-        request->append(QString("communi/%1").arg(m_timestamp));
+        request->append(QString("communi/%1").arg(d.timestamp));
     }
 }
 
 void Session::onSessionInfoReceived(const IrcSessionInfo& info)
 {
-    m_info = info;
-    emit networkChanged(m_info.network());
+    emit networkChanged(info.network());
 }
 
 void Session::applySettings()
@@ -309,16 +314,16 @@ void Session::applySettings()
     SettingsModel* settings = Application::settings();
     lagTimer()->setInterval(settings->value("session.lagTimerInterval").toInt());
     setAutoReconnectDelay(settings->value("session.reconnectDelay").toInt());
-    m_rejoin = settings->value("session.channelRejoinBatch").toInt();
+    d.rejoin = settings->value("session.channelRejoinBatch").toInt();
 }
 
 bool Session::messageFilter(IrcMessage* message)
 {
-    if (m_timestamp > 0 && m_timestamper.isValid()) {
-        long elapsed = m_timestamper.elapsed() / 1000;
+    if (d.timestamp > 0 && d.timestamper.isValid()) {
+        long elapsed = d.timestamper.elapsed() / 1000;
         if (elapsed > 0) {
-            m_timestamp += elapsed;
-            m_timestamper.restart();
+            d.timestamp += elapsed;
+            d.timestamper.restart();
         }
     }
 
@@ -331,31 +336,31 @@ bool Session::messageFilter(IrcMessage* message)
     } else if (message->type() == IrcMessage::Numeric) {
         int code = static_cast<IrcNumericMessage*>(message)->code();
         if (code == Irc::ERR_NICKNAMEINUSE) {
-            if (m_alternateNicks.isEmpty()) {
+            if (d.alternateNicks.isEmpty()) {
                 QString currentNick = nickName();
-                m_alternateNicks << (currentNick + "_")
+                d.alternateNicks << (currentNick + "_")
                                  <<  currentNick
                                  << (currentNick + "__")
                                  <<  currentNick;
             }
-            setNickName(m_alternateNicks.takeFirst());
+            setNickName(d.alternateNicks.takeFirst());
         }
     } else if (message->type() == IrcMessage::Notice) {
         if (message->sender().name() == "*communi") {
-            m_timestamp = static_cast<IrcNoticeMessage*>(message)->message().toLong();
-            m_timestamper.restart();
+            d.timestamp = static_cast<IrcNoticeMessage*>(message)->message().toLong();
+            d.timestamper.restart();
             return true;
         }
     } else if (message->type() == IrcMessage::Pong) {
         QString identifier = static_cast<IrcPongMessage*>(message)->argument();
-        delete m_commands.take(identifier);
+        delete d.commands.take(identifier);
     }
     return false;
 }
 
 void Session::addChannel(const QString& channel)
 {
-    foreach (const ViewInfo& view, m_views) {
+    foreach (const ViewInfo& view, d.views) {
         if (view.type == ViewInfo::Channel && !view.name.compare(channel, Qt::CaseInsensitive))
             return;
     }
@@ -364,15 +369,15 @@ void Session::addChannel(const QString& channel)
     view.active = true;
     view.name = channel;
     view.type = ViewInfo::Channel;
-    m_views += view;
+    d.views += view;
 }
 
 void Session::removeChannel(const QString& channel)
 {
-    for (int i = 0; i < m_views.count(); ++i) {
-        ViewInfo view = m_views.at(i);
+    for (int i = 0; i < d.views.count(); ++i) {
+        ViewInfo view = d.views.at(i);
         if (view.type == ViewInfo::Channel && !view.name.compare(channel, Qt::CaseInsensitive)) {
-            m_views.removeAt(i);
+            d.views.removeAt(i);
             return;
         }
     }
