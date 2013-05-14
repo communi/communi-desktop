@@ -91,7 +91,11 @@ void ItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
                 font.setPointSizeF(0.8 * font.pointSizeF());
             painter->setFont(font);
 
-            QString txt = QFontMetrics(font).elidedText(QString::number(badge), Qt::ElideRight, rect.width());
+            QString txt;
+            if (badge > 999)
+                txt = QLatin1String("...");
+            else
+                txt = QFontMetrics(font).elidedText(QString::number(badge), Qt::ElideRight, rect.width());
 
             painter->setPen(qApp->palette().color(QPalette::Light));
             painter->drawText(rect, Qt::AlignCenter, txt);
