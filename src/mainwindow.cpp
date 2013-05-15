@@ -85,7 +85,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     searchShortcut = new QShortcut(this);
     connect(searchShortcut, SIGNAL(activated()), this, SLOT(searchView()));
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     QMenu* menu = new QMenu(this);
     menuBar()->addMenu(menu);
 
@@ -107,7 +107,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     action->setMenuRole(QAction::AboutQtRole);
     connect(action, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     menu->addAction(action);
-#endif // Q_WS_MAC
+#endif // Q_OS_MAC
 
     applySettings();
     connect(Application::settings(), SIGNAL(changed()), this, SLOT(applySettings()));

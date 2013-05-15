@@ -165,11 +165,11 @@ QDir Application::dataDir()
 void Application::aboutApplication()
 {
     QMessageBox::about(
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
         0,
 #else
         activeWindow(),
-#endif // Q_WS_MAC
+#endif // Q_OS_MAC
         applicationName(), QString(
             "<h3>%1</h3>"
             "<p>%2</p>"

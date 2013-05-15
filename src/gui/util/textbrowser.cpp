@@ -195,11 +195,11 @@ void TextBrowser::paintEvent(QPaintEvent* event)
 
 void TextBrowser::wheelEvent(QWheelEvent* event)
 {
-#ifdef Q_WS_MACX
+#ifdef Q_OS_MAC
     // disable cmd+wheel zooming on mac
     QAbstractScrollArea::wheelEvent(event);
 #else
     QTextBrowser::wheelEvent(event);
-#endif // Q_WS_MACX
+#endif // Q_OS_MAC
 }
 
