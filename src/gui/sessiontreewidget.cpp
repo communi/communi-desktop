@@ -85,6 +85,9 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     d.mostActiveShortcut = new QShortcut(this);
     connect(d.mostActiveShortcut, SIGNAL(activated()), this, SLOT(moveToMostActiveItem()));
 
+    d.resetShortcut = new QShortcut(this);
+    connect(d.resetShortcut, SIGNAL(activated()), this, SLOT(resetAllItems()));
+
     applySettings();
     connect(Application::settings(), SIGNAL(changed()), this, SLOT(applySettings()));
 }
@@ -411,6 +414,7 @@ void SessionTreeWidget::applySettings()
     d.expandShortcut->setKey(QKeySequence(settings->value("shortcuts.expandView").toString()));
     d.collapseShortcut->setKey(QKeySequence(settings->value("shortcuts.collapseView").toString()));
     d.mostActiveShortcut->setKey(QKeySequence(settings->value("shortcuts.mostActiveView").toString()));
+    d.resetShortcut->setKey(QKeySequence(settings->value("shortcuts.resetViews").toString()));
 }
 
 void SessionTreeWidget::contextMenuEvent(QContextMenuEvent* event)
@@ -506,6 +510,15 @@ void SessionTreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidg
     SessionTreeItem* item = static_cast<SessionTreeItem*>(current);
     if (item)
         emit currentViewChanged(item->session(), item->parent() ? item->text(0) : QString());
+}
+
+void SessionTreeWidget::resetAllItems()
+{
+    QTreeWidgetItemIterator it(this);
+    while (*it) {
+        resetItem(static_cast<SessionTreeItem*>(*it));
+        ++it;
+    }
 }
 
 void SessionTreeWidget::delayedItemReset()

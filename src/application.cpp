@@ -132,6 +132,7 @@ QVariantMap Application::defaultSettings()
     settings["shortcuts.nextActiveView"] = nextActive.arg("Down");
     settings["shortcuts.mostActiveView"] = "Ctrl+L";
     settings["shortcuts.searchView"] = "Ctrl+S";
+    settings["shortcuts.resetViews"] = "Ctrl+R";
 
     // TODO:
 //    settings["messages.joins"] = true;

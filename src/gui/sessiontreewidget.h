@@ -99,6 +99,7 @@ private slots:
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+    void resetAllItems();
     void delayedItemReset();
     void delayedItemResetTimeout();
     void highlightTimeout();
@@ -124,6 +125,7 @@ private:
         QShortcut* expandShortcut;
         QShortcut* collapseShortcut;
         QShortcut* mostActiveShortcut;
+        QShortcut* resetShortcut;
         QHash<ItemStatus, QColor> colors;
         QSet<SessionTreeItem*> resetedItems;
         QSet<SessionTreeItem*> highlightedItems;
