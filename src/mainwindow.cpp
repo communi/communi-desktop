@@ -188,12 +188,14 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
         treeWidget->parentWidget()->show();
     }
 
+    SettingsModel* settings = Application::settings();
+    bool channels = settings->value("ui.rememberChannels").toBool();
+    bool queries = settings->value("ui.rememberQueries").toBool();
     foreach (const ViewInfo& view, connection.views) {
-        if (view.type != -1) {
+        if ((channels && view.type == ViewInfo::Channel) || (queries && view.type == ViewInfo::Query))
             stack->restoreView(view);
-            if (view.expanded)
-                treeWidget->expandItem(treeWidget->sessionItem(session));
-        }
+        if (view.type != -1 && view.expanded)
+            treeWidget->expandItem(treeWidget->sessionItem(session));
     }
 }
 

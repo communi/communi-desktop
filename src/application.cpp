@@ -109,6 +109,8 @@ QVariantMap Application::defaultSettings()
     settings["ui.theme"] = "light";
     settings["ui.scrollback"] = 0;
     settings["ui.sortViews"] = false;
+    settings["ui.rememberChannels"] = true;
+    settings["ui.rememberQueries"] = true;
 
     settings["session.reconnectDelay"] = 15;
     settings["session.lagTimerInterval"] = 60;

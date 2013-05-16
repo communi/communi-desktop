@@ -314,7 +314,9 @@ void Session::applySettings()
     SettingsModel* settings = Application::settings();
     lagTimer()->setInterval(settings->value("session.lagTimerInterval").toInt());
     setAutoReconnectDelay(settings->value("session.reconnectDelay").toInt());
-    d.rejoin = settings->value("session.channelRejoinBatch").toInt();
+    d.rejoin = 0;
+    if (settings->value("ui.rememberChannels").toBool())
+        d.rejoin = settings->value("session.channelRejoinBatch").toInt();
 }
 
 bool Session::messageFilter(IrcMessage* message)
