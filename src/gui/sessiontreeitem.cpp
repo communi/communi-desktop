@@ -112,8 +112,8 @@ bool SessionTreeItem::operator<(const QTreeWidgetItem& other) const
     Q_ASSERT(parent() && other.parent());
     QStringList sortOrder = static_cast<SessionTreeItem*>(parent())->d.sortOrder;
     if (sortOrder.isEmpty()) {
-        const bool a = session()->isChannel(text(0));
-        const bool b = session()->isChannel(other.text(0));
+        const bool a = d.view->viewType() == ViewInfo::Channel;
+        const bool b = static_cast<const SessionTreeItem*>(&other)->d.view->viewType() == ViewInfo::Channel;
         if (a != b)
             return a;
         return QTreeWidgetItem::operator<(other);
