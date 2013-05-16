@@ -33,6 +33,12 @@ else:target.path = /usr/bin
 INSTALLS += target
 
 unix:!mac {
+    ICONS_SIZES = 16 24 32 48 64 128
+    for(size, ICONS_SIZES) {
+        eval(icon$${size}.files = resources/icons/$${size}x$${size}/communi.png)
+        eval(icon$${size}.path = /usr/share/icons/hicolor/$${size}x$${size}/apps)
+        INSTALLS += icon$${size}
+    }
     icon.path = /usr/share/pixmaps
     icon.files = resources/icons/128x128/communi.png
     desktop.path = /usr/share/applications
