@@ -114,6 +114,7 @@ private:
     QTreeWidgetItem* findPrevItem(QTreeWidgetItem* from, int column, int role) const;
 
     struct Private {
+        bool sortViews;
         bool currentRestored;
         bool itemResetBlocked;
         QColor highlightColor;

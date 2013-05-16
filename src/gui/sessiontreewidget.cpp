@@ -50,6 +50,7 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
 
     d.dropParent = 0;
     d.menuFactory = 0;
+    d.sortViews = false;
     d.currentRestored = false;
     d.itemResetBlocked = false;
 
@@ -131,7 +132,9 @@ void SessionTreeWidget::restoreState(const QByteArray& state)
 
     for (int i = 0; i < topLevelItemCount(); ++i) {
         SessionTreeItem* item = static_cast<SessionTreeItem*>(topLevelItem(i));
-        item->d.sortOrder = hash.value(item->text(0)).toStringList();
+        item->d.sortOrder.clear();
+        if (!d.sortViews)
+            item->d.sortOrder = hash.value(item->text(0)).toStringList();
         item->sortChildren(0, Qt::AscendingOrder);
     }
 
@@ -402,6 +405,8 @@ void SessionTreeWidget::unhighlight(SessionTreeItem* item)
 void SessionTreeWidget::applySettings()
 {
     SettingsModel* settings = Application::settings();
+
+    d.sortViews = settings->value("ui.sortViews").toBool();
 
     QString theme =  settings->value("ui.theme").toString();
     QString key = QString("themes.%1.highlight").arg(theme);

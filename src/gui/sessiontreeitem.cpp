@@ -16,6 +16,7 @@
 #include "sessiontreewidget.h"
 #include "itemdelegate.h"
 #include "messageview.h"
+#include "session.h"
 
 SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidget* parent) : QTreeWidgetItem(parent)
 {
@@ -110,11 +111,20 @@ bool SessionTreeItem::operator<(const QTreeWidgetItem& other) const
 {
     Q_ASSERT(parent() && other.parent());
     QStringList sortOrder = static_cast<SessionTreeItem*>(parent())->d.sortOrder;
-    const int a = sortOrder.indexOf(text(0));
-    const int b = sortOrder.indexOf(other.text(0));
-    if (a == -1 && b != -1)
-        return false;
-    if (a != -1 && b == -1)
-        return true;
-    return a < b;
+    if (sortOrder.isEmpty()) {
+        const bool a = session()->isChannel(text(0));
+        const bool b = session()->isChannel(other.text(0));
+        if (a != b)
+            return a;
+        return QTreeWidgetItem::operator<(other);
+    } else {
+        // manual sorting via dnd
+        const int a = sortOrder.indexOf(text(0));
+        const int b = sortOrder.indexOf(other.text(0));
+        if (a == -1 && b != -1)
+            return false;
+        if (a != -1 && b == -1)
+            return true;
+        return a < b;
+    }
 }

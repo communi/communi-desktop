@@ -108,6 +108,7 @@ QVariantMap Application::defaultSettings()
     settings["ui.mute"] = false;
     settings["ui.theme"] = "light";
     settings["ui.scrollback"] = 0;
+    settings["ui.sortViews"] = false;
 
     settings["session.reconnectDelay"] = 15;
     settings["session.lagTimerInterval"] = 60;
