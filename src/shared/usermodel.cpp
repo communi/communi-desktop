@@ -229,14 +229,10 @@ void UserModel::processMessage(IrcMessage* message)
         IrcModeMessage* modeMsg = static_cast<IrcModeMessage*>(message);
         if (modeMsg->sender().name() != modeMsg->target() && !modeMsg->argument().isEmpty())
             setUserMode(modeMsg->argument(), modeMsg->mode());
-    } else if (message->type() == IrcMessage::Numeric) {
-        if (static_cast<IrcNumericMessage*>(message)->code() == Irc::RPL_NAMREPLY) {
-            int count = message->parameters().count();
-            if (!d.channel.isNull() && !d.channel.compare(message->parameters().value(count - 2), Qt::CaseInsensitive)) {
-                QString names = message->parameters().value(count - 1);
-                addUsers(names.split(" ", QString::SkipEmptyParts));
-            }
-        }
+    } else if (message->type() == IrcMessage::Names) {
+        IrcNamesMessage* namesMsg = static_cast<IrcNamesMessage*>(message);
+        if (!d.channel.isNull() && !d.channel.compare(namesMsg->channel(), Qt::CaseInsensitive))
+            addUsers(namesMsg->names());
     } else {
         promoteUser(message->sender().name());
     }
