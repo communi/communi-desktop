@@ -390,7 +390,7 @@ void MessageView::applySettings()
     command_model->setStringList(commands);
 
     // TODO: dedicated colors?
-    d.highlighter->setHighlightColor(settings->value(QString("themes.%1.timeStamp").arg(theme)).value<QColor>());
+    d.highlighter->setHighlightColor(settings->value(QString("themes.%1.timestamp").arg(theme)).value<QColor>());
     d.textBrowser->setHighlightColor(settings->value(QString("themes.%1.highlight").arg(theme)).value<QColor>().lighter(165));
 
     d.textBrowser->setFont(settings->value("ui.font").value<QFont>());
