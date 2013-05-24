@@ -175,14 +175,15 @@ void MessageHandler::handleNickMessage(IrcNickMessage* message)
 
 void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
 {
-    if (!message->session()->isConnected() || message->target() == "*")
+    QString target = message->target();
+    if (!message->session()->isConnected() || target.isEmpty()|| target == "*")
         sendMessage(message, d.defaultView);
     else if (MessageView* view = d.views.value(message->sender().name().toLower()))
         sendMessage(message, view);
-    else if (message->target() == message->session()->nickName() || message->target().contains("*"))
+    else if (target == message->session()->nickName() || target.contains("*"))
         sendMessage(message, d.currentView);
     else
-        sendMessage(message, message->target());
+        sendMessage(message, target);
 }
 
 void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
