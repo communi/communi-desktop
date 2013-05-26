@@ -501,14 +501,6 @@ void MessageView::receiveMessage(IrcMessage* message)
                         d.textBrowser->addMarker(blocks);
                     break;
                 }
-                case Irc::RPL_NOTOPIC:
-                    d.topic.clear();
-                    d.topicLabel->setText(tr("-"));
-                    break;
-                case Irc::RPL_TOPIC:
-                    d.topic = message->parameters().value(2);
-                    d.topicLabel->setText(MessageFormatter::formatHtml(d.topic));
-                    break;
                 case Irc::RPL_TOPICWHOTIME: {
                     QDateTime dateTime = QDateTime::fromTime_t(message->parameters().value(3).toInt());
                     d.topicLabel->setToolTip(tr("Set %1 by %2").arg(dateTime.toString(), message->parameters().value(2)));

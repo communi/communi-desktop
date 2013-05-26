@@ -224,10 +224,6 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message, const
                 return QCoreApplication::translate("MessageFormatter", "! %1 was created %2").arg(P_(1), dateTime.toString());
             }
             return QString();
-        case Irc::RPL_NOTOPIC:
-            return !options.repeat ? QCoreApplication::translate("MessageFormatter", "! %1 has no topic set").arg(P_(1)) : QString();
-        case Irc::RPL_TOPIC:
-            return !options.repeat ? QCoreApplication::translate("MessageFormatter", "! %1 topic is \"%2\"").arg(P_(1), formatHtml(P_(2), options)) : QString();
         case Irc::RPL_TOPICWHOTIME:
             if (!options.repeat) {
                 QDateTime dateTime = QDateTime::fromTime_t(P_(3).toInt());
@@ -297,7 +293,13 @@ QString MessageFormatter::formatTopicMessage(IrcTopicMessage* message, const Opt
 {
     const QString sender = formatSender(message->sender());
     const QString topic = formatHtml(message->topic(), options);
-    return QCoreApplication::translate("MessageFormatter", "! %1 sets topic \"%2\" on %3").arg(sender, topic, message->channel());
+    const QString channel = message->channel();
+    if (message->isReply()) {
+        if (topic.isEmpty())
+            return !options.repeat ? QCoreApplication::translate("MessageFormatter", "! %1 has no topic set").arg(channel) : QString();
+        return !options.repeat ? QCoreApplication::translate("MessageFormatter", "! %1 topic is \"%2\"").arg(channel, topic) : QString();
+    }
+    return QCoreApplication::translate("MessageFormatter", "! %1 sets topic \"%2\" on %3").arg(sender, topic, channel);
 }
 
 QString MessageFormatter::formatUnknownMessage(IrcMessage* message, const Options& options)

@@ -249,13 +249,13 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
         case Irc::RPL_ENDOFSTATS:
         case Irc::RPL_ENDOFUSERS:
         case Irc::RPL_ENDOFWHOWAS:
+        case Irc::RPL_NOTOPIC:
+        case Irc::RPL_TOPIC:
             break; // ignore
 
         case Irc::RPL_CHANNELMODEIS:
         case Irc::RPL_CHANNEL_URL:
         case Irc::RPL_CREATIONTIME:
-        case Irc::RPL_NOTOPIC:
-        case Irc::RPL_TOPIC:
         case Irc::RPL_TOPICWHOTIME:
             sendMessage(message, message->parameters().value(1));
             break;
