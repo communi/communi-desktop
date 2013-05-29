@@ -129,9 +129,11 @@ QString MessageFormatter::formatKickMessage(IrcKickMessage* message, const Optio
 
 QString MessageFormatter::formatModeMessage(IrcModeMessage* message, const Options& options)
 {
-    Q_UNUSED(options);
     const QString sender = formatSender(message->sender());
-    return QCoreApplication::translate("MessageFormatter", "! %1 sets mode %2 %3").arg(sender, message->mode(), message->argument());
+    if (message->isReply())
+        return !options.repeat ? QCoreApplication::translate("MessageFormatter", "! %1 mode is %2 %3").arg(message->target(), message->mode(), message->argument()) : QString();
+    else
+        return QCoreApplication::translate("MessageFormatter", "! %1 sets mode %2 %3").arg(sender, message->mode(), message->argument());
 }
 
 QString MessageFormatter::formatNamesMessage(IrcNamesMessage* message, const Options& options)
@@ -214,8 +216,6 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message, const
         case Irc::RPL_WHOISCHANNELS:
             return QCoreApplication::translate("MessageFormatter", "! %1 is on channels %2").arg(P_(1), P_(2));
 
-        case Irc::RPL_CHANNELMODEIS:
-            return !options.repeat ? QCoreApplication::translate("MessageFormatter", "! %1 mode is %2").arg(P_(1), P_(2)) : QString();
         case Irc::RPL_CHANNEL_URL:
             return !options.repeat ? QCoreApplication::translate("MessageFormatter", "! %1 url is %2").arg(P_(1), formatHtml(P_(2), options)) : QString();
         case Irc::RPL_CREATIONTIME:

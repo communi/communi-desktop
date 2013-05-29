@@ -167,10 +167,10 @@ void MessageHandler::handleKickMessage(IrcKickMessage* message)
 
 void MessageHandler::handleModeMessage(IrcModeMessage* message)
 {
-    if (message->sender().name() == message->target())
-        sendMessage(message, d.defaultView);
-    else
+    if (message->isReply() || message->sender().name() != message->target())
         sendMessage(message, message->target());
+    else
+        sendMessage(message, d.defaultView);
 }
 
 void MessageHandler::handleNamesMessage(IrcNamesMessage* message)
@@ -251,9 +251,9 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
         case Irc::RPL_ENDOFWHOWAS:
         case Irc::RPL_NOTOPIC:
         case Irc::RPL_TOPIC:
+        case Irc::RPL_CHANNELMODEIS:
             break; // ignore
 
-        case Irc::RPL_CHANNELMODEIS:
         case Irc::RPL_CHANNEL_URL:
         case Irc::RPL_CREATIONTIME:
         case Irc::RPL_TOPICWHOTIME:
