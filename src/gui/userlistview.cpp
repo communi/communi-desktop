@@ -61,6 +61,7 @@ IrcChannel* UserListView::channel() const
 void UserListView::setChannel(IrcChannel* channel)
 {
     d.channel = channel;
+    channel->model()->setActivitySortEnabled(true);
     SortedUserModel* sortedModel = new SortedUserModel(channel->model());
     sortedModel->sortByPrefixes(IrcSessionInfo(d.session).prefixes());
     setModel(sortedModel);

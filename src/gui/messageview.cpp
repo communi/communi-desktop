@@ -113,7 +113,6 @@ MessageView::MessageView(ViewInfo::Type type, Session* session, QWidget* parent)
         irc_text_format()->setPalette(palette);
     }
 
-    d.lineEditor->completer()->setUserModel(d.listView->userModel());
     d.lineEditor->completer()->setCommandModel(command_model);
     connect(d.lineEditor->completer(), SIGNAL(commandCompletion(QString)), this, SLOT(completeCommand(QString)));
 
@@ -195,6 +194,7 @@ IrcChannel* MessageView::channel() const
 void MessageView::setChannel(IrcChannel* channel)
 {
     d.listView->setChannel(channel);
+    d.lineEditor->completer()->setUserModel(d.listView->userModel());
 }
 
 bool MessageView::playbackMode() const
