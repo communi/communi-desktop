@@ -15,22 +15,25 @@
 #ifndef SORTEDUSERMODEL_H
 #define SORTEDUSERMODEL_H
 
+#include <QStringList>
 #include <QSortFilterProxyModel>
 
-class UserModel;
+class IrcUserModel;
 
 class SortedUserModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 
 public:
-    SortedUserModel(const QString& prefixes, UserModel* userModel = 0);
+    SortedUserModel(IrcUserModel* userModel);
+
+    void sortByPrefixes(const QStringList& prefixes);
 
 protected:
     bool lessThan(const QModelIndex& left, const QModelIndex& right) const;
 
 private:
-    QString pfx;
+    QStringList m_prefixes;
 };
 
 #endif // SORTEDUSERMODEL_H

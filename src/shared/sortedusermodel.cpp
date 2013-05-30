@@ -13,23 +13,27 @@
 */
 
 #include "sortedusermodel.h"
-#include "usermodel.h"
+#include <ircusermodel.h>
 
-SortedUserModel::SortedUserModel(const QString& prefixes, UserModel* userModel)
-    : QSortFilterProxyModel(userModel), pfx(prefixes)
+SortedUserModel::SortedUserModel(IrcUserModel* userModel) : QSortFilterProxyModel(userModel)
 {
     setSourceModel(userModel);
+}
+
+void SortedUserModel::sortByPrefixes(const QStringList& prefixes)
+{
+    m_prefixes = prefixes;
     sort(0, Qt::AscendingOrder);
     setDynamicSortFilter(true);
 }
 
 bool SortedUserModel::lessThan(const QModelIndex& left, const QModelIndex& right) const
 {
-    QString u1 = sourceModel()->data(left, Qt::DisplayRole).toString();
-    QString u2 = sourceModel()->data(right, Qt::DisplayRole).toString();
+    const QString p1 = left.data(Irc::PrefixRole).toString();
+    const QString p2 = right.data(Irc::PrefixRole).toString();
 
-    const int i1 = pfx.indexOf(u1.at(0));
-    const int i2 = pfx.indexOf(u2.at(0));
+    const int i1 = !p1.isEmpty() ? m_prefixes.indexOf(p1.at(0)) : -1;
+    const int i2 = !p2.isEmpty() ? m_prefixes.indexOf(p2.at(0)) : -1;
 
     if (i1 >= 0 && i2 < 0)
         return true;
@@ -38,5 +42,7 @@ bool SortedUserModel::lessThan(const QModelIndex& left, const QModelIndex& right
     if (i1 >= 0 && i2 >= 0 && i1 != i2)
         return i1 < i2;
 
-    return u1.compare(u2, Qt::CaseInsensitive) < 0;
+    const QString n1 = left.data(Irc::NameRole).toString();
+    const QString n2 = right.data(Irc::NameRole).toString();
+    return n1.compare(n2, Qt::CaseInsensitive) < 0;
 }

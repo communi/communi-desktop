@@ -21,8 +21,10 @@
 #include <QElapsedTimer>
 
 class SyntaxHighlighter;
+class IrcUserModel;
 class MenuFactory;
 class IrcMessage;
+class IrcChannel;
 class Session;
 
 class MessageView : public QWidget
@@ -38,12 +40,15 @@ public:
     bool isActive() const;
     ViewInfo::Type viewType() const;
     Session* session() const;
-    UserModel* userModel() const;
+    IrcUserModel* userModel() const;
     Completer* completer() const;
     QTextBrowser* textBrowser() const;
 
     QString receiver() const;
     void setReceiver(const QString& receiver);
+
+    IrcChannel* channel() const;
+    void setChannel(IrcChannel* channel);
 
     bool playbackMode() const;
     void setPlaybackMode(bool enabled);

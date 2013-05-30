@@ -17,9 +17,10 @@
 #include "userlistview.h"
 #include "sessiontreeitem.h"
 #include "sessiontreewidget.h"
-#include "usermodel.h"
 #include "session.h"
+#include <IrcUserModel>
 #include <IrcCommand>
+#include <IrcChannel>
 
 MenuFactory::MenuFactory(QObject* parent) : QObject(parent)
 {
@@ -95,7 +96,7 @@ private slots:
         QAction* action = qobject_cast<QAction*>(sender());
         if (action) {
             QStringList params = action->data().toStringList();
-            IrcCommand* command = IrcCommand::createMode(listView->channel(), params.at(1), params.at(0));
+            IrcCommand* command = IrcCommand::createMode(listView->channel()->title(), params.at(1), params.at(0));
             listView->session()->sendCommand(command);
         }
     }
@@ -104,7 +105,7 @@ private slots:
     {
         QAction* action = qobject_cast<QAction*>(sender());
         if (action) {
-            IrcCommand* command = IrcCommand::createKick(listView->channel(), action->data().toString());
+            IrcCommand* command = IrcCommand::createKick(listView->channel()->title(), action->data().toString());
             listView->session()->sendCommand(command);
         }
     }
@@ -113,7 +114,7 @@ private slots:
     {
         QAction* action = qobject_cast<QAction*>(sender());
         if (action) {
-            IrcCommand* command = IrcCommand::createMode(listView->channel(), "+b", action->data().toString() + "!*@*");
+            IrcCommand* command = IrcCommand::createMode(listView->channel()->title(), "+b", action->data().toString() + "!*@*");
             listView->session()->sendCommand(command);
         }
     }
@@ -230,7 +231,7 @@ QMenu* MenuFactory::createSessionTreeMenu(SessionTreeItem* item, SessionTreeWidg
         menu->addSeparator();
     } else if (active){
         if (item->session()->isChannel(item->text(0))) {
-            if (item->view()->userModel()->rowCount()) {
+            if (item->view()->userModel()->count()) {
                 menu->addAction(tr("Names"), menu, SLOT(onNamesTriggered()));
                 menu->addAction(tr("Part"), menu, SLOT(onPartTriggered()));
             } else {

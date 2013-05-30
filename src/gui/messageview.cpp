@@ -20,7 +20,6 @@
 #include "commandparser.h"
 #include "menufactory.h"
 #include "completer.h"
-#include "usermodel.h"
 #include "session.h"
 #include <QAbstractTextDocumentLayout>
 #include <QDesktopServices>
@@ -32,9 +31,11 @@
 #include <QDebug>
 #include <QUrl>
 #include <irctextformat.h>
+#include <ircusermodel.h>
 #include <ircpalette.h>
 #include <ircmessage.h>
 #include <irccommand.h>
+#include <ircchannel.h>
 #include <irc.h>
 
 static QStringListModel* command_model = 0;
@@ -158,7 +159,7 @@ Session* MessageView::session() const
     return d.session;
 }
 
-UserModel* MessageView::userModel() const
+IrcUserModel* MessageView::userModel() const
 {
     return d.listView->userModel();
 }
@@ -182,10 +183,18 @@ void MessageView::setReceiver(const QString& receiver)
 {
     if (d.receiver != receiver) {
         d.receiver = receiver;
-        if (d.viewType == ViewInfo::Channel)
-            d.listView->setChannel(receiver);
         emit receiverChanged(receiver);
     }
+}
+
+IrcChannel* MessageView::channel() const
+{
+    return d.listView->channel();
+}
+
+void MessageView::setChannel(IrcChannel* channel)
+{
+    d.listView->setChannel(channel);
 }
 
 bool MessageView::playbackMode() const
@@ -423,9 +432,6 @@ void MessageView::applySettings()
 
 void MessageView::receiveMessage(IrcMessage* message)
 {
-    if (!d.playback && d.viewType == ViewInfo::Channel)
-        d.listView->processMessage(message);
-
     bool ignore = false;
     MessageFormatter::Options options;
 
@@ -523,7 +529,8 @@ void MessageView::receiveMessage(IrcMessage* message)
     }
 
     options.nickName = d.session->nickName();
-    options.users = d.listView->userModel()->users();
+    if (IrcUserModel* model = d.listView->userModel())
+        options.users = model->names();
     // TODO: cache
     options.stripNicks = Application::settings()->value("format.hideUserHosts").toBool();
     options.timeStampFormat = Application::settings()->value("formatting.timeStamp").toString();

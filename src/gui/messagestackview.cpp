@@ -19,10 +19,24 @@
 #include "completer.h"
 #include "session.h"
 #include <irccommand.h>
+#include <ircchannel.h>
+#include <ircchannelmodel.h>
+
+class ChannelModel : public IrcChannelModel
+{
+public:
+    ChannelModel(QObject* parent = 0) : IrcChannelModel(parent) { }
+
+protected:
+    void destroyChannel(IrcChannel* channel) { Q_UNUSED(channel); }
+};
 
 MessageStackView::MessageStackView(Session* session, QWidget* parent) : QStackedWidget(parent)
 {
     d.handler.setSession(session);
+
+    d.channelModel = new ChannelModel(session);
+    connect(d.channelModel, SIGNAL(channelAdded(IrcChannel*)), this, SLOT(setChannel(IrcChannel*)));
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(activateView(int)));
 
@@ -160,4 +174,11 @@ void MessageStackView::activateView(int index)
         view->setFocus();
         emit viewActivated(view);
     }
+}
+
+void MessageStackView::setChannel(IrcChannel* channel)
+{
+    MessageView* view = addView(channel->title().toLower());
+    if (view)
+        view->setChannel(channel);
 }

@@ -23,8 +23,10 @@
 #include "viewinfo.h"
 
 class Session;
+class IrcChannel;
 class IrcMessage;
 class MessageView;
+class IrcChannelModel;
 
 class MessageStackView : public QStackedWidget
 {
@@ -56,6 +58,7 @@ signals:
 private slots:
     void applySettings();
     void activateView(int index);
+    void setChannel(IrcChannel* channel);
 
 private:
     MessageView* createView(ViewInfo::Type type, const QString& receiver);
@@ -63,6 +66,7 @@ private:
     struct Private {
         MessageHandler handler;
         QStringListModel viewModel;
+        IrcChannelModel* channelModel;
         QHash<QString, MessageView*> views;
     } d;
 };

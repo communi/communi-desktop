@@ -13,11 +13,13 @@
 */
 
 #include "userlistview.h"
-#include "itemdelegate.h"
 #include "sortedusermodel.h"
+#include "itemdelegate.h"
 #include "menufactory.h"
-#include "usermodel.h"
 #include "session.h"
+#include <IrcChannel>
+#include <IrcUserModel>
+#include <QSortFilterProxyModel>
 #include <QItemSelectionModel>
 #include <QContextMenuEvent>
 #include <QScrollBar>
@@ -25,8 +27,9 @@
 
 UserListView::UserListView(QWidget* parent) : QListView(parent)
 {
+    d.session = 0;
+    d.channel = 0;
     d.menuFactory = 0;
-    d.userModel = new UserModel(this);
     setItemDelegate(new ItemDelegate(this));
     connect(this, SIGNAL(doubleClicked(QModelIndex)), SLOT(onDoubleClicked(QModelIndex)));
 }
@@ -42,32 +45,39 @@ QSize UserListView::sizeHint() const
 
 Session* UserListView::session() const
 {
-    return d.userModel->session();
+    return d.session;
 }
 
 void UserListView::setSession(Session* session)
 {
-    d.userModel->setSession(session);
+    d.session = session;
 }
 
-QString UserListView::channel() const
+IrcChannel* UserListView::channel() const
 {
-    return d.userModel->channel();
+    return d.channel;
 }
 
-void UserListView::setChannel(const QString& channel)
+void UserListView::setChannel(IrcChannel* channel)
 {
-    d.userModel->setChannel(channel);
+    d.channel = channel;
+    SortedUserModel* sortedModel = new SortedUserModel(channel->model());
+    sortedModel->sortByPrefixes(IrcSessionInfo(d.session).prefixes());
+    setModel(sortedModel);
 }
 
-UserModel* UserListView::userModel() const
+IrcUserModel* UserListView::userModel() const
 {
-    return d.userModel;
+    if (d.channel)
+        return d.channel->model();
+    return 0;
 }
 
 bool UserListView::hasUser(const QString& user) const
 {
-    return d.userModel->hasUser(user);
+    if (IrcUserModel* model = userModel())
+        return model->names().contains(user, Qt::CaseInsensitive);
+    return false;
 }
 
 MenuFactory* UserListView::menuFactory() const
@@ -84,11 +94,6 @@ void UserListView::setMenuFactory(MenuFactory* factory)
     if (d.menuFactory && d.menuFactory->parent() == this)
         delete d.menuFactory;
     d.menuFactory = factory;
-}
-
-void UserListView::processMessage(IrcMessage* message)
-{
-    d.userModel->processMessage(message);
 }
 
 void UserListView::contextMenuEvent(QContextMenuEvent* event)
@@ -108,18 +113,8 @@ void UserListView::mousePressEvent(QMouseEvent* event)
         selectionModel()->clear();
 }
 
-void UserListView::showEvent(QShowEvent* event)
-{
-    QListView::showEvent(event);
-    if (!model()) {
-        Session* session = d.userModel->session();
-        IrcSessionInfo info(session);
-        setModel(new SortedUserModel(info.prefixes().join(""), d.userModel));
-    }
-}
-
 void UserListView::onDoubleClicked(const QModelIndex& index)
 {
     if (index.isValid())
-        emit doubleClicked(index.data(Qt::EditRole).toString());
+        emit doubleClicked(index.data(Irc::NameRole).toString());
 }

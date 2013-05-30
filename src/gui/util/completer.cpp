@@ -14,6 +14,7 @@
 
 #include "completer.h"
 #include "historylineedit.h"
+#include "ircusermodel.h"
 
 Completer::Completer(QObject* parent) : QCompleter(parent)
 {
@@ -113,14 +114,20 @@ void Completer::onTabPressed()
 
     // choose model
     if (!word.isEmpty() && d.commandPrefixes.contains(word.at(0))) {
-        if (model() != d.commandModel)
+        if (model() != d.commandModel) {
             setModel(d.commandModel);
+            setCompletionRole(Qt::DisplayRole);
+        }
     } else if (!word.isEmpty() && d.channelPrefixes.contains(word.at(0))) {
-        if (model() != d.channelModel)
+        if (model() != d.channelModel) {
             setModel(d.channelModel);
+            setCompletionRole(Qt::DisplayRole);
+        }
     } else {
-        if (model() != d.userModel)
+        if (model() != d.userModel) {
             setModel(d.userModel);
+            setCompletionRole(Irc::NameRole);
+        }
     }
 
     bool repeat = true;

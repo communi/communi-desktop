@@ -18,15 +18,15 @@
 #include <QListView>
 
 class Session;
-class UserModel;
+class IrcChannel;
 class IrcMessage;
 class IrcCommand;
 class MenuFactory;
+class IrcUserModel;
 
 class UserListView : public QListView
 {
     Q_OBJECT
-    Q_PROPERTY(QString channel READ channel WRITE setChannel)
 
 public:
     UserListView(QWidget* parent = 0);
@@ -37,17 +37,14 @@ public:
     Session* session() const;
     void setSession(Session* session);
 
-    QString channel() const;
-    void setChannel(const QString& channel);
+    IrcChannel* channel() const;
+    void setChannel(IrcChannel* channel);
 
-    UserModel* userModel() const;
+    IrcUserModel* userModel() const;
     bool hasUser(const QString& user) const;
 
     MenuFactory* menuFactory() const;
     void setMenuFactory(MenuFactory* factory);
-
-public slots:
-    void processMessage(IrcMessage* message);
 
 signals:
     void queried(const QString& user);
@@ -57,14 +54,14 @@ signals:
 protected:
     void contextMenuEvent(QContextMenuEvent* event);
     void mousePressEvent(QMouseEvent* event);
-    void showEvent(QShowEvent* event);
 
 private slots:
     void onDoubleClicked(const QModelIndex& index);
 
 private:
     struct Private {
-        UserModel* userModel;
+        Session* session;
+        IrcChannel* channel;
         MenuFactory* menuFactory;
     } d;
 };
