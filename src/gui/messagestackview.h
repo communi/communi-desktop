@@ -64,6 +64,7 @@ private:
     MessageView* createView(ViewInfo::Type type, const QString& receiver);
 
     struct Private {
+        Session* session;
         MessageHandler handler;
         QStringListModel viewModel;
         IrcChannelModel* channelModel;

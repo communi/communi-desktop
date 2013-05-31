@@ -32,9 +32,6 @@ public:
     explicit MessageHandler(QObject* parent = 0);
     virtual ~MessageHandler();
 
-    Session* session() const;
-    void setSession(Session* session);
-
     ZncPlayback* zncPlayback() const;
 
     MessageView* defaultView() const;

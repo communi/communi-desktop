@@ -33,10 +33,13 @@ protected:
 
 MessageStackView::MessageStackView(Session* session, QWidget* parent) : QStackedWidget(parent)
 {
-    d.handler.setSession(session);
+    d.session = session;
 
     d.channelModel = new ChannelModel(session);
     connect(d.channelModel, SIGNAL(channelAdded(IrcChannel*)), this, SLOT(setChannel(IrcChannel*)));
+    connect(d.channelModel, SIGNAL(messageIgnored(IrcMessage*)), &d.handler, SLOT(handleMessage(IrcMessage*)));
+
+    session->installMessageFilter(d.handler.zncPlayback());
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(activateView(int)));
 
@@ -44,7 +47,7 @@ MessageStackView::MessageStackView(Session* session, QWidget* parent) : QStacked
     connect(&d.handler, SIGNAL(viewToBeRemoved(QString)), this, SLOT(removeView(QString)));
     connect(&d.handler, SIGNAL(viewToBeRenamed(QString, QString)), this, SLOT(renameView(QString, QString)));
 
-    MessageView* view = addView(d.handler.session()->host());
+    MessageView* view = addView(session->host());
     d.handler.setDefaultView(view);
     d.handler.setCurrentView(view);
     setCurrentWidget(view);
@@ -55,7 +58,7 @@ MessageStackView::MessageStackView(Session* session, QWidget* parent) : QStacked
 
 Session* MessageStackView::session() const
 {
-    return qobject_cast<Session*>(d.handler.session());
+    return d.session;
 }
 
 MessageView* MessageStackView::currentView() const
@@ -77,7 +80,7 @@ MessageView* MessageStackView::addView(const QString& receiver)
             type = session()->isChannel(receiver) ? ViewInfo::Channel : ViewInfo::Query;
         view = createView(type, receiver);
     }
-    if (!view->isActive() && d.handler.session()->isChannel(receiver))
+    if (!view->isActive() && d.session->isChannel(receiver))
         openView(receiver);
     return view;
 }
@@ -89,7 +92,7 @@ void MessageStackView::restoreView(const ViewInfo& view)
 
 MessageView* MessageStackView::createView(ViewInfo::Type type, const QString& receiver)
 {
-    MessageView* view = new MessageView(type, d.handler.session(), this);
+    MessageView* view = new MessageView(type, d.session, this);
     // TODO:
     if (IrcSessionInfo(session()).isValid())
         view->completer()->setChannelPrefixes(IrcSessionInfo(session()).channelTypes().join(""));
@@ -135,7 +138,7 @@ void MessageStackView::closeView(int index)
             if (indexOf(view) == 0)
                 session()->quit();
             else if (view->viewType() == ViewInfo::Channel)
-                d.handler.session()->sendCommand(IrcCommand::createPart(view->receiver()));
+                d.session->sendCommand(IrcCommand::createPart(view->receiver()));
         }
         d.handler.removeView(view->receiver());
     }

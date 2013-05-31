@@ -29,7 +29,6 @@ MessageHandler::MessageHandler(QObject* parent) : QObject(parent)
 
     d.defaultView = 0;
     d.currentView = 0;
-    setSession(qobject_cast<Session*>(parent));
 }
 
 MessageHandler::~MessageHandler()
@@ -37,28 +36,6 @@ MessageHandler::~MessageHandler()
     d.defaultView = 0;
     d.currentView = 0;
     d.views.clear();
-}
-
-Session* MessageHandler::session() const
-{
-    return d.session;
-}
-
-void MessageHandler::setSession(Session* session)
-{
-    if (d.session != session) {
-        if (d.session) {
-            d.session->removeMessageFilter(d.zncPlayback);
-            disconnect(d.session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(handleMessage(IrcMessage*)));
-        }
-
-        if (session) {
-            session->installMessageFilter(d.zncPlayback);
-            connect(session, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(handleMessage(IrcMessage*)));
-        }
-
-        d.session = session;
-    }
 }
 
 ZncPlayback* MessageHandler::zncPlayback() const

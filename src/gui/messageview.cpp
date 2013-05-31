@@ -195,6 +195,7 @@ void MessageView::setChannel(IrcChannel* channel)
 {
     d.listView->setChannel(channel);
     d.lineEditor->completer()->setUserModel(d.listView->userModel());
+    connect(channel, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
 }
 
 bool MessageView::playbackMode() const
