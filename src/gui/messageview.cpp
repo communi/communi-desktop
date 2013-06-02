@@ -193,6 +193,7 @@ IrcChannel* MessageView::channel() const
 
 void MessageView::setChannel(IrcChannel* channel)
 {
+    channel->setParent(this);
     d.listView->setChannel(channel);
     d.lineEditor->completer()->setUserModel(d.listView->userModel());
     connect(channel, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
