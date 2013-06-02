@@ -30,8 +30,6 @@ Session::Session(QObject* parent) : IrcSession(parent)
     d.lag = new IrcLagTimer(this);
     d.timestamper.invalidate();
 
-    installMessageFilter(this);
-
     connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(this, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
     connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onDisconnected()));

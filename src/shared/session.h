@@ -27,7 +27,7 @@
 #include <QElapsedTimer>
 #include "connectioninfo.h"
 
-class Session : public IrcSession, IrcMessageFilter
+class Session : public IrcSession, public IrcMessageFilter
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
