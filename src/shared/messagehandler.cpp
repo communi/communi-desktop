@@ -15,8 +15,8 @@
 #include "messagehandler.h"
 #include "messageview.h"
 #include "zncplayback.h"
-#include "session.h"
 #include <qabstractsocket.h>
+#include <ircsession.h>
 #include <qvariant.h>
 #include <qdebug.h>
 #include <irc.h>
@@ -175,11 +175,11 @@ void MessageHandler::handleNickMessage(IrcNickMessage* message)
 
 void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
 {
-    if (!d.session->isConnected() || message->target() == "*")
+    if (!message->session()->isConnected() || message->target() == "*")
         sendMessage(message, d.defaultView);
     else if (MessageView* view = d.views.value(message->sender().name().toLower()))
         sendMessage(message, view);
-    else if (message->target() == d.session->nickName() || message->target().contains("*"))
+    else if (message->target() == message->session()->nickName() || message->target().contains("*"))
         sendMessage(message, d.currentView);
     else
         sendMessage(message, message->target());
@@ -286,7 +286,7 @@ void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
 {
     if (message->isRequest())
         sendMessage(message, d.currentView);
-    else if (message->target() == d.session->nickName())
+    else if (message->target() == message->session()->nickName())
         sendMessage(message, message->sender().name());
     else
         sendMessage(message, message->target());

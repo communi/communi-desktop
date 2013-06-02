@@ -20,7 +20,6 @@
 #include <QPointer>
 #include <IrcMessage>
 
-class Session;
 class MessageView;
 class ZncPlayback;
 
@@ -76,7 +75,6 @@ private slots:
 private:
     struct Private {
         ZncPlayback* zncPlayback;
-        QPointer<Session> session;
         MessageView* defaultView;
         MessageView* currentView;
         QHash<QString, MessageView*> views;
