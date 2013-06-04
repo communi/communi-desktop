@@ -62,6 +62,7 @@ private:
     struct Private {
         Session* session;
         IrcChannel* channel;
+        IrcUserModel* userModel;
         MenuFactory* menuFactory;
     } d;
 };

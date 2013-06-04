@@ -29,6 +29,7 @@ UserListView::UserListView(QWidget* parent) : QListView(parent)
 {
     d.session = 0;
     d.channel = 0;
+    d.userModel = 0;
     d.menuFactory = 0;
     setItemDelegate(new ItemDelegate(this));
     connect(this, SIGNAL(doubleClicked(QModelIndex)), SLOT(onDoubleClicked(QModelIndex)));
@@ -61,23 +62,21 @@ IrcChannel* UserListView::channel() const
 void UserListView::setChannel(IrcChannel* channel)
 {
     d.channel = channel;
-    channel->model()->setActivitySortEnabled(true);
-    SortedUserModel* sortedModel = new SortedUserModel(channel->model());
+    d.userModel = new IrcUserModel(channel);
+    SortedUserModel* sortedModel = new SortedUserModel(d.userModel);
     sortedModel->sortByPrefixes(IrcSessionInfo(d.session).prefixes());
     setModel(sortedModel);
 }
 
 IrcUserModel* UserListView::userModel() const
 {
-    if (d.channel)
-        return d.channel->model();
-    return 0;
+    return d.userModel;
 }
 
 bool UserListView::hasUser(const QString& user) const
 {
-    if (IrcUserModel* model = userModel())
-        return model->names().contains(user, Qt::CaseInsensitive);
+    if (d.userModel)
+        return d.userModel->contains(user);
     return false;
 }
 
