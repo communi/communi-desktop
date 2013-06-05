@@ -241,6 +241,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* message, const
         case Irc::RPL_NOWAWAY:
             return QCoreApplication::translate("MessageFormatter", "! %1").arg(P_(1));
 
+        case Irc::RPL_TOPIC:
         case Irc::RPL_NAMREPLY:
         case Irc::RPL_ENDOFNAMES:
             return QString();
