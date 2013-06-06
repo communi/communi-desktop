@@ -77,28 +77,6 @@ bool Session::isChannel(const QString& receiver) const
     return receiver.length() > 1 && info.channelTypes().contains(receiver.at(0));
 }
 
-QString Session::userPrefix(const QString& user) const
-{
-    IrcSessionInfo info(this);
-    QStringList prefixes = info.prefixes();
-    int i = 0;
-    while (i < user.length() && prefixes.contains(user.at(i)))
-        ++i;
-    return user.left(i);
-}
-
-QString Session::unprefixedUser(const QString& user) const
-{
-    QStringList prefixes = IrcSessionInfo(this).prefixes();
-    QString copy = user;
-    while (!copy.isEmpty() && prefixes.contains(copy.at(0)))
-        copy.remove(0, 1);
-    IrcSender sender(copy);
-    if (sender.isValid())
-        copy = sender.name();
-    return copy;
-}
-
 QString Session::password() const
 {
     return d.password;

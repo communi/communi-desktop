@@ -49,8 +49,6 @@ public:
     void setAutoReconnectDelay(int delay);
 
     Q_INVOKABLE bool isChannel(const QString& receiver) const;
-    Q_INVOKABLE QString userPrefix(const QString& user) const;
-    Q_INVOKABLE QString unprefixedUser(const QString& user) const;
 
     QString password() const;
     void setPassword(const QString& password);
