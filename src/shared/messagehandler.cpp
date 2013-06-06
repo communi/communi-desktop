@@ -91,6 +91,8 @@ bool MessageHandler::messageFilter(IrcMessage* message)
     case IrcMessage::Quit:
         handleQuitMessage(static_cast<IrcQuitMessage*>(message), true);
         break;
+    default:
+        break;
     }
     return false;
 }
