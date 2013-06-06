@@ -100,7 +100,8 @@ void UserListView::contextMenuEvent(QContextMenuEvent* event)
 {
     QModelIndex index = indexAt(event->pos());
     if (index.isValid()) {
-        QMenu* menu = menuFactory()->createUserListMenu(index.data().toString(), this);
+        QMenu* menu = menuFactory()->createUserListMenu(index.data(Irc::PrefixRole).toString(),
+                                                        index.data(Irc::NameRole).toString(), this);
         menu->exec(event->globalPos());
         menu->deleteLater();
     }

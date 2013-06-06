@@ -123,12 +123,9 @@ private:
     UserListView* listView;
 };
 
-QMenu* MenuFactory::createUserListMenu(const QString& user, UserListView* listView)
+QMenu* MenuFactory::createUserListMenu(const QString& prefix, const QString& name, UserListView* listView)
 {
     UserListMenu* menu = new UserListMenu(listView);
-
-    QString mode = listView->session()->userPrefix(user);
-    QString name = listView->session()->unprefixedUser(user);
 
     QAction* action = 0;
     action = menu->addAction(tr("Whois"), menu, SLOT(onWhoisTriggered()));
@@ -139,7 +136,7 @@ QMenu* MenuFactory::createUserListMenu(const QString& user, UserListView* listVi
 
     menu->addSeparator();
 
-    if (mode.contains("@")) {
+    if (prefix.contains("@")) {
         action = menu->addAction(tr("Deop"), menu, SLOT(onModeTriggered()));
         action->setData(QStringList() << name << "-o");
     } else {
@@ -147,7 +144,7 @@ QMenu* MenuFactory::createUserListMenu(const QString& user, UserListView* listVi
         action->setData(QStringList() << name << "+o");
     }
 
-    if (mode.contains("+")) {
+    if (prefix.contains("+")) {
         action = menu->addAction(tr("Devoice"), menu, SLOT(onModeTriggered()));
         action->setData(QStringList() << name << "-v");
     } else {

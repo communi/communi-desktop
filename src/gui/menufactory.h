@@ -31,7 +31,7 @@ public:
     virtual ~MenuFactory();
 
     virtual QMenu* createUserViewMenu(const QString& user, MessageView* view);
-    virtual QMenu* createUserListMenu(const QString& user, UserListView* listView);
+    virtual QMenu* createUserListMenu(const QString& prefix, const QString& name, UserListView* listView);
     virtual QMenu* createSessionTreeMenu(SessionTreeItem* item, SessionTreeWidget* tree);
 };
 
