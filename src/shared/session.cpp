@@ -24,7 +24,6 @@ Session::Session(QObject* parent) : IrcSession(parent)
     d.rejoin = 10;
     d.quit = false;
     d.timestamp = 0;
-    d.lag = new IrcLagTimer(this);
     d.timestamper.invalidate();
 
     connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
@@ -54,11 +53,6 @@ void Session::setName(const QString& name)
         d.name = name;
         emit nameChanged(name);
     }
-}
-
-IrcLagTimer* Session::lagTimer() const
-{
-    return d.lag;
 }
 
 int Session::autoReconnectDelay() const
@@ -226,7 +220,6 @@ void Session::onCapabilities(const QStringList& available, QStringList* request)
 void Session::applySettings()
 {
     SettingsModel* settings = Application::settings();
-    lagTimer()->setInterval(settings->value("session.lagTimerInterval").toInt());
     setAutoReconnectDelay(settings->value("session.reconnectDelay").toInt());
     d.rejoin = 0;
     if (settings->value("ui.rememberChannels").toBool())

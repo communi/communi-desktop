@@ -32,6 +32,7 @@
 #include <QUrl>
 #include <irctextformat.h>
 #include <ircusermodel.h>
+#include <irclagtimer.h>
 #include <ircpalette.h>
 #include <ircmessage.h>
 #include <irccommand.h>
@@ -70,8 +71,11 @@ MessageView::MessageView(ViewInfo::Type type, Session* session, QWidget* parent)
     d.session = session;
     connect(d.session, SIGNAL(activeChanged(bool)), this, SLOT(onSessionStatusChanged()));
     connect(d.session, SIGNAL(connectedChanged(bool)), this, SLOT(onSessionStatusChanged()));
-    connect(d.session->lagTimer(), SIGNAL(lagChanged(int)), d.lineEditor, SLOT(setLag(int)));
-    d.lineEditor->setLag(d.session->lagTimer()->lag());
+
+    d.lagTimer = new IrcLagTimer(d.session);
+    connect(d.lagTimer, SIGNAL(lagChanged(int)), d.lineEditor, SLOT(setLag(int)));
+
+    d.lineEditor->setLag(d.lagTimer->lag());
     if (type == ViewInfo::Server)
         connect(d.session, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onSocketError()));
 
@@ -384,6 +388,8 @@ void MessageView::applySettings()
 {
     SettingsModel* settings = Application::settings();
     QString theme =  settings->value("ui.theme").toString();
+
+    d.lagTimer->setInterval(settings->value("session.lagTimerInterval").toInt());
 
     // TODO: CommandParser is static => apply aliases once...
     QMap<QString,QString> aliases;

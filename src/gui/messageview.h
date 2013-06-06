@@ -23,6 +23,7 @@
 class SyntaxHighlighter;
 class IrcUserModel;
 class MenuFactory;
+class IrcLagTimer;
 class IrcMessage;
 class IrcChannel;
 class Session;
@@ -105,6 +106,7 @@ private:
         bool playback;
         int joined, parted;
         int connected, disconnected;
+        IrcLagTimer* lagTimer;
     } d;
 };
 

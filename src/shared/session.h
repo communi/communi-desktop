@@ -19,7 +19,6 @@
 #include <QTimer>
 #include <IrcSession>
 #include <IrcCommand>
-#include <IrcLagTimer>
 #include <QStringList>
 #include <IrcSessionInfo>
 #include <QAbstractSocket>
@@ -42,8 +41,6 @@ public:
 
     QString name() const;
     void setName(const QString& name);
-
-    IrcLagTimer* lagTimer() const;
 
     int autoReconnectDelay() const;
     void setAutoReconnectDelay(int delay);
@@ -95,7 +92,6 @@ private:
         QStringList alternateNicks;
         long timestamp;
         QElapsedTimer timestamper;
-        IrcLagTimer* lag;
         int rejoin;
         QHash<QString, IrcCommand*> commands;
     } d;
