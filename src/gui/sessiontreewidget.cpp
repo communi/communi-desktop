@@ -234,7 +234,6 @@ void SessionTreeWidget::addView(MessageView* view)
         item = new SessionTreeItem(view, this);
         Session* session = view->session();
         connect(session, SIGNAL(nameChanged(QString)), this, SLOT(updateSession()));
-        connect(session, SIGNAL(networkChanged(QString)), this, SLOT(updateSession()));
         d.sessionItems.insert(session, item);
     } else {
         SessionTreeItem* parent = d.sessionItems.value(view->session());

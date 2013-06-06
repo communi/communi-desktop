@@ -35,7 +35,6 @@ Session::Session(QObject* parent) : IrcSession(parent)
     connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onDisconnected()));
     connect(this, SIGNAL(password(QString*)), this, SLOT(onPassword(QString*)));
     connect(this, SIGNAL(capabilities(QStringList, QStringList*)), this, SLOT(onCapabilities(QStringList, QStringList*)));
-    connect(this, SIGNAL(sessionInfoReceived(IrcSessionInfo)), SLOT(onSessionInfoReceived(IrcSessionInfo)));
 
     connect(&d.reconnectTimer, SIGNAL(timeout()), this, SLOT(reconnect()));
 
@@ -58,11 +57,6 @@ void Session::setName(const QString& name)
         d.name = name;
         emit nameChanged(name);
     }
-}
-
-QString Session::network() const
-{
-    return IrcSessionInfo(this).network();
 }
 
 IrcLagTimer* Session::lagTimer() const
@@ -300,11 +294,6 @@ void Session::onCapabilities(const QStringList& available, QStringList* request)
         request->append("communi");
         request->append(QString("communi/%1").arg(d.timestamp));
     }
-}
-
-void Session::onSessionInfoReceived(const IrcSessionInfo& info)
-{
-    emit networkChanged(info.network());
 }
 
 void Session::applySettings()

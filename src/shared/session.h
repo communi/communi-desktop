@@ -31,7 +31,6 @@ class Session : public IrcSession, public IrcMessageFilter
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-    Q_PROPERTY(QString network READ network NOTIFY networkChanged)
     Q_PROPERTY(int autoReconnectDelay READ autoReconnectDelay WRITE setAutoReconnectDelay)
     Q_PROPERTY(bool secure READ isSecure WRITE setSecure)
     Q_PROPERTY(QString password READ password WRITE setPassword)
@@ -44,8 +43,6 @@ public:
 
     QString name() const;
     void setName(const QString& name);
-
-    QString network() const;
 
     IrcLagTimer* lagTimer() const;
 
@@ -81,14 +78,12 @@ public slots:
 
 signals:
     void nameChanged(const QString& name);
-    void networkChanged(const QString& network);
 
 private slots:
     void onConnected();
     void onDisconnected();
     void onPassword(QString* password);
     void onCapabilities(const QStringList& available, QStringList* request);
-    void onSessionInfoReceived(const IrcSessionInfo& info);
     void applySettings();
 
 private:
