@@ -32,7 +32,6 @@ class Session : public IrcSession, public IrcMessageFilter
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(int autoReconnectDelay READ autoReconnectDelay WRITE setAutoReconnectDelay)
-    Q_PROPERTY(bool secure READ isSecure WRITE setSecure)
     Q_PROPERTY(QString password READ password WRITE setPassword)
     Q_PROPERTY(bool reconnecting READ isReconnecting)
     Q_PROPERTY(bool hasQuit READ hasQuit WRITE setHasQuit)
@@ -52,9 +51,6 @@ public:
     Q_INVOKABLE bool isChannel(const QString& receiver) const;
     Q_INVOKABLE QString userPrefix(const QString& user) const;
     Q_INVOKABLE QString unprefixedUser(const QString& user) const;
-
-    bool isSecure() const;
-    void setSecure(bool secure);
 
     QString password() const;
     void setPassword(const QString& password);

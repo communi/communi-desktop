@@ -18,9 +18,6 @@
 #include <IrcCommand>
 #include <IrcMessage>
 #include <Irc>
-#ifndef QT_NO_OPENSSL
-#include <QSslSocket>
-#endif // QT_NO_OPENSSL
 
 Session::Session(QObject* parent) : IrcSession(parent)
 {
@@ -100,32 +97,6 @@ QString Session::unprefixedUser(const QString& user) const
     if (sender.isValid())
         copy = sender.name();
     return copy;
-}
-
-bool Session::isSecure() const
-{
-#ifdef QT_NO_OPENSSL
-    return false;
-#else
-    return qobject_cast<QSslSocket*>(socket());
-#endif // QT_NO_OPENSSL
-}
-
-void Session::setSecure(bool secure)
-{
-#ifdef QT_NO_OPENSSL
-    Q_UNUSED(secure)
-#else
-    QSslSocket* sslSocket = qobject_cast<QSslSocket*>(socket());
-    if (secure && !sslSocket) {
-        sslSocket = new QSslSocket(this);
-        sslSocket->setPeerVerifyMode(QSslSocket::QueryPeer);
-        sslSocket->ignoreSslErrors();
-        setSocket(sslSocket);
-    } else if (!secure && sslSocket) {
-        setSocket(new QTcpSocket(this));
-    }
-#endif // QT_NO_OPENSSL
 }
 
 QString Session::password() const
