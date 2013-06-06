@@ -148,11 +148,15 @@ void MessageStackView::closeView(int index)
 
 void MessageStackView::renameView(const QString& from, const QString& to)
 {
-    MessageView* view = d.views.take(from.toLower());
-    if (view) {
-        view->setReceiver(to);
-        d.views.insert(to.toLower(), view);
-        emit viewRenamed(view);
+    if (!d.views.contains(to.toLower())) {
+        MessageView* view = d.views.take(from.toLower());
+        if (view) {
+            view->setReceiver(to);
+            d.views.insert(to.toLower(), view);
+            emit viewRenamed(view);
+        }
+    } else if (currentView() == d.views.value(from.toLower())) {
+        setCurrentWidget(d.views.value(to.toLower()));
     }
 }
 

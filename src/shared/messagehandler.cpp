@@ -175,17 +175,22 @@ void MessageHandler::handleNamesMessage(IrcNamesMessage* message)
 
 void MessageHandler::handleNickMessage(IrcNickMessage* message, bool query)
 {
-    QString nick = message->sender().name().toLower();
+    QString oldNick = message->sender().name().toLower();
+    QString newNick = message->nick().toLower();
     if (d.zncPlayback->isActive()) {
         sendMessage(message, d.zncPlayback->target());
     } else {
         foreach (MessageView* view, d.views) {
-            if (view->hasUser(nick) && (!query || view->viewType() == ViewInfo::Query))
-                view->receiveMessage(message);
-            if (!nick.compare(view->receiver(), Qt::CaseInsensitive)) {
+            if (!query || view->viewType() == ViewInfo::Query) {
+                if (view->hasUser(oldNick) || !newNick.compare(view->receiver(), Qt::CaseInsensitive))
+                    view->receiveMessage(message);
+            }
+            if (!oldNick.compare(view->receiver(), Qt::CaseInsensitive)) {
                 emit viewToBeRenamed(view->receiver(), message->nick());
-                MessageView* object = d.views.take(nick);
-                d.views.insert(message->nick(), object);
+                if (!d.views.contains(newNick)) {
+                    MessageView* object = d.views.take(oldNick);
+                    d.views.insert(newNick, object);
+                }
             }
         }
     }
