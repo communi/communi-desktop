@@ -77,6 +77,24 @@ void MessageHandler::removeView(const QString& name)
     }
 }
 
+bool MessageHandler::messageFilter(IrcMessage* message)
+{
+    // Special handling for nick changes and quit messages:
+    // In order to keep potential queries up to date, we must
+    // process nick changes and quits regardless of whether
+    // a channel processed them or not...
+
+    switch (message->type()) {
+    case IrcMessage::Nick:
+        handleNickMessage(static_cast<IrcNickMessage*>(message));
+        break;
+    case IrcMessage::Quit:
+        handleQuitMessage(static_cast<IrcQuitMessage*>(message));
+        break;
+    }
+    return false;
+}
+
 void MessageHandler::handleMessage(IrcMessage* message)
 {
     switch (message->type()) {

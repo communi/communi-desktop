@@ -19,11 +19,12 @@
 #include <QObject>
 #include <QPointer>
 #include <IrcMessage>
+#include <IrcMessageFilter>
 
 class MessageView;
 class ZncPlayback;
 
-class MessageHandler : public QObject
+class MessageHandler : public QObject, public IrcMessageFilter
 {
     Q_OBJECT
 
@@ -41,6 +42,8 @@ public:
 
     void addView(const QString& name, MessageView* view);
     void removeView(const QString& name);
+
+    bool messageFilter(IrcMessage* message);
 
 public slots:
     void handleMessage(IrcMessage* message);
