@@ -17,6 +17,7 @@ HEADERS += $$PWD/viewinfo.h
 HEADERS += $$PWD/zncplayback.h
 
 SOURCES += $$PWD/commandparser.cpp
+SOURCES += $$PWD/connectioninfo.cpp
 SOURCES += $$PWD/messageformatter.cpp
 SOURCES += $$PWD/messagehandler.cpp
 SOURCES += $$PWD/session.cpp

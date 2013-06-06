@@ -156,7 +156,7 @@ void MainWindow::connectTo(const ConnectionInfo& connection)
 
 void MainWindow::connectToImpl(const ConnectionInfo& connection)
 {
-    Session* session = Session::fromConnection(connection, this);
+    Session* session = connection.toSession(this);
     session->setEncoding(Application::encoding());
     int index = stackView->addSession(session);
     if (!session->hasQuit()) {
@@ -213,7 +213,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
         ConnectionInfos connections;
         QList<Session*> sessions = stackView->sessions();
         foreach (Session* session, sessions) {
-            ConnectionInfo connection = session->toConnection();
+            ConnectionInfo connection = ConnectionInfo::fromSession(session);
             connection.views = treeWidget->viewInfos(session);
             connections += connection;
             session->quit();
@@ -249,9 +249,9 @@ void MainWindow::initialize()
 void MainWindow::editSession(Session* session)
 {
     ConnectionWizard wizard;
-    wizard.setConnection(session->toConnection());
+    wizard.setConnection(ConnectionInfo::fromSession(session));
     if (wizard.exec())
-        session->initFrom(wizard.connection());
+        wizard.connection().initSession(session);
     updateOverlay();
 }
 

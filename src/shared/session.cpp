@@ -138,51 +138,29 @@ void Session::setPassword(const QString& password)
     d.password = password;
 }
 
-ConnectionInfo Session::toConnection() const
-{
-    ConnectionInfo connection;
-    connection.name = name();
-    connection.secure = isSecure();
-    connection.host = host();
-    connection.port = port();
-    connection.user = userName();
-    connection.nick = nickName();
-    connection.real = realName();
-    connection.pass = password();
-    connection.quit = d.quit;
-    return connection;
-}
-
-void Session::initFrom(const ConnectionInfo& connection)
-{
-    setName(connection.name);
-    setSecure(connection.secure);
-    setPassword(connection.pass);
-    setHost(connection.host);
-    setPort(connection.port);
-    setNickName(connection.nick);
-    QString appName = QApplication::applicationName().toLower();
-    setUserName(connection.user.isEmpty() ? appName : connection.user);
-    setRealName(connection.real.isEmpty() ? appName : connection.real);
-    d.views = connection.views;
-    d.quit = connection.quit;
-}
-
-Session* Session::fromConnection(const ConnectionInfo& connection, QObject* parent)
-{
-    Session* session = new Session(parent);
-    session->initFrom(connection);
-    return session;
-}
-
 bool Session::hasQuit() const
 {
     return d.quit;
 }
 
+void Session::setHasQuit(bool quit)
+{
+    d.quit = quit;
+}
+
 bool Session::isReconnecting() const
 {
     return d.reconnectTimer.isActive();
+}
+
+ViewInfos Session::views() const
+{
+    return d.views;
+}
+
+void Session::setViews(const ViewInfos& views)
+{
+    d.views = views;
 }
 
 bool Session::sendUiCommand(IrcCommand* command, const QString& identifier)

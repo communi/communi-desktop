@@ -25,7 +25,7 @@
 #include <QAbstractSocket>
 #include <IrcMessageFilter>
 #include <QElapsedTimer>
-#include "connectioninfo.h"
+#include "viewinfo.h"
 
 class Session : public IrcSession, public IrcMessageFilter
 {
@@ -35,7 +35,7 @@ class Session : public IrcSession, public IrcMessageFilter
     Q_PROPERTY(bool secure READ isSecure WRITE setSecure)
     Q_PROPERTY(QString password READ password WRITE setPassword)
     Q_PROPERTY(bool reconnecting READ isReconnecting)
-    Q_PROPERTY(bool hasQuit READ hasQuit)
+    Q_PROPERTY(bool hasQuit READ hasQuit WRITE setHasQuit)
 
 public:
     explicit Session(QObject* parent = 0);
@@ -59,12 +59,13 @@ public:
     QString password() const;
     void setPassword(const QString& password);
 
-    ConnectionInfo toConnection() const;
-    void initFrom(const ConnectionInfo& connection);
-    static Session* fromConnection(const ConnectionInfo& connection, QObject* parent = 0);
-
     bool hasQuit() const;
+    void setHasQuit(bool quit);
+
     bool isReconnecting() const;
+
+    ViewInfos views() const;
+    void setViews(const ViewInfos& views);
 
     Q_INVOKABLE bool sendUiCommand(IrcCommand* command, const QString& identifier);
 

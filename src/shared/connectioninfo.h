@@ -23,9 +23,15 @@
 #include "viewinfo.h"
 #include "streamer.h"
 
-struct ConnectionInfo {
-    ConnectionInfo() : port(6667), secure(false), quit(false) {
-    }
+class Session;
+
+struct ConnectionInfo
+{
+    ConnectionInfo();
+
+    Session* toSession(QObject* parent = 0) const;
+    void initSession(Session* session) const;
+    static ConnectionInfo fromSession(Session* session);
 
     QString name;
     QString host;
