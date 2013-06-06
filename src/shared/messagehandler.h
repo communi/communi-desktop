@@ -59,13 +59,13 @@ protected:
     void handleKickMessage(IrcKickMessage* message);
     void handleModeMessage(IrcModeMessage* message);
     void handleNamesMessage(IrcNamesMessage* message);
-    void handleNickMessage(IrcNickMessage* message);
+    void handleNickMessage(IrcNickMessage* message, bool query = false);
     void handleNoticeMessage(IrcNoticeMessage* message);
     void handleNumericMessage(IrcNumericMessage* message);
     void handlePartMessage(IrcPartMessage* message);
     void handlePongMessage(IrcPongMessage* message);
     void handlePrivateMessage(IrcPrivateMessage* message);
-    void handleQuitMessage(IrcQuitMessage* message);
+    void handleQuitMessage(IrcQuitMessage* message, bool query = false);
     void handleTopicMessage(IrcTopicMessage* message);
     void handleUnknownMessage(IrcMessage* message);
 

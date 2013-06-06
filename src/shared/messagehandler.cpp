@@ -86,10 +86,10 @@ bool MessageHandler::messageFilter(IrcMessage* message)
 
     switch (message->type()) {
     case IrcMessage::Nick:
-        handleNickMessage(static_cast<IrcNickMessage*>(message));
+        handleNickMessage(static_cast<IrcNickMessage*>(message), true);
         break;
     case IrcMessage::Quit:
-        handleQuitMessage(static_cast<IrcQuitMessage*>(message));
+        handleQuitMessage(static_cast<IrcQuitMessage*>(message), true);
         break;
     }
     return false;
@@ -173,14 +173,14 @@ void MessageHandler::handleNamesMessage(IrcNamesMessage* message)
     sendMessage(message, message->channel());
 }
 
-void MessageHandler::handleNickMessage(IrcNickMessage* message)
+void MessageHandler::handleNickMessage(IrcNickMessage* message, bool query)
 {
     QString nick = message->sender().name().toLower();
     if (d.zncPlayback->isActive()) {
         sendMessage(message, d.zncPlayback->target());
     } else {
         foreach (MessageView* view, d.views) {
-            if (view->hasUser(nick))
+            if (view->hasUser(nick) && (!query || view->viewType() == ViewInfo::Query))
                 view->receiveMessage(message);
             if (!nick.compare(view->receiver(), Qt::CaseInsensitive)) {
                 emit viewToBeRenamed(view->receiver(), message->nick());
@@ -311,14 +311,14 @@ void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
         sendMessage(message, message->target());
 }
 
-void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
+void MessageHandler::handleQuitMessage(IrcQuitMessage* message, bool query)
 {
     QString nick = message->sender().name();
     if (d.zncPlayback->isActive()) {
         sendMessage(message, d.zncPlayback->target());
     } else {
         foreach (MessageView* view, d.views) {
-            if (view->hasUser(nick))
+            if (view->hasUser(nick) && (!query || view->viewType() == ViewInfo::Query))
                 view->receiveMessage(message);
         }
     }
