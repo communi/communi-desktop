@@ -64,7 +64,7 @@ void UserListView::setChannel(IrcChannel* channel)
     d.channel = channel;
     d.userModel = new IrcUserModel(channel);
     SortedUserModel* sortedModel = new SortedUserModel(d.userModel);
-    sortedModel->sortByPrefixes(IrcSessionInfo(d.session).prefixes());
+    sortedModel->setChannel(channel);
     setModel(sortedModel);
 }
 
