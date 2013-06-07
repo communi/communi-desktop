@@ -19,6 +19,7 @@
 #include <QStackedWidget>
 #include <QStringListModel>
 #include "messagehandler.h"
+#include "commandparser.h"
 #include "messageview.h"
 #include "viewinfo.h"
 
@@ -36,6 +37,8 @@ public:
     MessageStackView(Session* session, QWidget* parent = 0);
 
     Session* session() const;
+    CommandParser* parser() const;
+    QStringListModel* commandModel() const;
 
     MessageView* currentView() const;
     MessageView* viewAt(int index) const;
@@ -65,9 +68,11 @@ private:
 
     struct Private {
         Session* session;
+        CommandParser parser;
         MessageHandler handler;
         QStringListModel viewModel;
         IrcChannelModel* channelModel;
+        QStringListModel commandModel;
         QHash<QString, MessageView*> views;
     } d;
 };

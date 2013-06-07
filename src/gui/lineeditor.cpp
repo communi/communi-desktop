@@ -56,7 +56,7 @@ LineEditor::LineEditor(QWidget* parent) : HistoryLineEdit(parent)
     connect(this, SIGNAL(rightButtonClicked()), this, SLOT(onSend()));
 
     connect(this, SIGNAL(returnPressed()), this, SLOT(onSend()));
-    connect(this, SIGNAL(textChanged(QString)), this, SIGNAL(typed(QString)));
+    connect(this, SIGNAL(textEdited(QString)), this, SIGNAL(typed(QString)));
 }
 
 Completer* LineEditor::completer() const

@@ -63,6 +63,16 @@ Session* MessageStackView::session() const
     return d.session;
 }
 
+CommandParser* MessageStackView::parser() const
+{
+    return &const_cast<MessageStackView*>(this)->d.parser;
+}
+
+QStringListModel* MessageStackView::commandModel() const
+{
+    return &const_cast<MessageStackView*>(this)->d.commandModel;
+}
+
 MessageView* MessageStackView::currentView() const
 {
     return qobject_cast<MessageView*>(currentWidget());
@@ -173,6 +183,20 @@ void MessageStackView::applySettings()
 {
     SettingsModel* settings = Application::settings();
     d.handler.zncPlayback()->setTimeStampFormat(settings->value("formatting.timeStamp").toString());
+
+    QMap<QString,QString> aliases;
+    QVariantMap values = settings->values("aliases.*");
+    QMapIterator<QString,QVariant> it(values);
+    while (it.hasNext()) {
+        it.next();
+        aliases[it.key().mid(8).toUpper()] = it.value().toString();
+    }
+    d.parser.setAliases(aliases);
+
+    QStringList commands;
+    foreach (const QString& command, d.parser.availableCommands())
+        commands += d.parser.prefix() + command;
+    d.commandModel.setStringList(commands);
 }
 
 void MessageStackView::activateView(int index)

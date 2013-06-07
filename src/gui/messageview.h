@@ -21,6 +21,8 @@
 #include <QElapsedTimer>
 
 class SyntaxHighlighter;
+class MessageStackView;
+class CommandParser;
 class IrcUserModel;
 class MenuFactory;
 class IrcLagTimer;
@@ -35,7 +37,7 @@ class MessageView : public QWidget
     Q_PROPERTY(QString receiver READ receiver WRITE setReceiver NOTIFY receiverChanged)
 
 public:
-    MessageView(ViewInfo::Type type, Session* session, QWidget* parent = 0);
+    MessageView(ViewInfo::Type type, Session* session, MessageStackView* stack);
     ~MessageView();
 
     bool isActive() const;
@@ -107,6 +109,7 @@ private:
         int joined, parted;
         int connected, disconnected;
         IrcLagTimer* lagTimer;
+        CommandParser* parser;
     } d;
 };
 

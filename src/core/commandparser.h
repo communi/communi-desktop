@@ -15,58 +15,35 @@
 #ifndef COMMANDPARSER_H
 #define COMMANDPARSER_H
 
-#include <QMap>
+#include <IrcCommandParser>
 #include <QString>
-#include <QStringList>
+#include <QMap>
 
-class IrcCommand;
-
-class CommandParser
+class CommandParser : public IrcCommandParser
 {
+    Q_OBJECT
+    Q_PROPERTY(QStringList availableCommands READ availableCommands NOTIFY availableCommandsChanged)
+
 public:
-    static QStringList availableCommands();
-    static QStringList suggestedCommands(const QString& command, const QStringList& params);
-    static QString syntax(const QString& command);
+    CommandParser(QObject* parent = 0);
 
-    static void addCustomCommand(const QString& command, const QString& syntax);
-    static void removeCustomCommand(const QString& command);
+    QStringList availableCommands() const;
+    Q_INVOKABLE QString visualSyntax(const QString& command) const;
+    Q_INVOKABLE QStringList suggestedCommands(const QString& command, const QStringList& params) const;
 
-    static QMap<QString, QString> aliases();
-    static void setAliases(const QMap<QString, QString>& aliases);
+    QMap<QString, QString> aliases() const;
+    void setAliases(const QMap<QString, QString>& aliases);
 
-    static IrcCommand* parseCommand(const QString& receiver, const QString& text);
+    Q_INVOKABLE IrcCommand* parseCommand(const QString& input) const;
+
+signals:
+    void availableCommandsChanged();
+
+protected:
+    QString expandAlias(const QString& input) const;
 
 private:
-    static IrcCommand* parseCustomCommand(const QString& command, const QStringList& params, const QString& syntax);
-    static IrcCommand* parseAdmin(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseAway(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseInfo(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseInvite(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseJoin(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseKick(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseKnock(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseList(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseMe(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseMode(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseMotd(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseNames(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseNick(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseNotice(const QString& receiver, const QStringList& params);
-    static IrcCommand* parsePart(const QString& receiver, const QStringList& params);
-    static IrcCommand* parsePing(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseQuit(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseQuote(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseStats(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseTime(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseTopic(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseTrace(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseUsers(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseVersion(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseWho(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseWhois(const QString& receiver, const QStringList& params);
-    static IrcCommand* parseWhowas(const QString& receiver, const QStringList& params);
-
-    static struct Private {
+    struct Private {
         QMap<QString, QString> aliases;
     } d;
 };

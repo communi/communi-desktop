@@ -16,6 +16,7 @@
 #include "application.h"
 #include "settingsmodel.h"
 #include "syntaxhighlighter.h"
+#include "messagestackview.h"
 #include "messageformatter.h"
 #include "commandparser.h"
 #include "menufactory.h"
@@ -23,7 +24,6 @@
 #include "session.h"
 #include <QAbstractTextDocumentLayout>
 #include <QDesktopServices>
-#include <QStringListModel>
 #include <QTextBlock>
 #include <QShortcut>
 #include <QKeyEvent>
@@ -39,17 +39,17 @@
 #include <ircchannel.h>
 #include <irc.h>
 
-static QStringListModel* command_model = 0;
 Q_GLOBAL_STATIC(IrcTextFormat, irc_text_format)
 
-MessageView::MessageView(ViewInfo::Type type, Session* session, QWidget* parent) :
-    QWidget(parent)
+MessageView::MessageView(ViewInfo::Type type, Session* session, MessageStackView* stackView) :
+    QWidget(stackView)
 {
     d.setupUi(this);
     d.viewType = type;
     d.sentId = 1;
     d.awayReply.invalidate();
     d.playback = false;
+    d.parser = stackView->parser();
 
     d.joined = 0;
     d.parted = 0;
@@ -92,14 +92,6 @@ MessageView::MessageView(ViewInfo::Type type, Session* session, QWidget* parent)
         connect(d.session, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
     }
 
-    if (!command_model) {
-        command_model = new QStringListModel(qApp);
-
-        CommandParser::addCustomCommand("CLEAR", "");
-        CommandParser::addCustomCommand("QUERY", "<user>");
-        CommandParser::addCustomCommand("MSG", "<usr/channel> <message...>");
-    }
-
     static bool init = false;
     if (!init) {
         init = true;
@@ -117,7 +109,7 @@ MessageView::MessageView(ViewInfo::Type type, Session* session, QWidget* parent)
         irc_text_format()->setPalette(palette);
     }
 
-    d.lineEditor->completer()->setCommandModel(command_model);
+    d.lineEditor->completer()->setCommandModel(stackView->commandModel());
     connect(d.lineEditor->completer(), SIGNAL(commandCompletion(QString)), this, SLOT(completeCommand(QString)));
 
     connect(d.lineEditor, SIGNAL(send(QString)), this, SLOT(sendMessage(QString)));
@@ -239,14 +231,14 @@ void MessageView::showHelp(const QString& text, bool error)
 {
     QString syntax;
     if (text == "/") {
-        QStringList commands = CommandParser::availableCommands();
+        QStringList commands = d.parser->availableCommands();
         syntax = commands.join(" ");
     } else if (text.startsWith('/')) {
         QStringList words = text.mid(1).split(' ');
         QString command = words.value(0);
-        QStringList suggestions = CommandParser::suggestedCommands(command, words.mid(1));
+        QStringList suggestions = d.parser->suggestedCommands(command, words.mid(1));
         if (suggestions.count() == 1)
-            syntax = CommandParser::syntax(suggestions.first());
+            syntax = d.parser->visualSyntax(suggestions.first());
         else
             syntax = suggestions.join(" ");
 
@@ -268,7 +260,7 @@ void MessageView::showHelp(const QString& text, bool error)
 
 void MessageView::sendMessage(const QString& message)
 {
-    IrcCommand* cmd = CommandParser::parseCommand(d.receiver, message);
+    IrcCommand* cmd = d.parser->parseCommand(message);
     if (cmd) {
         if (cmd->type() == IrcCommand::Custom) {
             QString command = cmd->parameters().value(0);
@@ -390,21 +382,6 @@ void MessageView::applySettings()
     QString theme =  settings->value("ui.theme").toString();
 
     d.lagTimer->setInterval(settings->value("session.lagTimerInterval").toInt());
-
-    // TODO: CommandParser is static => apply aliases once...
-    QMap<QString,QString> aliases;
-    QVariantMap values = settings->values("aliases.*");
-    QMapIterator<QString,QVariant> it(values);
-    while (it.hasNext()) {
-        it.next();
-        aliases[it.key().mid(8).toUpper()] = it.value().toString();
-    }
-    CommandParser::setAliases(aliases);
-
-    QStringList commands;
-    foreach (const QString& command, CommandParser::availableCommands())
-        commands += "/" + command;
-    command_model->setStringList(commands);
 
     // TODO: dedicated colors?
     d.highlighter->setHighlightColor(settings->value(QString("themes.%1.timestamp").arg(theme)).value<QColor>());
