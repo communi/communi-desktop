@@ -4,3 +4,6 @@
 [submodule "src/3rdparty/libcommuni"]
 	path = src/3rdparty/libcommuni
 	url = git://github.com/communi/libcommuni.git
+[submodule "src/shared"]
+	path = src/shared
+	url = git://github.com/communi/communi-shared.git
