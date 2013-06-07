@@ -45,7 +45,7 @@ exists(3rdparty/libcommuni/src/src.pri) {
 }
 
 include(gui/gui.pri)
-include(shared/shared.pri)
+include(core/core.pri)
 include(wizard/wizard.pri)
 include(3rdparty/qtdocktile/qtdocktile.pri)
 include(3rdparty/qtsystemnotifier/systemnotifier.pri)
