@@ -75,6 +75,7 @@ private slots:
     void onConnected();
     void onDisconnected();
     void onPassword(QString* password);
+    void onNickNameReserved(QString* alternate);
     void onCapabilities(const QStringList& available, QStringList* request);
     void applySettings();
 

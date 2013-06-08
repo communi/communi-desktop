@@ -30,6 +30,7 @@ Session::Session(QObject* parent) : IrcSession(parent)
     connect(this, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
     connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onDisconnected()));
     connect(this, SIGNAL(password(QString*)), this, SLOT(onPassword(QString*)));
+    connect(this, SIGNAL(nickNameReserved(QString*)), this, SLOT(onNickNameReserved(QString*)));
     connect(this, SIGNAL(capabilities(QStringList, QStringList*)), this, SLOT(onCapabilities(QStringList, QStringList*)));
 
     connect(&d.reconnectTimer, SIGNAL(timeout()), this, SLOT(reconnect()));
@@ -207,6 +208,18 @@ void Session::onPassword(QString* password)
     *password = d.password;
 }
 
+void Session::onNickNameReserved(QString* alternate)
+{
+    if (d.alternateNicks.isEmpty()) {
+        QString currentNick = nickName();
+        d.alternateNicks << (currentNick + "_")
+                         <<  currentNick
+                         << (currentNick + "__")
+                         <<  currentNick;
+    }
+    *alternate = d.alternateNicks.takeFirst();
+}
+
 void Session::onCapabilities(const QStringList& available, QStringList* request)
 {
     if (available.contains("identify-msg"))
@@ -242,18 +255,6 @@ bool Session::messageFilter(IrcMessage* message)
     } else if (message->type() == IrcMessage::Part) {
         if (message->flags() & IrcMessage::Own)
             removeChannel(static_cast<IrcPartMessage*>(message)->channel());
-    } else if (message->type() == IrcMessage::Numeric) {
-        int code = static_cast<IrcNumericMessage*>(message)->code();
-        if (code == Irc::ERR_NICKNAMEINUSE) {
-            if (d.alternateNicks.isEmpty()) {
-                QString currentNick = nickName();
-                d.alternateNicks << (currentNick + "_")
-                                 <<  currentNick
-                                 << (currentNick + "__")
-                                 <<  currentNick;
-            }
-            setNickName(d.alternateNicks.takeFirst());
-        }
     } else if (message->type() == IrcMessage::Notice) {
         if (message->sender().name() == "*communi") {
             d.timestamp = static_cast<IrcNoticeMessage*>(message)->message().toLong();
