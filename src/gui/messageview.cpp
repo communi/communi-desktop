@@ -325,6 +325,10 @@ bool MessageView::eventFilter(QObject* object, QEvent* event)
 void MessageView::onConnected()
 {
     ++d.connected;
+
+    int blocks = d.textBrowser->document()->blockCount();
+    if (blocks > 10) // TODO
+        d.textBrowser->addMarker(blocks);
 }
 
 void MessageView::onDisconnected()
@@ -486,12 +490,6 @@ void MessageView::receiveMessage(IrcMessage* message)
         }
         case IrcMessage::Numeric:
             switch (static_cast<IrcNumericMessage*>(message)->code()) {
-                case Irc::RPL_WELCOME: {
-                    int blocks = d.textBrowser->document()->blockCount();
-                    if (blocks > 10) // TODO
-                        d.textBrowser->addMarker(blocks);
-                    break;
-                }
                 case Irc::RPL_TOPICWHOTIME: {
                     QDateTime dateTime = QDateTime::fromTime_t(message->parameters().value(3).toInt());
                     d.topicLabel->setToolTip(tr("Set %1 by %2").arg(dateTime.toString(), message->parameters().value(2)));
