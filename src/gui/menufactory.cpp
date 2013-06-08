@@ -227,7 +227,8 @@ QMenu* MenuFactory::createSessionTreeMenu(SessionTreeItem* item, SessionTreeWidg
         menu->addAction(tr("Edit"), menu, SLOT(onEditSession()))->setEnabled(!active);
         menu->addSeparator();
     } else if (active){
-        if (item->session()->isChannel(item->text(0))) {
+        bool channel = !item->text(0).isEmpty() && IrcSessionInfo(item->session()).channelTypes().contains(item->text(0).at(0));
+        if (channel) {
             if (item->view()->userModel()->count()) {
                 menu->addAction(tr("Names"), menu, SLOT(onNamesTriggered()));
                 menu->addAction(tr("Part"), menu, SLOT(onPartTriggered()));

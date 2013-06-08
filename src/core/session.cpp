@@ -64,12 +64,6 @@ void Session::setAutoReconnectDelay(int delay)
     d.reconnectTimer.setInterval(qMax(0, delay) * 1000);
 }
 
-bool Session::isChannel(const QString& receiver) const
-{
-    IrcSessionInfo info(this);
-    return receiver.length() > 1 && info.channelTypes().contains(receiver.at(0));
-}
-
 QString Session::password() const
 {
     return d.password;

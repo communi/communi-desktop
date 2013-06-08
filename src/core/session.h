@@ -44,8 +44,6 @@ public:
     int autoReconnectDelay() const;
     void setAutoReconnectDelay(int delay);
 
-    Q_INVOKABLE bool isChannel(const QString& receiver) const;
-
     QString password() const;
     void setPassword(const QString& password);
 
