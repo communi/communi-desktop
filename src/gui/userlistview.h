@@ -17,7 +17,7 @@
 
 #include <QListView>
 
-class Session;
+class IrcSession;
 class IrcChannel;
 class IrcMessage;
 class IrcCommand;
@@ -34,8 +34,8 @@ public:
 
     QSize sizeHint() const;
 
-    Session* session() const;
-    void setSession(Session* session);
+    IrcSession* session() const;
+    void setSession(IrcSession* session);
 
     IrcChannel* channel() const;
     void setChannel(IrcChannel* channel);
@@ -60,7 +60,7 @@ private slots:
 
 private:
     struct Private {
-        Session* session;
+        IrcSession* session;
         IrcChannel* channel;
         IrcUserModel* userModel;
         MenuFactory* menuFactory;

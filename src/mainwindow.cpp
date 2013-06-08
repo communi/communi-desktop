@@ -211,13 +211,15 @@ void MainWindow::closeEvent(QCloseEvent* event)
             Application::settings()->setValue("ui.mute", muteAction->isChecked());
 
         ConnectionInfos connections;
-        QList<Session*> sessions = stackView->sessions();
-        foreach (Session* session, sessions) {
-            ConnectionInfo connection = ConnectionInfo::fromSession(session);
-            connection.views = treeWidget->viewInfos(session);
-            connections += connection;
-            session->quit();
-            session->destructLater();
+        QList<IrcSession*> sessions = stackView->sessions();
+        foreach (IrcSession* s, sessions) {
+            if (Session* session = qobject_cast<Session*>(s)) { // TODO
+                ConnectionInfo connection = ConnectionInfo::fromSession(session);
+                connection.views = treeWidget->viewInfos(session);
+                connections += connection;
+                session->quit();
+                session->destructLater();
+            }
         }
         settings.setValue("connections", QVariant::fromValue(connections));
 
@@ -381,7 +383,7 @@ void MainWindow::updateOverlay()
             overlay = new Overlay(stackView);
             connect(overlay, SIGNAL(refresh()), this, SLOT(reconnectSession()));
         }
-        Session* session = stack->session();
+        IrcSession* session = stack->session();
         overlay->setParent(stack->currentWidget());
         overlay->setBusy(session->isActive() && !session->isConnected());
         overlay->setRefresh(!session->isActive());
@@ -394,8 +396,10 @@ void MainWindow::updateOverlay()
 void MainWindow::reconnectSession()
 {
     MessageStackView* stack = stackView->currentWidget();
-    if (stack)
-        stack->session()->reconnect();
+    if (stack) {
+        if (Session* session = qobject_cast<Session*>(stack->session())) // TODO
+            session->reconnect();
+    }
 }
 
 void MainWindow::addView()
@@ -405,7 +409,7 @@ void MainWindow::addView()
         AddViewDialog dialog(stack->session(), this);
         if (dialog.exec()) {
             QString view = dialog.view();
-            if (stack->session()->isChannel(view))
+            if (dialog.isChannel())
                 stack->session()->sendCommand(IrcCommand::createJoin(view, dialog.password()));
             stack->openView(view);
         }

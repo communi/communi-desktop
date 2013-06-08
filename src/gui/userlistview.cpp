@@ -16,7 +16,6 @@
 #include "sortedusermodel.h"
 #include "itemdelegate.h"
 #include "menufactory.h"
-#include "session.h"
 #include <IrcChannel>
 #include <IrcUserModel>
 #include <QSortFilterProxyModel>
@@ -44,12 +43,12 @@ QSize UserListView::sizeHint() const
     return QSize(16 * fontMetrics().width('#') + verticalScrollBar()->sizeHint().width(), QListView::sizeHint().height());
 }
 
-Session* UserListView::session() const
+IrcSession* UserListView::session() const
 {
     return d.session;
 }
 
-void UserListView::setSession(Session* session)
+void UserListView::setSession(IrcSession* session)
 {
     d.session = session;
 }

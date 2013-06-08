@@ -21,9 +21,9 @@ SessionStackView::SessionStackView(QWidget* parent) : QStackedWidget(parent)
 {
 }
 
-QList<Session*> SessionStackView::sessions() const
+QList<IrcSession*> SessionStackView::sessions() const
 {
-    QList<Session*> list;
+    QList<IrcSession*> list;
     for (int i = 0; i < count(); ++i) {
         MessageStackView* widget = widgetAt(i);
         if (widget)
@@ -32,19 +32,20 @@ QList<Session*> SessionStackView::sessions() const
     return list;
 }
 
-int SessionStackView::addSession(Session* session)
+int SessionStackView::addSession(IrcSession* session)
 {
     MessageStackView* widget = new MessageStackView(session, this);
     return addWidget(widget);
 }
 
-void SessionStackView::removeSession(Session* session)
+void SessionStackView::removeSession(IrcSession* session)
 {
     MessageStackView* widget = sessionWidget(session);
     if (widget) {
         removeWidget(widget);
         widget->deleteLater();
-        widget->session()->destructLater();
+        if (Session* session = qobject_cast<Session*>(widget->session()))
+            session->destructLater();
     }
 }
 
@@ -58,7 +59,7 @@ MessageStackView* SessionStackView::widgetAt(int index) const
     return qobject_cast<MessageStackView*>(QStackedWidget::widget(index));
 }
 
-MessageStackView* SessionStackView::sessionWidget(Session* session) const
+MessageStackView* SessionStackView::sessionWidget(IrcSession* session) const
 {
     for (int i = 0; i < count(); ++i) {
         MessageStackView* widget = widgetAt(i);

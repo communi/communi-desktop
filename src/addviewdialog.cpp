@@ -13,7 +13,6 @@
 */
 
 #include "addviewdialog.h"
-#include "session.h"
 #include <IrcSessionInfo>
 #include <QDialogButtonBox>
 #include <QRegExpValidator>
@@ -23,7 +22,7 @@
 #include <QRegExp>
 #include <QLabel>
 
-AddViewDialog::AddViewDialog(Session* session, QWidget* parent) : QDialog(parent)
+AddViewDialog::AddViewDialog(IrcSession* session, QWidget* parent) : QDialog(parent)
 {
     setWindowTitle(tr("Add view"));
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -65,6 +64,11 @@ AddViewDialog::AddViewDialog(Session* session, QWidget* parent) : QDialog(parent
     updateUi();
 }
 
+bool AddViewDialog::isChannel() const
+{
+    return !view().isEmpty() && IrcSessionInfo(d.session).channelTypes().contains(view().at(0));
+}
+
 QString AddViewDialog::view() const
 {
     return d.viewEdit->text();
@@ -75,16 +79,10 @@ QString AddViewDialog::password() const
     return d.passEdit->text();
 }
 
-Session* AddViewDialog::session() const
-{
-    return d.session;
-}
-
 void AddViewDialog::updateUi()
 {
     bool valid = false;
-    IrcSessionInfo info(d.session);
-    bool channel = !view().isEmpty() && info.channelTypes().contains(view().at(0));
+    bool channel = isChannel();
     if (channel) {
         valid = view().length() > 1;
         d.viewLabel->setText(tr("Join channel:"));

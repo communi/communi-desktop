@@ -17,9 +17,7 @@
 
 #include <QStackedWidget>
 
-class Session;
-class IrcMessage;
-class MessageView;
+class IrcSession;
 class MessageStackView;
 
 class SessionStackView : public QStackedWidget
@@ -29,15 +27,15 @@ class SessionStackView : public QStackedWidget
 public:
     SessionStackView(QWidget* parent = 0);
 
-    QList<Session*> sessions() const;
+    QList<IrcSession*> sessions() const;
 
     MessageStackView* currentWidget() const;
     MessageStackView* widgetAt(int index) const;
-    MessageStackView* sessionWidget(Session* session) const;
+    MessageStackView* sessionWidget(IrcSession* session) const;
 
 public slots:
-    int addSession(Session* session);
-    void removeSession(Session* session);
+    int addSession(IrcSession* session);
+    void removeSession(IrcSession* session);
 };
 
 #endif // SESSIONSTACKVIEW_H

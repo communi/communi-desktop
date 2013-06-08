@@ -17,9 +17,9 @@
 
 #include <QDialog>
 
-class Session;
 class QLabel;
 class QLineEdit;
+class IrcSession;
 class QDialogButtonBox;
 
 class AddViewDialog : public QDialog
@@ -27,18 +27,18 @@ class AddViewDialog : public QDialog
     Q_OBJECT
 
 public:
-    AddViewDialog(Session* session, QWidget* parent = 0);
+    AddViewDialog(IrcSession* session, QWidget* parent = 0);
 
+    bool isChannel() const;
     QString view() const;
     QString password() const;
-    Session* session() const;
 
 private slots:
     void updateUi();
 
 private:
     struct Private {
-        Session* session;
+        IrcSession* session;
         QLabel* viewLabel;
         QLabel* passLabel;
         QLineEdit* viewEdit;

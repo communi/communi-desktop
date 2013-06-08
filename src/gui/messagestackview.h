@@ -23,7 +23,7 @@
 #include "messageview.h"
 #include "viewinfo.h"
 
-class Session;
+class IrcSession;
 class IrcChannel;
 class IrcMessage;
 class MessageView;
@@ -34,9 +34,9 @@ class MessageStackView : public QStackedWidget
     Q_OBJECT
 
 public:
-    MessageStackView(Session* session, QWidget* parent = 0);
+    MessageStackView(IrcSession* session, QWidget* parent = 0);
 
-    Session* session() const;
+    IrcSession* session() const;
     CommandParser* parser() const;
     QStringListModel* commandModel() const;
 
@@ -67,7 +67,7 @@ private:
     MessageView* createView(ViewInfo::Type type, const QString& receiver);
 
     struct Private {
-        Session* session;
+        IrcSession* session;
         CommandParser parser;
         MessageHandler handler;
         QStringListModel viewModel;
