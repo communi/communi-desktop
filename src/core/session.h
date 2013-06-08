@@ -23,7 +23,6 @@
 #include <IrcSessionInfo>
 #include <QAbstractSocket>
 #include <IrcMessageFilter>
-#include <QElapsedTimer>
 #include "viewinfo.h"
 
 class Session : public IrcSession, public IrcMessageFilter
@@ -91,8 +90,6 @@ private:
         ViewInfos views;
         bool quit;
         QStringList alternateNicks;
-        long timestamp;
-        QElapsedTimer timestamper;
         int rejoin;
         QHash<QString, IrcCommand*> commands;
     } d;

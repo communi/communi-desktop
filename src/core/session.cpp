@@ -23,8 +23,6 @@ Session::Session(QObject* parent) : IrcSession(parent)
 {
     d.rejoin = 10;
     d.quit = false;
-    d.timestamp = 0;
-    d.timestamper.invalidate();
 
     connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(this, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
@@ -193,8 +191,6 @@ void Session::onConnected()
     d.commands.clear();
     foreach (IrcCommand* cmd, cmds)
         sendUiCommand(cmd, cmds.key(cmd));
-
-    d.timestamper.invalidate();
 }
 
 void Session::onDisconnected()
@@ -224,10 +220,6 @@ void Session::onCapabilities(const QStringList& available, QStringList* request)
 {
     if (available.contains("identify-msg"))
         request->append("identify-msg");
-    if (available.contains("communi")) {
-        request->append("communi");
-        request->append(QString("communi/%1").arg(d.timestamp));
-    }
 }
 
 void Session::applySettings()
@@ -241,26 +233,12 @@ void Session::applySettings()
 
 bool Session::messageFilter(IrcMessage* message)
 {
-    if (d.timestamp > 0 && d.timestamper.isValid()) {
-        long elapsed = d.timestamper.elapsed() / 1000;
-        if (elapsed > 0) {
-            d.timestamp += elapsed;
-            d.timestamper.restart();
-        }
-    }
-
     if (message->type() == IrcMessage::Join) {
         if (message->flags() & IrcMessage::Own)
             addChannel(static_cast<IrcJoinMessage*>(message)->channel());
     } else if (message->type() == IrcMessage::Part) {
         if (message->flags() & IrcMessage::Own)
             removeChannel(static_cast<IrcPartMessage*>(message)->channel());
-    } else if (message->type() == IrcMessage::Notice) {
-        if (message->sender().name() == "*communi") {
-            d.timestamp = static_cast<IrcNoticeMessage*>(message)->message().toLong();
-            d.timestamper.restart();
-            return true;
-        }
     } else if (message->type() == IrcMessage::Pong) {
         QString identifier = static_cast<IrcPongMessage*>(message)->argument();
         delete d.commands.take(identifier);
