@@ -199,7 +199,7 @@ SessionTreeItem* SessionTreeWidget::viewItem(MessageView* view) const
     return d.viewItems.value(view);
 }
 
-SessionTreeItem* SessionTreeWidget::sessionItem(Session* session) const
+SessionTreeItem* SessionTreeWidget::sessionItem(IrcSession* session) const
 {
     return d.sessionItems.value(session);
 }
@@ -209,7 +209,7 @@ bool SessionTreeWidget::hasRestoredCurrent() const
     return d.currentRestored;
 }
 
-ViewInfos SessionTreeWidget::viewInfos(Session* session) const
+ViewInfos SessionTreeWidget::viewInfos(IrcSession* session) const
 {
     ViewInfos views;
     SessionTreeItem* item = d.sessionItems.value(session);
@@ -232,7 +232,7 @@ void SessionTreeWidget::addView(MessageView* view)
     SessionTreeItem* item = 0;
     if (view->viewType() == ViewInfo::Server) {
         item = new SessionTreeItem(view, this);
-        Session* session = view->session();
+        IrcSession* session = view->session();
         connect(session, SIGNAL(nameChanged(QString)), this, SLOT(updateSession()));
         d.sessionItems.insert(session, item);
     } else {
@@ -476,8 +476,11 @@ void SessionTreeWidget::updateView(MessageView* view)
         view = qobject_cast<MessageView*>(sender());
     SessionTreeItem* item = d.viewItems.value(view);
     if (item) {
+        QString name;
+        if (Session* session = qobject_cast<Session*>(item->session())) // TODO
+            name = session->name();
         if (!item->parent())
-            item->setText(0, item->session()->name().isEmpty() ? item->session()->host() : item->session()->name());
+            item->setText(0, name.isEmpty() ? item->session()->host() : name);
         else
             item->setText(0, view->receiver());
         // re-read MessageView::isActive()
@@ -485,13 +488,17 @@ void SessionTreeWidget::updateView(MessageView* view)
     }
 }
 
-void SessionTreeWidget::updateSession(Session* session)
+void SessionTreeWidget::updateSession(IrcSession* session)
 {
     if (!session)
         session = qobject_cast<Session*>(sender());
     SessionTreeItem* item = d.sessionItems.value(session);
-    if (item)
-        item->setText(0, session->name().isEmpty() ? session->host() : session->name());
+    if (item) {
+        QString name;
+        if (Session* session = qobject_cast<Session*>(item->session())) // TODO
+            name = session->name();
+        item->setText(0, name.isEmpty() ? session->host() : name);
+    }
 }
 
 void SessionTreeWidget::onItemExpanded(QTreeWidgetItem* item)

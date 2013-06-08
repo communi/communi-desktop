@@ -41,7 +41,7 @@
 
 Q_GLOBAL_STATIC(IrcTextFormat, irc_text_format)
 
-MessageView::MessageView(ViewInfo::Type type, Session* session, MessageStackView* stackView) :
+MessageView::MessageView(ViewInfo::Type type, IrcSession* session, MessageStackView* stackView) :
     QWidget(stackView)
 {
     d.setupUi(this);
@@ -149,7 +149,7 @@ ViewInfo::Type MessageView::viewType() const
     return d.viewType;
 }
 
-Session* MessageView::session() const
+IrcSession* MessageView::session() const
 {
     return d.session;
 }
@@ -278,7 +278,8 @@ void MessageView::sendMessage(const QString& message)
             }
             delete cmd;
         } else if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction || cmd->type() == IrcCommand::Notice) {
-            d.session->sendUiCommand(cmd, QString("_communi_msg_%1_%2").arg(d.receiver).arg(++d.sentId));
+            if (Session* s = qobject_cast<Session*>(d.session)) // TODO
+                s->sendUiCommand(cmd, QString("_communi_msg_%1_%2").arg(d.receiver).arg(++d.sentId));
 
             IrcMessage* msg = IrcMessage::fromData(":" + d.session->nickName().toUtf8() + " " + cmd->toString().toUtf8(), d.session);
             receiveMessage(msg);

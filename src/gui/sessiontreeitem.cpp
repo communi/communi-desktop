@@ -16,7 +16,6 @@
 #include "sessiontreewidget.h"
 #include "itemdelegate.h"
 #include "messageview.h"
-#include "session.h"
 
 SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidget* parent) : QTreeWidgetItem(parent)
 {
@@ -38,7 +37,7 @@ SessionTreeItem::~SessionTreeItem()
 {
 }
 
-Session* SessionTreeItem::session() const
+IrcSession* SessionTreeItem::session() const
 {
     return d.view->session();
 }

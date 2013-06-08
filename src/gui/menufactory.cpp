@@ -176,7 +176,7 @@ public:
 private slots:
     void onEditSession()
     {
-        QMetaObject::invokeMethod(tree, "editSession", Q_ARG(Session*, item->session()));
+        QMetaObject::invokeMethod(tree, "editSession", Q_ARG(IrcSession*, item->session()));
     }
 
     void onNamesTriggered()
@@ -218,7 +218,8 @@ QMenu* MenuFactory::createSessionTreeMenu(SessionTreeItem* item, SessionTreeWidg
     bool active = item->session()->isActive();
     SessionTreeMenu* menu = new SessionTreeMenu(item, tree);
     if (!item->parent()) {
-        if (item->session()->isReconnecting())
+        Session* session = qobject_cast<Session*>(item->session()); // TODO
+        if (session && session->isReconnecting())
             menu->addAction(tr("Stop"), item->session(), SLOT(stopReconnecting()));
         else if (active)
             menu->addAction(tr("Disconnect"), item->session(), SLOT(quit()));

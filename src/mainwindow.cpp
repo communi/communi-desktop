@@ -248,13 +248,15 @@ void MainWindow::initialize()
     connectTo(ConnectionInfo());
 }
 
-void MainWindow::editSession(Session* session)
+void MainWindow::editSession(IrcSession* session)
 {
     ConnectionWizard wizard;
-    wizard.setConnection(ConnectionInfo::fromSession(session));
-    if (wizard.exec())
-        wizard.connection().initSession(session);
-    updateOverlay();
+    if (Session* s = qobject_cast<Session*>(session)) { // TODO
+        wizard.setConnection(ConnectionInfo::fromSession(s));
+        if (wizard.exec())
+            wizard.connection().initSession(s);
+        updateOverlay();
+    }
 }
 
 void MainWindow::applySettings()
@@ -355,7 +357,7 @@ void MainWindow::closeTreeItem(SessionTreeItem* item)
     }
 }
 
-void MainWindow::currentTreeItemChanged(Session* session, const QString& view)
+void MainWindow::currentTreeItemChanged(IrcSession* session, const QString& view)
 {
     MessageStackView* stack = stackView->sessionWidget(session);
     if (stack) {
@@ -450,9 +452,9 @@ void MainWindow::createTree()
     treeWidget = new SessionTreeWidget(container);
     treeWidget->setFocusPolicy(Qt::NoFocus);
 
-    connect(treeWidget, SIGNAL(editSession(Session*)), this, SLOT(editSession(Session*)));
+    connect(treeWidget, SIGNAL(editSession(IrcSession*)), this, SLOT(editSession(IrcSession*)));
     connect(treeWidget, SIGNAL(closeItem(SessionTreeItem*)), this, SLOT(closeTreeItem(SessionTreeItem*)));
-    connect(treeWidget, SIGNAL(currentViewChanged(Session*, QString)), this, SLOT(currentTreeItemChanged(Session*, QString)));
+    connect(treeWidget, SIGNAL(currentViewChanged(IrcSession*, QString)), this, SLOT(currentTreeItemChanged(IrcSession*, QString)));
 
     ToolBar* toolBar = new ToolBar(container);
     connect(toolBar, SIGNAL(aboutTriggered()), qApp, SLOT(aboutApplication()));

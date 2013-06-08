@@ -37,12 +37,12 @@ class MessageView : public QWidget
     Q_PROPERTY(QString receiver READ receiver WRITE setReceiver NOTIFY receiverChanged)
 
 public:
-    MessageView(ViewInfo::Type type, Session* session, MessageStackView* stack);
+    MessageView(ViewInfo::Type type, IrcSession* session, MessageStackView* stack);
     ~MessageView();
 
     bool isActive() const;
     ViewInfo::Type viewType() const;
-    Session* session() const;
+    IrcSession* session() const;
     IrcUserModel* userModel() const;
     Completer* completer() const;
     QTextBrowser* textBrowser() const;
@@ -99,7 +99,7 @@ private:
     struct Private : public Ui::MessageView {
         ViewInfo::Type viewType;
         QString receiver;
-        QPointer<Session> session;
+        QPointer<IrcSession> session;
         SyntaxHighlighter* highlighter;
         QString topic;
         int sentId;

@@ -21,7 +21,7 @@
 #include <QHash>
 #include "viewinfo.h"
 
-class Session;
+class IrcSession;
 class MessageView;
 class MenuFactory;
 class SessionTreeItem;
@@ -50,10 +50,10 @@ public:
     QColor currentHighlightColor() const;
 
     SessionTreeItem* viewItem(MessageView* view) const;
-    SessionTreeItem* sessionItem(Session* session) const;
+    SessionTreeItem* sessionItem(IrcSession* session) const;
 
     bool hasRestoredCurrent() const;
-    ViewInfos viewInfos(Session* session) const;
+    ViewInfos viewInfos(IrcSession* session) const;
 
 public slots:
     void addView(MessageView* view);
@@ -81,9 +81,9 @@ public slots:
     void unhighlight(SessionTreeItem* item);
 
 signals:
-    void editSession(Session* session);
+    void editSession(IrcSession* session);
     void closeItem(SessionTreeItem* item);
-    void currentViewChanged(Session* session, const QString& view);
+    void currentViewChanged(IrcSession* session, const QString& view);
     void searched(bool result);
 
 protected:
@@ -95,7 +95,7 @@ protected:
 
 private slots:
     void updateView(MessageView* view = 0);
-    void updateSession(Session* session = 0);
+    void updateSession(IrcSession* session = 0);
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
@@ -131,7 +131,7 @@ private:
         QSet<SessionTreeItem*> resetedItems;
         QSet<SessionTreeItem*> highlightedItems;
         QHash<MessageView*, SessionTreeItem*> viewItems;
-        QHash<Session*, SessionTreeItem*> sessionItems;
+        QHash<IrcSession*, SessionTreeItem*> sessionItems;
         mutable QTreeWidgetItem* dropParent;
     } d;
     friend class SessionTreeItem;
