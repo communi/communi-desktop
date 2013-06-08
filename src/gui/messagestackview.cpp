@@ -15,7 +15,7 @@
 #include "messagestackview.h"
 #include "settingsmodel.h"
 #include "application.h"
-#include "zncplayback.h"
+#include "zncmanager.h"
 #include "completer.h"
 #include "session.h"
 #include <irccommand.h>
@@ -41,7 +41,7 @@ MessageStackView::MessageStackView(IrcSession* session, QWidget* parent) : QStac
 
     session->installMessageFilter(&d.handler);
     session->installMessageFilter(qobject_cast<Session*>(session)); // TODO
-    d.handler.zncPlayback()->setModel(d.channelModel);
+    d.handler.znc()->setModel(d.channelModel);
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(activateView(int)));
 
@@ -186,7 +186,7 @@ void MessageStackView::sendMessage(const QString& receiver, const QString& messa
 void MessageStackView::applySettings()
 {
     SettingsModel* settings = Application::settings();
-    d.handler.zncPlayback()->setTimeStampFormat(settings->value("formatting.timeStamp").toString());
+    d.handler.znc()->setTimeStampFormat(settings->value("formatting.timeStamp").toString());
 
     QMap<QString,QString> aliases;
     QVariantMap values = settings->values("aliases.*");

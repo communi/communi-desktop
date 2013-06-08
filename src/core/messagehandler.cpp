@@ -14,7 +14,7 @@
 
 #include "messagehandler.h"
 #include "messageview.h"
-#include "zncplayback.h"
+#include "zncmanager.h"
 #include <qabstractsocket.h>
 #include <ircsession.h>
 #include <qvariant.h>
@@ -23,9 +23,9 @@
 
 MessageHandler::MessageHandler(QObject* parent) : QObject(parent)
 {
-    d.zncPlayback = new ZncPlayback(this);
-    connect(d.zncPlayback, SIGNAL(activeChanged(bool)), this, SLOT(activatePlayback(bool)));
-    connect(d.zncPlayback, SIGNAL(currentTargetChanged(QString)), this, SLOT(playbackView(QString)));
+    d.znc = new ZncManager(this);
+    connect(d.znc, SIGNAL(playbackActiveChanged(bool)), this, SLOT(activatePlayback(bool)));
+    connect(d.znc, SIGNAL(playbackTargetChanged(QString)), this, SLOT(playbackView(QString)));
 
     d.defaultView = 0;
     d.currentView = 0;
@@ -38,9 +38,9 @@ MessageHandler::~MessageHandler()
     d.views.clear();
 }
 
-ZncPlayback* MessageHandler::zncPlayback() const
+ZncManager* MessageHandler::znc() const
 {
-    return d.zncPlayback;
+    return d.znc;
 }
 
 MessageView* MessageHandler::defaultView() const
@@ -179,8 +179,8 @@ void MessageHandler::handleNickMessage(IrcNickMessage* message, bool query)
 {
     QString oldNick = message->sender().name().toLower();
     QString newNick = message->nick().toLower();
-    if (d.zncPlayback->isActive()) {
-        sendMessage(message, d.zncPlayback->currentTarget());
+    if (d.znc->isPlaybackActive()) {
+        sendMessage(message, d.znc->playbackTarget());
     } else {
         foreach (MessageView* view, d.views) {
             if (!query || view->viewType() == ViewInfo::Query) {
@@ -321,8 +321,8 @@ void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
 void MessageHandler::handleQuitMessage(IrcQuitMessage* message, bool query)
 {
     QString nick = message->sender().name();
-    if (d.zncPlayback->isActive()) {
-        sendMessage(message, d.zncPlayback->currentTarget());
+    if (d.znc->isPlaybackActive()) {
+        sendMessage(message, d.znc->playbackTarget());
     } else {
         foreach (MessageView* view, d.views) {
             if (view->hasUser(nick) && (!query || view->viewType() == ViewInfo::Query))
@@ -357,7 +357,7 @@ void MessageHandler::sendMessage(IrcMessage* message, const QString& receiver)
 
 void MessageHandler::activatePlayback(bool activate)
 {
-    MessageView* view = d.views.value(d.zncPlayback->currentTarget().toLower());
+    MessageView* view = d.views.value(d.znc->playbackTarget().toLower());
     if (view)
         view->setPlaybackMode(activate);
 }
@@ -366,5 +366,5 @@ void MessageHandler::playbackView(const QString& name)
 {
     MessageView* view = d.views.value(name.toLower());
     if (view)
-        view->setPlaybackMode(d.zncPlayback->isActive());
+        view->setPlaybackMode(d.znc->isPlaybackActive());
 }

@@ -21,8 +21,8 @@
 #include <IrcMessage>
 #include <IrcMessageFilter>
 
+class ZncManager;
 class MessageView;
-class ZncPlayback;
 
 class MessageHandler : public QObject, public IrcMessageFilter
 {
@@ -32,7 +32,7 @@ public:
     explicit MessageHandler(QObject* parent = 0);
     virtual ~MessageHandler();
 
-    ZncPlayback* zncPlayback() const;
+    ZncManager* znc() const;
 
     MessageView* defaultView() const;
     void setDefaultView(MessageView* view);
@@ -78,7 +78,7 @@ private slots:
 
 private:
     struct Private {
-        ZncPlayback* zncPlayback;
+        ZncManager* znc;
         MessageView* defaultView;
         MessageView* currentView;
         QHash<QString, MessageView*> views;
