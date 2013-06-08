@@ -15,12 +15,16 @@
 #include "zncplayback.h"
 #include <ircsession.h>
 #include <ircmessage.h>
+#include <ircchannel.h>
 #include <ircsender.h>
 
 ZncPlayback::ZncPlayback(QObject* parent) : QObject(parent)
 {
+    d.model = 0;
+    d.channel = 0;
     d.active = false;
     d.timeStampFormat = "[hh:mm:ss]";
+    setModel(qobject_cast<IrcChannelModel*>(parent));
 }
 
 ZncPlayback::~ZncPlayback()
@@ -32,9 +36,26 @@ bool ZncPlayback::isActive() const
     return d.active;
 }
 
-QString ZncPlayback::target() const
+QString ZncPlayback::currentTarget() const
 {
     return d.target;
+}
+
+IrcChannelModel* ZncPlayback::model() const
+{
+    return d.model;
+}
+
+void ZncPlayback::setModel(IrcChannelModel* model)
+{
+    if (d.model != model) {
+        if (d.model && d.model->session())
+            d.model->session()->removeMessageFilter(this);
+        d.model = model;
+        if (d.model && d.model->session())
+            d.model->session()->installMessageFilter(this);
+        emit modelChanged(model);
+    }
 }
 
 QString ZncPlayback::timeStampFormat() const
@@ -44,7 +65,10 @@ QString ZncPlayback::timeStampFormat() const
 
 void ZncPlayback::setTimeStampFormat(const QString& format)
 {
-    d.timeStampFormat = format;
+    if (d.timeStampFormat != format) {
+        d.timeStampFormat = format;
+        emit timeStampFormatChanged(format);
+    }
 }
 
 bool ZncPlayback::messageFilter(IrcMessage* message)
@@ -55,20 +79,32 @@ bool ZncPlayback::messageFilter(IrcMessage* message)
             IrcPrivateMessage* privMsg = static_cast<IrcPrivateMessage*>(message);
             QString content = privMsg->message();
             if (content == QLatin1String("Buffer Playback...")) {
-                d.active = true;
-                d.target = privMsg->target();
-                emit targetChanged(d.target, d.active);
+                if (!d.active) {
+                    d.active = true;
+                    emit activeChanged(d.active);
+                }
+                if (d.target != privMsg->target()) {
+                    d.target = privMsg->target();
+                    d.channel = d.model->channel(d.target);
+                    emit currentTargetChanged(d.target);
+                }
                 return false;
             } else if (content == QLatin1String("Playback Complete.")) {
-                d.active = false;
-                emit targetChanged(d.target, d.active);
-                d.target.clear();
+                if (d.active) {
+                    d.active = false;
+                    emit activeChanged(d.active);
+                }
+                if (!d.target.isEmpty()) {
+                    d.channel = 0;
+                    d.target.clear();
+                    emit currentTargetChanged(d.target);
+                }
                 return false;
             }
         }
     }
 
-    if (d.active) {
+    if (d.active && d.channel) {
         switch (message->type()) {
         case IrcMessage::Private:
             return processMessage(static_cast<IrcPrivateMessage*>(message));
@@ -125,7 +161,7 @@ bool ZncPlayback::processMessage(IrcPrivateMessage* message)
                 }
                 if (tmp) {
                     tmp->setTimeStamp(timeStamp);
-                    emit messagePlayed(tmp);
+                    QMetaObject::invokeMethod(d.channel, "messageReceived", Q_ARG(IrcMessage*, tmp));
                     tmp->deleteLater();
                     return true;
                 }

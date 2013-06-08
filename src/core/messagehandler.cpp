@@ -24,8 +24,8 @@
 MessageHandler::MessageHandler(QObject* parent) : QObject(parent)
 {
     d.zncPlayback = new ZncPlayback(this);
-    connect(d.zncPlayback, SIGNAL(messagePlayed(IrcMessage*)), this, SLOT(handleMessage(IrcMessage*)));
-    connect(d.zncPlayback, SIGNAL(targetChanged(QString,bool)), this, SLOT(playbackView(QString,bool)));
+    connect(d.zncPlayback, SIGNAL(activeChanged(bool)), this, SLOT(activatePlayback(bool)));
+    connect(d.zncPlayback, SIGNAL(currentTargetChanged(QString)), this, SLOT(playbackView(QString)));
 
     d.defaultView = 0;
     d.currentView = 0;
@@ -180,7 +180,7 @@ void MessageHandler::handleNickMessage(IrcNickMessage* message, bool query)
     QString oldNick = message->sender().name().toLower();
     QString newNick = message->nick().toLower();
     if (d.zncPlayback->isActive()) {
-        sendMessage(message, d.zncPlayback->target());
+        sendMessage(message, d.zncPlayback->currentTarget());
     } else {
         foreach (MessageView* view, d.views) {
             if (!query || view->viewType() == ViewInfo::Query) {
@@ -322,7 +322,7 @@ void MessageHandler::handleQuitMessage(IrcQuitMessage* message, bool query)
 {
     QString nick = message->sender().name();
     if (d.zncPlayback->isActive()) {
-        sendMessage(message, d.zncPlayback->target());
+        sendMessage(message, d.zncPlayback->currentTarget());
     } else {
         foreach (MessageView* view, d.views) {
             if (view->hasUser(nick) && (!query || view->viewType() == ViewInfo::Query))
@@ -355,9 +355,16 @@ void MessageHandler::sendMessage(IrcMessage* message, const QString& receiver)
     sendMessage(message, d.views.value(lower));
 }
 
-void MessageHandler::playbackView(const QString& name, bool active)
+void MessageHandler::activatePlayback(bool activate)
+{
+    MessageView* view = d.views.value(d.zncPlayback->currentTarget().toLower());
+    if (view)
+        view->setPlaybackMode(activate);
+}
+
+void MessageHandler::playbackView(const QString& name)
 {
     MessageView* view = d.views.value(name.toLower());
     if (view)
-        view->setPlaybackMode(active);
+        view->setPlaybackMode(d.zncPlayback->isActive());
 }

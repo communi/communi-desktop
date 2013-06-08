@@ -39,9 +39,9 @@ MessageStackView::MessageStackView(Session* session, QWidget* parent) : QStacked
     connect(d.channelModel, SIGNAL(channelAdded(IrcChannel*)), this, SLOT(setChannel(IrcChannel*)));
     connect(d.channelModel, SIGNAL(messageIgnored(IrcMessage*)), &d.handler, SLOT(handleMessage(IrcMessage*)));
 
-    session->installMessageFilter(d.handler.zncPlayback());
     session->installMessageFilter(&d.handler);
     session->installMessageFilter(session);
+    d.handler.zncPlayback()->setModel(d.channelModel);
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(activateView(int)));
 

@@ -16,6 +16,7 @@
 #define ZNCPLAYBACK_H
 
 #include <QObject>
+#include <IrcChannelModel>
 #include <IrcMessageFilter>
 
 class IrcNoticeMessage;
@@ -24,16 +25,20 @@ class IrcPrivateMessage;
 class ZncPlayback : public QObject, public IrcMessageFilter
 {
     Q_OBJECT
-    Q_PROPERTY(bool active READ isActive)
-    Q_PROPERTY(QString target READ target)
-    Q_PROPERTY(QString timeStampFormat READ timeStampFormat WRITE setTimeStampFormat)
+    Q_PROPERTY(bool active READ isActive NOTIFY activeChanged)
+    Q_PROPERTY(QString currentTarget READ currentTarget NOTIFY currentTargetChanged)
+    Q_PROPERTY(IrcChannelModel* model READ model WRITE setModel NOTIFY modelChanged)
+    Q_PROPERTY(QString timeStampFormat READ timeStampFormat WRITE setTimeStampFormat NOTIFY timeStampFormatChanged)
 
 public:
     explicit ZncPlayback(QObject* parent = 0);
     virtual ~ZncPlayback();
 
     bool isActive() const;
-    QString target() const;
+    QString currentTarget() const;
+
+    IrcChannelModel* model() const;
+    void setModel(IrcChannelModel* model);
 
     QString timeStampFormat() const;
     void setTimeStampFormat(const QString& format);
@@ -41,8 +46,10 @@ public:
     bool messageFilter(IrcMessage* message);
 
 signals:
-    void messagePlayed(IrcMessage* message);
-    void targetChanged(const QString& target, bool active);
+    void activeChanged(bool active);
+    void modelChanged(IrcChannelModel* model);
+    void currentTargetChanged(const QString& target);
+    void timeStampFormatChanged(const QString& format);
 
 protected:
     bool processMessage(IrcPrivateMessage* message);
@@ -52,6 +59,8 @@ private:
     mutable struct Private {
         bool active;
         QString target;
+        IrcChannel* channel;
+        IrcChannelModel* model;
         QString timeStampFormat;
     } d;
 };

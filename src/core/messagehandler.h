@@ -73,7 +73,8 @@ protected:
     void sendMessage(IrcMessage* message, const QString& receiver);
 
 private slots:
-    void playbackView(const QString& view, bool active);
+    void activatePlayback(bool activate);
+    void playbackView(const QString& view);
 
 private:
     struct Private {
