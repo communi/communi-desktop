@@ -16,7 +16,7 @@
 #include "sortedusermodel.h"
 #include "itemdelegate.h"
 #include "menufactory.h"
-#include <IrcChannel>
+#include <IrcBuffer>
 #include <IrcUserModel>
 #include <QSortFilterProxyModel>
 #include <QItemSelectionModel>
@@ -26,8 +26,8 @@
 
 UserListView::UserListView(QWidget* parent) : QListView(parent)
 {
+    d.buffer = 0;
     d.session = 0;
-    d.channel = 0;
     d.userModel = 0;
     d.menuFactory = 0;
     setItemDelegate(new ItemDelegate(this));
@@ -53,17 +53,17 @@ void UserListView::setSession(IrcSession* session)
     d.session = session;
 }
 
-IrcChannel* UserListView::channel() const
+IrcBuffer* UserListView::buffer() const
 {
-    return d.channel;
+    return d.buffer;
 }
 
-void UserListView::setChannel(IrcChannel* channel)
+void UserListView::setBuffer(IrcBuffer* buffer)
 {
-    d.channel = channel;
-    d.userModel = new IrcUserModel(channel);
+    d.buffer = buffer;
+    d.userModel = new IrcUserModel(buffer);
     SortedUserModel* sortedModel = new SortedUserModel(d.userModel);
-    sortedModel->setChannel(channel);
+    sortedModel->setBuffer(buffer);
     setModel(sortedModel);
 }
 

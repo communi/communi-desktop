@@ -27,7 +27,7 @@ class IrcUserModel;
 class MenuFactory;
 class IrcLagTimer;
 class IrcMessage;
-class IrcChannel;
+class IrcBuffer;
 class Session;
 
 class MessageView : public QWidget
@@ -50,8 +50,8 @@ public:
     QString receiver() const;
     void setReceiver(const QString& receiver);
 
-    IrcChannel* channel() const;
-    void setChannel(IrcChannel* channel);
+    IrcBuffer* buffer() const;
+    void setBuffer(IrcBuffer* buffer);
 
     bool playbackMode() const;
     void setPlaybackMode(bool enabled);

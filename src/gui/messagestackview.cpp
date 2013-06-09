@@ -18,30 +18,30 @@
 #include "zncmanager.h"
 #include "completer.h"
 #include "session.h"
+#include <ircbuffer.h>
 #include <irccommand.h>
-#include <ircchannel.h>
-#include <ircchannelmodel.h>
+#include <ircbuffermodel.h>
 
-class ChannelModel : public IrcChannelModel
+class BufferModel : public IrcBufferModel
 {
 public:
-    ChannelModel(QObject* parent = 0) : IrcChannelModel(parent) { }
+    BufferModel(QObject* parent = 0) : IrcBufferModel(parent) { }
 
 protected:
-    void destroyChannel(IrcChannel* channel) { Q_UNUSED(channel); }
+    void destroyBuffer(IrcBuffer* buffer) { Q_UNUSED(buffer); }
 };
 
 MessageStackView::MessageStackView(IrcSession* session, QWidget* parent) : QStackedWidget(parent)
 {
     d.session = session;
 
-    d.channelModel = new ChannelModel(session);
-    connect(d.channelModel, SIGNAL(channelAdded(IrcChannel*)), this, SLOT(setChannel(IrcChannel*)));
-    connect(d.channelModel, SIGNAL(messageIgnored(IrcMessage*)), &d.handler, SLOT(handleMessage(IrcMessage*)));
+    d.bufferModel = new BufferModel(session);
+    connect(d.bufferModel, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(setBuffer(IrcBuffer*)));
+    connect(d.bufferModel, SIGNAL(messageIgnored(IrcMessage*)), &d.handler, SLOT(handleMessage(IrcMessage*)));
 
     session->installMessageFilter(&d.handler);
     session->installMessageFilter(qobject_cast<Session*>(session)); // TODO
-    d.handler.znc()->setModel(d.channelModel);
+    d.handler.znc()->setModel(d.bufferModel);
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(activateView(int)));
 
@@ -116,7 +116,7 @@ MessageView* MessageStackView::createView(ViewInfo::Type type, const QString& re
     connect(view, SIGNAL(messaged(QString,QString)), this, SLOT(sendMessage(QString,QString)));
 
     d.handler.addView(receiver, view);
-    d.parser.setChannels(d.channelModel->titles());
+    d.parser.setChannels(d.bufferModel->titles());
     d.views.insert(receiver.toLower(), view);
     addWidget(view);
     d.viewModel.setStringList(d.viewModel.stringList() << receiver);
@@ -141,7 +141,7 @@ void MessageStackView::removeView(const QString& receiver)
             d.viewModel.setStringList(views);
         emit viewRemoved(view);
         d.handler.removeView(view->receiver());
-        d.parser.setChannels(d.channelModel->titles());
+        d.parser.setChannels(d.bufferModel->titles());
     }
 }
 
@@ -156,7 +156,7 @@ void MessageStackView::closeView(int index)
                 d.session->sendCommand(IrcCommand::createPart(view->receiver()));
         }
         d.handler.removeView(view->receiver());
-        d.parser.setChannels(d.channelModel->titles());
+        d.parser.setChannels(d.bufferModel->titles());
     }
 }
 
@@ -214,9 +214,9 @@ void MessageStackView::activateView(int index)
     }
 }
 
-void MessageStackView::setChannel(IrcChannel* channel)
+void MessageStackView::setBuffer(IrcBuffer* buffer)
 {
-    MessageView* view = addView(channel->title().toLower());
+    MessageView* view = addView(buffer->title().toLower());
     if (view)
-        view->setChannel(channel);
+        view->setBuffer(buffer);
 }

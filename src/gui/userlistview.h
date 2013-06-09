@@ -17,8 +17,8 @@
 
 #include <QListView>
 
+class IrcBuffer;
 class IrcSession;
-class IrcChannel;
 class IrcMessage;
 class IrcCommand;
 class MenuFactory;
@@ -37,8 +37,8 @@ public:
     IrcSession* session() const;
     void setSession(IrcSession* session);
 
-    IrcChannel* channel() const;
-    void setChannel(IrcChannel* channel);
+    IrcBuffer* buffer() const;
+    void setBuffer(IrcBuffer* buffer);
 
     IrcUserModel* userModel() const;
     bool hasUser(const QString& user) const;
@@ -60,8 +60,8 @@ private slots:
 
 private:
     struct Private {
+        IrcBuffer* buffer;
         IrcSession* session;
-        IrcChannel* channel;
         IrcUserModel* userModel;
         MenuFactory* menuFactory;
     } d;

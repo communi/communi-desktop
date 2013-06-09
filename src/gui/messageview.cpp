@@ -36,7 +36,7 @@
 #include <ircpalette.h>
 #include <ircmessage.h>
 #include <irccommand.h>
-#include <ircchannel.h>
+#include <ircbuffer.h>
 #include <irc.h>
 
 Q_GLOBAL_STATIC(IrcTextFormat, irc_text_format)
@@ -182,17 +182,17 @@ void MessageView::setReceiver(const QString& receiver)
     }
 }
 
-IrcChannel* MessageView::channel() const
+IrcBuffer* MessageView::buffer() const
 {
-    return d.listView->channel();
+    return d.listView->buffer();
 }
 
-void MessageView::setChannel(IrcChannel* channel)
+void MessageView::setBuffer(IrcBuffer* buffer)
 {
-    channel->setParent(this);
-    d.listView->setChannel(channel);
+    buffer->setParent(this);
+    d.listView->setBuffer(buffer);
     d.lineEditor->completer()->setUserModel(d.listView->userModel());
-    connect(channel, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
+    connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
 }
 
 bool MessageView::playbackMode() const
