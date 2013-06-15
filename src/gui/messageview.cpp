@@ -16,6 +16,7 @@
 #include "application.h"
 #include "settingsmodel.h"
 #include "syntaxhighlighter.h"
+#include "useractivitymodel.h"
 #include "messagestackview.h"
 #include "messageformatter.h"
 #include "commandparser.h"
@@ -191,7 +192,7 @@ void MessageView::setBuffer(IrcBuffer* buffer)
 {
     buffer->setParent(this);
     d.listView->setBuffer(buffer);
-    d.lineEditor->completer()->setUserModel(d.listView->userModel());
+    d.lineEditor->completer()->setUserModel(new UserActivityModel(buffer));
     connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
 }
 
