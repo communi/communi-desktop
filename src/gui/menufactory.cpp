@@ -20,7 +20,7 @@
 #include "session.h"
 #include <IrcUserModel>
 #include <IrcCommand>
-#include <IrcBuffer>
+#include <IrcChannel>
 
 MenuFactory::MenuFactory(QObject* parent) : QObject(parent)
 {
@@ -96,7 +96,7 @@ private slots:
         QAction* action = qobject_cast<QAction*>(sender());
         if (action) {
             QStringList params = action->data().toStringList();
-            IrcCommand* command = IrcCommand::createMode(listView->buffer()->title(), params.at(1), params.at(0));
+            IrcCommand* command = IrcCommand::createMode(listView->channel()->title(), params.at(1), params.at(0));
             listView->session()->sendCommand(command);
         }
     }
@@ -105,7 +105,7 @@ private slots:
     {
         QAction* action = qobject_cast<QAction*>(sender());
         if (action) {
-            IrcCommand* command = IrcCommand::createKick(listView->buffer()->title(), action->data().toString());
+            IrcCommand* command = IrcCommand::createKick(listView->channel()->title(), action->data().toString());
             listView->session()->sendCommand(command);
         }
     }
@@ -114,7 +114,7 @@ private slots:
     {
         QAction* action = qobject_cast<QAction*>(sender());
         if (action) {
-            IrcCommand* command = IrcCommand::createMode(listView->buffer()->title(), "+b", action->data().toString() + "!*@*");
+            IrcCommand* command = IrcCommand::createMode(listView->channel()->title(), "+b", action->data().toString() + "!*@*");
             listView->session()->sendCommand(command);
         }
     }

@@ -110,6 +110,7 @@ private:
         int connected, disconnected;
         IrcLagTimer* lagTimer;
         CommandParser* parser;
+        IrcBuffer* buffer;
     } d;
 };
 

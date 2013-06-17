@@ -37,6 +37,7 @@
 #include <ircpalette.h>
 #include <ircmessage.h>
 #include <irccommand.h>
+#include <ircchannel.h>
 #include <ircbuffer.h>
 #include <irc.h>
 
@@ -51,6 +52,7 @@ MessageView::MessageView(ViewInfo::Type type, IrcSession* session, MessageStackV
     d.awayReply.invalidate();
     d.playback = false;
     d.parser = stackView->parser();
+    d.buffer = 0;
 
     d.joined = 0;
     d.parted = 0;
@@ -185,14 +187,17 @@ void MessageView::setReceiver(const QString& receiver)
 
 IrcBuffer* MessageView::buffer() const
 {
-    return d.listView->buffer();
+    return d.buffer;
 }
 
 void MessageView::setBuffer(IrcBuffer* buffer)
 {
+    if (IrcChannel* channel = qobject_cast<IrcChannel*>(buffer)) {
+        d.listView->setChannel(channel);
+        d.lineEditor->completer()->setUserModel(new UserActivityModel(channel));
+    }
+    d.buffer = buffer;
     buffer->setParent(this);
-    d.listView->setBuffer(buffer);
-    d.lineEditor->completer()->setUserModel(new UserActivityModel(buffer));
     connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
 }
 
