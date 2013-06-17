@@ -38,6 +38,7 @@ MessageStackView::MessageStackView(IrcSession* session, QWidget* parent) : QStac
     d.bufferModel = new BufferModel(session);
     connect(d.bufferModel, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(setBuffer(IrcBuffer*)));
     connect(d.bufferModel, SIGNAL(messageIgnored(IrcMessage*)), &d.handler, SLOT(handleMessage(IrcMessage*)));
+    connect(d.bufferModel, SIGNAL(channelsChanged(QStringList)), &d.parser, SLOT(setChannels(QStringList)));
 
     session->installMessageFilter(&d.handler);
     session->installMessageFilter(qobject_cast<Session*>(session)); // TODO
@@ -116,7 +117,6 @@ MessageView* MessageStackView::createView(ViewInfo::Type type, const QString& re
     connect(view, SIGNAL(messaged(QString,QString)), this, SLOT(sendMessage(QString,QString)));
 
     d.handler.addView(receiver, view);
-    d.parser.setChannels(d.bufferModel->titles());
     d.views.insert(receiver.toLower(), view);
     addWidget(view);
     d.viewModel.setStringList(d.viewModel.stringList() << receiver);
@@ -141,7 +141,6 @@ void MessageStackView::removeView(const QString& receiver)
             d.viewModel.setStringList(views);
         emit viewRemoved(view);
         d.handler.removeView(view->receiver());
-        d.parser.setChannels(d.bufferModel->titles());
     }
 }
 
@@ -156,7 +155,6 @@ void MessageStackView::closeView(int index)
                 d.session->sendCommand(IrcCommand::createPart(view->receiver()));
         }
         d.handler.removeView(view->receiver());
-        d.parser.setChannels(d.bufferModel->titles());
     }
 }
 
