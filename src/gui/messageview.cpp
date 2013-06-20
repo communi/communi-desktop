@@ -73,7 +73,7 @@ MessageView::MessageView(ViewInfo::Type type, IrcSession* session, MessageStackV
 
     d.session = session;
     connect(d.session, SIGNAL(activeChanged(bool)), this, SLOT(onSessionStatusChanged()));
-    connect(d.session, SIGNAL(connectedChanged(bool)), this, SLOT(onSessionStatusChanged()));
+    connect(d.session, SIGNAL(connectedChanged(bool)), this, SIGNAL(activeChanged()));
 
     d.lagTimer = new IrcLagTimer(d.session);
     connect(d.lagTimer, SIGNAL(lagChanged(int)), d.lineEditor, SLOT(setLag(int)));
@@ -139,12 +139,9 @@ MessageView::~MessageView()
 
 bool MessageView::isActive() const
 {
-    switch (d.viewType) {
-    case ViewInfo::Channel: return (d.joined > d.parted) && d.session && d.session->isConnected();
-    case ViewInfo::Server: return d.session && d.session->isActive();
-    case ViewInfo::Query: return d.session && d.session->isConnected();
-    default: return false;
-    }
+    if (d.buffer)
+        return d.buffer->isActive();
+    return d.session && d.session->isConnected();
 }
 
 ViewInfo::Type MessageView::viewType() const
@@ -198,6 +195,7 @@ void MessageView::setBuffer(IrcBuffer* buffer)
     }
     d.buffer = buffer;
     buffer->setParent(this);
+    connect(buffer, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
     connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
 }
 
@@ -378,7 +376,6 @@ void MessageView::onSessionStatusChanged()
 {
     d.lineEditor->setFocusPolicy(d.session->isActive() ? Qt::StrongFocus : Qt::NoFocus);
     d.textBrowser->setFocusPolicy(d.session->isActive() ? Qt::StrongFocus : Qt::NoFocus);
-    emit activeChanged();
 }
 
 void MessageView::onSocketError()
@@ -461,21 +458,16 @@ void MessageView::receiveMessage(IrcMessage* message)
                 int blocks = d.textBrowser->document()->blockCount();
                 if (blocks > 1)
                     d.textBrowser->addMarker(blocks);
-                emit activeChanged();
             }
             break;
         case IrcMessage::Quit:
         case IrcMessage::Part:
-            if (!d.playback && message->flags() & IrcMessage::Own) {
+            if (!d.playback && message->flags() & IrcMessage::Own)
                 ++d.parted;
-                emit activeChanged();
-            }
             break;
         case IrcMessage::Kick:
-            if (!d.playback && !static_cast<IrcKickMessage*>(message)->user().compare(d.session->nickName(), Qt::CaseInsensitive)) {
+            if (!d.playback && !static_cast<IrcKickMessage*>(message)->user().compare(d.session->nickName(), Qt::CaseInsensitive))
                 ++d.parted;
-                emit activeChanged();
-            }
             break;
         case IrcMessage::Pong: {
             QString arg = static_cast<IrcPongMessage*>(message)->argument();
