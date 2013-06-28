@@ -296,6 +296,7 @@ void MessageView::sendMessage(const QString& message)
         } else {
             d.session->sendCommand(cmd);
         }
+        d.helpLabel->hide();
     } else {
         showHelp(message, true);
     }
