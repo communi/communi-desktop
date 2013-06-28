@@ -214,7 +214,7 @@ void MessageStackView::activateView(int index)
 
 void MessageStackView::setBuffer(IrcBuffer* buffer)
 {
-    MessageView* view = addView(buffer->title().toLower());
+    MessageView* view = addView(buffer->title());
     if (view)
         view->setBuffer(buffer);
 }
