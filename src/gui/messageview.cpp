@@ -135,6 +135,12 @@ MessageView::MessageView(ViewInfo::Type type, IrcSession* session, MessageStackV
 
 MessageView::~MessageView()
 {
+    if (d.buffer) {
+        if (qobject_cast<IrcChannel*>(d.buffer) && d.buffer->isActive())
+            connect(d.buffer, SIGNAL(activeChanged(bool)), d.buffer, SLOT(deleteLater()));
+        else
+            d.buffer->deleteLater();
+    }
 }
 
 bool MessageView::isActive() const
@@ -194,7 +200,6 @@ void MessageView::setBuffer(IrcBuffer* buffer)
         d.lineEditor->completer()->setUserModel(new UserActivityModel(channel));
     }
     d.buffer = buffer;
-    buffer->setParent(this);
     connect(buffer, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
     connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
 }
