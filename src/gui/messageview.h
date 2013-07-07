@@ -25,7 +25,6 @@ class MessageStackView;
 class CommandParser;
 class IrcUserModel;
 class MenuFactory;
-class IrcLagTimer;
 class IrcMessage;
 class IrcBuffer;
 class Session;
@@ -68,6 +67,7 @@ public slots:
     void showHelp(const QString& text, bool error = false);
     void sendMessage(const QString& message);
     void receiveMessage(IrcMessage* message);
+    void updateLag(int lag);
 
 signals:
     void activeChanged();
@@ -108,7 +108,6 @@ private:
         bool playback;
         int joined, parted;
         int connected, disconnected;
-        IrcLagTimer* lagTimer;
         CommandParser* parser;
         IrcBuffer* buffer;
     } d;

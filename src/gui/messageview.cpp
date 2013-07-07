@@ -33,7 +33,6 @@
 #include <QUrl>
 #include <irctextformat.h>
 #include <ircusermodel.h>
-#include <irclagtimer.h>
 #include <ircpalette.h>
 #include <ircmessage.h>
 #include <irccommand.h>
@@ -75,10 +74,6 @@ MessageView::MessageView(ViewInfo::Type type, IrcSession* session, MessageStackV
     connect(d.session, SIGNAL(activeChanged(bool)), this, SLOT(onSessionStatusChanged()));
     connect(d.session, SIGNAL(connectedChanged(bool)), this, SIGNAL(activeChanged()));
 
-    d.lagTimer = new IrcLagTimer(d.session);
-    connect(d.lagTimer, SIGNAL(lagChanged(int)), d.lineEditor, SLOT(setLag(int)));
-
-    d.lineEditor->setLag(d.lagTimer->lag());
     if (type == ViewInfo::Server)
         connect(d.session, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onSocketError()));
 
@@ -398,8 +393,6 @@ void MessageView::applySettings()
     SettingsModel* settings = Application::settings();
     QString theme =  settings->value("ui.theme").toString();
 
-    d.lagTimer->setInterval(settings->value("session.lagTimerInterval").toInt());
-
     // TODO: dedicated colors?
     d.highlighter->setHighlightColor(settings->value(QString("themes.%1.timestamp").arg(theme)).value<QColor>());
     d.textBrowser->setHighlightColor(settings->value(QString("themes.%1.highlight").arg(theme)).value<QColor>().lighter(165));
@@ -550,4 +543,9 @@ bool MessageView::hasUser(const QString& user) const
     return (!d.session->nickName().compare(user, Qt::CaseInsensitive) && d.viewType != ViewInfo::Query) ||
            (d.viewType == ViewInfo::Query && !d.receiver.compare(user, Qt::CaseInsensitive)) ||
            (d.viewType == ViewInfo::Channel && d.listView->hasUser(user));
+}
+
+void MessageView::updateLag(int lag)
+{
+    d.lineEditor->setLag(lag);
 }

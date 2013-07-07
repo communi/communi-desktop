@@ -20,6 +20,7 @@
 #include "session.h"
 #include <ircbuffer.h>
 #include <irccommand.h>
+#include <irclagtimer.h>
 #include <ircbuffermodel.h>
 
 class BufferModel : public IrcBufferModel
@@ -49,6 +50,8 @@ MessageStackView::MessageStackView(IrcSession* session, QWidget* parent) : QStac
     connect(&d.handler, SIGNAL(viewToBeAdded(QString)), this, SLOT(addView(QString)));
     connect(&d.handler, SIGNAL(viewToBeRemoved(QString)), this, SLOT(removeView(QString)));
     connect(&d.handler, SIGNAL(viewToBeRenamed(QString, QString)), this, SLOT(renameView(QString, QString)));
+
+    d.lagTimer = new IrcLagTimer(d.session);
 
     MessageView* view = addView(session->host());
     d.handler.setDefaultView(view);
@@ -115,6 +118,9 @@ MessageView* MessageStackView::createView(ViewInfo::Type type, const QString& re
     connect(view, SIGNAL(queried(QString)), this, SLOT(addView(QString)));
     connect(view, SIGNAL(queried(QString)), this, SLOT(openView(QString)));
     connect(view, SIGNAL(messaged(QString,QString)), this, SLOT(sendMessage(QString,QString)));
+
+    connect(d.lagTimer, SIGNAL(lagChanged(int)), view, SLOT(updateLag(int)));
+    view->updateLag(d.lagTimer->lag());
 
     d.handler.addView(receiver, view);
     d.views.insert(receiver.toLower(), view);
@@ -185,6 +191,8 @@ void MessageStackView::applySettings()
 {
     SettingsModel* settings = Application::settings();
     d.handler.znc()->setTimeStampFormat(settings->value("formatting.timeStamp").toString());
+
+    d.lagTimer->setInterval(settings->value("session.lagTimerInterval").toInt());
 
     QMap<QString,QString> aliases;
     QVariantMap values = settings->values("aliases.*");

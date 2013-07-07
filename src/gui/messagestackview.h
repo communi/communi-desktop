@@ -26,6 +26,7 @@
 class IrcBuffer;
 class IrcSession;
 class IrcMessage;
+class IrcLagTimer;
 class MessageView;
 class IrcBufferModel;
 
@@ -69,6 +70,7 @@ private:
     struct Private {
         IrcSession* session;
         CommandParser parser;
+        IrcLagTimer* lagTimer;
         MessageHandler handler;
         QStringListModel viewModel;
         IrcBufferModel* bufferModel;
