@@ -218,6 +218,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
                 connection.views = treeWidget->viewInfos(session);
                 connections += connection;
                 session->quit();
+                session->disconnect();
                 session->destructLater();
             }
         }

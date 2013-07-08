@@ -109,7 +109,7 @@ private:
         int joined, parted;
         int connected, disconnected;
         CommandParser* parser;
-        IrcBuffer* buffer;
+        QPointer<IrcBuffer> buffer;
     } d;
 };
 

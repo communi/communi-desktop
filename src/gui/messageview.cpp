@@ -51,7 +51,6 @@ MessageView::MessageView(ViewInfo::Type type, IrcSession* session, MessageStackV
     d.awayReply.invalidate();
     d.playback = false;
     d.parser = stackView->parser();
-    d.buffer = 0;
 
     d.joined = 0;
     d.parted = 0;
