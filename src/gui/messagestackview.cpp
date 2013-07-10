@@ -37,7 +37,7 @@ MessageStackView::MessageStackView(IrcSession* session, QWidget* parent) : QStac
     d.session = session;
 
     d.bufferModel = new BufferModel(session);
-    connect(d.bufferModel, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(setBuffer(IrcBuffer*)));
+    connect(d.bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(setBuffer(IrcBuffer*)));
     connect(d.bufferModel, SIGNAL(messageIgnored(IrcMessage*)), &d.handler, SLOT(handleMessage(IrcMessage*)));
     connect(d.bufferModel, SIGNAL(channelsChanged(QStringList)), &d.parser, SLOT(setChannels(QStringList)));
 
