@@ -52,6 +52,12 @@ Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
         settings.remove("settings");
     if (arguments().contains("-reset-connections"))
         settings.remove("connections");
+    if (arguments().contains("-reset-state")) {
+        settings.remove("list");
+        settings.remove("tree");
+        settings.remove("splitter");
+        settings.remove("geometry");
+    }
 
     if (settings.contains("settings")) {
         QVariant value = settings.value("settings");
