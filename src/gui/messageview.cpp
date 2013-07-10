@@ -355,13 +355,13 @@ void MessageView::onSplitterMoved()
 
 void MessageView::onAnchorClicked(const QUrl& link)
 {
-    if (link.scheme() == "nick")
+    if (link.scheme() == "nick") {
         emit queried(link.toString(QUrl::RemoveScheme));
-    else
+    } else {
         QDesktopServices::openUrl(link);
-
-    // avoid focus rectangle around the link
-    d.lineEditor->setFocus();
+        // avoid focus rectangle around the link
+        d.lineEditor->setFocus();
+    }
 }
 
 void MessageView::completeCommand(const QString& command)
