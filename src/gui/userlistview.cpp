@@ -17,6 +17,7 @@
 #include "itemdelegate.h"
 #include "menufactory.h"
 #include <IrcChannel>
+#include <IrcSession>
 #include <IrcUserModel>
 #include <QSortFilterProxyModel>
 #include <QItemSelectionModel>
@@ -26,9 +27,6 @@
 
 UserListView::UserListView(QWidget* parent) : QListView(parent)
 {
-    d.channel = 0;
-    d.session = 0;
-    d.userModel = 0;
     d.menuFactory = 0;
     setItemDelegate(new ItemDelegate(this));
     connect(this, SIGNAL(doubleClicked(QModelIndex)), SLOT(onDoubleClicked(QModelIndex)));

@@ -16,6 +16,7 @@
 #define USERLISTVIEW_H
 
 #include <QListView>
+#include <QPointer>
 
 class IrcChannel;
 class IrcSession;
@@ -60,10 +61,10 @@ private slots:
 
 private:
     struct Private {
-        IrcChannel* channel;
-        IrcSession* session;
-        IrcUserModel* userModel;
         MenuFactory* menuFactory;
+        QPointer<IrcChannel> channel;
+        QPointer<IrcSession> session;
+        QPointer<IrcUserModel> userModel;
     } d;
 };
 
