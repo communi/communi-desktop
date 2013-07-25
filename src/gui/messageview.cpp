@@ -154,11 +154,6 @@ IrcSession* MessageView::session() const
     return d.session;
 }
 
-IrcUserModel* MessageView::userModel() const
-{
-    return d.listView->userModel();
-}
-
 Completer* MessageView::completer() const
 {
     return d.lineEditor->completer();

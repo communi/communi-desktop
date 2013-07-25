@@ -23,7 +23,6 @@
 class SyntaxHighlighter;
 class MessageStackView;
 class CommandParser;
-class IrcUserModel;
 class MenuFactory;
 class IrcMessage;
 class IrcBuffer;
@@ -42,7 +41,6 @@ public:
     bool isActive() const;
     ViewInfo::Type viewType() const;
     IrcSession* session() const;
-    IrcUserModel* userModel() const;
     Completer* completer() const;
     QTextBrowser* textBrowser() const;
 

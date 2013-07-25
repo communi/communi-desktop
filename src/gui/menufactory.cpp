@@ -18,7 +18,6 @@
 #include "sessiontreeitem.h"
 #include "sessiontreewidget.h"
 #include "session.h"
-#include <IrcUserModel>
 #include <IrcCommand>
 #include <IrcChannel>
 
@@ -230,7 +229,7 @@ QMenu* MenuFactory::createSessionTreeMenu(SessionTreeItem* item, SessionTreeWidg
     } else if (active){
         bool channel = !item->text(0).isEmpty() && IrcSessionInfo(item->session()).channelTypes().contains(item->text(0).at(0));
         if (channel) {
-            if (item->view()->userModel()->count()) {
+            if (item->view()->isActive()) {
                 menu->addAction(tr("Names"), menu, SLOT(onNamesTriggered()));
                 menu->addAction(tr("Part"), menu, SLOT(onPartTriggered()));
             } else {
