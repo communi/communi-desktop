@@ -29,7 +29,7 @@ public:
     BufferModel(QObject* parent = 0) : IrcBufferModel(parent) { }
 
 protected:
-    void destroyBuffer(IrcBuffer* buffer) { Q_UNUSED(buffer); }
+    void destroy(IrcBuffer* buffer) { Q_UNUSED(buffer); }
 };
 
 MessageStackView::MessageStackView(IrcSession* session, QWidget* parent) : QStackedWidget(parent)
