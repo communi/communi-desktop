@@ -306,8 +306,7 @@ bool MessageView::eventFilter(QObject* object, QEvent* event)
 {
     if (object == d.textBrowser->viewport() && event->type() == QEvent::ContextMenu) {
         QContextMenuEvent* menuEvent = static_cast<QContextMenuEvent*>(event);
-        QAbstractTextDocumentLayout* layout = d.textBrowser->document()->documentLayout();
-        QUrl link(layout->anchorAt(menuEvent->pos()));
+        QUrl link(d.textBrowser->anchorAt(menuEvent->pos()));
         if (link.scheme() == "nick") {
             QMenu* standardMenu = d.textBrowser->createStandardContextMenu(menuEvent->pos());
             QMenu* customMenu = d.listView->menuFactory()->createUserViewMenu(link.toString(QUrl::RemoveScheme), this);
