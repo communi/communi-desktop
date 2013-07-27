@@ -75,11 +75,32 @@ void TextBrowser::append(const QString& text, bool highlight)
         cursor.setBlockFormat(format);
 #endif // QT_VERSION
 
+        int count = document()->blockCount();
+
+        if (count == document()->maximumBlockCount()) {
+            if (d.ub != -1)
+                --d.ub;
+
+            QMutableListIterator<int> mt(d.markers);
+            while (mt.hasNext()) {
+                --mt.next();
+                if (mt.value() < 0)
+                    mt.remove();
+            }
+
+            QMutableListIterator<int> ht(d.highlights);
+            while (ht.hasNext()) {
+                --ht.next();
+                if (ht.value() < 0)
+                    ht.remove();
+            }
+        }
+
         if (!isVisible() && d.ub == -1)
-            d.ub = document()->blockCount() - 1;
+            d.ub = count - 1;
 
         if (highlight)
-            d.highlights.append(document()->blockCount() - 1);
+            d.highlights.append(count - 1);
     }
 }
 
