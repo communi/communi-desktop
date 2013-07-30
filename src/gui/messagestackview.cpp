@@ -214,7 +214,6 @@ void MessageStackView::activateView(int index)
     MessageView* view = viewAt(index);
     if (view && isVisible()) {
         d.handler.setCurrentView(view);
-        d.parser.setCurrentTarget(view->receiver());
         view->setFocus();
         emit viewActivated(view);
     }

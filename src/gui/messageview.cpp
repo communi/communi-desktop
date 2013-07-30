@@ -258,6 +258,7 @@ void MessageView::showHelp(const QString& text, bool error)
 
 void MessageView::sendMessage(const QString& message)
 {
+    d.parser->setCurrentTarget(d.receiver);
     IrcCommand* cmd = d.parser->parseCommand(message);
     if (cmd) {
         if (cmd->type() == IrcCommand::Custom) {
