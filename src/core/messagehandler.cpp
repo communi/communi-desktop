@@ -77,26 +77,6 @@ void MessageHandler::removeView(const QString& name)
     }
 }
 
-bool MessageHandler::messageFilter(IrcMessage* message)
-{
-    // Special handling for nick changes and quit messages:
-    // In order to keep potential queries up to date, we must
-    // process nick changes and quits regardless of whether
-    // a channel processed them or not...
-
-    switch (message->type()) {
-    case IrcMessage::Nick:
-        handleNickMessage(static_cast<IrcNickMessage*>(message), true);
-        break;
-    case IrcMessage::Quit:
-        handleQuitMessage(static_cast<IrcQuitMessage*>(message), true);
-        break;
-    default:
-        break;
-    }
-    return false;
-}
-
 void MessageHandler::handleMessage(IrcMessage* message)
 {
     switch (message->type()) {
@@ -175,7 +155,7 @@ void MessageHandler::handleNamesMessage(IrcNamesMessage* message)
     sendMessage(message, message->channel());
 }
 
-void MessageHandler::handleNickMessage(IrcNickMessage* message, bool query)
+void MessageHandler::handleNickMessage(IrcNickMessage* message)
 {
     QString oldNick = message->sender().name().toLower();
     QString newNick = message->nick().toLower();
@@ -183,7 +163,7 @@ void MessageHandler::handleNickMessage(IrcNickMessage* message, bool query)
         sendMessage(message, d.znc->playbackTarget());
     } else {
         foreach (MessageView* view, d.views) {
-            if (!query || view->viewType() == ViewInfo::Query) {
+            if (view->viewType() == ViewInfo::Query) {
                 if (view->hasUser(oldNick) || !newNick.compare(view->receiver(), Qt::CaseInsensitive))
                     view->receiveMessage(message);
             }
@@ -318,14 +298,14 @@ void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
         sendMessage(message, message->target());
 }
 
-void MessageHandler::handleQuitMessage(IrcQuitMessage* message, bool query)
+void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
 {
     QString nick = message->sender().name();
     if (d.znc->isPlaybackActive()) {
         sendMessage(message, d.znc->playbackTarget());
     } else {
         foreach (MessageView* view, d.views) {
-            if (view->hasUser(nick) && (!query || view->viewType() == ViewInfo::Query))
+            if (view->viewType() == ViewInfo::Query && view->hasUser(nick))
                 view->receiveMessage(message);
         }
     }

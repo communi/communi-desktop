@@ -76,6 +76,7 @@ signals:
     void queried(const QString& user);
     void messaged(const QString& user, const QString& message);
     void splitterChanged(const QByteArray& state);
+    void renamed(const QString& from, const QString& to);
 
 protected:
     void hideEvent(QHideEvent* event);
@@ -86,6 +87,7 @@ private slots:
     void onDisconnected();
     void onEscPressed();
     void onSplitterMoved();
+    void onTitleChanged(const QString& title);
     void onAnchorClicked(const QUrl& link);
     void completeCommand(const QString& command);
     void onTopicEdited(const QString& topic);

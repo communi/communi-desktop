@@ -19,12 +19,11 @@
 #include <QObject>
 #include <QPointer>
 #include <IrcMessage>
-#include <IrcMessageFilter>
 
 class ZncManager;
 class MessageView;
 
-class MessageHandler : public QObject, public IrcMessageFilter
+class MessageHandler : public QObject
 {
     Q_OBJECT
 
@@ -43,8 +42,6 @@ public:
     void addView(const QString& name, MessageView* view);
     void removeView(const QString& name);
 
-    bool messageFilter(IrcMessage* message);
-
 public slots:
     void handleMessage(IrcMessage* message);
 
@@ -59,13 +56,13 @@ protected:
     void handleKickMessage(IrcKickMessage* message);
     void handleModeMessage(IrcModeMessage* message);
     void handleNamesMessage(IrcNamesMessage* message);
-    void handleNickMessage(IrcNickMessage* message, bool query = false);
+    void handleNickMessage(IrcNickMessage* message);
     void handleNoticeMessage(IrcNoticeMessage* message);
     void handleNumericMessage(IrcNumericMessage* message);
     void handlePartMessage(IrcPartMessage* message);
     void handlePongMessage(IrcPongMessage* message);
     void handlePrivateMessage(IrcPrivateMessage* message);
-    void handleQuitMessage(IrcQuitMessage* message, bool query = false);
+    void handleQuitMessage(IrcQuitMessage* message);
     void handleTopicMessage(IrcTopicMessage* message);
     void handleUnknownMessage(IrcMessage* message);
 

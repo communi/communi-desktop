@@ -41,7 +41,6 @@ MessageStackView::MessageStackView(IrcSession* session, QWidget* parent) : QStac
     connect(d.bufferModel, SIGNAL(messageIgnored(IrcMessage*)), &d.handler, SLOT(handleMessage(IrcMessage*)));
     connect(d.bufferModel, SIGNAL(channelsChanged(QStringList)), &d.parser, SLOT(setChannels(QStringList)));
 
-    session->installMessageFilter(&d.handler);
     session->installMessageFilter(qobject_cast<Session*>(session)); // TODO
     d.handler.znc()->setModel(d.bufferModel);
 
@@ -118,12 +117,14 @@ MessageView* MessageStackView::createView(ViewInfo::Type type, const QString& re
     connect(view, SIGNAL(queried(QString)), this, SLOT(addView(QString)));
     connect(view, SIGNAL(queried(QString)), this, SLOT(openView(QString)));
     connect(view, SIGNAL(messaged(QString,QString)), this, SLOT(sendMessage(QString,QString)));
+    connect(view, SIGNAL(renamed(QString,QString)), this, SLOT(renameView(QString,QString)));
 
     connect(d.lagTimer, SIGNAL(lagChanged(int)), view, SLOT(updateLag(int)));
     view->updateLag(d.lagTimer->lag());
 
     d.handler.addView(receiver, view);
     d.views.insert(receiver.toLower(), view);
+    d.bufferModel->add(receiver);
     addWidget(view);
     d.viewModel.setStringList(d.viewModel.stringList() << receiver);
     emit viewAdded(view);

@@ -191,6 +191,7 @@ void MessageView::setBuffer(IrcBuffer* buffer)
     d.buffer = buffer;
     connect(buffer, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
     connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
+    connect(buffer, SIGNAL(titleChanged(QString)), this, SLOT(onTitleChanged(QString)));
 }
 
 bool MessageView::playbackMode() const
@@ -341,6 +342,13 @@ void MessageView::onEscPressed()
     d.helpLabel->hide();
     d.searchEditor->hide();
     setFocus(Qt::OtherFocusReason);
+}
+
+void MessageView::onTitleChanged(const QString& title)
+{
+    const QString old = d.receiver;
+    setReceiver(title);
+    emit renamed(old, title);
 }
 
 void MessageView::onSplitterMoved()
