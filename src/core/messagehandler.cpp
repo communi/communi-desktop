@@ -181,7 +181,21 @@ void MessageHandler::handleNickMessage(IrcNickMessage* message)
 void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
 {
     QString target = message->target();
-    if (!message->session()->isConnected() || target.isEmpty()|| target == "*")
+
+    // forward ChanServ's "[#chan] msg" to the appropriate channel
+    if (target == message->session()->nickName() && message->sender().name() == "ChanServ") {
+        const QString msg = message->message();
+        if (msg.startsWith("[")) {
+            int idx = msg.indexOf("]");
+            if (idx != -1) {
+                const QString view = msg.mid(1, idx - 1);
+                if (d.views.contains(view.toLower()))
+                    target = view;
+            }
+        }
+    }
+
+    if (!message->session()->isConnected() || target.isEmpty() || target == "*")
         sendMessage(message, d.defaultView);
     else if (MessageView* view = d.views.value(message->sender().name().toLower()))
         sendMessage(message, view);
