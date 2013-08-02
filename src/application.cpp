@@ -23,7 +23,6 @@
 #include <QDebug>
 #include <QIcon>
 #include <QFile>
-#include <Irc>
 
 QByteArray Application::Private::encoding("ISO-8859-15");
 
@@ -31,7 +30,11 @@ Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
 {
     setApplicationName("Communi");
     setOrganizationName("Communi");
-    setApplicationVersion(Irc::version());
+
+    const int major = (COMMUNI_APP_VERSION & 0xff0000) >> 16;
+    const int minor = (COMMUNI_APP_VERSION & 0x00ff00) >> 8;
+    const int patch = (COMMUNI_APP_VERSION & 0x0000ff);
+    setApplicationVersion(tr("%1.%2.%3").arg(major).arg(minor).arg(patch));
 
     QIcon icon;
     icon.addFile(":/resources/icons/16x16/communi.png");
