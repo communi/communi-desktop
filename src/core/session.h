@@ -31,8 +31,9 @@ class Session : public IrcSession, public IrcMessageFilter
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(int autoReconnectDelay READ autoReconnectDelay WRITE setAutoReconnectDelay)
     Q_PROPERTY(QString password READ password WRITE setPassword)
-    Q_PROPERTY(bool reconnecting READ isReconnecting)
     Q_PROPERTY(bool hasQuit READ hasQuit WRITE setHasQuit)
+    Q_PROPERTY(bool reconnecting READ isReconnecting)
+    Q_PROPERTY(bool bouncer READ isBouncer)
 
 public:
     explicit Session(QObject* parent = 0);
@@ -50,6 +51,7 @@ public:
     bool hasQuit() const;
     void setHasQuit(bool quit);
 
+    bool isBouncer() const;
     bool isReconnecting() const;
 
     ViewInfos views() const;
@@ -74,7 +76,6 @@ private slots:
     void onPassword(QString* password);
     void onNickNameReserved(QString* alternate);
     void onCapabilities(const QStringList& available, QStringList* request);
-    void applySettings();
 
 private:
     bool messageFilter(IrcMessage* message);
@@ -82,13 +83,13 @@ private:
     void removeChannel(const QString& channel);
 
     struct Private {
+        bool quit;
+        bool bouncer;
         QString name;
         QTimer reconnectTimer;
         QString password;
         ViewInfos views;
-        bool quit;
         QStringList alternateNicks;
-        int rejoin;
         QHash<QString, IrcCommand*> commands;
     } d;
 };

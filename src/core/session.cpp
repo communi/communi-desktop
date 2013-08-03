@@ -14,15 +14,14 @@
 
 #include "session.h"
 #include "application.h"
-#include "settingsmodel.h"
 #include <IrcCommand>
 #include <IrcMessage>
 #include <Irc>
 
 Session::Session(QObject* parent) : IrcSession(parent)
 {
-    d.rejoin = 10;
     d.quit = false;
+    d.bouncer = false;
 
     connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(this, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
@@ -32,9 +31,7 @@ Session::Session(QObject* parent) : IrcSession(parent)
     connect(this, SIGNAL(capabilities(QStringList, QStringList*)), this, SLOT(onCapabilities(QStringList, QStringList*)));
 
     connect(&d.reconnectTimer, SIGNAL(timeout()), this, SLOT(reconnect()));
-
-    applySettings();
-    connect(Application::settings(), SIGNAL(changed()), this, SLOT(applySettings()));
+    setAutoReconnectDelay(15);
 }
 
 Session::~Session()
@@ -84,6 +81,11 @@ void Session::setHasQuit(bool quit)
     d.quit = quit;
 }
 
+bool Session::isBouncer() const
+{
+    return d.bouncer;
+}
+
 bool Session::isReconnecting() const
 {
     return d.reconnectTimer.isActive();
@@ -115,6 +117,7 @@ bool Session::sendUiCommand(IrcCommand* command, const QString& identifier)
 
 void Session::reconnect()
 {
+    d.bouncer = false;
     d.quit = false;
     if (!isActive()) {
         d.reconnectTimer.stop();
@@ -167,7 +170,7 @@ void Session::wake()
 
 void Session::onConnected()
 {
-    if (d.rejoin > 0) {
+    if (!d.bouncer) {
         QStringList channels;
         foreach (const ViewInfo& view, d.views) {
             if (view.active && view.type == ViewInfo::Channel)
@@ -175,8 +178,8 @@ void Session::onConnected()
         }
         // send join commands in batches of max N channels
         while (!channels.isEmpty()) {
-            sendCommand(IrcCommand::createJoin(QStringList(channels.mid(0, d.rejoin)).join(",")));
-            channels = channels.mid(d.rejoin);
+            sendCommand(IrcCommand::createJoin(QStringList(channels.mid(0, 10)).join(",")));
+            channels = channels.mid(10);
         }
     }
 
@@ -216,18 +219,11 @@ void Session::onCapabilities(const QStringList& available, QStringList* request)
         request->append("identify-msg");
 }
 
-void Session::applySettings()
-{
-    SettingsModel* settings = Application::settings();
-    setAutoReconnectDelay(settings->value("session.reconnectDelay").toInt());
-    d.rejoin = 0;
-    if (settings->value("ui.rememberChannels").toBool())
-        d.rejoin = settings->value("session.channelRejoinBatch").toInt();
-}
-
 bool Session::messageFilter(IrcMessage* message)
 {
-    if (message->type() == IrcMessage::Join) {
+    if (message->type() == IrcMessage::Capability) {
+        d.bouncer = message->sender().name() == "irc.znc.in";
+    } else if (message->type() == IrcMessage::Join) {
         if (message->flags() & IrcMessage::Own)
             addChannel(static_cast<IrcJoinMessage*>(message)->channel());
     } else if (message->type() == IrcMessage::Part) {

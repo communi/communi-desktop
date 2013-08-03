@@ -188,15 +188,15 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
         treeWidget->parentWidget()->show();
     }
 
-    SettingsModel* settings = Application::settings();
-    bool channels = settings->value("ui.rememberChannels").toBool();
-    bool queries = settings->value("ui.rememberQueries").toBool();
+    bool expand = false;
     foreach (const ViewInfo& view, connection.views) {
-        if ((channels && view.type == ViewInfo::Channel) || (queries && view.type == ViewInfo::Query))
-            stack->restoreView(view);
-        if (view.type != -1 && view.expanded)
-            treeWidget->expandItem(treeWidget->sessionItem(session));
+        if (view.type != -1 && view.expanded) {
+            expand = true;
+            break;
+        }
     }
+    if (expand || connection.views.isEmpty())
+        treeWidget->expandItem(treeWidget->sessionItem(session));
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)

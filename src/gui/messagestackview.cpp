@@ -193,8 +193,6 @@ void MessageStackView::applySettings()
     SettingsModel* settings = Application::settings();
     d.handler.znc()->setTimeStampFormat(settings->value("formatting.timeStamp").toString());
 
-    d.lagTimer->setInterval(settings->value("session.lagTimerInterval").toInt());
-
     QMap<QString,QString> aliases;
     QVariantMap values = settings->values("aliases.*");
     QMapIterator<QString,QVariant> it(values);
