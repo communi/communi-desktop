@@ -130,7 +130,7 @@ MessageView::MessageView(ViewInfo::Type type, IrcSession* session, MessageStackV
 MessageView::~MessageView()
 {
     if (d.buffer) {
-        if (qobject_cast<IrcChannel*>(d.buffer) && d.buffer->isActive())
+        if (d.buffer->isChannel() && d.buffer->isActive())
             connect(d.buffer, SIGNAL(activeChanged(bool)), d.buffer, SLOT(deleteLater()));
         else
             d.buffer->deleteLater();
