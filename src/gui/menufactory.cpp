@@ -15,8 +15,6 @@
 #include "menufactory.h"
 #include "messageview.h"
 #include "userlistview.h"
-#include "sessiontreeitem.h"
-#include "sessiontreewidget.h"
 #include "session.h"
 #include <IrcCommand>
 #include <IrcChannel>
@@ -159,88 +157,6 @@ QMenu* MenuFactory::createUserListMenu(const QString& prefix, const QString& nam
     action = menu->addAction(tr("Ban"), menu, SLOT(onBanTriggered()));
     action->setData(name);
 
-    return menu;
-}
-
-class SessionTreeMenu : public QMenu
-{
-    Q_OBJECT
-
-public:
-    SessionTreeMenu(SessionTreeItem* item, SessionTreeWidget* tree) :
-        QMenu(tree), item(item), tree(tree)
-    {
-    }
-
-private slots:
-    void onEditSession()
-    {
-        QMetaObject::invokeMethod(tree, "editSession", Q_ARG(IrcSession*, item->session()));
-    }
-
-    void onNamesTriggered()
-    {
-        IrcCommand* command = IrcCommand::createNames(item->text(0));
-        item->session()->sendCommand(command);
-    }
-
-    void onWhoisTriggered()
-    {
-        IrcCommand* command = IrcCommand::createWhois(item->text(0));
-        item->session()->sendCommand(command);
-    }
-
-    void onJoinTriggered()
-    {
-        IrcCommand* command = IrcCommand::createJoin(item->text(0));
-        item->session()->sendCommand(command);
-    }
-
-    void onPartTriggered()
-    {
-        IrcCommand* command = IrcCommand::createPart(item->text(0));
-        item->session()->sendCommand(command);
-    }
-
-    void onCloseTriggered()
-    {
-        QMetaObject::invokeMethod(tree, "closeItem", Q_ARG(SessionTreeItem*, item));
-    }
-
-private:
-    SessionTreeItem* item;
-    SessionTreeWidget* tree;
-};
-
-QMenu* MenuFactory::createSessionTreeMenu(SessionTreeItem* item, SessionTreeWidget* tree)
-{
-    bool active = item->session()->isActive();
-    SessionTreeMenu* menu = new SessionTreeMenu(item, tree);
-    if (!item->parent()) {
-        Session* session = qobject_cast<Session*>(item->session()); // TODO
-        if (session && session->isReconnecting())
-            menu->addAction(tr("Stop"), item->session(), SLOT(stopReconnecting()));
-        else if (active)
-            menu->addAction(tr("Disconnect"), item->session(), SLOT(quit()));
-        else
-            menu->addAction(tr("Reconnect"), item->session(), SLOT(reconnect()));
-        menu->addAction(tr("Edit"), menu, SLOT(onEditSession()))->setEnabled(!active);
-        menu->addSeparator();
-    } else if (active){
-        bool channel = !item->text(0).isEmpty() && IrcSessionInfo(item->session()).channelTypes().contains(item->text(0).at(0));
-        if (channel) {
-            if (item->view()->isActive()) {
-                menu->addAction(tr("Names"), menu, SLOT(onNamesTriggered()));
-                menu->addAction(tr("Part"), menu, SLOT(onPartTriggered()));
-            } else {
-                menu->addAction(tr("Join"), menu, SLOT(onJoinTriggered()));
-            }
-        } else {
-            menu->addAction(tr("Whois"), menu, SLOT(onWhoisTriggered()));
-        }
-        menu->addSeparator();
-    }
-    menu->addAction(tr("Close"), menu, SLOT(onCloseTriggered()));
     return menu;
 }
 

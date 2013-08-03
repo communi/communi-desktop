@@ -14,11 +14,11 @@
 
 #include "sessiontreewidget.h"
 #include "sessiontreeitem.h"
+#include "sessiontreemenu.h"
 #include "settingsmodel.h"
 #include "itemdelegate.h"
 #include "application.h"
 #include "messageview.h"
-#include "menufactory.h"
 #include "sharedtimer.h"
 #include "session.h"
 #include <QContextMenuEvent>
@@ -49,7 +49,6 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     setDragDropMode(InternalMove);
 
     d.dropParent = 0;
-    d.menuFactory = 0;
     d.sortViews = false;
     d.currentRestored = false;
     d.itemResetBlocked = false;
@@ -152,22 +151,6 @@ void SessionTreeWidget::restoreState(const QByteArray& state)
             }
         }
     }
-}
-
-MenuFactory* SessionTreeWidget::menuFactory() const
-{
-    if (!d.menuFactory) {
-        SessionTreeWidget* that = const_cast<SessionTreeWidget*>(this);
-        that->d.menuFactory = new MenuFactory(that);
-    }
-    return d.menuFactory;
-}
-
-void SessionTreeWidget::setMenuFactory(MenuFactory* factory)
-{
-    if (d.menuFactory && d.menuFactory->parent() == this)
-        delete d.menuFactory;
-    d.menuFactory = factory;
 }
 
 QColor SessionTreeWidget::statusColor(SessionTreeWidget::ItemStatus status) const
@@ -425,9 +408,8 @@ void SessionTreeWidget::contextMenuEvent(QContextMenuEvent* event)
 {
     SessionTreeItem* item = static_cast<SessionTreeItem*>(itemAt(event->pos()));
     if (item) {
-        QMenu* menu = menuFactory()->createSessionTreeMenu(item, this);
-        menu->exec(event->globalPos());
-        menu->deleteLater();
+        SessionTreeMenu menu(this);
+        menu.exec(item, event->globalPos());
     }
 }
 

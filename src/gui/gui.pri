@@ -16,6 +16,7 @@ HEADERS += $$PWD/messageview.h
 HEADERS += $$PWD/searcheditor.h
 HEADERS += $$PWD/sessionstackview.h
 HEADERS += $$PWD/sessiontreeitem.h
+HEADERS += $$PWD/sessiontreemenu.h
 HEADERS += $$PWD/sessiontreewidget.h
 HEADERS += $$PWD/userlistview.h
 
@@ -27,6 +28,7 @@ SOURCES += $$PWD/messageview.cpp
 SOURCES += $$PWD/searcheditor.cpp
 SOURCES += $$PWD/sessionstackview.cpp
 SOURCES += $$PWD/sessiontreeitem.cpp
+SOURCES += $$PWD/sessiontreemenu.cpp
 SOURCES += $$PWD/sessiontreewidget.cpp
 SOURCES += $$PWD/userlistview.cpp
 

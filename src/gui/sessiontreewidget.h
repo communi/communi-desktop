@@ -23,7 +23,6 @@
 
 class IrcSession;
 class MessageView;
-class MenuFactory;
 class SessionTreeItem;
 
 class SessionTreeWidget : public QTreeWidget
@@ -37,9 +36,6 @@ public:
 
     QByteArray saveState() const;
     void restoreState(const QByteArray& state);
-
-    MenuFactory* menuFactory() const;
-    void setMenuFactory(MenuFactory* factory);
 
     enum ItemStatus { Active, Inactive, Highlight };
 
@@ -118,7 +114,6 @@ private:
         bool currentRestored;
         bool itemResetBlocked;
         QColor highlightColor;
-        MenuFactory* menuFactory;
         QShortcut* prevShortcut;
         QShortcut* nextShortcut;
         QShortcut* prevActiveShortcut;
