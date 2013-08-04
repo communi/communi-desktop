@@ -110,6 +110,8 @@ private:
         int connected, disconnected;
         CommandParser* parser;
         QPointer<IrcBuffer> buffer;
+        bool stripNicks, showJoins, showParts, showQuits;
+        QString timeStampFormat;
     } d;
 };
 

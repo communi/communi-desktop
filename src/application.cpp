@@ -141,12 +141,12 @@ QVariantMap Application::defaultSettings()
     settings["shortcuts.resetViews"] = "Ctrl+R";
 
     // TODO:
-//    settings["messages.joins"] = true;
-//    settings["messages.parts"] = true;
+    settings["messages.joins"] = true;
+    settings["messages.parts"] = true;
+    settings["messages.quits"] = true;
 //    settings["messages.nicks"] = true;
 //    settings["messages.modes"] = true;
 //    settings["messages.kicks"] = true;
-//    settings["messages.quits"] = true;
 //    settings["messages.topics"] = true;
 
     settings["themes.light.background"] = QColor("#ffffff");

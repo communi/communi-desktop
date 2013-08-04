@@ -425,6 +425,12 @@ void MessageView::applySettings()
          .arg(settings->value(QString("themes.%1.event").arg(theme)).toString())
          .arg(settings->value(QString("themes.%1.timestamp").arg(theme)).toString())
          .arg(settings->value(QString("themes.%1.link").arg(theme)).toString()));
+
+    d.showJoins = settings->value("messages.joins").toBool();
+    d.showParts = settings->value("messages.parts").toBool();
+    d.showQuits = settings->value("messages.quits").toBool();
+    d.stripNicks = settings->value("format.hideUserHosts").toBool();
+    d.timeStampFormat = settings->value("formatting.timeStamp").toString();
 }
 
 void MessageView::receiveMessage(IrcMessage* message)
@@ -463,11 +469,20 @@ void MessageView::receiveMessage(IrcMessage* message)
                 if (blocks > 1)
                     d.textBrowser->addMarker(blocks);
             }
+            if (!d.showJoins)
+                return;
             break;
         case IrcMessage::Quit:
+            if (!d.playback && message->flags() & IrcMessage::Own)
+                ++d.parted;
+            if (!d.showQuits)
+                return;
+            break;
         case IrcMessage::Part:
             if (!d.playback && message->flags() & IrcMessage::Own)
                 ++d.parted;
+            if (!d.showParts)
+                return;
             break;
         case IrcMessage::Kick:
             if (!d.playback && !static_cast<IrcKickMessage*>(message)->user().compare(d.session->nickName(), Qt::CaseInsensitive))
@@ -517,9 +532,8 @@ void MessageView::receiveMessage(IrcMessage* message)
     options.nickName = d.session->nickName();
     if (IrcUserModel* model = d.listView->userModel())
         options.users = model->names();
-    // TODO: cache
-    options.stripNicks = Application::settings()->value("format.hideUserHosts").toBool();
-    options.timeStampFormat = Application::settings()->value("formatting.timeStamp").toString();
+    options.stripNicks = d.stripNicks;
+    options.timeStampFormat = d.timeStampFormat;
     options.textFormat = *irc_text_format();
     if (d.viewType == ViewInfo::Channel)
         options.repeat = (d.joined > 1 && d.joined > d.parted);

@@ -90,6 +90,13 @@
      </property>
     </widget>
    </item>
+   <item row="4" column="1">
+    <widget class="QCheckBox" name="hideEventsCheckBox">
+     <property name="text">
+      <string>Hide joins/parts/quits</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <tabstops>

@@ -25,6 +25,7 @@ BasicSettingsPage::BasicSettingsPage(QWidget* parent)
     connect(ui.blockSpinBox, SIGNAL(valueChanged(int)), SLOT(updateModel()));
     connect(ui.timeStampEdit, SIGNAL(textEdited(QString)), SLOT(updateModel()));
     connect(ui.stripNicksCheckBox, SIGNAL(toggled(bool)), SLOT(updateModel()));
+    connect(ui.hideEventsCheckBox, SIGNAL(toggled(bool)), SLOT(updateModel()));
 }
 
 void BasicSettingsPage::setSettings(SettingsModel* settings)
@@ -44,6 +45,9 @@ void BasicSettingsPage::updateUi()
         ui.blockSpinBox->setValue(model->value("ui.scrollback").toInt());
         ui.stripNicksCheckBox->setChecked(model->value("formatting.hideUserHosts").toBool());
         ui.timeStampEdit->setText(model->value("formatting.timeStamp").toString());
+        ui.hideEventsCheckBox->setChecked(!model->value("messages.joins").toBool() &&
+                                          !model->value("messages.parts").toBool() &&
+                                          !model->value("messages.quits").toBool());
         block = false;
     }
 }
@@ -58,6 +62,9 @@ void BasicSettingsPage::updateModel()
         model->setValue("ui.scrollback", ui.blockSpinBox->value());
         model->setValue("formatting.hideUserHosts", ui.stripNicksCheckBox->isChecked());
         model->setValue("formatting.timeStamp", ui.timeStampEdit->text());
+        model->setValue("messages.joins", !ui.hideEventsCheckBox->isChecked());
+        model->setValue("messages.parts", !ui.hideEventsCheckBox->isChecked());
+        model->setValue("messages.quits", !ui.hideEventsCheckBox->isChecked());
         block = false;
     }
 }
