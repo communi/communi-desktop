@@ -70,6 +70,9 @@ public slots:
 signals:
     void nameChanged(const QString& name);
 
+protected:
+    IrcCommand* createCtcpReply(IrcPrivateMessage* request) const;
+
 private slots:
     void onConnected();
     void onDisconnected();

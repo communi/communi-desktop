@@ -168,6 +168,17 @@ void Session::wake()
         reconnect();
 }
 
+IrcCommand* Session::createCtcpReply(IrcPrivateMessage* request) const
+{
+    const QString cmd = request->message().split(" ", QString::SkipEmptyParts).value(0).toUpper();
+    if (cmd == "VERSION") {
+        const QString message = tr("%1 %2").arg(QApplication::applicationName())
+                                           .arg(QApplication::applicationVersion());
+        return IrcCommand::createCtcpReply(request->sender().name(), QString("VERSION %1").arg(message));
+    }
+    return IrcSession::createCtcpReply(request);
+}
+
 void Session::onConnected()
 {
     if (!d.bouncer) {
