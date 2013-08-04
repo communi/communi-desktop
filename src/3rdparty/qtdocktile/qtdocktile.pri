@@ -22,7 +22,7 @@ unix:!mac {
 }
 
 win32 {
-    LIBS += -lole32
+    LIBS += -lole32 -luuid
     HEADERS += $$PWD/winutils.h
     SOURCES += $$PWD/qtdocktile_win.cpp
 }
