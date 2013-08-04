@@ -13,6 +13,7 @@
 */
 
 #include "toolbar.h"
+#include "helppopup.h"
 #include <QLineEdit>
 #include <QAction>
 #include <QIcon>
@@ -23,6 +24,7 @@ ToolBar::ToolBar(QWidget* parent) : QToolBar(parent)
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
     addAction(QIcon(":/resources/iconmonstr/about.png"), "", this, SIGNAL(aboutTriggered()))->setToolTip(tr("About"));
+    addAction(QIcon(":/resources/iconmonstr/help.png"), "", this, SLOT(showHelp()))->setToolTip(tr("Help"));
     addAction(QIcon(":/resources/iconmonstr/settings.png"), "", this, SIGNAL(settingsTriggered()))->setToolTip(tr("Settings"));
 
     QWidget* spacer = new QWidget(this);
@@ -35,4 +37,10 @@ ToolBar::ToolBar(QWidget* parent) : QToolBar(parent)
     QLineEdit lineEdit;
     lineEdit.setStyleSheet("QLineEdit { border: 1px solid transparent; }");
     setFixedHeight(lineEdit.sizeHint().height());
+}
+
+void ToolBar::showHelp()
+{
+    HelpPopup* help = new HelpPopup(window());
+    help->popup();
 }

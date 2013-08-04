@@ -8,6 +8,7 @@ QMAKE_CLEAN += $$PWD/*~
 
 HEADERS += $$PWD/addviewdialog.h
 HEADERS += $$PWD/application.h
+HEADERS += $$PWD/helppopup.h
 HEADERS += $$PWD/homepage.h
 HEADERS += $$PWD/mainwindow.h
 HEADERS += $$PWD/overlay.h
@@ -18,6 +19,7 @@ HEADERS += $$PWD/trayicon.h
 
 SOURCES += $$PWD/addviewdialog.cpp
 SOURCES += $$PWD/application.cpp
+SOURCES += $$PWD/helppopup.cpp
 SOURCES += $$PWD/homepage.cpp
 SOURCES += $$PWD/main.cpp
 SOURCES += $$PWD/mainwindow.cpp

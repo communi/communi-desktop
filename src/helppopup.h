@@ -12,26 +12,25 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TOOLBAR_H
-#define TOOLBAR_H
+#ifndef HELPPOPUP_H
+#define HELPPOPUP_H
 
-#include <QToolBar>
+#include <QLabel>
 
-class ToolBar : public QToolBar
+class HelpPopup : public QLabel
 {
     Q_OBJECT
 
 public:
-    explicit ToolBar(QWidget* parent = 0);
+    explicit HelpPopup(QWidget* parent = 0);
+    ~HelpPopup();
 
-signals:
-    void aboutTriggered();
-    void settingsTriggered();
-    void connectTriggered();
-    void joinTriggered();
+public slots:
+    void popup();
 
-private slots:
-    void showHelp();
+protected:
+    void keyPressEvent(QKeyEvent* event);
+    void mousePressEvent(QMouseEvent* event);
 };
 
-#endif // TOOLBAR_H
+#endif // HELPPOPUP_H
