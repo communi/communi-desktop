@@ -78,7 +78,10 @@ void ItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
     if (index.column() == 1) {
         int badge = index.data(BadgeRole).toInt();
         if (badge > 0) {
-            QRect rect = option.rect.adjusted(1, 3, -1, -3);
+            QRect rect;
+            rect.setWidth(option.rect.width() - 2);
+            rect.setHeight(option.fontMetrics.ascent() + 1);
+            rect.moveCenter(option.rect.center());
 
             painter->save();
             painter->setPen(Qt::NoPen);
@@ -95,10 +98,10 @@ void ItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             if (badge > 999)
                 txt = QLatin1String("...");
             else
-                txt = QFontMetrics(font).elidedText(QString::number(badge), Qt::ElideRight, rect.width());
+                txt = option.fontMetrics.elidedText(QString::number(badge), Qt::ElideRight, option.rect.width());
 
             painter->setPen(qApp->palette().color(QPalette::Light));
-            painter->drawText(rect, Qt::AlignCenter, txt);
+            painter->drawText(option.rect, Qt::AlignCenter, txt);
             painter->restore();
         }
     }
