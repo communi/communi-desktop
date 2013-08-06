@@ -16,6 +16,7 @@
 #include "sessiontreewidget.h"
 #include "itemdelegate.h"
 #include "messageview.h"
+#include <IrcBuffer>
 
 SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidget* parent) : QTreeWidgetItem(parent)
 {
@@ -111,11 +112,16 @@ bool SessionTreeItem::operator<(const QTreeWidgetItem& other) const
     Q_ASSERT(parent() && other.parent());
     QStringList sortOrder = static_cast<SessionTreeItem*>(parent())->d.sortOrder;
     if (sortOrder.isEmpty()) {
+        const SessionTreeItem* otherItem = static_cast<const SessionTreeItem*>(&other);
         const bool a = d.view->viewType() == ViewInfo::Channel;
-        const bool b = static_cast<const SessionTreeItem*>(&other)->d.view->viewType() == ViewInfo::Channel;
+        const bool b = otherItem->d.view->viewType() == ViewInfo::Channel;
         if (a != b)
             return a;
-        return QTreeWidgetItem::operator<(other);
+        const IrcBuffer* ab = d.view->buffer();
+        const IrcBuffer* bb = otherItem->view()->buffer();
+        if (!ab || !bb)
+            return QTreeWidgetItem::operator<(other);
+        return ab->name().localeAwareCompare(bb->name()) < 0;
     } else {
         // manual sorting via dnd
         const int a = sortOrder.indexOf(text(0));
