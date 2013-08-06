@@ -51,6 +51,7 @@ MessageView::MessageView(ViewInfo::Type type, IrcSession* session, MessageStackV
     d.awayReply.invalidate();
     d.playback = false;
     d.parser = stackView->parser();
+    d.firstNames = true;
 
     d.joined = 0;
     d.parted = 0;
@@ -465,6 +466,7 @@ void MessageView::receiveMessage(IrcMessage* message)
         case IrcMessage::Join:
             if (!d.playback && message->flags() & IrcMessage::Own) {
                 ++d.joined;
+                d.firstNames = true;
                 int blocks = d.textBrowser->document()->blockCount();
                 if (blocks > 1)
                     d.textBrowser->addMarker(blocks);
@@ -535,10 +537,21 @@ void MessageView::receiveMessage(IrcMessage* message)
     options.stripNicks = d.stripNicks;
     options.timeStampFormat = d.timeStampFormat;
     options.textFormat = *irc_text_format();
-    if (d.viewType == ViewInfo::Channel)
+    if (d.viewType == ViewInfo::Channel) {
         options.repeat = (d.joined > 1 && d.joined > d.parted);
-    else if (d.viewType == ViewInfo::Server)
+        if (message->type() == IrcMessage::Names) {
+            // - short version on first join
+            // - ignore names on consecutive joins
+            // - long version as reply to /names
+            bool wasFirst = d.firstNames;
+            options.repeat = !d.firstNames;
+            d.firstNames = false;
+            if (d.joined > 1 && wasFirst)
+                return;
+        }
+    } else if (d.viewType == ViewInfo::Server) {
         options.repeat = (d.connected > 1);
+    }
 
     QString formatted = MessageFormatter::formatMessage(message, options);
     if (formatted.length()) {

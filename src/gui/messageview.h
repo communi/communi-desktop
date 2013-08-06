@@ -112,6 +112,7 @@ private:
         QPointer<IrcBuffer> buffer;
         bool stripNicks, showJoins, showParts, showQuits;
         QString timeStampFormat;
+        bool firstNames;
     } d;
 };
 
