@@ -81,7 +81,7 @@ void ItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             QRect rect;
             rect.setWidth(option.rect.width() - 2);
             const int ascent = option.fontMetrics.ascent();
-            rect.setHeight(ascent + option.rect.height() % qMax(ascent % 2, 1));
+            rect.setHeight(ascent + qMax(option.rect.height() % 2, ascent % 2));
             rect.moveCenter(option.rect.center());
 
             painter->save();
