@@ -80,7 +80,8 @@ void ItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         if (badge > 0) {
             QRect rect;
             rect.setWidth(option.rect.width() - 2);
-            rect.setHeight(option.fontMetrics.ascent() + 1);
+            const int ascent = option.fontMetrics.ascent();
+            rect.setHeight(ascent + option.rect.height() % qMax(ascent % 2, 1));
             rect.moveCenter(option.rect.center());
 
             painter->save();
