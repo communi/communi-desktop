@@ -22,6 +22,7 @@ SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidget* parent) : QTree
 {
     d.view = view;
     d.highlighted = false;
+    d.sortOrder = Manual;
     setText(0, view->receiver());
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDropEnabled);
 }
@@ -30,6 +31,7 @@ SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidgetItem* parent) : Q
 {
     d.view = view;
     d.highlighted = false;
+    d.sortOrder = Manual;
     setText(0, view->receiver());
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
 }
@@ -107,11 +109,49 @@ void SessionTreeItem::setHighlighted(bool highlighted)
     }
 }
 
+void SessionTreeItem::sort(SortOrder order)
+{
+    if (d.sortOrder != order) {
+        if (d.sortOrder == Manual)
+            resetManualSortOrder();
+        d.sortOrder = order;
+        sortChildren(0, Qt::AscendingOrder);
+    }
+}
+
+SessionTreeItem::SortOrder SessionTreeItem::currentSortOrder() const
+{
+    if (const SessionTreeItem* p = static_cast<const SessionTreeItem*>(parent()))
+        return p->currentSortOrder();
+    return d.sortOrder;
+}
+
+QStringList SessionTreeItem::manualSortOrder() const
+{
+    if (const SessionTreeItem* p = static_cast<const SessionTreeItem*>(parent()))
+        return p->manualSortOrder();
+    return d.manualOrder;
+}
+
+void SessionTreeItem::setManualSortOrder(const QStringList& order)
+{
+    if (d.manualOrder != order) {
+        d.manualOrder = order;
+        sortChildren(0, Qt::AscendingOrder);
+    }
+}
+
+void SessionTreeItem::resetManualSortOrder()
+{
+    d.manualOrder.clear();
+    for (int i = 0; i < childCount(); ++i)
+        d.manualOrder += child(i)->text(0);
+}
+
 bool SessionTreeItem::operator<(const QTreeWidgetItem& other) const
 {
     Q_ASSERT(parent() && other.parent());
-    QStringList sortOrder = static_cast<SessionTreeItem*>(parent())->d.sortOrder;
-    if (sortOrder.isEmpty()) {
+    if (currentSortOrder() == Alphabetic) {
         const SessionTreeItem* otherItem = static_cast<const SessionTreeItem*>(&other);
         const bool a = d.view->viewType() == ViewInfo::Channel;
         const bool b = otherItem->d.view->viewType() == ViewInfo::Channel;
@@ -124,6 +164,7 @@ bool SessionTreeItem::operator<(const QTreeWidgetItem& other) const
         return ab->name().localeAwareCompare(bb->name()) < 0;
     } else {
         // manual sorting via dnd
+        const QStringList sortOrder = manualSortOrder();
         const int a = sortOrder.indexOf(text(0));
         const int b = sortOrder.indexOf(other.text(0));
         if (a == -1 && b != -1)

@@ -39,14 +39,23 @@ public:
     bool isHighlighted() const;
     void setHighlighted(bool highlighted);
 
+    enum SortOrder { Alphabetic, Manual };
+    void sort(SortOrder order);
+    SortOrder currentSortOrder() const;
+
+    QStringList manualSortOrder() const;
+    void setManualSortOrder(const QStringList& order);
+    void resetManualSortOrder();
+
     bool operator<(const QTreeWidgetItem& other) const;
 
 private:
     struct Private {
         bool highlighted;
         MessageView* view;
+        SortOrder sortOrder;
+        QStringList manualOrder;
         QSet<SessionTreeItem*> highlightedChildren;
-        QStringList sortOrder;
     } d;
     friend class SessionTreeWidget;
 };

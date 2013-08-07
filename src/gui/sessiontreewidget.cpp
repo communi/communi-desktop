@@ -44,12 +44,7 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     delegate->setRootIsDecorated(true);
     setItemDelegate(delegate);
 
-    setDragEnabled(true);
-    setDropIndicatorShown(true);
-    setDragDropMode(InternalMove);
-
     d.dropParent = 0;
-    d.sortViews = false;
     d.currentRestored = false;
     d.itemResetBlocked = false;
 
@@ -104,11 +99,10 @@ QByteArray SessionTreeWidget::saveState() const
 
     QVariantHash hash;
     for (int i = 0; i < topLevelItemCount(); ++i) {
-        QTreeWidgetItem* parent = topLevelItem(i);
-        QStringList receivers;
-        for (int j = 0; j < parent->childCount(); ++j)
-            receivers += parent->child(j)->text(0);
-        hash.insert(parent->text(0), receivers);
+        SessionTreeItem* item = static_cast<SessionTreeItem*>(topLevelItem(i));
+        if (item->currentSortOrder() == SessionTreeItem::Manual)
+            item->resetManualSortOrder();
+        hash.insert(item->text(0), item->manualSortOrder());
     }
 
     if (QTreeWidgetItem* item = currentItem()) {
@@ -131,10 +125,11 @@ void SessionTreeWidget::restoreState(const QByteArray& state)
 
     for (int i = 0; i < topLevelItemCount(); ++i) {
         SessionTreeItem* item = static_cast<SessionTreeItem*>(topLevelItem(i));
-        item->d.sortOrder.clear();
-        if (!d.sortViews)
-            item->d.sortOrder = hash.value(item->text(0)).toStringList();
-        item->sortChildren(0, Qt::AscendingOrder);
+        QStringList order = hash.value(item->text(0)).toStringList();
+        if (order != item->manualSortOrder()) {
+            item->setManualSortOrder(order);
+            item->sortChildren(0, Qt::AscendingOrder);
+        }
     }
 
     if (!d.currentRestored && hash.contains("_currentText_")) {
@@ -218,9 +213,12 @@ void SessionTreeWidget::addView(MessageView* view)
         IrcSession* session = view->session();
         connect(session, SIGNAL(nameChanged(QString)), this, SLOT(updateSession()));
         d.sessionItems.insert(session, item);
+        const bool sortViews = Application::settings()->value("ui.sortViews").toBool();
+        item->sort(sortViews ? SessionTreeItem::Alphabetic : SessionTreeItem::Manual);
     } else {
         SessionTreeItem* parent = d.sessionItems.value(view->session());
         item = new SessionTreeItem(view, parent);
+        parent->sortChildren(0, Qt::AscendingOrder);
     }
 
     connect(view, SIGNAL(activeChanged()), this, SLOT(updateView()));
@@ -388,7 +386,16 @@ void SessionTreeWidget::applySettings()
 {
     SettingsModel* settings = Application::settings();
 
-    d.sortViews = settings->value("ui.sortViews").toBool();
+    const bool sortViews = settings->value("ui.sortViews").toBool();
+
+    setDragEnabled(!sortViews);
+    setDropIndicatorShown(!sortViews);
+    setDragDropMode(sortViews ? NoDragDrop : InternalMove);
+
+    for (int i = 0; i < topLevelItemCount(); ++i) {
+        SessionTreeItem* item = static_cast<SessionTreeItem*>(topLevelItem(i));
+        item->sort(sortViews ? SessionTreeItem::Alphabetic : SessionTreeItem::Manual);
+    }
 
     QString theme =  settings->value("ui.theme").toString();
     QString key = QString("themes.%1.highlight").arg(theme);
