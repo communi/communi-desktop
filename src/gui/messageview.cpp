@@ -20,7 +20,6 @@
 #include "messagestackview.h"
 #include "messageformatter.h"
 #include "commandparser.h"
-#include "menufactory.h"
 #include "completer.h"
 #include "session.h"
 #include <QAbstractTextDocumentLayout>
@@ -30,6 +29,7 @@
 #include <QKeyEvent>
 #include <QDateTime>
 #include <QDebug>
+#include <QMenu>
 #include <QUrl>
 #include <irctextformat.h>
 #include <ircusermodel.h>
@@ -203,16 +203,6 @@ bool MessageView::playbackMode() const
 void MessageView::setPlaybackMode(bool enabled)
 {
     d.playback = enabled;
-}
-
-MenuFactory* MessageView::menuFactory() const
-{
-    return d.listView->menuFactory();
-}
-
-void MessageView::setMenuFactory(MenuFactory* factory)
-{
-    d.listView->setMenuFactory(factory);
 }
 
 QByteArray MessageView::saveSplitter() const

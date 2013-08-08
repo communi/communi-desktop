@@ -23,7 +23,6 @@
 class SyntaxHighlighter;
 class MessageStackView;
 class CommandParser;
-class MenuFactory;
 class IrcMessage;
 class IrcBuffer;
 class Session;
@@ -52,9 +51,6 @@ public:
 
     bool playbackMode() const;
     void setPlaybackMode(bool enabled);
-
-    MenuFactory* menuFactory() const;
-    void setMenuFactory(MenuFactory* factory);
 
     QByteArray saveSplitter() const;
     void restoreSplitter(const QByteArray& state);
