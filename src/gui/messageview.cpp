@@ -342,6 +342,7 @@ bool MessageView::eventFilter(QObject* object, QEvent* event)
                 emit queried(user);
             } else if (action == users) {
                 d.splitter->setSizes(QList<int>() << d.textBrowser->sizeHint().width() << d.listView->sizeHint().width());
+                onSplitterMoved();
             } else if (action == views) {
                 splitter->setSizes(QList<int>() << splitter->widget(0)->sizeHint().width() << splitter->widget(1)->sizeHint().width());
             }
