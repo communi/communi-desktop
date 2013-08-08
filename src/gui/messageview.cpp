@@ -268,6 +268,8 @@ void MessageView::sendMessage(const QString& message)
             QStringList params = cmd->parameters().mid(1);
             if (command == "CLEAR") {
                 d.textBrowser->clear();
+            } else if (command == "CLOSE") {
+                QMetaObject::invokeMethod(window(), "closeView");
             } else if (command == "MSG") {
                 // support "/msg foo /cmd" without executing /cmd
                 QString msg = QStringList(params.mid(1)).join(" ");
