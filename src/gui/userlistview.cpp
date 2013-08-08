@@ -14,6 +14,7 @@
 
 #include "userlistview.h"
 #include "sortedusermodel.h"
+#include "styledscrollbar.h"
 #include "itemdelegate.h"
 #include "menufactory.h"
 #include <IrcChannel>
@@ -30,6 +31,9 @@ UserListView::UserListView(QWidget* parent) : QListView(parent)
     d.menuFactory = 0;
     setItemDelegate(new ItemDelegate(this));
     connect(this, SIGNAL(doubleClicked(QModelIndex)), SLOT(onDoubleClicked(QModelIndex)));
+
+    setVerticalScrollBar(new StyledScrollBar(this));
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
 UserListView::~UserListView()

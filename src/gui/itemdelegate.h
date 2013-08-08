@@ -20,10 +20,14 @@
 class ItemDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
+    Q_PROPERTY(bool dark READ isDark WRITE setDark)
     Q_PROPERTY(bool rootIsDecorated READ rootIsDecorated WRITE setRootIsDecorated)
 
 public:
     explicit ItemDelegate(QObject* parent = 0);
+
+    bool isDark() const;
+    void setDark(bool dark);
 
     bool rootIsDecorated() const;
     void setRootIsDecorated(bool decorated);
@@ -35,6 +39,7 @@ public:
 
 private:
     struct Private {
+        bool dark;
         bool rootIsDecorated;
     } d;
 };

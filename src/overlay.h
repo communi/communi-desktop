@@ -23,6 +23,7 @@ class Overlay : public QLabel
 {
     Q_OBJECT
     Q_PROPERTY(bool busy READ isBusy WRITE setBusy)
+    Q_PROPERTY(bool dark READ isDark WRITE setDark)
     Q_PROPERTY(bool refresh READ hasRefresh WRITE setRefresh)
 
 public:
@@ -30,6 +31,9 @@ public:
 
     bool isBusy() const;
     void setBusy(bool busy);
+
+    bool isDark() const;
+    void setDark(bool dark);
 
     bool hasRefresh() const;
     void setRefresh(bool enabled);
@@ -47,6 +51,7 @@ private slots:
 
 private:
     struct Private {
+        bool dark;
         QToolButton* button;
         QPointer<QWidget> prevParent;
     } d;

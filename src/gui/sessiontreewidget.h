@@ -37,7 +37,7 @@ public:
     QByteArray saveState() const;
     void restoreState(const QByteArray& state);
 
-    enum ItemStatus { Active, Inactive, Highlight };
+    enum ItemStatus { Active, Inactive, Highlight, Badge, BadgeHighlight };
 
     QColor statusColor(ItemStatus status) const;
     void setStatusColor(ItemStatus status, const QColor& color);

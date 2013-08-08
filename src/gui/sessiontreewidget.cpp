@@ -15,6 +15,7 @@
 #include "sessiontreewidget.h"
 #include "sessiontreeitem.h"
 #include "sessiontreemenu.h"
+#include "styledscrollbar.h"
 #include "settingsmodel.h"
 #include "itemdelegate.h"
 #include "application.h"
@@ -23,6 +24,7 @@
 #include "session.h"
 #include <QContextMenuEvent>
 #include <QHeaderView>
+#include <QScrollBar>
 #include <QTimer>
 
 SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
@@ -40,6 +42,9 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     header()->setResizeMode(1, QHeaderView::Fixed);
     header()->resizeSection(1, fontMetrics().width("999"));
 
+    setVerticalScrollBar(new StyledScrollBar(this));
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
     ItemDelegate* delegate = new ItemDelegate(this);
     delegate->setRootIsDecorated(true);
     setItemDelegate(delegate);
@@ -47,10 +52,6 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     d.dropParent = 0;
     d.currentRestored = false;
     d.itemResetBlocked = false;
-
-    d.colors[Active] = palette().color(QPalette::WindowText);
-    d.colors[Inactive] = palette().color(QPalette::Disabled, QPalette::WindowText);
-    d.colors[Highlight] = palette().color(QPalette::Highlight);
 
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)),
             this, SLOT(onItemExpanded(QTreeWidgetItem*)));
@@ -161,8 +162,8 @@ void SessionTreeWidget::setStatusColor(SessionTreeWidget::ItemStatus status, con
 QColor SessionTreeWidget::currentBadgeColor() const
 {
     if (!d.highlightColor.isValid() || d.highlightColor != d.colors.value(Active))
-        return d.colors.value(Highlight).lighter(125);
-    return qApp->palette().color(QPalette::AlternateBase).darker(125);
+        return d.colors.value(BadgeHighlight);
+    return d.colors.value(Badge);
 }
 
 QColor SessionTreeWidget::currentHighlightColor() const
@@ -397,9 +398,15 @@ void SessionTreeWidget::applySettings()
         item->sort(sortViews ? SessionTreeItem::Alphabetic : SessionTreeItem::Manual);
     }
 
-    QString theme =  settings->value("ui.theme").toString();
-    QString key = QString("themes.%1.highlight").arg(theme);
-    setStatusColor(Highlight, settings->value(key).value<QColor>());
+    // TODO:
+    bool dark = settings->value("ui.dark").toBool();
+    d.colors[Active] = dark ? QColor("#dedede") : palette().color(QPalette::Text);
+    d.colors[Inactive] = dark ? QColor("#666666") : palette().color(QPalette::Disabled, QPalette::Text);
+    d.colors[Highlight] = QColor("#ff4040");
+    d.colors[Badge] = dark ? QColor("#444444") : palette().color(QPalette::AlternateBase).darker(125);
+    d.colors[BadgeHighlight] = dark ? QColor("#ff4040").darker(125) : QColor("#ff4040").lighter(125);
+
+    static_cast<ItemDelegate*>(itemDelegate())->setDark(dark);
 
     d.nextShortcut->setKey(QKeySequence(settings->value("shortcuts.nextView").toString()));
     d.prevShortcut->setKey(QKeySequence(settings->value("shortcuts.previousView").toString()));

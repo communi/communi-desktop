@@ -27,8 +27,14 @@ ToolBar {
                                 stop: 1.0 palette(button));
 }
 
+Overlay {
+    background: rgba(228, 228, 228, 40%)
+}
+
 TextBrowser {
     border: none;
+    color: #000000;
+    background: #ffffff;
     selection-color: palette(highlighted-text);
     selection-background-color: palette(highlight);
 }

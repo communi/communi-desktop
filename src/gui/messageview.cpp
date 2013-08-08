@@ -94,18 +94,40 @@ MessageView::MessageView(ViewInfo::Type type, IrcSession* session, MessageStackV
     if (!init) {
         init = true;
         IrcPalette palette;
-        QStringList colorNames = QStringList()
-                << "navy" << "green" << "red" << "maroon" << "purple" << "olive"
-                << "yellow" << "lime" << "teal" << "aqua" << "royalblue" << "fuchsia";
-        for (int i = IrcPalette::Blue; i <= IrcPalette::Pink; ++i) {
-            QColor color(colorNames.takeFirst());
-            color.setHsl(color.hue(), 100, 82);
-            palette.setColorName(i, color.name());
-        }
         palette.setColorName(IrcPalette::Gray, "#606060");
         palette.setColorName(IrcPalette::LightGray, "#808080");
+
+        // http://ethanschoonover.com/solarized
+        palette.setColorName(IrcPalette::Blue, "#268bd2");
+        palette.setColorName(IrcPalette::Green, "#859900");
+        palette.setColorName(IrcPalette::Red, "#dc322f");
+        palette.setColorName(IrcPalette::Brown, "#cb4b16");
+        palette.setColorName(IrcPalette::Purple, "#6c71c4");
+        palette.setColorName(IrcPalette::Orange, "#cb4b16");
+        palette.setColorName(IrcPalette::Yellow, "#b58900");
+        palette.setColorName(IrcPalette::LightGreen, "#859900");
+        palette.setColorName(IrcPalette::Cyan, "#2aa198");
+        palette.setColorName(IrcPalette::LightCyan, "#2aa198");
+        palette.setColorName(IrcPalette::LightBlue, "#268bd2");
+        palette.setColorName(IrcPalette::Pink, "#6c71c4");
+
         irc_text_format()->setPalette(palette);
     }
+
+    d.textBrowser->document()->setDefaultStyleSheet(
+        QString(
+            ".highlight { color: #ff4040 }"
+            ".notice    { color: #a54242 }"
+            ".action    { color: #8b388b }"
+            ".event     { color: #808080 }"
+            ".timestamp { color: #808080; font-size: small }"
+            "a { color: #4040ff }"));
+
+    QTextDocument* doc = d.topicLabel->findChild<QTextDocument*>();
+    if (doc)
+        doc->setDefaultStyleSheet("a { color: #4040ff }");
+
+    d.highlighter->setHighlightColor(QColor("#808080"));
 
     d.lineEditor->completer()->setCommandModel(stackView->commandModel());
     connect(d.lineEditor->completer(), SIGNAL(commandCompletion(QString)), this, SLOT(completeCommand(QString)));
@@ -238,12 +260,8 @@ void MessageView::showHelp(const QString& text, bool error)
 
     d.helpLabel->setVisible(!syntax.isEmpty());
     QPalette pal;
-    if (error) {
-        SettingsModel* settings = Application::settings();
-        QString theme =  settings->value("ui.theme").toString();
-        QString key = QString("themes.%1.highlight").arg(theme);
-        pal.setColor(QPalette::WindowText, settings->value(key).value<QColor>());
-    }
+    if (error)
+        pal.setColor(QPalette::WindowText, "#ff4040");
     d.helpLabel->setPalette(pal);
     d.helpLabel->setText(syntax);
 }
@@ -424,38 +442,32 @@ void MessageView::onSocketError()
 void MessageView::applySettings()
 {
     SettingsModel* settings = Application::settings();
-    QString theme =  settings->value("ui.theme").toString();
-
-    // TODO: dedicated colors?
-    d.highlighter->setHighlightColor(settings->value(QString("themes.%1.timestamp").arg(theme)).value<QColor>());
-    d.textBrowser->setHighlightColor(settings->value(QString("themes.%1.highlight").arg(theme)).value<QColor>().lighter(165));
+    bool dark =  settings->value("ui.dark").toBool();
 
     d.textBrowser->setFont(settings->value("ui.font").value<QFont>());
     d.textBrowser->document()->setMaximumBlockCount(settings->value("ui.scrollback").toInt());
 
-    QTextDocument* doc = d.topicLabel->findChild<QTextDocument*>();
-    if (doc)
-        doc->setDefaultStyleSheet(QString("a { color: %1 }").arg(settings->value(QString("themes.%1.link").arg(theme)).toString()));
+    if (dark) {
+        d.textBrowser->setShadowColor(Qt::black);
+        d.textBrowser->setMarkerColor(QColor("#ffffff"));
+        d.textBrowser->setHighlightColor(QColor("#ff4040").darker(465));
 
-    QString backgroundColor = settings->value(QString("themes.%1.background").arg(theme)).toString();
-    d.textBrowser->setStyleSheet(QString("QTextBrowser { background-color: %1 }").arg(backgroundColor));
+        d.searchEditor->setButtonPixmap(SearchEditor::Left, QPixmap(":/resources/buttons/prev-white.png"));
+        d.searchEditor->setButtonPixmap(SearchEditor::Right, QPixmap(":/resources/buttons/next-white.png"));
 
-    d.textBrowser->document()->setDefaultStyleSheet(
-        QString(
-            ".highlight { color: %1 }"
-            ".message   { color: %2 }"
-            ".notice    { color: %3 }"
-            ".action    { color: %4 }"
-            ".event     { color: %5 }"
-            ".timestamp { color: %6; font-size: small }"
-            "a { color: %7 }"
-        ).arg(settings->value(QString("themes.%1.highlight").arg(theme)).toString())
-         .arg(settings->value(QString("themes.%1.message").arg(theme)).toString())
-         .arg(settings->value(QString("themes.%1.notice").arg(theme)).toString())
-         .arg(settings->value(QString("themes.%1.action").arg(theme)).toString())
-         .arg(settings->value(QString("themes.%1.event").arg(theme)).toString())
-         .arg(settings->value(QString("themes.%1.timestamp").arg(theme)).toString())
-         .arg(settings->value(QString("themes.%1.link").arg(theme)).toString()));
+        d.lineEditor->setButtonPixmap(LineEditor::Right, QPixmap(":/resources/buttons/return-white.png"));
+        d.lineEditor->setButtonPixmap(LineEditor::Left, QPixmap(":/resources/buttons/tab-white.png"));
+    } else {
+        d.textBrowser->setShadowColor(Qt::gray);
+        d.textBrowser->setMarkerColor(QColor("#000000"));
+        d.textBrowser->setHighlightColor(QColor("#ff4040").lighter(165));
+
+        d.searchEditor->setButtonPixmap(SearchEditor::Left, QPixmap(":/resources/prev-black.png"));
+        d.searchEditor->setButtonPixmap(SearchEditor::Right, QPixmap(":/resources/next-black.png"));
+
+        d.lineEditor->setButtonPixmap(LineEditor::Right, QPixmap(":/resources/buttons/return-black.png"));
+        d.lineEditor->setButtonPixmap(LineEditor::Left, QPixmap(":/resources/buttons/tab-black.png"));
+    }
 
     d.showJoins = settings->value("messages.joins").toBool();
     d.showParts = settings->value("messages.parts").toBool();

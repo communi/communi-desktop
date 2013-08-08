@@ -3,7 +3,7 @@
  <class>BasicSettingsPage</class>
  <widget class="QWidget" name="BasicSettingsPage">
   <layout class="QFormLayout" name="formLayout">
-   <item row="0" column="0">
+   <item row="1" column="0">
     <widget class="QLabel" name="label_2">
      <property name="text">
       <string>&amp;Font:</string>
@@ -13,7 +13,7 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
+   <item row="1" column="1">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QFontComboBox" name="fontComboBox">
@@ -30,7 +30,7 @@
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
+   <item row="2" column="0">
     <widget class="QLabel" name="label_3">
      <property name="text">
       <string>&amp;Scrollback:</string>
@@ -40,7 +40,7 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
+   <item row="2" column="1">
     <widget class="QSpinBox" name="blockSpinBox">
      <property name="specialValueText">
       <string>Unlimited</string>
@@ -56,24 +56,24 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="3" column="0">
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>&amp;Timestamp:</string>
+      <string>T&amp;imestamp:</string>
      </property>
      <property name="buddy">
       <cstring>timeStampEdit</cstring>
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
+   <item row="3" column="1">
     <widget class="QLineEdit" name="timeStampEdit">
      <property name="text">
       <string>[hh:mm:ss]</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="4" column="0">
     <widget class="QLabel" name="label_4">
      <property name="text">
       <string>&amp;Messages:</string>
@@ -83,28 +83,54 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
+   <item row="4" column="1">
     <widget class="QCheckBox" name="stripNicksCheckBox">
      <property name="text">
       <string>Hide user hosts</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
+   <item row="5" column="1">
     <widget class="QCheckBox" name="hideEventsCheckBox">
      <property name="text">
       <string>Hide joins/parts/quits</string>
      </property>
     </widget>
    </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>&amp;Theme:</string>
+     </property>
+     <property name="buddy">
+      <cstring>themeComboBox</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QComboBox" name="themeComboBox">
+     <item>
+      <property name="text">
+       <string>Light</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Dark</string>
+      </property>
+     </item>
+    </widget>
+   </item>
   </layout>
  </widget>
  <tabstops>
+  <tabstop>themeComboBox</tabstop>
   <tabstop>fontComboBox</tabstop>
   <tabstop>sizeSpinBox</tabstop>
   <tabstop>blockSpinBox</tabstop>
   <tabstop>timeStampEdit</tabstop>
   <tabstop>stripNicksCheckBox</tabstop>
+  <tabstop>hideEventsCheckBox</tabstop>
  </tabstops>
  <resources/>
  <connections/>

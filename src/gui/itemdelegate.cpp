@@ -24,6 +24,16 @@ ItemDelegate::ItemDelegate(QObject* parent) : QStyledItemDelegate(parent)
     d.rootIsDecorated = false;
 }
 
+bool ItemDelegate::isDark() const
+{
+    return d.dark;
+}
+
+void ItemDelegate::setDark(bool dark)
+{
+    d.dark = dark;
+}
+
 bool ItemDelegate::rootIsDecorated() const
 {
     return d.rootIsDecorated;
@@ -51,10 +61,19 @@ void ItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 {
     if (d.rootIsDecorated && !index.parent().isValid()) {
         const bool selected = option.state & QStyle::State_Selected;
-        const_cast<QStyleOptionViewItem&>(option).state &= ~QStyle::State_Selected;
+        const_cast<QStyleOptionViewItem&>(option).state &= ~(QStyle::State_Selected | QStyle::State_MouseOver);
 
-        QColor c1 = qApp->palette().color(QPalette::Light);
-        QColor c2 = qApp->palette().color(QPalette::Button);
+        // TODO:
+        QColor c1;
+        QColor c2;
+        if (d.dark) {
+            c1 = QColor("#444444");
+            c2 = QColor("#222222");
+        } else {
+            c1 = qApp->palette().color(QPalette::Light);
+            c2 = qApp->palette().color(QPalette::Button);
+        }
+
         if (selected)
             qSwap(c1, c2);
 
@@ -68,7 +87,7 @@ void ItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             lines += QLine(option.rect.topLeft(), option.rect.topRight());
         lines += QLine(option.rect.bottomLeft(), option.rect.bottomRight());
         QPen oldPen = painter->pen();
-        painter->setPen(qApp->palette().color(QPalette::Dark));
+        painter->setPen(option.palette.color(QPalette::Dark));
         painter->drawLines(lines);
         painter->setPen(oldPen);
     }
@@ -101,7 +120,7 @@ void ItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             else
                 txt = option.fontMetrics.elidedText(QString::number(badge), Qt::ElideRight, option.rect.width());
 
-            painter->setPen(qApp->palette().color(QPalette::Light));
+            painter->setPen(option.palette.color(QPalette::Light));
             painter->drawText(option.rect, Qt::AlignCenter, txt);
             painter->restore();
         }

@@ -41,6 +41,7 @@ public:
 public slots:
     static void aboutApplication();
     static void showSettings();
+    static void applySettings(QVariantMap values = QVariantMap());
 
 private:
     struct Private {

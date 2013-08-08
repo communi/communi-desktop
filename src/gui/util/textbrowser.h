@@ -33,6 +33,12 @@ public:
     QColor highlightColor() const;
     void setHighlightColor(const QColor& color);
 
+    QColor markerColor() const;
+    void setMarkerColor(const QColor& color);
+
+    QColor shadowColor() const;
+    void setShadowColor(const QColor& color);
+
 public slots:
     void append(const QString& text, bool highlight = false);
 
@@ -57,6 +63,8 @@ private:
         QList<int> markers;
         QList<int> highlights;
         QColor highlightColor;
+        QColor markerColor;
+        QColor shadowColor;
     } d;
 };
 

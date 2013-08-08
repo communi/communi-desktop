@@ -266,6 +266,8 @@ void MainWindow::applySettings()
     searchShortcut->setKey(QKeySequence(settings->value("shortcuts.searchView").toString()));
     if (muteAction)
         muteAction->setChecked(settings->value("ui.mute").toBool());
+    if (overlay && overlay->isVisible())
+        updateOverlay();
 }
 
 void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -391,6 +393,7 @@ void MainWindow::updateOverlay()
         overlay->setBusy(session->isActive() && !session->isConnected());
         overlay->setRefresh(!session->isActive());
         overlay->setVisible(!session->isConnected());
+        overlay->setDark(Application::settings()->value("ui.dark").toBool());
         if (!session->isConnected())
             overlay->setFocus();
     }

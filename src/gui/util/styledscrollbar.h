@@ -12,36 +12,17 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TOOLBAR_H
-#define TOOLBAR_H
+#ifndef STYLEDSCROLLBAR_H
+#define STYLEDSCROLLBAR_H
 
-#include <QToolBar>
+#include <QScrollBar>
 
-class ToolBar : public QToolBar
+class StyledScrollBar : public QScrollBar
 {
     Q_OBJECT
 
 public:
-    explicit ToolBar(QWidget* parent = 0);
-
-signals:
-    void aboutTriggered();
-    void settingsTriggered();
-    void connectTriggered();
-    void joinTriggered();
-
-private slots:
-    void showHelp();
-    void applySettings();
-
-private:
-    struct Private {
-        QAction* aboutAction;
-        QAction* helpAction;
-        QAction* settingsAction;
-        QAction* connectAction;
-        QAction* newViewAction;
-    } d;
+    StyledScrollBar(QWidget* parent = 0);
 };
 
-#endif // TOOLBAR_H
+#endif // STYLEDSCROLLBAR_H

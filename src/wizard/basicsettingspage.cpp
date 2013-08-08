@@ -20,6 +20,7 @@ BasicSettingsPage::BasicSettingsPage(QWidget* parent)
 {
     ui.setupUi(this);
 
+    connect(ui.themeComboBox, SIGNAL(currentIndexChanged(int)), SLOT(updateModel()));
     connect(ui.fontComboBox, SIGNAL(currentFontChanged(QFont)), SLOT(updateModel()));
     connect(ui.sizeSpinBox, SIGNAL(valueChanged(int)), SLOT(updateModel()));
     connect(ui.blockSpinBox, SIGNAL(valueChanged(int)), SLOT(updateModel()));
@@ -39,6 +40,7 @@ void BasicSettingsPage::updateUi()
 {
     if (!block) {
         block = true;
+        ui.themeComboBox->setCurrentIndex(model->value("ui.dark").toBool() ? 1 : 0);
         QFont font = model->value("ui.font").value<QFont>();
         ui.fontComboBox->setCurrentFont(font);
         ui.sizeSpinBox->setValue(font.pointSize());
@@ -56,6 +58,7 @@ void BasicSettingsPage::updateModel()
 {
     if (!block) {
         block = true;
+        model->setValue("ui.dark", ui.themeComboBox->currentIndex() != 0);
         QFont font = ui.fontComboBox->currentFont();
         font.setPointSize(ui.sizeSpinBox->value());
         model->setValue("ui.font", font);

@@ -18,6 +18,7 @@
 
 Overlay::Overlay(QWidget* parent) : QLabel(parent)
 {
+    d.dark = false;
     d.button = 0;
     d.prevParent = 0;
 
@@ -30,15 +31,8 @@ Overlay::Overlay(QWidget* parent) : QLabel(parent)
     setFocusPolicy(Qt::StrongFocus);
 
     setVisible(false);
-    setAutoFillBackground(true);
     setAlignment(Qt::AlignCenter);
     setAttribute(Qt::WA_TransparentForMouseEvents);
-
-    QPalette pal = palette();
-    QColor col = pal.color(QPalette::Window);
-    col.setAlpha(100);
-    pal.setColor(QPalette::Window, col);
-    setPalette(pal);
 }
 
 bool Overlay::isBusy() const
@@ -49,10 +43,24 @@ bool Overlay::isBusy() const
 void Overlay::setBusy(bool busy)
 {
     if (busy) {
-        setMovie(new QMovie(":/resources/ajax-loader.gif", QByteArray(), this));
+        setMovie(new QMovie(QString(":/resources/ajax-loader-%1.gif").arg(d.dark ? "dark" : "light"), QByteArray(), this));
         movie()->start();
     } else {
         delete movie();
+    }
+}
+
+bool Overlay::isDark() const
+{
+    return d.dark;
+}
+
+void Overlay::setDark(bool dark)
+{
+    if (d.dark != dark) {
+        d.dark = dark;
+        if (movie())
+            movie()->setFileName(QString(":/resources/ajax-loader-%1.gif").arg(d.dark ? "dark" : "light"));
     }
 }
 

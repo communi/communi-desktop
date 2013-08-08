@@ -32,12 +32,10 @@ SearchEditor::SearchEditor(QWidget* parent) : HistoryLineEdit(parent)
 
     setButtonVisible(Left, true);
     setAutoHideButton(Left, true);
-    setButtonPixmap(Left, QPixmap(":/resources/icons/buttons/prev.png"));
     connect(this, SIGNAL(leftButtonClicked()), this, SLOT(findPrevious()));
 
     setButtonVisible(Right, true);
     setAutoHideButton(Right, true);
-    setButtonPixmap(Right, QPixmap(":/resources/icons/buttons/next.png"));
     connect(this, SIGNAL(rightButtonClicked()), this, SLOT(findNext()));
 
     connect(this, SIGNAL(returnPressed()), this, SLOT(findNext()));
@@ -121,7 +119,7 @@ void SearchEditor::find(const QString& text, bool forward, bool backward, bool t
         show();
     d.textEdit->setTextCursor(newCursor);
     d.textEdit->setExtraSelections(extraSelections);
-    setStyleSheet(error ? "background: #ff7a7a" : "");
+    setStyleSheet(error ? "background: #dc322f" : "");
 }
 
 void SearchEditor::hideEvent(QHideEvent* event)

@@ -13,6 +13,7 @@
 */
 
 #include "textbrowser.h"
+#include "styledscrollbar.h"
 #include <QApplication>
 #include <QScrollBar>
 #include <QPainter>
@@ -24,6 +25,9 @@ TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent)
 {
     d.ub = -1;
     d.bud = 0;
+
+    setVerticalScrollBar(new StyledScrollBar(this));
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
 QWidget* TextBrowser::buddy() const
@@ -57,6 +61,32 @@ void TextBrowser::setHighlightColor(const QColor& color)
 {
     if (d.highlightColor != color) {
         d.highlightColor = color;
+        update();
+    }
+}
+
+QColor TextBrowser::markerColor() const
+{
+    return d.markerColor;
+}
+
+void TextBrowser::setMarkerColor(const QColor& color)
+{
+    if (d.markerColor != color) {
+        d.markerColor = color;
+        update();
+    }
+}
+
+QColor TextBrowser::shadowColor() const
+{
+    return d.shadowColor;
+}
+
+void TextBrowser::setShadowColor(const QColor& color)
+{
+    if (d.shadowColor != color) {
+        d.shadowColor = color;
         update();
     }
 }
@@ -200,7 +230,7 @@ void TextBrowser::paintEvent(QPaintEvent* event)
     }
 
     if (d.ub > 0 && d.ub >= last) {
-        painter.setPen(QPen(Qt::black, 1, Qt::DashLine));
+        painter.setPen(QPen(d.markerColor, 1, Qt::DashLine));
         QTextBlock block = document()->findBlockByNumber(d.ub);
         QRectF br = document()->documentLayout()->blockBoundingRect(block);
         if (bounds.intersects(br.toAlignedRect()))
@@ -208,7 +238,7 @@ void TextBrowser::paintEvent(QPaintEvent* event)
     }
 
     QLinearGradient gradient(0, 0, 0, 3);
-    gradient.setColorAt(0.0, palette().color(QPalette::Dark));
+    gradient.setColorAt(0.0, d.shadowColor);
     gradient.setColorAt(1.0, Qt::transparent);
     painter.restore();
     painter.fillRect(0, 0, width(), 3, gradient);

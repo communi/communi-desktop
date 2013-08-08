@@ -24,12 +24,15 @@
 #include <QIcon>
 #include <QFile>
 
+Q_GLOBAL_STATIC(QPalette, originalPalette)
 QByteArray Application::Private::encoding("ISO-8859-15");
 
 Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
 {
     setApplicationName("Communi");
     setOrganizationName("Communi");
+
+    *originalPalette() = palette();
 
     const int major = (COMMUNI_APP_VERSION & 0xff0000) >> 16;
     const int minor = (COMMUNI_APP_VERSION & 0x00ff00) >> 8;
@@ -62,15 +65,23 @@ Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
         settings.remove("geometry");
     }
 
+    bool appliedSettings = false;
     if (settings.contains("settings")) {
         QVariant value = settings.value("settings");
-        if (value.canConvert<QVariantMap>())
-            Application::settings()->setValues(value.toMap());
+        if (value.canConvert<QVariantMap>()) {
+            QVariantMap map = value.toMap();
+            // cleanup obsolete theme bloat
+            foreach (const QString& key, map.keys()) {
+                if (key.startsWith("ui.theme") || key.startsWith("themes."))
+                    map.remove(key);
+            }
+            applySettings(map);
+            appliedSettings = true;
+            Application::settings()->setValues(map);
+        }
     }
-
-    QFile file(":resources/stylesheet.css");
-    if (file.open(QFile::ReadOnly | QIODevice::Text))
-        setStyleSheet(QString::fromUtf8(file.readAll()));
+    if (!appliedSettings)
+        applySettings();
 
     QDir dir = dataDir();
     if (dir.exists() || dir.mkpath(".")) {
@@ -115,7 +126,7 @@ QVariantMap Application::defaultSettings()
 
     settings["ui.font"] = QFont();
     settings["ui.mute"] = false;
-    settings["ui.theme"] = "light";
+    settings["ui.dark"] = false;
     settings["ui.scrollback"] = 0;
     settings["ui.sortViews"] = false;
 
@@ -148,15 +159,6 @@ QVariantMap Application::defaultSettings()
 //    settings["messages.modes"] = true;
 //    settings["messages.kicks"] = true;
 //    settings["messages.topics"] = true;
-
-    settings["themes.light.background"] = QColor("#ffffff");
-    settings["themes.light.message"] = QColor("#000000");
-    settings["themes.light.event"] = QColor("#808080");
-    settings["themes.light.notice"] = QColor("#a54242");
-    settings["themes.light.action"] = QColor("#8b388b");
-    settings["themes.light.highlight"] = QColor("#ff4040");
-    settings["themes.light.timestamp"] = QColor("#808080");
-    settings["themes.light.link"] = QColor("#4040ff");
 
     settings["aliases.chanserv"] = "MSG ChanServ $*";
     settings["aliases.nickserv"] = "MSG NickServ $*";
@@ -193,6 +195,20 @@ void Application::showSettings()
     SettingsModel model;
     model.setValues(settings()->values());
     SettingsWizard wizard(&model, activeWindow());
-    if (wizard.exec())
+    if (wizard.exec()) {
+        // make sure the css is set before triggering settings changes around the app
+        applySettings(model.values());
         settings()->setValues(model.values());
+    }
+}
+
+void Application::applySettings(QVariantMap values)
+{
+    if (values.isEmpty())
+        values = settings()->values();
+
+    bool dark = values.value("ui.dark").toBool();
+    QFile file(QString(":/resources/%1.css").arg(dark ? "dark" : "light"));
+    if (file.open(QFile::ReadOnly | QIODevice::Text))
+        qApp->setStyleSheet(QString::fromUtf8(file.readAll()));
 }
