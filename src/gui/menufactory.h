@@ -17,7 +17,6 @@
 
 #include <QMenu>
 
-class MessageView;
 class UserListView;
 
 class MenuFactory : public QObject
@@ -28,7 +27,6 @@ public:
     MenuFactory(QObject* parent);
     virtual ~MenuFactory();
 
-    virtual QMenu* createUserViewMenu(const QString& user, MessageView* view);
     virtual QMenu* createUserListMenu(const QString& prefix, const QString& name, UserListView* listView);
 };
 

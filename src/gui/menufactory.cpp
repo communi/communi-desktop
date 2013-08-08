@@ -13,7 +13,6 @@
 */
 
 #include "menufactory.h"
-#include "messageview.h"
 #include "userlistview.h"
 #include "session.h"
 #include <IrcCommand>
@@ -25,41 +24,6 @@ MenuFactory::MenuFactory(QObject* parent) : QObject(parent)
 
 MenuFactory::~MenuFactory()
 {
-}
-
-class UserViewMenu : public QMenu
-{
-    Q_OBJECT
-
-public:
-    UserViewMenu(const QString& user, MessageView* view) :
-        QMenu(view), user(user), view(view)
-    {
-    }
-
-private slots:
-    void onWhoisTriggered()
-    {
-        IrcCommand* command = IrcCommand::createWhois(user);
-        view->session()->sendCommand(command);
-    }
-
-    void onQueryTriggered()
-    {
-        QMetaObject::invokeMethod(view, "queried", Q_ARG(QString, user));
-    }
-
-private:
-    QString user;
-    MessageView* view;
-};
-
-QMenu* MenuFactory::createUserViewMenu(const QString& user, MessageView* view)
-{
-    UserViewMenu* menu = new UserViewMenu(user, view);
-    menu->addAction(tr("Whois"), menu, SLOT(onWhoisTriggered()));
-    menu->addAction(tr("Query"), menu, SLOT(onQueryTriggered()));
-    return menu;
 }
 
 class UserListMenu : public QMenu

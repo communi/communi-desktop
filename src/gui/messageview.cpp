@@ -309,17 +309,54 @@ bool MessageView::eventFilter(QObject* object, QEvent* event)
 {
     if (object == d.textBrowser->viewport() && event->type() == QEvent::ContextMenu) {
         QContextMenuEvent* menuEvent = static_cast<QContextMenuEvent*>(event);
+        QMenu* menu = d.textBrowser->createStandardContextMenu(menuEvent->pos());
+
+        QAction* query = 0;
+        QAction* whois = 0;
+        QAction* users = 0;
+        QAction* views = 0;
+
         QUrl link(d.textBrowser->anchorAt(menuEvent->pos()));
         if (link.scheme() == "nick") {
-            QMenu* standardMenu = d.textBrowser->createStandardContextMenu(menuEvent->pos());
-            QMenu* customMenu = d.listView->menuFactory()->createUserViewMenu(link.toString(QUrl::RemoveScheme), this);
-            customMenu->addSeparator();
-            customMenu->insertActions(0, standardMenu->actions());
-            customMenu->exec(menuEvent->globalPos());
-            customMenu->deleteLater();
-            delete standardMenu;
-            return true;
+            QAction* separator = menu->insertSeparator(menu->actions().value(0));
+
+            query = new QAction(tr("Query"), menu);
+            menu->insertAction(separator, query);
+
+            whois = new QAction(tr("Whois"), menu);
+            menu->insertAction(query, whois);
         }
+
+        QAction* separator = 0;
+        if (d.viewType == ViewInfo::Channel && d.splitter->sizes().value(1) == 0) {
+            separator = menu->addSeparator();
+            users = menu->addAction(tr("Restore users"));
+        }
+
+        QSplitter* splitter = window()->findChild<QSplitter*>();
+        if (splitter && splitter->sizes().value(0) == 0) {
+            if (!separator)
+                menu->addSeparator();
+            views = menu->addAction(tr("Restore views"));
+        }
+
+        QAction* action = menu->exec(menuEvent->globalPos());
+        if (action) {
+            const QString user = link.toString(QUrl::RemoveScheme);
+            if (action == whois) {
+                IrcCommand* command = IrcCommand::createWhois(user);
+                d.session->sendCommand(command);
+            } else if (action == query) {
+                emit queried(user);
+            } else if (action == users) {
+                d.splitter->setSizes(QList<int>() << d.textBrowser->sizeHint().width() << d.listView->sizeHint().width());
+            } else if (action == views) {
+                splitter->setSizes(QList<int>() << splitter->widget(0)->sizeHint().width() << splitter->widget(1)->sizeHint().width());
+            }
+        }
+
+        menu->deleteLater();
+        return true;
     }
     return QWidget::eventFilter(object, event);
 }
