@@ -228,6 +228,8 @@ void Session::onCapabilities(const QStringList& available, QStringList* request)
 {
     if (available.contains("identify-msg"))
         request->append("identify-msg");
+    if (isSecure() && available.contains("sasl"))
+        request->append("sasl");
 }
 
 bool Session::messageFilter(IrcMessage* message)
