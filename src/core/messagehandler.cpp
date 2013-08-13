@@ -195,7 +195,11 @@ void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
         }
     }
 
-    if (!message->session()->isConnected() || target.isEmpty() || target == "*")
+    if (target == "$$*") {
+        // global notice
+        foreach (MessageView* view, d.views)
+            view->receiveMessage(message);
+    } else if (!message->session()->isConnected() || target.isEmpty() || target == "*")
         sendMessage(message, d.defaultView);
     else if (MessageView* view = d.views.value(message->sender().name().toLower()))
         sendMessage(message, view);
