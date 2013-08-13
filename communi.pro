@@ -6,7 +6,6 @@ TEMPLATE = app
 QMAKE_PROJECT_NAME = desktop
 win32|mac:TARGET = Communi
 else:TARGET = communi
-DEFINES += COMMUNI_APP_VERSION=0x000900
 !mac:DESTDIR = bin
 QT += network
 greaterThan(QT_MAJOR_VERSION, 4) {
