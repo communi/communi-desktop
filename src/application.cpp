@@ -33,6 +33,7 @@ Application::Application(int& argc, char* argv[]) : QApplication(argc, argv)
     setApplicationName("Communi");
     setOrganizationName("Communi");
     setApplicationVersion(Irc::version());
+    setOrganizationDomain("communi.github.com");
 
     *originalPalette() = palette();
 

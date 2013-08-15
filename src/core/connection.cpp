@@ -138,8 +138,9 @@ void Connection::stopReconnecting()
 
 void Connection::sleep()
 {
-    QString message = tr("%1 %2").arg(QApplication::applicationName())
-                                 .arg(QApplication::applicationVersion());
+    QString message = tr("%1 %2 - http://%3").arg(QApplication::applicationName())
+                                             .arg(QApplication::applicationVersion())
+                                             .arg(QApplication::organizationDomain());
 
     if (isConnected()) {
         if (network()->activeCapabilities().contains("communi"))
