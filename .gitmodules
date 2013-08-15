@@ -1,9 +1,9 @@
 [submodule "src/3rdparty/qtsystemnotifier"]
 	path = src/3rdparty/qtsystemnotifier
 	url = git://github.com/jpnurmi/qtsystemnofitier.git
-[submodule "src/3rdparty/libcommuni"]
-	path = src/3rdparty/libcommuni
-	url = git://github.com/communi/libcommuni.git
 [submodule "src/shared"]
 	path = src/shared
 	url = git://github.com/communi/communi-shared.git
+[submodule "src/backend"]
+	path = src/backend
+	url = git://github.com/communi/libcommuni.git

@@ -29,8 +29,8 @@ SOURCES += $$PWD/soundnotification.cpp
 SOURCES += $$PWD/toolbar.cpp
 SOURCES += $$PWD/trayicon.cpp
 
-exists(3rdparty/libcommuni/src/src.pri) {
-    include(3rdparty/libcommuni/src/src.pri)
+exists(backend/src/src.pri) {
+    include(backend/src/src.pri)
 } else:load(communi-config, true) {
     # bool load(feature, ignore_error)
     CONFIG += communi
