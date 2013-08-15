@@ -19,7 +19,7 @@
 #include <QPointer>
 
 class IrcChannel;
-class IrcSession;
+class IrcConnection;
 class IrcMessage;
 class IrcCommand;
 class MenuFactory;
@@ -35,8 +35,8 @@ public:
 
     QSize sizeHint() const;
 
-    IrcSession* session() const;
-    void setSession(IrcSession* session);
+    IrcConnection* connection() const;
+    void setConnection(IrcConnection* connection);
 
     IrcChannel* channel() const;
     void setChannel(IrcChannel* channel);
@@ -63,7 +63,7 @@ private:
     struct Private {
         MenuFactory* menuFactory;
         QPointer<IrcChannel> channel;
-        QPointer<IrcSession> session;
+        QPointer<IrcConnection> connection;
         QPointer<IrcUserModel> userModel;
     } d;
 };

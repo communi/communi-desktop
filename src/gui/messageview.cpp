@@ -20,8 +20,8 @@
 #include "messagestackview.h"
 #include "messageformatter.h"
 #include "commandparser.h"
+#include "connection.h"
 #include "completer.h"
-#include "session.h"
 #include <QAbstractTextDocumentLayout>
 #include <QDesktopServices>
 #include <QTextBlock>
@@ -42,7 +42,7 @@
 
 Q_GLOBAL_STATIC(IrcTextFormat, irc_text_format)
 
-MessageView::MessageView(ViewInfo::Type type, IrcSession* session, MessageStackView* stackView) :
+MessageView::MessageView(ViewInfo::Type type, IrcConnection* connection, MessageStackView* stackView) :
     QWidget(stackView)
 {
     d.setupUi(this);
@@ -70,24 +70,24 @@ MessageView::MessageView(ViewInfo::Type type, IrcSession* session, MessageStackV
 
     d.highlighter = new SyntaxHighlighter(d.textBrowser->document());
 
-    d.session = session;
-    connect(d.session, SIGNAL(activeChanged(bool)), this, SLOT(onSessionStatusChanged()));
-    connect(d.session, SIGNAL(connectedChanged(bool)), this, SIGNAL(activeChanged()));
+    d.connection = connection;
+    connect(d.connection, SIGNAL(activeChanged(bool)), this, SLOT(onConnectionStatusChanged()));
+    connect(d.connection, SIGNAL(connectedChanged(bool)), this, SIGNAL(activeChanged()));
 
     if (type == ViewInfo::Server)
-        connect(d.session, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onSocketError()));
+        connect(d.connection, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onSocketError()));
 
     d.topicLabel->setVisible(type == ViewInfo::Channel);
     d.listView->setVisible(type == ViewInfo::Channel);
     if (type == ViewInfo::Channel) {
-        d.listView->setSession(session);
+        d.listView->setConnection(connection);
         connect(d.listView, SIGNAL(queried(QString)), this, SIGNAL(queried(QString)));
         connect(d.listView, SIGNAL(doubleClicked(QString)), this, SIGNAL(queried(QString)));
-        connect(d.listView, SIGNAL(commandRequested(IrcCommand*)), d.session, SLOT(sendCommand(IrcCommand*)));
+        connect(d.listView, SIGNAL(commandRequested(IrcCommand*)), d.connection, SLOT(sendCommand(IrcCommand*)));
         connect(d.topicLabel, SIGNAL(edited(QString)), this, SLOT(onTopicEdited(QString)));
     } else if (type == ViewInfo::Server) {
-        connect(d.session, SIGNAL(connected()), this, SLOT(onConnected()));
-        connect(d.session, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+        connect(d.connection, SIGNAL(connected()), this, SLOT(onConnected()));
+        connect(d.connection, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
     }
 
     static bool init = false;
@@ -164,7 +164,7 @@ bool MessageView::isActive() const
 {
     if (d.buffer)
         return d.buffer->isActive();
-    return d.session && d.session->isConnected();
+    return d.connection && d.connection->isConnected();
 }
 
 ViewInfo::Type MessageView::viewType() const
@@ -172,9 +172,9 @@ ViewInfo::Type MessageView::viewType() const
     return d.viewType;
 }
 
-IrcSession* MessageView::session() const
+IrcConnection* MessageView::connection() const
 {
-    return d.session;
+    return d.connection;
 }
 
 Completer* MessageView::completer() const
@@ -289,10 +289,10 @@ void MessageView::sendMessage(const QString& message)
             }
             delete cmd;
         } else if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction || cmd->type() == IrcCommand::Notice) {
-            if (Session* s = qobject_cast<Session*>(d.session)) // TODO
+            if (Connection* s = qobject_cast<Connection*>(d.connection)) // TODO
                 s->sendUiCommand(cmd, QString("_communi_msg_%1_%2").arg(d.receiver).arg(++d.sentId));
 
-            IrcMessage* msg = IrcMessage::fromData(":" + d.session->nickName().toUtf8() + " " + cmd->toString().toUtf8(), d.session);
+            IrcMessage* msg = IrcMessage::fromData(":" + d.connection->nickName().toUtf8() + " " + cmd->toString().toUtf8(), d.connection);
             receiveMessage(msg);
             delete msg;
 
@@ -301,7 +301,7 @@ void MessageView::sendMessage(const QString& message)
             block.setUserState(d.sentId);
             d.highlighter->rehighlightBlock(block);
         } else {
-            d.session->sendCommand(cmd);
+            d.connection->sendCommand(cmd);
         }
         d.helpLabel->hide();
     } else {
@@ -355,7 +355,7 @@ bool MessageView::eventFilter(QObject* object, QEvent* event)
             const QString user = link.toString(QUrl::RemoveScheme);
             if (action == whois) {
                 IrcCommand* command = IrcCommand::createWhois(user);
-                d.session->sendCommand(command);
+                d.connection->sendCommand(command);
             } else if (action == query) {
                 emit queried(user);
             } else if (action == users) {
@@ -424,18 +424,18 @@ void MessageView::completeCommand(const QString& command)
 
 void MessageView::onTopicEdited(const QString& topic)
 {
-    d.session->sendCommand(IrcCommand::createTopic(d.receiver, topic));
+    d.connection->sendCommand(IrcCommand::createTopic(d.receiver, topic));
 }
 
-void MessageView::onSessionStatusChanged()
+void MessageView::onConnectionStatusChanged()
 {
-    d.lineEditor->setFocusPolicy(d.session->isActive() ? Qt::StrongFocus : Qt::NoFocus);
-    d.textBrowser->setFocusPolicy(d.session->isActive() ? Qt::StrongFocus : Qt::NoFocus);
+    d.lineEditor->setFocusPolicy(d.connection->isActive() ? Qt::StrongFocus : Qt::NoFocus);
+    d.textBrowser->setFocusPolicy(d.connection->isActive() ? Qt::StrongFocus : Qt::NoFocus);
 }
 
 void MessageView::onSocketError()
 {
-    QString msg = tr("[ERROR] %1").arg(d.session->socket()->errorString());
+    QString msg = tr("[ERROR] %1").arg(d.connection->socket()->errorString());
     d.textBrowser->append(MessageFormatter::formatLine(msg));
 }
 
@@ -491,12 +491,12 @@ void MessageView::receiveMessage(IrcMessage* message)
                 else if (content == QLatin1String("Playback Complete."))
                     ignore = true;
             }
-            if (static_cast<IrcPrivateMessage*>(message)->message().contains(d.session->nickName()))
+            if (static_cast<IrcPrivateMessage*>(message)->message().contains(d.connection->nickName()))
                 options.highlight = true;
             break;
         }
         case IrcMessage::Notice:
-            if (static_cast<IrcNoticeMessage*>(message)->message().contains(d.session->nickName()))
+            if (static_cast<IrcNoticeMessage*>(message)->message().contains(d.connection->nickName()))
                 options.highlight = true;
             break;
         case IrcMessage::Topic:
@@ -529,7 +529,7 @@ void MessageView::receiveMessage(IrcMessage* message)
                 return;
             break;
         case IrcMessage::Kick:
-            if (!d.playback && !static_cast<IrcKickMessage*>(message)->user().compare(d.session->nickName(), Qt::CaseInsensitive))
+            if (!d.playback && !static_cast<IrcKickMessage*>(message)->user().compare(d.connection->nickName(), Qt::CaseInsensitive))
                 ++d.parted;
             break;
         case IrcMessage::Pong: {
@@ -573,7 +573,7 @@ void MessageView::receiveMessage(IrcMessage* message)
             break;
     }
 
-    options.nickName = d.session->nickName();
+    options.nickName = d.connection->nickName();
     if (IrcUserModel* model = d.listView->userModel())
         options.users = model->names();
     options.stripNicks = d.stripNicks;
@@ -611,7 +611,7 @@ void MessageView::receiveMessage(IrcMessage* message)
 
 bool MessageView::hasUser(const QString& user) const
 {
-    return (!d.session->nickName().compare(user, Qt::CaseInsensitive) && d.viewType != ViewInfo::Query) ||
+    return (!d.connection->nickName().compare(user, Qt::CaseInsensitive) && d.viewType != ViewInfo::Query) ||
            (d.viewType == ViewInfo::Query && !d.receiver.compare(user, Qt::CaseInsensitive)) ||
            (d.viewType == ViewInfo::Channel && d.listView->hasUser(user));
 }

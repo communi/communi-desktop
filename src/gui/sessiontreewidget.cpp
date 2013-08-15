@@ -21,7 +21,7 @@
 #include "application.h"
 #include "messageview.h"
 #include "sharedtimer.h"
-#include "session.h"
+#include "connection.h"
 #include <QContextMenuEvent>
 #include <QHeaderView>
 #include <QScrollBar>
@@ -73,10 +73,10 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     connect(d.nextActiveShortcut, SIGNAL(activated()), this, SLOT(moveToNextActiveItem()));
 
     d.expandShortcut = new QShortcut(this);
-    connect(d.expandShortcut, SIGNAL(activated()), this, SLOT(expandCurrentSession()));
+    connect(d.expandShortcut, SIGNAL(activated()), this, SLOT(expandCurrentConnection()));
 
     d.collapseShortcut = new QShortcut(this);
-    connect(d.collapseShortcut, SIGNAL(activated()), this, SLOT(collapseCurrentSession()));
+    connect(d.collapseShortcut, SIGNAL(activated()), this, SLOT(collapseCurrentConnection()));
 
     d.mostActiveShortcut = new QShortcut(this);
     connect(d.mostActiveShortcut, SIGNAL(activated()), this, SLOT(moveToMostActiveItem()));
@@ -178,9 +178,9 @@ SessionTreeItem* SessionTreeWidget::viewItem(MessageView* view) const
     return d.viewItems.value(view);
 }
 
-SessionTreeItem* SessionTreeWidget::sessionItem(IrcSession* session) const
+SessionTreeItem* SessionTreeWidget::connectionItem(IrcConnection* connection) const
 {
-    return d.sessionItems.value(session);
+    return d.connectionItems.value(connection);
 }
 
 bool SessionTreeWidget::hasRestoredCurrent() const
@@ -188,10 +188,10 @@ bool SessionTreeWidget::hasRestoredCurrent() const
     return d.currentRestored;
 }
 
-ViewInfos SessionTreeWidget::viewInfos(IrcSession* session) const
+ViewInfos SessionTreeWidget::viewInfos(IrcConnection* connection) const
 {
     ViewInfos views;
-    SessionTreeItem* item = d.sessionItems.value(session);
+    SessionTreeItem* item = d.connectionItems.value(connection);
     if (item) {
         for (int i = 0; i < item->childCount(); ++i) {
             SessionTreeItem* child = static_cast<SessionTreeItem*>(item->child(i));
@@ -211,13 +211,13 @@ void SessionTreeWidget::addView(MessageView* view)
     SessionTreeItem* item = 0;
     if (view->viewType() == ViewInfo::Server) {
         item = new SessionTreeItem(view, this);
-        IrcSession* session = view->session();
-        connect(session, SIGNAL(nameChanged(QString)), this, SLOT(updateSession()));
-        d.sessionItems.insert(session, item);
+        IrcConnection* connection = view->connection();
+        connect(connection, SIGNAL(nameChanged(QString)), this, SLOT(updateConnection()));
+        d.connectionItems.insert(connection, item);
         const bool sortViews = Application::settings()->value("ui.sortViews").toBool();
         item->sort(sortViews ? SessionTreeItem::Alphabetic : SessionTreeItem::Manual);
     } else {
-        SessionTreeItem* parent = d.sessionItems.value(view->session());
+        SessionTreeItem* parent = d.connectionItems.value(view->connection());
         item = new SessionTreeItem(view, parent);
         parent->sortChildren(0, Qt::AscendingOrder);
     }
@@ -231,7 +231,7 @@ void SessionTreeWidget::addView(MessageView* view)
 void SessionTreeWidget::removeView(MessageView* view)
 {
     if (view->viewType() == ViewInfo::Server)
-        d.sessionItems.remove(view->session());
+        d.connectionItems.remove(view->connection());
     delete d.viewItems.take(view);
 }
 
@@ -348,7 +348,7 @@ void SessionTreeWidget::unblockItemReset()
     delayedItemReset();
 }
 
-void SessionTreeWidget::expandCurrentSession()
+void SessionTreeWidget::expandCurrentConnection()
 {
     QTreeWidgetItem* item = currentItem();
     if (item && item->parent())
@@ -357,7 +357,7 @@ void SessionTreeWidget::expandCurrentSession()
         expandItem(item);
 }
 
-void SessionTreeWidget::collapseCurrentSession()
+void SessionTreeWidget::collapseCurrentConnection()
 {
     QTreeWidgetItem* item = currentItem();
     if (item && item->parent())
@@ -473,10 +473,10 @@ void SessionTreeWidget::updateView(MessageView* view)
     SessionTreeItem* item = d.viewItems.value(view);
     if (item) {
         QString name;
-        if (Session* session = qobject_cast<Session*>(item->session())) // TODO
-            name = session->name();
+        if (Connection* connection = qobject_cast<Connection*>(item->connection())) // TODO
+            name = connection->name();
         if (!item->parent())
-            item->setText(0, name.isEmpty() ? item->session()->host() : name);
+            item->setText(0, name.isEmpty() ? item->connection()->host() : name);
         else
             item->setText(0, view->receiver());
         // re-read MessageView::isActive()
@@ -484,16 +484,16 @@ void SessionTreeWidget::updateView(MessageView* view)
     }
 }
 
-void SessionTreeWidget::updateSession(IrcSession* session)
+void SessionTreeWidget::updateConnection(IrcConnection* connection)
 {
-    if (!session)
-        session = qobject_cast<Session*>(sender());
-    SessionTreeItem* item = d.sessionItems.value(session);
+    if (!connection)
+        connection = qobject_cast<Connection*>(sender());
+    SessionTreeItem* item = d.connectionItems.value(connection);
     if (item) {
         QString name;
-        if (Session* session = qobject_cast<Session*>(item->session())) // TODO
-            name = session->name();
-        item->setText(0, name.isEmpty() ? session->host() : name);
+        if (Connection* connection = qobject_cast<Connection*>(item->connection())) // TODO
+            name = connection->name();
+        item->setText(0, name.isEmpty() ? connection->host() : name);
     }
 }
 
@@ -516,7 +516,7 @@ void SessionTreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidg
     }
     SessionTreeItem* item = static_cast<SessionTreeItem*>(current);
     if (item)
-        emit currentViewChanged(item->session(), item->parent() ? item->text(0) : QString());
+        emit currentViewChanged(item->connection(), item->parent() ? item->text(0) : QString());
 }
 
 void SessionTreeWidget::resetAllItems()

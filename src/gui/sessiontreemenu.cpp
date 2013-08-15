@@ -16,7 +16,7 @@
 #include "sessiontreewidget.h"
 #include "sessiontreeitem.h"
 #include "messageview.h"
-#include "session.h"
+#include "connection.h"
 #include <IrcCommand>
 #include <IrcChannel>
 
@@ -44,25 +44,25 @@ void SessionTreeMenu::exec(SessionTreeItem* item, const QPoint& pos)
 
 void SessionTreeMenu::onEditTriggered()
 {
-    QMetaObject::invokeMethod(parent(), "editSession", Q_ARG(IrcSession*, d.item->session()));
+    QMetaObject::invokeMethod(parent(), "editConnection", Q_ARG(IrcConnection*, d.item->connection()));
 }
 
 void SessionTreeMenu::onWhoisTriggered()
 {
     IrcCommand* command = IrcCommand::createWhois(d.item->text(0));
-    d.item->session()->sendCommand(command);
+    d.item->connection()->sendCommand(command);
 }
 
 void SessionTreeMenu::onJoinTriggered()
 {
     IrcCommand* command = IrcCommand::createJoin(d.item->text(0));
-    d.item->session()->sendCommand(command);
+    d.item->connection()->sendCommand(command);
 }
 
 void SessionTreeMenu::onPartTriggered()
 {
     IrcCommand* command = IrcCommand::createPart(d.item->text(0));
-    d.item->session()->sendCommand(command);
+    d.item->connection()->sendCommand(command);
 }
 
 void SessionTreeMenu::onCloseTriggered()
@@ -73,10 +73,10 @@ void SessionTreeMenu::onCloseTriggered()
 void SessionTreeMenu::updateActions()
 {
     if (d.item) {
-        const Session* session = static_cast<Session*>(d.item->session()); // TODO
+        const Connection* connection = static_cast<Connection*>(d.item->connection()); // TODO
         const bool child = d.item->parent();
-        const bool connected = d.item->session()->isActive();
-        const bool reconnecting = session->isReconnecting();
+        const bool connected = d.item->connection()->isActive();
+        const bool reconnecting = connection->isReconnecting();
         const bool active = d.item->view()->isActive();
         const bool channel = d.item->view()->buffer()->isChannel();
         d.stopAction->setVisible(reconnecting);
@@ -102,25 +102,25 @@ void SessionTreeMenu::updateActions()
 void SessionTreeMenu::setup(SessionTreeItem* item)
 {
     if (d.item != item) {
-        if (d.item && d.item->session()) {
-            IrcSession* session = d.item->session();
-            disconnect(session, SIGNAL(connecting()), this, SLOT(updateActions()));
-            disconnect(session, SIGNAL(connected()), this, SLOT(updateActions()));
-            disconnect(session, SIGNAL(disconnected()), this, SLOT(updateActions()));
+        if (d.item && d.item->connection()) {
+            IrcConnection* connection = d.item->connection();
+            disconnect(connection, SIGNAL(connecting()), this, SLOT(updateActions()));
+            disconnect(connection, SIGNAL(connected()), this, SLOT(updateActions()));
+            disconnect(connection, SIGNAL(disconnected()), this, SLOT(updateActions()));
 
-            disconnect(d.stopAction, SIGNAL(triggered()), session, SLOT(stopReconnecting()));
-            disconnect(d.disconnectAction, SIGNAL(triggered()), session, SLOT(quit()));
-            disconnect(d.reconnectAction, SIGNAL(triggered()), session, SLOT(reconnect()));
+            disconnect(d.stopAction, SIGNAL(triggered()), connection, SLOT(stopReconnecting()));
+            disconnect(d.disconnectAction, SIGNAL(triggered()), connection, SLOT(quit()));
+            disconnect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(reconnect()));
         }
-        if (item && item->session()) {
-            IrcSession* session = item->session();
-            connect(session, SIGNAL(connecting()), this, SLOT(updateActions()));
-            connect(session, SIGNAL(connected()), this, SLOT(updateActions()));
-            connect(session, SIGNAL(disconnected()), this, SLOT(updateActions()));
+        if (item && item->connection()) {
+            IrcConnection* connection = item->connection();
+            connect(connection, SIGNAL(connecting()), this, SLOT(updateActions()));
+            connect(connection, SIGNAL(connected()), this, SLOT(updateActions()));
+            connect(connection, SIGNAL(disconnected()), this, SLOT(updateActions()));
 
-            connect(d.stopAction, SIGNAL(triggered()), session, SLOT(stopReconnecting()));
-            connect(d.disconnectAction, SIGNAL(triggered()), session, SLOT(quit()));
-            connect(d.reconnectAction, SIGNAL(triggered()), session, SLOT(reconnect()));
+            connect(d.stopAction, SIGNAL(triggered()), connection, SLOT(stopReconnecting()));
+            connect(d.disconnectAction, SIGNAL(triggered()), connection, SLOT(quit()));
+            connect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(reconnect()));
         }
         d.item = item;
     }

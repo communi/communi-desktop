@@ -40,9 +40,9 @@ SessionTreeItem::~SessionTreeItem()
 {
 }
 
-IrcSession* SessionTreeItem::session() const
+IrcConnection* SessionTreeItem::connection() const
 {
-    return d.view->session();
+    return d.view->connection();
 }
 
 MessageView* SessionTreeItem::view() const

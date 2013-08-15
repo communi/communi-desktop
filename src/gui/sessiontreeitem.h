@@ -17,7 +17,7 @@
 
 #include <QTreeWidgetItem>
 
-class IrcSession;
+class IrcConnection;
 class MessageView;
 
 class SessionTreeItem : public QTreeWidgetItem
@@ -27,7 +27,7 @@ public:
     SessionTreeItem(MessageView* view, QTreeWidgetItem* parent);
     ~SessionTreeItem();
 
-    IrcSession* session() const;
+    IrcConnection* connection() const;
     MessageView* view() const;
     SessionTreeItem* findChild(const QString& name) const;
 

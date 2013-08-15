@@ -9,7 +9,7 @@
  */
 
 #include "messageformatter.h"
-#include "session.h"
+#include "connection.h"
 #include <QtTest/QtTest>
 #include <QtCore/QStringList>
 
@@ -116,8 +116,8 @@ void tst_MessageFormatter::testFormatHtml()
     QFETCH(QString, message);
     QFETCH(QStringList, users);
 
-    Session session;
-    IrcMessage* dummy = new IrcMessage(&session);
+    Connection connection;
+    IrcMessage* dummy = new IrcMessage(&connection);
     formatter.setUsers(users);
     formatter.formatMessage(dummy);
 
@@ -146,8 +146,8 @@ void tst_MessageFormatter::testZncPlayback()
 {
     QFETCH(QByteArray, data);
 
-    Session session;
-    IrcMessage* msg = IrcMessage::fromData(data, &session);
+    Connection connection;
+    IrcMessage* msg = IrcMessage::fromData(data, &connection);
     formatter.setTimeStampFormat("[hh:mm:ss]");
     formatter.setZncPlaybackMode(true);
     QBENCHMARK {

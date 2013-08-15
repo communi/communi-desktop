@@ -13,47 +13,47 @@
 */
 
 #include "connectioninfo.h"
-#include "session.h"
+#include "connection.h"
 #include <QCoreApplication>
 
 ConnectionInfo::ConnectionInfo() : port(6667), secure(false), quit(false)
 {
 }
 
-Session* ConnectionInfo::toSession(QObject* parent) const
+Connection* ConnectionInfo::toConnection(QObject* parent) const
 {
-    Session* session = new Session(parent);
-    initSession(session);
-    return session;
-}
-
-void ConnectionInfo::initSession(Session* session) const
-{
-    session->setName(name);
-    session->setSecure(secure);
-    session->setPassword(pass);
-    session->setHost(host);
-    session->setPort(port);
-    session->setNickName(nick);
-    QString appName = QCoreApplication::applicationName().toLower();
-    session->setUserName(user.isEmpty() ? appName : user);
-    session->setRealName(real.isEmpty() ? appName : real);
-    session->setViews(views);
-    session->setHasQuit(quit);
-}
-
-ConnectionInfo ConnectionInfo::fromSession(Session* session)
-{
-    ConnectionInfo connection;
-    connection.name = session->name();
-    connection.secure = session->isSecure();
-    connection.host = session->host();
-    connection.port = session->port();
-    connection.user = session->userName();
-    connection.nick = session->nickName();
-    connection.real = session->realName();
-    connection.pass = session->password();
-    connection.views = session->views();
-    connection.quit = session->hasQuit();
+    Connection* connection = new Connection(parent);
+    initConnection(connection);
     return connection;
+}
+
+void ConnectionInfo::initConnection(Connection* connection) const
+{
+    connection->setName(name);
+    connection->setSecure(secure);
+    connection->setPassword(pass);
+    connection->setHost(host);
+    connection->setPort(port);
+    connection->setNickName(nick);
+    QString appName = QCoreApplication::applicationName().toLower();
+    connection->setUserName(user.isEmpty() ? appName : user);
+    connection->setRealName(real.isEmpty() ? appName : real);
+    connection->setViews(views);
+    connection->setHasQuit(quit);
+}
+
+ConnectionInfo ConnectionInfo::fromConnection(Connection* connection)
+{
+    ConnectionInfo info;
+    info.name = connection->name();
+    info.secure = connection->isSecure();
+    info.host = connection->host();
+    info.port = connection->port();
+    info.user = connection->userName();
+    info.nick = connection->nickName();
+    info.real = connection->realName();
+    info.pass = connection->password();
+    info.views = connection->views();
+    info.quit = connection->hasQuit();
+    return info;
 }

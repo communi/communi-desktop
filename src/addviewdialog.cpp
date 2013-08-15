@@ -13,21 +13,22 @@
 */
 
 #include "addviewdialog.h"
-#include <IrcSessionInfo>
 #include <QDialogButtonBox>
 #include <QRegExpValidator>
+#include <IrcConnection>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <IrcNetwork>
 #include <QLineEdit>
 #include <QRegExp>
 #include <QLabel>
 
-AddViewDialog::AddViewDialog(IrcSession* session, QWidget* parent) : QDialog(parent)
+AddViewDialog::AddViewDialog(IrcConnection* connection, QWidget* parent) : QDialog(parent)
 {
     setWindowTitle(tr("Add view"));
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    d.session = session;
+    d.connection = connection;
 
     d.viewLabel = new QLabel(this);
     d.viewEdit = new QLineEdit("#", this);
@@ -36,8 +37,8 @@ AddViewDialog::AddViewDialog(IrcSession* session, QWidget* parent) : QDialog(par
     connect(d.viewEdit, SIGNAL(textEdited(QString)), this, SLOT(updateUi()));
 
     QLabel* subLabel = new QLabel(this);
-    IrcSessionInfo info(session);
-    subLabel->setText(tr("<small>%1 supports channel types: %2<small>").arg(info.network()).arg(info.channelTypes().join("")));
+    const IrcNetwork* network = connection->network();
+    subLabel->setText(tr("<small>%1 supports channel types: %2<small>").arg(network->name()).arg(network->channelTypes().join("")));
     subLabel->setAlignment(Qt::AlignRight);
     subLabel->setDisabled(true);
 
@@ -66,7 +67,7 @@ AddViewDialog::AddViewDialog(IrcSession* session, QWidget* parent) : QDialog(par
 
 bool AddViewDialog::isChannel() const
 {
-    return !view().isEmpty() && IrcSessionInfo(d.session).channelTypes().contains(view().at(0));
+    return !view().isEmpty() && d.connection->network()->channelTypes().contains(view().at(0));
 }
 
 QString AddViewDialog::view() const

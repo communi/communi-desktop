@@ -18,7 +18,7 @@
 #include "itemdelegate.h"
 #include "menufactory.h"
 #include <IrcChannel>
-#include <IrcSession>
+#include <IrcConnection>
 #include <IrcUserModel>
 #include <QSortFilterProxyModel>
 #include <QItemSelectionModel>
@@ -45,14 +45,14 @@ QSize UserListView::sizeHint() const
     return QSize(16 * fontMetrics().width('#') + verticalScrollBar()->sizeHint().width(), QListView::sizeHint().height());
 }
 
-IrcSession* UserListView::session() const
+IrcConnection* UserListView::connection() const
 {
-    return d.session;
+    return d.connection;
 }
 
-void UserListView::setSession(IrcSession* session)
+void UserListView::setConnection(IrcConnection* connection)
 {
-    d.session = session;
+    d.connection = connection;
 }
 
 IrcChannel* UserListView::channel() const

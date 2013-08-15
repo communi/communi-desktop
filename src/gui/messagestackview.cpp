@@ -16,8 +16,8 @@
 #include "settingsmodel.h"
 #include "application.h"
 #include "zncmanager.h"
+#include "connection.h"
 #include "completer.h"
-#include "session.h"
 #include <ircbuffer.h>
 #include <irccommand.h>
 #include <irclagtimer.h>
@@ -32,16 +32,16 @@ protected:
     void destroy(IrcBuffer* buffer) { Q_UNUSED(buffer); }
 };
 
-MessageStackView::MessageStackView(IrcSession* session, QWidget* parent) : QStackedWidget(parent)
+MessageStackView::MessageStackView(IrcConnection* connection, QWidget* parent) : QStackedWidget(parent)
 {
-    d.session = session;
+    d.connection = connection;
 
-    d.bufferModel = new BufferModel(session);
+    d.bufferModel = new BufferModel(connection);
     connect(d.bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(setBuffer(IrcBuffer*)));
     connect(d.bufferModel, SIGNAL(messageIgnored(IrcMessage*)), &d.handler, SLOT(handleMessage(IrcMessage*)));
     connect(d.bufferModel, SIGNAL(channelsChanged(QStringList)), &d.parser, SLOT(setChannels(QStringList)));
 
-    session->installMessageFilter(qobject_cast<Session*>(session)); // TODO
+    connection->installMessageFilter(qobject_cast<Connection*>(connection)); // TODO
     d.handler.znc()->setModel(d.bufferModel);
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(activateView(int)));
@@ -50,9 +50,9 @@ MessageStackView::MessageStackView(IrcSession* session, QWidget* parent) : QStac
     connect(&d.handler, SIGNAL(viewToBeRemoved(QString)), this, SLOT(removeView(QString)));
     connect(&d.handler, SIGNAL(viewToBeRenamed(QString, QString)), this, SLOT(renameView(QString, QString)));
 
-    d.lagTimer = new IrcLagTimer(d.session);
+    d.lagTimer = new IrcLagTimer(d.connection);
 
-    MessageView* view = addView(session->host());
+    MessageView* view = addView(connection->host());
     d.handler.setDefaultView(view);
     d.handler.setCurrentView(view);
     setCurrentWidget(view);
@@ -61,9 +61,9 @@ MessageStackView::MessageStackView(IrcSession* session, QWidget* parent) : QStac
     connect(Application::settings(), SIGNAL(changed()), this, SLOT(applySettings()));
 }
 
-IrcSession* MessageStackView::session() const
+IrcConnection* MessageStackView::connection() const
 {
-    return d.session;
+    return d.connection;
 }
 
 CommandParser* MessageStackView::parser() const
@@ -89,7 +89,7 @@ MessageView* MessageStackView::viewAt(int index) const
 MessageView* MessageStackView::addView(const QString& receiver)
 {
     MessageView* view = d.views.value(receiver.toLower());
-    bool channel = !receiver.isEmpty() && IrcSessionInfo(d.session).channelTypes().contains(receiver.at(0));
+    bool channel = !receiver.isEmpty() && d.connection->network()->channelTypes().contains(receiver.at(0));
     if (!view) {
         ViewInfo::Type type = ViewInfo::Server;
         if (!d.views.isEmpty())
@@ -108,10 +108,11 @@ void MessageStackView::restoreView(const ViewInfo& view)
 
 MessageView* MessageStackView::createView(ViewInfo::Type type, const QString& receiver)
 {
-    MessageView* view = new MessageView(type, static_cast<Session*>(d.session), this); // TODO
+    MessageView* view = new MessageView(type, static_cast<Connection*>(d.connection), this); // TODO
     // TODO:
-    if (IrcSessionInfo(session()).isValid())
-        view->completer()->setChannelPrefixes(IrcSessionInfo(session()).channelTypes().join(""));
+    const IrcNetwork* network = d.connection->network();
+    if (network->isValid())
+        view->completer()->setChannelPrefixes(network->channelTypes().join(""));
     view->completer()->setChannelModel(&d.viewModel);
     view->setReceiver(receiver);
     connect(view, SIGNAL(queried(QString)), this, SLOT(addView(QString)));
@@ -157,9 +158,9 @@ void MessageStackView::closeView(int index)
     if (view) {
         if (view->isActive()) {
             if (indexOf(view) == 0)
-                static_cast<Session*>(session())->quit(); // TODO
+                static_cast<Connection*>(connection())->quit(); // TODO
             else if (view->viewType() == ViewInfo::Channel)
-                d.session->sendCommand(IrcCommand::createPart(view->receiver()));
+                d.connection->sendCommand(IrcCommand::createPart(view->receiver()));
         }
         d.handler.removeView(view->receiver());
     }

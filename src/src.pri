@@ -34,6 +34,7 @@ exists(backend/src/src.pri) {
 } else:load(communi-config, true) {
     # bool load(feature, ignore_error)
     CONFIG += communi
+    COMMUNI += core model util
 } else {
     error(Cannot detect libcommuni. Either install it or run \'git submodule update --init\' in $${_PRO_FILE_PWD_}.)
 }

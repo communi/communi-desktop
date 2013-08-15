@@ -24,7 +24,7 @@
 #include "viewinfo.h"
 
 class IrcBuffer;
-class IrcSession;
+class IrcConnection;
 class IrcMessage;
 class IrcLagTimer;
 class MessageView;
@@ -35,9 +35,9 @@ class MessageStackView : public QStackedWidget
     Q_OBJECT
 
 public:
-    MessageStackView(IrcSession* session, QWidget* parent = 0);
+    MessageStackView(IrcConnection* connection, QWidget* parent = 0);
 
-    IrcSession* session() const;
+    IrcConnection* connection() const;
     CommandParser* parser() const;
     QStringListModel* commandModel() const;
 
@@ -68,7 +68,7 @@ private:
     MessageView* createView(ViewInfo::Type type, const QString& receiver);
 
     struct Private {
-        IrcSession* session;
+        IrcConnection* connection;
         CommandParser parser;
         IrcLagTimer* lagTimer;
         MessageHandler handler;

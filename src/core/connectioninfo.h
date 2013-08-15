@@ -23,15 +23,15 @@
 #include "viewinfo.h"
 #include "streamer.h"
 
-class Session;
+class Connection;
 
 struct ConnectionInfo
 {
     ConnectionInfo();
 
-    Session* toSession(QObject* parent = 0) const;
-    void initSession(Session* session) const;
-    static ConnectionInfo fromSession(Session* session);
+    Connection* toConnection(QObject* parent = 0) const;
+    void initConnection(Connection* connection) const;
+    static ConnectionInfo fromConnection(Connection* connection);
 
     QString name;
     QString host;

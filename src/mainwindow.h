@@ -27,7 +27,7 @@ struct ConnectionInfo;
 class MessageView;
 class IrcMessage;
 class QtDockTile;
-class IrcSession;
+class IrcConnection;
 class QShortcut;
 class Overlay;
 
@@ -53,7 +53,7 @@ protected:
 
 private slots:
     void initialize();
-    void editSession(IrcSession* session);
+    void editConnection(IrcConnection* connection);
     void applySettings();
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void highlighted(IrcMessage* message);
@@ -61,10 +61,10 @@ private slots:
     void viewAdded(MessageView* view);
     void viewActivated(MessageView* view);
     void closeTreeItem(SessionTreeItem* item);
-    void currentTreeItemChanged(IrcSession* session, const QString& view);
+    void currentTreeItemChanged(IrcConnection* connection, const QString& view);
     void splitterChanged(const QByteArray& state);
     void updateOverlay();
-    void reconnectSession();
+    void reconnect();
     void addView();
     void closeView();
     void searchView();

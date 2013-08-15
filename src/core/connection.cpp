@@ -12,13 +12,13 @@
 * GNU General Public License for more details.
 */
 
-#include "session.h"
+#include "connection.h"
 #include "application.h"
 #include <IrcCommand>
 #include <IrcMessage>
 #include <Irc>
 
-Session::Session(QObject* parent) : IrcSession(parent)
+Connection::Connection(QObject* parent) : IrcConnection(parent)
 {
     d.quit = false;
     d.bouncer = false;
@@ -26,7 +26,6 @@ Session::Session(QObject* parent) : IrcSession(parent)
     connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(this, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
     connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onDisconnected()));
-    connect(this, SIGNAL(password(QString*)), this, SLOT(onPassword(QString*)));
     connect(this, SIGNAL(nickNameReserved(QString*)), this, SLOT(onNickNameReserved(QString*)));
     connect(this, SIGNAL(capabilities(QStringList, QStringList*)), this, SLOT(onCapabilities(QStringList, QStringList*)));
 
@@ -34,16 +33,16 @@ Session::Session(QObject* parent) : IrcSession(parent)
     setAutoReconnectDelay(15);
 }
 
-Session::~Session()
+Connection::~Connection()
 {
 }
 
-QString Session::name() const
+QString Connection::name() const
 {
     return d.name;
 }
 
-void Session::setName(const QString& name)
+void Connection::setName(const QString& name)
 {
     if (d.name != name) {
         d.name = name;
@@ -51,57 +50,47 @@ void Session::setName(const QString& name)
     }
 }
 
-int Session::autoReconnectDelay() const
+int Connection::autoReconnectDelay() const
 {
     return d.reconnectTimer.interval() / 1000;
 }
 
-void Session::setAutoReconnectDelay(int delay)
+void Connection::setAutoReconnectDelay(int delay)
 {
     d.reconnectTimer.setInterval(qMax(0, delay) * 1000);
 }
 
-QString Session::password() const
-{
-    return d.password;
-}
-
-void Session::setPassword(const QString& password)
-{
-    d.password = password;
-}
-
-bool Session::hasQuit() const
+bool Connection::hasQuit() const
 {
     return d.quit;
 }
 
-void Session::setHasQuit(bool quit)
+void Connection::setHasQuit(bool quit)
 {
     d.quit = quit;
 }
 
-bool Session::isBouncer() const
+bool Connection::isBouncer() const
 {
     return d.bouncer;
 }
 
-bool Session::isReconnecting() const
+bool Connection::isReconnecting() const
 {
     return d.reconnectTimer.isActive();
 }
 
-ViewInfos Session::views() const
+ViewInfos Connection::views() const
 {
     return d.views;
 }
 
-void Session::setViews(const ViewInfos& views)
+void Connection::setViews(const ViewInfos& views)
 {
     d.views = views;
 }
 
-bool Session::sendUiCommand(IrcCommand* command, const QString& identifier)
+bool Connection::sendUiCommand(IrcCommand* command, const QString& identifier)
 {
 //    TODO:
 //    if (command->type() == IrcCommand::Join) {
@@ -115,7 +104,7 @@ bool Session::sendUiCommand(IrcCommand* command, const QString& identifier)
            sendCommand(IrcCommand::createPing(identifier));
 }
 
-void Session::reconnect()
+void Connection::reconnect()
 {
     d.bouncer = false;
     d.quit = false;
@@ -125,13 +114,13 @@ void Session::reconnect()
     }
 }
 
-void Session::quit()
+void Connection::quit()
 {
     sleep();
     d.quit = true;
 }
 
-void Session::destructLater()
+void Connection::destructLater()
 {
     if (isConnected()) {
         connect(this, SIGNAL(disconnected()), SLOT(deleteLater()));
@@ -142,19 +131,18 @@ void Session::destructLater()
     }
 }
 
-void Session::stopReconnecting()
+void Connection::stopReconnecting()
 {
     d.reconnectTimer.stop();
 }
 
-void Session::sleep()
+void Connection::sleep()
 {
     QString message = tr("%1 %2").arg(QApplication::applicationName())
                                  .arg(QApplication::applicationVersion());
 
     if (isConnected()) {
-        IrcSessionInfo info(this);
-        if (info.activeCapabilities().contains("communi"))
+        if (network()->activeCapabilities().contains("communi"))
             sendCommand(IrcCommand::createCtcpRequest("*communi", "TIME"));
         sendCommand(IrcCommand::createQuit(message));
     } else {
@@ -162,13 +150,13 @@ void Session::sleep()
     }
 }
 
-void Session::wake()
+void Connection::wake()
 {
     if (!d.quit)
         reconnect();
 }
 
-IrcCommand* Session::createCtcpReply(IrcPrivateMessage* request) const
+IrcCommand* Connection::createCtcpReply(IrcPrivateMessage* request) const
 {
     const QString cmd = request->message().split(" ", QString::SkipEmptyParts).value(0).toUpper();
     if (cmd == "VERSION") {
@@ -176,10 +164,10 @@ IrcCommand* Session::createCtcpReply(IrcPrivateMessage* request) const
                                            .arg(QApplication::applicationVersion());
         return IrcCommand::createCtcpReply(request->sender().name(), QString("VERSION %1").arg(message));
     }
-    return IrcSession::createCtcpReply(request);
+    return IrcConnection::createCtcpReply(request);
 }
 
-void Session::onConnected()
+void Connection::onConnected()
 {
     if (!d.bouncer) {
         QStringList channels;
@@ -201,18 +189,13 @@ void Session::onConnected()
         sendUiCommand(cmd, cmds.key(cmd));
 }
 
-void Session::onDisconnected()
+void Connection::onDisconnected()
 {
     if (!d.quit && !d.reconnectTimer.isActive() && d.reconnectTimer.interval() > 0)
         d.reconnectTimer.start();
 }
 
-void Session::onPassword(QString* password)
-{
-    *password = d.password;
-}
-
-void Session::onNickNameReserved(QString* alternate)
+void Connection::onNickNameReserved(QString* alternate)
 {
     if (d.alternateNicks.isEmpty()) {
         QString currentNick = nickName();
@@ -224,7 +207,7 @@ void Session::onNickNameReserved(QString* alternate)
     *alternate = d.alternateNicks.takeFirst();
 }
 
-void Session::onCapabilities(const QStringList& available, QStringList* request)
+void Connection::onCapabilities(const QStringList& available, QStringList* request)
 {
     if (available.contains("identify-msg"))
         request->append("identify-msg");
@@ -232,7 +215,7 @@ void Session::onCapabilities(const QStringList& available, QStringList* request)
         request->append("sasl");
 }
 
-bool Session::messageFilter(IrcMessage* message)
+bool Connection::messageFilter(IrcMessage* message)
 {
     if (message->type() == IrcMessage::Capability) {
         d.bouncer = message->sender().name() == "irc.znc.in";
@@ -249,7 +232,7 @@ bool Session::messageFilter(IrcMessage* message)
     return false;
 }
 
-void Session::addChannel(const QString& channel)
+void Connection::addChannel(const QString& channel)
 {
     foreach (const ViewInfo& view, d.views) {
         if (view.type == ViewInfo::Channel && !view.name.compare(channel, Qt::CaseInsensitive))
@@ -263,7 +246,7 @@ void Session::addChannel(const QString& channel)
     d.views += view;
 }
 
-void Session::removeChannel(const QString& channel)
+void Connection::removeChannel(const QString& channel)
 {
     for (int i = 0; i < d.views.count(); ++i) {
         ViewInfo view = d.views.at(i);

@@ -12,41 +12,37 @@
 * GNU General Public License for more details.
 */
 
-#ifndef SESSION_H
-#define SESSION_H
+#ifndef CONNECTION_H
+#define CONNECTION_H
 
 #include <QSet>
 #include <QTimer>
-#include <IrcSession>
+#include <IrcConnection>
 #include <IrcCommand>
 #include <QStringList>
-#include <IrcSessionInfo>
+#include <IrcNetwork>
 #include <QAbstractSocket>
 #include <IrcMessageFilter>
 #include "viewinfo.h"
 
-class Session : public IrcSession, public IrcMessageFilter
+class Connection : public IrcConnection, public IrcMessageFilter
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(int autoReconnectDelay READ autoReconnectDelay WRITE setAutoReconnectDelay)
-    Q_PROPERTY(QString password READ password WRITE setPassword)
     Q_PROPERTY(bool hasQuit READ hasQuit WRITE setHasQuit)
     Q_PROPERTY(bool reconnecting READ isReconnecting)
     Q_PROPERTY(bool bouncer READ isBouncer)
 
 public:
-    explicit Session(QObject* parent = 0);
-    ~Session();
+    explicit Connection(QObject* parent = 0);
+    ~Connection();
 
     QString name() const;
     void setName(const QString& name);
 
     int autoReconnectDelay() const;
     void setAutoReconnectDelay(int delay);
-
-    QString password() const;
-    void setPassword(const QString& password);
 
     bool hasQuit() const;
     void setHasQuit(bool quit);
@@ -76,7 +72,6 @@ protected:
 private slots:
     void onConnected();
     void onDisconnected();
-    void onPassword(QString* password);
     void onNickNameReserved(QString* alternate);
     void onCapabilities(const QStringList& available, QStringList* request);
 
@@ -90,11 +85,10 @@ private:
         bool bouncer;
         QString name;
         QTimer reconnectTimer;
-        QString password;
         ViewInfos views;
         QStringList alternateNicks;
         QHash<QString, IrcCommand*> commands;
     } d;
 };
 
-#endif // SESSION_H
+#endif // CONNECTION_H

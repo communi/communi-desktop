@@ -25,7 +25,7 @@ class MessageStackView;
 class CommandParser;
 class IrcMessage;
 class IrcBuffer;
-class Session;
+class Connection;
 
 class MessageView : public QWidget
 {
@@ -34,12 +34,12 @@ class MessageView : public QWidget
     Q_PROPERTY(QString receiver READ receiver WRITE setReceiver NOTIFY receiverChanged)
 
 public:
-    MessageView(ViewInfo::Type type, IrcSession* session, MessageStackView* stack);
+    MessageView(ViewInfo::Type type, IrcConnection* connection, MessageStackView* stack);
     ~MessageView();
 
     bool isActive() const;
     ViewInfo::Type viewType() const;
-    IrcSession* session() const;
+    IrcConnection* connection() const;
     Completer* completer() const;
     QTextBrowser* textBrowser() const;
 
@@ -87,7 +87,7 @@ private slots:
     void onAnchorClicked(const QUrl& link);
     void completeCommand(const QString& command);
     void onTopicEdited(const QString& topic);
-    void onSessionStatusChanged();
+    void onConnectionStatusChanged();
     void onSocketError();
     void applySettings();
 
@@ -95,7 +95,7 @@ private:
     struct Private : public Ui::MessageView {
         ViewInfo::Type viewType;
         QString receiver;
-        QPointer<IrcSession> session;
+        QPointer<IrcConnection> connection;
         SyntaxHighlighter* highlighter;
         QString topic;
         int sentId;

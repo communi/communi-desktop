@@ -21,7 +21,7 @@
 #include <QHash>
 #include "viewinfo.h"
 
-class IrcSession;
+class IrcConnection;
 class MessageView;
 class SessionTreeItem;
 
@@ -46,10 +46,10 @@ public:
     QColor currentHighlightColor() const;
 
     SessionTreeItem* viewItem(MessageView* view) const;
-    SessionTreeItem* sessionItem(IrcSession* session) const;
+    SessionTreeItem* connectionItem(IrcConnection* connection) const;
 
     bool hasRestoredCurrent() const;
-    ViewInfos viewInfos(IrcSession* session) const;
+    ViewInfos viewInfos(IrcConnection* connection) const;
 
 public slots:
     void addView(MessageView* view);
@@ -63,8 +63,8 @@ public slots:
     void moveToNextActiveItem();
     void moveToPrevActiveItem();
 
-    void expandCurrentSession();
-    void collapseCurrentSession();
+    void expandCurrentConnection();
+    void collapseCurrentConnection();
     void moveToMostActiveItem();
 
     void search(const QString& search);
@@ -77,9 +77,9 @@ public slots:
     void unhighlight(SessionTreeItem* item);
 
 signals:
-    void editSession(IrcSession* session);
+    void editConnection(IrcConnection* connection);
     void closeItem(SessionTreeItem* item);
-    void currentViewChanged(IrcSession* session, const QString& view);
+    void currentViewChanged(IrcConnection* connection, const QString& view);
     void searched(bool result);
 
 protected:
@@ -91,7 +91,7 @@ protected:
 
 private slots:
     void updateView(MessageView* view = 0);
-    void updateSession(IrcSession* session = 0);
+    void updateConnection(IrcConnection* connection = 0);
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
@@ -125,7 +125,7 @@ private:
         QSet<SessionTreeItem*> resetedItems;
         QSet<SessionTreeItem*> highlightedItems;
         QHash<MessageView*, SessionTreeItem*> viewItems;
-        QHash<IrcSession*, SessionTreeItem*> sessionItems;
+        QHash<IrcConnection*, SessionTreeItem*> connectionItems;
         mutable QTreeWidgetItem* dropParent;
     } d;
     friend class SessionTreeItem;

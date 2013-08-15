@@ -16,7 +16,7 @@
 #include "messageview.h"
 #include "zncmanager.h"
 #include <qabstractsocket.h>
-#include <ircsession.h>
+#include <ircconnection.h>
 #include <qvariant.h>
 #include <qdebug.h>
 #include <irc.h>
@@ -183,7 +183,7 @@ void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
     QString target = message->target();
 
     // forward ChanServ's "[#chan] msg" to the appropriate channel
-    if (target == message->session()->nickName() && message->sender().name() == "ChanServ") {
+    if (target == message->connection()->nickName() && message->sender().name() == "ChanServ") {
         const QString msg = message->message();
         if (msg.startsWith("[")) {
             int idx = msg.indexOf("]");
@@ -199,11 +199,11 @@ void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
         // global notice
         foreach (MessageView* view, d.views)
             view->receiveMessage(message);
-    } else if (!message->session()->isConnected() || target.isEmpty() || target == "*")
+    } else if (!message->connection()->isConnected() || target.isEmpty() || target == "*")
         sendMessage(message, d.defaultView);
     else if (MessageView* view = d.views.value(message->sender().name().toLower()))
         sendMessage(message, view);
-    else if (target == message->session()->nickName() || target.contains("*"))
+    else if (target == message->connection()->nickName() || target.contains("*"))
         sendMessage(message, d.currentView);
     else
         sendMessage(message, target);
@@ -310,7 +310,7 @@ void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
 {
     if (message->isRequest())
         sendMessage(message, d.currentView);
-    else if (message->target() == message->session()->nickName())
+    else if (message->target() == message->connection()->nickName())
         sendMessage(message, message->sender().name());
     else
         sendMessage(message, message->target());

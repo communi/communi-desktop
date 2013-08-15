@@ -29,7 +29,7 @@
 #include "homepage.h"
 #include "overlay.h"
 #include "toolbar.h"
-#include "session.h"
+#include "connection.h"
 #include "qtdocktile.h"
 #include <QCloseEvent>
 #include <QSettings>
@@ -154,28 +154,28 @@ void MainWindow::connectTo(const ConnectionInfo& connection)
         connectToImpl(wizard.connection());
 }
 
-void MainWindow::connectToImpl(const ConnectionInfo& connection)
+void MainWindow::connectToImpl(const ConnectionInfo& info)
 {
-    Session* session = connection.toSession(this);
-    session->setEncoding(Application::encoding());
-    int index = stackView->addSession(session);
-    if (!session->hasQuit()) {
-        session->open();
+    Connection* connection = info.toConnection(this);
+    connection->setEncoding(Application::encoding());
+    int index = stackView->addConnection(connection);
+    if (!connection->hasQuit()) {
+        connection->open();
         if (!treeWidget->hasRestoredCurrent())
             stackView->setCurrentIndex(index);
     }
 
-    connect(SystemNotifier::instance(), SIGNAL(sleep()), session, SLOT(sleep()));
-    connect(SystemNotifier::instance(), SIGNAL(wake()), session, SLOT(wake()));
+    connect(SystemNotifier::instance(), SIGNAL(sleep()), connection, SLOT(sleep()));
+    connect(SystemNotifier::instance(), SIGNAL(wake()), connection, SLOT(wake()));
 
-    connect(SystemNotifier::instance(), SIGNAL(online()), session, SLOT(wake()));
-    connect(SystemNotifier::instance(), SIGNAL(offline()), session, SLOT(close()));
+    connect(SystemNotifier::instance(), SIGNAL(online()), connection, SLOT(wake()));
+    connect(SystemNotifier::instance(), SIGNAL(offline()), connection, SLOT(close()));
 
-    connect(session, SIGNAL(activeChanged(bool)), this, SLOT(updateOverlay()));
-    connect(session, SIGNAL(connectedChanged(bool)), this, SLOT(updateOverlay()));
+    connect(connection, SIGNAL(activeChanged(bool)), this, SLOT(updateOverlay()));
+    connect(connection, SIGNAL(connectedChanged(bool)), this, SLOT(updateOverlay()));
     updateOverlay();
 
-    MessageStackView* stack = stackView->sessionWidget(session);
+    MessageStackView* stack = stackView->connectionWidget(connection);
     connect(stack, SIGNAL(viewAdded(MessageView*)), this, SLOT(viewAdded(MessageView*)));
     connect(stack, SIGNAL(viewRemoved(MessageView*)), treeWidget, SLOT(removeView(MessageView*)));
     connect(stack, SIGNAL(viewRenamed(MessageView*)), treeWidget, SLOT(renameView(MessageView*)));
@@ -183,20 +183,20 @@ void MainWindow::connectToImpl(const ConnectionInfo& connection)
 
     if (MessageView* view = stack->viewAt(0)) {
         treeWidget->addView(view);
-        if (!treeWidget->hasRestoredCurrent() && (!session->hasQuit() || stackView->count() == 1))
+        if (!treeWidget->hasRestoredCurrent() && (!connection->hasQuit() || stackView->count() == 1))
             treeWidget->setCurrentView(view);
         treeWidget->parentWidget()->show();
     }
 
     bool expand = false;
-    foreach (const ViewInfo& view, connection.views) {
+    foreach (const ViewInfo& view, info.views) {
         if (view.type != -1 && view.expanded) {
             expand = true;
             break;
         }
     }
-    if (expand || connection.views.isEmpty())
-        treeWidget->expandItem(treeWidget->sessionItem(session));
+    if (expand || info.views.isEmpty())
+        treeWidget->expandItem(treeWidget->connectionItem(connection));
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
@@ -210,21 +210,21 @@ void MainWindow::closeEvent(QCloseEvent* event)
         if (muteAction)
             Application::settings()->setValue("ui.mute", muteAction->isChecked());
 
-        ConnectionInfos connections;
-        QList<IrcSession*> sessions = stackView->sessions();
-        foreach (IrcSession* s, sessions) {
-            if (Session* session = qobject_cast<Session*>(s)) { // TODO
-                ConnectionInfo connection = ConnectionInfo::fromSession(session);
-                connection.views = treeWidget->viewInfos(session);
-                connections += connection;
-                session->quit();
-                session->disconnect();
-                session->destructLater();
+        ConnectionInfos infos;
+        QList<IrcConnection*> connections = stackView->connections();
+        foreach (IrcConnection* c, connections) {
+            if (Connection* connection = qobject_cast<Connection*>(c)) { // TODO
+                ConnectionInfo info = ConnectionInfo::fromConnection(connection);
+                info.views = treeWidget->viewInfos(connection);
+                infos += info;
+                connection->quit();
+                connection->disconnect();
+                connection->destructLater();
             }
         }
-        settings.setValue("connections", QVariant::fromValue(connections));
+        settings.setValue("connections", QVariant::fromValue(infos));
 
-        // let the sessions close in the background
+        // let the connections close in the background
         hide();
         event->ignore();
         QTimer::singleShot(1000, qApp, SLOT(quit()));
@@ -249,13 +249,13 @@ void MainWindow::initialize()
     connectTo(ConnectionInfo());
 }
 
-void MainWindow::editSession(IrcSession* session)
+void MainWindow::editConnection(IrcConnection* connection)
 {
     ConnectionWizard wizard;
-    if (Session* s = qobject_cast<Session*>(session)) { // TODO
-        wizard.setConnection(ConnectionInfo::fromSession(s));
+    if (Connection* c = qobject_cast<Connection*>(connection)) { // TODO
+        wizard.setConnection(ConnectionInfo::fromConnection(c));
         if (wizard.exec())
-            wizard.connection().initSession(s);
+            wizard.connection().initConnection(c);
         updateOverlay();
     }
 }
@@ -300,7 +300,7 @@ void MainWindow::highlighted(IrcMessage* message)
 
     MessageView* view = qobject_cast<MessageView*>(sender());
     if (view) {
-        SessionTreeItem* item = treeWidget->sessionItem(view->session());
+        SessionTreeItem* item = treeWidget->connectionItem(view->connection());
         if (view->viewType() != ViewInfo::Server)
             item = item->findChild(view->receiver());
         if (item) {
@@ -315,7 +315,7 @@ void MainWindow::missed(IrcMessage* message)
     Q_UNUSED(message);
     MessageView* view = qobject_cast<MessageView*>(sender());
     if (view) {
-        SessionTreeItem* item = treeWidget->sessionItem(view->session());
+        SessionTreeItem* item = treeWidget->connectionItem(view->connection());
         if (view->viewType() != ViewInfo::Server)
             item = item->findChild(view->receiver());
         if (item)
@@ -349,20 +349,20 @@ void MainWindow::viewActivated(MessageView* view)
 
 void MainWindow::closeTreeItem(SessionTreeItem* item)
 {
-    MessageStackView* stack = stackView->sessionWidget(item->session());
+    MessageStackView* stack = stackView->connectionWidget(item->connection());
     if (stack) {
         int index = stack->indexOf(item->view());
         stack->closeView(index);
         if (index == 0) {
-            stackView->removeSession(stack->session());
-            treeWidget->parentWidget()->setVisible(!stackView->sessions().isEmpty());
+            stackView->removeConnection(stack->connection());
+            treeWidget->parentWidget()->setVisible(!stackView->connections().isEmpty());
         }
     }
 }
 
-void MainWindow::currentTreeItemChanged(IrcSession* session, const QString& view)
+void MainWindow::currentTreeItemChanged(IrcConnection* connection, const QString& view)
 {
-    MessageStackView* stack = stackView->sessionWidget(session);
+    MessageStackView* stack = stackView->connectionWidget(connection);
     if (stack) {
         stackView->setCurrentWidget(stack);
         if (view.isEmpty())
@@ -383,40 +383,40 @@ void MainWindow::splitterChanged(const QByteArray& state)
 void MainWindow::updateOverlay()
 {
     MessageStackView* stack = stackView->currentWidget();
-    if (stack && stack->session()) {
+    if (stack && stack->connection()) {
         if (!overlay) {
             overlay = new Overlay(stackView);
-            connect(overlay, SIGNAL(refresh()), this, SLOT(reconnectSession()));
+            connect(overlay, SIGNAL(refresh()), this, SLOT(reconnect()));
         }
-        IrcSession* session = stack->session();
+        IrcConnection* connection = stack->connection();
         overlay->setParent(stack->currentWidget());
-        overlay->setBusy(session->isActive() && !session->isConnected());
-        overlay->setRefresh(!session->isActive());
-        overlay->setVisible(!session->isConnected());
+        overlay->setBusy(connection->isActive() && !connection->isConnected());
+        overlay->setRefresh(!connection->isActive());
+        overlay->setVisible(!connection->isConnected());
         overlay->setDark(Application::settings()->value("ui.dark").toBool());
-        if (!session->isConnected())
+        if (!connection->isConnected())
             overlay->setFocus();
     }
 }
 
-void MainWindow::reconnectSession()
+void MainWindow::reconnect()
 {
     MessageStackView* stack = stackView->currentWidget();
     if (stack) {
-        if (Session* session = qobject_cast<Session*>(stack->session())) // TODO
-            session->reconnect();
+        if (Connection* connection = qobject_cast<Connection*>(stack->connection())) // TODO
+            connection->reconnect();
     }
 }
 
 void MainWindow::addView()
 {
     MessageStackView* stack = stackView->currentWidget();
-    if (stack && stack->session()->isActive()) {
-        AddViewDialog dialog(stack->session(), this);
+    if (stack && stack->connection()->isActive()) {
+        AddViewDialog dialog(stack->connection(), this);
         if (dialog.exec()) {
             QString view = dialog.view();
             if (dialog.isChannel())
-                stack->session()->sendCommand(IrcCommand::createJoin(view, dialog.password()));
+                stack->connection()->sendCommand(IrcCommand::createJoin(view, dialog.password()));
             stack->openView(view);
         }
     }
@@ -429,8 +429,8 @@ void MainWindow::closeView()
         int index = stack->currentIndex();
         stack->closeView(index);
         if (index == 0) {
-            stackView->removeSession(stack->session());
-            treeWidget->parentWidget()->setVisible(!stackView->sessions().isEmpty());
+            stackView->removeConnection(stack->connection());
+            treeWidget->parentWidget()->setVisible(!stackView->connections().isEmpty());
         }
     }
 }
@@ -456,9 +456,9 @@ void MainWindow::createTree()
     treeWidget = new SessionTreeWidget(container);
     treeWidget->setFocusPolicy(Qt::NoFocus);
 
-    connect(treeWidget, SIGNAL(editSession(IrcSession*)), this, SLOT(editSession(IrcSession*)));
+    connect(treeWidget, SIGNAL(editConnection(IrcConnection*)), this, SLOT(editConnection(IrcConnection*)));
     connect(treeWidget, SIGNAL(closeItem(SessionTreeItem*)), this, SLOT(closeTreeItem(SessionTreeItem*)));
-    connect(treeWidget, SIGNAL(currentViewChanged(IrcSession*, QString)), this, SLOT(currentTreeItemChanged(IrcSession*, QString)));
+    connect(treeWidget, SIGNAL(currentViewChanged(IrcConnection*, QString)), this, SLOT(currentTreeItemChanged(IrcConnection*, QString)));
 
     ToolBar* toolBar = new ToolBar(container);
     connect(toolBar, SIGNAL(aboutTriggered()), qApp, SLOT(aboutApplication()));

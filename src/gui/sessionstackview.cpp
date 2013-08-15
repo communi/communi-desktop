@@ -15,37 +15,37 @@
 #include "sessionstackview.h"
 #include "messagestackview.h"
 #include "messageview.h"
-#include "session.h"
+#include "connection.h"
 
 SessionStackView::SessionStackView(QWidget* parent) : QStackedWidget(parent)
 {
 }
 
-QList<IrcSession*> SessionStackView::sessions() const
+QList<IrcConnection*> SessionStackView::connections() const
 {
-    QList<IrcSession*> list;
+    QList<IrcConnection*> list;
     for (int i = 0; i < count(); ++i) {
         MessageStackView* widget = widgetAt(i);
         if (widget)
-            list += widget->session();
+            list += widget->connection();
     }
     return list;
 }
 
-int SessionStackView::addSession(IrcSession* session)
+int SessionStackView::addConnection(IrcConnection* connection)
 {
-    MessageStackView* widget = new MessageStackView(session, this);
+    MessageStackView* widget = new MessageStackView(connection, this);
     return addWidget(widget);
 }
 
-void SessionStackView::removeSession(IrcSession* session)
+void SessionStackView::removeConnection(IrcConnection* connection)
 {
-    MessageStackView* widget = sessionWidget(session);
+    MessageStackView* widget = connectionWidget(connection);
     if (widget) {
         removeWidget(widget);
         widget->deleteLater();
-        if (Session* session = qobject_cast<Session*>(widget->session()))
-            session->destructLater();
+        if (Connection* connection = qobject_cast<Connection*>(widget->connection()))
+            connection->destructLater();
     }
 }
 
@@ -59,11 +59,11 @@ MessageStackView* SessionStackView::widgetAt(int index) const
     return qobject_cast<MessageStackView*>(QStackedWidget::widget(index));
 }
 
-MessageStackView* SessionStackView::sessionWidget(IrcSession* session) const
+MessageStackView* SessionStackView::connectionWidget(IrcConnection* connection) const
 {
     for (int i = 0; i < count(); ++i) {
         MessageStackView* widget = widgetAt(i);
-        if (widget && widget->session() == session)
+        if (widget && widget->connection() == connection)
             return widget;
     }
     return 0;

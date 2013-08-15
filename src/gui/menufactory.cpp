@@ -14,7 +14,7 @@
 
 #include "menufactory.h"
 #include "userlistview.h"
-#include "session.h"
+#include "connection.h"
 #include <IrcCommand>
 #include <IrcChannel>
 
@@ -41,7 +41,7 @@ private slots:
         QAction* action = qobject_cast<QAction*>(sender());
         if (action) {
             IrcCommand* command = IrcCommand::createWhois(action->data().toString());
-            listView->session()->sendCommand(command);
+            listView->connection()->sendCommand(command);
         }
     }
 
@@ -58,7 +58,7 @@ private slots:
         if (action) {
             QStringList params = action->data().toStringList();
             IrcCommand* command = IrcCommand::createMode(listView->channel()->title(), params.at(1), params.at(0));
-            listView->session()->sendCommand(command);
+            listView->connection()->sendCommand(command);
         }
     }
 
@@ -67,7 +67,7 @@ private slots:
         QAction* action = qobject_cast<QAction*>(sender());
         if (action) {
             IrcCommand* command = IrcCommand::createKick(listView->channel()->title(), action->data().toString());
-            listView->session()->sendCommand(command);
+            listView->connection()->sendCommand(command);
         }
     }
 
@@ -76,7 +76,7 @@ private slots:
         QAction* action = qobject_cast<QAction*>(sender());
         if (action) {
             IrcCommand* command = IrcCommand::createMode(listView->channel()->title(), "+b", action->data().toString() + "!*@*");
-            listView->session()->sendCommand(command);
+            listView->connection()->sendCommand(command);
         }
     }
 
