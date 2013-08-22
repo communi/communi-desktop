@@ -42,11 +42,15 @@ bool Overlay::isBusy() const
 
 void Overlay::setBusy(bool busy)
 {
+    QMovie* mov = movie();
     if (busy) {
-        setMovie(new QMovie(QString(":/resources/ajax-loader-%1.gif").arg(d.dark ? "dark" : "light"), QByteArray(), this));
-        movie()->start();
+        if (!mov) {
+            mov = new QMovie(QString(":/resources/ajax-loader-%1.gif").arg(d.dark ? "dark" : "light"), QByteArray(), this);
+            setMovie(mov);
+        }
+        mov->start();
     } else {
-        delete movie();
+        delete mov;
     }
 }
 
