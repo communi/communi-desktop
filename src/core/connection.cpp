@@ -163,7 +163,7 @@ IrcCommand* Connection::createCtcpReply(IrcPrivateMessage* request) const
     if (cmd == "VERSION") {
         const QString message = tr("%1 %2").arg(QApplication::applicationName())
                                            .arg(QApplication::applicationVersion());
-        return IrcCommand::createCtcpReply(request->sender().name(), QString("VERSION %1").arg(message));
+        return IrcCommand::createCtcpReply(request->nick(), QString("VERSION %1").arg(message));
     }
     return IrcConnection::createCtcpReply(request);
 }
@@ -219,7 +219,7 @@ void Connection::onCapabilities(const QStringList& available, QStringList* reque
 bool Connection::messageFilter(IrcMessage* message)
 {
     if (message->type() == IrcMessage::Capability) {
-        d.bouncer = message->sender().name() == "irc.znc.in";
+        d.bouncer = message->nick() == "irc.znc.in";
     } else if (message->type() == IrcMessage::Join) {
         if (message->flags() & IrcMessage::Own)
             addChannel(static_cast<IrcJoinMessage*>(message)->channel());

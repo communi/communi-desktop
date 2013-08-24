@@ -33,7 +33,6 @@
 #include <QUrl>
 #include <irctextformat.h>
 #include <ircusermodel.h>
-#include <ircpalette.h>
 #include <ircmessage.h>
 #include <irccommand.h>
 #include <ircchannel.h>
@@ -93,25 +92,23 @@ MessageView::MessageView(ViewInfo::Type type, IrcConnection* connection, Message
     static bool init = false;
     if (!init) {
         init = true;
-        IrcPalette palette;
-        palette.setColorName(IrcPalette::Gray, "#606060");
-        palette.setColorName(IrcPalette::LightGray, "#808080");
+        IrcTextFormat* format = irc_text_format();
+        format->setColorName(Irc::Gray, "#606060");
+        format->setColorName(Irc::LightGray, "#808080");
 
         // http://ethanschoonover.com/solarized
-        palette.setColorName(IrcPalette::Blue, "#268bd2");
-        palette.setColorName(IrcPalette::Green, "#859900");
-        palette.setColorName(IrcPalette::Red, "#dc322f");
-        palette.setColorName(IrcPalette::Brown, "#cb4b16");
-        palette.setColorName(IrcPalette::Purple, "#6c71c4");
-        palette.setColorName(IrcPalette::Orange, "#cb4b16");
-        palette.setColorName(IrcPalette::Yellow, "#b58900");
-        palette.setColorName(IrcPalette::LightGreen, "#859900");
-        palette.setColorName(IrcPalette::Cyan, "#2aa198");
-        palette.setColorName(IrcPalette::LightCyan, "#2aa198");
-        palette.setColorName(IrcPalette::LightBlue, "#268bd2");
-        palette.setColorName(IrcPalette::Pink, "#6c71c4");
-
-        irc_text_format()->setPalette(palette);
+        format->setColorName(Irc::Blue, "#268bd2");
+        format->setColorName(Irc::Green, "#859900");
+        format->setColorName(Irc::Red, "#dc322f");
+        format->setColorName(Irc::Brown, "#cb4b16");
+        format->setColorName(Irc::Purple, "#6c71c4");
+        format->setColorName(Irc::Orange, "#cb4b16");
+        format->setColorName(Irc::Yellow, "#b58900");
+        format->setColorName(Irc::LightGreen, "#859900");
+        format->setColorName(Irc::Cyan, "#2aa198");
+        format->setColorName(Irc::LightCyan, "#2aa198");
+        format->setColorName(Irc::LightBlue, "#268bd2");
+        format->setColorName(Irc::Pink, "#6c71c4");
     }
 
     d.textBrowser->document()->setDefaultStyleSheet(
@@ -483,8 +480,7 @@ void MessageView::receiveMessage(IrcMessage* message)
 
     switch (message->type()) {
         case IrcMessage::Private: {
-            IrcSender sender = message->sender();
-            if (sender.name() == QLatin1String("***") && sender.user() == QLatin1String("znc")) {
+            if (message->nick() == QLatin1String("***") && message->ident() == QLatin1String("znc")) {
                 QString content = static_cast<IrcPrivateMessage*>(message)->message();
                 if (content == QLatin1String("Buffer Playback..."))
                     ignore = true;
@@ -578,7 +574,7 @@ void MessageView::receiveMessage(IrcMessage* message)
         options.users = model->names();
     options.stripNicks = d.stripNicks;
     options.timeStampFormat = d.timeStampFormat;
-    options.textFormat = *irc_text_format();
+    options.textFormat = irc_text_format();
     if (d.viewType == ViewInfo::Channel) {
         options.repeat = (d.joined > 1 && d.joined > d.parted);
         if (message->type() == IrcMessage::Names) {

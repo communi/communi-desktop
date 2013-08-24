@@ -144,7 +144,7 @@ void MessageHandler::handleKickMessage(IrcKickMessage* message)
 
 void MessageHandler::handleModeMessage(IrcModeMessage* message)
 {
-    if (message->isReply() || message->sender().name() != message->target())
+    if (message->isReply() || message->nick() != message->target())
         sendMessage(message, message->target());
     else
         sendMessage(message, d.defaultView);
@@ -157,8 +157,8 @@ void MessageHandler::handleNamesMessage(IrcNamesMessage* message)
 
 void MessageHandler::handleNickMessage(IrcNickMessage* message)
 {
-    QString oldNick = message->sender().name().toLower();
-    QString newNick = message->nick().toLower();
+    QString oldNick = message->oldNick().toLower();
+    QString newNick = message->newNick().toLower();
     if (d.znc->isPlaybackActive()) {
         sendMessage(message, d.znc->playbackTarget());
     } else {
@@ -183,7 +183,7 @@ void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
     QString target = message->target();
 
     // forward ChanServ's "[#chan] msg" to the appropriate channel
-    if (target == message->connection()->nickName() && message->sender().name() == "ChanServ") {
+    if (target == message->connection()->nickName() && message->nick() == "ChanServ") {
         const QString msg = message->message();
         if (msg.startsWith("[")) {
             int idx = msg.indexOf("]");
@@ -201,7 +201,7 @@ void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
             view->receiveMessage(message);
     } else if (!message->connection()->isConnected() || target.isEmpty() || target == "*")
         sendMessage(message, d.defaultView);
-    else if (MessageView* view = d.views.value(message->sender().name().toLower()))
+    else if (MessageView* view = d.views.value(message->nick().toLower()))
         sendMessage(message, view);
     else if (target == message->connection()->nickName() || target.contains("*"))
         sendMessage(message, d.currentView);
@@ -211,7 +211,7 @@ void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
 
 void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
 {
-    if (QByteArray(Irc::toString(message->code())).startsWith("ERR_")) {
+    if (Irc::codeToString(message->code()).startsWith("ERR_")) {
         sendMessage(message, d.currentView);
         return;
     }
@@ -311,14 +311,14 @@ void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
     if (message->isRequest())
         sendMessage(message, d.currentView);
     else if (message->target() == message->connection()->nickName())
-        sendMessage(message, message->sender().name());
+        sendMessage(message, message->nick());
     else
         sendMessage(message, message->target());
 }
 
 void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
 {
-    QString nick = message->sender().name();
+    QString nick = message->nick();
     if (d.znc->isPlaybackActive()) {
         sendMessage(message, d.znc->playbackTarget());
     } else {
