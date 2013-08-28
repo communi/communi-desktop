@@ -23,20 +23,11 @@
 #include <irclagtimer.h>
 #include <ircbuffermodel.h>
 
-class BufferModel : public IrcBufferModel
-{
-public:
-    BufferModel(QObject* parent = 0) : IrcBufferModel(parent) { }
-
-protected:
-    void destroy(IrcBuffer* buffer) { Q_UNUSED(buffer); }
-};
-
 MessageStackView::MessageStackView(IrcConnection* connection, QWidget* parent) : QStackedWidget(parent)
 {
     d.connection = connection;
 
-    d.bufferModel = new BufferModel(connection);
+    d.bufferModel = new IrcBufferModel(connection);
     connect(d.bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(setBuffer(IrcBuffer*)));
     connect(d.bufferModel, SIGNAL(messageIgnored(IrcMessage*)), &d.handler, SLOT(handleMessage(IrcMessage*)));
     connect(d.bufferModel, SIGNAL(channelsChanged(QStringList)), &d.parser, SLOT(setChannels(QStringList)));
@@ -222,6 +213,8 @@ void MessageStackView::activateView(int index)
 void MessageStackView::setBuffer(IrcBuffer* buffer)
 {
     MessageView* view = addView(buffer->title());
-    if (view)
+    if (view) {
         view->setBuffer(buffer);
+        buffer->setPersistent(true);
+    }
 }
