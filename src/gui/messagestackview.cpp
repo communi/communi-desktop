@@ -116,7 +116,8 @@ MessageView* MessageStackView::createView(ViewInfo::Type type, const QString& re
 
     d.handler.addView(receiver, view);
     d.views.insert(receiver.toLower(), view);
-    d.bufferModel->add(receiver);
+    view->setBuffer(d.bufferModel->add(receiver));
+    view->buffer()->setPersistent(true);
     addWidget(view);
     d.viewModel.setStringList(d.viewModel.stringList() << receiver);
     emit viewAdded(view);
