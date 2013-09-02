@@ -204,14 +204,16 @@ IrcBuffer* MessageView::buffer() const
 
 void MessageView::setBuffer(IrcBuffer* buffer)
 {
-    if (IrcChannel* channel = qobject_cast<IrcChannel*>(buffer)) {
-        d.listView->setChannel(channel);
-        d.lineEditor->completer()->setUserModel(new UserActivityModel(channel));
+    if (d.buffer != buffer) {
+        if (IrcChannel* channel = qobject_cast<IrcChannel*>(buffer)) {
+            d.listView->setChannel(channel);
+            d.lineEditor->completer()->setUserModel(new UserActivityModel(channel));
+        }
+        d.buffer = buffer;
+        connect(buffer, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
+        connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
+        connect(buffer, SIGNAL(titleChanged(QString)), this, SLOT(onTitleChanged(QString)));
     }
-    d.buffer = buffer;
-    connect(buffer, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
-    connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
-    connect(buffer, SIGNAL(titleChanged(QString)), this, SLOT(onTitleChanged(QString)));
 }
 
 bool MessageView::playbackMode() const
