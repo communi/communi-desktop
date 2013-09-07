@@ -15,6 +15,7 @@
 #include "mainwindow.h"
 #include "application.h"
 #include "settingsmodel.h"
+#include "ignoremanager.h"
 #include "connectionwizard.h"
 #include "sessionstackview.h"
 #include "soundnotification.h"
@@ -159,6 +160,7 @@ void MainWindow::connectToImpl(const ConnectionInfo& info)
     Connection* connection = info.toConnection(this);
     connection->setEncoding(Application::encoding());
     int index = stackView->addConnection(connection);
+    IgnoreManager::instance()->addConnection(connection);
     if (!connection->hasQuit()) {
         connection->open();
         if (!treeWidget->hasRestoredCurrent())
@@ -209,6 +211,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
         if (muteAction)
             Application::settings()->setValue("ui.mute", muteAction->isChecked());
+        Application::settings()->setValue("ignores", IgnoreManager::instance()->ignores());
 
         ConnectionInfos infos;
         QList<IrcConnection*> connections = stackView->connections();
@@ -268,6 +271,7 @@ void MainWindow::applySettings()
         muteAction->setChecked(settings->value("ui.mute").toBool());
     if (overlay && overlay->isVisible())
         updateOverlay();
+    IgnoreManager::instance()->setIgnores(settings->value("ignores").toStringList());
 }
 
 void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -355,6 +359,7 @@ void MainWindow::closeTreeItem(SessionTreeItem* item)
         stack->closeView(index);
         if (index == 0) {
             stackView->removeConnection(stack->connection());
+            IgnoreManager::instance()->removeConnection(stack->connection());
             treeWidget->parentWidget()->setVisible(!stackView->connections().isEmpty());
         }
     }
@@ -430,6 +435,7 @@ void MainWindow::closeView()
         stack->closeView(index);
         if (index == 0) {
             stackView->removeConnection(stack->connection());
+            IgnoreManager::instance()->removeConnection(stack->connection());
             treeWidget->parentWidget()->setVisible(!stackView->connections().isEmpty());
         }
     }

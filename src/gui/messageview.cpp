@@ -19,6 +19,7 @@
 #include "useractivitymodel.h"
 #include "messagestackview.h"
 #include "messageformatter.h"
+#include "ignoremanager.h"
 #include "commandparser.h"
 #include "connection.h"
 #include "completer.h"
@@ -285,6 +286,26 @@ void MessageView::sendMessage(const QString& message)
                 emit messaged(params.value(0), msg);
             } else if (command == "QUERY") {
                 emit queried(params.value(0));
+            } else if (command == "IGNORE") {
+                MessageFormatter::Options options;
+                options.timeStampFormat = d.timeStampFormat;
+                options.timeStamp = QDateTime::currentDateTime();
+                QString ignore  = params.value(0);
+                if (ignore.isEmpty()) {
+                    const QStringList ignores = IgnoreManager::instance()->ignores();
+                    if (!ignores.isEmpty()) {
+                        foreach (const QString& ignore, ignores)
+                            d.textBrowser->append(MessageFormatter::formatLine("! " + ignore, options));
+                    } else {
+                        d.textBrowser->append(MessageFormatter::formatLine("! no ignores", options));
+                    }
+                } else {
+                    QString mask = IgnoreManager::instance()->addIgnore(ignore);
+                    d.textBrowser->append(MessageFormatter::formatLine("! ignored: " + mask));
+                }
+            } else if (command == "UNIGNORE") {
+                QString mask = IgnoreManager::instance()->removeIgnore(params.value(0));
+                d.textBrowser->append(MessageFormatter::formatLine("! unignored: " + mask));
             }
             delete cmd;
         } else if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction || cmd->type() == IrcCommand::Notice) {
