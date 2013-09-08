@@ -73,7 +73,6 @@ private slots:
     void onConnected();
     void onDisconnected();
     void onNickNameReserved(QString* alternate);
-    void requestCapabilities(const QStringList& available);
 
 private:
     bool messageFilter(IrcMessage* message);

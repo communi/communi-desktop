@@ -27,7 +27,6 @@ Connection::Connection(QObject* parent) : IrcConnection(parent)
     connect(this, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
     connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onDisconnected()));
     connect(this, SIGNAL(nickNameReserved(QString*)), this, SLOT(onNickNameReserved(QString*)));
-    connect(network(), SIGNAL(availableCapabilitiesChanged(QStringList)), this, SLOT(requestCapabilities(QStringList)));
 
     connect(&d.reconnectTimer, SIGNAL(timeout()), this, SLOT(reconnect()));
     setAutoReconnectDelay(15);
@@ -206,12 +205,6 @@ void Connection::onNickNameReserved(QString* alternate)
                          <<  currentNick;
     }
     *alternate = d.alternateNicks.takeFirst();
-}
-
-void Connection::requestCapabilities(const QStringList& available)
-{
-    if (available.contains("identify-msg"))
-        network()->requestCapability("identify-msg");
 }
 
 bool Connection::messageFilter(IrcMessage* message)
