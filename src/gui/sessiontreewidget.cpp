@@ -212,7 +212,7 @@ void SessionTreeWidget::addView(MessageView* view)
     if (view->viewType() == ViewInfo::Server) {
         item = new SessionTreeItem(view, this);
         IrcConnection* connection = view->connection();
-        connect(connection, SIGNAL(nameChanged(QString)), this, SLOT(updateConnection()));
+        connect(connection, SIGNAL(displayNameChanged(QString)), this, SLOT(updateConnection()));
         d.connectionItems.insert(connection, item);
         const bool sortViews = Application::settings()->value("ui.sortViews").toBool();
         item->sort(sortViews ? SessionTreeItem::Alphabetic : SessionTreeItem::Manual);
@@ -472,11 +472,8 @@ void SessionTreeWidget::updateView(MessageView* view)
         view = qobject_cast<MessageView*>(sender());
     SessionTreeItem* item = d.viewItems.value(view);
     if (item) {
-        QString name;
-        if (Connection* connection = qobject_cast<Connection*>(item->connection())) // TODO
-            name = connection->name();
         if (!item->parent())
-            item->setText(0, name.isEmpty() ? item->connection()->host() : name);
+            item->setText(0, item->connection()->displayName());
         else
             item->setText(0, view->receiver());
         // re-read MessageView::isActive()
@@ -489,12 +486,8 @@ void SessionTreeWidget::updateConnection(IrcConnection* connection)
     if (!connection)
         connection = qobject_cast<Connection*>(sender());
     SessionTreeItem* item = d.connectionItems.value(connection);
-    if (item) {
-        QString name;
-        if (Connection* connection = qobject_cast<Connection*>(item->connection())) // TODO
-            name = connection->name();
-        item->setText(0, name.isEmpty() ? connection->host() : name);
-    }
+    if (item)
+        item->setText(0, connection->displayName());
 }
 
 void SessionTreeWidget::onItemExpanded(QTreeWidgetItem* item)

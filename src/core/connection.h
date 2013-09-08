@@ -28,27 +28,13 @@
 class Connection : public IrcConnection, public IrcMessageFilter
 {
     Q_OBJECT
-    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-    Q_PROPERTY(int autoReconnectDelay READ autoReconnectDelay WRITE setAutoReconnectDelay)
-    Q_PROPERTY(bool hasQuit READ hasQuit WRITE setHasQuit)
-    Q_PROPERTY(bool reconnecting READ isReconnecting)
     Q_PROPERTY(bool bouncer READ isBouncer)
 
 public:
     explicit Connection(QObject* parent = 0);
     ~Connection();
 
-    QString name() const;
-    void setName(const QString& name);
-
-    int autoReconnectDelay() const;
-    void setAutoReconnectDelay(int delay);
-
-    bool hasQuit() const;
-    void setHasQuit(bool quit);
-
     bool isBouncer() const;
-    bool isReconnecting() const;
 
     ViewInfos views() const;
     void setViews(const ViewInfos& views);
@@ -56,22 +42,14 @@ public:
     Q_INVOKABLE bool sendUiCommand(IrcCommand* command, const QString& identifier);
 
 public slots:
-    void reconnect();
     void quit();
-    void destructLater();
-    void stopReconnecting();
-    void sleep();
     void wake();
-
-signals:
-    void nameChanged(const QString& name);
 
 protected:
     IrcCommand* createCtcpReply(IrcPrivateMessage* request) const;
 
 private slots:
     void onConnected();
-    void onDisconnected();
     void onNickNameReserved(QString* alternate);
 
 private:
@@ -80,10 +58,7 @@ private:
     void removeChannel(const QString& channel);
 
     struct Private {
-        bool quit;
         bool bouncer;
-        QString name;
-        QTimer reconnectTimer;
         ViewInfos views;
         QStringList alternateNicks;
         QHash<QString, IrcCommand*> commands;

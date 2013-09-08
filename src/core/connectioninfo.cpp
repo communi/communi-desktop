@@ -29,7 +29,7 @@ Connection* ConnectionInfo::toConnection(QObject* parent) const
 
 void ConnectionInfo::initConnection(Connection* connection) const
 {
-    connection->setName(name);
+    connection->setDisplayName(name);
     connection->setSecure(secure);
     connection->setPassword(pass);
     connection->setHost(host);
@@ -39,13 +39,14 @@ void ConnectionInfo::initConnection(Connection* connection) const
     connection->setUserName(user.isEmpty() ? appName : user);
     connection->setRealName(real.isEmpty() ? appName : real);
     connection->setViews(views);
-    connection->setHasQuit(quit);
+    if (quit)
+        connection->close();
 }
 
 ConnectionInfo ConnectionInfo::fromConnection(Connection* connection)
 {
     ConnectionInfo info;
-    info.name = connection->name();
+    info.name = connection->displayName();
     info.secure = connection->isSecure();
     info.host = connection->host();
     info.port = connection->port();
@@ -54,6 +55,6 @@ ConnectionInfo ConnectionInfo::fromConnection(Connection* connection)
     info.real = connection->realName();
     info.pass = connection->password();
     info.views = connection->views();
-    info.quit = connection->hasQuit();
+    info.quit = connection->status() == IrcConnection::Closed;
     return info;
 }

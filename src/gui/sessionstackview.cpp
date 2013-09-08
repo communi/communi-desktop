@@ -44,8 +44,10 @@ void SessionStackView::removeConnection(IrcConnection* connection)
     if (widget) {
         removeWidget(widget);
         widget->deleteLater();
-        if (Connection* connection = qobject_cast<Connection*>(widget->connection()))
-            connection->destructLater();
+        if (Connection* connection = qobject_cast<Connection*>(widget->connection())) {
+            connection->quit();
+            QTimer::singleShot(1000, connection, SLOT(deleteLater()));
+        }
     }
 }
 

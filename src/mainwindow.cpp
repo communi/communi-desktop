@@ -161,20 +161,19 @@ void MainWindow::connectToImpl(const ConnectionInfo& info)
     connection->setEncoding(Application::encoding());
     int index = stackView->addConnection(connection);
     IgnoreManager::instance()->addConnection(connection);
-    if (!connection->hasQuit()) {
+    if (connection->status() != IrcConnection::Closed) {
         connection->open();
         if (!treeWidget->hasRestoredCurrent())
             stackView->setCurrentIndex(index);
     }
 
-    connect(SystemNotifier::instance(), SIGNAL(sleep()), connection, SLOT(sleep()));
+    connect(SystemNotifier::instance(), SIGNAL(sleep()), connection, SLOT(quit()));
     connect(SystemNotifier::instance(), SIGNAL(wake()), connection, SLOT(wake()));
 
     connect(SystemNotifier::instance(), SIGNAL(online()), connection, SLOT(wake()));
     connect(SystemNotifier::instance(), SIGNAL(offline()), connection, SLOT(close()));
 
-    connect(connection, SIGNAL(activeChanged(bool)), this, SLOT(updateOverlay()));
-    connect(connection, SIGNAL(connectedChanged(bool)), this, SLOT(updateOverlay()));
+    connect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateOverlay()));
     updateOverlay();
 
     MessageStackView* stack = stackView->connectionWidget(connection);
@@ -185,7 +184,7 @@ void MainWindow::connectToImpl(const ConnectionInfo& info)
 
     if (MessageView* view = stack->viewAt(0)) {
         treeWidget->addView(view);
-        if (!treeWidget->hasRestoredCurrent() && (!connection->hasQuit() || stackView->count() == 1))
+        if (!treeWidget->hasRestoredCurrent() && (connection->status() != IrcConnection::Closed || stackView->count() == 1))
             treeWidget->setCurrentView(view);
         treeWidget->parentWidget()->show();
     }
@@ -222,7 +221,6 @@ void MainWindow::closeEvent(QCloseEvent* event)
                 infos += info;
                 connection->quit();
                 connection->disconnect();
-                connection->destructLater();
             }
         }
         settings.setValue("connections", QVariant::fromValue(infos));
@@ -407,10 +405,8 @@ void MainWindow::updateOverlay()
 void MainWindow::reconnect()
 {
     MessageStackView* stack = stackView->currentWidget();
-    if (stack) {
-        if (Connection* connection = qobject_cast<Connection*>(stack->connection())) // TODO
-            connection->reconnect();
-    }
+    if (stack && stack->connection())
+        stack->connection()->open();
 }
 
 void MainWindow::addView()

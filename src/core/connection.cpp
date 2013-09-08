@@ -20,63 +20,21 @@
 
 Connection::Connection(QObject* parent) : IrcConnection(parent)
 {
-    d.quit = false;
     d.bouncer = false;
 
     connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
-    connect(this, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
-    connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onDisconnected()));
     connect(this, SIGNAL(nickNameReserved(QString*)), this, SLOT(onNickNameReserved(QString*)));
 
-    connect(&d.reconnectTimer, SIGNAL(timeout()), this, SLOT(reconnect()));
-    setAutoReconnectDelay(15);
+    setReconnectDelay(15);
 }
 
 Connection::~Connection()
 {
 }
 
-QString Connection::name() const
-{
-    return d.name;
-}
-
-void Connection::setName(const QString& name)
-{
-    if (d.name != name) {
-        d.name = name;
-        emit nameChanged(name);
-    }
-}
-
-int Connection::autoReconnectDelay() const
-{
-    return d.reconnectTimer.interval() / 1000;
-}
-
-void Connection::setAutoReconnectDelay(int delay)
-{
-    d.reconnectTimer.setInterval(qMax(0, delay) * 1000);
-}
-
-bool Connection::hasQuit() const
-{
-    return d.quit;
-}
-
-void Connection::setHasQuit(bool quit)
-{
-    d.quit = quit;
-}
-
 bool Connection::isBouncer() const
 {
     return d.bouncer;
-}
-
-bool Connection::isReconnecting() const
-{
-    return d.reconnectTimer.isActive();
 }
 
 ViewInfos Connection::views() const
@@ -103,39 +61,7 @@ bool Connection::sendUiCommand(IrcCommand* command, const QString& identifier)
            sendCommand(IrcCommand::createPing(identifier));
 }
 
-void Connection::reconnect()
-{
-    d.bouncer = false;
-    d.quit = false;
-    if (!isActive()) {
-        d.reconnectTimer.stop();
-        open();
-    }
-}
-
 void Connection::quit()
-{
-    sleep();
-    d.quit = true;
-}
-
-void Connection::destructLater()
-{
-    if (isConnected()) {
-        connect(this, SIGNAL(disconnected()), SLOT(deleteLater()));
-        connect(this, SIGNAL(socketError(QAbstractSocket::SocketError)), SLOT(deleteLater()));
-        QTimer::singleShot(1000, this, SLOT(deleteLater()));
-    } else {
-        deleteLater();
-    }
-}
-
-void Connection::stopReconnecting()
-{
-    d.reconnectTimer.stop();
-}
-
-void Connection::sleep()
 {
     QString message = tr("%1 %2 - http://%3").arg(QApplication::applicationName())
                                              .arg(QApplication::applicationVersion())
@@ -152,8 +78,8 @@ void Connection::sleep()
 
 void Connection::wake()
 {
-    if (!d.quit)
-        reconnect();
+    if (!status() != Closed)
+        open();
 }
 
 IrcCommand* Connection::createCtcpReply(IrcPrivateMessage* request) const
@@ -187,12 +113,6 @@ void Connection::onConnected()
     d.commands.clear();
     foreach (IrcCommand* cmd, cmds)
         sendUiCommand(cmd, cmds.key(cmd));
-}
-
-void Connection::onDisconnected()
-{
-    if (!d.quit && !d.reconnectTimer.isActive() && d.reconnectTimer.interval() > 0)
-        d.reconnectTimer.start();
 }
 
 void Connection::onNickNameReserved(QString* alternate)

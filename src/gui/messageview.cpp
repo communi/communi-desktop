@@ -71,8 +71,7 @@ MessageView::MessageView(ViewInfo::Type type, IrcConnection* connection, Message
     d.highlighter = new SyntaxHighlighter(d.textBrowser->document());
 
     d.connection = connection;
-    connect(d.connection, SIGNAL(activeChanged(bool)), this, SLOT(onConnectionStatusChanged()));
-    connect(d.connection, SIGNAL(connectedChanged(bool)), this, SIGNAL(activeChanged()));
+    connect(d.connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(onConnectionStatusChanged()));
 
     if (type == ViewInfo::Server)
         connect(d.connection, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onSocketError()));

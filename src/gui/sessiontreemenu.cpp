@@ -23,7 +23,6 @@
 SessionTreeMenu::SessionTreeMenu(SessionTreeWidget* parent) : QMenu(parent)
 {
     d.item = 0;
-    d.stopAction = addAction(tr("Stop"));
     d.disconnectAction = addAction(tr("Disconnect"));
     d.reconnectAction = addAction(tr("Reconnect"));
     addSeparator();
@@ -73,13 +72,10 @@ void SessionTreeMenu::onCloseTriggered()
 void SessionTreeMenu::updateActions()
 {
     if (d.item) {
-        const Connection* connection = static_cast<Connection*>(d.item->connection()); // TODO
         const bool child = d.item->parent();
         const bool connected = d.item->connection()->isActive();
-        const bool reconnecting = connection->isReconnecting();
         const bool active = d.item->view()->isActive();
         const bool channel = d.item->view()->buffer()->isChannel();
-        d.stopAction->setVisible(reconnecting);
         d.disconnectAction->setVisible(connected);
         d.reconnectAction->setVisible(!connected);
         d.editAction->setVisible(!connected && !child);
@@ -87,7 +83,6 @@ void SessionTreeMenu::updateActions()
         d.partAction->setVisible(connected && channel && active);
         d.whoisAction->setVisible(connected && child && !channel);
     } else {
-        d.stopAction->setVisible(false);
         d.disconnectAction->setVisible(false);
         d.reconnectAction->setVisible(false);
         d.editAction->setVisible(false);
@@ -108,9 +103,8 @@ void SessionTreeMenu::setup(SessionTreeItem* item)
             disconnect(connection, SIGNAL(connected()), this, SLOT(updateActions()));
             disconnect(connection, SIGNAL(disconnected()), this, SLOT(updateActions()));
 
-            disconnect(d.stopAction, SIGNAL(triggered()), connection, SLOT(stopReconnecting()));
             disconnect(d.disconnectAction, SIGNAL(triggered()), connection, SLOT(quit()));
-            disconnect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(reconnect()));
+            disconnect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(open()));
         }
         if (item && item->connection()) {
             IrcConnection* connection = item->connection();
@@ -118,9 +112,8 @@ void SessionTreeMenu::setup(SessionTreeItem* item)
             connect(connection, SIGNAL(connected()), this, SLOT(updateActions()));
             connect(connection, SIGNAL(disconnected()), this, SLOT(updateActions()));
 
-            connect(d.stopAction, SIGNAL(triggered()), connection, SLOT(stopReconnecting()));
             connect(d.disconnectAction, SIGNAL(triggered()), connection, SLOT(quit()));
-            connect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(reconnect()));
+            connect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(open()));
         }
         d.item = item;
     }

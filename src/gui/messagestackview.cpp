@@ -100,10 +100,8 @@ void MessageStackView::restoreView(const ViewInfo& view)
 MessageView* MessageStackView::createView(ViewInfo::Type type, const QString& receiver)
 {
     MessageView* view = new MessageView(type, static_cast<Connection*>(d.connection), this); // TODO
-    // TODO:
     const IrcNetwork* network = d.connection->network();
-    if (network->isValid())
-        view->completer()->setChannelPrefixes(network->channelTypes().join(""));
+    view->completer()->setChannelPrefixes(network->channelTypes().join(""));
     view->completer()->setChannelModel(&d.viewModel);
     view->setReceiver(receiver);
     connect(view, SIGNAL(queried(QString)), this, SLOT(addView(QString)));

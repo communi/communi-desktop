@@ -42,7 +42,6 @@ private:
     void setup(SessionTreeItem* item);
 
     struct SessionTreePrivate {
-        QAction* stopAction;
         QAction* disconnectAction;
         QAction* reconnectAction;
         QAction* editAction;
