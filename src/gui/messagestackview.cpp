@@ -41,6 +41,7 @@ MessageStackView::MessageStackView(IrcConnection* connection, QWidget* parent) :
     connect(&d.handler, SIGNAL(viewToBeRemoved(QString)), this, SLOT(removeView(QString)));
     connect(&d.handler, SIGNAL(viewToBeRenamed(QString, QString)), this, SLOT(renameView(QString, QString)));
 
+    d.parser.setTolerant(true);
     d.lagTimer = new IrcLagTimer(d.connection);
 
     MessageView* view = addView(connection->host());

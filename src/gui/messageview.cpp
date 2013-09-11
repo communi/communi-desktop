@@ -253,8 +253,8 @@ void MessageView::showHelp(const QString& text, bool error)
         else
             syntax = suggestions.join(" ");
 
-        if (syntax.isEmpty() && error)
-            syntax = tr("Unknown command '%1'").arg(command.toUpper());
+        if (syntax.isEmpty())
+            syntax = tr("SERVER COMMAND: %1 %2").arg(command.toUpper(), QStringList(words.mid(1)).join(" "));
     }
 
     d.helpLabel->setVisible(!syntax.isEmpty());
