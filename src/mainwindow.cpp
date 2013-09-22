@@ -162,16 +162,17 @@ void MainWindow::connectToImpl(const ConnectionInfo& info)
     int index = stackView->addConnection(connection);
     IgnoreManager::instance()->addConnection(connection);
     if (connection->status() != IrcConnection::Closed) {
-        connection->open();
+        connection->resume();
         if (!treeWidget->hasRestoredCurrent())
             stackView->setCurrentIndex(index);
     }
 
     connect(SystemNotifier::instance(), SIGNAL(sleep()), connection, SLOT(quit()));
-    connect(SystemNotifier::instance(), SIGNAL(wake()), connection, SLOT(wake()));
+    connect(SystemNotifier::instance(), SIGNAL(sleep()), connection, SLOT(reset()));
+    connect(SystemNotifier::instance(), SIGNAL(wake()), connection, SLOT(resume()));
 
-    connect(SystemNotifier::instance(), SIGNAL(online()), connection, SLOT(wake()));
-    connect(SystemNotifier::instance(), SIGNAL(offline()), connection, SLOT(close()));
+    connect(SystemNotifier::instance(), SIGNAL(online()), connection, SLOT(resume()));
+    connect(SystemNotifier::instance(), SIGNAL(offline()), connection, SLOT(reset()));
 
     connect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateOverlay()));
     updateOverlay();

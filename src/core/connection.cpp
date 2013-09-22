@@ -71,15 +71,7 @@ void Connection::quit()
         if (network()->activeCapabilities().contains("communi"))
             sendCommand(IrcCommand::createCtcpRequest("*communi", "TIME"));
         sendCommand(IrcCommand::createQuit(message));
-    } else {
-        close();
     }
-}
-
-void Connection::wake()
-{
-    if (!status() != Closed)
-        open();
 }
 
 IrcCommand* Connection::createCtcpReply(IrcPrivateMessage* request) const

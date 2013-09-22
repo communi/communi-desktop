@@ -43,7 +43,6 @@ public:
 
 public slots:
     void quit();
-    void wake();
 
 protected:
     IrcCommand* createCtcpReply(IrcPrivateMessage* request) const;
