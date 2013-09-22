@@ -24,7 +24,7 @@ SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidget* parent) : QTree
     d.highlighted = false;
     d.sortOrder = Manual;
     setText(0, view->receiver());
-    setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDropEnabled);
+    setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
 }
 
 SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidgetItem* parent) : QTreeWidgetItem(parent)

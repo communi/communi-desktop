@@ -42,6 +42,8 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     header()->setResizeMode(1, QHeaderView::Fixed);
     header()->resizeSection(1, fontMetrics().width("999"));
 
+    invisibleRootItem()->setFlags(invisibleRootItem()->flags() | Qt::ItemIsDropEnabled);
+
     setVerticalScrollBar(new StyledScrollBar(this));
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -432,7 +434,9 @@ void SessionTreeWidget::contextMenuEvent(QContextMenuEvent* event)
 void SessionTreeWidget::dragMoveEvent(QDragMoveEvent* event)
 {
     QTreeWidgetItem* item = itemAt(event->pos());
-    if (!item || !item->parent() || item->parent() != d.dropParent)
+    if (item && !d.dropParent)
+        event->ignore();
+    else if (item && d.dropParent && item->parent() != d.dropParent)
         event->ignore();
     else
         QTreeWidget::dragMoveEvent(event);
