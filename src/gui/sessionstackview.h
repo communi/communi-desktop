@@ -30,12 +30,17 @@ public:
     QList<IrcConnection*> connections() const;
 
     MessageStackView* currentWidget() const;
-    MessageStackView* widgetAt(int index) const;
     MessageStackView* connectionWidget(IrcConnection* connection) const;
 
 public slots:
     int addConnection(IrcConnection* connection);
     void removeConnection(IrcConnection* connection);
+
+private:
+    struct Private {
+        QList<IrcConnection*> connections;
+        QHash<IrcConnection*, MessageStackView*> connectionWidgets;
+    } d;
 };
 
 #endif // SESSIONSTACKVIEW_H

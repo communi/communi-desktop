@@ -23,18 +23,14 @@ SessionStackView::SessionStackView(QWidget* parent) : QStackedWidget(parent)
 
 QList<IrcConnection*> SessionStackView::connections() const
 {
-    QList<IrcConnection*> list;
-    for (int i = 0; i < count(); ++i) {
-        MessageStackView* widget = widgetAt(i);
-        if (widget)
-            list += widget->connection();
-    }
-    return list;
+    return d.connections;
 }
 
 int SessionStackView::addConnection(IrcConnection* connection)
 {
     MessageStackView* widget = new MessageStackView(connection, this);
+    d.connections += connection;
+    d.connectionWidgets.insert(connection, widget);
     return addWidget(widget);
 }
 
@@ -56,17 +52,7 @@ MessageStackView* SessionStackView::currentWidget() const
     return qobject_cast<MessageStackView*>(QStackedWidget::currentWidget());
 }
 
-MessageStackView* SessionStackView::widgetAt(int index) const
-{
-    return qobject_cast<MessageStackView*>(QStackedWidget::widget(index));
-}
-
 MessageStackView* SessionStackView::connectionWidget(IrcConnection* connection) const
 {
-    for (int i = 0; i < count(); ++i) {
-        MessageStackView* widget = widgetAt(i);
-        if (widget && widget->connection() == connection)
-            return widget;
-    }
-    return 0;
+    return d.connectionWidgets.value(connection);
 }
