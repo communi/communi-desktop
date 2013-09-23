@@ -15,6 +15,7 @@
 #ifndef SESSIONSTACKVIEW_H
 #define SESSIONSTACKVIEW_H
 
+#include <QHash>
 #include <QStackedWidget>
 
 class IrcConnection;
