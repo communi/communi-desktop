@@ -39,13 +39,9 @@
 #include <QMenu>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
-    treeWidget(0), trayIcon(0), muteAction(0), dockTile(0), sound(0)
+    treeWidget(0), trayIcon(0), muteAction(0), dockTile(0), sound(0), homePage(0)
 {
     stackView = new SessionStackView(this);
-
-    HomePage* homePage = new HomePage(stackView);
-    connect(homePage, SIGNAL(connectRequested()), this, SLOT(connectTo()));
-    stackView->insertWidget(0, homePage);
 
     QSplitter* splitter = new QSplitter(this);
     splitter->setHandleWidth(1);
@@ -121,8 +117,10 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent),
     foreach (const ConnectionInfo& connection, connections)
         connectToImpl(connection);
 
-    if (connections.isEmpty())
+    if (connections.isEmpty()) {
+        createHome();
         QTimer::singleShot(600, this, SLOT(initialize()));
+    }
 }
 
 MainWindow::~MainWindow()
@@ -360,6 +358,8 @@ void MainWindow::closeTreeItem(SessionTreeItem* item)
             stackView->removeConnection(stack->connection());
             IgnoreManager::instance()->removeConnection(stack->connection());
             treeWidget->parentWidget()->setVisible(!stackView->connections().isEmpty());
+            if (stackView->count() == 0)
+                createHome();
         }
     }
 }
@@ -434,6 +434,8 @@ void MainWindow::closeView()
             stackView->removeConnection(stack->connection());
             IgnoreManager::instance()->removeConnection(stack->connection());
             treeWidget->parentWidget()->setVisible(!stackView->connections().isEmpty());
+            if (stackView->count() == 0)
+                createHome();
         }
     }
 }
@@ -481,4 +483,11 @@ void MainWindow::createTree()
     QSettings settings;
     if (settings.contains("splitter"))
         splitter->restoreState(settings.value("splitter").toByteArray());
+}
+
+void MainWindow::createHome()
+{
+    homePage = new HomePage(stackView);
+    connect(homePage, SIGNAL(connectRequested()), this, SLOT(connectTo()));
+    stackView->insertWidget(0, homePage);
 }

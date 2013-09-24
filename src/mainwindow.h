@@ -29,6 +29,7 @@ class IrcMessage;
 class QtDockTile;
 class IrcConnection;
 class QShortcut;
+class HomePage;
 class Overlay;
 
 class MainWindow : public QMainWindow
@@ -71,6 +72,7 @@ private slots:
 
 private:
     void createTree();
+    void createHome();
 
     SessionTreeWidget* treeWidget;
     SessionStackView* stackView;
@@ -80,6 +82,7 @@ private:
     QShortcut* searchShortcut;
     QPointer<Overlay> overlay;
     SoundNotification* sound;
+    HomePage *homePage;
 };
 
 #endif // MAINWINDOW_H
