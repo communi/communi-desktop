@@ -36,10 +36,11 @@ int SessionStackView::addConnection(IrcConnection* connection)
 
 void SessionStackView::removeConnection(IrcConnection* connection)
 {
-    MessageStackView* widget = connectionWidget(connection);
+    MessageStackView* widget = d.connectionWidgets.take(connection);
     if (widget) {
         removeWidget(widget);
         widget->deleteLater();
+        d.connections.removeOne(connection);
         if (Connection* connection = qobject_cast<Connection*>(widget->connection())) {
             connection->quit();
             QTimer::singleShot(1000, connection, SLOT(deleteLater()));
