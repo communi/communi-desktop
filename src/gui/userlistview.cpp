@@ -13,7 +13,6 @@
 */
 
 #include "userlistview.h"
-#include "sortedusermodel.h"
 #include "styledscrollbar.h"
 #include "itemdelegate.h"
 #include "menufactory.h"
@@ -62,11 +61,15 @@ IrcChannel* UserListView::channel() const
 
 void UserListView::setChannel(IrcChannel* channel)
 {
-    d.channel = channel;
-    d.userModel = new IrcUserModel(channel);
-    SortedUserModel* sortedModel = new SortedUserModel(d.userModel);
-    sortedModel->setChannel(channel);
-    setModel(sortedModel);
+    if (d.channel != channel) {
+        d.channel = channel;
+        if (!d.userModel) {
+            d.userModel = new IrcUserModel(channel);
+            d.userModel->setDynamicSort(true);
+            setModel(d.userModel);
+        }
+        d.userModel->setChannel(channel);
+    }
 }
 
 IrcUserModel* UserListView::userModel() const

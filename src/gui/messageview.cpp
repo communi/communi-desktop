@@ -16,7 +16,6 @@
 #include "application.h"
 #include "settingsmodel.h"
 #include "syntaxhighlighter.h"
-#include "useractivitymodel.h"
 #include "messagestackview.h"
 #include "messageformatter.h"
 #include "ignoremanager.h"
@@ -207,7 +206,10 @@ void MessageView::setBuffer(IrcBuffer* buffer)
     if (d.buffer != buffer) {
         if (IrcChannel* channel = qobject_cast<IrcChannel*>(buffer)) {
             d.listView->setChannel(channel);
-            d.lineEditor->completer()->setUserModel(new UserActivityModel(channel));
+            IrcUserModel* activityModel = new IrcUserModel(channel);
+            activityModel->setSortMethod(Irc::SortByActivity);
+            activityModel->setDynamicSort(true);
+            d.lineEditor->completer()->setUserModel(activityModel);
         }
         d.buffer = buffer;
         connect(buffer, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
