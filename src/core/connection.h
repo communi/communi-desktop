@@ -28,6 +28,7 @@
 class Connection : public IrcConnection, public IrcMessageFilter
 {
     Q_OBJECT
+    Q_INTERFACES(IrcMessageFilter)
     Q_PROPERTY(bool bouncer READ isBouncer)
 
 public:
