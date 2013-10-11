@@ -110,7 +110,7 @@ MessageView* MessageStackView::createView(ViewInfo::Type type, const QString& re
     connect(view, SIGNAL(messaged(QString,QString)), this, SLOT(sendMessage(QString,QString)));
     connect(view, SIGNAL(renamed(QString,QString)), this, SLOT(renameView(QString,QString)));
 
-    connect(d.lagTimer, SIGNAL(lagChanged(int)), view, SLOT(updateLag(int)));
+    connect(d.lagTimer, SIGNAL(lagChanged(qint64)), view, SLOT(updateLag(qint64)));
     view->updateLag(d.lagTimer->lag());
 
     d.handler.addView(receiver, view);

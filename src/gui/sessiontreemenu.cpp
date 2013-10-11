@@ -103,7 +103,10 @@ void SessionTreeMenu::setup(SessionTreeItem* item)
             disconnect(connection, SIGNAL(connected()), this, SLOT(updateActions()));
             disconnect(connection, SIGNAL(disconnected()), this, SLOT(updateActions()));
 
+            disconnect(d.disconnectAction, SIGNAL(triggered()), connection, SLOT(setDisabled()));
             disconnect(d.disconnectAction, SIGNAL(triggered()), connection, SLOT(quit()));
+
+            disconnect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(setEnabled()));
             disconnect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(open()));
         }
         if (item && item->connection()) {
@@ -112,7 +115,10 @@ void SessionTreeMenu::setup(SessionTreeItem* item)
             connect(connection, SIGNAL(connected()), this, SLOT(updateActions()));
             connect(connection, SIGNAL(disconnected()), this, SLOT(updateActions()));
 
+            connect(d.disconnectAction, SIGNAL(triggered()), connection, SLOT(setDisabled()));
             connect(d.disconnectAction, SIGNAL(triggered()), connection, SLOT(quit()));
+
+            connect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(setEnabled()));
             connect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(open()));
         }
         d.item = item;

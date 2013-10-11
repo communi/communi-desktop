@@ -40,7 +40,7 @@ void ConnectionInfo::initConnection(Connection* connection) const
     connection->setRealName(real.isEmpty() ? appName : real);
     connection->setViews(views);
     if (quit)
-        connection->close();
+        connection->setEnabled(false);
 }
 
 ConnectionInfo ConnectionInfo::fromConnection(Connection* connection)
@@ -55,6 +55,6 @@ ConnectionInfo ConnectionInfo::fromConnection(Connection* connection)
     info.real = connection->realName();
     info.pass = connection->password();
     info.views = connection->views();
-    info.quit = connection->status() == IrcConnection::Closed;
+    info.quit = !connection->isEnabled();
     return info;
 }

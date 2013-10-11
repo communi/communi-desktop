@@ -61,7 +61,7 @@ public slots:
     void showHelp(const QString& text, bool error = false);
     void sendMessage(const QString& message);
     void receiveMessage(IrcMessage* message);
-    void updateLag(int lag);
+    void updateLag(qint64 lag);
 
 signals:
     void activeChanged();

@@ -55,10 +55,15 @@ bool Connection::sendUiCommand(IrcCommand* command, const QString& identifier)
 //        if (!key.isEmpty())
 //            setChannelKey(command->parameters().value(0), key);
 //    }
-    d.commands.insert(identifier, command);
-    command->setParent(this); // take ownership
-    return sendCommand(command) &&
-           sendCommand(IrcCommand::createPing(identifier));
+    if (!identifier.isEmpty()) {
+        d.commands.insert(identifier, command);
+        command->setParent(this); // take ownership
+        return sendCommand(command) &&
+               sendCommand(IrcCommand::createPing(identifier));
+    }
+    if (command->type() == IrcCommand::Quit)
+        setDisabled(true);
+    return sendCommand(command);
 }
 
 void Connection::quit()

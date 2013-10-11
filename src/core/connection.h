@@ -40,7 +40,7 @@ public:
     ViewInfos views() const;
     void setViews(const ViewInfos& views);
 
-    Q_INVOKABLE bool sendUiCommand(IrcCommand* command, const QString& identifier);
+    Q_INVOKABLE bool sendUiCommand(IrcCommand* command, const QString& identifier = QString());
 
 public slots:
     void quit();

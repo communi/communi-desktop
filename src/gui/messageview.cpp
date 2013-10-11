@@ -322,7 +322,8 @@ void MessageView::sendMessage(const QString& message)
             block.setUserState(d.sentId);
             d.highlighter->rehighlightBlock(block);
         } else {
-            d.connection->sendCommand(cmd);
+            if (Connection* s = qobject_cast<Connection*>(d.connection)) // TODO
+                s->sendUiCommand(cmd);
         }
         d.helpLabel->hide();
     } else {
@@ -636,7 +637,7 @@ bool MessageView::hasUser(const QString& user) const
            (d.viewType == ViewInfo::Channel && d.listView->hasUser(user));
 }
 
-void MessageView::updateLag(int lag)
+void MessageView::updateLag(qint64 lag)
 {
     d.lineEditor->setLag(lag);
 }
