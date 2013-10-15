@@ -8,6 +8,7 @@
  */
 
 #include "browser.h"
+#include "bufferview.h"
 #include <QDesktopServices>
 #include <QContextMenuEvent>
 #include <QMenu>
@@ -31,13 +32,14 @@ void Browser::contextMenuEvent(QContextMenuEvent* event)
     QAction* splitAction = menu->addAction(tr("Split"));
     QAction* splitSideAction = menu->addAction(tr("Split side by side"));
     QAction* closeAction = menu->addAction(tr("Close"));
+    closeAction->setEnabled(window()->findChildren<BufferView*>().count() > 1);
     QAction* action = menu->exec(event->globalPos());
     if (action == splitAction)
         emit split(Qt::Vertical);
     else if (action == splitSideAction)
         emit split(Qt::Horizontal);
     else if (action == closeAction)
-        deleteLater();
+        parent()->parent()->deleteLater();
     delete menu;
 }
 
