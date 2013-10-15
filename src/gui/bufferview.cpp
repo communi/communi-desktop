@@ -11,7 +11,6 @@
 #include "userlistview.h"
 #include "topiclabel.h"
 #include "textentry.h"
-#include "treeview.h"
 #include "document.h"
 #include "browser.h"
 #include <QVBoxLayout>

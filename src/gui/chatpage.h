@@ -12,9 +12,9 @@
 
 #include <QSplitter>
 
-class TreeView;
-class SplitView;
 class IrcBuffer;
+class SplitView;
+class TreeWidget;
 class IrcConnection;
 
 class ChatPage : public QSplitter
@@ -36,8 +36,8 @@ signals:
 
 private:
     struct Private {
-        TreeView* treeView;
         SplitView* splitView;
+        TreeWidget* treeWidget;
         QList<IrcConnection*> connections;
     } d;
 };

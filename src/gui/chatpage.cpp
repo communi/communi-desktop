@@ -8,7 +8,7 @@
  */
 
 #include "chatpage.h"
-#include "treeview.h"
+#include "treewidget.h"
 #include "splitview.h"
 #include "document.h"
 #include <IrcConnection>
@@ -17,14 +17,14 @@
 
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 {
-    d.treeView = new TreeView(this);
     d.splitView = new SplitView(this);
+    d.treeWidget = new TreeWidget(this);
 
-    connect(d.treeView, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
-    connect(d.treeView, SIGNAL(currentBufferChanged(IrcBuffer*)), d.splitView, SLOT(setCurrentBuffer(IrcBuffer*)));
-    connect(d.splitView, SIGNAL(currentBufferChanged(IrcBuffer*)), d.treeView, SLOT(setCurrentBuffer(IrcBuffer*)));
+    connect(d.treeWidget, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
+    connect(d.treeWidget, SIGNAL(currentBufferChanged(IrcBuffer*)), d.splitView, SLOT(setCurrentBuffer(IrcBuffer*)));
+    connect(d.splitView, SIGNAL(currentBufferChanged(IrcBuffer*)), d.treeWidget, SLOT(setCurrentBuffer(IrcBuffer*)));
 
-    addWidget(d.treeView);
+    addWidget(d.treeWidget);
     addWidget(d.splitView);
     setStretchFactor(1, 1);
     setHandleWidth(1);
@@ -36,7 +36,7 @@ ChatPage::~ChatPage()
 
 IrcBuffer* ChatPage::currentBuffer() const
 {
-    return d.treeView->currentBuffer();
+    return d.treeWidget->currentBuffer();
 }
 
 QList<IrcConnection*> ChatPage::connections() const
@@ -49,15 +49,19 @@ void ChatPage::addConnection(IrcConnection* connection)
     IrcBufferModel* bufferModel = new IrcBufferModel(connection);
 
     IrcBuffer* serverBuffer = bufferModel->add(connection->displayName());
+    serverBuffer->setSticky(true);
     connect(connection, SIGNAL(displayNameChanged(QString)), serverBuffer, SLOT(setName(QString)));
     connect(bufferModel, SIGNAL(messageIgnored(IrcMessage*)), serverBuffer, SLOT(receiveMessage(IrcMessage*)));
 
     connect(bufferModel, SIGNAL(added(IrcBuffer*)), Document::instance(), SLOT(addBuffer(IrcBuffer*)));
     connect(bufferModel, SIGNAL(removed(IrcBuffer*)), Document::instance(), SLOT(removeBuffer(IrcBuffer*)));
 
-    d.treeView->addModel(bufferModel);
-    if (!d.treeView->currentBuffer())
-        d.treeView->setCurrentBuffer(serverBuffer);
+    connect(bufferModel, SIGNAL(added(IrcBuffer*)), d.treeWidget, SLOT(addBuffer(IrcBuffer*)));
+    connect(bufferModel, SIGNAL(removed(IrcBuffer*)), d.treeWidget, SLOT(removeBuffer(IrcBuffer*)));
+
+    d.treeWidget->addBuffer(serverBuffer);
+    if (!d.treeWidget->currentBuffer())
+        d.treeWidget->setCurrentBuffer(serverBuffer);
 
     d.connections += connection;
 }
@@ -68,6 +72,9 @@ void ChatPage::removeConnection(IrcConnection* connection)
     disconnect(bufferModel, SIGNAL(added(IrcBuffer*)), Document::instance(), SLOT(addBuffer(IrcBuffer*)));
     disconnect(bufferModel, SIGNAL(removed(IrcBuffer*)), Document::instance(), SLOT(removeBuffer(IrcBuffer*)));
 
-    d.treeView->removeModel(bufferModel);
+    disconnect(bufferModel, SIGNAL(added(IrcBuffer*)), d.treeWidget, SLOT(addBuffer(IrcBuffer*)));
+    disconnect(bufferModel, SIGNAL(removed(IrcBuffer*)), d.treeWidget, SLOT(removeBuffer(IrcBuffer*)));
+
+    d.treeWidget->removeBuffer(bufferModel->get(0));
     d.connections.removeOne(connection);
 }

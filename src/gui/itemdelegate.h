@@ -12,19 +12,36 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TREEDELEGATE_H
-#define TREEDELEGATE_H
+#ifndef ITEMDELEGATE_H
+#define ITEMDELEGATE_H
 
 #include <QStyledItemDelegate>
 
-class TreeDelegate : public QStyledItemDelegate
+class ItemDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
+    Q_PROPERTY(bool dark READ isDark WRITE setDark)
+    Q_PROPERTY(bool rootIsDecorated READ rootIsDecorated WRITE setRootIsDecorated)
 
 public:
-    explicit TreeDelegate(QObject* parent = 0);
+    explicit ItemDelegate(QObject* parent = 0);
 
+    bool isDark() const;
+    void setDark(bool dark);
+
+    bool rootIsDecorated() const;
+    void setRootIsDecorated(bool decorated);
+
+    enum { BadgeRole = Qt::UserRole, BadgeColorRole, HighlightRole };
+
+    QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+
+private:
+    struct Private {
+        bool dark;
+        bool rootIsDecorated;
+    } d;
 };
 
-#endif // TREEDELEGATE_H
+#endif // ITEMDELEGATE_H
