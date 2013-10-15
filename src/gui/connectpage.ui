@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ConnectPage</class>
+ <widget class="QWidget" name="ConnectPage">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="iconLabel">
+       <property name="pixmap">
+        <pixmap resource="../../../resources/communi2.qrc">:/icons/64x64/communi2.png</pixmap>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="titleLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>&lt;h1&gt;Communi&lt;/h1&gt;</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignBottom|Qt::AlignRight|Qt::AlignTrailing</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="sloganLabel">
+     <property name="text">
+      <string>&lt;small&gt;Communi is a simple and light-weight cross-platform IRC client.&lt;/small&gt;</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="1">
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="0">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Preferred</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>100</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="1">
+       <layout class="QFormLayout" name="formLayout">
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+        </property>
+        <item row="1" column="0">
+         <widget class="QLabel" name="hostLabel">
+          <property name="text">
+           <string>&amp;Host:</string>
+          </property>
+          <property name="buddy">
+           <cstring>hostField</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="hostField">
+          <property name="inputMethodHints">
+           <set>Qt::ImhUrlCharactersOnly</set>
+          </property>
+          <property name="placeholderText">
+           <string>irc.freenode.net</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="portLabel">
+          <property name="text">
+           <string>&amp;Port:</string>
+          </property>
+          <property name="buddy">
+           <cstring>portField</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QSpinBox" name="portField">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>1</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimum">
+             <number>1024</number>
+            </property>
+            <property name="maximum">
+             <number>65535</number>
+            </property>
+            <property name="value">
+             <number>6667</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="secureField">
+            <property name="text">
+             <string>&amp;Secure</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="nickNameLabel">
+          <property name="text">
+           <string>&amp;Nick name:</string>
+          </property>
+          <property name="buddy">
+           <cstring>nickNameField</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="nickNameField">
+          <property name="placeholderText">
+           <string>Communi%1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="realNameLabel">
+          <property name="text">
+           <string>&amp;Real name:</string>
+          </property>
+          <property name="buddy">
+           <cstring>realNameField</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="realNameField">
+          <property name="placeholderText">
+           <string>Communi %1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="userNameLabel">
+          <property name="text">
+           <string>&amp;User name:</string>
+          </property>
+          <property name="buddy">
+           <cstring>userNameField</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QLineEdit" name="userNameField">
+          <property name="placeholderText">
+           <string>communi</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="passwordLabel">
+          <property name="text">
+           <string>Pass&amp;word:</string>
+          </property>
+          <property name="buddy">
+           <cstring>passwordField</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QLineEdit" name="passwordField">
+          <property name="echoMode">
+           <enum>QLineEdit::Password</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="displayNameLabel">
+          <property name="text">
+           <string>&amp;Name:</string>
+          </property>
+          <property name="buddy">
+           <cstring>displayNameField</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="displayNameField">
+          <property name="placeholderText">
+           <string>Freenode</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="1" column="2">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Preferred</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>100</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="1">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="copyrightLabel">
+     <property name="text">
+      <string>&lt;small&gt;Copyright (C) 2008-2013 The Communi Project&lt;/small&gt;</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+  <zorder>sloganLabel</zorder>
+  <zorder>buttonBox</zorder>
+  <zorder>widget</zorder>
+  <zorder>copyrightLabel</zorder>
+ </widget>
+ <tabstops>
+  <tabstop>displayNameField</tabstop>
+  <tabstop>hostField</tabstop>
+  <tabstop>portField</tabstop>
+  <tabstop>secureField</tabstop>
+  <tabstop>nickNameField</tabstop>
+  <tabstop>realNameField</tabstop>
+  <tabstop>userNameField</tabstop>
+  <tabstop>passwordField</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../../../resources/communi2.qrc"/>
+ </resources>
+ <connections/>
+</ui>

@@ -1,0 +1,4 @@
+[submodule "src/backend"]
+	path = src/backend
+	url = git://github.com/communi/libcommuni.git
+

@@ -1,0 +1,126 @@
+a { color: #4040ff; }
+
+span.highlight { color: #ff4040; }
+span.message   { color: #000000; }
+span.notice    { color: #a54242; }
+span.action    { color: #8b388b; }
+span.event     { color: #808080; }
+span.timestamp { color: #808080; font-size: small }
+
+IrcPalette {
+    white: #ffffff;
+    black: #000000;
+    blue: #323272;
+    green: #327232;
+    red: #723232;
+    brown: #723232;
+    purple: #723272;
+    orange: #727232;
+    yellow: #727232;
+    lightgreen: #327232;
+    cyan: #327272;
+    lightcyan: #327272;
+    lightblue: #324272;
+    pink: rgba(6,7,8, 9);
+    gray: rgb(1, 2, 3);
+    lightgray: rgb(4,5,6);
+}
+
+TextBrowser {
+    border: none;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: palette(base);
+    background-position: bottom right;
+    background-image: url(:/background.png);
+    selection-color: palette(highlighted-text);
+    selection-background-color: palette(highlight);
+}
+
+TextEntry {
+    border: 1px solid transparent;
+    border-top-color: palette(dark);
+}
+
+SearchEntry {
+    border: 1px solid transparent;
+    border-top-color: palette(dark);
+}
+
+HelpLabel {
+    border: 1px solid transparent;
+    border-top-color: palette(dark);
+}
+
+UserListView {
+    border: none;
+    background: palette(alternate-base);
+    selection-background-color: palette(highlight);
+}
+
+TreeView {
+    border: none;
+    background: palette(alternate-base);
+    selection-background-color: palette(highlight);
+}
+
+TreeView::item:active {
+    color: #ff4040;
+}
+
+TitleLabel::item {
+    color: palette(text);
+    border: 1px solid transparent;
+    border-top-color: palette(dark);
+    border-bottom-color: palette(dark);
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0.0 palette(light),
+                                stop: 1.0 palette(button));
+}
+
+TitleLabel::item:only-one, BufferTreeLabel::item:first {
+    border-top-color: transparent;
+}
+
+TitleLabel::item:selected {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0.0 palette(button),
+                                stop: 1.0 palette(light));
+}
+
+BadgeLabel::item {
+    margin: 3px;
+    border-radius: 6px;
+    color: palette(light);
+    background: palette(dark);
+}
+
+BadgeLabel::item:active {
+    background: #ff7676;
+}
+
+TopicLabel {
+    border: 1px solid transparent;
+    border-bottom-color: palette(dark);
+    selection-color: palette(highlighted-text);
+    selection-background-color: palette(highlight);
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0.0 palette(light),
+                                stop: 1.0 palette(button));
+}
+
+QSplitter::handle {
+    background: palette(dark);
+}
+
+QLabel#sloganLabel {
+    border: 1px solid transparent;
+    border-top-color: palette(dark);
+    padding-top: 3px;
+}
+
+QLabel#copyrightLabel {
+    border: 1px solid transparent;
+    border-bottom-color: palette(dark);
+    padding-bottom: 6px;
+}

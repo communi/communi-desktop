@@ -1,0 +1,160 @@
+UserListView {
+    border: none;
+    background: #222222;
+}
+
+UserListView::item {
+    color: #dedede;
+}
+
+UserListView::item:hover {
+    background: #222222;
+}
+
+UserListView::item:selected {
+    background: #444444;
+}
+
+UserListView::item:hover:selected {
+    background: #444444;
+}
+
+SessionTreeWidget {
+    border: none;
+    color: #dedede;
+    background: #222222;
+}
+
+SessionTreeWidget::item:hover {
+    background: #222222;
+}
+
+SessionTreeWidget::item:selected {
+    color: #dedede;
+    background: #444444;
+}
+
+SessionTreeWidget::item:hover:selected {
+    background: #444444;
+}
+
+QSplitter::handle {
+    background: palette(dark);
+}
+
+ToolBar {
+    border: 1px solid transparent;
+    border-top-color: palette(dark);
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0.0 #444444,
+                                stop: 1.0 #222222);
+}
+
+ToolBar QToolButton {
+    background: transparent;
+}
+
+ToolBar QToolButton:pressed {
+    background: #666666;
+    border-radius: 4px;
+    margin: 2px;
+}
+
+Overlay {
+    background: rgba(128, 128, 128, 50%)
+}
+
+TextBrowser {
+    border: none;
+    color: #dedede;
+    background: #000000;
+    selection-color: #dedede;
+    selection-background-color: #444444;
+}
+
+QLabel#topicLabel > QTextEdit {
+    border: 1px solid transparent;
+    border-bottom-color: palette(dark);
+    selection-color: #dedede;
+    selection-background-color: #444444;
+    background: #222222;
+    color: #dedede;
+}
+
+MessageView > QLineEdit {
+    border: 1px solid transparent;
+    border-top-color: palette(dark);
+    background: #222222;
+    color: #dedede;
+    selection-color: #dedede;
+    selection-background-color: #444444;
+}
+
+QLabel#headerLabel {
+    border: 1px solid transparent;
+    border-bottom-color: palette(dark);
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0.0 #444444,
+                                stop: 1.0 #222222);
+    color: #ffffff;
+}
+
+QLabel#footerLabel {
+    border: 1px solid transparent;
+    border-top-color: palette(dark);
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0.0 #444444,
+                                stop: 1.0 #222222);
+    color: #dedede;
+}
+
+QLabel#helpLabel {
+    border: 1px solid transparent;
+    border-top-color: palette(dark);
+    background: #222222;
+    color: #dedede;
+}
+
+QLabel#topicLabel {
+    border: 1px solid transparent;
+    border-bottom-color: palette(dark);
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0.0 #444444,
+                                stop: 1.0 #222222);
+    color: #dedede;
+}
+
+QToolButton#reconnectButton {
+    border: none;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url(:/resources/reconnect.png);
+}
+
+QToolButton#reconnectButton:pressed {
+    background-image: url(:/resources/reconnect-pressed.png);
+}
+
+StyledScrollBar {
+    border: 1px solid transparent;
+    border-left-color: palette(dark);
+    background: #222222;
+    width: 14px;
+}
+
+StyledScrollBar::handle {
+    background: #444444;
+    border-radius: 4px;
+    margin: 1px 1px 1px 2px;
+    min-height: 24px;
+}
+
+StyledScrollBar::handle:pressed {
+    background: #666666;
+}
+
+StyledScrollBar::add-line, StyledScrollBar::sub-line, StyledScrollBar::up-arrow, StyledScrollBar::down-arrow, StyledScrollBar::add-page, StyledScrollBar::sub-page {
+    width: 0;
+    height: 0;
+    background: none;
+}

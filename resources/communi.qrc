@@ -1,0 +1,36 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+  <file>icons/16x16/communi.png</file>
+  <file>icons/24x24/communi.png</file>
+  <file>icons/32x32/communi.png</file>
+  <file>icons/48x48/communi.png</file>
+  <file>icons/64x64/communi.png</file>
+  <file>icons/128x128/communi.png</file>
+
+  <file>icons/16x16/communi-alert.png</file>
+  <file>icons/24x24/communi-alert.png</file>
+  <file>icons/32x32/communi-alert.png</file>
+  <file>icons/48x48/communi-alert.png</file>
+  <file>icons/64x64/communi-alert.png</file>
+  <file>icons/128x128/communi-alert.png</file>
+
+  <file>icons/buttons/close.png</file>
+  <file>icons/buttons/next.png</file>
+  <file>icons/buttons/prev.png</file>
+  <file>icons/buttons/return.png</file>
+  <file>icons/buttons/tab.png</file>
+  <file>background.png</file>
+  <file>stylesheet.css</file>
+  <file>ajax-loader.gif</file>
+  <file>reconnect.png</file>
+  <file>reconnect-pressed.png</file>
+
+  <file>iconmonstr/about.png</file>
+  <file>iconmonstr/connect.png</file>
+  <file>iconmonstr/new-view.png</file>
+  <file>iconmonstr/reconnect.png</file>
+  <file>iconmonstr/settings.png</file>
+
+  <file>notify.mp3</file>
+</qresource>
+</RCC>
