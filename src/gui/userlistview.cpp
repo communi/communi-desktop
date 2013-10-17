@@ -16,7 +16,7 @@
 UserListView::UserListView(QWidget* parent) : QListView(parent)
 {
     d.model = new IrcUserModel(this);
-    d.model->setDynamicSort(true);
+    d.model->setSortMethod(Irc::SortByTitle);
 
     setModel(d.model);
     setFocusPolicy(Qt::NoFocus);

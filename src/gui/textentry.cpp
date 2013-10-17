@@ -33,7 +33,6 @@ TextEntry::TextEntry(QWidget* parent) : LineEditor(parent)
 
     d.userModel = new IrcUserModel(this);
     d.userModel->setSortMethod(Irc::SortByActivity);
-    d.userModel->setDynamicSort(true);
 
     d.completer = new Completer(this);
     d.completer->setEditor(this);
