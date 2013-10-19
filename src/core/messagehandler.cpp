@@ -184,7 +184,7 @@ void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
 
     // forward ChanServ's "[#chan] msg" to the appropriate channel
     if (target == message->connection()->nickName() && message->nick() == "ChanServ") {
-        const QString msg = message->message();
+        const QString msg = message->content();
         if (msg.startsWith("[")) {
             int idx = msg.indexOf("]");
             if (idx != -1) {

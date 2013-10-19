@@ -65,7 +65,7 @@ void UserListView::setChannel(IrcChannel* channel)
         d.channel = channel;
         if (!d.userModel) {
             d.userModel = new IrcUserModel(channel);
-            d.userModel->setDynamicSort(true);
+            d.userModel->setSortMethod(Irc::SortByTitle);
             setModel(d.userModel);
         }
         d.userModel->setChannel(channel);

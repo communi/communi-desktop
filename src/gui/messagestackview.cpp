@@ -41,6 +41,7 @@ MessageStackView::MessageStackView(IrcConnection* connection, QWidget* parent) :
     connect(&d.handler, SIGNAL(viewToBeRemoved(QString)), this, SLOT(removeView(QString)));
     connect(&d.handler, SIGNAL(viewToBeRenamed(QString, QString)), this, SLOT(renameView(QString, QString)));
 
+    d.parser.setTriggers(QStringList("/"));
     d.parser.setTolerant(true);
     d.lagTimer = new IrcLagTimer(d.connection);
 
@@ -195,8 +196,10 @@ void MessageStackView::applySettings()
     d.parser.setAliases(aliases);
 
     QStringList commands;
-    foreach (const QString& command, d.parser.availableCommands())
-        commands += d.parser.prefix() + command;
+    foreach (const QString& command, d.parser.availableCommands()) {
+        foreach (const QString& trigger, d.parser.triggers())
+            commands += trigger + command;
+    }
     d.commandModel.setStringList(commands);
 }
 

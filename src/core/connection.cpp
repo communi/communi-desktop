@@ -81,7 +81,7 @@ void Connection::quit()
 
 IrcCommand* Connection::createCtcpReply(IrcPrivateMessage* request) const
 {
-    const QString cmd = request->message().split(" ", QString::SkipEmptyParts).value(0).toUpper();
+    const QString cmd = request->content().split(" ", QString::SkipEmptyParts).value(0).toUpper();
     if (cmd == "VERSION") {
         const QString message = tr("%1 %2").arg(QApplication::applicationName())
                                            .arg(QApplication::applicationVersion());
