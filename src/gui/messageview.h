@@ -18,7 +18,11 @@
 #include "ui_messageview.h"
 #include "viewinfo.h"
 #include <QPointer>
+#if QT_VERSION >= 0x040700
 #include <QElapsedTimer>
+#else
+#include <QTime>
+#endif
 
 class SyntaxHighlighter;
 class MessageStackView;
@@ -100,7 +104,11 @@ private:
         QString topic;
         int sentId;
         QString awayMessage;
+        #if QT_VERSION >= 0x040700
         QElapsedTimer awayReply;
+        #else
+        QTime awayReply;
+        #endif
         bool playback;
         int joined, parted;
         int connected, disconnected;
