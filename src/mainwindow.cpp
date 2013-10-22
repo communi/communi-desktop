@@ -405,8 +405,10 @@ void MainWindow::updateOverlay()
 void MainWindow::reconnect()
 {
     MessageStackView* stack = stackView->currentWidget();
-    if (stack && stack->connection())
+    if (stack && stack->connection()) {
+        stack->connection()->setEnabled(true);
         stack->connection()->open();
+    }
 }
 
 void MainWindow::addView()
