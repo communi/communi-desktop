@@ -16,6 +16,7 @@
 #include "mainwindow.h"
 #include <QNetworkProxy>
 #include <QSettings>
+#include <QFont>
 #include <QUrl>
 #include <Irc>
 
@@ -31,6 +32,11 @@ static void setApplicationProxy(QUrl url)
 
 int main(int argc, char* argv[])
 {
+#ifdef Q_OS_MAC
+    // QTBUG-32789 - GUI widgets use the wrong font on OS X Mavericks
+    QFont::insertSubstitution(".Lucida Grande UI", "Lucida Grande");
+#endif
+
     Application app(argc, argv);
     MainWindow window;
     QStringList args = app.arguments();
