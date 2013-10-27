@@ -17,9 +17,8 @@
 
 #include "lineeditor.h"
 
-class Completer;
 class IrcBuffer;
-class IrcUserModel;
+class IrcCompleter;
 class CommandParser;
 
 class TextEntry : public LineEditor
@@ -38,12 +37,14 @@ private slots:
     void sendInput();
     void cleanup(IrcBuffer* buffer);
 
+    void tryComplete();
+    void complete(const QString& text, int cursor);
+
 private:
     struct Private {
         IrcBuffer* buffer;
-        Completer* completer;
         CommandParser* parser;
-        IrcUserModel* userModel;
+        IrcCompleter* completer;
         QHash<IrcBuffer*, QStringList> histories;
     } d;
 };

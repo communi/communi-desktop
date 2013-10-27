@@ -13,14 +13,12 @@
 */
 
 #include "textentry.h"
-#include "completer.h"
 #include "commandparser.h"
 #include <QStringListModel>
 #include <IrcBufferModel>
 #include <IrcConnection>
-#include <IrcUserModel>
-#include <IrcMessage>
-#include <IrcChannel>
+#include <IrcCompleter>
+#include <IrcBuffer>
 #include <QShortcut>
 
 TextEntry::TextEntry(QWidget* parent) : LineEditor(parent)
@@ -31,29 +29,19 @@ TextEntry::TextEntry(QWidget* parent) : LineEditor(parent)
     d.parser->setTriggers(QStringList("/"));
     d.parser->setTolerant(true);
 
-    d.userModel = new IrcUserModel(this);
-    d.userModel->setSortMethod(Irc::SortByActivity);
-
-    d.completer = new Completer(this);
-    d.completer->setEditor(this);
-    d.completer->setUserModel(d.userModel);
-
-    QStringList commands;
-    foreach (const QString& command, d.parser->availableCommands()) {
-        foreach (const QString& trigger, d.parser->triggers())
-            commands += trigger + command;
-    }
-    d.completer->setCommandModel(new QStringListModel(commands, this));
+    d.completer = new IrcCompleter(this);
+    connect(d.completer, SIGNAL(completed(QString,int)), this, SLOT(complete(QString,int)));
+    d.completer->setParser(d.parser);
 
     setAttribute(Qt::WA_MacShowFocusRect, false);
 
     QShortcut* shortcut = new QShortcut(Qt::Key_Tab, this);
-    connect(shortcut, SIGNAL(activated()), d.completer, SLOT(onTabPressed()));
+    connect(shortcut, SIGNAL(activated()), this, SLOT(tryComplete()));
 
     setButtonVisible(Left, true);
     setAutoHideButton(Left, true);
     setButtonPixmap(Left, QPixmap(":/icons/buttons/tab.png"));
-    connect(this, SIGNAL(leftButtonClicked()), d.completer, SLOT(onTabPressed()));
+    connect(this, SIGNAL(leftButtonClicked()), this, SLOT(tryComplete()));
 
     setButtonVisible(Right, true);
     setAutoHideButton(Right, true);
@@ -90,12 +78,10 @@ void TextEntry::setBuffer(IrcBuffer* buffer)
 
             d.parser->setTarget(buffer->title());
             d.parser->setChannels(buffer->model()->channels());
-            d.userModel->setChannel(buffer->toChannel());
-            d.completer->setChannelModel(model);
+            d.completer->setBuffer(buffer);
         } else {
             d.parser->reset();
-            d.userModel->setChannel(0);
-            d.completer->setChannelModel(0);
+            d.completer->setBuffer(0);
         }
     }
 }
@@ -120,4 +106,15 @@ void TextEntry::sendInput()
 void TextEntry::cleanup(IrcBuffer* buffer)
 {
     d.histories.remove(buffer);
+}
+
+void TextEntry::tryComplete()
+{
+    d.completer->complete(text(), cursorPosition());
+}
+
+void TextEntry::complete(const QString& text, int cursor)
+{
+    setText(text);
+    setCursorPosition(cursor);
 }
