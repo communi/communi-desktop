@@ -258,4 +258,5 @@ void ConnectPage::reset()
     ui.realNameField->clear();
     ui.userNameField->clear();
     ui.passwordField->clear();
+    saveSettings();
 }
