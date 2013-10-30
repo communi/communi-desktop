@@ -25,6 +25,7 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     d.topicLabel = new TopicLabel(this);
     d.listView = new UserListView(this);
     d.splitter = new QSplitter(this);
+    d.splitter->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
 
     connect(d.browser, SIGNAL(split(Qt::Orientation)), this, SIGNAL(split(Qt::Orientation)));
 
