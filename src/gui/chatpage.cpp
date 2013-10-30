@@ -63,6 +63,9 @@ void ChatPage::addConnection(IrcConnection* connection)
     if (!d.treeWidget->currentBuffer())
         d.treeWidget->setCurrentBuffer(serverBuffer);
 
+    if (!connection->isActive() && connection->isEnabled())
+        connection->open();
+
     d.connections += connection;
 }
 

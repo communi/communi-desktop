@@ -45,7 +45,8 @@ private slots:
     void closeBuffer();
     void setCurrentBuffer(IrcBuffer* buffer);
     void onTrayIconActivated(QSystemTrayIcon::ActivationReason reason);
-    void restoreSessions();
+    void restoreConnections();
+    void saveConnections();
 
 private:
     struct Private {

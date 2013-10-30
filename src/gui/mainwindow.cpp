@@ -98,7 +98,7 @@ MainWindow::MainWindow(QWidget* parent) : QStackedWidget(parent)
     shortcut = new QShortcut(QKeySequence::Close, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(closeBuffer()));
 
-    restoreSessions();
+    restoreConnections();
 }
 
 MainWindow::~MainWindow()
@@ -124,6 +124,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
         settings.beginGroup("Widgets/MainWindow");
         settings.setValue("geometry", saveGeometry());
 
+        saveConnections();
         QList<IrcConnection*> connections = d.chatPage->connections();
         foreach (IrcConnection* connection, connections) {
             connection->quit(tr("Communi %1").arg(IRC_VERSION_STR));
@@ -189,7 +190,6 @@ void MainWindow::onAccepted()
     connection->setUserName(d.connectPage->userName());
     connection->setDisplayName(d.connectPage->displayName());
     connection->setPassword(d.connectPage->password());
-    connection->open();
 
     connect(SystemNotifier::instance(), SIGNAL(sleep()), connection, SLOT(quit()));
     connect(SystemNotifier::instance(), SIGNAL(wake()), connection, SLOT(open()));
@@ -249,28 +249,29 @@ void MainWindow::onTrayIconActivated(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
-void MainWindow::restoreSessions()
+void MainWindow::restoreConnections()
 {
-//    QSettings settings;
-//    settings.beginGroup("Sessions");
-//    QStringList sessions = settings.childGroups();
+    QSettings settings;
+    foreach (const QVariant& state, settings.value("Connections").toList()) {
+        IrcConnection* connection = new IrcConnection(this);
 
-//    foreach (const QString& uuid, sessions) {
-//        IrcSession* session = new IrcSession(this);
-//        SessionManager* manager = new SessionManager(session);
-//        manager->restore(uuid);
-//        if (manager->enabled())
-//            session->open();
+        // TODO:
+        connect(SystemNotifier::instance(), SIGNAL(sleep()), connection, SLOT(quit()));
+        connect(SystemNotifier::instance(), SIGNAL(wake()), connection, SLOT(open()));
+        connect(SystemNotifier::instance(), SIGNAL(online()), connection, SLOT(open()));
+        connect(SystemNotifier::instance(), SIGNAL(offline()), connection, SLOT(quit()));
 
-//        // TODO:
-//        connect(SystemNotifier::instance(), SIGNAL(sleep()), manager, SLOT(sleep()));
-//        connect(SystemNotifier::instance(), SIGNAL(wake()), manager, SLOT(wake()));
-//        connect(SystemNotifier::instance(), SIGNAL(online()), manager, SLOT(wake()));
-//        connect(SystemNotifier::instance(), SIGNAL(offline()), session, SLOT(close()));
+        connection->restoreState(state.toByteArray());
+        d.chatPage->addConnection(connection);
+        setCurrentWidget(d.chatPage);
+    }
+}
 
-//        d.chatPage->addSession(manager);
-//    }
-
-//    if (!sessions.isEmpty())
-//        setCurrentWidget(d.chatPage);
+void MainWindow::saveConnections()
+{
+    QSettings settings;
+    QVariantList states;
+    foreach (IrcConnection* connection, d.chatPage->connections())
+        states += connection->saveState();
+    settings.setValue("Connections", states);
 }
