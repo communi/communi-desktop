@@ -207,7 +207,7 @@ void MainWindow::onRejected()
 
 void MainWindow::closeBuffer()
 {
-    IrcBuffer* buffer = 0; //d.chatPage->currentBuffer();
+    IrcBuffer* buffer = d.chatPage->currentBuffer();
     IrcChannel* channel = qobject_cast<IrcChannel*>(buffer);
     if (channel)
         channel->part(tr("Communi %1").arg(IRC_VERSION_STR));
