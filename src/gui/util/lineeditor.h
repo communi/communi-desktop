@@ -26,9 +26,6 @@ public:
 
     QStringList history() const;
 
-    void cursorWordBackward(bool mark);
-    void insert(const QString& text);
-
 public slots:
     void goBackward();
     void goForward();

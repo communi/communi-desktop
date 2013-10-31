@@ -36,36 +36,6 @@ void LineEditor::clearHistory()
     setHistory(QStringList());
 }
 
-// QLineEdit doesn't like chars like '-', '/'..
-// so we'll do it by hand
-void LineEditor::cursorWordBackward(bool mark)
-{
-    // skip trailing whitespace
-    while (cursorPosition() > 0 && text().at(cursorPosition() - 1).isSpace())
-        cursorBackward(false, 1);
-
-    // find previous whitespace
-    int steps = cursorPosition();
-    int idx = text().lastIndexOf(QRegExp("\\s"), steps - 1);
-
-    // move cursor
-    if (idx != -1)
-        steps -= idx + 1;
-    cursorBackward(mark, steps);
-}
-
-// QLineEdit::insert() emits textEdited()
-// so here's the workaround
-void LineEditor::insert(const QString& text)
-{
-    QString tmp = FancyLineEdit::text();
-    int pos = cursorPosition();
-    int len = selectedText().length();
-    tmp.replace(pos, len, text);
-    setText(tmp);
-    setCursorPosition(pos + text.length() + 1);
-}
-
 void LineEditor::goBackward()
 {
     if (d.index > 0)
