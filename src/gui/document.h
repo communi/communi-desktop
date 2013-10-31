@@ -29,8 +29,8 @@ public:
     static Document* instance(IrcBuffer* buffer = 0);
 
 public slots:
-    void addBuffer(IrcBuffer* buffer);
-    void removeBuffer(IrcBuffer* buffer);
+    static void addBuffer(IrcBuffer* buffer);
+    static void removeBuffer(IrcBuffer* buffer);
 
 private slots:
     void receiveMessage(IrcMessage* message);
