@@ -47,6 +47,7 @@ QList<IrcConnection*> ChatPage::connections() const
 void ChatPage::addConnection(IrcConnection* connection)
 {
     IrcBufferModel* bufferModel = new IrcBufferModel(connection);
+    bufferModel->setSortMethod(Irc::SortByTitle);
 
     IrcBuffer* serverBuffer = bufferModel->add(connection->displayName());
     serverBuffer->setSticky(true);
