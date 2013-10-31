@@ -59,6 +59,7 @@ void ChatPage::addConnection(IrcConnection* connection)
     connect(bufferModel, SIGNAL(added(IrcBuffer*)), d.treeWidget, SLOT(addBuffer(IrcBuffer*)));
     connect(bufferModel, SIGNAL(removed(IrcBuffer*)), d.treeWidget, SLOT(removeBuffer(IrcBuffer*)));
 
+    Document::addBuffer(serverBuffer);
     d.treeWidget->addBuffer(serverBuffer);
     if (!d.treeWidget->currentBuffer())
         d.treeWidget->setCurrentBuffer(serverBuffer);
