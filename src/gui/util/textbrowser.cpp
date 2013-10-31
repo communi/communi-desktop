@@ -144,6 +144,9 @@ void TextBrowser::paintEvent(QPaintEvent* event)
 
     TextDocument* doc = document();
     if (doc) {
+        if (!doc->isActive())
+            doc->setActive(true);
+
         QPainter painter(viewport());
         painter.translate(-hoffset, -voffset);
         painter.setPen(Qt::NoPen);
