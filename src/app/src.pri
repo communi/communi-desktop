@@ -19,4 +19,3 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 }
 
 include(gui/gui.pri)
-include(../3rdparty/3rdparty.pri)

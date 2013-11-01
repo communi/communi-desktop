@@ -17,6 +17,7 @@ include(../config.pri)
 include(../backend.pri)
 include(../util/util.pri)
 include(../tree/tree.pri)
+include(../3rdparty/3rdparty.pri)
 include(../../resources/resources.pri)
 
 STATIC_PLUGINS = finder highlighter menu navigator

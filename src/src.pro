@@ -3,5 +3,5 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS += backend.pro util tree plugins app
+SUBDIRS += backend.pro 3rdparty util tree plugins app
 CONFIG += ordered
