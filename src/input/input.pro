@@ -15,6 +15,7 @@ DESTDIR = ../../lib
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
+HEADERS += $$PWD/inputplugin.h
 HEADERS += $$PWD/lineeditor.h
 HEADERS += $$PWD/textentry.h
 
