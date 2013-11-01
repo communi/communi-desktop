@@ -32,7 +32,7 @@ FinderPlugin::FinderPlugin(QObject* parent) : QLineEdit()
     connect(this, SIGNAL(returnPressed()), this, SLOT(searchAgain()));
 }
 
-void FinderPlugin::initialize(TreeWidget* tree)
+void FinderPlugin::setTree(TreeWidget* tree)
 {
     d.tree = tree;
     setParent(d.tree);

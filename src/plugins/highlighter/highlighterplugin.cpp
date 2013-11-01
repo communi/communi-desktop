@@ -25,7 +25,7 @@ HighlighterPlugin::HighlighterPlugin(QObject* parent) : QObject(parent)
     d.shortcut = 0;
 }
 
-void HighlighterPlugin::initialize(TreeWidget* tree)
+void HighlighterPlugin::setTree(TreeWidget* tree)
 {
     d.tree = tree;
 
