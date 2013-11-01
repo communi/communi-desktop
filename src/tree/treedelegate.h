@@ -12,34 +12,20 @@
 * GNU General Public License for more details.
 */
 
-#ifndef ITEMDELEGATE_H
-#define ITEMDELEGATE_H
+#ifndef TREEDELEGATE_H
+#define TREEDELEGATE_H
 
 #include <QStyledItemDelegate>
 
-class ItemDelegate : public QStyledItemDelegate
+class TreeDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
-    Q_PROPERTY(bool dark READ isDark WRITE setDark)
-    Q_PROPERTY(bool rootIsDecorated READ rootIsDecorated WRITE setRootIsDecorated)
 
 public:
-    explicit ItemDelegate(QObject* parent = 0);
-
-    bool isDark() const;
-    void setDark(bool dark);
-
-    bool rootIsDecorated() const;
-    void setRootIsDecorated(bool decorated);
+    explicit TreeDelegate(QObject* parent = 0);
 
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
-
-private:
-    struct Private {
-        bool dark;
-        bool rootIsDecorated;
-    } d;
 };
 
-#endif // ITEMDELEGATE_H
+#endif // TREEDELEGATE_H

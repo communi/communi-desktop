@@ -2,6 +2,6 @@
 # Communi
 ######################################################################
 
-DEPENDPATH += $$PWD $$PWD/systemnotifier
-INCLUDEPATH += $$PWD $$PWD/systemnotifier
-LIBS += -L../../lib -lutil
+DEPENDPATH += $$PWD
+INCLUDEPATH += $$PWD
+LIBS += -L../../lib -ltree

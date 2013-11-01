@@ -18,9 +18,6 @@ HEADERS += $$PWD/searchentry.h
 HEADERS += $$PWD/splitview.h
 HEADERS += $$PWD/textentry.h
 HEADERS += $$PWD/topiclabel.h
-HEADERS += $$PWD/treeitem.h
-HEADERS += $$PWD/treerole.h
-HEADERS += $$PWD/treewidget.h
 HEADERS += $$PWD/userlistview.h
 
 SOURCES += $$PWD/browser.cpp
@@ -34,11 +31,6 @@ SOURCES += $$PWD/searchentry.cpp
 SOURCES += $$PWD/splitview.cpp
 SOURCES += $$PWD/textentry.cpp
 SOURCES += $$PWD/topiclabel.cpp
-SOURCES += $$PWD/treeitem.cpp
-SOURCES += $$PWD/treewidget.cpp
 SOURCES += $$PWD/userlistview.cpp
 
 include(util/util.pri)
-
-# TODO:
-include(extensions/extensions.pri)

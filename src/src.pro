@@ -2,6 +2,6 @@
 # Communi
 ######################################################################
 
-DEPENDPATH += $$PWD $$PWD/systemnotifier
-INCLUDEPATH += $$PWD $$PWD/systemnotifier
-LIBS += -L../../lib -lutil
+TEMPLATE = subdirs
+SUBDIRS += backend.pro util tree app
+CONFIG += ordered

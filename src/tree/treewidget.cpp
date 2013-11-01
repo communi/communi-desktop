@@ -18,7 +18,7 @@
 #include "finder.h"
 #include "reseter.h"
 #include "navigator.h"
-#include "itemdelegate.h"
+#include "treedelegate.h"
 #include <IrcConnection>
 #include <QHeaderView>
 #include <IrcBuffer>
@@ -43,9 +43,7 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    ItemDelegate* delegate = new ItemDelegate(this);
-    delegate->setRootIsDecorated(true);
-    setItemDelegate(delegate);
+    setItemDelegate(new TreeDelegate(this));
 
     // TODO: extensions
     Navigator* navigator = new Navigator(this);
