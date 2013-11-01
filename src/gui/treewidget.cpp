@@ -141,11 +141,6 @@ QList<IrcConnection*> TreeWidget::connections() const
     return d.connections;
 }
 
-TreeItem* TreeWidget::connectionItem(IrcConnection* connection) const
-{
-    return d.connectionItems.value(connection);
-}
-
 void TreeWidget::addBuffer(IrcBuffer* buffer)
 {
     TreeItem* item = 0;

@@ -40,7 +40,6 @@ public:
     TreeItem* bufferItem(IrcBuffer* buffer) const;
 
     QList<IrcConnection*> connections() const;
-    TreeItem* connectionItem(IrcConnection* connection) const;
 
 public slots:
     void addBuffer(IrcBuffer* buffer);
@@ -54,10 +53,8 @@ public slots:
     void unblockItemReset();
 
 signals:
-    void editConnection(IrcConnection* connection);
-    void closeItem(TreeItem* item);
-    void currentBufferChanged(IrcBuffer* buffer);
     void searched(bool result);
+    void currentBufferChanged(IrcBuffer* buffer);
 
 protected:
     bool event(QEvent* event);
