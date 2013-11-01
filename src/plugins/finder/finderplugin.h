@@ -28,7 +28,7 @@ class FinderPlugin : public QLineEdit, public TreePlugin
 public:
     explicit FinderPlugin(QObject* parent = 0);
 
-    void setTree(TreeWidget* tree);
+    void initialize(TreeWidget* tree);
 
 public slots:
     void popup();

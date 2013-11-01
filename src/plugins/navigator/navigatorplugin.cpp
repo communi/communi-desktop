@@ -21,7 +21,7 @@ NavigatorPlugin::NavigatorPlugin(QObject* parent) : QObject(parent)
     d.tree = 0;
 }
 
-void NavigatorPlugin::setTree(TreeWidget* tree)
+void NavigatorPlugin::initialize(TreeWidget* tree)
 {
     d.tree = tree;
 

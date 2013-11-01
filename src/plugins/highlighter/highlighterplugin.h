@@ -29,7 +29,7 @@ class HighlighterPlugin : public QObject, public TreePlugin
 public:
     HighlighterPlugin(QObject* parent = 0);
 
-    void setTree(TreeWidget* tree);
+    void initialize(TreeWidget* tree);
 
     bool eventFilter(QObject *object, QEvent *event);
 

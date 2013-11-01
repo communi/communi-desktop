@@ -30,7 +30,7 @@ class MenuPlugin : public QMenu, public TreePlugin
 public:
     MenuPlugin(QObject* parent = 0);
 
-    void setTree(TreeWidget* tree);
+    void initialize(TreeWidget* tree);
 
     bool eventFilter(QObject *object, QEvent *event);
 

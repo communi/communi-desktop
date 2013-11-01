@@ -37,7 +37,7 @@ MenuPlugin::MenuPlugin(QObject* parent) : QMenu()
     d.closeAction = addAction(tr("Close"), this, SLOT(onCloseTriggered()), QKeySequence::Close);
 }
 
-void MenuPlugin::setTree(TreeWidget* tree)
+void MenuPlugin::initialize(TreeWidget* tree)
 {
     d.tree = tree;
     tree->installEventFilter(this);

@@ -53,7 +53,7 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         TreePlugin* plugin = qobject_cast<TreePlugin*>(instance);
         if (plugin)
-            plugin->setTree(this);
+            plugin->initialize(this);
     }
 
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(onItemExpanded(QTreeWidgetItem*)));
