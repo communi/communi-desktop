@@ -15,13 +15,9 @@
 #include "textinput.h"
 #include "inputplugin.h"
 #include "commandparser.h"
-#include <QStringListModel>
 #include <IrcBufferModel>
-#include <IrcConnection>
 #include <QPluginLoader> // TODO
-#include <IrcCompleter>
 #include <IrcBuffer>
-#include <QShortcut>
 
 // TODO:
 Q_IMPORT_PLUGIN(CompleterPlugin)
@@ -70,7 +66,6 @@ void TextInput::setBuffer(IrcBuffer* buffer)
             IrcBufferModel* model = buffer->model();
             connect(model, SIGNAL(channelsChanged(QStringList)), d.parser, SLOT(setChannels(QStringList)));
             connect(buffer, SIGNAL(titleChanged(QString)), d.parser, SLOT(setTarget(QString)));
-            connect(buffer, SIGNAL(destroyed(IrcBuffer*)), this, SLOT(cleanup(IrcBuffer*)), Qt::UniqueConnection);
 
             d.parser->setTarget(buffer->title());
             d.parser->setChannels(buffer->model()->channels());
@@ -98,9 +93,4 @@ void TextInput::sendInput()
     }
     if (!error)
         clear();
-}
-
-void TextInput::cleanup(IrcBuffer* buffer)
-{
-    d.histories.remove(buffer);
 }

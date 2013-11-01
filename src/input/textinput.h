@@ -18,7 +18,6 @@
 #include <QLineEdit>
 
 class IrcBuffer;
-class CommandParser;
 class IrcCommandParser;
 
 class TextInput : public QLineEdit
@@ -39,13 +38,11 @@ signals:
 
 private slots:
     void sendInput();
-    void cleanup(IrcBuffer* buffer);
 
 private:
     struct Private {
         IrcBuffer* buffer;
-        CommandParser* parser;
-        QHash<IrcBuffer*, QStringList> histories;
+        IrcCommandParser* parser;
     } d;
 };
 
