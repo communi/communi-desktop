@@ -14,14 +14,18 @@
 
 #include "treewidget.h"
 #include "treeitem.h"
-#include "menu.h"
-#include "finder.h"
-#include "reseter.h"
-#include "navigator.h"
+#include "treeplugin.h"
 #include "treedelegate.h"
 #include <IrcConnection>
+#include <QPluginLoader> // TODO
 #include <QHeaderView>
 #include <IrcBuffer>
+
+// TODO:
+Q_IMPORT_PLUGIN(finderplugin)
+Q_IMPORT_PLUGIN(menuplugin)
+Q_IMPORT_PLUGIN(navigatorplugin)
+Q_IMPORT_PLUGIN(reseterplugin)
 
 TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
@@ -45,18 +49,17 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 
     setItemDelegate(new TreeDelegate(this));
 
-    // TODO: extensions
-    Navigator* navigator = new Navigator(this);
-    navigator->initialize(this);
-
-    Finder* finder = new Finder(this);
-    finder->initialize(this);
-
-    Menu* menu = new Menu(this);
-    menu->initialize(this);
-
-    Reseter* reseter = new Reseter(this);
-    reseter->initialize(this);
+    // TODO:
+    qDebug("WTF");
+    qDebug() << QPluginLoader::staticInstances();
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        TreePlugin* plugin = qobject_cast<TreePlugin*>(instance);
+        qDebug() << "LOAD" << instance;
+        if (plugin) {
+            qDebug() << "INIT" << plugin;
+            plugin->initialize(this);
+        }
+    }
 
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(onItemExpanded(QTreeWidgetItem*)));
     connect(this, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(onItemCollapsed(QTreeWidgetItem*)));

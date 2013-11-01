@@ -15,19 +15,20 @@
 #ifndef FINDER_H
 #define FINDER_H
 
+#include <QtPlugin>
 #include <QLineEdit>
-#include <QTreeWidget>
-#include "treeextension.h"
+#include "treeplugin.h"
 
-class Finder : public QLineEdit, public TreeExtensionInterface
+class Finder : public QLineEdit, public TreePlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreeExtensionInterface)
+    Q_INTERFACES(TreePlugin)
+    Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
 
 public:
     explicit Finder(QObject* parent = 0);
 
-    void initialize(QTreeWidget* tree);
+    void initialize(TreeWidget* tree);
 
 public slots:
     void popup();
@@ -41,7 +42,7 @@ private slots:
 
 private:
     struct Private {
-        QTreeWidget* tree;
+        TreeWidget* tree;
     } d;
 };
 

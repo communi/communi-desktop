@@ -13,6 +13,7 @@
 */
 
 #include "menu.h"
+#include "treewidget.h"
 #include <QContextMenuEvent>
 #include <IrcConnection>
 #include <IrcCommand>
@@ -35,7 +36,7 @@ Menu::Menu(QObject* parent) : QMenu()
     d.closeAction = addAction(tr("Close"), this, SLOT(onCloseTriggered()), QKeySequence::Close);
 }
 
-void Menu::initialize(QTreeWidget* tree)
+void Menu::initialize(TreeWidget* tree)
 {
     d.tree = tree;
     tree->installEventFilter(this);

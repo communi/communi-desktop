@@ -13,14 +13,15 @@
 */
 
 #include "navigator.h"
-#include "treerole.h" // TODO
+#include "treewidget.h"
+#include "treerole.h"
 
 Navigator::Navigator(QObject* parent) : QObject(parent)
 {
     d.tree = 0;
 }
 
-void Navigator::initialize(QTreeWidget* tree)
+void Navigator::initialize(TreeWidget* tree)
 {
     d.tree = tree;
 

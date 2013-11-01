@@ -15,19 +15,21 @@
 #ifndef RESETER_H
 #define RESETER_H
 
-#include <QTreeWidget>
+#include <QtPlugin>
 #include <QShortcut>
-#include "treeextension.h"
+#include <QTreeWidget>
+#include "treeplugin.h"
 
-class Reseter : public QObject, public TreeExtensionInterface
+class Reseter : public QObject, public TreePlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreeExtensionInterface)
+    Q_INTERFACES(TreePlugin)
+    Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
 
 public:
     Reseter(QObject* parent = 0);
 
-    void initialize(QTreeWidget* tree);
+    void initialize(TreeWidget* tree);
 
     bool eventFilter(QObject *object, QEvent *event);
 
@@ -39,7 +41,7 @@ private slots:
 private:
     struct Private {
         bool blocked;
-        QTreeWidget* tree;
+        TreeWidget* tree;
         QShortcut* shortcut;
     } d;
     friend class TreeItem;

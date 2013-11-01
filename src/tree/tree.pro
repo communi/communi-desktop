@@ -17,6 +17,7 @@ INCLUDEPATH += $$PWD
 
 HEADERS += $$PWD/treedelegate.h
 HEADERS += $$PWD/treeitem.h
+HEADERS += $$PWD/treeplugin.h
 HEADERS += $$PWD/treerole.h
 HEADERS += $$PWD/treewidget.h
 
@@ -27,4 +28,3 @@ SOURCES += $$PWD/treewidget.cpp
 include(../config.pri)
 include(../backend.pri)
 include(../util/util.pri)
-include(../extensions/tree/tree.pri)

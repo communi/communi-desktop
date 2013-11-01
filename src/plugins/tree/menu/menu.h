@@ -16,18 +16,20 @@
 #define MENU_H
 
 #include <QMenu>
+#include <QtPlugin>
 #include <QTreeWidget>
-#include "treeextension.h"
+#include "treeplugin.h"
 
-class Menu : public QMenu, public TreeExtensionInterface
+class Menu : public QMenu, public TreePlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreeExtensionInterface)
+    Q_INTERFACES(TreePlugin)
+    Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
 
 public:
-    Menu(QObject* parent);
+    Menu(QObject* parent = 0);
 
-    void initialize(QTreeWidget* tree);
+    void initialize(TreeWidget* tree);
 
     bool eventFilter(QObject *object, QEvent *event);
 
@@ -46,7 +48,7 @@ private:
     void setup(QTreeWidgetItem* item);
 
     struct Private {
-        QTreeWidget* tree;
+        TreeWidget* tree;
         QAction* disconnectAction;
         QAction* reconnectAction;
         QAction* editAction;

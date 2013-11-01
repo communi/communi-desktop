@@ -18,3 +18,9 @@ include(../backend.pri)
 include(../util/util.pri)
 include(../tree/tree.pri)
 include(../../resources/resources.pri)
+
+STATIC_PLUGINS = finder menu navigator reseter
+for(PLUGIN, STATIC_PLUGINS) {
+    LIBS *= -L$$PWD/../../plugins
+    LIBS += -l$${PLUGIN}plugin
+}

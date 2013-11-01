@@ -13,6 +13,7 @@
 */
 
 #include "reseter.h"
+#include "treewidget.h"
 #include <QEvent>
 
 Reseter::Reseter(QObject* parent) : QObject(parent)
@@ -22,7 +23,7 @@ Reseter::Reseter(QObject* parent) : QObject(parent)
     d.shortcut = 0;
 }
 
-void Reseter::initialize(QTreeWidget* tree)
+void Reseter::initialize(TreeWidget* tree)
 {
     d.tree = tree;
 

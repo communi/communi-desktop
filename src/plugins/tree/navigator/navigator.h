@@ -15,19 +15,21 @@
 #ifndef NAVIGATOR_H
 #define NAVIGATOR_H
 
+#include <QtPlugin>
 #include <QShortcut>
 #include <QTreeWidget>
-#include "treeextension.h"
+#include "treeplugin.h"
 
-class Navigator : public QObject, public TreeExtensionInterface
+class Navigator : public QObject, public TreePlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreeExtensionInterface)
+    Q_INTERFACES(TreePlugin)
+    Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
 
 public:
     explicit Navigator(QObject* parent = 0);
 
-    void initialize(QTreeWidget* tree);
+    void initialize(TreeWidget* tree);
 
     QTreeWidgetItem* currentItem() const;
     void setCurrentItem(QTreeWidgetItem* item);
@@ -56,7 +58,7 @@ public slots:
 
 private:
     struct Private {
-        QTreeWidget* tree;
+        TreeWidget* tree;
         QShortcut* prevShortcut;
         QShortcut* nextShortcut;
         QShortcut* prevActiveShortcut;

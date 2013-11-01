@@ -13,6 +13,7 @@
 */
 
 #include "finder.h"
+#include "treewidget.h"
 #include <QMouseEvent>
 #include <QShortcut>
 
@@ -31,7 +32,7 @@ Finder::Finder(QObject* parent) : QLineEdit()
     connect(this, SIGNAL(returnPressed()), this, SLOT(searchAgain()));
 }
 
-void Finder::initialize(QTreeWidget* tree)
+void Finder::initialize(TreeWidget* tree)
 {
     d.tree = tree;
     setParent(d.tree);
