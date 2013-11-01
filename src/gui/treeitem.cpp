@@ -14,25 +14,31 @@
 
 #include "treeitem.h"
 #include "treewidget.h"
-#include "itemdelegate.h"
+#include "sharedtimer.h"
+#include "itemdelegate.h" // TODO: treerole.h
+#include <IrcBufferModel>
 #include <IrcBuffer>
 
 TreeItem::TreeItem(IrcBuffer* buffer, QTreeWidget* parent) : QTreeWidgetItem(parent)
 {
-    d.buffer = buffer;
-    d.highlighted = false;
-    d.sortOrder = Manual;
-    setText(0, buffer->title());
-    setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
+    init(buffer);
 }
 
 TreeItem::TreeItem(IrcBuffer* buffer, QTreeWidgetItem* parent) : QTreeWidgetItem(parent)
 {
+    init(buffer);
+}
+
+void TreeItem::init(IrcBuffer* buffer)
+{
+    d.badge = 0;
     d.buffer = buffer;
     d.highlighted = false;
-    d.sortOrder = Manual;
-    setText(0, buffer->title());
-    setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
+    setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+    connect(buffer, SIGNAL(destroyed()), this, SLOT(deleteLater()));
+    connect(buffer, SIGNAL(activeChanged(bool)), this, SLOT(refresh()));
+    connect(buffer, SIGNAL(titleChanged(QString)), this, SLOT(refresh()));
 }
 
 TreeItem::~TreeItem()
@@ -49,42 +55,47 @@ IrcConnection* TreeItem::connection() const
     return d.buffer->connection();
 }
 
-TreeItem* TreeItem::findChild(const QString& name) const
+TreeItem* TreeItem::parentItem() const
 {
-    for (int i = 0; i < childCount(); ++i)
-        if (child(i)->text(0).compare(name, Qt::CaseInsensitive) == 0)
-            return static_cast<TreeItem*>(child(i));
-    return 0;
+    return static_cast<TreeItem*>(QTreeWidgetItem::parent());
+}
+
+TreeWidget* TreeItem::treeWidget() const
+{
+    return static_cast<TreeWidget*>(QTreeWidgetItem::treeWidget());
 }
 
 QVariant TreeItem::data(int column, int role) const
 {
-    if (role == Qt::ForegroundRole) {
-        TreeWidget* tw = static_cast<TreeWidget*>(treeWidget());
+    switch (role) {
+    case ItemDelegate::BadgeRole:
+        return d.badge;
+    case ItemDelegate::HighlightRole:
+        return d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty());
+    case Qt::ForegroundRole:
         if (!d.buffer->isActive())
-            return tw->statusColor(TreeWidget::Inactive);
-        if (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty()))
-            return tw->currentHighlightColor();
-        return tw->statusColor(TreeWidget::Active);
-    } else if (role == ItemDelegate::BadgeColorRole) {
-        TreeWidget* tw = static_cast<TreeWidget*>(treeWidget());
-        if (!isSelected() && d.buffer->isActive() && d.highlighted)
-            return tw->currentBadgeColor();
-        return tw->statusColor(TreeWidget::Badge);
-    } else if (role == ItemDelegate::HighlightRole) {
-        return d.highlighted;
+            return treeWidget()->palette().color(QPalette::Disabled, QPalette::Text);
+        if (d.blink && (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty())))
+            return QColor("#ff4040");
+        return QTreeWidgetItem::data(column, role);
+    default:
+        if (column == 0 && d.buffer)
+            return d.buffer->data(role);
+        return QVariant();
     }
-    return QTreeWidgetItem::data(column, role);
 }
 
 int TreeItem::badge() const
 {
-    return data(1, ItemDelegate::BadgeRole).toInt();
+    return d.badge;
 }
 
 void TreeItem::setBadge(int badge)
 {
-    setData(1, ItemDelegate::BadgeRole, badge);
+    if (d.badge != badge) {
+        d.badge = badge;
+        emitDataChanged();
+    }
 }
 
 bool TreeItem::isHighlighted() const
@@ -96,7 +107,7 @@ void TreeItem::setHighlighted(bool highlighted)
 {
     if (d.highlighted != highlighted) {
         d.highlighted = highlighted;
-        if (TreeItem* p = static_cast<TreeItem*>(parent())) {
+        if (TreeItem* p = parentItem()) {
             if (highlighted)
                 p->d.highlightedChildren.insert(this);
             else
@@ -104,68 +115,44 @@ void TreeItem::setHighlighted(bool highlighted)
             if (!p->isExpanded())
                 p->emitDataChanged();
         }
+        if (highlighted)
+            SharedTimer::instance()->registerReceiver(this, "blink");
+        else
+            SharedTimer::instance()->unregisterReceiver(this, "blink");
         emitDataChanged();
     }
 }
 
-void TreeItem::sort(SortOrder order)
+// TODO
+class FriendlyModel : public IrcBufferModel
 {
-    if (d.sortOrder != order) {
-        if (d.sortOrder == Manual)
-            resetManualSortOrder();
-        d.sortOrder = order;
-        sortChildren(0, Qt::AscendingOrder);
-    }
-}
-
-TreeItem::SortOrder TreeItem::currentSortOrder() const
-{
-    if (const TreeItem* p = static_cast<const TreeItem*>(parent()))
-        return p->currentSortOrder();
-    return d.sortOrder;
-}
-
-QStringList TreeItem::manualSortOrder() const
-{
-    if (const TreeItem* p = static_cast<const TreeItem*>(parent()))
-        return p->manualSortOrder();
-    return d.manualOrder;
-}
-
-void TreeItem::setManualSortOrder(const QStringList& order)
-{
-    if (d.manualOrder != order) {
-        d.manualOrder = order;
-        sortChildren(0, Qt::AscendingOrder);
-    }
-}
-
-void TreeItem::resetManualSortOrder()
-{
-    d.manualOrder.clear();
-    for (int i = 0; i < childCount(); ++i)
-        d.manualOrder += child(i)->text(0);
-}
+    friend class TreeItem;
+};
 
 bool TreeItem::operator<(const QTreeWidgetItem& other) const
 {
-    Q_ASSERT(parent() && other.parent());
-    if (currentSortOrder() == Alphabetic) {
-        const TreeItem* otherItem = static_cast<const TreeItem*>(&other);
-        const bool a = d.buffer->isChannel();
-        const bool b = otherItem->d.buffer->isChannel();
-        if (a != b)
-            return a;
-        return d.buffer->name().localeAwareCompare(otherItem->d.buffer->name()) < 0;
-    } else {
-        // manual sorting via dnd
-        const QStringList sortOrder = manualSortOrder();
-        const int a = sortOrder.indexOf(text(0));
-        const int b = sortOrder.indexOf(other.text(0));
-        if (a == -1 && b != -1)
-            return false;
-        if (a != -1 && b == -1)
-            return true;
-        return a < b;
+    const TreeItem* otherItem = static_cast<const TreeItem*>(&other);
+    if (!parentItem()) {
+        QList<IrcConnection*> connections = treeWidget()->connections();
+        return connections.indexOf(connection()) < connections.indexOf(otherItem->connection());
     }
+    const FriendlyModel* model = static_cast<FriendlyModel*>(d.buffer->model());
+    return model->lessThan(d.buffer, otherItem->buffer(), model->sortMethod());
+}
+
+void TreeItem::reset()
+{
+    setBadge(0);
+    setHighlighted(false);
+}
+
+void TreeItem::refresh()
+{
+    emitDataChanged();
+}
+
+void TreeItem::blink()
+{
+    d.blink = !d.blink;
+    emitDataChanged();
 }

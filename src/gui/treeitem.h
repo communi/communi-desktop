@@ -15,13 +15,18 @@
 #ifndef TREEITEM_H
 #define TREEITEM_H
 
+#include <QObject>
 #include <QTreeWidgetItem>
 
 class IrcBuffer;
+class TreeWidget;
 class IrcConnection;
+class IrcBufferModel;
 
-class TreeItem : public QTreeWidgetItem
+class TreeItem : public QObject, public QTreeWidgetItem
 {
+    Q_OBJECT
+
 public:
     TreeItem(IrcBuffer* buffer, QTreeWidget* parent);
     TreeItem(IrcBuffer* buffer, QTreeWidgetItem* parent);
@@ -30,32 +35,36 @@ public:
     IrcBuffer* buffer() const;
     IrcConnection* connection() const;
 
-    TreeItem* findChild(const QString& name) const;
+    TreeItem* parentItem() const;
+    TreeWidget* treeWidget() const;
 
     QVariant data(int column, int role) const;
 
     int badge() const;
-    void setBadge(int badget);
+    void setBadge(int badge);
 
     bool isHighlighted() const;
     void setHighlighted(bool highlighted);
 
-    enum SortOrder { Alphabetic, Manual };
-    void sort(SortOrder order);
-    SortOrder currentSortOrder() const;
-
-    QStringList manualSortOrder() const;
-    void setManualSortOrder(const QStringList& order);
-    void resetManualSortOrder();
-
     bool operator<(const QTreeWidgetItem& other) const;
 
+public slots:
+    void reset();
+    void refresh();
+
+private slots:
+    void blink();
+
 private:
+    void init(IrcBuffer* buffer);
+    void startBlinking();
+    void stopBlinking();
+
     struct Private {
+        int badge;
+        bool blink;
         bool highlighted;
         IrcBuffer* buffer;
-        SortOrder sortOrder;
-        QStringList manualOrder;
         QSet<TreeItem*> highlightedChildren;
     } d;
     friend class TreeWidget;

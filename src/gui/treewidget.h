@@ -17,7 +17,6 @@
 
 #include <QTreeWidget>
 #include <QShortcut>
-#include <QColor>
 #include <QHash>
 
 class TreeItem;
@@ -36,24 +35,15 @@ public:
     QByteArray saveState() const;
     void restoreState(const QByteArray& state);
 
-    enum ItemStatus { Active, Inactive, Highlight, Badge, BadgeHighlight };
-
-    QColor statusColor(ItemStatus status) const;
-    void setStatusColor(ItemStatus status, const QColor& color);
-
-    QColor currentBadgeColor() const;
-    QColor currentHighlightColor() const;
-
     IrcBuffer* currentBuffer() const;
     TreeItem* bufferItem(IrcBuffer* buffer) const;
-    TreeItem* connectionItem(IrcConnection* connection) const;
 
-    bool hasRestoredCurrent() const;
+    QList<IrcConnection*> connections() const;
+    TreeItem* connectionItem(IrcConnection* connection) const;
 
 public slots:
     void addBuffer(IrcBuffer* buffer);
     void removeBuffer(IrcBuffer* buffer);
-    void renameBuffer(IrcBuffer* buffer);
     void setCurrentBuffer(IrcBuffer* buffer);
 
     void moveToNextItem();
@@ -72,9 +62,6 @@ public slots:
     void blockItemReset();
     void unblockItemReset();
 
-    void highlight(TreeItem* item);
-    void unhighlight(TreeItem* item);
-
 signals:
     void editConnection(IrcConnection* connection);
     void closeItem(TreeItem* item);
@@ -82,26 +69,19 @@ signals:
     void searched(bool result);
 
 protected:
-    void contextMenuEvent(QContextMenuEvent* event);
-    void dragMoveEvent(QDragMoveEvent* event);
     bool event(QEvent* event);
-    QMimeData* mimeData(const QList<QTreeWidgetItem*> items) const;
+    void contextMenuEvent(QContextMenuEvent* event);
     void rowsAboutToBeRemoved(const QModelIndex & parent, int start, int end);
 
 private slots:
-    void updateBuffer(IrcBuffer* buffer = 0);
-    void updateConnection(IrcConnection* connection = 0);
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void resetAllItems();
     void delayedItemReset();
     void delayedItemResetTimeout();
-    void highlightTimeout();
-    void applySettings();
 
 private:
-    void resetItem(TreeItem* item);
     QTreeWidgetItem* lastItem() const;
     QTreeWidgetItem* nextItem(QTreeWidgetItem* from) const;
     QTreeWidgetItem* previousItem(QTreeWidgetItem* from) const;
@@ -109,9 +89,7 @@ private:
     QTreeWidgetItem* findPrevItem(QTreeWidgetItem* from, int column, int role) const;
 
     struct Private {
-        bool currentRestored;
         bool itemResetBlocked;
-        QColor highlightColor;
         QShortcut* prevShortcut;
         QShortcut* nextShortcut;
         QShortcut* prevActiveShortcut;
@@ -120,12 +98,10 @@ private:
         QShortcut* collapseShortcut;
         QShortcut* mostActiveShortcut;
         QShortcut* resetShortcut;
-        QHash<ItemStatus, QColor> colors;
         QSet<TreeItem*> resetedItems;
-        QSet<TreeItem*> highlightedItems;
+        QList<IrcConnection*> connections;
         QHash<IrcBuffer*, TreeItem*> bufferItems;
         QHash<IrcConnection*, TreeItem*> connectionItems;
-        mutable QTreeWidgetItem* dropParent;
     } d;
     friend class TreeItem;
 };

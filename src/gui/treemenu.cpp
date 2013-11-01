@@ -71,7 +71,7 @@ void TreeMenu::onCloseTriggered()
 void TreeMenu::updateActions()
 {
     if (d.item) {
-        const bool child = d.item->parent();
+        const bool child = d.item->parentItem();
         const bool connected = d.item->connection()->isActive();
         const bool active = d.item->buffer()->isActive();
         const bool channel = d.item->buffer()->isChannel();
