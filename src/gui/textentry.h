@@ -29,10 +29,10 @@ class TextEntry : public LineEditor
 public:
     TextEntry(QWidget* parent = 0);
 
-    IrcBuffer* currentBuffer() const;
+    IrcBuffer* buffer() const;
 
 public slots:
-    void setCurrentBuffer(IrcBuffer* buffer);
+    void setBuffer(IrcBuffer* buffer);
 
 private slots:
     void sendInput();

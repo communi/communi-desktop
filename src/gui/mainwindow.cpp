@@ -58,7 +58,6 @@ MainWindow::MainWindow(QWidget* parent) : QStackedWidget(parent)
     addWidget(d.connectPage);
 
     d.chatPage = new ChatPage(this);
-    connect(d.chatPage, SIGNAL(highlighted(IrcMessage*)), this, SLOT(alert()));
     connect(d.chatPage, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(setCurrentBuffer(IrcBuffer*)));
     addWidget(d.chatPage);
 
@@ -208,7 +207,7 @@ void MainWindow::onRejected()
 
 void MainWindow::closeBuffer()
 {
-    IrcBuffer* buffer = d.chatPage->currentBuffer();
+    IrcBuffer* buffer = 0; //d.chatPage->currentBuffer();
     IrcChannel* channel = qobject_cast<IrcChannel*>(buffer);
     if (channel)
         channel->part(tr("Communi %1").arg(IRC_VERSION_STR));

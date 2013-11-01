@@ -64,12 +64,12 @@ TextEntry::TextEntry(QWidget* parent) : LineEditor(parent)
     connect(this, SIGNAL(returnPressed()), this, SLOT(sendInput()));
 }
 
-IrcBuffer* TextEntry::currentBuffer() const
+IrcBuffer* TextEntry::buffer() const
 {
     return d.buffer;
 }
 
-void TextEntry::setCurrentBuffer(IrcBuffer* buffer)
+void TextEntry::setBuffer(IrcBuffer* buffer)
 {
     if (d.buffer != buffer) {
         if (d.buffer) {

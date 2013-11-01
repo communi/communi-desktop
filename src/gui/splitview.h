@@ -7,39 +7,39 @@
  * completely or partially.
  */
 
-#ifndef CHATPAGE_H
-#define CHATPAGE_H
+#ifndef SPLITVIEW_H
+#define SPLITVIEW_H
 
 #include <QSplitter>
 
-class TreeView;
-class SplitView;
 class IrcBuffer;
-class IrcConnection;
+class BufferView;
 
-class ChatPage : public QSplitter
+class SplitView : public QSplitter
 {
     Q_OBJECT
 
 public:
-    ChatPage(QWidget* parent = 0);
-    ~ChatPage();
+    SplitView(QWidget* parent = 0);
+    ~SplitView();
 
     IrcBuffer* currentBuffer() const;
 
-    QList<IrcConnection*> connections() const;
-    void addConnection(IrcConnection* connection);
-    void removeConnection(IrcConnection* connection);
+public slots:
+    void setCurrentBuffer(IrcBuffer* buffer);
+    void split(Qt::Orientation orientation);
 
 signals:
     void currentBufferChanged(IrcBuffer* buffer);
 
+private slots:
+    void onFocusChanged(QWidget* old, QWidget* now);
+
 private:
     struct Private {
-        TreeView* treeView;
-        SplitView* splitView;
-        QList<IrcConnection*> connections;
+        BufferView* current;
+        QList<BufferView*> views;
     } d;
 };
 
-#endif // CHATPAGE_H
+#endif // SPLITVIEW_H

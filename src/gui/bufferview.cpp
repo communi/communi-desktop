@@ -8,134 +8,61 @@
  */
 
 #include "bufferview.h"
-#include "textbrowser.h"
-#include "textdocument.h"
-#include "messageformatter.h"
-#include <QDesktopServices>
-#include <IrcUserModel>
+#include "userlistview.h"
+#include "topiclabel.h"
+#include "textentry.h"
+#include "treeview.h"
+#include "document.h"
+#include "browser.h"
+#include <QVBoxLayout>
 #include <IrcChannel>
+#include <IrcBuffer>
 
-BufferView::BufferView(QWidget* parent) : QStackedWidget(parent)
+BufferView::BufferView(QWidget* parent) : QWidget(parent)
 {
-    d.bud = 0;
     d.buffer = 0;
-    d.userModel = new IrcUserModel(this);
-    d.formatter = new MessageFormatter(this);
+    d.browser = new Browser(this);
+    d.textEntry = new TextEntry(this);
+    d.topicLabel = new TopicLabel(this);
+    d.listView = new UserListView(this);
+    d.splitter = new QSplitter(this);
+
+    connect(d.browser, SIGNAL(split(Qt::Orientation)), this, SIGNAL(split(Qt::Orientation)));
+
+    QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->setSpacing(0);
+    layout->setMargin(0);
+    layout->addWidget(d.topicLabel);
+    layout->addWidget(d.splitter);
+    layout->addWidget(d.textEntry);
+
+    d.splitter->setHandleWidth(1);
+    d.splitter->addWidget(d.browser);
+    d.splitter->addWidget(d.listView);
+    d.splitter->setStretchFactor(0, 1);
 }
 
 BufferView::~BufferView()
 {
 }
 
-IrcBuffer* BufferView::currentBuffer() const
+IrcBuffer* BufferView::buffer() const
 {
     return d.buffer;
 }
 
-QWidget* BufferView::buddy() const
+void BufferView::setBuffer(IrcBuffer* buffer)
 {
-    return d.bud;
-}
+    d.buffer = buffer;
+    d.browser->setDocument(Document::instance(buffer));
 
-void BufferView::setBuddy(QWidget* buddy)
-{
-    d.bud = buddy;
-    foreach (TextBrowser* browser, d.browsers)
-        browser->setBuddy(buddy);
-}
+    IrcChannel* channel = qobject_cast<IrcChannel*>(buffer);
+    d.topicLabel->setChannel(channel);
+    d.topicLabel->setVisible(channel);
+    d.listView->setChannel(channel);
+    d.listView->setVisible(channel);
 
-void BufferView::addBuffer(IrcBuffer* buffer)
-{
-    connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
-
-    TextBrowser* browser = new TextBrowser(this);
-    TextDocument* doc = new TextDocument(browser);
-    doc->setMaximumBlockCount(1000);
-    doc->setDefaultStyleSheet(d.css);
-    browser->setBuddy(d.bud);
-    browser->setDocument(doc);
-    browser->setOpenLinks(false);
-    browser->setTabChangesFocus(true);
-    connect(browser, SIGNAL(anchorClicked(QUrl)), this, SLOT(onAnchorClicked(QUrl)));
-
-    addWidget(browser);
-    d.browsers.insert(buffer, browser);
-
-    if (buffer == d.buffer) // TODO:
-        setCurrentWidget(browser);
-}
-
-void BufferView::removeBuffer(IrcBuffer* buffer)
-{
-    disconnect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
-    delete d.browsers.value(buffer);
-}
-
-void BufferView::setCurrentBuffer(IrcBuffer* buffer)
-{
-    if (d.buffer != buffer) {
-        if (d.buffer) {
-            TextBrowser* browser = d.browsers.value(d.buffer);
-            if (browser) {
-                browser->document()->setNote(-1);
-                browser->document()->setActive(false);
-            }
-        }
-        d.buffer = buffer;
-        if (buffer) {
-            d.userModel->setChannel(qobject_cast<IrcChannel*>(buffer));
-            TextBrowser* browser = d.browsers.value(buffer);
-            if (browser) {
-                browser->document()->setActive(true);
-                setCurrentWidget(browser);
-                browser->scrollToBottom();
-            }
-        }
-    }
-}
-
-void BufferView::onAnchorClicked(const QUrl& url)
-{
-    if (url.scheme() == "nick")
-        emit clicked(url.toString(QUrl::RemoveScheme));
-    else
-        QDesktopServices::openUrl(url);
-    clearFocus();
-}
-
-void BufferView::receiveMessage(IrcMessage* message)
-{
-    IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
-    if (!buffer)
-        buffer = currentBuffer();
-    TextBrowser* browser = d.browsers.value(buffer);
-    if (browser) {
-        TextDocument* doc = browser->document();
-        const bool atBottom = browser->isAtBottom();
-
-        d.formatter->setBuffer(buffer);
-        const QString formatted = d.formatter->formatMessage(message);
-        bool highlight = d.formatter->wasHighlighted();
-        doc->append(formatted, highlight);
-
-        if (buffer == d.buffer) {
-            if (atBottom)
-                browser->scrollToBottom();
-        } else {
-            // set the "unseen block" note
-            int note = doc->note();
-            if (note == -1) {
-                note = doc->totalCount() - 1;
-                if (note > 1)
-                    doc->setNote(note);
-            }
-            // highlight non-current private queries
-            if (!qobject_cast<IrcChannel*>(buffer))
-                highlight = true;
-        }
-        if (highlight) {
-            emit highlighted(message);
-            emit highlighted(buffer);
-        }
-    }
+    d.textEntry->setBuffer(buffer);
+    if (buffer)
+        d.textEntry->setFocus();
 }

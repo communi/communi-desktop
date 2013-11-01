@@ -10,20 +10,15 @@
 #ifndef BUFFERVIEW_H
 #define BUFFERVIEW_H
 
-#include <QUrl>
-#include <QHash>
-#include <QStackedWidget>
+#include <QSplitter>
 
-class IrcUser;
+class Browser;
 class IrcBuffer;
-class IrcMessage;
-class IrcPalette;
-class TextBrowser;
-class IrcUserModel;
-class TextDocument;
-class MessageFormatter;
+class TextEntry;
+class TopicLabel;
+class UserListView;
 
-class BufferView : public QStackedWidget
+class BufferView : public QWidget
 {
     Q_OBJECT
 
@@ -31,34 +26,22 @@ public:
     BufferView(QWidget* parent = 0);
     ~BufferView();
 
-    IrcBuffer* currentBuffer() const;
-
-    QWidget* buddy() const;
-    void setBuddy(QWidget* buddy);
+    IrcBuffer* buffer() const;
 
 public slots:
-    void addBuffer(IrcBuffer* buffer);
-    void removeBuffer(IrcBuffer* buffer);
-    void setCurrentBuffer(IrcBuffer* buffer);
+    void setBuffer(IrcBuffer* buffer);
 
 signals:
-    void clicked(const QString& user);
-    void highlighted(IrcBuffer* buffer);
-    void highlighted(IrcMessage* message);
-
-private slots:
-    void onAnchorClicked(const QUrl& url);
-    void receiveMessage(IrcMessage* message);
+    void split(Qt::Orientation orientation);
 
 private:
     struct Private {
-        QString css;
-        QWidget* bud;
         IrcBuffer* buffer;
-        IrcUserModel* userModel;
-        MessageFormatter* formatter;
-        QHash<IrcBuffer*, QString> buffers;
-        QHash<IrcBuffer*, TextBrowser*> browsers;
+        Browser* browser;
+        TextEntry* textEntry;
+        TopicLabel* topicLabel;
+        UserListView* listView;
+        QSplitter* splitter;
     } d;
 };
 
