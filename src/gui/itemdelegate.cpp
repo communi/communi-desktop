@@ -21,6 +21,7 @@
 
 ItemDelegate::ItemDelegate(QObject* parent) : QStyledItemDelegate(parent)
 {
+    d.dark = false;
     d.rootIsDecorated = false;
 }
 
