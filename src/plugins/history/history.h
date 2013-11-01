@@ -12,8 +12,8 @@
 * GNU General Public License for more details.
 */
 
-#ifndef INPUTHISTORY_H
-#define INPUTHISTORY_H
+#ifndef HISTORY_H
+#define HISTORY_H
 
 #include <QHash>
 #include <QObject>
@@ -22,12 +22,12 @@
 class IrcBuffer;
 class TextInput;
 
-class InputHistory : public QObject
+class History : public QObject
 {
     Q_OBJECT
 
 public:
-    InputHistory(TextInput* input);
+    History(TextInput* input);
 
     bool eventFilter(QObject *object, QEvent *event);
 
@@ -47,4 +47,4 @@ private:
     } d;
 };
 
-#endif // INPUTHISTORY_H
+#endif // HISTORY_H

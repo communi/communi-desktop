@@ -13,7 +13,7 @@
 */
 
 #include "historyplugin.h"
-#include "inputhistory.h"
+#include "history.h"
 
 HistoryPlugin::HistoryPlugin(QObject* parent) : QObject(parent)
 {
@@ -21,5 +21,5 @@ HistoryPlugin::HistoryPlugin(QObject* parent) : QObject(parent)
 
 void HistoryPlugin::initialize(TextInput* input)
 {
-    new InputHistory(input);
+    new History(input);
 }

@@ -15,11 +15,11 @@ DESTDIR = ../../../plugins
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
+HEADERS += $$PWD/history.h
 HEADERS += $$PWD/historyplugin.h
-HEADERS += $$PWD/inputhistory.h
 
+SOURCES += $$PWD/history.cpp
 SOURCES += $$PWD/historyplugin.cpp
-SOURCES += $$PWD/inputhistory.cpp
 
 include(../../config.pri)
 include(../../input/input.pri)

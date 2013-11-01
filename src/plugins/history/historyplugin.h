@@ -15,11 +15,8 @@
 #ifndef HISTORYPLUGIN_H
 #define HISTORYPLUGIN_H
 
-#include <QHash>
 #include <QtPlugin>
 #include "inputplugin.h"
-
-class IrcBuffer;
 
 class HistoryPlugin : public QObject, public InputPlugin
 {

@@ -12,12 +12,12 @@
 * GNU General Public License for more details.
 */
 
-#include "inputhistory.h"
+#include "history.h"
 #include "textinput.h"
 #include <QKeyEvent>
 #include <QtDebug>
 
-InputHistory::InputHistory(TextInput* input) : QObject(input)
+History::History(TextInput* input) : QObject(input)
 {
     d.index = 0;
     d.buffer = 0;
@@ -26,7 +26,7 @@ InputHistory::InputHistory(TextInput* input) : QObject(input)
     connect(d.input, SIGNAL(bufferChanged(IrcBuffer*)), this, SLOT(changeBuffer(IrcBuffer*)));
 }
 
-bool InputHistory::eventFilter(QObject *object, QEvent* event)
+bool History::eventFilter(QObject *object, QEvent* event)
 {
     Q_UNUSED(object);
     if (event->type() == QEvent::KeyPress) {
@@ -55,13 +55,13 @@ bool InputHistory::eventFilter(QObject *object, QEvent* event)
     return false;
 }
 
-void InputHistory::goBackward()
+void History::goBackward()
 {
     if (d.index > 0)
         d.input->setText(d.history.value(--d.index));
 }
 
-void InputHistory::goForward()
+void History::goForward()
 {
     if (d.index < d.history.count())
         d.input->setText(d.history.value(++d.index));
@@ -69,7 +69,7 @@ void InputHistory::goForward()
         d.input->setText(d.text);
 }
 
-void InputHistory::changeBuffer(IrcBuffer* buffer)
+void History::changeBuffer(IrcBuffer* buffer)
 {
     if (d.buffer != buffer) {
         if (d.buffer)
