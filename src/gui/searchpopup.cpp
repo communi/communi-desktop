@@ -16,8 +16,10 @@
 #include <QMouseEvent>
 #include <QShortcut>
 
-SearchPopup::SearchPopup(QWidget* parent) : QLineEdit(parent)
+SearchPopup::SearchPopup(QTreeWidget* parent) : QLineEdit(parent)
 {
+    d.tree = parent;
+
     setWindowOpacity(0.8);
     setWindowFlags(Qt::Popup);
     setAttribute(Qt::WA_DeleteOnClose);
@@ -26,8 +28,8 @@ SearchPopup::SearchPopup(QWidget* parent) : QLineEdit(parent)
     QShortcut* shortcut = new QShortcut(QKeySequence("Esc"), this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(close()));
 
-    connect(this, SIGNAL(textEdited(QString)), this, SIGNAL(searched(QString)));
-    connect(this, SIGNAL(returnPressed()), this, SLOT(onReturnPressed()));
+    connect(this, SIGNAL(textEdited(QString)), this, SLOT(search(QString)));
+    connect(this, SIGNAL(returnPressed()), this, SLOT(searchAgain()));
 }
 
 SearchPopup::~SearchPopup()
@@ -49,13 +51,37 @@ void SearchPopup::mousePressEvent(QMouseEvent* event)
         close();
 }
 
-void SearchPopup::onReturnPressed()
+void SearchPopup::search(const QString& txt)
 {
-    if (!text().isEmpty())
-        emit searchedAgain(text());
+    if (d.tree && !txt.isEmpty()) {
+        QList<QTreeWidgetItem*> items = d.tree->findItems(txt, Qt::MatchExactly | Qt::MatchWrap | Qt::MatchRecursive);
+        if (items.isEmpty())
+            items = d.tree->findItems(txt, Qt::MatchContains | Qt::MatchWrap | Qt::MatchRecursive);
+        if (!items.isEmpty() && !items.contains(d.tree->currentItem()))
+            d.tree->setCurrentItem(items.first());
+        setStyleSheet(!items.isEmpty() ? "" : "background: #ff7a7a");
+    }
 }
 
-void SearchPopup::onSearched(bool result)
+void SearchPopup::searchAgain()
 {
-    setStyleSheet(result ? "" : "background: #ff7a7a");
+    QString txt = text();
+    if (d.tree && !txt.isEmpty()) {
+        QTreeWidgetItem* item = d.tree->currentItem();
+        if (item) {
+            QTreeWidgetItemIterator it(item, QTreeWidgetItemIterator::Unselected);
+            bool wrapped = false;
+            while (*it) {
+                if ((*it)->text(0).contains(txt, Qt::CaseInsensitive)) {
+                    d.tree->setCurrentItem(*it);
+                    return;
+                }
+                ++it;
+                if (!(*it) && !wrapped) {
+                    it = QTreeWidgetItemIterator(d.tree, QTreeWidgetItemIterator::Unselected);
+                    wrapped = true;
+                }
+            }
+        }
+    }
 }

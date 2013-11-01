@@ -46,14 +46,10 @@ public slots:
     void removeBuffer(IrcBuffer* buffer);
     void setCurrentBuffer(IrcBuffer* buffer);
 
-    void search(const QString& search);
-    void searchAgain(const QString& search);
-
     void blockItemReset();
     void unblockItemReset();
 
 signals:
-    void searched(bool result);
     void currentBufferChanged(IrcBuffer* buffer);
 
 protected:
@@ -66,12 +62,14 @@ private slots:
     void onItemCollapsed(QTreeWidgetItem* item);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void delayedReset(QTreeWidgetItem* item);
+    void search();
 
 private:
     struct Private {
         bool itemResetBlocked;
         Navigator* navigator;
         QShortcut* resetShortcut;
+        QShortcut* searchShortcut;
         QList<IrcConnection*> connections;
         QHash<IrcBuffer*, TreeItem*> bufferItems;
         QHash<IrcConnection*, TreeItem*> connectionItems;

@@ -16,6 +16,7 @@
 #include "treeitem.h"
 #include "treemenu.h"
 #include "navigator.h"
+#include "searchpopup.h"
 #include "itemdelegate.h"
 #include <QContextMenuEvent>
 #include <IrcConnection>
@@ -59,6 +60,10 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 
     d.resetShortcut = new QShortcut(this);
     d.resetShortcut->setKey(QKeySequence(tr("Ctrl+R")));
+
+    d.searchShortcut = new QShortcut(this);
+    d.searchShortcut->setKey(QKeySequence(tr("Ctrl+S")));
+    connect(d.searchShortcut, SIGNAL(activated()), this, SLOT(search()));
 }
 
 QSize TreeWidget::sizeHint() const
@@ -173,38 +178,6 @@ void TreeWidget::setCurrentBuffer(IrcBuffer* buffer)
         setCurrentItem(item);
 }
 
-void TreeWidget::search(const QString& search)
-{
-    if (!search.isEmpty()) {
-        QList<QTreeWidgetItem*> items = findItems(search, Qt::MatchExactly | Qt::MatchWrap | Qt::MatchRecursive);
-        if (items.isEmpty())
-            items = findItems(search, Qt::MatchContains | Qt::MatchWrap | Qt::MatchRecursive);
-        if (!items.isEmpty() && !items.contains(currentItem()))
-            setCurrentItem(items.first());
-        emit searched(!items.isEmpty());
-    }
-}
-
-void TreeWidget::searchAgain(const QString& search)
-{
-    QTreeWidgetItem* item = currentItem();
-    if (item && !search.isEmpty()) {
-        QTreeWidgetItemIterator it(item, QTreeWidgetItemIterator::Unselected);
-        bool wrapped = false;
-        while (*it) {
-            if ((*it)->text(0).contains(search, Qt::CaseInsensitive)) {
-                setCurrentItem(*it);
-                return;
-            }
-            ++it;
-            if (!(*it) && !wrapped) {
-                it = QTreeWidgetItemIterator(this, QTreeWidgetItemIterator::Unselected);
-                wrapped = true;
-            }
-        }
-    }
-}
-
 void TreeWidget::blockItemReset()
 {
     d.itemResetBlocked = true;
@@ -273,4 +246,12 @@ void TreeWidget::delayedReset(QTreeWidgetItem* item)
 {
     if (item)
         QTimer::singleShot(500, static_cast<TreeItem*>(item), SLOT(reset()));
+}
+
+void TreeWidget::search()
+{
+    SearchPopup* popup = new SearchPopup(this);
+    connect(popup, SIGNAL(destroyed()), this, SLOT(unblockItemReset()));
+    blockItemReset();
+    popup->popup();
 }

@@ -16,28 +16,30 @@
 #define SEARCHPOPUP_H
 
 #include <QLineEdit>
+#include <QTreeWidget>
 
 class SearchPopup : public QLineEdit
 {
     Q_OBJECT
 
 public:
-    explicit SearchPopup(QWidget* parent = 0);
+    explicit SearchPopup(QTreeWidget* parent = 0);
     ~SearchPopup();
 
 public slots:
     void popup();
 
-signals:
-    void searched(const QString& search);
-    void searchedAgain(const QString& search);
-
 protected:
     void mousePressEvent(QMouseEvent* event);
 
 private slots:
-    void onReturnPressed();
-    void onSearched(bool result);
+    void search(const QString& text);
+    void searchAgain();
+
+private:
+    struct Private {
+        QTreeWidget* tree;
+    } d;
 };
 
 #endif // SEARCHPOPUP_H
