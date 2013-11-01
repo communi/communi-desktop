@@ -4,3 +4,5 @@
 
 TEMPLATE = subdirs
 SUBDIRS += src
+
+greaterThan(QT_MAJOR_VERSION, 4): cache()
