@@ -24,6 +24,7 @@
 #include <QShortcut>
 
 // TODO:
+Q_IMPORT_PLUGIN(CompleterPlugin)
 Q_IMPORT_PLUGIN(HistoryPlugin)
 
 TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
@@ -34,10 +35,6 @@ TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
     d.parser->setTriggers(QStringList("/"));
     d.parser->setTolerant(true);
 
-    d.completer = new IrcCompleter(this);
-    connect(d.completer, SIGNAL(completed(QString,int)), this, SLOT(complete(QString,int)));
-    d.completer->setParser(d.parser);
-
     setAttribute(Qt::WA_MacShowFocusRect, false);
 
     // TODO: move outta here...
@@ -47,15 +44,17 @@ TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
             plugin->initialize(this);
     }
 
-    QShortcut* shortcut = new QShortcut(Qt::Key_Tab, this);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(tryComplete()));
-
     connect(this, SIGNAL(returnPressed()), this, SLOT(sendInput()));
 }
 
 IrcBuffer* TextInput::buffer() const
 {
     return d.buffer;
+}
+
+IrcCommandParser* TextInput::parser() const
+{
+    return d.parser;
 }
 
 void TextInput::setBuffer(IrcBuffer* buffer)
@@ -75,10 +74,8 @@ void TextInput::setBuffer(IrcBuffer* buffer)
 
             d.parser->setTarget(buffer->title());
             d.parser->setChannels(buffer->model()->channels());
-            d.completer->setBuffer(buffer);
         } else {
             d.parser->reset();
-            d.completer->setBuffer(0);
         }
 
         d.buffer = buffer;
@@ -106,15 +103,4 @@ void TextInput::sendInput()
 void TextInput::cleanup(IrcBuffer* buffer)
 {
     d.histories.remove(buffer);
-}
-
-void TextInput::tryComplete()
-{
-    d.completer->complete(text(), cursorPosition());
-}
-
-void TextInput::complete(const QString& text, int cursor)
-{
-    setText(text);
-    setCursorPosition(cursor);
 }

@@ -12,41 +12,28 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TEXTINPUT_H
-#define TEXTINPUT_H
+#ifndef COMPLETER_H
+#define COMPLETER_H
 
-#include <QLineEdit>
+#include <IrcCompleter>
 
-class IrcBuffer;
-class CommandParser;
-class IrcCommandParser;
+class TextInput;
 
-class TextInput : public QLineEdit
+class Completer : public IrcCompleter
 {
     Q_OBJECT
 
 public:
-    TextInput(QWidget* parent = 0);
-
-    IrcBuffer* buffer() const;
-    IrcCommandParser* parser() const;
-
-public slots:
-    void setBuffer(IrcBuffer* buffer);
-
-signals:
-    void bufferChanged(IrcBuffer* buffer);
+    Completer(TextInput* input);
 
 private slots:
-    void sendInput();
-    void cleanup(IrcBuffer* buffer);
+    void tryComplete();
+    void complete(const QString& text, int cursor);
 
 private:
     struct Private {
-        IrcBuffer* buffer;
-        CommandParser* parser;
-        QHash<IrcBuffer*, QStringList> histories;
+        TextInput* input;
     } d;
 };
 
-#endif // TEXTINPUT_H
+#endif // COMPLETER_H
