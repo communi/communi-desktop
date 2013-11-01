@@ -17,13 +17,13 @@
 
 #include <QtPlugin>
 
-class TextEntry;
+class TextInput;
 
 class InputPlugin
 {
 public:
     virtual ~InputPlugin() {}
-    virtual void initialize(TextEntry* input) = 0;
+    virtual void initialize(TextInput* input) = 0;
 };
 
 Q_DECLARE_INTERFACE(TreePlugin, "com.github.communi.InputPlugin")

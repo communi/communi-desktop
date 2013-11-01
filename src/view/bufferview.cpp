@@ -10,7 +10,7 @@
 #include "bufferview.h"
 #include "userlistview.h"
 #include "topiclabel.h"
-#include "textentry.h"
+#include "textinput.h"
 #include "document.h"
 #include "browser.h"
 #include <QVBoxLayout>
@@ -21,7 +21,7 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
 {
     d.buffer = 0;
     d.browser = new Browser(this);
-    d.textEntry = new TextEntry(this);
+    d.textInput = new TextInput(this);
     d.topicLabel = new TopicLabel(this);
     d.listView = new UserListView(this);
     d.splitter = new QSplitter(this);
@@ -34,7 +34,7 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     layout->setMargin(0);
     layout->addWidget(d.topicLabel);
     layout->addWidget(d.splitter);
-    layout->addWidget(d.textEntry);
+    layout->addWidget(d.textInput);
 
     d.splitter->setHandleWidth(1);
     d.splitter->addWidget(d.browser);
@@ -62,7 +62,7 @@ void BufferView::setBuffer(IrcBuffer* buffer)
     d.listView->setChannel(channel);
     d.listView->setVisible(channel);
 
-    d.textEntry->setBuffer(buffer);
+    d.textInput->setBuffer(buffer);
     if (buffer)
-        d.textEntry->setFocus();
+        d.textInput->setFocus();
 }

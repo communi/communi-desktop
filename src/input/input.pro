@@ -17,10 +17,10 @@ INCLUDEPATH += $$PWD
 
 HEADERS += $$PWD/inputplugin.h
 HEADERS += $$PWD/lineeditor.h
-HEADERS += $$PWD/textentry.h
+HEADERS += $$PWD/textinput.h
 
 SOURCES += $$PWD/lineeditor.cpp
-SOURCES += $$PWD/textentry.cpp
+SOURCES += $$PWD/textinput.cpp
 
 include(../config.pri)
 include(../backend.pri)

@@ -12,7 +12,7 @@
 * GNU General Public License for more details.
 */
 
-#include "textentry.h"
+#include "textinput.h"
 #include "commandparser.h"
 #include <QStringListModel>
 #include <IrcBufferModel>
@@ -21,7 +21,7 @@
 #include <IrcBuffer>
 #include <QShortcut>
 
-TextEntry::TextEntry(QWidget* parent) : LineEditor(parent)
+TextInput::TextInput(QWidget* parent) : LineEditor(parent)
 {
     d.buffer = 0;
 
@@ -51,12 +51,12 @@ TextEntry::TextEntry(QWidget* parent) : LineEditor(parent)
     connect(this, SIGNAL(returnPressed()), this, SLOT(sendInput()));
 }
 
-IrcBuffer* TextEntry::buffer() const
+IrcBuffer* TextInput::buffer() const
 {
     return d.buffer;
 }
 
-void TextEntry::setBuffer(IrcBuffer* buffer)
+void TextInput::setBuffer(IrcBuffer* buffer)
 {
     if (d.buffer != buffer) {
         if (d.buffer) {
@@ -86,7 +86,7 @@ void TextEntry::setBuffer(IrcBuffer* buffer)
     }
 }
 
-void TextEntry::sendInput()
+void TextInput::sendInput()
 {
     if (!d.buffer)
         return;
@@ -103,17 +103,17 @@ void TextEntry::sendInput()
         clear();
 }
 
-void TextEntry::cleanup(IrcBuffer* buffer)
+void TextInput::cleanup(IrcBuffer* buffer)
 {
     d.histories.remove(buffer);
 }
 
-void TextEntry::tryComplete()
+void TextInput::tryComplete()
 {
     d.completer->complete(text(), cursorPosition());
 }
 
-void TextEntry::complete(const QString& text, int cursor)
+void TextInput::complete(const QString& text, int cursor)
 {
     setText(text);
     setCursorPosition(cursor);

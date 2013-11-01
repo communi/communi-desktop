@@ -14,7 +14,7 @@
 
 class Browser;
 class IrcBuffer;
-class TextEntry;
+class TextInput;
 class TopicLabel;
 class UserListView;
 
@@ -38,7 +38,7 @@ private:
     struct Private {
         IrcBuffer* buffer;
         Browser* browser;
-        TextEntry* textEntry;
+        TextInput* textInput;
         TopicLabel* topicLabel;
         UserListView* listView;
         QSplitter* splitter;

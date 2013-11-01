@@ -12,8 +12,8 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TEXTENTRY_H
-#define TEXTENTRY_H
+#ifndef TEXTINPUT_H
+#define TEXTINPUT_H
 
 #include "lineeditor.h"
 
@@ -21,12 +21,12 @@ class IrcBuffer;
 class IrcCompleter;
 class CommandParser;
 
-class TextEntry : public LineEditor
+class TextInput : public LineEditor
 {
     Q_OBJECT
 
 public:
-    TextEntry(QWidget* parent = 0);
+    TextInput(QWidget* parent = 0);
 
     IrcBuffer* buffer() const;
 
@@ -49,4 +49,4 @@ private:
     } d;
 };
 
-#endif // TEXTENTRY_H
+#endif // TEXTINPUT_H
