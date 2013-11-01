@@ -21,6 +21,7 @@
 
 class TreeItem;
 class IrcBuffer;
+class Navigator;
 class IrcConnection;
 
 class TreeWidget : public QTreeWidget
@@ -45,16 +46,6 @@ public slots:
     void addBuffer(IrcBuffer* buffer);
     void removeBuffer(IrcBuffer* buffer);
     void setCurrentBuffer(IrcBuffer* buffer);
-
-    void moveToNextItem();
-    void moveToPrevItem();
-
-    void moveToNextActiveItem();
-    void moveToPrevActiveItem();
-
-    void expandCurrentConnection();
-    void collapseCurrentConnection();
-    void moveToMostActiveItem();
 
     void search(const QString& search);
     void searchAgain(const QString& search);
@@ -82,21 +73,9 @@ private slots:
     void delayedItemResetTimeout();
 
 private:
-    QTreeWidgetItem* lastItem() const;
-    QTreeWidgetItem* nextItem(QTreeWidgetItem* from) const;
-    QTreeWidgetItem* previousItem(QTreeWidgetItem* from) const;
-    QTreeWidgetItem* findNextItem(QTreeWidgetItem* from, int column, int role) const;
-    QTreeWidgetItem* findPrevItem(QTreeWidgetItem* from, int column, int role) const;
-
     struct Private {
         bool itemResetBlocked;
-        QShortcut* prevShortcut;
-        QShortcut* nextShortcut;
-        QShortcut* prevActiveShortcut;
-        QShortcut* nextActiveShortcut;
-        QShortcut* expandShortcut;
-        QShortcut* collapseShortcut;
-        QShortcut* mostActiveShortcut;
+        Navigator* navigator;
         QShortcut* resetShortcut;
         QSet<TreeItem*> resetedItems;
         QList<IrcConnection*> connections;

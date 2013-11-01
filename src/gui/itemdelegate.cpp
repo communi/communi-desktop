@@ -13,6 +13,7 @@
 */
 
 #include "itemdelegate.h"
+#include "treerole.h"
 #include <QStyleOptionViewItem>
 #include <QApplication>
 #include <QLineEdit>
@@ -96,7 +97,7 @@ void ItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
     QStyledItemDelegate::paint(painter, option, index);
 
     if (index.column() == 1) {
-        int badge = index.data(BadgeRole).toInt();
+        int badge = index.data(TreeRole::Badge).toInt();
         if (badge > 0) {
             QRect rect;
             rect.setWidth(option.rect.width() - 2);
@@ -106,7 +107,7 @@ void ItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 
             painter->save();
             painter->setPen(Qt::NoPen);
-            painter->setBrush(qvariant_cast<QBrush>(index.data(BadgeColorRole)));
+            // TODO: painter->setBrush(qvariant_cast<QBrush>(index.data(BadgeColorRole)));
             painter->setRenderHint(QPainter::Antialiasing);
             painter->drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
 

@@ -15,6 +15,7 @@
 #include "treewidget.h"
 #include "treeitem.h"
 #include "treemenu.h"
+#include "navigator.h"
 #include "itemdelegate.h"
 #include <QContextMenuEvent>
 #include <IrcConnection>
@@ -47,6 +48,7 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     setItemDelegate(delegate);
 
     d.itemResetBlocked = false;
+    d.navigator = new Navigator(this);
 
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)),
             this, SLOT(onItemExpanded(QTreeWidgetItem*)));
@@ -54,42 +56,6 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
             this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
-
-#ifdef Q_OS_MAC
-    QString navigate("Ctrl+Alt+%1");
-    QString nextActive("Shift+Ctrl+Alt+%1");
-#else
-    QString navigate("Alt+%1");
-    QString nextActive("Shift+Alt+%1");
-#endif
-
-    d.prevShortcut = new QShortcut(this);
-    d.prevShortcut->setKey(QKeySequence(navigate.arg("Up")));
-    connect(d.prevShortcut, SIGNAL(activated()), this, SLOT(moveToPrevItem()));
-
-    d.nextShortcut = new QShortcut(this);
-    d.nextShortcut->setKey(QKeySequence(navigate.arg("Down")));
-    connect(d.nextShortcut, SIGNAL(activated()), this, SLOT(moveToNextItem()));
-
-    d.prevActiveShortcut = new QShortcut(this);
-    d.prevActiveShortcut->setKey(QKeySequence(nextActive.arg("Up")));
-    connect(d.prevActiveShortcut, SIGNAL(activated()), this, SLOT(moveToPrevActiveItem()));
-
-    d.nextActiveShortcut = new QShortcut(this);
-    d.nextActiveShortcut->setKey(QKeySequence(nextActive.arg("Down")));
-    connect(d.nextActiveShortcut, SIGNAL(activated()), this, SLOT(moveToNextActiveItem()));
-
-    d.expandShortcut = new QShortcut(this);
-    d.expandShortcut->setKey(QKeySequence(navigate.arg("Right")));
-    connect(d.expandShortcut, SIGNAL(activated()), this, SLOT(expandCurrentConnection()));
-
-    d.collapseShortcut = new QShortcut(this);
-    d.collapseShortcut->setKey(QKeySequence(navigate.arg("Left")));
-    connect(d.collapseShortcut, SIGNAL(activated()), this, SLOT(collapseCurrentConnection()));
-
-    d.mostActiveShortcut = new QShortcut(this);
-    d.mostActiveShortcut->setKey(QKeySequence(tr("Ctrl+L")));
-    connect(d.mostActiveShortcut, SIGNAL(activated()), this, SLOT(moveToMostActiveItem()));
 
     d.resetShortcut = new QShortcut(this);
     d.resetShortcut->setKey(QKeySequence(tr("Ctrl+R")));
@@ -212,64 +178,6 @@ void TreeWidget::setCurrentBuffer(IrcBuffer* buffer)
         setCurrentItem(item);
 }
 
-void TreeWidget::moveToNextItem()
-{
-    QTreeWidgetItem* item = nextItem(currentItem());
-    if (!item)
-        item = topLevelItem(0);
-    setCurrentItem(item);
-}
-
-void TreeWidget::moveToPrevItem()
-{
-    QTreeWidgetItem* item = previousItem(currentItem());
-    if (!item)
-        item = lastItem();
-    setCurrentItem(item);
-}
-
-void TreeWidget::moveToNextActiveItem()
-{
-    QTreeWidgetItem* item = findNextItem(currentItem(), 0, ItemDelegate::HighlightRole);
-    if (!item)
-        item = findNextItem(currentItem(), 1, ItemDelegate::BadgeRole);
-    if (item)
-        setCurrentItem(item);
-}
-
-void TreeWidget::moveToPrevActiveItem()
-{
-    QTreeWidgetItem* item = findPrevItem(currentItem(), 0, ItemDelegate::HighlightRole);
-    if (!item)
-        item = findPrevItem(currentItem(), 1, ItemDelegate::BadgeRole);
-    if (item)
-        setCurrentItem(item);
-}
-
-void TreeWidget::moveToMostActiveItem()
-{
-    TreeItem* mostActive = 0;
-    QTreeWidgetItemIterator it(this, QTreeWidgetItemIterator::Unselected);
-    while (*it) {
-        TreeItem* item = static_cast<TreeItem*>(*it);
-
-        if (item->isHighlighted()) {
-            // we found a channel hilight or PM to us
-            setCurrentItem(item);
-            return;
-        }
-
-        // as a backup, store the most active window with any sort of activity
-        if (item->badge() && (!mostActive || mostActive->badge() < item->badge()))
-            mostActive = item;
-
-        it++;
-    }
-
-    if (mostActive)
-        setCurrentItem(mostActive);
-}
-
 void TreeWidget::search(const QString& search)
 {
     if (!search.isEmpty()) {
@@ -311,26 +219,6 @@ void TreeWidget::unblockItemReset()
 {
     d.itemResetBlocked = false;
     delayedItemReset();
-}
-
-void TreeWidget::expandCurrentConnection()
-{
-    QTreeWidgetItem* item = currentItem();
-    if (item && item->parent())
-        item = item->parent();
-    if (item)
-        expandItem(item);
-}
-
-void TreeWidget::collapseCurrentConnection()
-{
-    QTreeWidgetItem* item = currentItem();
-    if (item && item->parent())
-        item = item->parent();
-    if (item) {
-        collapseItem(item);
-        setCurrentItem(item);
-    }
 }
 
 bool TreeWidget::event(QEvent* event)
@@ -411,62 +299,4 @@ void TreeWidget::delayedItemResetTimeout()
             item->reset();
         d.resetedItems.clear();
     }
-}
-
-QTreeWidgetItem* TreeWidget::lastItem() const
-{
-    QTreeWidgetItem* item = topLevelItem(topLevelItemCount() - 1);
-    if (item->childCount() > 0)
-        item = item->child(item->childCount() - 1);
-    return item;
-}
-
-QTreeWidgetItem* TreeWidget::nextItem(QTreeWidgetItem* from) const
-{
-    if (!from)
-        return 0;
-    QTreeWidgetItemIterator it(from);
-    while (*++it) {
-        if (!(*it)->parent() || (*it)->parent()->isExpanded())
-            break;
-    }
-    return *it;
-}
-
-QTreeWidgetItem* TreeWidget::previousItem(QTreeWidgetItem* from) const
-{
-    if (!from)
-        return 0;
-    QTreeWidgetItemIterator it(from);
-    while (*--it) {
-        if (!(*it)->parent() || (*it)->parent()->isExpanded())
-            break;
-    }
-    return *it;
-}
-
-QTreeWidgetItem* TreeWidget::findNextItem(QTreeWidgetItem* from, int column, int role) const
-{
-    if (from) {
-        QTreeWidgetItemIterator it(from);
-        while (*++it && *it != from) {
-            TreeItem* item = static_cast<TreeItem*>(*it);
-            if (item->data(column, role).toBool())
-                return item;
-        }
-    }
-    return 0;
-}
-
-QTreeWidgetItem* TreeWidget::findPrevItem(QTreeWidgetItem* from, int column, int role) const
-{
-    if (from) {
-        QTreeWidgetItemIterator it(from);
-        while (*--it && *it != from) {
-            TreeItem* item = static_cast<TreeItem*>(*it);
-            if (item->data(column, role).toBool())
-                return item;
-        }
-    }
-    return 0;
 }

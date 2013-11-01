@@ -15,7 +15,7 @@
 #include "treeitem.h"
 #include "treewidget.h"
 #include "sharedtimer.h"
-#include "itemdelegate.h" // TODO: treerole.h
+#include "treerole.h"
 #include <IrcBufferModel>
 #include <IrcBuffer>
 
@@ -68,9 +68,9 @@ TreeWidget* TreeItem::treeWidget() const
 QVariant TreeItem::data(int column, int role) const
 {
     switch (role) {
-    case ItemDelegate::BadgeRole:
+    case TreeRole::Badge:
         return d.badge;
-    case ItemDelegate::HighlightRole:
+    case TreeRole::Highlight:
         return d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty());
     case Qt::ForegroundRole:
         if (!d.buffer->isActive())
