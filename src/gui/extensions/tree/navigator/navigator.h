@@ -15,18 +15,19 @@
 #ifndef NAVIGATOR_H
 #define NAVIGATOR_H
 
-#include <QTreeWidget>
 #include <QShortcut>
+#include <QTreeWidget>
+#include "treeextension.h"
 
-class Navigator : public QObject
+class Navigator : public QObject, public TreeExtensionInterface
 {
     Q_OBJECT
+    Q_INTERFACES(TreeExtensionInterface)
 
 public:
-    Navigator(QWidget* parent = 0);
+    explicit Navigator(QObject* parent = 0);
 
-    QTreeWidget* treeWidget() const;
-    void setTreeWidget(QTreeWidget* widget);
+    void initialize(QTreeWidget* tree);
 
     QTreeWidgetItem* currentItem() const;
     void setCurrentItem(QTreeWidgetItem* item);

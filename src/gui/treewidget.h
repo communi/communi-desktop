@@ -46,30 +46,19 @@ public slots:
     void removeBuffer(IrcBuffer* buffer);
     void setCurrentBuffer(IrcBuffer* buffer);
 
-    void blockItemReset();
-    void unblockItemReset();
-
 signals:
     void currentBufferChanged(IrcBuffer* buffer);
 
 protected:
-    bool event(QEvent* event);
-    void contextMenuEvent(QContextMenuEvent* event);
     void rowsAboutToBeRemoved(const QModelIndex & parent, int start, int end);
 
 private slots:
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
-    void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
-    void delayedReset(QTreeWidgetItem* item);
-    void search();
+    void onCurrentItemChanged(QTreeWidgetItem* item);
 
 private:
     struct Private {
-        bool itemResetBlocked;
-        Navigator* navigator;
-        QShortcut* resetShortcut;
-        QShortcut* searchShortcut;
         QList<IrcConnection*> connections;
         QHash<IrcBuffer*, TreeItem*> bufferItems;
         QHash<IrcConnection*, TreeItem*> connectionItems;

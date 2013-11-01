@@ -1,5 +1,5 @@
 ######################################################################
-# Communi: widgets.pri
+# Communi
 ######################################################################
 
 DEPENDPATH += $$PWD
@@ -14,14 +14,11 @@ HEADERS += $$PWD/connectpage.h
 HEADERS += $$PWD/document.h
 HEADERS += $$PWD/itemdelegate.h
 HEADERS += $$PWD/mainwindow.h
-HEADERS += $$PWD/navigator.h
 HEADERS += $$PWD/searchentry.h
-HEADERS += $$PWD/searchpopup.h
 HEADERS += $$PWD/splitview.h
 HEADERS += $$PWD/textentry.h
 HEADERS += $$PWD/topiclabel.h
 HEADERS += $$PWD/treeitem.h
-HEADERS += $$PWD/treemenu.h
 HEADERS += $$PWD/treerole.h
 HEADERS += $$PWD/treewidget.h
 HEADERS += $$PWD/userlistview.h
@@ -33,15 +30,15 @@ SOURCES += $$PWD/connectpage.cpp
 SOURCES += $$PWD/document.cpp
 SOURCES += $$PWD/itemdelegate.cpp
 SOURCES += $$PWD/mainwindow.cpp
-SOURCES += $$PWD/navigator.cpp
 SOURCES += $$PWD/searchentry.cpp
-SOURCES += $$PWD/searchpopup.cpp
 SOURCES += $$PWD/splitview.cpp
 SOURCES += $$PWD/textentry.cpp
 SOURCES += $$PWD/topiclabel.cpp
 SOURCES += $$PWD/treeitem.cpp
-SOURCES += $$PWD/treemenu.cpp
 SOURCES += $$PWD/treewidget.cpp
 SOURCES += $$PWD/userlistview.cpp
 
 include(util/util.pri)
+
+# TODO:
+include(extensions/extensions.pri)

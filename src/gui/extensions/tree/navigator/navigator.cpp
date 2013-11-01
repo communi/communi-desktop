@@ -13,11 +13,16 @@
 */
 
 #include "navigator.h"
-#include "treerole.h"
+#include "treerole.h" // TODO
 
-Navigator::Navigator(QWidget* parent) : QObject(parent)
+Navigator::Navigator(QObject* parent) : QObject(parent)
 {
-    setTreeWidget(qobject_cast<QTreeWidget*>(parent));
+    d.tree = 0;
+}
+
+void Navigator::initialize(QTreeWidget* tree)
+{
+    d.tree = tree;
 
 #ifdef Q_OS_MAC
     QString navigate(tr("Ctrl+Alt+%1"));
@@ -27,43 +32,33 @@ Navigator::Navigator(QWidget* parent) : QObject(parent)
     QString nextActive(tr("Shift+Alt+%1"));
 #endif
 
-    d.prevShortcut = new QShortcut(parent);
+    d.prevShortcut = new QShortcut(tree);
     d.prevShortcut->setKey(QKeySequence(navigate.arg("Up")));
     connect(d.prevShortcut, SIGNAL(activated()), this, SLOT(moveToPrevItem()));
 
-    d.nextShortcut = new QShortcut(parent);
+    d.nextShortcut = new QShortcut(tree);
     d.nextShortcut->setKey(QKeySequence(navigate.arg("Down")));
     connect(d.nextShortcut, SIGNAL(activated()), this, SLOT(moveToNextItem()));
 
-    d.prevActiveShortcut = new QShortcut(parent);
+    d.prevActiveShortcut = new QShortcut(tree);
     d.prevActiveShortcut->setKey(QKeySequence(nextActive.arg("Up")));
     connect(d.prevActiveShortcut, SIGNAL(activated()), this, SLOT(moveToPrevActiveItem()));
 
-    d.nextActiveShortcut = new QShortcut(parent);
+    d.nextActiveShortcut = new QShortcut(tree);
     d.nextActiveShortcut->setKey(QKeySequence(nextActive.arg("Down")));
     connect(d.nextActiveShortcut, SIGNAL(activated()), this, SLOT(moveToNextActiveItem()));
 
-    d.expandShortcut = new QShortcut(parent);
+    d.expandShortcut = new QShortcut(tree);
     d.expandShortcut->setKey(QKeySequence(navigate.arg("Right")));
     connect(d.expandShortcut, SIGNAL(activated()), this, SLOT(expandCurrentConnection()));
 
-    d.collapseShortcut = new QShortcut(parent);
+    d.collapseShortcut = new QShortcut(tree);
     d.collapseShortcut->setKey(QKeySequence(navigate.arg("Left")));
     connect(d.collapseShortcut, SIGNAL(activated()), this, SLOT(collapseCurrentConnection()));
 
-    d.mostActiveShortcut = new QShortcut(parent);
+    d.mostActiveShortcut = new QShortcut(tree);
     d.mostActiveShortcut->setKey(QKeySequence(tr("Ctrl+L")));
     connect(d.mostActiveShortcut, SIGNAL(activated()), this, SLOT(moveToMostActiveItem()));
-}
-
-QTreeWidget* Navigator::treeWidget() const
-{
-    return d.tree;
-}
-
-void Navigator::setTreeWidget(QTreeWidget* widget)
-{
-    d.tree = widget;
 }
 
 QTreeWidgetItem* Navigator::currentItem() const

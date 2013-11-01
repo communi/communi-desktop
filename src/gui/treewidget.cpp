@@ -14,15 +14,14 @@
 
 #include "treewidget.h"
 #include "treeitem.h"
-#include "treemenu.h"
+#include "menu.h"
+#include "finder.h"
+#include "reseter.h"
 #include "navigator.h"
-#include "searchpopup.h"
 #include "itemdelegate.h"
-#include <QContextMenuEvent>
 #include <IrcConnection>
 #include <QHeaderView>
 #include <IrcBuffer>
-#include <QTimer>
 
 TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
@@ -48,22 +47,22 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     delegate->setRootIsDecorated(true);
     setItemDelegate(delegate);
 
-    d.itemResetBlocked = false;
-    d.navigator = new Navigator(this);
+    // TODO: extensions
+    Navigator* navigator = new Navigator(this);
+    navigator->initialize(this);
 
-    connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)),
-            this, SLOT(onItemExpanded(QTreeWidgetItem*)));
-    connect(this, SIGNAL(itemCollapsed(QTreeWidgetItem*)),
-            this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
-    connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
-            this, SLOT(onCurrentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
+    Finder* finder = new Finder(this);
+    finder->initialize(this);
 
-    d.resetShortcut = new QShortcut(this);
-    d.resetShortcut->setKey(QKeySequence(tr("Ctrl+R")));
+    Menu* menu = new Menu(this);
+    menu->initialize(this);
 
-    d.searchShortcut = new QShortcut(this);
-    d.searchShortcut->setKey(QKeySequence(tr("Ctrl+S")));
-    connect(d.searchShortcut, SIGNAL(activated()), this, SLOT(search()));
+    Reseter* reseter = new Reseter(this);
+    reseter->initialize(this);
+
+    connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(onItemExpanded(QTreeWidgetItem*)));
+    connect(this, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
+    connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));
 }
 
 QSize TreeWidget::sizeHint() const
@@ -157,7 +156,6 @@ void TreeWidget::addBuffer(IrcBuffer* buffer)
         TreeItem* parent = d.connectionItems.value(buffer->connection());
         item = new TreeItem(buffer, parent);
     }
-    connect(d.resetShortcut, SIGNAL(activated()), item, SLOT(reset()));
     d.bufferItems.insert(buffer, item);
 }
 
@@ -176,33 +174,6 @@ void TreeWidget::setCurrentBuffer(IrcBuffer* buffer)
     TreeItem* item = d.bufferItems.value(buffer);
     if (item)
         setCurrentItem(item);
-}
-
-void TreeWidget::blockItemReset()
-{
-    d.itemResetBlocked = true;
-}
-
-void TreeWidget::unblockItemReset()
-{
-    d.itemResetBlocked = false;
-    delayedReset(currentItem());
-}
-
-bool TreeWidget::event(QEvent* event)
-{
-    if (event->type() == QEvent::WindowActivate)
-        delayedReset(currentItem());
-    return QTreeWidget::event(event);
-}
-
-void TreeWidget::contextMenuEvent(QContextMenuEvent* event)
-{
-    TreeItem* item = static_cast<TreeItem*>(itemAt(event->pos()));
-    if (item) {
-        TreeMenu menu(this);
-        menu.exec(item, event->globalPos());
-    }
 }
 
 void TreeWidget::rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end)
@@ -230,28 +201,8 @@ void TreeWidget::onItemCollapsed(QTreeWidgetItem* item)
     static_cast<TreeItem*>(item)->emitDataChanged();
 }
 
-void TreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
-{
-    if (!d.itemResetBlocked) {
-        if (previous)
-            static_cast<TreeItem*>(previous)->reset();
-    }
-    if (current) {
-        emit currentBufferChanged(static_cast<TreeItem*>(current)->buffer());
-        delayedReset(current);
-    }
-}
-
-void TreeWidget::delayedReset(QTreeWidgetItem* item)
+void TreeWidget::onCurrentItemChanged(QTreeWidgetItem* item)
 {
     if (item)
-        QTimer::singleShot(500, static_cast<TreeItem*>(item), SLOT(reset()));
-}
-
-void TreeWidget::search()
-{
-    SearchPopup* popup = new SearchPopup(this);
-    connect(popup, SIGNAL(destroyed()), this, SLOT(unblockItemReset()));
-    blockItemReset();
-    popup->popup();
+        emit currentBufferChanged(static_cast<TreeItem*>(item)->buffer());
 }

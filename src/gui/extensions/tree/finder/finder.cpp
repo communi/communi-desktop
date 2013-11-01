@@ -12,31 +12,40 @@
 * GNU General Public License for more details.
 */
 
-#include "searchpopup.h"
+#include "finder.h"
 #include <QMouseEvent>
 #include <QShortcut>
 
-SearchPopup::SearchPopup(QTreeWidget* parent) : QLineEdit(parent)
+Finder::Finder(QObject* parent) : QLineEdit()
 {
-    d.tree = parent;
+    d.tree = 0;
+    Q_UNUSED(parent);
 
+    setVisible(false);
     setWindowOpacity(0.8);
     setWindowFlags(Qt::Popup);
-    setAttribute(Qt::WA_DeleteOnClose);
+    setWindowModality(Qt::WindowModal);
     setFont(QFont(font().family(), 36));
-
-    QShortcut* shortcut = new QShortcut(QKeySequence("Esc"), this);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(close()));
 
     connect(this, SIGNAL(textEdited(QString)), this, SLOT(search(QString)));
     connect(this, SIGNAL(returnPressed()), this, SLOT(searchAgain()));
 }
 
-SearchPopup::~SearchPopup()
+void Finder::initialize(QTreeWidget* tree)
 {
+    d.tree = tree;
+    setParent(d.tree);
+
+    QShortcut* searchShortcut = new QShortcut(this);
+    searchShortcut->setKey(QKeySequence(tr("Ctrl+S")));
+    connect(searchShortcut, SIGNAL(activated()), this, SLOT(popup()));
+
+    QShortcut* hideShortcut = new QShortcut(this);
+    hideShortcut->setKey(QKeySequence(tr("Esc")));
+    connect(hideShortcut, SIGNAL(activated()), this, SLOT(hide()));
 }
 
-void SearchPopup::popup()
+void Finder::popup()
 {
     show();
     raise();
@@ -44,14 +53,14 @@ void SearchPopup::popup()
     activateWindow();
 }
 
-void SearchPopup::mousePressEvent(QMouseEvent* event)
+void Finder::mousePressEvent(QMouseEvent* event)
 {
     QLineEdit::mousePressEvent(event);
     if (!geometry().contains(event->globalPos()))
         close();
 }
 
-void SearchPopup::search(const QString& txt)
+void Finder::search(const QString& txt)
 {
     if (d.tree && !txt.isEmpty()) {
         QList<QTreeWidgetItem*> items = d.tree->findItems(txt, Qt::MatchExactly | Qt::MatchWrap | Qt::MatchRecursive);
@@ -63,7 +72,7 @@ void SearchPopup::search(const QString& txt)
     }
 }
 
-void SearchPopup::searchAgain()
+void Finder::searchAgain()
 {
     QString txt = text();
     if (d.tree && !txt.isEmpty()) {

@@ -12,34 +12,37 @@
 * GNU General Public License for more details.
 */
 
-#ifndef SEARCHPOPUP_H
-#define SEARCHPOPUP_H
+#ifndef RESETER_H
+#define RESETER_H
 
-#include <QLineEdit>
 #include <QTreeWidget>
+#include <QShortcut>
+#include "treeextension.h"
 
-class SearchPopup : public QLineEdit
+class Reseter : public QObject, public TreeExtensionInterface
 {
     Q_OBJECT
+    Q_INTERFACES(TreeExtensionInterface)
 
 public:
-    explicit SearchPopup(QTreeWidget* parent = 0);
-    ~SearchPopup();
+    Reseter(QObject* parent = 0);
 
-public slots:
-    void popup();
+    void initialize(QTreeWidget* tree);
 
-protected:
-    void mousePressEvent(QMouseEvent* event);
+    bool eventFilter(QObject *object, QEvent *event);
 
 private slots:
-    void search(const QString& text);
-    void searchAgain();
+    void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+    void delayedReset(QTreeWidgetItem* item);
+    void resetItems();
 
 private:
     struct Private {
+        bool blocked;
         QTreeWidget* tree;
+        QShortcut* shortcut;
     } d;
+    friend class TreeItem;
 };
 
-#endif // SEARCHPOPUP_H
+#endif // RESETER_H
