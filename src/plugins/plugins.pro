@@ -3,4 +3,4 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS += tree
+SUBDIRS += finder menu navigator reseter
