@@ -12,52 +12,39 @@
 * GNU General Public License for more details.
 */
 
-#ifndef MENU_H
-#define MENU_H
+#ifndef RESETERPLUGIN_H
+#define RESETERPLUGIN_H
 
-#include <QMenu>
 #include <QtPlugin>
+#include <QShortcut>
 #include <QTreeWidget>
 #include "treeplugin.h"
 
-class Menu : public QMenu, public TreePlugin
+class ReseterPlugin : public QObject, public TreePlugin
 {
     Q_OBJECT
     Q_INTERFACES(TreePlugin)
     Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
 
 public:
-    Menu(QObject* parent = 0);
+    ReseterPlugin(QObject* parent = 0);
 
     void initialize(TreeWidget* tree);
 
     bool eventFilter(QObject *object, QEvent *event);
 
-public slots:
-    void exec(QTreeWidgetItem* item, const QPoint& pos);
-
 private slots:
-    void onEditTriggered();
-    void onWhoisTriggered();
-    void onJoinTriggered();
-    void onPartTriggered();
-    void onCloseTriggered();
-    void updateActions();
+    void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+    void delayedReset(QTreeWidgetItem* item);
+    void resetItems();
 
 private:
-    void setup(QTreeWidgetItem* item);
-
     struct Private {
+        bool blocked;
         TreeWidget* tree;
-        QAction* disconnectAction;
-        QAction* reconnectAction;
-        QAction* editAction;
-        QAction* whoisAction;
-        QAction* joinAction;
-        QAction* partAction;
-        QAction* closeAction;
-        QTreeWidgetItem* item;
+        QShortcut* shortcut;
     } d;
+    friend class TreeItem;
 };
 
-#endif // MENU_H
+#endif // RESETERPLUGIN_H

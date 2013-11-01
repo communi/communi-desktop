@@ -12,38 +12,52 @@
 * GNU General Public License for more details.
 */
 
-#ifndef FINDER_H
-#define FINDER_H
+#ifndef MENUPLUGIN_H
+#define MENUPLUGIN_H
 
+#include <QMenu>
 #include <QtPlugin>
-#include <QLineEdit>
+#include <QTreeWidget>
 #include "treeplugin.h"
 
-class Finder : public QLineEdit, public TreePlugin
+class MenuPlugin : public QMenu, public TreePlugin
 {
     Q_OBJECT
     Q_INTERFACES(TreePlugin)
     Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
 
 public:
-    explicit Finder(QObject* parent = 0);
+    MenuPlugin(QObject* parent = 0);
 
     void initialize(TreeWidget* tree);
 
-public slots:
-    void popup();
+    bool eventFilter(QObject *object, QEvent *event);
 
-protected:
-    void mousePressEvent(QMouseEvent* event);
+public slots:
+    void exec(QTreeWidgetItem* item, const QPoint& pos);
 
 private slots:
-    void search(const QString& text);
-    void searchAgain();
+    void onEditTriggered();
+    void onWhoisTriggered();
+    void onJoinTriggered();
+    void onPartTriggered();
+    void onCloseTriggered();
+    void updateActions();
 
 private:
+    void setup(QTreeWidgetItem* item);
+
     struct Private {
         TreeWidget* tree;
+        QAction* disconnectAction;
+        QAction* reconnectAction;
+        QAction* editAction;
+        QAction* whoisAction;
+        QAction* joinAction;
+        QAction* partAction;
+        QAction* closeAction;
+        QTreeWidgetItem* item;
     } d;
 };
 
-#endif // FINDER_H
+#endif // MENUPLUGIN_H

@@ -12,18 +12,18 @@
 * GNU General Public License for more details.
 */
 
-#include "reseter.h"
+#include "reseterplugin.h"
 #include "treewidget.h"
 #include <QEvent>
 
-Reseter::Reseter(QObject* parent) : QObject(parent)
+ReseterPlugin::ReseterPlugin(QObject* parent) : QObject(parent)
 {
     d.blocked = false;
     d.tree = 0;
     d.shortcut = 0;
 }
 
-void Reseter::initialize(TreeWidget* tree)
+void ReseterPlugin::initialize(TreeWidget* tree)
 {
     d.tree = tree;
 
@@ -35,7 +35,7 @@ void Reseter::initialize(TreeWidget* tree)
     connect(d.shortcut, SIGNAL(activated()), this, SLOT(resetItems()));
 }
 
-bool Reseter::eventFilter(QObject *object, QEvent* event)
+bool ReseterPlugin::eventFilter(QObject *object, QEvent* event)
 {
     Q_UNUSED(object);
     switch (event->type()) {
@@ -55,7 +55,7 @@ bool Reseter::eventFilter(QObject *object, QEvent* event)
     return false;
 }
 
-void Reseter::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
+void ReseterPlugin::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
     if (!d.blocked) {
         //if (previous)
@@ -65,13 +65,13 @@ void Reseter::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* pr
         delayedReset(current);
 }
 
-void Reseter::delayedReset(QTreeWidgetItem* item)
+void ReseterPlugin::delayedReset(QTreeWidgetItem* item)
 {
     //if (item)
         // TODO: QTimer::singleShot(500, static_cast<TreeItem*>(item), SLOT(reset()));
 }
 
-void Reseter::resetItems()
+void ReseterPlugin::resetItems()
 {
     QTreeWidgetItemIterator it(d.tree);
     while (*it) {

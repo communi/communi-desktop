@@ -12,22 +12,22 @@
 * GNU General Public License for more details.
 */
 
-#ifndef NAVIGATOR_H
-#define NAVIGATOR_H
+#ifndef NAVIGATORPLUGIN_H
+#define NAVIGATORPLUGIN_H
 
 #include <QtPlugin>
 #include <QShortcut>
 #include <QTreeWidget>
 #include "treeplugin.h"
 
-class Navigator : public QObject, public TreePlugin
+class NavigatorPlugin : public QObject, public TreePlugin
 {
     Q_OBJECT
     Q_INTERFACES(TreePlugin)
     Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
 
 public:
-    explicit Navigator(QObject* parent = 0);
+    explicit NavigatorPlugin(QObject* parent = 0);
 
     void initialize(TreeWidget* tree);
 
@@ -69,4 +69,4 @@ private:
     } d;
 };
 
-#endif // NAVIGATOR_H
+#endif // NAVIGATORPLUGIN_H

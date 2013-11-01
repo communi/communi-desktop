@@ -12,12 +12,12 @@
 * GNU General Public License for more details.
 */
 
-#include "finder.h"
+#include "finderplugin.h"
 #include "treewidget.h"
 #include <QMouseEvent>
 #include <QShortcut>
 
-Finder::Finder(QObject* parent) : QLineEdit()
+FinderPlugin::FinderPlugin(QObject* parent) : QLineEdit()
 {
     d.tree = 0;
     Q_UNUSED(parent);
@@ -32,7 +32,7 @@ Finder::Finder(QObject* parent) : QLineEdit()
     connect(this, SIGNAL(returnPressed()), this, SLOT(searchAgain()));
 }
 
-void Finder::initialize(TreeWidget* tree)
+void FinderPlugin::initialize(TreeWidget* tree)
 {
     d.tree = tree;
     setParent(d.tree);
@@ -46,7 +46,7 @@ void Finder::initialize(TreeWidget* tree)
     connect(hideShortcut, SIGNAL(activated()), this, SLOT(hide()));
 }
 
-void Finder::popup()
+void FinderPlugin::popup()
 {
     show();
     raise();
@@ -54,14 +54,14 @@ void Finder::popup()
     activateWindow();
 }
 
-void Finder::mousePressEvent(QMouseEvent* event)
+void FinderPlugin::mousePressEvent(QMouseEvent* event)
 {
     QLineEdit::mousePressEvent(event);
     if (!geometry().contains(event->globalPos()))
         close();
 }
 
-void Finder::search(const QString& txt)
+void FinderPlugin::search(const QString& txt)
 {
     if (d.tree && !txt.isEmpty()) {
         QList<QTreeWidgetItem*> items = d.tree->findItems(txt, Qt::MatchExactly | Qt::MatchWrap | Qt::MatchRecursive);
@@ -73,7 +73,7 @@ void Finder::search(const QString& txt)
     }
 }
 
-void Finder::searchAgain()
+void FinderPlugin::searchAgain()
 {
     QString txt = text();
     if (d.tree && !txt.isEmpty()) {

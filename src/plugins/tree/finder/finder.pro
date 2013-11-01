@@ -15,8 +15,8 @@ DESTDIR = ../../../../plugins
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
-HEADERS += $$PWD/finder.h
-SOURCES += $$PWD/finder.cpp
+HEADERS += $$PWD/finderplugin.h
+SOURCES += $$PWD/finderplugin.cpp
 
 include(../../../config.pri)
 include(../../../backend.pri)

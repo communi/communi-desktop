@@ -21,7 +21,6 @@
 
 class TreeItem;
 class IrcBuffer;
-class Navigator;
 class IrcConnection;
 
 class TreeWidget : public QTreeWidget

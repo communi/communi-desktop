@@ -15,8 +15,8 @@ DESTDIR = ../../../../plugins
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
-HEADERS += $$PWD/menu.h
-SOURCES += $$PWD/menu.cpp
+HEADERS += $$PWD/menuplugin.h
+SOURCES += $$PWD/menuplugin.cpp
 
 include(../../../config.pri)
 include(../../../backend.pri)

@@ -22,10 +22,10 @@
 #include <IrcBuffer>
 
 // TODO:
-Q_IMPORT_PLUGIN(finderplugin)
-Q_IMPORT_PLUGIN(menuplugin)
-Q_IMPORT_PLUGIN(navigatorplugin)
-Q_IMPORT_PLUGIN(reseterplugin)
+Q_IMPORT_PLUGIN(FinderPlugin)
+Q_IMPORT_PLUGIN(MenuPlugin)
+Q_IMPORT_PLUGIN(NavigatorPlugin)
+Q_IMPORT_PLUGIN(ReseterPlugin)
 
 TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
@@ -49,16 +49,11 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 
     setItemDelegate(new TreeDelegate(this));
 
-    // TODO:
-    qDebug("WTF");
-    qDebug() << QPluginLoader::staticInstances();
+    // TODO: move outta here...
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         TreePlugin* plugin = qobject_cast<TreePlugin*>(instance);
-        qDebug() << "LOAD" << instance;
-        if (plugin) {
-            qDebug() << "INIT" << plugin;
+        if (plugin)
             plugin->initialize(this);
-        }
     }
 
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(onItemExpanded(QTreeWidgetItem*)));

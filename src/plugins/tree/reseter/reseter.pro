@@ -15,8 +15,8 @@ DESTDIR = ../../../../plugins
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
-HEADERS += $$PWD/reseter.h
-SOURCES += $$PWD/reseter.cpp
+HEADERS += $$PWD/reseterplugin.h
+SOURCES += $$PWD/reseterplugin.cpp
 
 include(../../../config.pri)
 include(../../../backend.pri)

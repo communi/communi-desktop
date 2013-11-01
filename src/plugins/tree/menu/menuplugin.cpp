@@ -12,14 +12,14 @@
 * GNU General Public License for more details.
 */
 
-#include "menu.h"
+#include "menuplugin.h"
 #include "treewidget.h"
 #include <QContextMenuEvent>
 #include <IrcConnection>
 #include <IrcCommand>
 #include <IrcChannel>
 
-Menu::Menu(QObject* parent) : QMenu()
+MenuPlugin::MenuPlugin(QObject* parent) : QMenu()
 {
     Q_UNUSED(parent);
 
@@ -36,13 +36,13 @@ Menu::Menu(QObject* parent) : QMenu()
     d.closeAction = addAction(tr("Close"), this, SLOT(onCloseTriggered()), QKeySequence::Close);
 }
 
-void Menu::initialize(TreeWidget* tree)
+void MenuPlugin::initialize(TreeWidget* tree)
 {
     d.tree = tree;
     tree->installEventFilter(this);
 }
 
-bool Menu::eventFilter(QObject *object, QEvent *event)
+bool MenuPlugin::eventFilter(QObject *object, QEvent *event)
 {
     Q_UNUSED(object);
     if (event->type() == QEvent::ContextMenu) {
@@ -55,42 +55,42 @@ bool Menu::eventFilter(QObject *object, QEvent *event)
     return false;
 }
 
-void Menu::exec(QTreeWidgetItem* item, const QPoint& pos)
+void MenuPlugin::exec(QTreeWidgetItem* item, const QPoint& pos)
 {
     setup(item);
     updateActions();
     QMenu::exec(pos);
 }
 
-void Menu::onEditTriggered()
+void MenuPlugin::onEditTriggered()
 {
     //QMetaObject::invokeMethod(parent(), "editConnection", Q_ARG(IrcConnection*, d.item->connection()));
 }
 
-void Menu::onWhoisTriggered()
+void MenuPlugin::onWhoisTriggered()
 {
     //IrcCommand* command = IrcCommand::createWhois(d.item->text(0));
     //d.item->connection()->sendCommand(command);
 }
 
-void Menu::onJoinTriggered()
+void MenuPlugin::onJoinTriggered()
 {
     //IrcCommand* command = IrcCommand::createJoin(d.item->text(0));
     //d.item->connection()->sendCommand(command);
 }
 
-void Menu::onPartTriggered()
+void MenuPlugin::onPartTriggered()
 {
     //IrcCommand* command = IrcCommand::createPart(d.item->text(0));
     //d.item->connection()->sendCommand(command);
 }
 
-void Menu::onCloseTriggered()
+void MenuPlugin::onCloseTriggered()
 {
     //QMetaObject::invokeMethod(parent(), "closeItem", Q_ARG(TreeItem*, d.item));
 }
 
-void Menu::updateActions()
+void MenuPlugin::updateActions()
 {
 //    if (d.item) {
 //        const bool child = d.item->parentItem();
@@ -115,7 +115,7 @@ void Menu::updateActions()
 //    d.closeAction->setVisible(d.item);
 }
 
-void Menu::setup(QTreeWidgetItem* item)
+void MenuPlugin::setup(QTreeWidgetItem* item)
 {
 //    if (d.item != item) {
 //        if (d.item && d.item->connection()) {

@@ -12,16 +12,16 @@
 * GNU General Public License for more details.
 */
 
-#include "navigator.h"
+#include "navigatorplugin.h"
 #include "treewidget.h"
 #include "treerole.h"
 
-Navigator::Navigator(QObject* parent) : QObject(parent)
+NavigatorPlugin::NavigatorPlugin(QObject* parent) : QObject(parent)
 {
     d.tree = 0;
 }
 
-void Navigator::initialize(TreeWidget* tree)
+void NavigatorPlugin::initialize(TreeWidget* tree)
 {
     d.tree = tree;
 
@@ -62,20 +62,20 @@ void Navigator::initialize(TreeWidget* tree)
     connect(d.mostActiveShortcut, SIGNAL(activated()), this, SLOT(moveToMostActiveItem()));
 }
 
-QTreeWidgetItem* Navigator::currentItem() const
+QTreeWidgetItem* NavigatorPlugin::currentItem() const
 {
     if (d.tree)
         return d.tree->currentItem();
     return 0;
 }
 
-void Navigator::setCurrentItem(QTreeWidgetItem* item)
+void NavigatorPlugin::setCurrentItem(QTreeWidgetItem* item)
 {
     if (d.tree)
         d.tree->setCurrentItem(item);
 }
 
-QTreeWidgetItem* Navigator::topLevelItem(int index) const
+QTreeWidgetItem* NavigatorPlugin::topLevelItem(int index) const
 {
     if (d.tree) {
         if (index == -1)
@@ -85,19 +85,19 @@ QTreeWidgetItem* Navigator::topLevelItem(int index) const
     return 0;
 }
 
-void Navigator::expandItem(QTreeWidgetItem* item)
+void NavigatorPlugin::expandItem(QTreeWidgetItem* item)
 {
     if (d.tree)
         d.tree->expandItem(item);
 }
 
-void Navigator::collapseItem(QTreeWidgetItem* item)
+void NavigatorPlugin::collapseItem(QTreeWidgetItem* item)
 {
     if (d.tree)
         d.tree->collapseItem(item);
 }
 
-QTreeWidgetItem* Navigator::lastItem() const
+QTreeWidgetItem* NavigatorPlugin::lastItem() const
 {
     QTreeWidgetItem* item = topLevelItem(-1);
     if (item->childCount() > 0)
@@ -105,7 +105,7 @@ QTreeWidgetItem* Navigator::lastItem() const
     return item;
 }
 
-QTreeWidgetItem* Navigator::nextItem(QTreeWidgetItem* from) const
+QTreeWidgetItem* NavigatorPlugin::nextItem(QTreeWidgetItem* from) const
 {
     if (!from)
         return 0;
@@ -117,7 +117,7 @@ QTreeWidgetItem* Navigator::nextItem(QTreeWidgetItem* from) const
     return *it;
 }
 
-QTreeWidgetItem* Navigator::previousItem(QTreeWidgetItem* from) const
+QTreeWidgetItem* NavigatorPlugin::previousItem(QTreeWidgetItem* from) const
 {
     if (!from)
         return 0;
@@ -129,7 +129,7 @@ QTreeWidgetItem* Navigator::previousItem(QTreeWidgetItem* from) const
     return *it;
 }
 
-QTreeWidgetItem* Navigator::findNextItem(QTreeWidgetItem* from, int column, int role) const
+QTreeWidgetItem* NavigatorPlugin::findNextItem(QTreeWidgetItem* from, int column, int role) const
 {
     if (from) {
         QTreeWidgetItemIterator it(from);
@@ -142,7 +142,7 @@ QTreeWidgetItem* Navigator::findNextItem(QTreeWidgetItem* from, int column, int 
     return 0;
 }
 
-QTreeWidgetItem* Navigator::findPrevItem(QTreeWidgetItem* from, int column, int role) const
+QTreeWidgetItem* NavigatorPlugin::findPrevItem(QTreeWidgetItem* from, int column, int role) const
 {
     if (from) {
         QTreeWidgetItemIterator it(from);
@@ -155,7 +155,7 @@ QTreeWidgetItem* Navigator::findPrevItem(QTreeWidgetItem* from, int column, int 
     return 0;
 }
 
-void Navigator::moveToNextItem()
+void NavigatorPlugin::moveToNextItem()
 {
     QTreeWidgetItem* item = nextItem(currentItem());
     if (!item)
@@ -163,7 +163,7 @@ void Navigator::moveToNextItem()
     setCurrentItem(item);
 }
 
-void Navigator::moveToPrevItem()
+void NavigatorPlugin::moveToPrevItem()
 {
     QTreeWidgetItem* item = previousItem(currentItem());
     if (!item)
@@ -171,7 +171,7 @@ void Navigator::moveToPrevItem()
     setCurrentItem(item);
 }
 
-void Navigator::moveToNextActiveItem()
+void NavigatorPlugin::moveToNextActiveItem()
 {
     QTreeWidgetItem* item = findNextItem(currentItem(), 0, TreeRole::Highlight);
     if (!item)
@@ -180,7 +180,7 @@ void Navigator::moveToNextActiveItem()
         setCurrentItem(item);
 }
 
-void Navigator::moveToPrevActiveItem()
+void NavigatorPlugin::moveToPrevActiveItem()
 {
     QTreeWidgetItem* item = findPrevItem(currentItem(), 0, TreeRole::Highlight);
     if (!item)
@@ -189,7 +189,7 @@ void Navigator::moveToPrevActiveItem()
         setCurrentItem(item);
 }
 
-void Navigator::moveToMostActiveItem()
+void NavigatorPlugin::moveToMostActiveItem()
 {
     QTreeWidgetItem* mostActive = 0;
     QTreeWidgetItemIterator it(d.tree, QTreeWidgetItemIterator::Unselected);
@@ -214,7 +214,7 @@ void Navigator::moveToMostActiveItem()
         setCurrentItem(mostActive);
 }
 
-void Navigator::expandCurrentConnection()
+void NavigatorPlugin::expandCurrentConnection()
 {
     QTreeWidgetItem* item = currentItem();
     if (item && item->parent())
@@ -223,7 +223,7 @@ void Navigator::expandCurrentConnection()
         expandItem(item);
 }
 
-void Navigator::collapseCurrentConnection()
+void NavigatorPlugin::collapseCurrentConnection()
 {
     QTreeWidgetItem* item = currentItem();
     if (item && item->parent())

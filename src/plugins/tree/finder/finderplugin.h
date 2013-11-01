@@ -12,39 +12,38 @@
 * GNU General Public License for more details.
 */
 
-#ifndef RESETER_H
-#define RESETER_H
+#ifndef FINDERPLUGIN_H
+#define FINDERPLUGIN_H
 
 #include <QtPlugin>
-#include <QShortcut>
-#include <QTreeWidget>
+#include <QLineEdit>
 #include "treeplugin.h"
 
-class Reseter : public QObject, public TreePlugin
+class FinderPlugin : public QLineEdit, public TreePlugin
 {
     Q_OBJECT
     Q_INTERFACES(TreePlugin)
     Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
 
 public:
-    Reseter(QObject* parent = 0);
+    explicit FinderPlugin(QObject* parent = 0);
 
     void initialize(TreeWidget* tree);
 
-    bool eventFilter(QObject *object, QEvent *event);
+public slots:
+    void popup();
+
+protected:
+    void mousePressEvent(QMouseEvent* event);
 
 private slots:
-    void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
-    void delayedReset(QTreeWidgetItem* item);
-    void resetItems();
+    void search(const QString& text);
+    void searchAgain();
 
 private:
     struct Private {
-        bool blocked;
         TreeWidget* tree;
-        QShortcut* shortcut;
     } d;
-    friend class TreeItem;
 };
 
-#endif // RESETER_H
+#endif // FINDER_H

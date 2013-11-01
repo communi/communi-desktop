@@ -15,8 +15,8 @@ DESTDIR = ../../../../plugins
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
-HEADERS += $$PWD/navigator.h
-SOURCES += $$PWD/navigator.cpp
+HEADERS += $$PWD/navigatorplugin.h
+SOURCES += $$PWD/navigatorplugin.cpp
 
 include(../../../config.pri)
 include(../../../backend.pri)
