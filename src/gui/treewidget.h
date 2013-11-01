@@ -65,16 +65,13 @@ private slots:
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
-    void resetAllItems();
-    void delayedItemReset();
-    void delayedItemResetTimeout();
+    void delayedReset(QTreeWidgetItem* item);
 
 private:
     struct Private {
         bool itemResetBlocked;
         Navigator* navigator;
         QShortcut* resetShortcut;
-        QSet<TreeItem*> resetedItems;
         QList<IrcConnection*> connections;
         QHash<IrcBuffer*, TreeItem*> bufferItems;
         QHash<IrcConnection*, TreeItem*> connectionItems;

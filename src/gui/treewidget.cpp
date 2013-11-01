@@ -59,7 +59,6 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 
     d.resetShortcut = new QShortcut(this);
     d.resetShortcut->setKey(QKeySequence(tr("Ctrl+R")));
-    connect(d.resetShortcut, SIGNAL(activated()), this, SLOT(resetAllItems()));
 }
 
 QSize TreeWidget::sizeHint() const
@@ -153,6 +152,7 @@ void TreeWidget::addBuffer(IrcBuffer* buffer)
         TreeItem* parent = d.connectionItems.value(buffer->connection());
         item = new TreeItem(buffer, parent);
     }
+    connect(d.resetShortcut, SIGNAL(activated()), item, SLOT(reset()));
     d.bufferItems.insert(buffer, item);
 }
 
@@ -213,13 +213,13 @@ void TreeWidget::blockItemReset()
 void TreeWidget::unblockItemReset()
 {
     d.itemResetBlocked = false;
-    delayedItemReset();
+    delayedReset(currentItem());
 }
 
 bool TreeWidget::event(QEvent* event)
 {
     if (event->type() == QEvent::WindowActivate)
-        delayedItemReset();
+        delayedReset(currentItem());
     return QTreeWidget::event(event);
 }
 
@@ -241,7 +241,6 @@ void TreeWidget::rowsAboutToBeRemoved(const QModelIndex& parent, int start, int 
             TreeItem* child = static_cast<TreeItem*>(item->child(i));
             if (child) {
                 item->d.highlightedChildren.remove(child);
-                d.resetedItems.remove(child);
                 child->reset();
             }
         }
@@ -263,35 +262,15 @@ void TreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem*
     if (!d.itemResetBlocked) {
         if (previous)
             static_cast<TreeItem*>(previous)->reset();
-        delayedItemReset();
     }
-    if (current)
+    if (current) {
         emit currentBufferChanged(static_cast<TreeItem*>(current)->buffer());
-}
-
-void TreeWidget::resetAllItems()
-{
-    QTreeWidgetItemIterator it(this);
-    while (*it) {
-        static_cast<TreeItem*>(*it)->reset();
-        ++it;
+        delayedReset(current);
     }
 }
 
-void TreeWidget::delayedItemReset()
+void TreeWidget::delayedReset(QTreeWidgetItem* item)
 {
-    TreeItem* item = static_cast<TreeItem*>(currentItem());
-    if (item) {
-        d.resetedItems.insert(item);
-        QTimer::singleShot(500, this, SLOT(delayedItemResetTimeout()));
-    }
-}
-
-void TreeWidget::delayedItemResetTimeout()
-{
-    if (!d.resetedItems.isEmpty()) {
-        foreach (TreeItem* item, d.resetedItems)
-            item->reset();
-        d.resetedItems.clear();
-    }
+    if (item)
+        QTimer::singleShot(500, static_cast<TreeItem*>(item), SLOT(reset()));
 }
