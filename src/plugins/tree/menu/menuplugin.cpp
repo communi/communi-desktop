@@ -14,6 +14,7 @@
 
 #include "menuplugin.h"
 #include "treewidget.h"
+#include "treeitem.h"
 #include <QContextMenuEvent>
 #include <IrcConnection>
 #include <IrcCommand>
@@ -49,13 +50,13 @@ bool MenuPlugin::eventFilter(QObject *object, QEvent *event)
         QContextMenuEvent* cme = static_cast<QContextMenuEvent*>(event);
         QTreeWidgetItem* item = d.tree->itemAt(cme->pos());
         if (item)
-            exec(item, cme->globalPos());
+            exec(static_cast<TreeItem*>(item), cme->globalPos());
         return true;
     }
     return false;
 }
 
-void MenuPlugin::exec(QTreeWidgetItem* item, const QPoint& pos)
+void MenuPlugin::exec(TreeItem* item, const QPoint& pos)
 {
     setup(item);
     updateActions();
@@ -64,84 +65,84 @@ void MenuPlugin::exec(QTreeWidgetItem* item, const QPoint& pos)
 
 void MenuPlugin::onEditTriggered()
 {
-    //QMetaObject::invokeMethod(parent(), "editConnection", Q_ARG(IrcConnection*, d.item->connection()));
+    // TODO: QMetaObject::invokeMethod(parent(), "editConnection", Q_ARG(IrcConnection*, d.item->connection()));
 }
 
 void MenuPlugin::onWhoisTriggered()
 {
-    //IrcCommand* command = IrcCommand::createWhois(d.item->text(0));
-    //d.item->connection()->sendCommand(command);
+    IrcCommand* command = IrcCommand::createWhois(d.item->text(0));
+    d.item->connection()->sendCommand(command);
 }
 
 void MenuPlugin::onJoinTriggered()
 {
-    //IrcCommand* command = IrcCommand::createJoin(d.item->text(0));
-    //d.item->connection()->sendCommand(command);
+    IrcCommand* command = IrcCommand::createJoin(d.item->text(0));
+    d.item->connection()->sendCommand(command);
 }
 
 void MenuPlugin::onPartTriggered()
 {
-    //IrcCommand* command = IrcCommand::createPart(d.item->text(0));
-    //d.item->connection()->sendCommand(command);
+    IrcCommand* command = IrcCommand::createPart(d.item->text(0));
+    d.item->connection()->sendCommand(command);
 }
 
 void MenuPlugin::onCloseTriggered()
 {
-    //QMetaObject::invokeMethod(parent(), "closeItem", Q_ARG(TreeItem*, d.item));
+    d.item->buffer()->deleteLater();
 }
 
 void MenuPlugin::updateActions()
 {
-//    if (d.item) {
-//        const bool child = d.item->parentItem();
-//        const bool connected = d.item->connection()->isActive();
-//        const bool active = d.item->buffer()->isActive();
-//        const bool channel = d.item->buffer()->isChannel();
-//        d.disconnectAction->setVisible(connected);
-//        d.reconnectAction->setVisible(!connected);
-//        d.editAction->setVisible(!connected && !child);
-//        d.joinAction->setVisible(connected && channel && !active);
-//        d.partAction->setVisible(connected && channel && active);
-//        d.whoisAction->setVisible(connected && child && !channel);
-//    } else {
-//        d.disconnectAction->setVisible(false);
-//        d.reconnectAction->setVisible(false);
-//        d.editAction->setVisible(false);
-//        d.whoisAction->setVisible(false);
-//        d.joinAction->setVisible(false);
-//        d.partAction->setVisible(false);
-//    }
+    if (d.item) {
+        const bool child = d.item->parentItem();
+        const bool connected = d.item->connection()->isActive();
+        const bool active = d.item->buffer()->isActive();
+        const bool channel = d.item->buffer()->isChannel();
+        d.disconnectAction->setVisible(connected);
+        d.reconnectAction->setVisible(!connected);
+        d.editAction->setVisible(!connected && !child);
+        d.joinAction->setVisible(connected && channel && !active);
+        d.partAction->setVisible(connected && channel && active);
+        d.whoisAction->setVisible(connected && child && !channel);
+    } else {
+        d.disconnectAction->setVisible(false);
+        d.reconnectAction->setVisible(false);
+        d.editAction->setVisible(false);
+        d.whoisAction->setVisible(false);
+        d.joinAction->setVisible(false);
+        d.partAction->setVisible(false);
+    }
 
-//    d.closeAction->setVisible(d.item);
+    d.closeAction->setVisible(d.item);
 }
 
-void MenuPlugin::setup(QTreeWidgetItem* item)
+void MenuPlugin::setup(TreeItem* item)
 {
-//    if (d.item != item) {
-//        if (d.item && d.item->connection()) {
-//            IrcConnection* connection = d.item->connection();
-//            disconnect(connection, SIGNAL(connecting()), this, SLOT(updateActions()));
-//            disconnect(connection, SIGNAL(connected()), this, SLOT(updateActions()));
-//            disconnect(connection, SIGNAL(disconnected()), this, SLOT(updateActions()));
+    if (d.item != item) {
+        if (d.item && d.item->connection()) {
+            IrcConnection* connection = d.item->connection();
+            disconnect(connection, SIGNAL(connecting()), this, SLOT(updateActions()));
+            disconnect(connection, SIGNAL(connected()), this, SLOT(updateActions()));
+            disconnect(connection, SIGNAL(disconnected()), this, SLOT(updateActions()));
 
-//            disconnect(d.disconnectAction, SIGNAL(triggered()), connection, SLOT(setDisabled()));
-//            disconnect(d.disconnectAction, SIGNAL(triggered()), connection, SLOT(quit()));
+            disconnect(d.disconnectAction, SIGNAL(triggered()), connection, SLOT(setDisabled()));
+            disconnect(d.disconnectAction, SIGNAL(triggered()), connection, SLOT(quit()));
 
-//            disconnect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(setEnabled()));
-//            disconnect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(open()));
-//        }
-//        if (item && item->connection()) {
-//            IrcConnection* connection = item->connection();
-//            connect(connection, SIGNAL(connecting()), this, SLOT(updateActions()));
-//            connect(connection, SIGNAL(connected()), this, SLOT(updateActions()));
-//            connect(connection, SIGNAL(disconnected()), this, SLOT(updateActions()));
+            disconnect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(setEnabled()));
+            disconnect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(open()));
+        }
+        if (item && item->connection()) {
+            IrcConnection* connection = item->connection();
+            connect(connection, SIGNAL(connecting()), this, SLOT(updateActions()));
+            connect(connection, SIGNAL(connected()), this, SLOT(updateActions()));
+            connect(connection, SIGNAL(disconnected()), this, SLOT(updateActions()));
 
-//            connect(d.disconnectAction, SIGNAL(triggered()), connection, SLOT(setDisabled()));
-//            connect(d.disconnectAction, SIGNAL(triggered()), connection, SLOT(quit()));
+            connect(d.disconnectAction, SIGNAL(triggered()), connection, SLOT(setDisabled()));
+            connect(d.disconnectAction, SIGNAL(triggered()), connection, SLOT(quit()));
 
-//            connect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(setEnabled()));
-//            connect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(open()));
-//        }
-//        d.item = item;
-//    }
+            connect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(setEnabled()));
+            connect(d.reconnectAction, SIGNAL(triggered()), connection, SLOT(open()));
+        }
+        d.item = item;
+    }
 }

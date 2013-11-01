@@ -17,8 +17,9 @@
 
 #include <QMenu>
 #include <QtPlugin>
-#include <QTreeWidget>
 #include "treeplugin.h"
+
+class TreeItem;
 
 class MenuPlugin : public QMenu, public TreePlugin
 {
@@ -34,7 +35,7 @@ public:
     bool eventFilter(QObject *object, QEvent *event);
 
 public slots:
-    void exec(QTreeWidgetItem* item, const QPoint& pos);
+    void exec(TreeItem* item, const QPoint& pos);
 
 private slots:
     void onEditTriggered();
@@ -45,9 +46,10 @@ private slots:
     void updateActions();
 
 private:
-    void setup(QTreeWidgetItem* item);
+    void setup(TreeItem* item);
 
     struct Private {
+        TreeItem* item;
         TreeWidget* tree;
         QAction* disconnectAction;
         QAction* reconnectAction;
@@ -56,7 +58,6 @@ private:
         QAction* joinAction;
         QAction* partAction;
         QAction* closeAction;
-        QTreeWidgetItem* item;
     } d;
 };
 
