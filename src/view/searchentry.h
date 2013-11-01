@@ -15,11 +15,11 @@
 #ifndef SEARCHENTRY_H
 #define SEARCHENTRY_H
 
-#include "fancylineedit.h"
+#include <QLineEdit>
 
 QT_FORWARD_DECLARE_CLASS(QTextEdit)
 
-class SearchEntry : public Utils::FancyLineEdit
+class SearchEntry : public QLineEdit
 {
     Q_OBJECT
 

@@ -16,7 +16,7 @@
 #include <QTextEdit>
 #include <QShortcut>
 
-SearchEntry::SearchEntry(QWidget* parent) : Utils::FancyLineEdit(parent)
+SearchEntry::SearchEntry(QWidget* parent) : QLineEdit(parent)
 {
     Q_ASSERT(parent);
     d.textEdit = 0;
@@ -30,15 +30,16 @@ SearchEntry::SearchEntry(QWidget* parent) : Utils::FancyLineEdit(parent)
     shortcut = new QShortcut(QKeySequence::FindPrevious, parent);
     connect(shortcut, SIGNAL(activated()), this, SLOT(findPrevious()));
 
-    setButtonVisible(Left, true);
-    setAutoHideButton(Left, true);
-    setButtonPixmap(Left, QPixmap(":/icons/buttons/prev.png"));
-    connect(this, SIGNAL(leftButtonClicked()), this, SLOT(findPrevious()));
+//    TODO:
+//    setButtonVisible(Left, true);
+//    setAutoHideButton(Left, true);
+//    setButtonPixmap(Left, QPixmap(":/icons/buttons/prev.png"));
+//    connect(this, SIGNAL(leftButtonClicked()), this, SLOT(findPrevious()));
 
-    setButtonVisible(Right, true);
-    setAutoHideButton(Right, true);
-    setButtonPixmap(Right, QPixmap(":/icons/buttons/next.png"));
-    connect(this, SIGNAL(rightButtonClicked()), this, SLOT(findNext()));
+//    setButtonVisible(Right, true);
+//    setAutoHideButton(Right, true);
+//    setButtonPixmap(Right, QPixmap(":/icons/buttons/next.png"));
+//    connect(this, SIGNAL(rightButtonClicked()), this, SLOT(findNext()));
 
     connect(this, SIGNAL(returnPressed()), this, SLOT(findNext()));
     connect(this, SIGNAL(textEdited(QString)), this, SLOT(find(QString)));
@@ -126,7 +127,7 @@ void SearchEntry::find(const QString& text, bool forward, bool backward, bool ty
 
 void SearchEntry::hideEvent(QHideEvent* event)
 {
-    Utils::FancyLineEdit::hideEvent(event);
+    QLineEdit::hideEvent(event);
     if (d.textEdit) {
         QTextCursor cursor = d.textEdit->textCursor();
         if (cursor.hasSelection()) {
