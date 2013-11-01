@@ -3,5 +3,7 @@
 ######################################################################
 
 DEFINES += IRC_STATIC
-IRC_MODULES = IrcCore IrcModel IrcUtil
-include(backend/src/module_deps.pri)
+INCDIR = $$PWD/backend/include
+DEPENDPATH += $$INCDIR/IrcCore $$INCDIR/IrcModel $$INCDIR/IrcUtil
+INCLUDEPATH += $$INCDIR/IrcCore $$INCDIR/IrcModel $$INCDIR/IrcUtil
+LIBS += -L../../lib -lbackend
