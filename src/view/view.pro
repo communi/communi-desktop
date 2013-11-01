@@ -20,11 +20,9 @@ HEADERS += $$PWD/bufferview.h
 HEADERS += $$PWD/document.h
 HEADERS += $$PWD/editablelabel.h
 HEADERS += $$PWD/itemdelegate.h
-HEADERS += $$PWD/lineeditor.h
 HEADERS += $$PWD/searchentry.h
 HEADERS += $$PWD/textbrowser.h
 HEADERS += $$PWD/textdocument.h
-HEADERS += $$PWD/textentry.h
 HEADERS += $$PWD/topiclabel.h
 HEADERS += $$PWD/userlistview.h
 
@@ -33,15 +31,14 @@ SOURCES += $$PWD/bufferview.cpp
 SOURCES += $$PWD/document.cpp
 SOURCES += $$PWD/editablelabel.cpp
 SOURCES += $$PWD/itemdelegate.cpp
-SOURCES += $$PWD/lineeditor.cpp
 SOURCES += $$PWD/searchentry.cpp
 SOURCES += $$PWD/textbrowser.cpp
 SOURCES += $$PWD/textdocument.cpp
-SOURCES += $$PWD/textentry.cpp
 SOURCES += $$PWD/topiclabel.cpp
 SOURCES += $$PWD/userlistview.cpp
 
 include(../config.pri)
 include(../backend.pri)
 include(../util/util.pri)
+include(../input/input.pri)
 include(../3rdparty/3rdparty.pri)

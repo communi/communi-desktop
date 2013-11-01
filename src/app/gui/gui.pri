@@ -16,5 +16,3 @@ SOURCES += $$PWD/chatpage.cpp
 SOURCES += $$PWD/connectpage.cpp
 SOURCES += $$PWD/mainwindow.cpp
 SOURCES += $$PWD/splitview.cpp
-
-include(util/util.pri)
