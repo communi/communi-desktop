@@ -12,36 +12,14 @@
 * GNU General Public License for more details.
 */
 
-#ifndef LINEEDITOR_H
-#define LINEEDITOR_H
+#include "historyplugin.h"
+#include "inputhistory.h"
 
-#include "fancylineedit.h"
-
-class LineEditor : public Utils::FancyLineEdit
+HistoryPlugin::HistoryPlugin(QObject* parent) : QObject(parent)
 {
-    Q_OBJECT
+}
 
-public:
-    explicit LineEditor(QWidget* parent = 0);
-
-    QStringList history() const;
-
-public slots:
-    void goBackward();
-    void goForward();
-
-    void setHistory(const QStringList& history);
-    void clearHistory();
-
-protected:
-    void keyPressEvent(QKeyEvent* event);
-
-private:
-    struct Private {
-        int index;
-        QString input;
-        QStringList history;
-    } d;
-};
-
-#endif // LINEEDITOR_H
+void HistoryPlugin::initialize(TextInput* input)
+{
+    new InputHistory(input);
+}

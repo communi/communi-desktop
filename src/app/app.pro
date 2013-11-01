@@ -22,7 +22,7 @@ include(../view/view.pri)
 include(../3rdparty/3rdparty.pri)
 include(../../resources/resources.pri)
 
-STATIC_PLUGINS = finder highlighter menu navigator
+STATIC_PLUGINS = finder highlighter history menu navigator
 for(PLUGIN, STATIC_PLUGINS) {
     LIBS *= -L$$PWD/../../plugins
     LIBS += -l$${PLUGIN}plugin

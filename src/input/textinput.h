@@ -15,13 +15,13 @@
 #ifndef TEXTINPUT_H
 #define TEXTINPUT_H
 
-#include "lineeditor.h"
+#include <QLineEdit>
 
 class IrcBuffer;
 class IrcCompleter;
 class CommandParser;
 
-class TextInput : public LineEditor
+class TextInput : public QLineEdit
 {
     Q_OBJECT
 
@@ -32,6 +32,9 @@ public:
 
 public slots:
     void setBuffer(IrcBuffer* buffer);
+
+signals:
+    void bufferChanged(IrcBuffer* buffer);
 
 private slots:
     void sendInput();

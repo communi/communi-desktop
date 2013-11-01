@@ -12,38 +12,39 @@
 * GNU General Public License for more details.
 */
 
-#ifndef SEARCHENTRY_H
-#define SEARCHENTRY_H
+#ifndef INPUTHISTORY_H
+#define INPUTHISTORY_H
 
-#include "fancylineedit.h"
+#include <QHash>
+#include <QObject>
+#include <QStringList>
 
-QT_FORWARD_DECLARE_CLASS(QTextEdit)
+class IrcBuffer;
+class TextInput;
 
-class SearchEntry : public Utils::FancyLineEdit
+class InputHistory : public QObject
 {
     Q_OBJECT
 
 public:
-    SearchEntry(QWidget* parent = 0);
+    InputHistory(TextInput* input);
 
-    QTextEdit* textEdit() const;
-    void setTextEdit(QTextEdit* textEdit);
+    bool eventFilter(QObject *object, QEvent *event);
 
-public slots:
-    void find();
-    void findNext();
-    void findPrevious();
-
-protected slots:
-    void find(const QString& text, bool forward = false, bool backward = false, bool typed = true);
-
-protected:
-    void hideEvent(QHideEvent* event);
+private slots:
+    void goBackward();
+    void goForward();
+    void changeBuffer(IrcBuffer* buffer);
 
 private:
     struct Private {
-        QTextEdit* textEdit;
+        int index;
+        QString text;
+        TextInput* input;
+        IrcBuffer* buffer;
+        QStringList history;
+        QHash<IrcBuffer*, QStringList> histories;
     } d;
 };
 
-#endif // SEARCHENTRY_H
+#endif // INPUTHISTORY_H

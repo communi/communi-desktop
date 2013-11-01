@@ -12,20 +12,25 @@
 * GNU General Public License for more details.
 */
 
-#ifndef INPUTPLUGIN_H
-#define INPUTPLUGIN_H
+#ifndef HISTORYPLUGIN_H
+#define HISTORYPLUGIN_H
 
+#include <QHash>
 #include <QtPlugin>
+#include "inputplugin.h"
 
-class TextInput;
+class IrcBuffer;
 
-class InputPlugin
+class HistoryPlugin : public QObject, public InputPlugin
 {
+    Q_OBJECT
+    Q_INTERFACES(InputPlugin)
+    Q_PLUGIN_METADATA(IID "com.github.communi.InputPlugin")
+
 public:
-    virtual ~InputPlugin() {}
-    virtual void initialize(TextInput* input) = 0;
+    HistoryPlugin(QObject* parent = 0);
+
+    void initialize(TextInput* input);
 };
 
-Q_DECLARE_INTERFACE(InputPlugin, "com.github.communi.InputPlugin")
-
-#endif // INPUTPLUGIN_H
+#endif // HISTORYPLUGIN_H

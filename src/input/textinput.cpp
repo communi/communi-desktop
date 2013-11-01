@@ -13,15 +13,20 @@
 */
 
 #include "textinput.h"
+#include "inputplugin.h"
 #include "commandparser.h"
 #include <QStringListModel>
 #include <IrcBufferModel>
 #include <IrcConnection>
+#include <QPluginLoader> // TODO
 #include <IrcCompleter>
 #include <IrcBuffer>
 #include <QShortcut>
 
-TextInput::TextInput(QWidget* parent) : LineEditor(parent)
+// TODO:
+Q_IMPORT_PLUGIN(HistoryPlugin)
+
+TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
 {
     d.buffer = 0;
 
@@ -35,18 +40,15 @@ TextInput::TextInput(QWidget* parent) : LineEditor(parent)
 
     setAttribute(Qt::WA_MacShowFocusRect, false);
 
+    // TODO: move outta here...
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        InputPlugin* plugin = qobject_cast<InputPlugin*>(instance);
+        if (plugin)
+            plugin->initialize(this);
+    }
+
     QShortcut* shortcut = new QShortcut(Qt::Key_Tab, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(tryComplete()));
-
-    setButtonVisible(Left, true);
-    setAutoHideButton(Left, true);
-    setButtonPixmap(Left, QPixmap(":/icons/buttons/tab.png"));
-    connect(this, SIGNAL(leftButtonClicked()), this, SLOT(tryComplete()));
-
-    setButtonVisible(Right, true);
-    setAutoHideButton(Right, true);
-    setButtonPixmap(Right, QPixmap(":/icons/buttons/return.png"));
-    connect(this, SIGNAL(rightButtonClicked()), this, SLOT(sendInput()));
 
     connect(this, SIGNAL(returnPressed()), this, SLOT(sendInput()));
 }
@@ -60,15 +62,10 @@ void TextInput::setBuffer(IrcBuffer* buffer)
 {
     if (d.buffer != buffer) {
         if (d.buffer) {
-            d.histories.insert(d.buffer, history());
-
             IrcBufferModel* model = d.buffer->model();
             disconnect(model, SIGNAL(channelsChanged(QStringList)), d.parser, SLOT(setChannels(QStringList)));
             disconnect(buffer, SIGNAL(titleChanged(QString)), d.parser, SLOT(setTarget(QString)));
         }
-
-        d.buffer = buffer;
-        setHistory(d.histories.value(buffer));
 
         if (buffer) {
             IrcBufferModel* model = buffer->model();
@@ -83,6 +80,9 @@ void TextInput::setBuffer(IrcBuffer* buffer)
             d.parser->reset();
             d.completer->setBuffer(0);
         }
+
+        d.buffer = buffer;
+        emit bufferChanged(buffer);
     }
 }
 

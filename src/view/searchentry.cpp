@@ -16,7 +16,7 @@
 #include <QTextEdit>
 #include <QShortcut>
 
-SearchEntry::SearchEntry(QWidget* parent) : LineEditor(parent)
+SearchEntry::SearchEntry(QWidget* parent) : Utils::FancyLineEdit(parent)
 {
     Q_ASSERT(parent);
     d.textEdit = 0;
@@ -126,7 +126,7 @@ void SearchEntry::find(const QString& text, bool forward, bool backward, bool ty
 
 void SearchEntry::hideEvent(QHideEvent* event)
 {
-    LineEditor::hideEvent(event);
+    Utils::FancyLineEdit::hideEvent(event);
     if (d.textEdit) {
         QTextCursor cursor = d.textEdit->textCursor();
         if (cursor.hasSelection()) {
