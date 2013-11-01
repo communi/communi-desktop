@@ -5,7 +5,7 @@
 TEMPLATE = app
 win32|mac:TARGET = Communi
 else:TARGET = communi
-!mac:DESTDIR = bin
+DESTDIR = ../../bin
 
 win32:target.path = $$[QT_INSTALL_BINS]
 else:mac:target.path = /Applications
