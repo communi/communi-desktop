@@ -25,7 +25,7 @@
 Q_IMPORT_PLUGIN(FinderPlugin)
 Q_IMPORT_PLUGIN(MenuPlugin)
 Q_IMPORT_PLUGIN(NavigatorPlugin)
-Q_IMPORT_PLUGIN(ReseterPlugin)
+Q_IMPORT_PLUGIN(HighlighterPlugin)
 
 TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 {

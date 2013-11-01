@@ -19,7 +19,7 @@ include(../util/util.pri)
 include(../tree/tree.pri)
 include(../../resources/resources.pri)
 
-STATIC_PLUGINS = finder menu navigator reseter
+STATIC_PLUGINS = finder highlighter menu navigator
 for(PLUGIN, STATIC_PLUGINS) {
     LIBS *= -L$$PWD/../../plugins
     LIBS += -l$${PLUGIN}plugin

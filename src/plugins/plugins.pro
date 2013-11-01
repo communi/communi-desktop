@@ -3,4 +3,4 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS += finder menu navigator reseter
+SUBDIRS += finder highlighter menu navigator

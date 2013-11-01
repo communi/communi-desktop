@@ -12,22 +12,22 @@
 * GNU General Public License for more details.
 */
 
-#ifndef RESETERPLUGIN_H
-#define RESETERPLUGIN_H
+#ifndef HIGHLIGHTERPLUGIN_H
+#define HIGHLIGHTERPLUGIN_H
 
 #include <QtPlugin>
 #include <QShortcut>
 #include <QTreeWidget>
 #include "treeplugin.h"
 
-class ReseterPlugin : public QObject, public TreePlugin
+class HighlighterPlugin : public QObject, public TreePlugin
 {
     Q_OBJECT
     Q_INTERFACES(TreePlugin)
     Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
 
 public:
-    ReseterPlugin(QObject* parent = 0);
+    HighlighterPlugin(QObject* parent = 0);
 
     void initialize(TreeWidget* tree);
 
@@ -47,4 +47,4 @@ private:
     friend class TreeItem;
 };
 
-#endif // RESETERPLUGIN_H
+#endif // HIGHLIGHTERPLUGIN_H

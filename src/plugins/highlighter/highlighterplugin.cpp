@@ -12,18 +12,20 @@
 * GNU General Public License for more details.
 */
 
-#include "reseterplugin.h"
+#include "highlighterplugin.h"
 #include "treewidget.h"
+#include "treeitem.h"
+#include <QTimer>
 #include <QEvent>
 
-ReseterPlugin::ReseterPlugin(QObject* parent) : QObject(parent)
+HighlighterPlugin::HighlighterPlugin(QObject* parent) : QObject(parent)
 {
     d.blocked = false;
     d.tree = 0;
     d.shortcut = 0;
 }
 
-void ReseterPlugin::initialize(TreeWidget* tree)
+void HighlighterPlugin::initialize(TreeWidget* tree)
 {
     d.tree = tree;
 
@@ -35,7 +37,7 @@ void ReseterPlugin::initialize(TreeWidget* tree)
     connect(d.shortcut, SIGNAL(activated()), this, SLOT(resetItems()));
 }
 
-bool ReseterPlugin::eventFilter(QObject *object, QEvent* event)
+bool HighlighterPlugin::eventFilter(QObject *object, QEvent* event)
 {
     Q_UNUSED(object);
     switch (event->type()) {
@@ -55,27 +57,27 @@ bool ReseterPlugin::eventFilter(QObject *object, QEvent* event)
     return false;
 }
 
-void ReseterPlugin::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
+void HighlighterPlugin::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
     if (!d.blocked) {
-        //if (previous)
-            // TODO: static_cast<TreeItem*>(previous)->reset();
+        if (previous)
+            static_cast<TreeItem*>(previous)->reset();
     }
     if (current)
         delayedReset(current);
 }
 
-void ReseterPlugin::delayedReset(QTreeWidgetItem* item)
+void HighlighterPlugin::delayedReset(QTreeWidgetItem* item)
 {
-    //if (item)
-        // TODO: QTimer::singleShot(500, static_cast<TreeItem*>(item), SLOT(reset()));
+    if (item)
+        QTimer::singleShot(500, static_cast<TreeItem*>(item), SLOT(reset()));
 }
 
-void ReseterPlugin::resetItems()
+void HighlighterPlugin::resetItems()
 {
     QTreeWidgetItemIterator it(d.tree);
     while (*it) {
-        // TODO: static_cast<QTreeWidgetItem*>(*it)->reset();
+        static_cast<TreeItem*>(*it)->reset();
         ++it;
     }
 }

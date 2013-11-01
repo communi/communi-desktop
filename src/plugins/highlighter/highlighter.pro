@@ -4,7 +4,7 @@
 
 TEMPLATE = lib
 CONFIG += plugin static
-TARGET = reseterplugin
+TARGET = highlighterplugin
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets
@@ -15,8 +15,8 @@ DESTDIR = ../../../plugins
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
-HEADERS += $$PWD/reseterplugin.h
-SOURCES += $$PWD/reseterplugin.cpp
+HEADERS += $$PWD/highlighterplugin.h
+SOURCES += $$PWD/highlighterplugin.cpp
 
 include(../../config.pri)
 include(../../backend.pri)
