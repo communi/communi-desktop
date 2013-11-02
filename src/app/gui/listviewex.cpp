@@ -7,50 +7,39 @@
  * completely or partially.
  */
 
-#include "userlistview.h"
-#include <IrcUserModel>
+#include "listviewex.h"
+#include "listplugin.h"
+#include <QPluginLoader> // TODO
 #include <QScrollBar>
-#include <IrcChannel>
-#include <IrcUser>
+#include <Irc>
 
-UserListView::UserListView(QWidget* parent) : QListView(parent)
+ListViewEx::ListViewEx(QWidget* parent) : ListView(parent)
 {
-    d.model = new IrcUserModel(this);
-    d.model->setSortMethod(Irc::SortByTitle);
-
-    setModel(d.model);
     setFocusPolicy(Qt::NoFocus);
 
     connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClicked(QModelIndex)));
+
+    // TODO: move outta here...
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        ListPlugin* plugin = qobject_cast<ListPlugin*>(instance);
+        if (plugin)
+            plugin->initialize(this);
+    }
 }
 
-UserListView::~UserListView()
-{
-}
-
-IrcChannel* UserListView::channel() const
-{
-    return d.model->channel();
-}
-
-void UserListView::setChannel(IrcChannel* channel)
-{
-    d.model->setChannel(channel);
-}
-
-QSize UserListView::sizeHint() const
+QSize ListViewEx::sizeHint() const
 {
     const int w = 16 * fontMetrics().width('#') + verticalScrollBar()->sizeHint().width();
     return QSize(w, QListView::sizeHint().height());
 }
 
-void UserListView::contextMenuEvent(QContextMenuEvent* event)
+void ListViewEx::contextMenuEvent(QContextMenuEvent* event)
 {
     Q_UNUSED(event);
     // TODO
 }
 
-void UserListView::onDoubleClicked(const QModelIndex& index)
+void ListViewEx::onDoubleClicked(const QModelIndex& index)
 {
     if (index.isValid())
         emit doubleClicked(index.data(Irc::NameRole).toString());

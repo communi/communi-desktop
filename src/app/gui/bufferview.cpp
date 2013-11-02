@@ -8,7 +8,7 @@
  */
 
 #include "bufferview.h"
-#include "userlistview.h"
+#include "listviewex.h"
 #include "topiclabel.h"
 #include "textinputex.h"
 #include "document.h"
@@ -23,7 +23,7 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     d.browser = new Browser(this);
     d.textInput = new TextInputEx(this);
     d.topicLabel = new TopicLabel(this);
-    d.listView = new UserListView(this);
+    d.listView = new ListViewEx(this);
     d.splitter = new QSplitter(this);
     d.splitter->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
 

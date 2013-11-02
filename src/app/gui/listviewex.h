@@ -7,27 +7,17 @@
  * completely or partially.
  */
 
-#ifndef USERLISTVIEW_H
-#define USERLISTVIEW_H
+#ifndef LISTVIEWEX_H
+#define LISTVIEWEX_H
 
-#include <QListView>
+#include "listview.h"
 
-class IrcUser;
-class IrcChannel;
-class IrcUserModel;
-
-class UserListView : public QListView
+class ListViewEx : public ListView
 {
     Q_OBJECT
 
 public:
-    UserListView(QWidget* parent = 0);
-    ~UserListView();
-
-    IrcChannel* channel() const;
-
-public slots:
-    void setChannel(IrcChannel* channel);
+    ListViewEx(QWidget* parent = 0);
 
 signals:
     void doubleClicked(const QString& user);
@@ -38,11 +28,6 @@ protected:
 
 private slots:
     void onDoubleClicked(const QModelIndex& index);
-
-private:
-    struct Private {
-        IrcUserModel* model;
-    } d;
 };
 
-#endif // USERLISTVIEW_H
+#endif // LISTVIEWEX_H

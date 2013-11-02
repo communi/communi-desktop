@@ -28,7 +28,7 @@ HEADERS += $$PWD/searchentry.h
 HEADERS += $$PWD/textbrowser.h
 HEADERS += $$PWD/textdocument.h
 HEADERS += $$PWD/topiclabel.h
-HEADERS += $$PWD/userlistview.h
+HEADERS += $$PWD/listviewex.h
 
 SOURCES += $$PWD/browser.cpp
 SOURCES += $$PWD/bufferview.cpp
@@ -39,7 +39,7 @@ SOURCES += $$PWD/searchentry.cpp
 SOURCES += $$PWD/textbrowser.cpp
 SOURCES += $$PWD/textdocument.cpp
 SOURCES += $$PWD/topiclabel.cpp
-SOURCES += $$PWD/userlistview.cpp
+SOURCES += $$PWD/listviewex.cpp
 
 HEADERS += $$PWD/treedelegate.h
 HEADERS += $$PWD/treewidgetex.h

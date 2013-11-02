@@ -13,10 +13,10 @@
 #include <QSplitter>
 
 class Browser;
+class ListView;
 class IrcBuffer;
 class TextInput;
 class TopicLabel;
-class UserListView;
 
 class BufferView : public QWidget
 {
@@ -38,9 +38,9 @@ private:
     struct Private {
         IrcBuffer* buffer;
         Browser* browser;
+        ListView* listView;
         TextInput* textInput;
         TopicLabel* topicLabel;
-        UserListView* listView;
         QSplitter* splitter;
     } d;
 };
