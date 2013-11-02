@@ -13,6 +13,9 @@
 #include <QScrollBar>
 #include <Irc>
 
+// TODO:
+//Q_IMPORT_PLUGIN(MenuPlugin)
+
 ListViewEx::ListViewEx(QWidget* parent) : ListView(parent)
 {
     setFocusPolicy(Qt::NoFocus);
@@ -31,12 +34,6 @@ QSize ListViewEx::sizeHint() const
 {
     const int w = 16 * fontMetrics().width('#') + verticalScrollBar()->sizeHint().width();
     return QSize(w, QListView::sizeHint().height());
-}
-
-void ListViewEx::contextMenuEvent(QContextMenuEvent* event)
-{
-    Q_UNUSED(event);
-    // TODO
 }
 
 void ListViewEx::onDoubleClicked(const QModelIndex& index)

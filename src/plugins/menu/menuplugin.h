@@ -15,50 +15,25 @@
 #ifndef MENUPLUGIN_H
 #define MENUPLUGIN_H
 
-#include <QMenu>
+#include <QObject>
 #include <QtPlugin>
 #include "treeplugin.h"
+#include "listplugin.h"
 
 class TreeItem;
 
-class MenuPlugin : public QMenu, public TreePlugin
+class MenuPlugin : public QObject, public TreePlugin, public ListPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreePlugin)
+    Q_INTERFACES(TreePlugin ListPlugin)
     Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
+    Q_PLUGIN_METADATA(IID "com.github.communi.ListPlugin")
 
 public:
     MenuPlugin(QObject* parent = 0);
 
     void initialize(TreeWidget* tree);
-
-    bool eventFilter(QObject *object, QEvent *event);
-
-public slots:
-    void exec(TreeItem* item, const QPoint& pos);
-
-private slots:
-    void onEditTriggered();
-    void onWhoisTriggered();
-    void onJoinTriggered();
-    void onPartTriggered();
-    void onCloseTriggered();
-    void updateActions();
-
-private:
-    void setup(TreeItem* item);
-
-    struct Private {
-        TreeItem* item;
-        TreeWidget* tree;
-        QAction* disconnectAction;
-        QAction* reconnectAction;
-        QAction* editAction;
-        QAction* whoisAction;
-        QAction* joinAction;
-        QAction* partAction;
-        QAction* closeAction;
-    } d;
+    void initialize(ListView* tree);
 };
 
 #endif // MENUPLUGIN_H

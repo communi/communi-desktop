@@ -24,7 +24,6 @@ signals:
 
 protected:
     QSize sizeHint() const;
-    void contextMenuEvent(QContextMenuEvent* event);
 
 private slots:
     void onDoubleClicked(const QModelIndex& index);
