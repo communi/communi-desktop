@@ -15,6 +15,7 @@
 #ifndef TREEWIDGET_H
 #define TREEWIDGET_H
 
+#include <QHash>
 #include <QTreeWidget>
 
 class TreeItem;
@@ -29,18 +30,30 @@ class TreeWidget : public QTreeWidget
 public:
     TreeWidget(QWidget* parent = 0);
 
-    virtual IrcBuffer* currentBuffer() const = 0;
-    virtual TreeItem* bufferItem(IrcBuffer* buffer) const = 0;
+    IrcBuffer* currentBuffer() const;
+    TreeItem* bufferItem(IrcBuffer* buffer) const;
 
-    virtual QList<IrcConnection*> connections() const = 0;
+    QList<IrcConnection*> connections() const;
 
 public slots:
-    virtual void addBuffer(IrcBuffer* buffer) = 0;
-    virtual void removeBuffer(IrcBuffer* buffer) = 0;
-    virtual void setCurrentBuffer(IrcBuffer* buffer) = 0;
+    void addBuffer(IrcBuffer* buffer);
+    void removeBuffer(IrcBuffer* buffer);
+    void setCurrentBuffer(IrcBuffer* buffer);
 
 signals:
     void currentBufferChanged(IrcBuffer* buffer);
+
+private slots:
+    void onItemExpanded(QTreeWidgetItem* item);
+    void onItemCollapsed(QTreeWidgetItem* item);
+    void onCurrentItemChanged(QTreeWidgetItem* item);
+
+private:
+    struct Private {
+        QList<IrcConnection*> connections;
+        QHash<IrcBuffer*, TreeItem*> bufferItems;
+        QHash<IrcConnection*, TreeItem*> connectionItems;
+    } d;
 };
 
 #endif // TREEWIDGET_H

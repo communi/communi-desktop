@@ -13,13 +13,10 @@
 */
 
 #include "treewidgetimpl.h"
-#include "treeitem.h"
 #include "treeplugin.h"
 #include "treedelegate.h"
-#include <IrcConnection>
 #include <QPluginLoader> // TODO
 #include <QHeaderView>
-#include <IrcBuffer>
 
 // TODO:
 Q_IMPORT_PLUGIN(FinderPlugin)
@@ -55,10 +52,6 @@ TreeWidgetImpl::TreeWidgetImpl(QWidget* parent) : TreeWidget(parent)
         if (plugin)
             plugin->initialize(this);
     }
-
-    connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(onItemExpanded(QTreeWidgetItem*)));
-    connect(this, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
-    connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));
 }
 
 QSize TreeWidgetImpl::sizeHint() const
@@ -120,70 +113,4 @@ void TreeWidgetImpl::restoreState(const QByteArray& state)
 //            }
 //        }
 //    }
-}
-
-IrcBuffer* TreeWidgetImpl::currentBuffer() const
-{
-    TreeItem* item = static_cast<TreeItem*>(currentItem());
-    if (item)
-        return item->buffer();
-    return 0;
-}
-
-TreeItem* TreeWidgetImpl::bufferItem(IrcBuffer* buffer) const
-{
-    return d.bufferItems.value(buffer);
-}
-
-QList<IrcConnection*> TreeWidgetImpl::connections() const
-{
-    return d.connections;
-}
-
-void TreeWidgetImpl::addBuffer(IrcBuffer* buffer)
-{
-    TreeItem* item = 0;
-    if (buffer->isSticky()) {
-        item = new TreeItem(buffer, this);
-        IrcConnection* connection = buffer->connection();
-        d.connectionItems.insert(connection, item);
-        d.connections.append(connection);
-    } else {
-        TreeItem* parent = d.connectionItems.value(buffer->connection());
-        item = new TreeItem(buffer, parent);
-    }
-    d.bufferItems.insert(buffer, item);
-}
-
-void TreeWidgetImpl::removeBuffer(IrcBuffer* buffer)
-{
-    if (buffer->isSticky()) {
-        IrcConnection* connection = buffer->connection();
-        d.connectionItems.remove(connection);
-        d.connections.removeOne(connection);
-    }
-    delete d.bufferItems.take(buffer);
-}
-
-void TreeWidgetImpl::setCurrentBuffer(IrcBuffer* buffer)
-{
-    TreeItem* item = d.bufferItems.value(buffer);
-    if (item)
-        setCurrentItem(item);
-}
-
-void TreeWidgetImpl::onItemExpanded(QTreeWidgetItem* item)
-{
-    static_cast<TreeItem*>(item)->refresh();
-}
-
-void TreeWidgetImpl::onItemCollapsed(QTreeWidgetItem* item)
-{
-    static_cast<TreeItem*>(item)->refresh();
-}
-
-void TreeWidgetImpl::onCurrentItemChanged(QTreeWidgetItem* item)
-{
-    if (item)
-        emit currentBufferChanged(static_cast<TreeItem*>(item)->buffer());
 }

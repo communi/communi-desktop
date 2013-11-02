@@ -13,7 +13,79 @@
 */
 
 #include "treewidget.h"
+#include "treeitem.h"
+#include <IrcBuffer>
 
 TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
+    connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(onItemExpanded(QTreeWidgetItem*)));
+    connect(this, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
+    connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));
+}
+
+IrcBuffer* TreeWidget::currentBuffer() const
+{
+    TreeItem* item = static_cast<TreeItem*>(currentItem());
+    if (item)
+        return item->buffer();
+    return 0;
+}
+
+TreeItem* TreeWidget::bufferItem(IrcBuffer* buffer) const
+{
+    return d.bufferItems.value(buffer);
+}
+
+QList<IrcConnection*> TreeWidget::connections() const
+{
+    return d.connections;
+}
+
+void TreeWidget::addBuffer(IrcBuffer* buffer)
+{
+    TreeItem* item = 0;
+    if (buffer->isSticky()) {
+        item = new TreeItem(buffer, this);
+        IrcConnection* connection = buffer->connection();
+        d.connectionItems.insert(connection, item);
+        d.connections.append(connection);
+    } else {
+        TreeItem* parent = d.connectionItems.value(buffer->connection());
+        item = new TreeItem(buffer, parent);
+    }
+    d.bufferItems.insert(buffer, item);
+}
+
+void TreeWidget::removeBuffer(IrcBuffer* buffer)
+{
+    if (buffer->isSticky()) {
+        IrcConnection* connection = buffer->connection();
+        d.connectionItems.remove(connection);
+        d.connections.removeOne(connection);
+    }
+    delete d.bufferItems.take(buffer);
+}
+
+void TreeWidget::setCurrentBuffer(IrcBuffer* buffer)
+{
+    TreeItem* item = d.bufferItems.value(buffer);
+    if (item)
+        setCurrentItem(item);
+}
+
+
+void TreeWidget::onItemExpanded(QTreeWidgetItem* item)
+{
+    static_cast<TreeItem*>(item)->refresh();
+}
+
+void TreeWidget::onItemCollapsed(QTreeWidgetItem* item)
+{
+    static_cast<TreeItem*>(item)->refresh();
+}
+
+void TreeWidget::onCurrentItemChanged(QTreeWidgetItem* item)
+{
+    if (item)
+        emit currentBufferChanged(static_cast<TreeItem*>(item)->buffer());
 }

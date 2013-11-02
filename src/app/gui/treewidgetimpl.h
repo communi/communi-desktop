@@ -16,12 +16,6 @@
 #define TREEWIDGETIMPL_H
 
 #include "treewidget.h"
-#include <QShortcut>
-#include <QHash>
-
-class TreeItem;
-class IrcBuffer;
-class IrcConnection;
 
 class TreeWidgetImpl : public TreeWidget
 {
@@ -34,32 +28,6 @@ public:
 
     QByteArray saveState() const;
     void restoreState(const QByteArray& state);
-
-    IrcBuffer* currentBuffer() const;
-    TreeItem* bufferItem(IrcBuffer* buffer) const;
-
-    QList<IrcConnection*> connections() const;
-
-public slots:
-    void addBuffer(IrcBuffer* buffer);
-    void removeBuffer(IrcBuffer* buffer);
-    void setCurrentBuffer(IrcBuffer* buffer);
-
-signals:
-    void currentBufferChanged(IrcBuffer* buffer);
-
-private slots:
-    void onItemExpanded(QTreeWidgetItem* item);
-    void onItemCollapsed(QTreeWidgetItem* item);
-    void onCurrentItemChanged(QTreeWidgetItem* item);
-
-private:
-    struct Private {
-        QList<IrcConnection*> connections;
-        QHash<IrcBuffer*, TreeItem*> bufferItems;
-        QHash<IrcConnection*, TreeItem*> connectionItems;
-    } d;
-    friend class TreeItem;
 };
 
 #endif // TREEWIDGETIMPL_H
