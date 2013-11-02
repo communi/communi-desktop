@@ -17,9 +17,6 @@
 
 #include "textinput.h"
 
-class IrcBuffer;
-class IrcCommandParser;
-
 class TextInputImpl : public TextInput
 {
     Q_OBJECT
@@ -27,23 +24,8 @@ class TextInputImpl : public TextInput
 public:
     TextInputImpl(QWidget* parent = 0);
 
-    IrcBuffer* buffer() const;
-    IrcCommandParser* parser() const;
-
-public slots:
-    void setBuffer(IrcBuffer* buffer);
-
-signals:
-    void bufferChanged(IrcBuffer* buffer);
-
 private slots:
     void sendInput();
-
-private:
-    struct Private {
-        IrcBuffer* buffer;
-        IrcCommandParser* parser;
-    } d;
 };
 
 #endif // TEXTINPUTIMPL_H

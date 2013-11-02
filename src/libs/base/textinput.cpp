@@ -13,7 +13,65 @@
 */
 
 #include "textinput.h"
+#include <IrcCommandParser>
+#include <IrcBufferModel>
+#include <IrcBuffer>
 
 TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
 {
+    d.buffer = 0;
+    d.parser = 0;
+}
+
+IrcBuffer* TextInput::buffer() const
+{
+    return d.buffer;
+}
+
+IrcCommandParser* TextInput::parser() const
+{
+    return d.parser;
+}
+
+static void bind(IrcBuffer* buffer, IrcCommandParser* parser)
+{
+    if (buffer && parser) {
+        IrcBufferModel* model = buffer->model();
+        QObject::connect(model, SIGNAL(channelsChanged(QStringList)), parser, SLOT(setChannels(QStringList)));
+        QObject::connect(buffer, SIGNAL(titleChanged(QString)), parser, SLOT(setTarget(QString)));
+
+        parser->setTarget(buffer->title());
+        parser->setChannels(buffer->model()->channels());
+    } else if (parser) {
+        parser->reset();
+    }
+}
+
+static void unbind(IrcBuffer* buffer, IrcCommandParser* parser)
+{
+    if (buffer && parser) {
+        IrcBufferModel* model = buffer->model();
+        QObject::disconnect(model, SIGNAL(channelsChanged(QStringList)), parser, SLOT(setChannels(QStringList)));
+        QObject::disconnect(buffer, SIGNAL(titleChanged(QString)), parser, SLOT(setTarget(QString)));
+    }
+}
+
+void TextInput::setBuffer(IrcBuffer* buffer)
+{
+    if (d.buffer != buffer) {
+        unbind(d.buffer, d.parser);
+        bind(buffer, d.parser);
+        d.buffer = buffer;
+        emit bufferChanged(buffer);
+    }
+}
+
+void TextInput::setParser(IrcCommandParser* parser)
+{
+    if (d.parser != parser) {
+        unbind(d.buffer, d.parser);
+        bind(d.buffer, parser);
+        d.parser = parser;
+        emit parserChanged(parser);
+    }
 }

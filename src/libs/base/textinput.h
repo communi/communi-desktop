@@ -23,20 +23,28 @@ class IrcCommandParser;
 class TextInput : public QLineEdit
 {
     Q_OBJECT
-    Q_PROPERTY(IrcCommandParser* parser READ parser CONSTANT)
     Q_PROPERTY(IrcBuffer* buffer READ buffer WRITE setBuffer NOTIFY bufferChanged)
+    Q_PROPERTY(IrcCommandParser* parser READ parser WRITE setParser NOTIFY parserChanged)
 
 public:
     TextInput(QWidget* parent = 0);
 
-    virtual IrcBuffer* buffer() const = 0;
-    virtual IrcCommandParser* parser() const = 0;
+    IrcBuffer* buffer() const;
+    IrcCommandParser* parser() const;
 
 public slots:
-    virtual void setBuffer(IrcBuffer* buffer) = 0;
+    void setBuffer(IrcBuffer* buffer);
+    void setParser(IrcCommandParser* parser);
 
 signals:
     void bufferChanged(IrcBuffer* buffer);
+    void parserChanged(IrcCommandParser* parser);
+
+private:
+    struct Private {
+        IrcBuffer* buffer;
+        IrcCommandParser* parser;
+    } d;
 };
 
 #endif // TEXTINPUT_H
