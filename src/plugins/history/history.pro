@@ -22,4 +22,4 @@ SOURCES += $$PWD/history.cpp
 SOURCES += $$PWD/historyplugin.cpp
 
 include(../../config.pri)
-include(../../input/input.pri)
+include(../../libs/input/input.pri)

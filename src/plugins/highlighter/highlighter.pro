@@ -19,5 +19,5 @@ HEADERS += $$PWD/highlighterplugin.h
 SOURCES += $$PWD/highlighterplugin.cpp
 
 include(../../config.pri)
-include(../../backend.pri)
-include(../../tree/tree.pri)
+include(../../libs/backend/backend.pri)
+include(../../libs/tree/tree.pri)

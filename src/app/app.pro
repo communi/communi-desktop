@@ -14,12 +14,12 @@ INSTALLS += target
 
 include(src.pri)
 include(../config.pri)
-include(../backend.pri)
-include(../util/util.pri)
-include(../input/input.pri)
-include(../tree/tree.pri)
-include(../view/view.pri)
-include(../3rdparty/3rdparty.pri)
+include(../libs/backend/backend.pri)
+include(../libs/util/util.pri)
+include(../libs/input/input.pri)
+include(../libs/tree/tree.pri)
+include(../libs/view/view.pri)
+include(../libs/3rdparty/3rdparty.pri)
 include(../../resources/resources.pri)
 
 STATIC_PLUGINS = completer finder highlighter history menu navigator

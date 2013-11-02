@@ -3,5 +3,5 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS += libs plugins app
+SUBDIRS += backend 3rdparty util input tree view
 CONFIG += ordered

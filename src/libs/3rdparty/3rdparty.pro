@@ -17,7 +17,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     CONFIG(phonon, phonon|no_phonon):QT += phonon
 }
 
-DESTDIR = ../../lib
+DESTDIR = ../../../lib
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
@@ -48,4 +48,4 @@ win32 {
     SOURCES += $$PWD/qtdocktile/qtdocktile_win.cpp
 }
 
-include(../config.pri)
+include(../../config.pri)

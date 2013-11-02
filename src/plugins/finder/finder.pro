@@ -19,5 +19,5 @@ HEADERS += $$PWD/finderplugin.h
 SOURCES += $$PWD/finderplugin.cpp
 
 include(../../config.pri)
-include(../../backend.pri)
-include(../../tree/tree.pri)
+include(../../libs/backend/backend.pri)
+include(../../libs/tree/tree.pri)

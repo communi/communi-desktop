@@ -17,7 +17,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     CONFIG(phonon, phonon|no_phonon):QT += phonon
 }
 
-DESTDIR = ../../lib
+DESTDIR = ../../../lib
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
@@ -35,6 +35,6 @@ SOURCES += $$PWD/sharedtimer.cpp
 SOURCES += $$PWD/soundnotification.cpp
 SOURCES += $$PWD/zncmanager.cpp
 
-include(../config.pri)
-include(../backend.pri)
+include(../../config.pri)
+include(../backend/backend.pri)
 include(systemnotifier/systemnotifier.pri)

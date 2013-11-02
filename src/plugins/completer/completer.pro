@@ -22,5 +22,5 @@ SOURCES += $$PWD/completer.cpp
 SOURCES += $$PWD/completerplugin.cpp
 
 include(../../config.pri)
-include(../../backend.pri)
-include(../../input/input.pri)
+include(../../libs/backend/backend.pri)
+include(../../libs/input/input.pri)

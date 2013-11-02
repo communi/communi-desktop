@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000
 }
 
-DESTDIR = ../../lib
+DESTDIR = ../../../lib
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
@@ -37,8 +37,8 @@ SOURCES += $$PWD/textdocument.cpp
 SOURCES += $$PWD/topiclabel.cpp
 SOURCES += $$PWD/userlistview.cpp
 
-include(../config.pri)
-include(../backend.pri)
+include(../../config.pri)
+include(../backend/backend.pri)
 include(../util/util.pri)
 include(../input/input.pri)
 include(../3rdparty/3rdparty.pri)

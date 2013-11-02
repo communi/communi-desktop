@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000
 }
 
-DESTDIR = ../../lib
+DESTDIR = ../../../lib
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
@@ -25,6 +25,6 @@ SOURCES += $$PWD/treedelegate.cpp
 SOURCES += $$PWD/treeitem.cpp
 SOURCES += $$PWD/treewidget.cpp
 
-include(../config.pri)
-include(../backend.pri)
+include(../../config.pri)
+include(../backend/backend.pri)
 include(../util/util.pri)
