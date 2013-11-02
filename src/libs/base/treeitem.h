@@ -29,18 +29,47 @@ class TreeItem : public QObject, public QTreeWidgetItem
     Q_PROPERTY(IrcConnection* connection READ connection CONSTANT)
 
 public:
-    TreeItem(TreeItem* parent);
-    TreeItem(TreeWidget* parent);
+    TreeItem(IrcBuffer* buffer, TreeItem* parent);
+    TreeItem(IrcBuffer* buffer, TreeWidget* parent);
+    ~TreeItem();
 
-    virtual IrcBuffer* buffer() const = 0;
-    virtual IrcConnection* connection() const = 0;
+    IrcBuffer* buffer() const;
+    IrcConnection* connection() const;
 
     TreeItem* parentItem() const;
     TreeWidget* treeWidget() const;
 
+    int badge() const;
+    void setBadge(int badge);
+
+    bool isHighlighted() const;
+    void setHighlighted(bool highlighted);
+
+    QVariant data(int column, int role) const;
+
+    bool operator<(const QTreeWidgetItem& other) const;
+
 public slots:
-    virtual void reset() = 0;
-    virtual void refresh() = 0;
+    void reset();
+    void refresh();
+    void blink();
+
+signals:
+    void destroyed(TreeItem* item);
+
+private slots:
+    void removeChild(TreeItem* child);
+
+private:
+    void init(IrcBuffer* buffer);
+
+    struct Private {
+        int badge;
+        bool blink;
+        bool highlighted;
+        IrcBuffer* buffer;
+        QSet<TreeItem*> highlightedChildren;
+    } d;
 };
 
 #endif // TREEITEM_H

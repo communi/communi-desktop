@@ -13,7 +13,7 @@
 */
 
 #include "treewidgetimpl.h"
-#include "treeitemimpl.h"
+#include "treeitem.h"
 #include "treeplugin.h"
 #include "treedelegate.h"
 #include <IrcConnection>
@@ -144,13 +144,13 @@ void TreeWidgetImpl::addBuffer(IrcBuffer* buffer)
 {
     TreeItem* item = 0;
     if (buffer->isSticky()) {
-        item = new TreeItemImpl(buffer, this);
+        item = new TreeItem(buffer, this);
         IrcConnection* connection = buffer->connection();
         d.connectionItems.insert(connection, item);
         d.connections.append(connection);
     } else {
         TreeItem* parent = d.connectionItems.value(buffer->connection());
-        item = new TreeItemImpl(buffer, parent);
+        item = new TreeItem(buffer, parent);
     }
     d.bufferItems.insert(buffer, item);
 }
@@ -170,21 +170,6 @@ void TreeWidgetImpl::setCurrentBuffer(IrcBuffer* buffer)
     TreeItem* item = d.bufferItems.value(buffer);
     if (item)
         setCurrentItem(item);
-}
-
-void TreeWidgetImpl::rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end)
-{
-    QTreeWidget::rowsAboutToBeRemoved(parent, start, end);
-    TreeItemImpl* item = static_cast<TreeItemImpl*>(itemFromIndex(parent));
-    if (item) {
-        for (int i = start; i <= end; ++i) {
-            TreeItemImpl* child = static_cast<TreeItemImpl*>(item->child(i));
-            if (child) {
-                item->d.highlightedChildren.remove(child);
-                child->reset();
-            }
-        }
-    }
 }
 
 void TreeWidgetImpl::onItemExpanded(QTreeWidgetItem* item)

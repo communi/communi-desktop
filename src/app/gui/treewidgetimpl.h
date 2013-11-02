@@ -48,9 +48,6 @@ public slots:
 signals:
     void currentBufferChanged(IrcBuffer* buffer);
 
-protected:
-    void rowsAboutToBeRemoved(const QModelIndex & parent, int start, int end);
-
 private slots:
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
@@ -62,7 +59,7 @@ private:
         QHash<IrcBuffer*, TreeItem*> bufferItems;
         QHash<IrcConnection*, TreeItem*> connectionItems;
     } d;
-    friend class TreeItemImpl;
+    friend class TreeItem;
 };
 
 #endif // TREEWIDGETIMPL_H

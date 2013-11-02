@@ -28,3 +28,4 @@ SOURCES += $$PWD/treewidget.cpp
 
 include(../../config.pri)
 include(../backend/backend.pri)
+include(../util/util.pri)

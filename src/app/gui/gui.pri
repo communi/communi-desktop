@@ -42,9 +42,7 @@ SOURCES += $$PWD/topiclabel.cpp
 SOURCES += $$PWD/userlistview.cpp
 
 HEADERS += $$PWD/treedelegate.h
-HEADERS += $$PWD/treeitemimpl.h
 HEADERS += $$PWD/treewidgetimpl.h
 
 SOURCES += $$PWD/treedelegate.cpp
-SOURCES += $$PWD/treeitemimpl.cpp
 SOURCES += $$PWD/treewidgetimpl.cpp
