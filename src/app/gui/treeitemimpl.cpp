@@ -12,24 +12,24 @@
 * GNU General Public License for more details.
 */
 
-#include "treeitem.h"
+#include "treeitemimpl.h"
 #include "treewidget.h"
 #include "sharedtimer.h"
 #include "treerole.h"
 #include <IrcBufferModel>
 #include <IrcBuffer>
 
-TreeItem::TreeItem(IrcBuffer* buffer, QTreeWidget* parent) : QTreeWidgetItem(parent)
+TreeItemImpl::TreeItemImpl(IrcBuffer* buffer, TreeItem* parent) : TreeItem(parent)
 {
     init(buffer);
 }
 
-TreeItem::TreeItem(IrcBuffer* buffer, QTreeWidgetItem* parent) : QTreeWidgetItem(parent)
+TreeItemImpl::TreeItemImpl(IrcBuffer* buffer, TreeWidget* parent) : TreeItem(parent)
 {
     init(buffer);
 }
 
-void TreeItem::init(IrcBuffer* buffer)
+void TreeItemImpl::init(IrcBuffer* buffer)
 {
     d.badge = 0;
     d.buffer = buffer;
@@ -41,31 +41,31 @@ void TreeItem::init(IrcBuffer* buffer)
     connect(buffer, SIGNAL(titleChanged(QString)), this, SLOT(refresh()));
 }
 
-TreeItem::~TreeItem()
+TreeItemImpl::~TreeItemImpl()
 {
 }
 
-IrcBuffer* TreeItem::buffer() const
+IrcBuffer* TreeItemImpl::buffer() const
 {
     return d.buffer;
 }
 
-IrcConnection* TreeItem::connection() const
+IrcConnection* TreeItemImpl::connection() const
 {
     return d.buffer->connection();
 }
 
-TreeItem* TreeItem::parentItem() const
+TreeItem* TreeItemImpl::parentItem() const
 {
     return static_cast<TreeItem*>(QTreeWidgetItem::parent());
 }
 
-TreeWidget* TreeItem::treeWidget() const
+TreeWidget* TreeItemImpl::treeWidget() const
 {
     return static_cast<TreeWidget*>(QTreeWidgetItem::treeWidget());
 }
 
-QVariant TreeItem::data(int column, int role) const
+QVariant TreeItemImpl::data(int column, int role) const
 {
     switch (role) {
     case TreeRole::Badge:
@@ -85,12 +85,12 @@ QVariant TreeItem::data(int column, int role) const
     }
 }
 
-int TreeItem::badge() const
+int TreeItemImpl::badge() const
 {
     return d.badge;
 }
 
-void TreeItem::setBadge(int badge)
+void TreeItemImpl::setBadge(int badge)
 {
     if (d.badge != badge) {
         d.badge = badge;
@@ -98,16 +98,16 @@ void TreeItem::setBadge(int badge)
     }
 }
 
-bool TreeItem::isHighlighted() const
+bool TreeItemImpl::isHighlighted() const
 {
     return d.highlighted;
 }
 
-void TreeItem::setHighlighted(bool highlighted)
+void TreeItemImpl::setHighlighted(bool highlighted)
 {
     if (d.highlighted != highlighted) {
         d.highlighted = highlighted;
-        if (TreeItem* p = parentItem()) {
+        if (TreeItemImpl* p = static_cast<TreeItemImpl*>(parentItem())) {
             if (highlighted)
                 p->d.highlightedChildren.insert(this);
             else
@@ -126,10 +126,10 @@ void TreeItem::setHighlighted(bool highlighted)
 // TODO
 class FriendlyModel : public IrcBufferModel
 {
-    friend class TreeItem;
+    friend class TreeItemImpl;
 };
 
-bool TreeItem::operator<(const QTreeWidgetItem& other) const
+bool TreeItemImpl::operator<(const QTreeWidgetItem& other) const
 {
     const TreeItem* otherItem = static_cast<const TreeItem*>(&other);
     if (!parentItem()) {
@@ -140,18 +140,18 @@ bool TreeItem::operator<(const QTreeWidgetItem& other) const
     return model->lessThan(d.buffer, otherItem->buffer(), model->sortMethod());
 }
 
-void TreeItem::reset()
+void TreeItemImpl::reset()
 {
     setBadge(0);
     setHighlighted(false);
 }
 
-void TreeItem::refresh()
+void TreeItemImpl::refresh()
 {
     emitDataChanged();
 }
 
-void TreeItem::blink()
+void TreeItemImpl::blink()
 {
     d.blink = !d.blink;
     emitDataChanged();

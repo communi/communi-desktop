@@ -12,7 +12,7 @@
 * GNU General Public License for more details.
 */
 
-#include "textinput.h"
+#include "textinputimpl.h"
 #include "inputplugin.h"
 #include "commandparser.h"
 #include <IrcBufferModel>
@@ -23,7 +23,7 @@
 Q_IMPORT_PLUGIN(CompleterPlugin)
 Q_IMPORT_PLUGIN(HistoryPlugin)
 
-TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
+TextInputImpl::TextInputImpl(QWidget* parent) : TextInput(parent)
 {
     d.buffer = 0;
 
@@ -43,17 +43,17 @@ TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
     connect(this, SIGNAL(returnPressed()), this, SLOT(sendInput()));
 }
 
-IrcBuffer* TextInput::buffer() const
+IrcBuffer* TextInputImpl::buffer() const
 {
     return d.buffer;
 }
 
-IrcCommandParser* TextInput::parser() const
+IrcCommandParser* TextInputImpl::parser() const
 {
     return d.parser;
 }
 
-void TextInput::setBuffer(IrcBuffer* buffer)
+void TextInputImpl::setBuffer(IrcBuffer* buffer)
 {
     if (d.buffer != buffer) {
         if (d.buffer) {
@@ -78,7 +78,7 @@ void TextInput::setBuffer(IrcBuffer* buffer)
     }
 }
 
-void TextInput::sendInput()
+void TextInputImpl::sendInput()
 {
     if (!d.buffer)
         return;

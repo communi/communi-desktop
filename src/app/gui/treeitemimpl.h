@@ -12,25 +12,24 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TREEITEM_H
-#define TREEITEM_H
+#ifndef TREEITEMIMPL_H
+#define TREEITEMIMPL_H
 
-#include <QObject>
-#include <QTreeWidgetItem>
+#include "treeitem.h"
 
 class IrcBuffer;
 class TreeWidget;
 class IrcConnection;
 class IrcBufferModel;
 
-class TreeItem : public QObject, public QTreeWidgetItem
+class TreeItemImpl : public TreeItem
 {
     Q_OBJECT
 
 public:
-    TreeItem(IrcBuffer* buffer, QTreeWidget* parent);
-    TreeItem(IrcBuffer* buffer, QTreeWidgetItem* parent);
-    ~TreeItem();
+    TreeItemImpl(IrcBuffer* buffer, TreeItem* parent);
+    TreeItemImpl(IrcBuffer* buffer, TreeWidget* parent);
+    ~TreeItemImpl();
 
     IrcBuffer* buffer() const;
     IrcConnection* connection() const;
@@ -67,7 +66,7 @@ private:
         IrcBuffer* buffer;
         QSet<TreeItem*> highlightedChildren;
     } d;
-    friend class TreeWidget;
+    friend class TreeWidgetImpl;
 };
 
-#endif // TREEITEM_H
+#endif // TREEITEMIMPL_H

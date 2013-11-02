@@ -19,5 +19,5 @@ HEADERS += $$PWD/menuplugin.h
 SOURCES += $$PWD/menuplugin.cpp
 
 include(../../config.pri)
+include(../../libs/api/api.pri)
 include(../../libs/backend/backend.pri)
-include(../../libs/tree/tree.pri)

@@ -12,10 +12,10 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TREEWIDGET_H
-#define TREEWIDGET_H
+#ifndef TREEWIDGETIMPL_H
+#define TREEWIDGETIMPL_H
 
-#include <QTreeWidget>
+#include "treewidget.h"
 #include <QShortcut>
 #include <QHash>
 
@@ -23,12 +23,12 @@ class TreeItem;
 class IrcBuffer;
 class IrcConnection;
 
-class TreeWidget : public QTreeWidget
+class TreeWidgetImpl : public TreeWidget
 {
     Q_OBJECT
 
 public:
-    TreeWidget(QWidget* parent = 0);
+    TreeWidgetImpl(QWidget* parent = 0);
 
     QSize sizeHint() const;
 
@@ -62,7 +62,7 @@ private:
         QHash<IrcBuffer*, TreeItem*> bufferItems;
         QHash<IrcConnection*, TreeItem*> connectionItems;
     } d;
-    friend class TreeItem;
+    friend class TreeItemImpl;
 };
 
-#endif // TREEWIDGET_H
+#endif // TREEWIDGETIMPL_H

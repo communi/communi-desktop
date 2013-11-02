@@ -32,8 +32,3 @@ TreeWidget* TreeItem::treeWidget() const
 {
     return static_cast<TreeWidget*>(QTreeWidgetItem::treeWidget());
 }
-
-void TreeItem::emitDataChanged()
-{
-    QTreeWidgetItem::emitDataChanged();
-}

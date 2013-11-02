@@ -12,20 +12,20 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TEXTINPUT_H
-#define TEXTINPUT_H
+#ifndef TEXTINPUTIMPL_H
+#define TEXTINPUTIMPL_H
 
-#include <QLineEdit>
+#include "textinput.h"
 
 class IrcBuffer;
 class IrcCommandParser;
 
-class TextInput : public QLineEdit
+class TextInputImpl : public TextInput
 {
     Q_OBJECT
 
 public:
-    TextInput(QWidget* parent = 0);
+    TextInputImpl(QWidget* parent = 0);
 
     IrcBuffer* buffer() const;
     IrcCommandParser* parser() const;
@@ -46,4 +46,4 @@ private:
     } d;
 };
 
-#endif // TEXTINPUT_H
+#endif // TEXTINPUTIMPL_H

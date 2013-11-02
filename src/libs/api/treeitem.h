@@ -39,7 +39,8 @@ public:
     TreeWidget* treeWidget() const;
 
 public slots:
-    void emitDataChanged();
+    virtual void reset() = 0;
+    virtual void refresh() = 0;
 };
 
 #endif // TREEITEM_H

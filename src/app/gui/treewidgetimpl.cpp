@@ -12,8 +12,8 @@
 * GNU General Public License for more details.
 */
 
-#include "treewidget.h"
-#include "treeitem.h"
+#include "treewidgetimpl.h"
+#include "treeitemimpl.h"
 #include "treeplugin.h"
 #include "treedelegate.h"
 #include <IrcConnection>
@@ -27,7 +27,7 @@ Q_IMPORT_PLUGIN(MenuPlugin)
 Q_IMPORT_PLUGIN(NavigatorPlugin)
 Q_IMPORT_PLUGIN(HighlighterPlugin)
 
-TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
+TreeWidgetImpl::TreeWidgetImpl(QWidget* parent) : TreeWidget(parent)
 {
     setAnimated(true);
     setColumnCount(2);
@@ -61,12 +61,12 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));
 }
 
-QSize TreeWidget::sizeHint() const
+QSize TreeWidgetImpl::sizeHint() const
 {
     return QSize(20 * fontMetrics().width('#'), QTreeWidget::sizeHint().height());
 }
 
-QByteArray TreeWidget::saveState() const
+QByteArray TreeWidgetImpl::saveState() const
 {
     QByteArray state;
 //    QDataStream out(&state, QIODevice::WriteOnly);
@@ -91,7 +91,7 @@ QByteArray TreeWidget::saveState() const
     return state;
 }
 
-void TreeWidget::restoreState(const QByteArray& state)
+void TreeWidgetImpl::restoreState(const QByteArray& state)
 {
 //    QVariantHash hash;
 //    QDataStream in(state);
@@ -122,7 +122,7 @@ void TreeWidget::restoreState(const QByteArray& state)
 //    }
 }
 
-IrcBuffer* TreeWidget::currentBuffer() const
+IrcBuffer* TreeWidgetImpl::currentBuffer() const
 {
     TreeItem* item = static_cast<TreeItem*>(currentItem());
     if (item)
@@ -130,32 +130,32 @@ IrcBuffer* TreeWidget::currentBuffer() const
     return 0;
 }
 
-TreeItem* TreeWidget::bufferItem(IrcBuffer* buffer) const
+TreeItem* TreeWidgetImpl::bufferItem(IrcBuffer* buffer) const
 {
     return d.bufferItems.value(buffer);
 }
 
-QList<IrcConnection*> TreeWidget::connections() const
+QList<IrcConnection*> TreeWidgetImpl::connections() const
 {
     return d.connections;
 }
 
-void TreeWidget::addBuffer(IrcBuffer* buffer)
+void TreeWidgetImpl::addBuffer(IrcBuffer* buffer)
 {
     TreeItem* item = 0;
     if (buffer->isSticky()) {
-        item = new TreeItem(buffer, this);
+        item = new TreeItemImpl(buffer, this);
         IrcConnection* connection = buffer->connection();
         d.connectionItems.insert(connection, item);
         d.connections.append(connection);
     } else {
         TreeItem* parent = d.connectionItems.value(buffer->connection());
-        item = new TreeItem(buffer, parent);
+        item = new TreeItemImpl(buffer, parent);
     }
     d.bufferItems.insert(buffer, item);
 }
 
-void TreeWidget::removeBuffer(IrcBuffer* buffer)
+void TreeWidgetImpl::removeBuffer(IrcBuffer* buffer)
 {
     if (buffer->isSticky()) {
         IrcConnection* connection = buffer->connection();
@@ -165,20 +165,20 @@ void TreeWidget::removeBuffer(IrcBuffer* buffer)
     delete d.bufferItems.take(buffer);
 }
 
-void TreeWidget::setCurrentBuffer(IrcBuffer* buffer)
+void TreeWidgetImpl::setCurrentBuffer(IrcBuffer* buffer)
 {
     TreeItem* item = d.bufferItems.value(buffer);
     if (item)
         setCurrentItem(item);
 }
 
-void TreeWidget::rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end)
+void TreeWidgetImpl::rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end)
 {
     QTreeWidget::rowsAboutToBeRemoved(parent, start, end);
-    TreeItem* item = static_cast<TreeItem*>(itemFromIndex(parent));
+    TreeItemImpl* item = static_cast<TreeItemImpl*>(itemFromIndex(parent));
     if (item) {
         for (int i = start; i <= end; ++i) {
-            TreeItem* child = static_cast<TreeItem*>(item->child(i));
+            TreeItemImpl* child = static_cast<TreeItemImpl*>(item->child(i));
             if (child) {
                 item->d.highlightedChildren.remove(child);
                 child->reset();
@@ -187,17 +187,17 @@ void TreeWidget::rowsAboutToBeRemoved(const QModelIndex& parent, int start, int 
     }
 }
 
-void TreeWidget::onItemExpanded(QTreeWidgetItem* item)
+void TreeWidgetImpl::onItemExpanded(QTreeWidgetItem* item)
 {
-    static_cast<TreeItem*>(item)->emitDataChanged();
+    static_cast<TreeItem*>(item)->refresh();
 }
 
-void TreeWidget::onItemCollapsed(QTreeWidgetItem* item)
+void TreeWidgetImpl::onItemCollapsed(QTreeWidgetItem* item)
 {
-    static_cast<TreeItem*>(item)->emitDataChanged();
+    static_cast<TreeItem*>(item)->refresh();
 }
 
-void TreeWidget::onCurrentItemChanged(QTreeWidgetItem* item)
+void TreeWidgetImpl::onCurrentItemChanged(QTreeWidgetItem* item)
 {
     if (item)
         emit currentBufferChanged(static_cast<TreeItem*>(item)->buffer());

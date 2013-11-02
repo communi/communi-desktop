@@ -19,5 +19,5 @@ HEADERS += $$PWD/navigatorplugin.h
 SOURCES += $$PWD/navigatorplugin.cpp
 
 include(../../config.pri)
+include(../../libs/api/api.pri)
 include(../../libs/backend/backend.pri)
-include(../../libs/tree/tree.pri)
