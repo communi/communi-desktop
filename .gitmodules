@@ -1,4 +1,3 @@
-[submodule "src/backend"]
-	path = src/backend
+[submodule "src/libs/backend/libcommuni"]
+	path = src/libs/backend/libcommuni
 	url = git://github.com/communi/libcommuni.git
-
