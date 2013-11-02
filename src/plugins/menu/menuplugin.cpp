@@ -14,6 +14,7 @@
 
 #include "menuplugin.h"
 #include "treemenu.h"
+#include "listmenu.h"
 
 MenuPlugin::MenuPlugin(QObject* parent) : QObject(parent)
 {
@@ -26,5 +27,5 @@ void MenuPlugin::initialize(TreeWidget* tree)
 
 void MenuPlugin::initialize(ListView* list)
 {
-    Q_UNUSED(list);
+    new ListMenu(list);
 }
