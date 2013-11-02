@@ -12,7 +12,7 @@
 * GNU General Public License for more details.
 */
 
-#include "textinputimpl.h"
+#include "textinputex.h"
 #include "inputplugin.h"
 #include "commandparser.h"
 #include <QPluginLoader> // TODO
@@ -22,7 +22,7 @@
 Q_IMPORT_PLUGIN(CompleterPlugin)
 Q_IMPORT_PLUGIN(HistoryPlugin)
 
-TextInputImpl::TextInputImpl(QWidget* parent) : TextInput(parent)
+TextInputEx::TextInputEx(QWidget* parent) : TextInput(parent)
 {
     CommandParser* parser = new CommandParser(this);
     parser->setTriggers(QStringList("/"));
@@ -41,7 +41,7 @@ TextInputImpl::TextInputImpl(QWidget* parent) : TextInput(parent)
     connect(this, SIGNAL(returnPressed()), this, SLOT(sendInput()));
 }
 
-void TextInputImpl::sendInput()
+void TextInputEx::sendInput()
 {
     IrcBuffer* b = buffer();
     IrcCommandParser* p = parser();

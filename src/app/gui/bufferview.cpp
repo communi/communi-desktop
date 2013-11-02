@@ -10,7 +10,7 @@
 #include "bufferview.h"
 #include "userlistview.h"
 #include "topiclabel.h"
-#include "textinputimpl.h"
+#include "textinputex.h"
 #include "document.h"
 #include "browser.h"
 #include <QVBoxLayout>
@@ -21,7 +21,7 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
 {
     d.buffer = 0;
     d.browser = new Browser(this);
-    d.textInput = new TextInputImpl(this);
+    d.textInput = new TextInputEx(this);
     d.topicLabel = new TopicLabel(this);
     d.listView = new UserListView(this);
     d.splitter = new QSplitter(this);

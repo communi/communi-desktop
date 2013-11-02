@@ -12,20 +12,20 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TEXTINPUTIMPL_H
-#define TEXTINPUTIMPL_H
+#ifndef TEXTINPUTEX_H
+#define TEXTINPUTEX_H
 
 #include "textinput.h"
 
-class TextInputImpl : public TextInput
+class TextInputEx : public TextInput
 {
     Q_OBJECT
 
 public:
-    TextInputImpl(QWidget* parent = 0);
+    TextInputEx(QWidget* parent = 0);
 
 private slots:
     void sendInput();
 };
 
-#endif // TEXTINPUTIMPL_H
+#endif // TEXTINPUTEX_H

@@ -11,13 +11,13 @@ HEADERS += $$PWD/chatpage.h
 HEADERS += $$PWD/connectpage.h
 HEADERS += $$PWD/mainwindow.h
 HEADERS += $$PWD/splitview.h
-HEADERS += $$PWD/textinputimpl.h
+HEADERS += $$PWD/textinputex.h
 
 SOURCES += $$PWD/chatpage.cpp
 SOURCES += $$PWD/connectpage.cpp
 SOURCES += $$PWD/mainwindow.cpp
 SOURCES += $$PWD/splitview.cpp
-SOURCES += $$PWD/textinputimpl.cpp
+SOURCES += $$PWD/textinputex.cpp
 
 HEADERS += $$PWD/browser.h
 HEADERS += $$PWD/bufferview.h
