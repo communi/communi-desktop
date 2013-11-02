@@ -4,5 +4,5 @@
 
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
-LIBS += -L$$PWD/../../../lib -lapi
-PRE_TARGETDEPS += $$PWD/../../../lib/$${QMAKE_PREFIX_STATICLIB}api.$${QMAKE_EXTENSION_STATICLIB}
+LIBS += -L$$PWD/../../../lib -lbase
+PRE_TARGETDEPS += $$PWD/../../../lib/$${QMAKE_PREFIX_STATICLIB}base.$${QMAKE_EXTENSION_STATICLIB}

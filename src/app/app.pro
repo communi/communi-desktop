@@ -14,7 +14,7 @@ INSTALLS += target
 
 include(src.pri)
 include(../config.pri)
-include(../libs/api/api.pri)
+include(../libs/base/base.pri)
 include(../libs/util/util.pri)
 include(../libs/backend/backend.pri)
 include(../libs/3rdparty/3rdparty.pri)

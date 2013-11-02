@@ -3,5 +3,5 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS += api backend 3rdparty util
+SUBDIRS += backend base 3rdparty util
 util.depends += backend

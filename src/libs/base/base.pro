@@ -4,7 +4,7 @@
 
 TEMPLATE = lib
 CONFIG += static
-TARGET = api
+TARGET = base
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets
