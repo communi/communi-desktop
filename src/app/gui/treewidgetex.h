@@ -12,17 +12,17 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TREEWIDGETIMPL_H
-#define TREEWIDGETIMPL_H
+#ifndef TREEWIDGETEX_H
+#define TREEWIDGETEX_H
 
 #include "treewidget.h"
 
-class TreeWidgetImpl : public TreeWidget
+class TreeWidgetEx : public TreeWidget
 {
     Q_OBJECT
 
 public:
-    TreeWidgetImpl(QWidget* parent = 0);
+    TreeWidgetEx(QWidget* parent = 0);
 
     QSize sizeHint() const;
 
@@ -30,4 +30,4 @@ public:
     void restoreState(const QByteArray& state);
 };
 
-#endif // TREEWIDGETIMPL_H
+#endif // TREEWIDGETEX_H

@@ -12,7 +12,7 @@
 * GNU General Public License for more details.
 */
 
-#include "treewidgetimpl.h"
+#include "treewidgetex.h"
 #include "treeplugin.h"
 #include "treedelegate.h"
 #include <QPluginLoader> // TODO
@@ -24,7 +24,7 @@ Q_IMPORT_PLUGIN(MenuPlugin)
 Q_IMPORT_PLUGIN(NavigatorPlugin)
 Q_IMPORT_PLUGIN(HighlighterPlugin)
 
-TreeWidgetImpl::TreeWidgetImpl(QWidget* parent) : TreeWidget(parent)
+TreeWidgetEx::TreeWidgetEx(QWidget* parent) : TreeWidget(parent)
 {
     setAnimated(true);
     setColumnCount(2);
@@ -54,12 +54,12 @@ TreeWidgetImpl::TreeWidgetImpl(QWidget* parent) : TreeWidget(parent)
     }
 }
 
-QSize TreeWidgetImpl::sizeHint() const
+QSize TreeWidgetEx::sizeHint() const
 {
     return QSize(20 * fontMetrics().width('#'), QTreeWidget::sizeHint().height());
 }
 
-QByteArray TreeWidgetImpl::saveState() const
+QByteArray TreeWidgetEx::saveState() const
 {
     QByteArray state;
 //    QDataStream out(&state, QIODevice::WriteOnly);
@@ -84,7 +84,7 @@ QByteArray TreeWidgetImpl::saveState() const
     return state;
 }
 
-void TreeWidgetImpl::restoreState(const QByteArray& state)
+void TreeWidgetEx::restoreState(const QByteArray& state)
 {
 //    QVariantHash hash;
 //    QDataStream in(state);

@@ -8,7 +8,7 @@
  */
 
 #include "chatpage.h"
-#include "treewidgetimpl.h"
+#include "treewidgetex.h"
 #include "splitview.h"
 #include "document.h"
 #include <IrcConnection>
@@ -18,7 +18,7 @@
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 {
     d.splitView = new SplitView(this);
-    d.treeWidget = new TreeWidgetImpl(this);
+    d.treeWidget = new TreeWidgetEx(this);
 
     connect(d.treeWidget, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
     connect(d.treeWidget, SIGNAL(currentBufferChanged(IrcBuffer*)), d.splitView, SLOT(setCurrentBuffer(IrcBuffer*)));
