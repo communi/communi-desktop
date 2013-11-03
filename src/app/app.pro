@@ -20,7 +20,7 @@ include(../libs/backend/backend.pri)
 include(../libs/3rdparty/3rdparty.pri)
 include(../../resources/resources.pri)
 
-STATIC_PLUGINS = completer finder highlighter history menu navigator
+STATIC_PLUGINS = completer finder highlighter history menu navigator subject
 for(PLUGIN, STATIC_PLUGINS) {
     LIBS *= -L$$PWD/../../plugins
     LIBS += -l$${PLUGIN}plugin

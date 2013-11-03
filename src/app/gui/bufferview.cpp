@@ -9,8 +9,8 @@
 
 #include "bufferview.h"
 #include "listviewex.h"
-#include "topiclabel.h"
 #include "textinputex.h"
+#include "topiclabelex.h"
 #include "textdocument.h"
 #include "textbrowserex.h"
 #include <QVBoxLayout>
@@ -22,7 +22,7 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     d.buffer = 0;
     d.listView = new ListViewEx(this);
     d.textInput = new TextInputEx(this);
-    d.topicLabel = new TopicLabel(this);
+    d.topicLabel = new TopicLabelEx(this);
     d.textBrowser = new TextBrowserEx(this);
     d.splitter = new QSplitter(this);
     d.splitter->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);

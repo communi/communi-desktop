@@ -2,5 +2,10 @@
 # Communi
 ######################################################################
 
-TEMPLATE = subdirs
-SUBDIRS += completer finder highlighter history menu navigator subject
+HEADERS += $$PWD/editor.h
+HEADERS += $$PWD/subjectplugin.h
+
+SOURCES += $$PWD/editor.cpp
+SOURCES += $$PWD/subjectplugin.cpp
+
+include(../plugin.pri)

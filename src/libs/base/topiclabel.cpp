@@ -18,13 +18,14 @@
 #include <IrcCommand>
 #include <IrcChannel>
 
-TopicLabel::TopicLabel(QWidget* parent) : EditableLabel(parent)
+TopicLabel::TopicLabel(QWidget* parent) : QLabel(parent)
 {
     d.channel = 0;
-    setOpenExternalLinks(true);
-    setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Maximum);
 
-    connect(this, SIGNAL(edited(QString)), this, SLOT(sendTopic(QString)));
+    setMargin(1);
+    setWordWrap(true);
+    setTextFormat(Qt::RichText);
+
     updateTopic();
 }
 
@@ -45,16 +46,16 @@ void TopicLabel::setChannel(IrcChannel* channel)
     }
 }
 
+void TopicLabel::sendTopic(const QString& topic)
+{
+    d.channel->sendCommand(IrcCommand::createTopic(d.channel->title(), topic));
+}
+
 void TopicLabel::updateTopic()
 {
     const QString topic = d.channel ? d.channel->topic() : QString();
     if (topic.isEmpty())
         setText(tr("-"));
     else
-        setText(IrcTextFormat().toHtml(topic));
-}
-
-void TopicLabel::sendTopic(const QString& topic)
-{
-    d.channel->sendCommand(IrcCommand::createTopic(d.channel->title(), topic));
+        setText(IrcTextFormat().toHtml(topic)); // TODO: formatter
 }

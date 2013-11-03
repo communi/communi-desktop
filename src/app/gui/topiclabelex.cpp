@@ -12,33 +12,22 @@
 * GNU General Public License for more details.
 */
 
-#ifndef EDITABLELABEL_H
-#define EDITABLELABEL_H
+#include "topiclabelex.h"
+#include "topicplugin.h"
+#include <QPluginLoader> // TODO
 
-#include <QLabel>
-#include <QTextEdit>
+// TODO:
+Q_IMPORT_PLUGIN(SubjectPlugin)
 
-class EditableLabel : public QLabel
+TopicLabelEx::TopicLabelEx(QWidget* parent) : TopicLabel(parent)
 {
-    Q_OBJECT
+    setOpenExternalLinks(true);
+    setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Maximum);
 
-public:
-    EditableLabel(QWidget* parent = 0);
-
-public slots:
-    void edit();
-
-signals:
-    void edited(const QString& text);
-
-protected:
-    bool eventFilter(QObject* object, QEvent* event);
-    void mouseDoubleClickEvent(QMouseEvent* event);
-
-private:
-    struct Private {
-        QTextEdit* editor;
-    } d;
-};
-
-#endif // EDITABLELABEL_H
+    // TODO: move outta here...
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        TopicPlugin* plugin = qobject_cast<TopicPlugin*>(instance);
+        if (plugin)
+            plugin->initialize(this);
+    }
+}

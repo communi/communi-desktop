@@ -23,6 +23,7 @@ HEADERS += $$PWD/listview.h
 HEADERS += $$PWD/textbrowser.h
 HEADERS += $$PWD/textdocument.h
 HEADERS += $$PWD/textinput.h
+HEADERS += $$PWD/topiclabel.h
 HEADERS += $$PWD/treeitem.h
 HEADERS += $$PWD/treeplugin.h
 HEADERS += $$PWD/treerole.h
@@ -32,6 +33,7 @@ SOURCES += $$PWD/listview.cpp
 SOURCES += $$PWD/textbrowser.cpp
 SOURCES += $$PWD/textdocument.cpp
 SOURCES += $$PWD/textinput.cpp
+SOURCES += $$PWD/topiclabel.cpp
 SOURCES += $$PWD/treeitem.cpp
 SOURCES += $$PWD/treewidget.cpp
 

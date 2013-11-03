@@ -12,33 +12,32 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TOPICLABEL_H
-#define TOPICLABEL_H
+#ifndef EDITOR_H
+#define EDITOR_H
 
-#include "editablelabel.h"
+#include <QTextEdit>
 
-class IrcChannel;
+class TopicLabel;
 
-class TopicLabel : public EditableLabel
+class Editor : public QTextEdit
 {
     Q_OBJECT
 
 public:
-    TopicLabel(QWidget* parent = 0);
+    Editor(TopicLabel* parent = 0);
 
-    IrcChannel* channel() const;
+    bool eventFilter(QObject* object, QEvent* event);
 
 public slots:
-    void setChannel(IrcChannel* channel);
+    void edit();
 
-private slots:
-    void updateTopic();
-    void sendTopic(const QString& topic);
+protected:
+    bool event(QEvent* event);
 
 private:
     struct Private {
-        IrcChannel* channel;
+        TopicLabel* label;
     } d;
 };
 
-#endif // TOPICLABEL_H
+#endif // EDITOR_H
