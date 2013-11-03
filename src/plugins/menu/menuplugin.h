@@ -19,21 +19,24 @@
 #include <QtPlugin>
 #include "treeplugin.h"
 #include "listplugin.h"
+#include "browserplugin.h"
 
 class TreeItem;
 
-class MenuPlugin : public QObject, public TreePlugin, public ListPlugin
+class MenuPlugin : public QObject, public TreePlugin, public ListPlugin, public BrowserPlugin
 {
     Q_OBJECT
     Q_INTERFACES(TreePlugin ListPlugin)
     Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
     Q_PLUGIN_METADATA(IID "com.github.communi.ListPlugin")
+    Q_PLUGIN_METADATA(IID "com.github.communi.BrowserPlugin")
 
 public:
     MenuPlugin(QObject* parent = 0);
 
     void initialize(TreeWidget* tree);
     void initialize(ListView* tree);
+    void initialize(TextBrowser* browser);
 };
 
 #endif // MENUPLUGIN_H

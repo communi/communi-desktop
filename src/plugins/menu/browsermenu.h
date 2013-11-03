@@ -12,26 +12,26 @@
 * GNU General Public License for more details.
 */
 
-#include "menuplugin.h"
-#include "treemenu.h"
-#include "listmenu.h"
-#include "browsermenu.h"
+#ifndef BROWSERMENU_H
+#define BROWSERMENU_H
 
-MenuPlugin::MenuPlugin(QObject* parent) : QObject(parent)
-{
-}
+#include <QMenu>
 
-void MenuPlugin::initialize(TreeWidget* tree)
-{
-    new TreeMenu(tree);
-}
+class TextBrowser;
 
-void MenuPlugin::initialize(ListView* list)
+class BrowserMenu : public QMenu
 {
-    new ListMenu(list);
-}
+    Q_OBJECT
 
-void MenuPlugin::initialize(TextBrowser* browser)
-{
-    new BrowserMenu(browser);
-}
+public:
+    BrowserMenu(TextBrowser* browser);
+
+    bool eventFilter(QObject *object, QEvent *event);
+
+private:
+    struct Private {
+        TextBrowser* browser;
+    } d;
+};
+
+#endif // BROWSERMENU_H
