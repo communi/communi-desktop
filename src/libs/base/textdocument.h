@@ -33,8 +33,8 @@ public:
 
     int totalCount() const;
 
-    bool isActive() const;
-    void setActive(bool active);
+    bool ref();
+    bool deref();
 
     int note() const;
     void setNote(int note);
@@ -63,9 +63,9 @@ private:
     void appendLine(QTextCursor& cursor, const QString& line);
 
     struct Private {
+        int ref;
         int note;
         int dirty;
-        bool active;
         IrcBuffer* buffer;
         QStringList lines;
         QList<int> markers;

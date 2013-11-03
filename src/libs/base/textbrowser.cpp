@@ -39,7 +39,13 @@ TextDocument* TextBrowser::document() const
 
 void TextBrowser::setDocument(TextDocument* document)
 {
+    TextDocument* doc = qobject_cast<TextDocument*>(QTextBrowser::document());
+    if (doc)
+        doc->deref();
+    if (document)
+        document->ref();
     QTextBrowser::setDocument(document);
+    QMetaObject::invokeMethod(this, "scrollToBottom", Qt::QueuedConnection);
 }
 
 QWidget* TextBrowser::buddy() const
@@ -150,9 +156,6 @@ void TextBrowser::paintEvent(QPaintEvent* event)
 
     TextDocument* doc = document();
     if (doc) {
-        if (!doc->isActive())
-            doc->setActive(true);
-
         QPainter painter(viewport());
         painter.translate(-hoffset, -voffset);
         painter.setPen(Qt::NoPen);

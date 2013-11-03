@@ -25,9 +25,9 @@ static int delay = 1000;
 
 TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
 {
+    d.ref = 0;
     d.note = -1;
     d.dirty = -1;
-    d.active = false;
     d.buffer = buffer;
 
     d.formatter = new MessageFormatter(this);
@@ -48,16 +48,16 @@ int TextDocument::totalCount() const
     return blockCount() + d.lines.count();
 }
 
-bool TextDocument::isActive() const
+bool TextDocument::ref()
 {
-    return d.active;
+    if (++d.ref == 1 && d.dirty > 0)
+        flushLines();
+    return d.ref == 1;
 }
 
-void TextDocument::setActive(bool active)
+bool TextDocument::deref()
 {
-    d.active = active;
-    if (active && d.dirty)
-        flushLines();
+    return --d.ref == 0;
 }
 
 int TextDocument::note() const
@@ -108,7 +108,7 @@ void TextDocument::append(const QString& text, bool highlight)
     if (!text.isEmpty()) {
         if (highlight)
             d.highlights.append(totalCount() - 1);
-        if (d.active || d.dirty == 0) {
+        if (d.ref || d.dirty == 0) {
             QTextCursor cursor(this);
             cursor.beginEditBlock();
             appendLine(cursor, text);
@@ -156,7 +156,7 @@ void TextDocument::drawHighlights(QPainter* painter, const QRect& bounds)
 
 void TextDocument::updateBlock(int number)
 {
-    if (d.active) {
+    if (d.ref) {
         QTextBlock block = findBlockByNumber(number);
         if (block.isValid())
             QMetaObject::invokeMethod(documentLayout(), "updateBlock", Q_ARG(QTextBlock, block));
