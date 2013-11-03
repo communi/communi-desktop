@@ -31,6 +31,11 @@ static void setApplicationProxy(QUrl url)
 
 int main(int argc, char* argv[])
 {
+#ifdef Q_OS_MAC
+    // QTBUG-32789 - GUI widgets use the wrong font on OS X Mavericks
+    QFont::insertSubstitution(".Lucida Grande UI", "Lucida Grande");
+#endif
+
     QApplication app(argc, argv);
     app.setApplicationName("CommuniNG");
     app.setOrganizationName("CommuniNG");
