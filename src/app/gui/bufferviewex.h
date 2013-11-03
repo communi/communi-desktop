@@ -7,26 +7,20 @@
  * completely or partially.
  */
 
-#ifndef LISTVIEWEX_H
-#define LISTVIEWEX_H
+#ifndef BUFFERVIEWEX_H
+#define BUFFERVIEWEX_H
 
-#include "listview.h"
+#include "bufferview.h"
 
-class ListViewEx : public ListView
+class BufferViewEx : public BufferView
 {
     Q_OBJECT
 
 public:
-    ListViewEx(QWidget* parent = 0);
+    explicit BufferViewEx(QWidget* parent = 0);
 
 signals:
-    void doubleClicked(const QString& user);
-
-protected:
-    QSize sizeHint() const;
-
-private slots:
-    void onDoubleClicked(const QModelIndex& index);
+    void split(Qt::Orientation orientation);
 };
 
-#endif // LISTVIEWEX_H
+#endif // BUFFERVIEWEX_H

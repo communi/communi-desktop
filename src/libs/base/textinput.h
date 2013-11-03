@@ -40,6 +40,9 @@ signals:
     void bufferChanged(IrcBuffer* buffer);
     void parserChanged(IrcCommandParser* parser);
 
+private slots:
+    void sendInput();
+
 private:
     struct Private {
         IrcBuffer* buffer;

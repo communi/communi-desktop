@@ -8,27 +8,25 @@
  */
 
 #include "bufferview.h"
-#include "listviewex.h"
-#include "textinputex.h"
-#include "topiclabelex.h"
 #include "textdocument.h"
-#include "textbrowserex.h"
+#include "textbrowser.h"
+#include "topiclabel.h"
+#include "textinput.h"
+#include "listview.h"
 #include <QVBoxLayout>
 #include <IrcChannel>
 #include <IrcBuffer>
 
 BufferView::BufferView(QWidget* parent) : QWidget(parent)
 {
-    d.buffer = 0;
-    d.listView = new ListViewEx(this);
-    d.textInput = new TextInputEx(this);
-    d.topicLabel = new TopicLabelEx(this);
-    d.textBrowser = new TextBrowserEx(this);
+    d.listView = new ListView(this);
+    d.textInput = new TextInput(this);
+    d.topicLabel = new TopicLabel(this);
+    d.textBrowser = new TextBrowser(this);
     d.textBrowser->setBuddy(d.textInput);
+
     d.splitter = new QSplitter(this);
     d.splitter->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
-
-    connect(d.textBrowser, SIGNAL(split(Qt::Orientation)), this, SIGNAL(split(Qt::Orientation)));
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setSpacing(0);
@@ -52,18 +50,42 @@ IrcBuffer* BufferView::buffer() const
     return d.buffer;
 }
 
+ListView* BufferView::listView() const
+{
+    return d.listView;
+}
+
+TextInput* BufferView::textInput() const
+{
+    return d.textInput;
+}
+
+TopicLabel* BufferView::topicLabel() const
+{
+    return d.topicLabel;
+}
+
+TextBrowser* BufferView::textBrowser() const
+{
+    return d.textBrowser;
+}
+
 void BufferView::setBuffer(IrcBuffer* buffer)
 {
-    d.buffer = buffer;
-    d.textBrowser->setDocument(buffer->property("document").value<TextDocument*>());
+    if (d.buffer != buffer) {
+        d.buffer = buffer;
+        d.textBrowser->setDocument(buffer->property("document").value<TextDocument*>());
 
-    IrcChannel* channel = qobject_cast<IrcChannel*>(buffer);
-    d.topicLabel->setChannel(channel);
-    d.topicLabel->setVisible(channel);
-    d.listView->setChannel(channel);
-    d.listView->setVisible(channel);
+        IrcChannel* channel = qobject_cast<IrcChannel*>(buffer);
+        d.topicLabel->setChannel(channel);
+        d.topicLabel->setVisible(channel);
+        d.listView->setChannel(channel);
+        d.listView->setVisible(channel);
 
-    d.textInput->setBuffer(buffer);
-    if (buffer)
-        d.textInput->setFocus();
+        d.textInput->setBuffer(buffer);
+        if (buffer)
+            d.textInput->setFocus();
+
+        emit bufferChanged(buffer);
+    }
 }

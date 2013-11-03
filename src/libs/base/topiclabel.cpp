@@ -24,7 +24,9 @@ TopicLabel::TopicLabel(QWidget* parent) : QLabel(parent)
 
     setMargin(1);
     setWordWrap(true);
+    setOpenExternalLinks(true);
     setTextFormat(Qt::RichText);
+    setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Maximum);
 
     updateTopic();
 }

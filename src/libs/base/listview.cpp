@@ -9,14 +9,20 @@
 
 #include "listview.h"
 #include <IrcUserModel>
+#include <QFontMetrics>
+#include <QScrollBar>
 #include <IrcChannel>
+#include <Irc>
 
 ListView::ListView(QWidget* parent) : QListView(parent)
 {
+    setFocusPolicy(Qt::NoFocus);
+
     d.model = new IrcUserModel(this);
     d.model->setSortMethod(Irc::SortByTitle);
-
     setModel(d.model);
+
+    connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(query(QModelIndex)));
 }
 
 IrcChannel* ListView::channel() const
@@ -30,4 +36,16 @@ void ListView::setChannel(IrcChannel* channel)
         d.model->setChannel(channel);
         emit channelChanged(channel);
     }
+}
+
+void ListView::query(const QModelIndex& index)
+{
+    if (index.isValid())
+        emit queried(index.data(Irc::NameRole).toString());
+}
+
+QSize ListView::sizeHint() const
+{
+    const int w = 16 * fontMetrics().width('#') + verticalScrollBar()->sizeHint().width();
+    return QSize(w, QListView::sizeHint().height());
 }

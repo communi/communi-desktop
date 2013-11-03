@@ -19,8 +19,12 @@
 
 TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
 {
+    setAttribute(Qt::WA_MacShowFocusRect, false);
+
     d.buffer = 0;
     d.parser = 0;
+
+    connect(this, SIGNAL(returnPressed()), this, SLOT(sendInput()));
 }
 
 IrcBuffer* TextInput::buffer() const
@@ -74,4 +78,23 @@ void TextInput::setParser(IrcCommandParser* parser)
         d.parser = parser;
         emit parserChanged(parser);
     }
+}
+
+void TextInput::sendInput()
+{
+    IrcBuffer* b = buffer();
+    IrcCommandParser* p = parser();
+    if (!b || !p)
+        return;
+
+    bool error = false;
+    const QStringList lines = text().split(QRegExp("[\\r\\n]"), QString::SkipEmptyParts);
+    foreach (const QString& line, lines) {
+        if (!line.trimmed().isEmpty()) {
+            if (!b->sendCommand(p->parse(line)))
+                error = true;
+        }
+    }
+    if (!error)
+        clear();
 }

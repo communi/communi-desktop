@@ -15,6 +15,7 @@
 #include "textbrowser.h"
 #include "textdocument.h"
 #include <QCoreApplication>
+#include <QDesktopServices>
 #include <QScrollBar>
 #include <QKeyEvent>
 #include <QPainter>
@@ -24,6 +25,11 @@ TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent)
     d.bud = 0;
     d.markerColor = Qt::darkGray;
     d.highlightColor = QColor("#ffe6e6"); // TODO: stylesheet
+
+    setOpenLinks(false);
+    setTabChangesFocus(true);
+
+    connect(this, SIGNAL(anchorClicked(QUrl)), this, SLOT(onAnchorClicked(QUrl)));
 }
 
 TextDocument* TextBrowser::document() const
@@ -70,6 +76,25 @@ void TextBrowser::setHighlightColor(const QColor& color)
         d.highlightColor = color;
         update();
     }
+}
+
+void TextBrowser::contextMenuEvent(QContextMenuEvent* event)
+{
+    // TODO:
+//    QMenu* menu = createStandardContextMenu(event->pos());
+//    menu->addSeparator();
+//    QAction* splitAction = menu->addAction(tr("Split"));
+//    QAction* splitSideAction = menu->addAction(tr("Split side by side"));
+//    QAction* closeAction = menu->addAction(tr("Close"));
+//    closeAction->setEnabled(window()->findChildren<BufferView*>().count() > 1);
+//    QAction* action = menu->exec(event->globalPos());
+//    if (action == splitAction)
+//        emit split(Qt::Vertical);
+//    else if (action == splitSideAction)
+//        emit split(Qt::Horizontal);
+//    else if (action == closeAction)
+//        parent()->parent()->deleteLater();
+//    delete menu;
 }
 
 void TextBrowser::keyPressEvent(QKeyEvent* event)
@@ -180,4 +205,14 @@ void TextBrowser::wheelEvent(QWheelEvent* event)
 #else
     QTextBrowser::wheelEvent(event);
 #endif // Q_OS_MAC
+}
+
+void TextBrowser::onAnchorClicked(const QUrl& url)
+{
+    // TODO:
+//    if (url.scheme() == "nick")
+//        emit clicked(url.toString(QUrl::RemoveScheme));
+//    else
+        QDesktopServices::openUrl(url);
+    clearFocus();
 }

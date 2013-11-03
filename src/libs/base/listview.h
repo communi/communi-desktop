@@ -27,9 +27,14 @@ public:
 
 public slots:
     void setChannel(IrcChannel* channel);
+    void query(const QModelIndex& index);
 
 signals:
     void channelChanged(IrcChannel* channel);
+    void queried(const QString& user);
+
+protected:
+    QSize sizeHint() const;
 
 private:
     struct Private {

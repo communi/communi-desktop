@@ -48,10 +48,14 @@ public slots:
     void scrollToPreviousPage();
 
 protected:
+    void contextMenuEvent(QContextMenuEvent* event);
     void keyPressEvent(QKeyEvent* event);
     void paintEvent(QPaintEvent* event);
     void resizeEvent(QResizeEvent* event);
     void wheelEvent(QWheelEvent* event);
+
+private slots:
+    void onAnchorClicked(const QUrl& url);
 
 private:
     struct Private {

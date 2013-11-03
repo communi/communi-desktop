@@ -21,18 +21,24 @@ class TextBrowser;
 class BufferView : public QWidget
 {
     Q_OBJECT
+    Q_PROPERTY(IrcBuffer* buffer READ buffer WRITE setBuffer NOTIFY bufferChanged)
 
 public:
-    BufferView(QWidget* parent = 0);
+    explicit BufferView(QWidget* parent = 0);
     ~BufferView();
 
     IrcBuffer* buffer() const;
+
+    ListView* listView() const;
+    TextInput* textInput() const;
+    TopicLabel* topicLabel() const;
+    TextBrowser* textBrowser() const;
 
 public slots:
     void setBuffer(IrcBuffer* buffer);
 
 signals:
-    void split(Qt::Orientation orientation);
+    void bufferChanged(IrcBuffer* buffer);
 
 private:
     struct Private {
