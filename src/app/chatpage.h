@@ -15,6 +15,7 @@
 class IrcBuffer;
 class SplitView;
 class TreeWidget;
+class BufferView;
 class IrcConnection;
 
 class ChatPage : public QSplitter
@@ -37,6 +38,8 @@ signals:
 private slots:
     void addBuffer(IrcBuffer* buffer);
     void removeBuffer(IrcBuffer* buffer);
+    void addView(BufferView* view);
+    void removeView(BufferView* view);
 
 private:
     struct Private {

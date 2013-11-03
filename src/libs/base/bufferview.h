@@ -25,6 +25,7 @@ class BufferView : public QWidget
 
 public:
     explicit BufferView(QWidget* parent = 0);
+    ~BufferView();
 
     IrcBuffer* buffer() const;
 
@@ -37,6 +38,7 @@ public slots:
     void setBuffer(IrcBuffer* buffer);
 
 signals:
+    void destroyed(BufferView* view);
     void bufferChanged(IrcBuffer* buffer);
 
 private:

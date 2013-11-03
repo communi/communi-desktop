@@ -21,19 +21,24 @@ class SplitView : public QSplitter
 
 public:
     SplitView(QWidget* parent = 0);
-    ~SplitView();
 
     IrcBuffer* currentBuffer() const;
+    BufferView* currentView() const;
+    QList<BufferView*> views() const;
 
 public slots:
+    void setCurrentView(BufferView* view);
     void setCurrentBuffer(IrcBuffer* buffer);
     void split(Qt::Orientation orientation);
 
 signals:
+    void viewAdded(BufferView* view);
+    void viewRemoved(BufferView* view);
+    void currentViewChanged(BufferView* view);
     void currentBufferChanged(IrcBuffer* buffer);
 
 protected:
-    BufferView* createBufferView(QWidget* parent) const;
+    BufferView* createBufferView(QSplitter* splitter);
 
 private slots:
     void onFocusChanged(QWidget* old, QWidget* now);

@@ -10,35 +10,49 @@
 #include "chatpage.h"
 #include "treewidget.h"
 #include "textdocument.h"
+#include "commandparser.h"
+#include "bufferview.h"
+#include "textinput.h"
 #include "splitview.h"
 #include <IrcBufferModel>
 #include <IrcConnection>
 #include <IrcBuffer>
 
-// TODO:
 #include <QPluginLoader>
+#include "browserplugin.h"
 #include "documentplugin.h"
+#include "listplugin.h"
+#include "inputplugin.h"
+#include "topicplugin.h"
 #include "treeplugin.h"
+#include "viewplugin.h"
 
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 {
     d.splitView = new SplitView(this);
     d.treeWidget = new TreeWidget(this);
+    addWidget(d.treeWidget);
+    addWidget(d.splitView);
 
     connect(d.treeWidget, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
     connect(d.treeWidget, SIGNAL(currentBufferChanged(IrcBuffer*)), d.splitView, SLOT(setCurrentBuffer(IrcBuffer*)));
     connect(d.splitView, SIGNAL(currentBufferChanged(IrcBuffer*)), d.treeWidget, SLOT(setCurrentBuffer(IrcBuffer*)));
 
-    addWidget(d.treeWidget);
-    addWidget(d.splitView);
+    connect(d.splitView, SIGNAL(viewAdded(BufferView*)), this, SLOT(addView(BufferView*)));
+    connect(d.splitView, SIGNAL(viewRemoved(BufferView*)), this, SLOT(removeView(BufferView*)));
+    addView(d.splitView->currentView());
+
     setStretchFactor(1, 1);
     setHandleWidth(1);
 
     // TODO: move outta here...
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        TreePlugin* plugin = qobject_cast<TreePlugin*>(instance);
-        if (plugin)
-            plugin->initialize(d.treeWidget);
+        TreePlugin* treePlugin = qobject_cast<TreePlugin*>(instance);
+        if (treePlugin)
+            treePlugin->initialize(d.treeWidget);
+        ViewPlugin* viewPlugin = qobject_cast<ViewPlugin*>(instance);
+        if (viewPlugin)
+            viewPlugin->initialize(d.splitView);
     }
 }
 
@@ -96,7 +110,6 @@ void ChatPage::addBuffer(IrcBuffer* buffer)
     TextDocument* doc = new TextDocument(buffer);
     buffer->setProperty("document", QVariant::fromValue(doc));
 
-    // TODO: move outta here...
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         DocumentPlugin* plugin = qobject_cast<DocumentPlugin*>(instance);
         if (plugin)
@@ -107,4 +120,33 @@ void ChatPage::addBuffer(IrcBuffer* buffer)
 void ChatPage::removeBuffer(IrcBuffer* buffer)
 {
     d.treeWidget->removeBuffer(buffer);
+}
+
+void ChatPage::addView(BufferView* view)
+{
+    CommandParser* parser = new CommandParser(view);
+    parser->setTriggers(QStringList("/"));
+    parser->setTolerant(true);
+    view->textInput()->setParser(parser);
+
+    // TODO: move outta here...?
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        BrowserPlugin* browserPlugin = qobject_cast<BrowserPlugin*>(instance);
+        if (browserPlugin)
+            browserPlugin->initialize(view->textBrowser());
+        InputPlugin* inputPlugin = qobject_cast<InputPlugin*>(instance);
+        if (inputPlugin)
+            inputPlugin->initialize(view->textInput());
+        ListPlugin* listPlugin = qobject_cast<ListPlugin*>(instance);
+        if (listPlugin)
+            listPlugin->initialize(view->listView());
+        TopicPlugin* topicPlugin = qobject_cast<TopicPlugin*>(instance);
+        if (topicPlugin)
+            topicPlugin->initialize(view->topicLabel());
+    }
+}
+
+void ChatPage::removeView(BufferView* view)
+{
+    // TODO
 }

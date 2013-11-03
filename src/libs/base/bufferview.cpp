@@ -41,6 +41,11 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     d.splitter->setStretchFactor(0, 1);
 }
 
+BufferView::~BufferView()
+{
+    emit destroyed(this);
+}
+
 IrcBuffer* BufferView::buffer() const
 {
     return d.buffer;
