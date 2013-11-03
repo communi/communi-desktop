@@ -12,14 +12,14 @@
 * GNU General Public License for more details.
 */
 
-#include "itemdelegate.h"
+#include "listdelegate.h"
 #include <QLineEdit>
 
-ItemDelegate::ItemDelegate(QObject* parent) : QStyledItemDelegate(parent)
+ListDelegate::ListDelegate(QObject* parent) : QStyledItemDelegate(parent)
 {
 }
 
-QSize ItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+QSize ListDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     QSize size = QStyledItemDelegate::sizeHint(option, index);
     static int height = 0;

@@ -9,7 +9,6 @@
 
 #include "chatpage.h"
 #include "treewidget.h"
-#include "treedelegate.h"
 #include "textdocument.h"
 #include "splitview.h"
 #include <IrcBufferModel>
@@ -25,7 +24,6 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 {
     d.splitView = new SplitView(this);
     d.treeWidget = new TreeWidget(this);
-    d.treeWidget->setItemDelegate(new TreeDelegate(d.treeWidget));
 
     connect(d.treeWidget, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
     connect(d.treeWidget, SIGNAL(currentBufferChanged(IrcBuffer*)), d.splitView, SLOT(setCurrentBuffer(IrcBuffer*)));
