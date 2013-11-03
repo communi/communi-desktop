@@ -17,10 +17,8 @@ SOURCES += $$PWD/connectpage.cpp
 SOURCES += $$PWD/mainwindow.cpp
 SOURCES += $$PWD/splitview.cpp
 
-HEADERS += $$PWD/bufferviewex.h
 HEADERS += $$PWD/itemdelegate.h
 
-SOURCES += $$PWD/bufferviewex.cpp
 SOURCES += $$PWD/itemdelegate.cpp
 
 HEADERS += $$PWD/treedelegate.h

@@ -9,13 +9,31 @@
 
 #include "splitview.h"
 #include "bufferview.h"
+#include "commandparser.h"
+#include "textbrowser.h"
+#include "topiclabel.h"
+#include "textinput.h"
+#include "listview.h"
 #include <QApplication>
+
+// TODO:
+#include <QPluginLoader>
+#include "browserplugin.h"
+#include "inputplugin.h"
+#include "listplugin.h"
+#include "topicplugin.h"
+
+// TODO:
+Q_IMPORT_PLUGIN(CompleterPlugin)
+//Q_IMPORT_PLUGIN(FinderPlugin)
+Q_IMPORT_PLUGIN(HistoryPlugin)
+//Q_IMPORT_PLUGIN(MenuPlugin)
+Q_IMPORT_PLUGIN(SubjectPlugin)
 
 SplitView::SplitView(QWidget* parent) : QSplitter(parent)
 {
     setHandleWidth(1);
-    BufferView* view = new BufferView(this);
-    connect(view, SIGNAL(split(Qt::Orientation)), this, SLOT(split(Qt::Orientation)));
+    BufferView* view = createBufferView(this);
     connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(onFocusChanged(QWidget*,QWidget*)));
     d.current = view;
     d.views += view;
@@ -46,7 +64,7 @@ void SplitView::split(Qt::Orientation orientation)
             const int size = (orientation == Qt::Horizontal ? container->width() : container->height()) - container->handleWidth();
             if (container->count() == 1 || container->orientation() == orientation) {
                 container->setOrientation(orientation);
-                BufferView* view = new BufferView(container);
+                BufferView* view = createBufferView(container);
                 view->setBuffer(current->buffer());
                 connect(view, SIGNAL(split(Qt::Orientation)), this, SLOT(split(Qt::Orientation)));
                 container->addWidget(view);
@@ -63,15 +81,43 @@ void SplitView::split(Qt::Orientation orientation)
                     container->insertWidget(index, splitter);
                     splitter->addWidget(current);
                     container->setSizes(sizes);
-                    BufferView* view = new BufferView(splitter);
+                    BufferView* view = createBufferView(splitter);
                     view->setBuffer(current->buffer());
-                    connect(view, SIGNAL(split(Qt::Orientation)), this, SLOT(split(Qt::Orientation)));
                     splitter->addWidget(view);
                     splitter->setSizes(QList<int>() << size/2 << size/2);
                 }
             }
         }
     }
+}
+
+BufferView* SplitView::createBufferView(QWidget* parent) const
+{
+    BufferView* view = new BufferView(parent);
+    // TODO: connect(view, SIGNAL(split(Qt::Orientation)), this, SLOT(split(Qt::Orientation)));
+
+    CommandParser* parser = new CommandParser(view);
+    parser->setTriggers(QStringList("/"));
+    parser->setTolerant(true);
+    view->textInput()->setParser(parser);
+
+    // TODO: move outta here...?
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        BrowserPlugin* browserPlugin = qobject_cast<BrowserPlugin*>(instance);
+        if (browserPlugin)
+            browserPlugin->initialize(view->textBrowser());
+        InputPlugin* inputPlugin = qobject_cast<InputPlugin*>(instance);
+        if (inputPlugin)
+            inputPlugin->initialize(view->textInput());
+        ListPlugin* listPlugin = qobject_cast<ListPlugin*>(instance);
+        if (listPlugin)
+            listPlugin->initialize(view->listView());
+        TopicPlugin* topicPlugin = qobject_cast<TopicPlugin*>(instance);
+        if (topicPlugin)
+            topicPlugin->initialize(view->topicLabel());
+    }
+
+    return view;
 }
 
 void SplitView::onFocusChanged(QWidget*, QWidget* widget)

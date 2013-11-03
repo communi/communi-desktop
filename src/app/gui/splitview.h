@@ -32,6 +32,9 @@ public slots:
 signals:
     void currentBufferChanged(IrcBuffer* buffer);
 
+protected:
+    BufferView* createBufferView(QWidget* parent) const;
+
 private slots:
     void onFocusChanged(QWidget* old, QWidget* now);
 
