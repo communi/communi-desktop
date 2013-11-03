@@ -18,6 +18,7 @@
 #include <IrcConnection>
 #include <IrcBuffer>
 
+#include <QtPlugin>
 #include <QPluginLoader>
 #include "browserplugin.h"
 #include "documentplugin.h"
@@ -26,6 +27,14 @@
 #include "topicplugin.h"
 #include "treeplugin.h"
 #include "viewplugin.h"
+
+Q_IMPORT_PLUGIN(CompleterPlugin)
+Q_IMPORT_PLUGIN(FinderPlugin)
+Q_IMPORT_PLUGIN(HighlighterPlugin)
+Q_IMPORT_PLUGIN(HistoryPlugin)
+Q_IMPORT_PLUGIN(MenuPlugin)
+Q_IMPORT_PLUGIN(NavigatorPlugin)
+Q_IMPORT_PLUGIN(SubjectPlugin)
 
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 {
@@ -45,7 +54,6 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
     setStretchFactor(1, 1);
     setHandleWidth(1);
 
-    // TODO: move outta here...
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         TreePlugin* treePlugin = qobject_cast<TreePlugin*>(instance);
         if (treePlugin)
@@ -129,7 +137,6 @@ void ChatPage::addView(BufferView* view)
     parser->setTolerant(true);
     view->textInput()->setParser(parser);
 
-    // TODO: move outta here...?
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         BrowserPlugin* browserPlugin = qobject_cast<BrowserPlugin*>(instance);
         if (browserPlugin)

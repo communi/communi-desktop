@@ -15,18 +15,9 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <QNetworkProxy>
-#include <QtPlugin>
 #include <QIcon>
 #include <QUrl>
 #include <Irc>
-
-Q_IMPORT_PLUGIN(CompleterPlugin)
-Q_IMPORT_PLUGIN(FinderPlugin)
-Q_IMPORT_PLUGIN(HighlighterPlugin)
-Q_IMPORT_PLUGIN(HistoryPlugin)
-Q_IMPORT_PLUGIN(MenuPlugin)
-Q_IMPORT_PLUGIN(NavigatorPlugin)
-Q_IMPORT_PLUGIN(SubjectPlugin)
 
 static void setApplicationProxy(QUrl url)
 {
