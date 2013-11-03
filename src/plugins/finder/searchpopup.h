@@ -12,38 +12,35 @@
 * GNU General Public License for more details.
 */
 
-#ifndef SEARCHENTRY_H
-#define SEARCHENTRY_H
+#ifndef SEARCHPOPUP_H
+#define SEARCHPOPUP_H
 
+#include <QtPlugin>
 #include <QLineEdit>
 
-QT_FORWARD_DECLARE_CLASS(QTextEdit)
+class TreeWidget;
 
-class SearchEntry : public QLineEdit
+class SearchPopup : public QLineEdit
 {
     Q_OBJECT
 
 public:
-    SearchEntry(QWidget* parent = 0);
-
-    QTextEdit* textEdit() const;
-    void setTextEdit(QTextEdit* textEdit);
+    explicit SearchPopup(TreeWidget* tree);
 
 public slots:
-    void find();
-    void findNext();
-    void findPrevious();
-
-protected slots:
-    void find(const QString& text, bool forward = false, bool backward = false, bool typed = true);
+    void popup();
 
 protected:
-    void hideEvent(QHideEvent* event);
+    void mousePressEvent(QMouseEvent* event);
+
+private slots:
+    void search(const QString& text);
+    void searchAgain();
 
 private:
     struct Private {
-        QTextEdit* textEdit;
+        TreeWidget* tree;
     } d;
 };
 
-#endif // SEARCHENTRY_H
+#endif // SEARCHPOPUP_H

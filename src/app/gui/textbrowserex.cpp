@@ -15,6 +15,9 @@
 #include <QPluginLoader> // TODO
 #include <QMenu>
 
+// TODO:
+//Q_IMPORT_PLUGIN(FinderPlugin)
+
 TextBrowserEx::TextBrowserEx(QWidget* parent) : TextBrowser(parent)
 {
     setOpenLinks(false);

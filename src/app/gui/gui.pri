@@ -22,14 +22,12 @@ SOURCES += $$PWD/textinputex.cpp
 HEADERS += $$PWD/textbrowserex.h
 HEADERS += $$PWD/bufferview.h
 HEADERS += $$PWD/itemdelegate.h
-HEADERS += $$PWD/searchentry.h
 HEADERS += $$PWD/topiclabelex.h
 HEADERS += $$PWD/listviewex.h
 
 SOURCES += $$PWD/textbrowserex.cpp
 SOURCES += $$PWD/bufferview.cpp
 SOURCES += $$PWD/itemdelegate.cpp
-SOURCES += $$PWD/searchentry.cpp
 SOURCES += $$PWD/topiclabelex.cpp
 SOURCES += $$PWD/listviewex.cpp
 

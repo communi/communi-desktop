@@ -12,22 +12,22 @@
 * GNU General Public License for more details.
 */
 
-#include "searchentry.h"
-#include <QTextEdit>
+#include "searchinput.h"
+#include "textbrowser.h"
+#include "textdocument.h"
 #include <QShortcut>
 
-SearchEntry::SearchEntry(QWidget* parent) : QLineEdit(parent)
+SearchInput::SearchInput(TextBrowser* browser) : QLineEdit(browser)
 {
-    Q_ASSERT(parent);
-    d.textEdit = 0;
+    d.textBrowser = browser;
 
-    QShortcut* shortcut = new QShortcut(QKeySequence::Find, parent);
+    QShortcut* shortcut = new QShortcut(QKeySequence::Find, browser);
     connect(shortcut, SIGNAL(activated()), this, SLOT(find()));
 
-    shortcut = new QShortcut(QKeySequence::FindNext, parent);
+    shortcut = new QShortcut(QKeySequence::FindNext, browser);
     connect(shortcut, SIGNAL(activated()), this, SLOT(findNext()));
 
-    shortcut = new QShortcut(QKeySequence::FindPrevious, parent);
+    shortcut = new QShortcut(QKeySequence::FindPrevious, browser);
     connect(shortcut, SIGNAL(activated()), this, SLOT(findPrevious()));
 
 //    TODO:
@@ -48,40 +48,30 @@ SearchEntry::SearchEntry(QWidget* parent) : QLineEdit(parent)
     setVisible(false);
 }
 
-QTextEdit* SearchEntry::textEdit() const
-{
-    return d.textEdit;
-}
-
-void SearchEntry::setTextEdit(QTextEdit* textEdit)
-{
-    d.textEdit = textEdit;
-}
-
-void SearchEntry::findNext()
+void SearchInput::findNext()
 {
     find(text(), true, false, false);
 }
 
-void SearchEntry::findPrevious()
+void SearchInput::findPrevious()
 {
     find(text(), false, true, false);
 }
 
-void SearchEntry::find()
+void SearchInput::find()
 {
     show();
     setFocus(Qt::ShortcutFocusReason);
     selectAll();
 }
 
-void SearchEntry::find(const QString& text, bool forward, bool backward, bool typed)
+void SearchInput::find(const QString& text, bool forward, bool backward, bool typed)
 {
-    if (!d.textEdit)
+    if (!d.textBrowser)
         return;
 
-    QTextDocument* doc = d.textEdit->document();
-    QTextCursor cursor = d.textEdit->textCursor();
+    QTextDocument* doc = d.textBrowser->document();
+    QTextCursor cursor = d.textBrowser->textCursor();
 
     bool error = false;
     QTextDocument::FindFlags options;
@@ -120,20 +110,20 @@ void SearchEntry::find(const QString& text, bool forward, bool backward, bool ty
 
     if (!isVisible())
         show();
-    d.textEdit->setTextCursor(newCursor);
-    d.textEdit->setExtraSelections(extraSelections);
+    d.textBrowser->setTextCursor(newCursor);
+    d.textBrowser->setExtraSelections(extraSelections);
     setStyleSheet(error ? "background: #ff7a7a" : "");
 }
 
-void SearchEntry::hideEvent(QHideEvent* event)
+void SearchInput::hideEvent(QHideEvent* event)
 {
     QLineEdit::hideEvent(event);
-    if (d.textEdit) {
-        QTextCursor cursor = d.textEdit->textCursor();
+    if (d.textBrowser) {
+        QTextCursor cursor = d.textBrowser->textCursor();
         if (cursor.hasSelection()) {
             cursor.clearSelection();
-            d.textEdit->setTextCursor(cursor);
+            d.textBrowser->setTextCursor(cursor);
         }
-        d.textEdit->setExtraSelections(QList<QTextEdit::ExtraSelection>());
+        d.textBrowser->setExtraSelections(QList<QTextEdit::ExtraSelection>());
     }
 }

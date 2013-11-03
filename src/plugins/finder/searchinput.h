@@ -12,20 +12,35 @@
 * GNU General Public License for more details.
 */
 
-#include "finderplugin.h"
-#include "searchpopup.h"
-#include "searchinput.h"
+#ifndef SEARCHINPUT_H
+#define SEARCHINPUT_H
 
-FinderPlugin::FinderPlugin(QObject* parent) : QObject(parent)
-{
-}
+#include <QLineEdit>
 
-void FinderPlugin::initialize(TreeWidget* tree)
-{
-    new SearchPopup(tree);
-}
+class TextBrowser;
 
-void FinderPlugin::initialize(TextBrowser* browser)
+class SearchInput : public QLineEdit
 {
-    new SearchInput(browser);
-}
+    Q_OBJECT
+
+public:
+    explicit SearchInput(TextBrowser* browser);
+
+public slots:
+    void find();
+    void findNext();
+    void findPrevious();
+
+protected slots:
+    void find(const QString& text, bool forward = false, bool backward = false, bool typed = true);
+
+protected:
+    void hideEvent(QHideEvent* event);
+
+private:
+    struct Private {
+        TextBrowser* textBrowser;
+    } d;
+};
+
+#endif // SEARCHINPUT_H

@@ -15,35 +15,23 @@
 #ifndef FINDERPLUGIN_H
 #define FINDERPLUGIN_H
 
+#include <QObject>
 #include <QtPlugin>
-#include <QLineEdit>
 #include "treeplugin.h"
+#include "browserplugin.h"
 
-class FinderPlugin : public QLineEdit, public TreePlugin
+class FinderPlugin : public QObject, public TreePlugin, public BrowserPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreePlugin)
+    Q_INTERFACES(TreePlugin BrowserPlugin)
     Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
+    Q_PLUGIN_METADATA(IID "com.github.communi.BrowserPlugin")
 
 public:
     explicit FinderPlugin(QObject* parent = 0);
 
     void initialize(TreeWidget* tree);
-
-public slots:
-    void popup();
-
-protected:
-    void mousePressEvent(QMouseEvent* event);
-
-private slots:
-    void search(const QString& text);
-    void searchAgain();
-
-private:
-    struct Private {
-        TreeWidget* tree;
-    } d;
+    void initialize(TextBrowser* browser);
 };
 
-#endif // FINDER_H
+#endif // FINDERPLUGIN_H
