@@ -8,9 +8,11 @@
  */
 
 #include "textbrowserex.h"
+#include "browserplugin.h"
 #include "bufferview.h"
 #include <QDesktopServices>
 #include <QContextMenuEvent>
+#include <QPluginLoader> // TODO
 #include <QMenu>
 
 TextBrowserEx::TextBrowserEx(QWidget* parent) : TextBrowser(parent)
@@ -19,6 +21,13 @@ TextBrowserEx::TextBrowserEx(QWidget* parent) : TextBrowser(parent)
     setTabChangesFocus(true);
 
     connect(this, SIGNAL(anchorClicked(QUrl)), this, SLOT(onAnchorClicked(QUrl)));
+
+    // TODO: move outta here...
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        BrowserPlugin* plugin = qobject_cast<BrowserPlugin*>(instance);
+        if (plugin)
+            plugin->initialize(this);
+    }
 }
 
 TextBrowserEx::~TextBrowserEx()

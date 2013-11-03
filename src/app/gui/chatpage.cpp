@@ -10,9 +10,11 @@
 #include "chatpage.h"
 #include "treewidgetex.h"
 #include "textdocument.h"
+#include "documentplugin.h"
 #include "splitview.h"
-#include <IrcConnection>
+#include <QPluginLoader> // TODO
 #include <IrcBufferModel>
+#include <IrcConnection>
 #include <IrcBuffer>
 
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
@@ -81,7 +83,15 @@ void ChatPage::removeConnection(IrcConnection* connection)
 void ChatPage::addBuffer(IrcBuffer* buffer)
 {
     d.treeWidget->addBuffer(buffer);
-    buffer->setProperty("document", QVariant::fromValue(new TextDocument(buffer)));
+    TextDocument* doc = new TextDocument(buffer);
+    buffer->setProperty("document", QVariant::fromValue(doc));
+
+    // TODO: move outta here...
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        DocumentPlugin* plugin = qobject_cast<DocumentPlugin*>(instance);
+        if (plugin)
+            plugin->initialize(doc);
+    }
 }
 
 void ChatPage::removeBuffer(IrcBuffer* buffer)

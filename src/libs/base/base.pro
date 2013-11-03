@@ -15,6 +15,8 @@ DESTDIR = ../../../lib
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
+HEADERS += $$PWD/browserplugin.h
+HEADERS += $$PWD/documentplugin.h
 HEADERS += $$PWD/inputplugin.h
 HEADERS += $$PWD/listplugin.h
 HEADERS += $$PWD/listview.h
