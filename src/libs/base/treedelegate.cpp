@@ -15,7 +15,6 @@
 #include "treedelegate.h"
 #include "treerole.h"
 #include <QStyleOptionViewItem>
-#include <QApplication>
 #include <QLineEdit>
 #include <QPalette>
 #include <QPainter>
@@ -43,17 +42,8 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         const bool selected = option.state & QStyle::State_Selected;
         const_cast<QStyleOptionViewItem&>(option).state &= ~(QStyle::State_Selected | QStyle::State_MouseOver);
 
-        // TODO:
-        QColor c1;
-        QColor c2;
-        if (false/*d.dark*/) {
-            c1 = QColor("#444444");
-            c2 = QColor("#222222");
-        } else {
-            c1 = qApp->palette().color(QPalette::Light);
-            c2 = qApp->palette().color(QPalette::Button);
-        }
-
+        QColor c1 = option.palette.color(QPalette::Light);
+        QColor c2 = option.palette.color(QPalette::Button);
         if (selected)
             qSwap(c1, c2);
 
@@ -85,7 +75,7 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 
             painter->save();
             painter->setPen(Qt::NoPen);
-            // TODO: painter->setBrush(qvariant_cast<QBrush>(index.data(BadgeColorRole)));
+            painter->setBrush(option.palette.color(QPalette::Button));
             painter->setRenderHint(QPainter::Antialiasing);
             painter->drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
 
@@ -100,7 +90,9 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             else
                 txt = option.fontMetrics.elidedText(QString::number(badge), Qt::ElideRight, option.rect.width());
 
-            painter->setPen(option.palette.color(QPalette::Light));
+            QColor color = option.palette.color(QPalette::ButtonText);
+            color.setAlpha(128);
+            painter->setPen(color);
             painter->drawText(option.rect, Qt::AlignCenter, txt);
             painter->restore();
         }
