@@ -41,6 +41,7 @@ protected:
     BufferView* createBufferView(QSplitter* splitter);
 
 private slots:
+    void onViewRemoved(BufferView* view);
     void onFocusChanged(QWidget* old, QWidget* now);
 
 private:

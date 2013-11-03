@@ -49,7 +49,6 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 
     connect(d.splitView, SIGNAL(viewAdded(BufferView*)), this, SLOT(addView(BufferView*)));
     connect(d.splitView, SIGNAL(viewRemoved(BufferView*)), this, SLOT(removeView(BufferView*)));
-    addView(d.splitView->currentView());
 
     setStretchFactor(1, 1);
     setHandleWidth(1);
@@ -62,6 +61,8 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
         if (viewPlugin)
             viewPlugin->initialize(d.splitView);
     }
+
+    addView(d.splitView->currentView());
 }
 
 ChatPage::~ChatPage()

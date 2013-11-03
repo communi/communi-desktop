@@ -14,12 +14,29 @@
 
 #include "browsermenu.h"
 #include "textbrowser.h"
+#include "bufferview.h"
+#include "splitview.h"
 #include <QContextMenuEvent>
 
-BrowserMenu::BrowserMenu(TextBrowser* browser) : QMenu(browser)
+BrowserMenu::BrowserMenu(TextBrowser* browser, SplitView* view) : QMenu(browser)
 {
+    d.view = view;
     d.browser = browser;
-    browser->installEventFilter(this);
+    browser->viewport()->installEventFilter(this);
+
+    connect(d.view, SIGNAL(viewAdded(BufferView*)), this, SLOT(updateActions()));
+    connect(d.view, SIGNAL(viewRemoved(BufferView*)), this, SLOT(updateActions()));
+
+    d.splitVAction = new QAction(tr("Split"), browser);
+    connect(d.splitVAction, SIGNAL(triggered()), this, SLOT(splitVertical()));
+
+    d.splitHAction = new QAction(tr("Split side by side"), browser);
+    connect(d.splitHAction, SIGNAL(triggered()), this, SLOT(splitHorizontal()));
+
+    d.closeAction = new QAction(tr("Close"), browser);
+    connect(d.closeAction, SIGNAL(triggered()), this, SLOT(unsplit()));
+
+    updateActions();
 }
 
 bool BrowserMenu::eventFilter(QObject *object, QEvent *event)
@@ -28,10 +45,10 @@ bool BrowserMenu::eventFilter(QObject *object, QEvent *event)
     if (event->type() == QEvent::ContextMenu) {
         QContextMenuEvent* cme = static_cast<QContextMenuEvent*>(event);
         QMenu* menu = d.browser->createStandardContextMenu(cme->pos());
-        if (!actions().isEmpty()) {
-            menu->addSeparator();
-            menu->addActions(actions());
-        }
+        menu->addSeparator();
+        menu->addAction(d.splitVAction);
+        menu->addAction(d.splitHAction);
+        menu->addAction(d.closeAction);
         menu->exec(cme->globalPos());
         delete menu;
         return true;
@@ -39,18 +56,29 @@ bool BrowserMenu::eventFilter(QObject *object, QEvent *event)
     return false;
 }
 
-/*
-TODO:
-QAction* splitAction = menu->addAction(tr("Split"));
-QAction* splitSideAction = menu->addAction(tr("Split side by side"));
-QAction* closeAction = menu->addAction(tr("Close"));
-closeAction->setEnabled(window()->findChildren<BufferView*>().count() > 1);
-QAction* action = menu->exec(event->globalPos());
-if (action == splitAction)
-    emit split(Qt::Vertical);
-else if (action == splitSideAction)
-    emit split(Qt::Horizontal);
-else if (action == closeAction)
-    parent()->parent()->deleteLater();
-delete menu;
-*/
+void BrowserMenu::updateActions()
+{
+    d.closeAction->setEnabled(d.view->views().count() > 1);
+}
+
+void BrowserMenu::splitVertical()
+{
+    d.view->split(Qt::Vertical);
+}
+
+void BrowserMenu::splitHorizontal()
+{
+    d.view->split(Qt::Horizontal);
+}
+
+void BrowserMenu::unsplit()
+{
+    QWidget* parent = d.browser->parentWidget();
+    while (parent) {
+        if (qobject_cast<BufferView*>(parent)) {
+            parent->deleteLater();
+            break;
+        }
+        parent = parent->parentWidget();
+    }
+}

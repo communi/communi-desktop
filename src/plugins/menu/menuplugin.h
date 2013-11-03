@@ -20,16 +20,16 @@
 #include "treeplugin.h"
 #include "listplugin.h"
 #include "browserplugin.h"
+#include "viewplugin.h"
 
-class TreeItem;
-
-class MenuPlugin : public QObject, public TreePlugin, public ListPlugin, public BrowserPlugin
+class MenuPlugin : public QObject, public TreePlugin, public ListPlugin, public BrowserPlugin, public ViewPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreePlugin ListPlugin)
+    Q_INTERFACES(TreePlugin ListPlugin BrowserPlugin ViewPlugin)
     Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
     Q_PLUGIN_METADATA(IID "com.github.communi.ListPlugin")
     Q_PLUGIN_METADATA(IID "com.github.communi.BrowserPlugin")
+    Q_PLUGIN_METADATA(IID "com.github.communi.ViewPlugin")
 
 public:
     MenuPlugin(QObject* parent = 0);
@@ -37,6 +37,12 @@ public:
     void initialize(TreeWidget* tree);
     void initialize(ListView* tree);
     void initialize(TextBrowser* browser);
+    void initialize(SplitView* view);
+
+private:
+    struct Private {
+        SplitView* view;
+    } d;
 };
 
 #endif // MENUPLUGIN_H

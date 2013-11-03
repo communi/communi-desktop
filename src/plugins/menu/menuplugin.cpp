@@ -19,6 +19,7 @@
 
 MenuPlugin::MenuPlugin(QObject* parent) : QObject(parent)
 {
+    d.view = 0;
 }
 
 void MenuPlugin::initialize(TreeWidget* tree)
@@ -33,5 +34,10 @@ void MenuPlugin::initialize(ListView* list)
 
 void MenuPlugin::initialize(TextBrowser* browser)
 {
-    new BrowserMenu(browser);
+    new BrowserMenu(browser, d.view);
+}
+
+void MenuPlugin::initialize(SplitView *view)
+{
+    d.view = view;
 }

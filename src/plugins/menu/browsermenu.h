@@ -17,6 +17,7 @@
 
 #include <QMenu>
 
+class SplitView;
 class TextBrowser;
 
 class BrowserMenu : public QMenu
@@ -24,12 +25,22 @@ class BrowserMenu : public QMenu
     Q_OBJECT
 
 public:
-    BrowserMenu(TextBrowser* browser);
+    BrowserMenu(TextBrowser* browser, SplitView* view);
 
     bool eventFilter(QObject *object, QEvent *event);
 
+private slots:
+    void updateActions();
+    void splitVertical();
+    void splitHorizontal();
+    void unsplit();
+
 private:
     struct Private {
+        QAction* splitVAction;
+        QAction* splitHAction;
+        QAction* closeAction;
+        SplitView* view;
         TextBrowser* browser;
     } d;
 };
