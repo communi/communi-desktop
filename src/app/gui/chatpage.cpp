@@ -9,8 +9,8 @@
 
 #include "chatpage.h"
 #include "treewidgetex.h"
+#include "textdocument.h"
 #include "splitview.h"
-#include "document.h"
 #include <IrcConnection>
 #include <IrcBufferModel>
 #include <IrcBuffer>
@@ -54,14 +54,10 @@ void ChatPage::addConnection(IrcConnection* connection)
     connect(connection, SIGNAL(displayNameChanged(QString)), serverBuffer, SLOT(setName(QString)));
     connect(bufferModel, SIGNAL(messageIgnored(IrcMessage*)), serverBuffer, SLOT(receiveMessage(IrcMessage*)));
 
-    connect(bufferModel, SIGNAL(added(IrcBuffer*)), Document::instance(), SLOT(addBuffer(IrcBuffer*)));
-    connect(bufferModel, SIGNAL(removed(IrcBuffer*)), Document::instance(), SLOT(removeBuffer(IrcBuffer*)));
+    connect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(addBuffer(IrcBuffer*)));
+    connect(bufferModel, SIGNAL(removed(IrcBuffer*)), this, SLOT(removeBuffer(IrcBuffer*)));
 
-    connect(bufferModel, SIGNAL(added(IrcBuffer*)), d.treeWidget, SLOT(addBuffer(IrcBuffer*)));
-    connect(bufferModel, SIGNAL(removed(IrcBuffer*)), d.treeWidget, SLOT(removeBuffer(IrcBuffer*)));
-
-    Document::addBuffer(serverBuffer);
-    d.treeWidget->addBuffer(serverBuffer);
+    addBuffer(serverBuffer);
     if (!d.treeWidget->currentBuffer())
         d.treeWidget->setCurrentBuffer(serverBuffer);
 
@@ -74,12 +70,21 @@ void ChatPage::addConnection(IrcConnection* connection)
 void ChatPage::removeConnection(IrcConnection* connection)
 {
     IrcBufferModel* bufferModel = connection->findChild<IrcBufferModel*>();
-    disconnect(bufferModel, SIGNAL(added(IrcBuffer*)), Document::instance(), SLOT(addBuffer(IrcBuffer*)));
-    disconnect(bufferModel, SIGNAL(removed(IrcBuffer*)), Document::instance(), SLOT(removeBuffer(IrcBuffer*)));
 
-    disconnect(bufferModel, SIGNAL(added(IrcBuffer*)), d.treeWidget, SLOT(addBuffer(IrcBuffer*)));
-    disconnect(bufferModel, SIGNAL(removed(IrcBuffer*)), d.treeWidget, SLOT(removeBuffer(IrcBuffer*)));
+    disconnect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(addBuffer(IrcBuffer*)));
+    disconnect(bufferModel, SIGNAL(removed(IrcBuffer*)), this, SLOT(removeBuffer(IrcBuffer*)));
 
-    d.treeWidget->removeBuffer(bufferModel->get(0));
+    removeBuffer(bufferModel->get(0));
     d.connections.removeOne(connection);
+}
+
+void ChatPage::addBuffer(IrcBuffer* buffer)
+{
+    d.treeWidget->addBuffer(buffer);
+    buffer->setProperty("document", QVariant::fromValue(new TextDocument(buffer)));
+}
+
+void ChatPage::removeBuffer(IrcBuffer* buffer)
+{
+    d.treeWidget->removeBuffer(buffer);
 }

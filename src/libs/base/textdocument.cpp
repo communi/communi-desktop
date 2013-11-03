@@ -13,24 +13,39 @@
 */
 
 #include "textdocument.h"
+#include "messageformatter.h"
 #include <QAbstractTextDocumentLayout>
 #include <QTextCursor>
 #include <QTextBlock>
+#include <IrcBuffer>
 #include <QPainter>
 #include <qmath.h>
 
 static int delay = 1000;
 
-TextDocument::TextDocument(QObject* parent) : QTextDocument(parent)
+TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
 {
     d.note = -1;
     d.dirty = -1;
     d.active = false;
+    d.buffer = buffer;
+
+    d.formatter = new MessageFormatter(this);
+    d.formatter->setBuffer(buffer);
+
+    setMaximumBlockCount(1000);
+
+    connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
+}
+
+IrcBuffer* TextDocument::buffer() const
+{
+    return d.buffer;
 }
 
 int TextDocument::totalCount() const
 {
-    return blockCount() + d.buffer.count();
+    return blockCount() + d.lines.count();
 }
 
 bool TextDocument::isActive() const
@@ -42,7 +57,7 @@ void TextDocument::setActive(bool active)
 {
     d.active = active;
     if (active && d.dirty)
-        flushBuffer();
+        flushLines();
 }
 
 int TextDocument::note() const
@@ -103,7 +118,7 @@ void TextDocument::append(const QString& text, bool highlight)
                 d.dirty = startTimer(delay);
                 delay += 1000;
             }
-            d.buffer += text;
+            d.lines += text;
         }
     }
 }
@@ -153,16 +168,16 @@ void TextDocument::timerEvent(QTimerEvent* event)
     QTextDocument::timerEvent(event);
     if (event->timerId() == d.dirty) {
         delay -= 1000;
-        flushBuffer();
+        flushLines();
     }
 }
 
-void TextDocument::flushBuffer()
+void TextDocument::flushLines()
 {
-    if (!d.buffer.isEmpty()) {
+    if (!d.lines.isEmpty()) {
         QTextCursor cursor(this);
         cursor.beginEditBlock();
-        foreach (const QString& line, d.buffer)
+        foreach (const QString& line, d.lines)
             appendLine(cursor, line);
         cursor.endEditBlock();
     }
@@ -171,6 +186,13 @@ void TextDocument::flushBuffer()
         killTimer(d.dirty);
         d.dirty = 0;
     }
+}
+
+void TextDocument::receiveMessage(IrcMessage* message)
+{
+    const QString formatted = d.formatter->formatMessage(message);
+    const bool highlight = d.formatter->wasHighlighted();
+    append(formatted, highlight);
 }
 
 void TextDocument::appendLine(QTextCursor& cursor, const QString& line)

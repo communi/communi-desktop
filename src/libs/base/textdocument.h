@@ -18,12 +18,18 @@
 #include <QTextDocument>
 #include <QStringList>
 
+class IrcBuffer;
+class IrcMessage;
+class MessageFormatter;
+
 class TextDocument : public QTextDocument
 {
     Q_OBJECT
 
 public:
-    TextDocument(QObject* parent = 0);
+    TextDocument(IrcBuffer* buffer);
+
+    IrcBuffer* buffer() const;
 
     int totalCount() const;
 
@@ -50,7 +56,8 @@ protected:
     void timerEvent(QTimerEvent* event);
 
 private slots:
-    void flushBuffer();
+    void flushLines();
+    void receiveMessage(IrcMessage* message);
 
 private:
     void appendLine(QTextCursor& cursor, const QString& line);
@@ -59,9 +66,11 @@ private:
         int note;
         int dirty;
         bool active;
-        QStringList buffer;
+        IrcBuffer* buffer;
+        QStringList lines;
         QList<int> markers;
         QList<int> highlights;
+        MessageFormatter* formatter;
     } d;
 };
 

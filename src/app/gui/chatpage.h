@@ -34,6 +34,10 @@ public:
 signals:
     void currentBufferChanged(IrcBuffer* buffer);
 
+private slots:
+    void addBuffer(IrcBuffer* buffer);
+    void removeBuffer(IrcBuffer* buffer);
+
 private:
     struct Private {
         SplitView* splitView;

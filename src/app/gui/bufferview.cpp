@@ -11,7 +11,7 @@
 #include "listviewex.h"
 #include "topiclabel.h"
 #include "textinputex.h"
-#include "document.h"
+#include "textdocument.h"
 #include "browser.h"
 #include <QVBoxLayout>
 #include <IrcChannel>
@@ -54,7 +54,7 @@ IrcBuffer* BufferView::buffer() const
 void BufferView::setBuffer(IrcBuffer* buffer)
 {
     d.buffer = buffer;
-    d.browser->setDocument(Document::instance(buffer));
+    d.browser->setDocument(buffer->property("document").value<TextDocument*>());
 
     IrcChannel* channel = qobject_cast<IrcChannel*>(buffer);
     d.topicLabel->setChannel(channel);
