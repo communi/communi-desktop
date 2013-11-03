@@ -8,19 +8,24 @@
  */
 
 #include "chatpage.h"
-#include "treewidgetex.h"
+#include "treewidget.h"
+#include "treedelegate.h"
 #include "textdocument.h"
-#include "documentplugin.h"
 #include "splitview.h"
-#include <QPluginLoader> // TODO
 #include <IrcBufferModel>
 #include <IrcConnection>
 #include <IrcBuffer>
 
+// TODO:
+#include <QPluginLoader>
+#include "documentplugin.h"
+#include "treeplugin.h"
+
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 {
     d.splitView = new SplitView(this);
-    d.treeWidget = new TreeWidgetEx(this);
+    d.treeWidget = new TreeWidget(this);
+    d.treeWidget->setItemDelegate(new TreeDelegate(d.treeWidget));
 
     connect(d.treeWidget, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
     connect(d.treeWidget, SIGNAL(currentBufferChanged(IrcBuffer*)), d.splitView, SLOT(setCurrentBuffer(IrcBuffer*)));
@@ -30,6 +35,13 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
     addWidget(d.splitView);
     setStretchFactor(1, 1);
     setHandleWidth(1);
+
+    // TODO: move outta here...
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        TreePlugin* plugin = qobject_cast<TreePlugin*>(instance);
+        if (plugin)
+            plugin->initialize(d.treeWidget);
+    }
 }
 
 ChatPage::~ChatPage()

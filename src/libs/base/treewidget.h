@@ -43,6 +43,9 @@ public slots:
 signals:
     void currentBufferChanged(IrcBuffer* buffer);
 
+protected:
+    QSize sizeHint() const;
+
 private slots:
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);

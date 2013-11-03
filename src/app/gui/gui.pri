@@ -9,20 +9,14 @@ FORMS += $$PWD/connectpage.ui
 
 HEADERS += $$PWD/chatpage.h
 HEADERS += $$PWD/connectpage.h
+HEADERS += $$PWD/itemdelegate.h
 HEADERS += $$PWD/mainwindow.h
 HEADERS += $$PWD/splitview.h
+HEADERS += $$PWD/treedelegate.h
 
 SOURCES += $$PWD/chatpage.cpp
 SOURCES += $$PWD/connectpage.cpp
+SOURCES += $$PWD/itemdelegate.cpp
 SOURCES += $$PWD/mainwindow.cpp
 SOURCES += $$PWD/splitview.cpp
-
-HEADERS += $$PWD/itemdelegate.h
-
-SOURCES += $$PWD/itemdelegate.cpp
-
-HEADERS += $$PWD/treedelegate.h
-HEADERS += $$PWD/treewidgetex.h
-
 SOURCES += $$PWD/treedelegate.cpp
-SOURCES += $$PWD/treewidgetex.cpp

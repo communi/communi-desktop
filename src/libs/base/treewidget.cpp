@@ -14,10 +14,28 @@
 
 #include "treewidget.h"
 #include "treeitem.h"
+#include <QHeaderView>
 #include <IrcBuffer>
 
 TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
+    setAnimated(true);
+    setColumnCount(2);
+    setIndentation(0);
+    setHeaderHidden(true);
+    setRootIsDecorated(false);
+    setUniformRowHeights(true);
+    setFrameStyle(QFrame::NoFrame);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    setSortingEnabled(true);
+    sortByColumn(0, Qt::AscendingOrder);
+
+    header()->setStretchLastSection(false);
+    header()->setResizeMode(0, QHeaderView::Stretch);
+    header()->setResizeMode(1, QHeaderView::Fixed);
+    header()->resizeSection(1, fontMetrics().width("999"));
+
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(onItemExpanded(QTreeWidgetItem*)));
     connect(this, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));
@@ -73,6 +91,10 @@ void TreeWidget::setCurrentBuffer(IrcBuffer* buffer)
         setCurrentItem(item);
 }
 
+QSize TreeWidget::sizeHint() const
+{
+    return QSize(20 * fontMetrics().width('#'), QTreeWidget::sizeHint().height());
+}
 
 void TreeWidget::onItemExpanded(QTreeWidgetItem* item)
 {
