@@ -41,6 +41,8 @@ public slots:
     void setCurrentBuffer(IrcBuffer* buffer);
 
 signals:
+    void bufferAdded(IrcBuffer* buffer);
+    void bufferRemoved(IrcBuffer* buffer);
     void currentBufferChanged(IrcBuffer* buffer);
 
 protected:

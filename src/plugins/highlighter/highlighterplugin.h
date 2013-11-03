@@ -20,6 +20,9 @@
 #include <QTreeWidget>
 #include "treeplugin.h"
 
+class IrcBuffer;
+class IrcMessage;
+
 class HighlighterPlugin : public QObject, public TreePlugin
 {
     Q_OBJECT
@@ -34,6 +37,9 @@ public:
     bool eventFilter(QObject *object, QEvent *event);
 
 private slots:
+    void onBufferAdded(IrcBuffer* buffer);
+    void onBufferRemoved(IrcBuffer* buffer);
+    void onMessageReceived(IrcMessage* message);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void delayedReset(QTreeWidgetItem* item);
     void resetItems();

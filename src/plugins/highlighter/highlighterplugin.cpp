@@ -15,6 +15,8 @@
 #include "highlighterplugin.h"
 #include "treewidget.h"
 #include "treeitem.h"
+#include <IrcMessage>
+#include <IrcBuffer>
 #include <QTimer>
 #include <QEvent>
 
@@ -29,6 +31,8 @@ void HighlighterPlugin::initialize(TreeWidget* tree)
 {
     d.tree = tree;
 
+    connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
+    connect(tree, SIGNAL(bufferRemoved(IrcBuffer*)), this, SLOT(onBufferRemoved(IrcBuffer*)));
     connect(tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
 
@@ -55,6 +59,24 @@ bool HighlighterPlugin::eventFilter(QObject *object, QEvent* event)
         break;
     }
     return false;
+}
+
+void HighlighterPlugin::onBufferAdded(IrcBuffer* buffer)
+{
+    connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
+}
+
+void HighlighterPlugin::onBufferRemoved(IrcBuffer* buffer)
+{
+    disconnect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
+}
+
+void HighlighterPlugin::onMessageReceived(IrcMessage* message)
+{
+    IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
+    TreeItem* item = d.tree->bufferItem(buffer);
+    if (item && item != d.tree->currentItem())
+        item->setBadge(item->badge() + 1);
 }
 
 void HighlighterPlugin::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)

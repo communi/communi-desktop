@@ -76,6 +76,7 @@ void TreeWidget::addBuffer(IrcBuffer* buffer)
         item = new TreeItem(buffer, parent);
     }
     d.bufferItems.insert(buffer, item);
+    emit bufferAdded(buffer);
 }
 
 void TreeWidget::removeBuffer(IrcBuffer* buffer)
@@ -86,6 +87,7 @@ void TreeWidget::removeBuffer(IrcBuffer* buffer)
         d.connections.removeOne(connection);
     }
     delete d.bufferItems.take(buffer);
+    emit bufferRemoved(buffer);
 }
 
 void TreeWidget::setCurrentBuffer(IrcBuffer* buffer)
