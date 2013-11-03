@@ -13,6 +13,7 @@
 */
 
 #include "textdocument.h"
+#include "textbrowser.h"
 #include "messageformatter.h"
 #include <QAbstractTextDocumentLayout>
 #include <QTextCursor>
@@ -25,7 +26,6 @@ static int delay = 1000;
 
 TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
 {
-    d.ref = 0;
     d.note = -1;
     d.dirty = -1;
     d.buffer = buffer;
@@ -36,6 +36,7 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
     setMaximumBlockCount(1000);
 
     connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
+    connect(documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(scrollToBottom()));
 }
 
 IrcBuffer* TextDocument::buffer() const
@@ -48,16 +49,16 @@ int TextDocument::totalCount() const
     return blockCount() + d.lines.count();
 }
 
-bool TextDocument::ref()
+void TextDocument::ref(TextBrowser* browser)
 {
-    if (++d.ref == 1 && d.dirty > 0)
+    if (d.dirty > 0 && d.browsers.isEmpty())
         flushLines();
-    return d.ref == 1;
+    d.browsers.insert(browser);
 }
 
-bool TextDocument::deref()
+void TextDocument::deref(TextBrowser* browser)
 {
-    return --d.ref == 0;
+    d.browsers.remove(browser);
 }
 
 int TextDocument::note() const
@@ -108,7 +109,7 @@ void TextDocument::append(const QString& text, bool highlight)
     if (!text.isEmpty()) {
         if (highlight)
             d.highlights.append(totalCount() - 1);
-        if (d.ref || d.dirty == 0) {
+        if (d.dirty == 0 || !d.browsers.isEmpty()) {
             QTextCursor cursor(this);
             cursor.beginEditBlock();
             appendLine(cursor, text);
@@ -156,7 +157,7 @@ void TextDocument::drawHighlights(QPainter* painter, const QRect& bounds)
 
 void TextDocument::updateBlock(int number)
 {
-    if (d.ref) {
+    if (!d.browsers.isEmpty()) {
         QTextBlock block = findBlockByNumber(number);
         if (block.isValid())
             QMetaObject::invokeMethod(documentLayout(), "updateBlock", Q_ARG(QTextBlock, block));
@@ -185,6 +186,14 @@ void TextDocument::flushLines()
     if (d.dirty > 0) {
         killTimer(d.dirty);
         d.dirty = 0;
+    }
+}
+
+void TextDocument::scrollToBottom()
+{
+    foreach (TextBrowser* browser, d.browsers) {
+        if (browser->isAtBottom())
+            QMetaObject::invokeMethod(browser, "scrollToBottom", Qt::QueuedConnection);
     }
 }
 

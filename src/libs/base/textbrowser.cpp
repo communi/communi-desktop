@@ -23,6 +23,7 @@
 TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent)
 {
     d.bud = 0;
+    d.dirty = 0;
     d.markerColor = Qt::darkGray;
     d.highlightColor = QColor("#ffe6e6"); // TODO: stylesheet
 
@@ -41,9 +42,15 @@ void TextBrowser::setDocument(TextDocument* document)
 {
     TextDocument* doc = qobject_cast<TextDocument*>(QTextBrowser::document());
     if (doc)
-        doc->deref();
+        doc->deref(this);
     if (document)
-        document->ref();
+        document->ref(this);
+
+    if (d.dirty == 0) {
+        setUpdatesEnabled(false);
+        d.dirty = startTimer(32);
+    }
+
     QTextBrowser::setDocument(document);
     QMetaObject::invokeMethod(this, "scrollToBottom", Qt::QueuedConnection);
 }
@@ -116,6 +123,15 @@ void TextBrowser::resizeEvent(QResizeEvent* event)
 
     // http://www.qtsoftware.com/developer/task-tracker/index_html?method=entry&id=240940
     QMetaObject::invokeMethod(this, "scrollToBottom", Qt::QueuedConnection);
+}
+
+void TextBrowser::timerEvent(QTimerEvent* event)
+{
+    if (event->timerId() == d.dirty) {
+        setUpdatesEnabled(true);
+        killTimer(d.dirty);
+        d.dirty = 0;
+    }
 }
 
 bool TextBrowser::isAtTop() const

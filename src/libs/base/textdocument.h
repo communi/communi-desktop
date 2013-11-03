@@ -17,9 +17,11 @@
 
 #include <QTextDocument>
 #include <QStringList>
+#include <QSet>
 
 class IrcBuffer;
 class IrcMessage;
+class TextBrowser;
 class MessageFormatter;
 
 class TextDocument : public QTextDocument
@@ -33,8 +35,8 @@ public:
 
     int totalCount() const;
 
-    bool ref();
-    bool deref();
+    void ref(TextBrowser* browser);
+    void deref(TextBrowser* browser);
 
     int note() const;
     void setNote(int note);
@@ -57,13 +59,13 @@ protected:
 
 private slots:
     void flushLines();
+    void scrollToBottom();
     void receiveMessage(IrcMessage* message);
 
 private:
     void appendLine(QTextCursor& cursor, const QString& line);
 
     struct Private {
-        int ref;
         int note;
         int dirty;
         IrcBuffer* buffer;
@@ -71,6 +73,7 @@ private:
         QList<int> markers;
         QList<int> highlights;
         MessageFormatter* formatter;
+        QSet<TextBrowser*> browsers;
     } d;
 };
 
