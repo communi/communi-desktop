@@ -13,6 +13,7 @@ else:target.path = /usr/bin
 INSTALLS += target
 
 include(src.pri)
+include(util/util.pri)
 include(../config.pri)
 include(../libs/base/base.pri)
 include(../libs/util/util.pri)
