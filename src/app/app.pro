@@ -24,4 +24,5 @@ STATIC_PLUGINS = completer finder highlighter history menu navigator subject
 for(PLUGIN, STATIC_PLUGINS) {
     LIBS *= -L$$PWD/../../plugins
     LIBS += -l$${PLUGIN}plugin
+    PRE_TARGETDEPS += $$PWD/../../plugins/$${QMAKE_PREFIX_STATICLIB}$${PLUGIN}plugin.$${QMAKE_EXTENSION_STATICLIB}
 }
