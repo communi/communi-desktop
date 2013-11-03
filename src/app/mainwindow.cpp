@@ -48,9 +48,9 @@ MainWindow::MainWindow(QWidget* parent) : QStackedWidget(parent)
 #endif // Q_OS_MAC
 
     QSettings settings;
-    settings.beginGroup("Widgets/MainWindow");
-    if (settings.contains("geometry"))
-        restoreGeometry(settings.value("geometry").toByteArray());
+    settings.beginGroup("Geometries");
+    if (settings.contains("window"))
+        restoreGeometry(settings.value("window").toByteArray());
 
     d.connectPage = new ConnectPage(this);
     connect(d.connectPage, SIGNAL(accepted()), this, SLOT(onAccepted()));
@@ -121,8 +121,8 @@ void MainWindow::closeEvent(QCloseEvent* event)
 {
     if (isVisible()) {
         QSettings settings;
-        settings.beginGroup("Widgets/MainWindow");
-        settings.setValue("geometry", saveGeometry());
+        settings.beginGroup("Geometries");
+        settings.setValue("window", saveGeometry());
 
         saveConnections();
         QList<IrcConnection*> connections = d.chatPage->connections();
@@ -252,7 +252,8 @@ void MainWindow::onTrayIconActivated(QSystemTrayIcon::ActivationReason reason)
 void MainWindow::restoreConnections()
 {
     QSettings settings;
-    foreach (const QVariant& state, settings.value("Connections").toList()) {
+    settings.beginGroup("Connections");
+    foreach (const QVariant& state, settings.value("connections").toList()) {
         IrcConnection* connection = new IrcConnection(this);
 
         // TODO:
@@ -270,8 +271,9 @@ void MainWindow::restoreConnections()
 void MainWindow::saveConnections()
 {
     QSettings settings;
+    settings.beginGroup("Connections");
     QVariantList states;
     foreach (IrcConnection* connection, d.chatPage->connections())
         states += connection->saveState();
-    settings.setValue("Connections", states);
+    settings.setValue("connections", states);
 }

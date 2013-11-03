@@ -159,7 +159,7 @@ static QCompleter* createCompleter(const QStringList& list, QLineEdit* lineEdit)
 void ConnectPage::restoreSettings()
 {
     QSettings settings;
-    settings.beginGroup("Common/ConnectPage");
+    settings.beginGroup("Credentials");
 
     ui.displayNameField->setText(settings.value("displayName").toString());
     ui.hostField->setText(settings.value("host").toString());
@@ -184,7 +184,7 @@ void ConnectPage::saveSettings()
     ui.buttonBox->button(QDialogButtonBox::Cancel)->setEnabled(true); // TODO
 
     QSettings settings;
-    settings.beginGroup("Common/ConnectPage");
+    settings.beginGroup("Credentials");
 
     const QString displayName = ui.displayNameField->text();
     const QString host = ui.hostField->text();
