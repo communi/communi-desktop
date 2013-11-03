@@ -28,7 +28,7 @@ class TreeWidget : public QTreeWidget
     Q_PROPERTY(IrcBuffer* currentBuffer READ currentBuffer WRITE setCurrentBuffer NOTIFY currentBufferChanged)
 
 public:
-    TreeWidget(QWidget* parent = 0);
+    explicit TreeWidget(QWidget* parent = 0);
 
     IrcBuffer* currentBuffer() const;
     TreeItem* bufferItem(IrcBuffer* buffer) const;

@@ -24,7 +24,7 @@ class TopicLabel : public QLabel
     Q_OBJECT
 
 public:
-    TopicLabel(QWidget* parent = 0);
+    explicit TopicLabel(QWidget* parent = 0);
 
     IrcChannel* channel() const;
 

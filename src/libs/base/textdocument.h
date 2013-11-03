@@ -27,7 +27,7 @@ class TextDocument : public QTextDocument
     Q_OBJECT
 
 public:
-    TextDocument(IrcBuffer* buffer);
+    explicit TextDocument(IrcBuffer* buffer);
 
     IrcBuffer* buffer() const;
 

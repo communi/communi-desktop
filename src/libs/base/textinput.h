@@ -27,7 +27,7 @@ class TextInput : public QLineEdit
     Q_PROPERTY(IrcCommandParser* parser READ parser WRITE setParser NOTIFY parserChanged)
 
 public:
-    TextInput(QWidget* parent = 0);
+    explicit TextInput(QWidget* parent = 0);
 
     IrcBuffer* buffer() const;
     IrcCommandParser* parser() const;

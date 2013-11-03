@@ -21,7 +21,7 @@ class ListView : public QListView
     Q_PROPERTY(IrcChannel* channel READ channel WRITE setChannel NOTIFY channelChanged)
 
 public:
-    ListView(QWidget* parent = 0);
+    explicit ListView(QWidget* parent = 0);
 
     IrcChannel* channel() const;
 

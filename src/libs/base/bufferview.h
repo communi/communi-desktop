@@ -25,7 +25,6 @@ class BufferView : public QWidget
 
 public:
     explicit BufferView(QWidget* parent = 0);
-    ~BufferView();
 
     IrcBuffer* buffer() const;
 
