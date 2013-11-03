@@ -23,13 +23,6 @@
 #include "listplugin.h"
 #include "topicplugin.h"
 
-// TODO:
-Q_IMPORT_PLUGIN(CompleterPlugin)
-//Q_IMPORT_PLUGIN(FinderPlugin)
-Q_IMPORT_PLUGIN(HistoryPlugin)
-//Q_IMPORT_PLUGIN(MenuPlugin)
-Q_IMPORT_PLUGIN(SubjectPlugin)
-
 SplitView::SplitView(QWidget* parent) : QSplitter(parent)
 {
     setHandleWidth(1);
