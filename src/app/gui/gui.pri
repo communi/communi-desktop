@@ -19,21 +19,19 @@ SOURCES += $$PWD/mainwindow.cpp
 SOURCES += $$PWD/splitview.cpp
 SOURCES += $$PWD/textinputex.cpp
 
-HEADERS += $$PWD/browser.h
+HEADERS += $$PWD/textbrowserex.h
 HEADERS += $$PWD/bufferview.h
 HEADERS += $$PWD/editablelabel.h
 HEADERS += $$PWD/itemdelegate.h
 HEADERS += $$PWD/searchentry.h
-HEADERS += $$PWD/textbrowser.h
 HEADERS += $$PWD/topiclabel.h
 HEADERS += $$PWD/listviewex.h
 
-SOURCES += $$PWD/browser.cpp
+SOURCES += $$PWD/textbrowserex.cpp
 SOURCES += $$PWD/bufferview.cpp
 SOURCES += $$PWD/editablelabel.cpp
 SOURCES += $$PWD/itemdelegate.cpp
 SOURCES += $$PWD/searchentry.cpp
-SOURCES += $$PWD/textbrowser.cpp
 SOURCES += $$PWD/topiclabel.cpp
 SOURCES += $$PWD/listviewex.cpp
 

@@ -18,6 +18,7 @@ INCLUDEPATH += $$PWD
 HEADERS += $$PWD/inputplugin.h
 HEADERS += $$PWD/listplugin.h
 HEADERS += $$PWD/listview.h
+HEADERS += $$PWD/textbrowser.h
 HEADERS += $$PWD/textdocument.h
 HEADERS += $$PWD/textinput.h
 HEADERS += $$PWD/treeitem.h
@@ -26,6 +27,7 @@ HEADERS += $$PWD/treerole.h
 HEADERS += $$PWD/treewidget.h
 
 SOURCES += $$PWD/listview.cpp
+SOURCES += $$PWD/textbrowser.cpp
 SOURCES += $$PWD/textdocument.cpp
 SOURCES += $$PWD/textinput.cpp
 SOURCES += $$PWD/treeitem.cpp

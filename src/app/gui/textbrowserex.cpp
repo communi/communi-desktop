@@ -7,13 +7,13 @@
  * completely or partially.
  */
 
-#include "browser.h"
+#include "textbrowserex.h"
 #include "bufferview.h"
 #include <QDesktopServices>
 #include <QContextMenuEvent>
 #include <QMenu>
 
-Browser::Browser(QWidget* parent) : TextBrowser(parent)
+TextBrowserEx::TextBrowserEx(QWidget* parent) : TextBrowser(parent)
 {
     setOpenLinks(false);
     setTabChangesFocus(true);
@@ -21,11 +21,11 @@ Browser::Browser(QWidget* parent) : TextBrowser(parent)
     connect(this, SIGNAL(anchorClicked(QUrl)), this, SLOT(onAnchorClicked(QUrl)));
 }
 
-Browser::~Browser()
+TextBrowserEx::~TextBrowserEx()
 {
 }
 
-void Browser::contextMenuEvent(QContextMenuEvent* event)
+void TextBrowserEx::contextMenuEvent(QContextMenuEvent* event)
 {
     QMenu* menu = createStandardContextMenu(event->pos());
     menu->addSeparator();
@@ -43,7 +43,7 @@ void Browser::contextMenuEvent(QContextMenuEvent* event)
     delete menu;
 }
 
-void Browser::onAnchorClicked(const QUrl& url)
+void TextBrowserEx::onAnchorClicked(const QUrl& url)
 {
     if (url.scheme() == "nick")
         emit clicked(url.toString(QUrl::RemoveScheme));

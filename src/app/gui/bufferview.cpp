@@ -12,7 +12,7 @@
 #include "topiclabel.h"
 #include "textinputex.h"
 #include "textdocument.h"
-#include "browser.h"
+#include "textbrowserex.h"
 #include <QVBoxLayout>
 #include <IrcChannel>
 #include <IrcBuffer>
@@ -20,14 +20,14 @@
 BufferView::BufferView(QWidget* parent) : QWidget(parent)
 {
     d.buffer = 0;
-    d.browser = new Browser(this);
+    d.listView = new ListViewEx(this);
     d.textInput = new TextInputEx(this);
     d.topicLabel = new TopicLabel(this);
-    d.listView = new ListViewEx(this);
+    d.textBrowser = new TextBrowserEx(this);
     d.splitter = new QSplitter(this);
     d.splitter->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
 
-    connect(d.browser, SIGNAL(split(Qt::Orientation)), this, SIGNAL(split(Qt::Orientation)));
+    connect(d.textBrowser, SIGNAL(split(Qt::Orientation)), this, SIGNAL(split(Qt::Orientation)));
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setSpacing(0);
@@ -37,7 +37,7 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     layout->addWidget(d.textInput);
 
     d.splitter->setHandleWidth(1);
-    d.splitter->addWidget(d.browser);
+    d.splitter->addWidget(d.textBrowser);
     d.splitter->addWidget(d.listView);
     d.splitter->setStretchFactor(0, 1);
 }
@@ -54,7 +54,7 @@ IrcBuffer* BufferView::buffer() const
 void BufferView::setBuffer(IrcBuffer* buffer)
 {
     d.buffer = buffer;
-    d.browser->setDocument(buffer->property("document").value<TextDocument*>());
+    d.textBrowser->setDocument(buffer->property("document").value<TextDocument*>());
 
     IrcChannel* channel = qobject_cast<IrcChannel*>(buffer);
     d.topicLabel->setChannel(channel);

@@ -7,20 +7,18 @@
  * completely or partially.
  */
 
-#ifndef BROWSER_H
-#define BROWSER_H
+#ifndef TEXTBROWSEREX_H
+#define TEXTBROWSEREX_H
 
 #include "textbrowser.h"
 
-class IrcBuffer;
-
-class Browser : public TextBrowser
+class TextBrowserEx : public TextBrowser
 {
     Q_OBJECT
 
 public:
-    Browser(QWidget* parent = 0);
-    ~Browser();
+    TextBrowserEx(QWidget* parent = 0);
+    ~TextBrowserEx();
 
 signals:
     void clicked(const QString& user);
@@ -31,10 +29,6 @@ protected:
 
 private slots:
     void onAnchorClicked(const QUrl& url);
-
-private:
-    struct Private {
-    } d;
 };
 
-#endif // BROWSER_H
+#endif // TEXTBROWSEREX_H
