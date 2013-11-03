@@ -24,6 +24,7 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     d.textInput = new TextInputEx(this);
     d.topicLabel = new TopicLabelEx(this);
     d.textBrowser = new TextBrowserEx(this);
+    d.textBrowser->setBuddy(d.textInput);
     d.splitter = new QSplitter(this);
     d.splitter->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
 

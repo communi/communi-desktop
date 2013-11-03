@@ -30,6 +30,9 @@ SearchInput::SearchInput(TextBrowser* browser) : QLineEdit(browser)
     shortcut = new QShortcut(QKeySequence::FindPrevious, browser);
     connect(shortcut, SIGNAL(activated()), this, SLOT(findPrevious()));
 
+    shortcut = new QShortcut(QKeySequence(tr("Esc")), browser);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(hide()));
+
 //    TODO:
 //    setButtonVisible(Left, true);
 //    setAutoHideButton(Left, true);
@@ -125,5 +128,6 @@ void SearchInput::hideEvent(QHideEvent* event)
             d.textBrowser->setTextCursor(cursor);
         }
         d.textBrowser->setExtraSelections(QList<QTextEdit::ExtraSelection>());
+        d.textBrowser->buddy()->setFocus();
     }
 }

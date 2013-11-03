@@ -24,7 +24,6 @@ SearchPopup::SearchPopup(TreeWidget* tree) : QLineEdit(tree)
     setVisible(false);
     setWindowOpacity(0.8);
     setWindowFlags(Qt::Popup);
-    setWindowModality(Qt::WindowModal);
     setFont(QFont(font().family(), 36));
 
     connect(this, SIGNAL(textEdited(QString)), this, SLOT(search(QString)));
@@ -34,7 +33,7 @@ SearchPopup::SearchPopup(TreeWidget* tree) : QLineEdit(tree)
     searchShortcut->setKey(QKeySequence(tr("Ctrl+S")));
     connect(searchShortcut, SIGNAL(activated()), this, SLOT(popup()));
 
-    QShortcut* hideShortcut = new QShortcut(tree);
+    QShortcut* hideShortcut = new QShortcut(this);
     hideShortcut->setKey(QKeySequence(tr("Esc")));
     connect(hideShortcut, SIGNAL(activated()), this, SLOT(hide()));
 }
@@ -51,7 +50,7 @@ void SearchPopup::mousePressEvent(QMouseEvent* event)
 {
     QLineEdit::mousePressEvent(event);
     if (!geometry().contains(event->globalPos()))
-        close();
+        hide();
 }
 
 void SearchPopup::search(const QString& txt)
