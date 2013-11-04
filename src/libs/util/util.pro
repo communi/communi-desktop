@@ -6,7 +6,7 @@ TEMPLATE = lib
 CONFIG += static
 TARGET = util
 
-DESTDIR = ../../../lib
+DESTDIR = $$BUILD_ROOT/lib
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 

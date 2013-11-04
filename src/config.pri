@@ -15,3 +15,5 @@ CONFIG(debug, debug|release) {
     RCC_DIR = release
     UI_DIR = release
 }
+
+isEmpty(QMAKE_EXTENSION_STATICLIB):QMAKE_EXTENSION_STATICLIB = lib

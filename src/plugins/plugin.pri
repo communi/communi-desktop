@@ -9,7 +9,7 @@ TARGET = $$basename(_PRO_FILE_PWD_)plugin
 DEPENDPATH += $$_PRO_FILE_PWD_
 INCLUDEPATH += $$_PRO_FILE_PWD_
 
-DESTDIR = $$PWD/../../plugins
+DESTDIR = $$BUILD_ROOT/plugins
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets

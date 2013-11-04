@@ -5,7 +5,7 @@
 TEMPLATE = lib
 CONFIG += static
 TARGET = backend
-DESTDIR = ../../../lib
+DESTDIR = $$BUILD_ROOT/lib
 QT = core network
 DEFINES += IRC_STATIC
 

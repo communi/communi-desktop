@@ -5,7 +5,8 @@
 TEMPLATE = app
 win32|mac:TARGET = Communi
 else:TARGET = communi
-DESTDIR = ../../bin
+DESTDIR = $$BUILD_ROOT/bin
+QT += network
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets
@@ -44,7 +45,8 @@ include(../../resources/resources.pri)
 
 STATIC_PLUGINS = completer finder highlighter history menu navigator subject
 for(PLUGIN, STATIC_PLUGINS) {
-    LIBS *= -L$$PWD/../../plugins
+    LIBS *= -L$$BUILD_ROOT/plugins
     LIBS += -l$${PLUGIN}plugin
-    PRE_TARGETDEPS += $$PWD/../../plugins/$${QMAKE_PREFIX_STATICLIB}$${PLUGIN}plugin.$${QMAKE_EXTENSION_STATICLIB}
+    isEmpty(QMAKE_EXTENSION_STATICLIB):QMAKE_EXTENSION_STATICLIB = lib
+    PRE_TARGETDEPS += $$BUILD_ROOT/plugins/$${QMAKE_PREFIX_STATICLIB}$${PLUGIN}plugin.$${QMAKE_EXTENSION_STATICLIB}
 }
