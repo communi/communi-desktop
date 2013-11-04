@@ -28,6 +28,7 @@
 #ifndef MESSAGEFORMATTER_H
 #define MESSAGEFORMATTER_H
 
+#include <QHash>
 #include <QDateTime>
 #include <IrcMessage>
 #include <IrcTextFormat>
