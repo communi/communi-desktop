@@ -118,6 +118,7 @@ void ChatPage::addBuffer(IrcBuffer* buffer)
     d.treeWidget->addBuffer(buffer);
     TextDocument* doc = new TextDocument(buffer);
     buffer->setProperty("document", QVariant::fromValue(doc));
+    buffer->setPersistent(true);
 
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         DocumentPlugin* plugin = qobject_cast<DocumentPlugin*>(instance);
