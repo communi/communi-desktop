@@ -22,7 +22,6 @@
 TreeItem::TreeItem(IrcBuffer* buffer, TreeItem* parent) : QTreeWidgetItem(parent)
 {
     init(buffer);
-    connect(this, SIGNAL(destroyed(TreeItem*)), parent, SLOT(removeChild(TreeItem*)));
 }
 
 TreeItem::TreeItem(IrcBuffer* buffer, TreeWidget* parent) : QTreeWidgetItem(parent)
@@ -45,7 +44,9 @@ void TreeItem::init(IrcBuffer* buffer)
 
 TreeItem::~TreeItem()
 {
-    emit destroyed(this);
+    TreeItem* p = parentItem();
+    if (p)
+        p->removeChild(this);
 }
 
 IrcBuffer* TreeItem::buffer() const
@@ -114,7 +115,7 @@ QVariant TreeItem::data(int column, int role) const
     case TreeRole::Highlight:
         return d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty());
     case Qt::BackgroundRole:
-        if (column == 1 && d.blink && (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty())))
+        if (column == 1 && d.blink && d.highlighted)
             return QColor("#ff4040").lighter(125); // TODO
         return QTreeWidgetItem::data(column, role);
     case Qt::ForegroundRole:
@@ -162,10 +163,16 @@ void TreeItem::blink()
 {
     d.blink = !d.blink;
     emitDataChanged();
+    TreeItem* p = parentItem();
+    if (p && !p->isExpanded()) {
+        p->blink();
+        p->emitDataChanged();
+    }
 }
 
-void TreeItem::removeChild(TreeItem* child)
+void TreeItem::removeChild(TreeItem *child)
 {
-    if (d.highlightedChildren.remove(child) && d.highlighted && !isExpanded())
+    const bool removed = d.highlightedChildren.remove(child);
+    if (removed && !isExpanded() && treeWidget())
         emitDataChanged();
 }

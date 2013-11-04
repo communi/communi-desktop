@@ -54,10 +54,7 @@ public slots:
     void refresh();
     void blink();
 
-signals:
-    void destroyed(TreeItem* item);
-
-private slots:
+protected slots:
     void removeChild(TreeItem* child);
 
 private:

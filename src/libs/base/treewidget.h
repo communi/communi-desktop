@@ -50,8 +50,6 @@ protected:
     QSize sizeHint() const;
 
 private slots:
-    void onItemExpanded(QTreeWidgetItem* item);
-    void onItemCollapsed(QTreeWidgetItem* item);
     void onCurrentItemChanged(QTreeWidgetItem* item);
 
 private:

@@ -42,6 +42,8 @@ private slots:
     void onBufferAdded(IrcBuffer* buffer);
     void onBufferRemoved(IrcBuffer* buffer);
     void onMessageReceived(IrcMessage* message);
+    void onItemExpanded(QTreeWidgetItem* item);
+    void onItemCollapsed(QTreeWidgetItem* item);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void delayedReset(QTreeWidgetItem* item);
     void resetItems();

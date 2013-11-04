@@ -40,9 +40,8 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     header()->setResizeMode(1, QHeaderView::Fixed);
     header()->resizeSection(1, fontMetrics().width("999"));
 
-    connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(onItemExpanded(QTreeWidgetItem*)));
-    connect(this, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
-    connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));
+    connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
+            this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));
 }
 
 IrcBuffer* TreeWidget::currentBuffer() const
@@ -101,16 +100,6 @@ void TreeWidget::setCurrentBuffer(IrcBuffer* buffer)
 QSize TreeWidget::sizeHint() const
 {
     return QSize(20 * fontMetrics().width('#'), QTreeWidget::sizeHint().height());
-}
-
-void TreeWidget::onItemExpanded(QTreeWidgetItem* item)
-{
-    static_cast<TreeItem*>(item)->refresh();
-}
-
-void TreeWidget::onItemCollapsed(QTreeWidgetItem* item)
-{
-    static_cast<TreeItem*>(item)->refresh();
 }
 
 void TreeWidget::onCurrentItemChanged(QTreeWidgetItem* item)

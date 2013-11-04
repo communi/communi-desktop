@@ -35,6 +35,8 @@ void HighlighterPlugin::initialize(TreeWidget* tree)
 
     connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
     connect(tree, SIGNAL(bufferRemoved(IrcBuffer*)), this, SLOT(onBufferRemoved(IrcBuffer*)));
+    connect(tree, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(onItemExpanded(QTreeWidgetItem*)));
+    connect(tree, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
     connect(tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
 
@@ -92,6 +94,16 @@ void HighlighterPlugin::onMessageReceived(IrcMessage* message)
             document->addHighlight(document->totalCount() - 2); // TODO: -2??
         }
     }
+}
+
+void HighlighterPlugin::onItemExpanded(QTreeWidgetItem* item)
+{
+    static_cast<TreeItem*>(item)->refresh();
+}
+
+void HighlighterPlugin::onItemCollapsed(QTreeWidgetItem* item)
+{
+    static_cast<TreeItem*>(item)->refresh();
 }
 
 void HighlighterPlugin::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
