@@ -49,29 +49,34 @@ void SplitView::setCurrentBuffer(IrcBuffer* buffer)
 
 void SplitView::split(Qt::Orientation orientation)
 {
-    if (d.current) {
-        QSplitter* container = qobject_cast<QSplitter*>(d.current->parentWidget());
+    split(d.current, orientation);
+}
+
+void SplitView::split(BufferView* view, Qt::Orientation orientation)
+{
+    if (view) {
+        QSplitter* container = qobject_cast<QSplitter*>(view->parentWidget());
         if (container) {
             const int size = (orientation == Qt::Horizontal ? container->width() : container->height()) - container->handleWidth();
             if (container->count() == 1 || container->orientation() == orientation) {
                 container->setOrientation(orientation);
-                BufferView* view = createBufferView(container);
-                view->setBuffer(d.current->buffer());
+                BufferView* bv = createBufferView(container);
+                bv->setBuffer(view->buffer());
                 QList<int> sizes;
                 for (int i = 0; i < container->count(); ++i)
                     sizes += size / container->count();
                 container->setSizes(sizes);
             } else {
-                int index = container->indexOf(d.current);
+                int index = container->indexOf(view);
                 if (index != -1) {
                     QList<int> sizes = container->sizes();
                     QSplitter* splitter = new QSplitter(orientation, container);
                     splitter->setHandleWidth(1);
                     container->insertWidget(index, splitter);
-                    splitter->addWidget(d.current);
+                    splitter->addWidget(view);
                     container->setSizes(sizes);
-                    BufferView* view = createBufferView(splitter);
-                    view->setBuffer(d.current->buffer());
+                    BufferView* bv = createBufferView(splitter);
+                    bv->setBuffer(view->buffer());
                     splitter->setSizes(QList<int>() << size/2 << size/2);
                 }
             }
