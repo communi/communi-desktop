@@ -52,7 +52,7 @@ public:
     void drawHighlights(QPainter* painter, const QRect& bounds);
 
 public slots:
-    void append(const QString& text, bool highlight = false);
+    void append(const QString& text);
 
 protected:
     void updateBlock(int number);

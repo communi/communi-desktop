@@ -56,8 +56,6 @@ public:
     QString formatLine(const QString& message, const QDateTime& timeStamp = QDateTime::currentDateTime());
     QString formatHtml(const QString& message);
 
-    bool wasHighlighted() const;
-
 protected:
     QString formatInviteMessage(IrcInviteMessage* message);
     QString formatJoinMessage(IrcJoinMessage* message);
@@ -74,22 +72,22 @@ protected:
     QString formatTopicMessage(IrcTopicMessage* message);
     QString formatUnknownMessage(IrcMessage* message);
 
-    static QString formatPingReply(const QString& sender, const QString& arg);
+    static QString formatPingReply(const QString& nick, const QString& arg);
 
-    static QString formatSender(const QString& sender, bool strip = true);
-    static QString formatUser(const QString& user, bool strip = true);
+    static QString formatNick(const QString& nick, bool own = false);
+    static QString formatPrefix(const QString& prefix, bool strip = true, bool own = false);
 
     static QString formatIdleTime(int secs);
 
+    static QString formatNames(const QStringList& names, int columns = 6);
+
 private:
     struct Private {
-        bool highlighted;
         IrcBuffer* buffer;
         IrcUserModel* userModel;
         QString timeStampFormat;
         IrcTextFormat* textFormat;
         QHash<IrcBuffer*, bool> repeats;
-        QHash<IrcBuffer*, bool> playbacks;
     } d;
 };
 

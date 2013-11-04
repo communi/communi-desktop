@@ -106,11 +106,9 @@ void TextDocument::removeHighlight(int block)
         updateBlock(block);
 }
 
-void TextDocument::append(const QString& text, bool highlight)
+void TextDocument::append(const QString& text)
 {
     if (!text.isEmpty()) {
-        if (highlight)
-            d.highlights.append(totalCount() - 1);
         if (d.dirty == 0 || !d.browsers.isEmpty()) {
             QTextCursor cursor(this);
             cursor.beginEditBlock();
@@ -201,9 +199,7 @@ void TextDocument::scrollToBottom()
 
 void TextDocument::receiveMessage(IrcMessage* message)
 {
-    const QString formatted = d.formatter->formatMessage(message);
-    const bool highlight = d.formatter->wasHighlighted();
-    append(formatted, highlight);
+    append(d.formatter->formatMessage(message));
 }
 
 void TextDocument::appendLine(QTextCursor& cursor, const QString& line)
