@@ -13,6 +13,7 @@
 */
 
 #include "highlighterplugin.h"
+#include "textdocument.h"
 #include "treewidget.h"
 #include "treeitem.h"
 #include <IrcConnection>
@@ -74,13 +75,21 @@ void HighlighterPlugin::onBufferRemoved(IrcBuffer* buffer)
 
 void HighlighterPlugin::onMessageReceived(IrcMessage* message)
 {
-    IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
-    TreeItem* item = d.tree->bufferItem(buffer);
-    if (item && item != d.tree->currentItem()) {
-        if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
+    if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
+        IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
+
+        const bool highlight = message->property("content").toString().contains(message->connection()->nickName());
+
+        TreeItem* item = d.tree->bufferItem(buffer);
+        if (item && item != d.tree->currentItem()) {
             item->setBadge(item->badge() + 1);
-            if (message->property("content").toString().contains(message->connection()->nickName()))
+            if (highlight)
                 item->setHighlighted(true);
+        }
+
+        if (highlight) {
+            TextDocument* document = buffer->property("document").value<TextDocument*>();
+            document->addHighlight(document->totalCount() - 2); // TODO: -2??
         }
     }
 }
