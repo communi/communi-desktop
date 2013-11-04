@@ -5,7 +5,7 @@
 TEMPLATE = app
 win32|mac:TARGET = Communi
 else:TARGET = communi
-DESTDIR = $$BUILD_ROOT/bin
+DESTDIR = ../../bin
 QT += network
 
 greaterThan(QT_MAJOR_VERSION, 4) {
