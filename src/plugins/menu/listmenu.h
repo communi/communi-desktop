@@ -16,6 +16,7 @@
 #define LISTMENU_H
 
 #include <QMenu>
+#include <QModelIndex>
 
 class ListView;
 
