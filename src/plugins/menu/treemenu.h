@@ -16,6 +16,7 @@
 #define TREEMENU_H
 
 #include <QMenu>
+#include <QPointer>
 
 class TreeItem;
 class TreeWidget;
@@ -44,8 +45,8 @@ private:
     void setup(TreeItem* item);
 
     struct Private {
-        TreeItem* item;
         TreeWidget* tree;
+        QPointer<TreeItem> item;
         QAction* disconnectAction;
         QAction* reconnectAction;
         QAction* editAction;
