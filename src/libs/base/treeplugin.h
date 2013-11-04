@@ -23,7 +23,8 @@ class TreePlugin
 {
 public:
     virtual ~TreePlugin() {}
-    virtual void initialize(TreeWidget* tree) = 0;
+    virtual void initialize(TreeWidget*) {}
+    virtual void uninitialize(TreeWidget*) {}
 };
 
 Q_DECLARE_INTERFACE(TreePlugin, "com.github.communi.TreePlugin")

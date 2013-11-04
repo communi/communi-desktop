@@ -23,7 +23,8 @@ class TopicPlugin
 {
 public:
     virtual ~TopicPlugin() {}
-    virtual void initialize(TopicLabel* label) = 0;
+    virtual void initialize(TopicLabel*) {}
+    virtual void uninitialize(TopicLabel*) {}
 };
 
 Q_DECLARE_INTERFACE(TopicPlugin, "com.github.communi.TopicPlugin")

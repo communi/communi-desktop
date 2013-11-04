@@ -23,7 +23,8 @@ class DocumentPlugin
 {
 public:
     virtual ~DocumentPlugin() {}
-    virtual void initialize(TextDocument* doc) = 0;
+    virtual void initialize(TextDocument*) {}
+    virtual void uninitialize(TextDocument*) {}
 };
 
 Q_DECLARE_INTERFACE(DocumentPlugin, "com.github.communi.DocumentPlugin")

@@ -23,7 +23,8 @@ class ViewPlugin
 {
 public:
     virtual ~ViewPlugin() {}
-    virtual void initialize(SplitView* view) = 0;
+    virtual void initialize(SplitView*) {}
+    virtual void uninitialize(SplitView*) {}
 };
 
 Q_DECLARE_INTERFACE(ViewPlugin, "com.github.communi.ViewPlugin")

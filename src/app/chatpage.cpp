@@ -67,6 +67,14 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 
 ChatPage::~ChatPage()
 {
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        TreePlugin* treePlugin = qobject_cast<TreePlugin*>(instance);
+        if (treePlugin)
+            treePlugin->uninitialize(d.treeWidget);
+        ViewPlugin* viewPlugin = qobject_cast<ViewPlugin*>(instance);
+        if (viewPlugin)
+            viewPlugin->uninitialize(d.splitView);
+    }
 }
 
 IrcBuffer* ChatPage::currentBuffer() const
@@ -129,6 +137,13 @@ void ChatPage::addBuffer(IrcBuffer* buffer)
 
 void ChatPage::removeBuffer(IrcBuffer* buffer)
 {
+    TextDocument* doc = buffer->property("document").value<TextDocument*>();
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        DocumentPlugin* plugin = qobject_cast<DocumentPlugin*>(instance);
+        if (plugin)
+            plugin->uninitialize(doc);
+    }
+
     d.treeWidget->removeBuffer(buffer);
 }
 
@@ -157,5 +172,18 @@ void ChatPage::addView(BufferView* view)
 
 void ChatPage::removeView(BufferView* view)
 {
-    // TODO
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        BrowserPlugin* browserPlugin = qobject_cast<BrowserPlugin*>(instance);
+        if (browserPlugin)
+            browserPlugin->uninitialize(view->textBrowser());
+        InputPlugin* inputPlugin = qobject_cast<InputPlugin*>(instance);
+        if (inputPlugin)
+            inputPlugin->uninitialize(view->textInput());
+        ListPlugin* listPlugin = qobject_cast<ListPlugin*>(instance);
+        if (listPlugin)
+            listPlugin->uninitialize(view->listView());
+        TopicPlugin* topicPlugin = qobject_cast<TopicPlugin*>(instance);
+        if (topicPlugin)
+            topicPlugin->uninitialize(view->topicLabel());
+    }
 }

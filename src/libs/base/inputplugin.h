@@ -23,7 +23,8 @@ class InputPlugin
 {
 public:
     virtual ~InputPlugin() {}
-    virtual void initialize(TextInput* input) = 0;
+    virtual void initialize(TextInput*) {}
+    virtual void uninitialize(TextInput*) {}
 };
 
 Q_DECLARE_INTERFACE(InputPlugin, "com.github.communi.InputPlugin")

@@ -23,7 +23,8 @@ class ListPlugin
 {
 public:
     virtual ~ListPlugin() {}
-    virtual void initialize(ListView* list) = 0;
+    virtual void initialize(ListView*) {}
+    virtual void uninitialize(ListView*) {}
 };
 
 Q_DECLARE_INTERFACE(ListPlugin, "com.github.communi.ListPlugin")

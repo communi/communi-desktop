@@ -23,7 +23,8 @@ class BrowserPlugin
 {
 public:
     virtual ~BrowserPlugin() {}
-    virtual void initialize(TextBrowser* browser) = 0;
+    virtual void initialize(TextBrowser*) {}
+    virtual void uninitialize(TextBrowser*) {}
 };
 
 Q_DECLARE_INTERFACE(BrowserPlugin, "com.github.communi.BrowserPlugin")
