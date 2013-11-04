@@ -38,6 +38,8 @@ QSize TreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelInd
 
 void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
+    int badge = 0;
+
     if (!index.parent().isValid()) {
         const bool selected = option.state & QStyle::State_Selected;
         const_cast<QStyleOptionViewItem&>(option).state &= ~(QStyle::State_Selected | QStyle::State_MouseOver);
@@ -60,9 +62,11 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         painter->setPen(option.palette.color(QPalette::Dark));
         painter->drawLines(lines);
         painter->setPen(oldPen);
+    } else if (index.column() == 1) {
+        badge = index.data(TreeRole::Badge).toInt();
     }
 
-    if (index.parent().isValid() && index.column() == 1) {
+    if (badge > 0) {
         QRect rect;
         rect.setWidth(option.rect.width() - 2);
         const int ascent = option.fontMetrics.ascent();
@@ -83,25 +87,22 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 
     QStyledItemDelegate::paint(painter, option, index);
 
-    if (index.parent().isValid() && index.column() == 1) {
-        int badge = index.data(TreeRole::Badge).toInt();
-        if (badge > 0) {
-            painter->save();
-            QFont font;
-            if (font.pointSize() != -1)
-                font.setPointSizeF(0.8 * font.pointSizeF());
-            painter->setFont(font);
+    if (badge > 0) {
+        painter->save();
+        QFont font;
+        if (font.pointSize() != -1)
+            font.setPointSizeF(0.8 * font.pointSizeF());
+        painter->setFont(font);
 
-            QString txt;
-            if (badge > 999)
-                txt = QLatin1String("...");
-            else
-                txt = QFontMetrics(font).elidedText(QString::number(badge), Qt::ElideRight, option.rect.width());
+        QString txt;
+        if (badge > 999)
+            txt = QLatin1String("...");
+        else
+            txt = QFontMetrics(font).elidedText(QString::number(badge), Qt::ElideRight, option.rect.width());
 
-            painter->setPen(option.palette.color(QPalette::ButtonText));
-            painter->drawText(option.rect, Qt::AlignCenter, txt);
-            painter->restore();
-        }
+        painter->setPen(option.palette.color(QPalette::ButtonText));
+        painter->drawText(option.rect, Qt::AlignCenter, txt);
+        painter->restore();
     }
 }
 
