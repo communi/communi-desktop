@@ -113,6 +113,10 @@ QVariant TreeItem::data(int column, int role) const
         return d.badge;
     case TreeRole::Highlight:
         return d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty());
+    case Qt::BackgroundRole:
+        if (column == 1 && d.blink && (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty())))
+            return QColor("#ff4040").lighter(125); // TODO
+        return QTreeWidgetItem::data(column, role);
     case Qt::ForegroundRole:
         if (!d.buffer->isActive())
             return treeWidget()->palette().color(QPalette::Disabled, QPalette::Text);

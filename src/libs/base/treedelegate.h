@@ -26,6 +26,9 @@ public:
 
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+
+protected:
+    void initStyleOption(QStyleOptionViewItem* option, const QModelIndex& index) const;
 };
 
 #endif // TREEDELEGATE_H

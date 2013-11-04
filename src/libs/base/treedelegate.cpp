@@ -62,23 +62,31 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         painter->setPen(oldPen);
     }
 
+    if (index.parent().isValid() && index.column() == 1) {
+        QRect rect;
+        rect.setWidth(option.rect.width() - 2);
+        const int ascent = option.fontMetrics.ascent();
+        rect.setHeight(ascent + qMax(option.rect.height() % 2, ascent % 2));
+        rect.moveCenter(option.rect.center());
+
+        QColor color = index.data(Qt::BackgroundRole).value<QColor>();
+        if (!color.isValid())
+            color = option.palette.color(QPalette::Button);
+
+        painter->save();
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(color);
+        painter->setRenderHint(QPainter::Antialiasing);
+        painter->drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
+        painter->restore();
+    }
+
     QStyledItemDelegate::paint(painter, option, index);
 
-    if (index.column() == 1) {
+    if (index.parent().isValid() && index.column() == 1) {
         int badge = index.data(TreeRole::Badge).toInt();
         if (badge > 0) {
-            QRect rect;
-            rect.setWidth(option.rect.width() - 2);
-            const int ascent = option.fontMetrics.ascent();
-            rect.setHeight(ascent + qMax(option.rect.height() % 2, ascent % 2));
-            rect.moveCenter(option.rect.center());
-
             painter->save();
-            painter->setPen(Qt::NoPen);
-            painter->setBrush(option.palette.color(QPalette::Button));
-            painter->setRenderHint(QPainter::Antialiasing);
-            painter->drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
-
             QFont font;
             if (font.pointSize() != -1)
                 font.setPointSizeF(0.8 * font.pointSizeF());
@@ -88,13 +96,21 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             if (badge > 999)
                 txt = QLatin1String("...");
             else
-                txt = option.fontMetrics.elidedText(QString::number(badge), Qt::ElideRight, option.rect.width());
+                txt = QFontMetrics(font).elidedText(QString::number(badge), Qt::ElideRight, option.rect.width());
 
-            QColor color = option.palette.color(QPalette::ButtonText);
-            color.setAlpha(128);
-            painter->setPen(color);
+            painter->setPen(option.palette.color(QPalette::ButtonText));
             painter->drawText(option.rect, Qt::AlignCenter, txt);
             painter->restore();
         }
+    }
+}
+
+void TreeDelegate::initStyleOption(QStyleOptionViewItem* option, const QModelIndex& index) const
+{
+    QStyledItemDelegate::initStyleOption(option, index);
+    if (index.parent().isValid() && index.column() == 1) {
+        QStyleOptionViewItemV4* v4 = qstyleoption_cast<QStyleOptionViewItemV4*>(option);
+        if (v4)
+            v4->backgroundBrush = Qt::transparent;
     }
 }
