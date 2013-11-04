@@ -20,6 +20,7 @@
 #include <IrcConnection>
 #include <IrcCommand>
 #include <IrcChannel>
+#include <QShortcut>
 
 TreeMenu::TreeMenu(TreeWidget* tree) : QMenu(tree)
 {
@@ -33,8 +34,17 @@ TreeMenu::TreeMenu(TreeWidget* tree) : QMenu(tree)
     d.joinAction = addAction(tr("Join"), this, SLOT(onJoinTriggered()));
     d.partAction = addAction(tr("Part"), this, SLOT(onPartTriggered()));
     addSeparator();
-    d.closeAction = addAction(tr("Close"), this, SLOT(onCloseTriggered()), QKeySequence::Close);
 
+    d.closeAction = new QAction(tr("Close"), tree);
+    d.closeAction->setShortcut(QKeySequence::Close);
+    connect(d.closeAction, SIGNAL(triggered()), this, SLOT(onCloseTriggered()));
+    addAction(d.closeAction);
+
+    // TODO: why the action shortcut above doesn't work?
+    QShortcut* shortcut = new QShortcut(QKeySequence::Close, tree);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(onCloseTriggered()));
+
+    connect(tree, SIGNAL(currentItemChanged(TreeItem*)), this, SLOT(setup(TreeItem*)));
     tree->installEventFilter(this);
 }
 
@@ -44,18 +54,13 @@ bool TreeMenu::eventFilter(QObject *object, QEvent *event)
     if (event->type() == QEvent::ContextMenu) {
         QContextMenuEvent* cme = static_cast<QContextMenuEvent*>(event);
         QTreeWidgetItem* item = d.tree->itemAt(cme->pos());
-        if (item)
-            exec(static_cast<TreeItem*>(item), cme->globalPos());
+        if (item) {
+            setup(static_cast<TreeItem*>(item));
+            exec(cme->globalPos());
+        }
         return true;
     }
     return false;
-}
-
-void TreeMenu::exec(TreeItem* item, const QPoint& pos)
-{
-    setup(item);
-    updateActions();
-    QMenu::exec(pos);
 }
 
 void TreeMenu::onEditTriggered()
@@ -115,6 +120,7 @@ void TreeMenu::updateActions()
     }
 
     d.closeAction->setVisible(d.item);
+    d.closeAction->setEnabled(d.item);
 }
 
 void TreeMenu::setup(TreeItem* item)
@@ -146,4 +152,5 @@ void TreeMenu::setup(TreeItem* item)
         }
         d.item = item;
     }
+    updateActions();
 }

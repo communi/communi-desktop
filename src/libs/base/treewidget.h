@@ -43,6 +43,7 @@ public slots:
 signals:
     void bufferAdded(IrcBuffer* buffer);
     void bufferRemoved(IrcBuffer* buffer);
+    void currentItemChanged(TreeItem* item);
     void currentBufferChanged(IrcBuffer* buffer);
 
 protected:

@@ -30,6 +30,7 @@ public slots:
     void setCurrentView(BufferView* view);
     void setCurrentBuffer(IrcBuffer* buffer);
 
+    void reset();
     void split(Qt::Orientation orientation);
     void split(BufferView* view, Qt::Orientation orientation = Qt::Vertical);
 

@@ -75,7 +75,6 @@ void BufferView::setBuffer(IrcBuffer* buffer)
 {
     if (d.buffer != buffer) {
         d.buffer = buffer;
-        d.textBrowser->setDocument(buffer->property("document").value<TextDocument*>());
 
         IrcChannel* channel = qobject_cast<IrcChannel*>(buffer);
         d.topicLabel->setChannel(channel);
@@ -84,8 +83,10 @@ void BufferView::setBuffer(IrcBuffer* buffer)
         d.listView->setVisible(channel);
 
         d.textInput->setBuffer(buffer);
-        if (buffer)
+        if (buffer) {
             d.textInput->setFocus();
+            d.textBrowser->setDocument(buffer->property("document").value<TextDocument*>());
+        }
 
         emit bufferChanged(buffer);
     }

@@ -95,9 +95,6 @@ MainWindow::MainWindow(QWidget* parent) : QStackedWidget(parent)
     shortcut = new QShortcut(QKeySequence::New, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(doConnect()));
 
-    shortcut = new QShortcut(QKeySequence::Close, this);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(closeBuffer()));
-
     restoreConnections();
 }
 
@@ -200,7 +197,6 @@ void MainWindow::onAccepted()
     connect(SystemNotifier::instance(), SIGNAL(offline()), connection, SLOT(quit()));
 
     d.chatPage->addConnection(connection);
-    setCurrentWidget(d.chatPage);
 }
 
 void MainWindow::onRejected()
@@ -208,33 +204,15 @@ void MainWindow::onRejected()
     setCurrentWidget(d.chatPage);
 }
 
-void MainWindow::closeBuffer()
-{
-    IrcBuffer* buffer = d.chatPage->currentBuffer();
-    IrcChannel* channel = qobject_cast<IrcChannel*>(buffer);
-    if (channel)
-        channel->part(tr("Communi %1").arg(IRC_VERSION_STR));
-    IrcBufferModel* model = buffer->model();
-
-    if (buffer == model->get(0)) {
-        IrcConnection* connection = buffer->connection();
-        connection->quit(tr("Communi %1").arg(IRC_VERSION_STR));
-        connection->close();
-        d.chatPage->removeConnection(connection);
-    } else {
-        delete buffer;
-    }
-
-    if (d.chatPage->connections().isEmpty())
-        setCurrentWidget(d.connectPage);
-}
-
 void MainWindow::setCurrentBuffer(IrcBuffer* buffer)
 {
-    if (buffer)
+    if (buffer) {
+        setCurrentWidget(d.chatPage);
         setWindowTitle(tr("%2 - Communi %1").arg(IRC_VERSION_STR).arg(buffer->title()));
-    else
+    } else {
+        setCurrentWidget(d.connectPage);
         setWindowTitle(tr("Communi %1").arg(IRC_VERSION_STR));
+    }
 }
 
 void MainWindow::onTrayIconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -267,7 +245,6 @@ void MainWindow::restoreConnections()
 
         connection->restoreState(state.toByteArray());
         d.chatPage->addConnection(connection);
-        setCurrentWidget(d.chatPage);
     }
 }
 

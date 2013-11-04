@@ -115,6 +115,7 @@ void TreeWidget::onItemCollapsed(QTreeWidgetItem* item)
 
 void TreeWidget::onCurrentItemChanged(QTreeWidgetItem* item)
 {
-    if (item)
-        emit currentBufferChanged(static_cast<TreeItem*>(item)->buffer());
+    TreeItem* ti = static_cast<TreeItem*>(item);
+    emit currentItemChanged(ti);
+    emit currentBufferChanged(ti ? ti->buffer() : 0);
 }

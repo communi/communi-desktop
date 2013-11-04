@@ -126,6 +126,9 @@ void ChatPage::removeConnection(IrcConnection* connection)
         connection->close();
     }
     connection->deleteLater();
+
+    if (d.connections.isEmpty())
+        d.splitView->reset();
 }
 
 void ChatPage::addBuffer(IrcBuffer* buffer)

@@ -42,7 +42,6 @@ private slots:
     void doConnect();
     void onAccepted();
     void onRejected();
-    void closeBuffer();
     void setCurrentBuffer(IrcBuffer* buffer);
     void onTrayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void restoreConnections();

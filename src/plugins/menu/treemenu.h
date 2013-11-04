@@ -30,9 +30,6 @@ public:
 
     bool eventFilter(QObject *object, QEvent *event);
 
-public slots:
-    void exec(TreeItem* item, const QPoint& pos);
-
 private slots:
     void onEditTriggered();
     void onWhoisTriggered();
@@ -41,9 +38,10 @@ private slots:
     void onCloseTriggered();
     void updateActions();
 
-private:
+private slots:
     void setup(TreeItem* item);
 
+private:
     struct Private {
         TreeWidget* tree;
         QPointer<TreeItem> item;

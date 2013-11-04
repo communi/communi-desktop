@@ -45,9 +45,17 @@ void SplitView::setCurrentView(BufferView *view)
 void SplitView::setCurrentBuffer(IrcBuffer* buffer)
 {
     if (d.current) {
-        connect(buffer, SIGNAL(destroyed(IrcBuffer*)), this, SLOT(onBufferRemoved(IrcBuffer*)), Qt::UniqueConnection);
+        if (buffer)
+            connect(buffer, SIGNAL(destroyed(IrcBuffer*)), this, SLOT(onBufferRemoved(IrcBuffer*)), Qt::UniqueConnection);
         d.current->setBuffer(buffer);
     }
+}
+
+void SplitView::reset()
+{
+    qDeleteAll(d.views);
+    d.views.clear();
+    d.current = createBufferView(this);
 }
 
 void SplitView::split(Qt::Orientation orientation)
