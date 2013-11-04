@@ -26,6 +26,7 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     setHeaderHidden(true);
     setRootIsDecorated(false);
     setUniformRowHeights(true);
+    setFocusPolicy(Qt::NoFocus);
     setFrameStyle(QFrame::NoFrame);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
