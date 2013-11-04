@@ -28,7 +28,7 @@ public:
 
 private slots:
     void tryComplete();
-    void complete(const QString& text, int cursor);
+    void doComplete(const QString& text, int cursor);
 
 private:
     struct Private {

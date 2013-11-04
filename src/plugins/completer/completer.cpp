@@ -27,6 +27,7 @@ Completer::Completer(TextInput* input) : IrcCompleter(input)
 
     QShortcut* shortcut = new QShortcut(Qt::Key_Tab, input);
     connect(shortcut, SIGNAL(activated()), this, SLOT(tryComplete()));
+    connect(this, SIGNAL(completed(QString,int)), this, SLOT(doComplete(QString,int)));
 }
 
 void Completer::tryComplete()
@@ -34,7 +35,7 @@ void Completer::tryComplete()
     complete(d.input->text(), d.input->cursorPosition());
 }
 
-void Completer::complete(const QString& text, int cursor)
+void Completer::doComplete(const QString& text, int cursor)
 {
     d.input->setText(text);
     d.input->setCursorPosition(cursor);
