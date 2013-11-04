@@ -27,7 +27,9 @@ class HighlighterPlugin : public QObject, public TreePlugin
 {
     Q_OBJECT
     Q_INTERFACES(TreePlugin)
+#if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
+#endif
 
 public:
     HighlighterPlugin(QObject* parent = 0);

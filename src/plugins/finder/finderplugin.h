@@ -24,8 +24,10 @@ class FinderPlugin : public QObject, public TreePlugin, public BrowserPlugin
 {
     Q_OBJECT
     Q_INTERFACES(TreePlugin BrowserPlugin)
+#if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
     Q_PLUGIN_METADATA(IID "com.github.communi.BrowserPlugin")
+#endif
 
 public:
     explicit FinderPlugin(QObject* parent = 0);

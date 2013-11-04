@@ -22,7 +22,9 @@ class SubjectPlugin : public QObject, public TopicPlugin
 {
     Q_OBJECT
     Q_INTERFACES(TopicPlugin)
+#if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "com.github.communi.TopicPlugin")
+#endif
 
 public:
     SubjectPlugin(QObject* parent = 0);

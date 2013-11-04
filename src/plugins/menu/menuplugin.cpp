@@ -41,3 +41,7 @@ void MenuPlugin::initialize(SplitView *view)
 {
     d.view = view;
 }
+
+#if QT_VERSION < 0x050000
+Q_EXPORT_STATIC_PLUGIN(MenuPlugin)
+#endif

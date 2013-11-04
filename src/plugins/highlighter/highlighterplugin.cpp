@@ -103,3 +103,7 @@ void HighlighterPlugin::resetItems()
         ++it;
     }
 }
+
+#if QT_VERSION < 0x050000
+Q_EXPORT_STATIC_PLUGIN(HighlighterPlugin)
+#endif

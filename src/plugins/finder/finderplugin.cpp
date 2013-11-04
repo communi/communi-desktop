@@ -29,3 +29,7 @@ void FinderPlugin::initialize(TextBrowser* browser)
 {
     new SearchInput(browser);
 }
+
+#if QT_VERSION < 0x050000
+Q_EXPORT_STATIC_PLUGIN(FinderPlugin)
+#endif

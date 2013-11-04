@@ -26,10 +26,12 @@ class MenuPlugin : public QObject, public TreePlugin, public ListPlugin, public 
 {
     Q_OBJECT
     Q_INTERFACES(TreePlugin ListPlugin BrowserPlugin ViewPlugin)
+#if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
     Q_PLUGIN_METADATA(IID "com.github.communi.ListPlugin")
     Q_PLUGIN_METADATA(IID "com.github.communi.BrowserPlugin")
     Q_PLUGIN_METADATA(IID "com.github.communi.ViewPlugin")
+#endif
 
 public:
     MenuPlugin(QObject* parent = 0);

@@ -22,7 +22,9 @@ class CompleterPlugin : public QObject, public InputPlugin
 {
     Q_OBJECT
     Q_INTERFACES(InputPlugin)
+#if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "com.github.communi.InputPlugin")
+#endif
 
 public:
     CompleterPlugin(QObject* parent = 0);

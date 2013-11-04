@@ -23,3 +23,7 @@ void SubjectPlugin::initialize(TopicLabel* label)
 {
     new Editor(label);
 }
+
+#if QT_VERSION < 0x050000
+Q_EXPORT_STATIC_PLUGIN(SubjectPlugin)
+#endif
