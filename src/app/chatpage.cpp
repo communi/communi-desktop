@@ -14,6 +14,7 @@
 #include "bufferview.h"
 #include "textinput.h"
 #include "splitview.h"
+#include <QCoreApplication>
 #include <IrcBufferModel>
 #include <IrcConnection>
 #include <IrcBuffer>
@@ -113,12 +114,18 @@ void ChatPage::addConnection(IrcConnection* connection)
 void ChatPage::removeConnection(IrcConnection* connection)
 {
     IrcBufferModel* bufferModel = connection->findChild<IrcBufferModel*>();
-
     disconnect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(addBuffer(IrcBuffer*)));
     disconnect(bufferModel, SIGNAL(removed(IrcBuffer*)), this, SLOT(removeBuffer(IrcBuffer*)));
-
-    removeBuffer(bufferModel->get(0));
     d.connections.removeOne(connection);
+
+    if (connection->isActive()) {
+        QString reason = tr("%1 %2 - http://%3").arg(QCoreApplication::applicationName())
+                                                .arg(QCoreApplication::applicationVersion())
+                                                .arg(QCoreApplication::organizationDomain());
+        connection->quit(reason);
+        connection->close();
+    }
+    connection->deleteLater();
 }
 
 void ChatPage::addBuffer(IrcBuffer* buffer)
@@ -137,6 +144,9 @@ void ChatPage::addBuffer(IrcBuffer* buffer)
 
 void ChatPage::removeBuffer(IrcBuffer* buffer)
 {
+    if (buffer->isSticky())
+        removeConnection(buffer->connection());
+
     TextDocument* doc = buffer->property("document").value<TextDocument*>();
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         DocumentPlugin* plugin = qobject_cast<DocumentPlugin*>(instance);

@@ -127,7 +127,10 @@ void MainWindow::closeEvent(QCloseEvent* event)
         saveConnections();
         QList<IrcConnection*> connections = d.chatPage->connections();
         foreach (IrcConnection* connection, connections) {
-            connection->quit(tr("Communi %1").arg(IRC_VERSION_STR));
+            QString reason = tr("%1 %2 - http://%3").arg(QCoreApplication::applicationName())
+                                                    .arg(QCoreApplication::applicationVersion())
+                                                    .arg(QCoreApplication::organizationDomain());
+            connection->quit(reason);
             connection->close();
         }
 
