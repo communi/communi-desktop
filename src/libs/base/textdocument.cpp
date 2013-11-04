@@ -26,6 +26,8 @@ static int delay = 1000;
 
 TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
 {
+    qRegisterMetaType<TextDocument*>();
+
     d.note = -1;
     d.dirty = -1;
     d.buffer = buffer;

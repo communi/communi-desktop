@@ -17,6 +17,7 @@
 
 #include <QTextDocument>
 #include <QStringList>
+#include <QMetaType>
 #include <QSet>
 
 class IrcBuffer;
@@ -76,5 +77,7 @@ private:
         QSet<TextBrowser*> browsers;
     } d;
 };
+
+Q_DECLARE_METATYPE(TextDocument*)
 
 #endif // TEXTDOCUMENT_H
