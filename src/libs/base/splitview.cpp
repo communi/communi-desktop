@@ -10,6 +10,7 @@
 #include "splitview.h"
 #include "bufferview.h"
 #include <QApplication>
+#include <IrcBuffer>
 
 SplitView::SplitView(QWidget* parent) : QSplitter(parent)
 {
@@ -43,8 +44,10 @@ void SplitView::setCurrentView(BufferView *view)
 
 void SplitView::setCurrentBuffer(IrcBuffer* buffer)
 {
-    if (d.current)
+    if (d.current) {
+        connect(buffer, SIGNAL(destroyed(IrcBuffer*)), this, SLOT(onBufferRemoved(IrcBuffer*)), Qt::UniqueConnection);
         d.current->setBuffer(buffer);
+    }
 }
 
 void SplitView::split(Qt::Orientation orientation)
@@ -98,6 +101,14 @@ void SplitView::onViewRemoved(BufferView* view)
 {
     d.views.removeOne(view);
     emit viewRemoved(view);
+}
+
+void SplitView::onBufferRemoved(IrcBuffer* buffer)
+{
+    foreach (BufferView* view, d.views) {
+        if (view->buffer() == buffer)
+            view->setBuffer(d.current->buffer());
+    }
 }
 
 void SplitView::onFocusChanged(QWidget*, QWidget* widget)

@@ -44,6 +44,7 @@ protected:
 
 private slots:
     void onViewRemoved(BufferView* view);
+    void onBufferRemoved(IrcBuffer* buffer);
     void onFocusChanged(QWidget* old, QWidget* now);
 
 private:
