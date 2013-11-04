@@ -15,6 +15,7 @@
 #include "highlighterplugin.h"
 #include "treewidget.h"
 #include "treeitem.h"
+#include <IrcConnection>
 #include <IrcMessage>
 #include <IrcBuffer>
 #include <QTimer>
@@ -75,8 +76,13 @@ void HighlighterPlugin::onMessageReceived(IrcMessage* message)
 {
     IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
     TreeItem* item = d.tree->bufferItem(buffer);
-    if (item && item != d.tree->currentItem())
-        item->setBadge(item->badge() + 1);
+    if (item && item != d.tree->currentItem()) {
+        if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
+            item->setBadge(item->badge() + 1);
+            if (message->property("content").toString().contains(message->connection()->nickName()))
+                item->setHighlighted(true);
+        }
+    }
 }
 
 void HighlighterPlugin::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
