@@ -16,6 +16,7 @@
 #include "treewidget.h"
 #include "treeitem.h"
 #include <QContextMenuEvent>
+#include <QCoreApplication>
 #include <IrcConnection>
 #include <IrcCommand>
 #include <IrcChannel>
@@ -76,12 +77,18 @@ void TreeMenu::onJoinTriggered()
 
 void TreeMenu::onPartTriggered()
 {
-    IrcCommand* command = IrcCommand::createPart(d.item->text(0));
-    d.item->connection()->sendCommand(command);
+    IrcChannel* channel = d.item->buffer()->toChannel();
+    if (channel) {
+        QString reason = tr("%1 %2 - http://%3").arg(QCoreApplication::applicationName())
+                                                .arg(QCoreApplication::applicationVersion())
+                                                .arg(QCoreApplication::organizationDomain());
+        channel->part(reason);
+    }
 }
 
 void TreeMenu::onCloseTriggered()
 {
+    onPartTriggered();
     d.item->buffer()->deleteLater();
 }
 
