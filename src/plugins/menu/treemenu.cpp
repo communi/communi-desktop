@@ -28,7 +28,7 @@ TreeMenu::TreeMenu(TreeWidget* tree) : QMenu(tree)
     d.disconnectAction = addAction(tr("Disconnect"));
     d.reconnectAction = addAction(tr("Reconnect"));
     addSeparator();
-    d.editAction = addAction(tr("Edit"), this, SLOT(onEditTriggered()));
+    // TODO: d.editAction = addAction(tr("Edit"), this, SLOT(onEditTriggered()));
     d.whoisAction = addAction(tr("Whois"), this, SLOT(onWhoisTriggered()));
     d.joinAction = addAction(tr("Join"), this, SLOT(onJoinTriggered()));
     d.partAction = addAction(tr("Part"), this, SLOT(onPartTriggered()));
@@ -101,14 +101,14 @@ void TreeMenu::updateActions()
         const bool channel = d.item->buffer()->isChannel();
         d.disconnectAction->setVisible(connected);
         d.reconnectAction->setVisible(!connected);
-        d.editAction->setVisible(!connected && !child);
+        // TODO: d.editAction->setVisible(!connected && !child);
         d.joinAction->setVisible(connected && channel && !active);
         d.partAction->setVisible(connected && channel && active);
         d.whoisAction->setVisible(connected && child && !channel);
     } else {
         d.disconnectAction->setVisible(false);
         d.reconnectAction->setVisible(false);
-        d.editAction->setVisible(false);
+        // TODO: d.editAction->setVisible(false);
         d.whoisAction->setVisible(false);
         d.joinAction->setVisible(false);
         d.partAction->setVisible(false);
