@@ -16,6 +16,7 @@
 #include "textdocument.h"
 #include "treewidget.h"
 #include "treeitem.h"
+#include "delegate.h"
 #include <IrcConnection>
 #include <IrcMessage>
 #include <IrcBuffer>
@@ -32,6 +33,7 @@ HighlighterPlugin::HighlighterPlugin(QObject* parent) : QObject(parent)
 void HighlighterPlugin::initialize(TreeWidget* tree)
 {
     d.tree = tree;
+    d.tree->setItemDelegateForColumn(1, new Delegate(this));
 
     connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
     connect(tree, SIGNAL(bufferRemoved(IrcBuffer*)), this, SLOT(onBufferRemoved(IrcBuffer*)));

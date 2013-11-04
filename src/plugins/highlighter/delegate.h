@@ -12,20 +12,22 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TREEDELEGATE_H
-#define TREEDELEGATE_H
+#ifndef DELEGATE_H
+#define DELEGATE_H
 
-#include <QStyledItemDelegate>
+#include "treedelegate.h"
 
-class TreeDelegate : public QStyledItemDelegate
+class Delegate : public TreeDelegate
 {
     Q_OBJECT
 
 public:
-    explicit TreeDelegate(QObject* parent = 0);
+    explicit Delegate(QObject* parent = 0);
 
-    QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+
+protected:
+    void initStyleOption(QStyleOptionViewItem* option, const QModelIndex& index) const;
 };
 
-#endif // TREEDELEGATE_H
+#endif // DELEGATE_H
