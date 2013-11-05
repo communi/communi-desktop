@@ -15,3 +15,4 @@ SUBDIRS += navigator
 SUBDIRS += sound
 SUBDIRS += subject
 SUBDIRS += tray
+SUBDIRS += znc

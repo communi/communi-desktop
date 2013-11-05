@@ -42,6 +42,7 @@ Q_IMPORT_PLUGIN(NavigatorPlugin)
 Q_IMPORT_PLUGIN(SoundPlugin)
 Q_IMPORT_PLUGIN(SubjectPlugin)
 Q_IMPORT_PLUGIN(TrayPlugin)
+Q_IMPORT_PLUGIN(ZncPlugin)
 
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 {
