@@ -17,7 +17,6 @@ class ChatPage;
 class IrcBuffer;
 class IrcMessage;
 class IrcSession;
-class QtDockTile;
 class ConnectPage;
 class SoundNotification;
 
@@ -47,7 +46,6 @@ private:
         QIcon normalIcon;
         QIcon alertIcon;
         ChatPage* chatPage;
-        QtDockTile* dockTile;
         ConnectPage* connectPage;
         SoundNotification* sound;
     } d;

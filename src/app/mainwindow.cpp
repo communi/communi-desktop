@@ -12,7 +12,6 @@
 #include "soundnotification.h"
 #include "systemnotifier.h"
 #include "sharedtimer.h"
-#include "qtdocktile.h"
 #include "chatpage.h"
 #include <QDesktopServices>
 #include <IrcBufferModel>
@@ -60,10 +59,6 @@ MainWindow::MainWindow(QWidget* parent) : QStackedWidget(parent)
     d.chatPage = new ChatPage(this);
     connect(d.chatPage, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(setCurrentBuffer(IrcBuffer*)));
     addWidget(d.chatPage);
-
-    d.dockTile = 0;
-    if (QtDockTile::isAvailable())
-        d.dockTile = new QtDockTile(this);
 
     d.sound = 0;
     if (SoundNotification::isAvailable()) {

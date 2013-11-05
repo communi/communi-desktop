@@ -5,6 +5,7 @@
 TEMPLATE = subdirs
 SUBDIRS += badge
 SUBDIRS += completer
+SUBDIRS += dock
 SUBDIRS += finder
 SUBDIRS += highlighter
 SUBDIRS += history
