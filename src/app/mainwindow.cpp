@@ -9,7 +9,6 @@
 
 #include "mainwindow.h"
 #include "connectpage.h"
-#include "soundnotification.h"
 #include "systemnotifier.h"
 #include "sharedtimer.h"
 #include "chatpage.h"
@@ -59,19 +58,6 @@ MainWindow::MainWindow(QWidget* parent) : QStackedWidget(parent)
     d.chatPage = new ChatPage(this);
     connect(d.chatPage, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(setCurrentBuffer(IrcBuffer*)));
     addWidget(d.chatPage);
-
-    d.sound = 0;
-    if (SoundNotification::isAvailable()) {
-        d.sound = new SoundNotification(this);
-
-        QDir dataDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
-        if (dataDir.exists() || dataDir.mkpath(".")) {
-            QString filePath = dataDir.filePath("notify.mp3");
-            if (!QFile::exists(filePath))
-                QFile::copy(":/notify.mp3", filePath);
-            d.sound->setFilePath(filePath);
-        }
-    }
 
     setCurrentBuffer(0);
 

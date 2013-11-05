@@ -11,5 +11,6 @@ SUBDIRS += highlighter
 SUBDIRS += history
 SUBDIRS += menu
 SUBDIRS += navigator
+SUBDIRS += sound
 SUBDIRS += subject
 SUBDIRS += tray

@@ -18,7 +18,6 @@ class IrcBuffer;
 class IrcMessage;
 class IrcSession;
 class ConnectPage;
-class SoundNotification;
 
 class MainWindow : public QStackedWidget
 {
@@ -47,7 +46,6 @@ private:
         QIcon alertIcon;
         ChatPage* chatPage;
         ConnectPage* connectPage;
-        SoundNotification* sound;
     } d;
 };
 
