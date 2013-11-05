@@ -16,6 +16,7 @@
 #include "textdocument.h"
 #include "treewidget.h"
 #include "treeitem.h"
+#include "treerole.h"
 #include <IrcConnection>
 #include <IrcMessage>
 #include <IrcBuffer>
@@ -62,7 +63,7 @@ void HighlighterPlugin::onMessageReceived(IrcMessage* message)
         if (message->property("content").toString().contains(message->connection()->nickName())) {
             TreeItem* item = d.tree->bufferItem(buffer);
             if (item && item != d.tree->currentItem())
-                item->setHighlighted(true);
+                highlightItem(item, true);
 
             TextDocument* document = buffer->property("document").value<TextDocument*>();
             document->addHighlight(document->totalCount() - 2); // TODO: -2??
@@ -82,21 +83,21 @@ void HighlighterPlugin::onItemCollapsed(QTreeWidgetItem* item)
 
 void HighlighterPlugin::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
-    resetItem(previous);
-    resetItem(current);
+    highlightItem(previous, false);
+    highlightItem(current, false);
 }
 
-void HighlighterPlugin::resetItem(QTreeWidgetItem* item)
+void HighlighterPlugin::highlightItem(QTreeWidgetItem* item, bool highlight)
 {
     if (item)
-        static_cast<TreeItem*>(item)->setHighlighted(false);
+        item->setData(0, Qt::ForegroundRole, highlight ? QColor("#ff4040") : QVariant());
 }
 
 void HighlighterPlugin::resetItems()
 {
     QTreeWidgetItemIterator it(d.tree);
     while (*it) {
-        resetItem(*it);
+        highlightItem(*it, false);
         ++it;
     }
 }

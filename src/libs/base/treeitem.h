@@ -39,28 +39,21 @@ public:
     TreeItem* parentItem() const;
     TreeWidget* treeWidget() const;
 
-    bool isHighlighted() const;
-    void setHighlighted(bool highlighted);
-
     QVariant data(int column, int role) const;
 
     bool operator<(const QTreeWidgetItem& other) const;
 
 public slots:
     void refresh();
-    void blink();
 
-protected slots:
-    void removeChild(TreeItem* child);
+signals:
+    void destroyed(TreeItem* item);
 
 private:
     void init(IrcBuffer* buffer);
 
     struct Private {
-        bool blink;
-        bool highlighted;
         IrcBuffer* buffer;
-        QSet<TreeItem*> highlightedChildren;
     } d;
 };
 

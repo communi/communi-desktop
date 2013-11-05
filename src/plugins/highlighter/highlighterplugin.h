@@ -43,7 +43,7 @@ private slots:
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
-    void resetItem(QTreeWidgetItem* item);
+    void highlightItem(QTreeWidgetItem* item, bool highlight);
     void resetItems();
 
 private:

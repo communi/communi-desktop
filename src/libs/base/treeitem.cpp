@@ -13,9 +13,7 @@
 */
 
 #include "treeitem.h"
-#include "treerole.h"
 #include "treewidget.h"
-#include "sharedtimer.h"
 #include <IrcBufferModel>
 #include <IrcBuffer>
 
@@ -31,9 +29,7 @@ TreeItem::TreeItem(IrcBuffer* buffer, TreeWidget* parent) : QTreeWidgetItem(pare
 
 void TreeItem::init(IrcBuffer* buffer)
 {
-    d.blink = false;
     d.buffer = buffer;
-    d.highlighted = false;
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
     connect(buffer, SIGNAL(destroyed()), this, SLOT(deleteLater()));
@@ -43,9 +39,7 @@ void TreeItem::init(IrcBuffer* buffer)
 
 TreeItem::~TreeItem()
 {
-    TreeItem* p = parentItem();
-    if (p)
-        p->removeChild(this);
+    emit destroyed(this);
 }
 
 IrcBuffer* TreeItem::buffer() const
@@ -68,51 +62,10 @@ TreeWidget* TreeItem::treeWidget() const
     return static_cast<TreeWidget*>(QTreeWidgetItem::treeWidget());
 }
 
-bool TreeItem::isHighlighted() const
-{
-    return d.highlighted;
-}
-
-void TreeItem::setHighlighted(bool highlighted)
-{
-    if (d.highlighted != highlighted) {
-        d.highlighted = highlighted;
-        if (TreeItem* p = parentItem()) {
-            if (highlighted)
-                p->d.highlightedChildren.insert(this);
-            else
-                p->d.highlightedChildren.remove(this);
-            if (!p->isExpanded())
-                p->emitDataChanged();
-        }
-        if (highlighted)
-            SharedTimer::instance()->registerReceiver(this, "blink");
-        else
-            SharedTimer::instance()->unregisterReceiver(this, "blink");
-        emitDataChanged();
-    }
-}
-
 QVariant TreeItem::data(int column, int role) const
 {
-    switch (role) {
-    case TreeRole::Highlight:
-        return d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty());
-    case Qt::BackgroundRole:
-        if (column == 1 && d.blink && d.highlighted)
-            return QColor("#ff4040").lighter(125); // TODO
-        break;
-    case Qt::ForegroundRole:
-        if (!d.buffer->isActive())
-            return treeWidget()->palette().color(QPalette::Disabled, QPalette::Text);
-        if (d.blink && (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty())))
-            return QColor("#ff4040"); // TODO
-        break;
-    default:
-        if (column == 0 && d.buffer)
-            return d.buffer->data(role);
-        break;
-    }
+    if (column == 0 && role == Qt::DisplayRole)
+        return d.buffer->data(role);
     return QTreeWidgetItem::data(column, role);
 }
 
@@ -136,22 +89,4 @@ bool TreeItem::operator<(const QTreeWidgetItem& other) const
 void TreeItem::refresh()
 {
     emitDataChanged();
-}
-
-void TreeItem::blink()
-{
-    d.blink = !d.blink;
-    emitDataChanged();
-    TreeItem* p = parentItem();
-    if (p && !p->isExpanded()) {
-        p->blink();
-        p->emitDataChanged();
-    }
-}
-
-void TreeItem::removeChild(TreeItem *child)
-{
-    const bool removed = d.highlightedChildren.remove(child);
-    if (removed && !isExpanded() && treeWidget())
-        emitDataChanged();
 }
