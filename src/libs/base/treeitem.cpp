@@ -68,16 +68,6 @@ TreeWidget* TreeItem::treeWidget() const
     return static_cast<TreeWidget*>(QTreeWidgetItem::treeWidget());
 }
 
-int TreeItem::badge() const
-{
-    return data(1, TreeRole::Badge).toInt();
-}
-
-void TreeItem::setBadge(int badge)
-{
-    setData(1, TreeRole::Badge, badge);
-}
-
 bool TreeItem::isHighlighted() const
 {
     return d.highlighted;

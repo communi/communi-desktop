@@ -16,6 +16,7 @@
 #include "badgedelegate.h"
 #include "treewidget.h"
 #include "treeitem.h"
+#include "treerole.h"
 #include <QHeaderView>
 #include <IrcMessage>
 #include <IrcBuffer>
@@ -58,7 +59,7 @@ void BadgePlugin::onMessageReceived(IrcMessage* message)
 
         TreeItem* item = d.tree->bufferItem(buffer);
         if (item && item != d.tree->currentItem())
-            item->setBadge(item->badge() + 1);
+            item->setData(1, TreeRole::Badge, item->data(1, TreeRole::Badge).toInt() + 1);
     }
 }
 

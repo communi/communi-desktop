@@ -39,9 +39,6 @@ public:
     TreeItem* parentItem() const;
     TreeWidget* treeWidget() const;
 
-    int badge() const;
-    void setBadge(int badge);
-
     bool isHighlighted() const;
     void setHighlighted(bool highlighted);
 
