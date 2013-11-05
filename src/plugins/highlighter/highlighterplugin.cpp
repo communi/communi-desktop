@@ -24,7 +24,6 @@
 
 HighlighterPlugin::HighlighterPlugin(QObject* parent) : QObject(parent)
 {
-    d.blocked = false;
     d.tree = 0;
     d.shortcut = 0;
 }
@@ -43,26 +42,6 @@ void HighlighterPlugin::initialize(TreeWidget* tree)
     d.shortcut = new QShortcut(tree);
     d.shortcut->setKey(QKeySequence(tr("Ctrl+R")));
     connect(d.shortcut, SIGNAL(activated()), this, SLOT(resetItems()));
-}
-
-bool HighlighterPlugin::eventFilter(QObject *object, QEvent* event)
-{
-    Q_UNUSED(object);
-    switch (event->type()) {
-    case QEvent::WindowActivate:
-        delayedReset(d.tree->currentItem());
-        break;
-    case QEvent::WindowBlocked:
-        d.blocked = true;
-        break;
-    case QEvent::WindowUnblocked:
-        d.blocked = false;
-        delayedReset(d.tree->currentItem());
-        break;
-    default:
-        break;
-    }
-    return false;
 }
 
 void HighlighterPlugin::onBufferAdded(IrcBuffer* buffer)
@@ -103,25 +82,21 @@ void HighlighterPlugin::onItemCollapsed(QTreeWidgetItem* item)
 
 void HighlighterPlugin::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
-    if (!d.blocked) {
-        if (previous)
-            static_cast<TreeItem*>(previous)->setHighlighted(false);
-    }
-    if (current)
-        delayedReset(current);
+    resetItem(previous);
+    resetItem(current);
 }
 
-void HighlighterPlugin::delayedReset(QTreeWidgetItem* item)
+void HighlighterPlugin::resetItem(QTreeWidgetItem* item)
 {
     if (item)
-        QTimer::singleShot(500, static_cast<TreeItem*>(item), SLOT(reset()));
+        static_cast<TreeItem*>(item)->setHighlighted(false);
 }
 
 void HighlighterPlugin::resetItems()
 {
     QTreeWidgetItemIterator it(d.tree);
     while (*it) {
-        static_cast<TreeItem*>(*it)->setHighlighted(false);
+        resetItem(*it);
         ++it;
     }
 }

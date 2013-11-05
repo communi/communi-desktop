@@ -36,8 +36,6 @@ public:
 
     void initialize(TreeWidget* tree);
 
-    bool eventFilter(QObject *object, QEvent *event);
-
 private slots:
     void onBufferAdded(IrcBuffer* buffer);
     void onBufferRemoved(IrcBuffer* buffer);
@@ -45,16 +43,14 @@ private slots:
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
-    void delayedReset(QTreeWidgetItem* item);
+    void resetItem(QTreeWidgetItem* item);
     void resetItems();
 
 private:
     struct Private {
-        bool blocked;
         TreeWidget* tree;
         QShortcut* shortcut;
     } d;
-    friend class TreeItem;
 };
 
 #endif // HIGHLIGHTERPLUGIN_H
