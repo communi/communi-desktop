@@ -66,6 +66,7 @@ void TreeWidget::addBuffer(IrcBuffer* buffer)
         IrcConnection* connection = buffer->connection();
         d.connectionItems.insert(connection, item);
         d.connections.append(connection);
+        emit connectionAdded(connection);
     } else {
         TreeItem* parent = d.connectionItems.value(buffer->connection());
         item = new TreeItem(buffer, parent);
@@ -80,6 +81,7 @@ void TreeWidget::removeBuffer(IrcBuffer* buffer)
         IrcConnection* connection = buffer->connection();
         d.connectionItems.remove(connection);
         d.connections.removeOne(connection);
+        emit connectionRemoved(connection);
     }
     emit bufferRemoved(buffer);
     delete d.bufferItems.take(buffer);

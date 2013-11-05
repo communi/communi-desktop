@@ -43,6 +43,8 @@ public slots:
 signals:
     void bufferAdded(IrcBuffer* buffer);
     void bufferRemoved(IrcBuffer* buffer);
+    void connectionAdded(IrcConnection* connection);
+    void connectionRemoved(IrcConnection* connection);
     void currentItemChanged(TreeItem* item);
     void currentBufferChanged(IrcBuffer* buffer);
 
