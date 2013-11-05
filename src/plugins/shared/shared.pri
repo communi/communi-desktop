@@ -2,8 +2,7 @@
 # Communi
 ######################################################################
 
-HEADERS += $$PWD/navigatorplugin.h
-SOURCES += $$PWD/navigatorplugin.cpp
+DEPENDPATH += $$PWD
+INCLUDEPATH += $$PWD
 
-include(../plugin.pri)
-include(../shared/shared.pri)
+HEADERS += $$PWD/treerole.h

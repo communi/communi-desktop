@@ -13,7 +13,6 @@
 */
 
 #include "treedelegate.h"
-#include "treerole.h"
 #include <QStyleOptionViewItem>
 #include <QLineEdit>
 #include <QPalette>

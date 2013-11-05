@@ -30,7 +30,6 @@ HEADERS += $$PWD/topiclabel.h
 HEADERS += $$PWD/treedelegate.h
 HEADERS += $$PWD/treeitem.h
 HEADERS += $$PWD/treeplugin.h
-HEADERS += $$PWD/treerole.h
 HEADERS += $$PWD/treewidget.h
 HEADERS += $$PWD/viewplugin.h
 
