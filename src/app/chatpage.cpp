@@ -29,6 +29,7 @@
 #include "treeplugin.h"
 #include "viewplugin.h"
 
+Q_IMPORT_PLUGIN(BadgePlugin)
 Q_IMPORT_PLUGIN(CompleterPlugin)
 Q_IMPORT_PLUGIN(FinderPlugin)
 Q_IMPORT_PLUGIN(HighlighterPlugin)

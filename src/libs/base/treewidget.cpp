@@ -21,7 +21,7 @@
 TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
     setAnimated(true);
-    setColumnCount(2);
+    setColumnCount(1);
     setIndentation(0);
     setHeaderHidden(true);
     setRootIsDecorated(false);
@@ -34,11 +34,6 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     sortByColumn(0, Qt::AscendingOrder);
 
     setItemDelegate(new TreeDelegate(this));
-
-    header()->setStretchLastSection(false);
-    header()->setResizeMode(0, QHeaderView::Stretch);
-    header()->setResizeMode(1, QHeaderView::Fixed);
-    header()->resizeSection(1, fontMetrics().width("999"));
 
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));

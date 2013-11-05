@@ -16,7 +16,6 @@
 #include "textdocument.h"
 #include "treewidget.h"
 #include "treeitem.h"
-#include "delegate.h"
 #include <IrcConnection>
 #include <IrcMessage>
 #include <IrcBuffer>
@@ -33,7 +32,6 @@ HighlighterPlugin::HighlighterPlugin(QObject* parent) : QObject(parent)
 void HighlighterPlugin::initialize(TreeWidget* tree)
 {
     d.tree = tree;
-    d.tree->setItemDelegateForColumn(1, new Delegate(this));
 
     connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
     connect(tree, SIGNAL(bufferRemoved(IrcBuffer*)), this, SLOT(onBufferRemoved(IrcBuffer*)));
@@ -82,16 +80,11 @@ void HighlighterPlugin::onMessageReceived(IrcMessage* message)
     if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
         IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
 
-        const bool highlight = message->property("content").toString().contains(message->connection()->nickName());
-
-        TreeItem* item = d.tree->bufferItem(buffer);
-        if (item && item != d.tree->currentItem()) {
-            item->setBadge(item->badge() + 1);
-            if (highlight)
+        if (message->property("content").toString().contains(message->connection()->nickName())) {
+            TreeItem* item = d.tree->bufferItem(buffer);
+            if (item && item != d.tree->currentItem())
                 item->setHighlighted(true);
-        }
 
-        if (highlight) {
             TextDocument* document = buffer->property("document").value<TextDocument*>();
             document->addHighlight(document->totalCount() - 2); // TODO: -2??
         }

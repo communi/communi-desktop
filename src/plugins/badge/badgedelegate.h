@@ -12,17 +12,17 @@
 * GNU General Public License for more details.
 */
 
-#ifndef DELEGATE_H
-#define DELEGATE_H
+#ifndef BADGEDELEGATE_H
+#define BADGEDELEGATE_H
 
 #include "treedelegate.h"
 
-class Delegate : public TreeDelegate
+class BadgeDelegate : public TreeDelegate
 {
     Q_OBJECT
 
 public:
-    explicit Delegate(QObject* parent = 0);
+    explicit BadgeDelegate(QObject* parent = 0);
 
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
@@ -30,4 +30,4 @@ protected:
     void initStyleOption(QStyleOptionViewItem* option, const QModelIndex& index) const;
 };
 
-#endif // DELEGATE_H
+#endif // BADGEDELEGATE_H

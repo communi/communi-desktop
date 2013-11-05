@@ -12,17 +12,17 @@
 * GNU General Public License for more details.
 */
 
-#include "delegate.h"
+#include "badgedelegate.h"
 #include "treerole.h"
 #include <QStyleOptionViewItem>
 #include <QPalette>
 #include <QPainter>
 
-Delegate::Delegate(QObject* parent) : TreeDelegate(parent)
+BadgeDelegate::BadgeDelegate(QObject* parent) : TreeDelegate(parent)
 {
 }
 
-void Delegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+void BadgeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     int badge = 0;
     if (index.parent().isValid())
@@ -68,7 +68,7 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem& option, cons
     }
 }
 
-void Delegate::initStyleOption(QStyleOptionViewItem* option, const QModelIndex& index) const
+void BadgeDelegate::initStyleOption(QStyleOptionViewItem* option, const QModelIndex& index) const
 {
     QStyledItemDelegate::initStyleOption(option, index);
     if (index.parent().isValid()) {

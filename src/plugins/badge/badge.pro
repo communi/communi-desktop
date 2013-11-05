@@ -2,7 +2,10 @@
 # Communi
 ######################################################################
 
-HEADERS += $$PWD/highlighterplugin.h
-SOURCES += $$PWD/highlighterplugin.cpp
+HEADERS += $$PWD/badgedelegate.h
+HEADERS += $$PWD/badgeplugin.h
+
+SOURCES += $$PWD/badgedelegate.cpp
+SOURCES += $$PWD/badgeplugin.cpp
 
 include(../plugin.pri)

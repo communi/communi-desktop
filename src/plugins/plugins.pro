@@ -3,4 +3,4 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS += completer finder highlighter history menu navigator subject
+SUBDIRS += badge completer finder highlighter history menu navigator subject
