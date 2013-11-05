@@ -81,8 +81,8 @@ void TreeWidget::removeBuffer(IrcBuffer* buffer)
         d.connectionItems.remove(connection);
         d.connections.removeOne(connection);
     }
-    delete d.bufferItems.take(buffer);
     emit bufferRemoved(buffer);
+    delete d.bufferItems.take(buffer);
 }
 
 void TreeWidget::setCurrentBuffer(IrcBuffer* buffer)

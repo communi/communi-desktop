@@ -14,6 +14,7 @@
 
 #include "highlighterplugin.h"
 #include "textdocument.h"
+#include "sharedtimer.h"
 #include "treewidget.h"
 #include "treeitem.h"
 #include "treerole.h"
@@ -27,6 +28,7 @@ HighlighterPlugin::HighlighterPlugin(QObject* parent) : QObject(parent)
 {
     d.tree = 0;
     d.shortcut = 0;
+    d.blink = false;
 }
 
 void HighlighterPlugin::initialize(TreeWidget* tree)
@@ -52,6 +54,7 @@ void HighlighterPlugin::onBufferAdded(IrcBuffer* buffer)
 
 void HighlighterPlugin::onBufferRemoved(IrcBuffer* buffer)
 {
+    d.items.remove(d.tree->bufferItem(buffer));
     disconnect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
 }
 
@@ -63,7 +66,7 @@ void HighlighterPlugin::onMessageReceived(IrcMessage* message)
         if (message->property("content").toString().contains(message->connection()->nickName())) {
             TreeItem* item = d.tree->bufferItem(buffer);
             if (item && item != d.tree->currentItem())
-                highlightItem(item, true);
+                highlightItem(item);
 
             TextDocument* document = buffer->property("document").value<TextDocument*>();
             document->addHighlight(document->totalCount() - 2); // TODO: -2??
@@ -83,23 +86,45 @@ void HighlighterPlugin::onItemCollapsed(QTreeWidgetItem* item)
 
 void HighlighterPlugin::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
-    highlightItem(previous, false);
-    highlightItem(current, false);
+    unhighlightItem(previous);
+    unhighlightItem(current);
 }
 
-void HighlighterPlugin::highlightItem(QTreeWidgetItem* item, bool highlight)
+void HighlighterPlugin::highlightItem(QTreeWidgetItem* item)
 {
-    if (item)
-        item->setData(0, Qt::ForegroundRole, highlight ? QColor("#ff4040") : QVariant());
+    if (d.items.isEmpty())
+        SharedTimer::instance()->registerReceiver(this, "blinkItems");
+    d.items.insert(item);
+    item->setData(0, TreeRole::Highlight, true);
+    item->setData(0, Qt::ForegroundRole, QColor("#ff4040")); // TODO
+}
+
+void HighlighterPlugin::unhighlightItem(QTreeWidgetItem* item)
+{
+    if (item) {
+        item->setData(0, TreeRole::Highlight, false);
+        item->setData(0, Qt::ForegroundRole, QVariant());
+
+        if (d.items.remove(item) && d.items.isEmpty())
+            SharedTimer::instance()->unregisterReceiver(this, "blinkItems");
+    }
 }
 
 void HighlighterPlugin::resetItems()
 {
-    QTreeWidgetItemIterator it(d.tree);
-    while (*it) {
-        highlightItem(*it, false);
-        ++it;
+    foreach (QTreeWidgetItem* item, d.items)
+        unhighlightItem(item);
+}
+
+void HighlighterPlugin::blinkItems()
+{
+    foreach (QTreeWidgetItem* item, d.items) {
+        item->setData(0, Qt::ForegroundRole, d.blink ? QColor("#ff4040") : QVariant()); // TODO
+        QTreeWidgetItem* p = item->parent();
+        if (p)
+            p->setData(0, Qt::ForegroundRole, d.blink && !p->isExpanded() ? QColor("#ff4040") : QVariant()); // TODO
     }
+    d.blink = !d.blink;
 }
 
 #if QT_VERSION < 0x050000

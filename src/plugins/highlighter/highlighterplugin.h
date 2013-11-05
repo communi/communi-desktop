@@ -15,6 +15,7 @@
 #ifndef HIGHLIGHTERPLUGIN_H
 #define HIGHLIGHTERPLUGIN_H
 
+#include <QSet>
 #include <QtPlugin>
 #include <QShortcut>
 #include <QTreeWidget>
@@ -43,13 +44,17 @@ private slots:
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
-    void highlightItem(QTreeWidgetItem* item, bool highlight);
+    void highlightItem(QTreeWidgetItem* item);
+    void unhighlightItem(QTreeWidgetItem* item);
     void resetItems();
+    void blinkItems();
 
 private:
     struct Private {
+        bool blink;
         TreeWidget* tree;
         QShortcut* shortcut;
+        QSet<QTreeWidgetItem*> items;
     } d;
 };
 
