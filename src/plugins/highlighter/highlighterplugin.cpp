@@ -92,21 +92,25 @@ void HighlighterPlugin::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidg
 
 void HighlighterPlugin::highlightItem(QTreeWidgetItem* item)
 {
-    if (d.items.isEmpty())
-        SharedTimer::instance()->registerReceiver(this, "blinkItems");
-    d.items.insert(item);
-    item->setData(0, TreeRole::Highlight, true);
-    item->setData(0, Qt::ForegroundRole, QColor("#ff4040")); // TODO
+    if (item && !d.items.contains(item)) {
+        if (d.items.isEmpty())
+            SharedTimer::instance()->registerReceiver(this, "blinkItems");
+        d.items.insert(item);
+        item->setData(0, TreeRole::Highlight, true);
+        item->setData(0, Qt::ForegroundRole, QColor("#ff4040")); // TODO
+        item->setData(1, Qt::BackgroundRole, QColor("#ff4040").lighter(125)); // TODO
+    }
 }
 
 void HighlighterPlugin::unhighlightItem(QTreeWidgetItem* item)
 {
-    if (item) {
+    if (item && d.items.contains(item)) {
+        d.items.remove(item);
+        if (d.items.isEmpty())
+            SharedTimer::instance()->unregisterReceiver(this, "blinkItems");
         item->setData(0, TreeRole::Highlight, false);
         item->setData(0, Qt::ForegroundRole, QVariant());
-
-        if (d.items.remove(item) && d.items.isEmpty())
-            SharedTimer::instance()->unregisterReceiver(this, "blinkItems");
+        item->setData(1, Qt::BackgroundRole, QVariant());
     }
 }
 
@@ -120,6 +124,7 @@ void HighlighterPlugin::blinkItems()
 {
     foreach (QTreeWidgetItem* item, d.items) {
         item->setData(0, Qt::ForegroundRole, d.blink ? QColor("#ff4040") : QVariant()); // TODO
+        item->setData(1, Qt::BackgroundRole, d.blink ? QColor("#ff4040").lighter(125) : QVariant()); // TODO
         QTreeWidgetItem* p = item->parent();
         if (p)
             p->setData(0, Qt::ForegroundRole, d.blink && !p->isExpanded() ? QColor("#ff4040") : QVariant()); // TODO
