@@ -3,4 +3,12 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS += badge completer finder highlighter history menu navigator subject tray
+SUBDIRS += badge
+SUBDIRS += completer
+SUBDIRS += finder
+SUBDIRS += highlighter
+SUBDIRS += history
+SUBDIRS += menu
+SUBDIRS += navigator
+SUBDIRS += subject
+SUBDIRS += tray
