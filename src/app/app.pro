@@ -39,7 +39,6 @@ SOURCES += $$PWD/connectpage.cpp
 SOURCES += $$PWD/main.cpp
 SOURCES += $$PWD/mainwindow.cpp
 
-include(util/util.pri)
 include(../config.pri)
 include(../libs/base/base.pri)
 include(../libs/util/util.pri)
@@ -47,7 +46,7 @@ include(../libs/backend/backend.pri)
 include(../libs/3rdparty/3rdparty.pri)
 include(../../resources/resources.pri)
 
-STATIC_PLUGINS = badge completer dock finder highlighter history menu monitor navigator sound subject tray znc
+STATIC_PLUGINS = badge completer dock finder highlighter history ignore menu monitor navigator sound subject tray znc
 for(PLUGIN, STATIC_PLUGINS) {
     LIBS *= -L$$BUILD_ROOT/plugins
     LIBS += -l$${PLUGIN}plugin
