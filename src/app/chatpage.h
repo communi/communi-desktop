@@ -17,6 +17,7 @@ class SplitView;
 class TreeWidget;
 class BufferView;
 class IrcConnection;
+class IrcCommandParser;
 
 class ChatPage : public QSplitter
 {
@@ -42,6 +43,8 @@ private slots:
     void removeView(BufferView* view);
 
 private:
+    static IrcCommandParser* createParser(QObject* parent);
+
     struct Private {
         SplitView* splitView;
         TreeWidget* treeWidget;

@@ -10,11 +10,11 @@
 #include "chatpage.h"
 #include "treewidget.h"
 #include "textdocument.h"
-#include "commandparser.h"
 #include "bufferview.h"
 #include "textinput.h"
 #include "splitview.h"
 #include <QCoreApplication>
+#include <IrcCommandParser>
 #include <IrcBufferModel>
 #include <IrcConnection>
 #include <IrcBuffer>
@@ -175,10 +175,7 @@ void ChatPage::removeBuffer(IrcBuffer* buffer)
 
 void ChatPage::addView(BufferView* view)
 {
-    CommandParser* parser = new CommandParser(view);
-    parser->setTriggers(QStringList("/"));
-    parser->setTolerant(true);
-    view->textInput()->setParser(parser);
+    view->textInput()->setParser(createParser(view));
 
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         BrowserPlugin* browserPlugin = qobject_cast<BrowserPlugin*>(instance);
@@ -212,4 +209,46 @@ void ChatPage::removeView(BufferView* view)
         if (topicPlugin)
             topicPlugin->uninitialize(view->topicLabel());
     }
+}
+
+IrcCommandParser* ChatPage::createParser(QObject *parent)
+{
+    IrcCommandParser* parser = new IrcCommandParser(parent);
+    parser->setTriggers(QStringList("/"));
+    parser->setTolerant(true);
+
+    parser->addCommand(IrcCommand::CtcpAction, "ACTION <target> <message...>");
+    parser->addCommand(IrcCommand::Admin, "ADMIN (<server>)");
+    parser->addCommand(IrcCommand::Away, "AWAY (<reason...>)");
+    parser->addCommand(IrcCommand::Info, "INFO (<server>)");
+    parser->addCommand(IrcCommand::Invite, "INVITE <user> (<#channel>)");
+    parser->addCommand(IrcCommand::Join, "JOIN <#channel> (<key>)");
+    parser->addCommand(IrcCommand::Kick, "KICK (<#channel>) <user> (<reason...>)");
+    parser->addCommand(IrcCommand::Knock, "KNOCK <#channel> (<message...>)");
+    parser->addCommand(IrcCommand::List, "LIST (<channels>) (<server>)");
+    parser->addCommand(IrcCommand::CtcpAction, "ME [target] <message...>");
+    parser->addCommand(IrcCommand::Mode, "MODE (<channel/user>) (<mode>) (<arg>)");
+    parser->addCommand(IrcCommand::Motd, "MOTD (<server>)");
+    parser->addCommand(IrcCommand::Names, "NAMES (<#channel>)");
+    parser->addCommand(IrcCommand::Nick, "NICK <nick>");
+    parser->addCommand(IrcCommand::Notice, "NOTICE <#channel/user> <message...>");
+    parser->addCommand(IrcCommand::Part, "PART (<#channel>) (<message...>)");
+    parser->addCommand(IrcCommand::Ping, "PING (<user>)");
+    parser->addCommand(IrcCommand::Quit, "QUIT (<message...>)");
+    parser->addCommand(IrcCommand::Quote, "QUOTE <command> (<parameters...>)");
+    parser->addCommand(IrcCommand::Stats, "STATS <query> (<server>)");
+    parser->addCommand(IrcCommand::Time, "TIME (<user>)");
+    parser->addCommand(IrcCommand::Topic, "TOPIC (<#channel>) (<topic...>)");
+    parser->addCommand(IrcCommand::Trace, "TRACE (<target>)");
+    parser->addCommand(IrcCommand::Users, "USERS (<server>)");
+    parser->addCommand(IrcCommand::Version, "VERSION (<user>)");
+    parser->addCommand(IrcCommand::Who, "WHO <user>");
+    parser->addCommand(IrcCommand::Whois, "WHOIS <user>");
+    parser->addCommand(IrcCommand::Whowas, "WHOWAS <user>");
+
+    parser->addCommand(IrcCommand::Custom, "CLEAR");
+    parser->addCommand(IrcCommand::Custom, "QUERY <user>");
+    parser->addCommand(IrcCommand::Custom, "MSG <user/channel> <message...>");
+
+    return parser;
 }
