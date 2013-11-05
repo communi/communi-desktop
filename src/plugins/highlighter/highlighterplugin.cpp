@@ -105,7 +105,7 @@ void HighlighterPlugin::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidg
 {
     if (!d.blocked) {
         if (previous)
-            static_cast<TreeItem*>(previous)->reset();
+            static_cast<TreeItem*>(previous)->setHighlighted(false);
     }
     if (current)
         delayedReset(current);
@@ -121,7 +121,7 @@ void HighlighterPlugin::resetItems()
 {
     QTreeWidgetItemIterator it(d.tree);
     while (*it) {
-        static_cast<TreeItem*>(*it)->reset();
+        static_cast<TreeItem*>(*it)->setHighlighted(false);
         ++it;
     }
 }

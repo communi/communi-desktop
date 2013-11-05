@@ -47,7 +47,6 @@ public:
     bool operator<(const QTreeWidgetItem& other) const;
 
 public slots:
-    void reset();
     void refresh();
     void blink();
 

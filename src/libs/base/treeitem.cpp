@@ -133,12 +133,6 @@ bool TreeItem::operator<(const QTreeWidgetItem& other) const
     return model->lessThan(d.buffer, otherItem->buffer(), model->sortMethod());
 }
 
-void TreeItem::reset()
-{
-    setData(1, TreeRole::Badge, 0);
-    setHighlighted(false);
-}
-
 void TreeItem::refresh()
 {
     emitDataChanged();
