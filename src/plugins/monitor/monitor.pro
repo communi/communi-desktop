@@ -2,25 +2,27 @@
 # Communi
 ######################################################################
 
-DEPENDPATH += $$PWD
-INCLUDEPATH += $$PWD
+HEADERS += $$PWD/monitorplugin.h
+HEADERS += $$PWD/systemmonitor.h
 
-HEADERS += $$PWD/systemnotifier.h
-SOURCES += $$PWD/systemnotifier.cpp
+SOURCES += $$PWD/monitorplugin.cpp
+SOURCES += $$PWD/systemmonitor.cpp
 
 mac {
     HEADERS += $$PWD/mac/Reachability.h
     OBJECTIVE_SOURCES += $$PWD/mac/Reachability.m
-    OBJECTIVE_SOURCES += $$PWD/systemnotifier_mac.mm
+    OBJECTIVE_SOURCES += $$PWD/systemmonitor_mac.mm
     LIBS += -framework SystemConfiguration
 } else:win32 {
-    HEADERS += $$PWD/win/networknotifier.h
-    SOURCES += $$PWD/win/networknotifier.cpp
-    SOURCES += $$PWD/systemnotifier_win.cpp
+    HEADERS += $$PWD/win/networkmonitor.h
+    SOURCES += $$PWD/win/networkmonitor.cpp
+    SOURCES += $$PWD/systemmonitor_win.cpp
     LIBS += -lole32
 } else:unix {
     QT += dbus
-    SOURCES += $$PWD/systemnotifier_dbus.cpp
+    SOURCES += $$PWD/systemmonitor_dbus.cpp
 } else {
     error(unsupported platform)
 }
+
+include(../plugin.pri)

@@ -12,8 +12,8 @@
 * GNU General Public License for more details.
 */
 
-#include "systemnotifier.h"
-#include "win/networknotifier.h"
+#include "systemmonitor.h"
+#include "win/networkmonitor.h"
 
 #include <qt_windows.h>
 #include <qabstracteventdispatcher.h>
@@ -22,7 +22,7 @@
 #include <qabstractnativeeventfilter.h>
 #endif // QT_VERSION
 
-class SystemNotifierPrivate
+class SystemMonitorPrivate
 #if QT_VERSION >= 0x050000
                             : public QAbstractNativeEventFilter
 #endif
@@ -38,10 +38,10 @@ public:
         if (msg && msg->message == WM_POWERBROADCAST) {
             switch (msg->wParam) {
             case PBT_APMSUSPEND:
-                QMetaObject::invokeMethod(SystemNotifier::instance(), "sleep");
+                QMetaObject::invokeMethod(SystemMonitor::instance(), "sleep");
                 break;
             case PBT_APMRESUMESUSPEND:
-                QMetaObject::invokeMethod(SystemNotifier::instance(), "wake");
+                QMetaObject::invokeMethod(SystemMonitor::instance(), "wake");
                 break;
             default:
                 break;
@@ -52,23 +52,23 @@ public:
 #if QT_VERSION < 0x050000
     QAbstractEventDispatcher::EventFilter prev;
 #endif
-    NetworkNotifier network;
+    NetworkMonitor network;
 };
 
-void SystemNotifier::initialize()
+void SystemMonitor::initialize()
 {
-    d = new SystemNotifierPrivate;
+    d = new SystemMonitorPrivate;
 #if QT_VERSION >= 0x050000
     QAbstractEventDispatcher::instance()->installNativeEventFilter(d);
 #else
-    d->prev = QAbstractEventDispatcher::instance()->setEventFilter(SystemNotifierPrivate::nativeEventFilter);
+    d->prev = QAbstractEventDispatcher::instance()->setEventFilter(SystemMonitorPrivate::nativeEventFilter);
 #endif // QT_VERSION
 
     connect(&d->network, SIGNAL(online()), this, SIGNAL(online()));
     connect(&d->network, SIGNAL(offline()), this, SIGNAL(offline()));
 }
 
-void SystemNotifier::uninitialize()
+void SystemMonitor::uninitialize()
 {
     if (QAbstractEventDispatcher::instance())
 #if QT_VERSION >= 0x050000

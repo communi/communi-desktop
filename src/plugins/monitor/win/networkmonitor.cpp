@@ -12,10 +12,10 @@
 * GNU General Public License for more details.
 */
 
-#include "networknotifier.h"
+#include "networkmonitor.h"
 #include <QtDebug>
 
-NetworkNotifier::NetworkNotifier()
+NetworkMonitor::NetworkMonitor()
     : cookie(0), cp(NULL), manager(NULL), container(NULL)
 {
     HRESULT hr = CoInitialize(NULL);
@@ -36,10 +36,10 @@ NetworkNotifier::NetworkNotifier()
         }
     }
     if (FAILED(hr))
-        qWarning() << "NetworkNotifier: COM failure:" << GetLastError();
+        qWarning() << "NetworkMonitor: COM failure:" << GetLastError();
 }
 
-NetworkNotifier::~NetworkNotifier()
+NetworkMonitor::~NetworkMonitor()
 {
     if (cp) {
         if (cookie)
@@ -53,17 +53,17 @@ NetworkNotifier::~NetworkNotifier()
     CoUninitialize();
 }
 
-ULONG STDMETHODCALLTYPE NetworkNotifier::AddRef()
+ULONG STDMETHODCALLTYPE NetworkMonitor::AddRef()
 {
     return -1;
 }
 
-ULONG STDMETHODCALLTYPE NetworkNotifier::Release()
+ULONG STDMETHODCALLTYPE NetworkMonitor::Release()
 {
     return -1;
 }
 
-HRESULT STDMETHODCALLTYPE NetworkNotifier::QueryInterface(REFIID riid, void** obj)
+HRESULT STDMETHODCALLTYPE NetworkMonitor::QueryInterface(REFIID riid, void** obj)
 {
     if (IsEqualIID(riid, IID_IUnknown))
         *obj = (IUnknown*)this;
@@ -74,7 +74,7 @@ HRESULT STDMETHODCALLTYPE NetworkNotifier::QueryInterface(REFIID riid, void** ob
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE NetworkNotifier::ConnectivityChanged(NLM_CONNECTIVITY connectivity)
+HRESULT STDMETHODCALLTYPE NetworkMonitor::ConnectivityChanged(NLM_CONNECTIVITY connectivity)
 {
     if (connectivity == NLM_CONNECTIVITY_DISCONNECTED)
         emit offline();

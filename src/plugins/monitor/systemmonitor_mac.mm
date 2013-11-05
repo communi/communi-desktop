@@ -12,21 +12,21 @@
 * GNU General Public License for more details.
 */
 
-#include "systemnotifier.h"
+#include "systemmonitor.h"
 #include "mac/Reachability.h"
 #include <Cocoa/Cocoa.h>
 
-@interface CocoaSystemNotifier : NSObject
+@interface CocoaSystemMonitor : NSObject
 @end
 
-class SystemNotifierPrivate
+class SystemMonitorPrivate
 {
 public:
     Reachability* reachability;
-    CocoaSystemNotifier* notifier;
+    CocoaSystemMonitor* notifier;
 };
 
-@implementation CocoaSystemNotifier
+@implementation CocoaSystemMonitor
 - (id)init
 {
     self = [super init];
@@ -48,13 +48,13 @@ public:
 - (void) receiveSleepNote: (NSNotification*) note
 {
     Q_UNUSED(note);
-    QMetaObject::invokeMethod(SystemNotifier::instance(), "sleep");
+    QMetaObject::invokeMethod(SystemMonitor::instance(), "sleep");
 }
 
 - (void) receiveWakeNote: (NSNotification*) note
 {
     Q_UNUSED(note);
-    QMetaObject::invokeMethod(SystemNotifier::instance(), "wake");
+    QMetaObject::invokeMethod(SystemMonitor::instance(), "wake");
 }
 
 - (void) receiveNetworkNote: (NSNotification* )note
@@ -62,19 +62,19 @@ public:
     Reachability* reachability = [note object];
     NSParameterAssert([reachability isKindOfClass: [Reachability class]]);
     BOOL offline = [reachability connectionRequired];
-    QMetaObject::invokeMethod(SystemNotifier::instance(), offline ? "offline" : "online");
+    QMetaObject::invokeMethod(SystemMonitor::instance(), offline ? "offline" : "online");
 }
 @end
 
-void SystemNotifier::initialize()
+void SystemMonitor::initialize()
 {
-    d = new SystemNotifierPrivate;
-    d->notifier = [[CocoaSystemNotifier alloc] init];
+    d = new SystemMonitorPrivate;
+    d->notifier = [[CocoaSystemMonitor alloc] init];
     d->reachability = [[Reachability reachabilityForInternetConnection] retain];
     [d->reachability startNotifier];
 }
 
-void SystemNotifier::uninitialize()
+void SystemMonitor::uninitialize()
 {
     [d->notifier release];
     [d->reachability release];

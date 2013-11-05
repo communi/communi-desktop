@@ -12,5 +12,3 @@ HEADERS += $$PWD/zncmanager.h
 SOURCES += $$PWD/commandparser.cpp
 SOURCES += $$PWD/ignoremanager.cpp
 SOURCES += $$PWD/zncmanager.cpp
-
-include(systemnotifier/systemnotifier.pri)

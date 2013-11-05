@@ -12,22 +12,22 @@
 * GNU General Public License for more details.
 */
 
-#include "systemnotifier.h"
+#include "systemmonitor.h"
 #include <QtDBus>
 
-class SystemNotifierPrivate : public QObject
+class SystemMonitorPrivate : public QObject
 {
     Q_OBJECT
 
 private slots:
     void sleeping()
     {
-        QMetaObject::invokeMethod(SystemNotifier::instance(), "sleep");
+        QMetaObject::invokeMethod(SystemMonitor::instance(), "sleep");
     }
 
     void resuming()
     {
-        QMetaObject::invokeMethod(SystemNotifier::instance(), "wake");
+        QMetaObject::invokeMethod(SystemMonitor::instance(), "wake");
     }
 
     void networkStateChanged(uint state)
@@ -36,15 +36,15 @@ private slots:
         static const uint NM_STATE_CONNECTED_GLOBAL = 70;
 
         if (state == NM_STATE_DISCONNECTED)
-            QMetaObject::invokeMethod(SystemNotifier::instance(), "offline");
+            QMetaObject::invokeMethod(SystemMonitor::instance(), "offline");
         else if (state == NM_STATE_CONNECTED_GLOBAL)
-            QMetaObject::invokeMethod(SystemNotifier::instance(), "online");
+            QMetaObject::invokeMethod(SystemMonitor::instance(), "online");
     }
 };
 
-void SystemNotifier::initialize()
+void SystemMonitor::initialize()
 {
-    d = new SystemNotifierPrivate;
+    d = new SystemMonitorPrivate;
 
     QDBusConnection bus = QDBusConnection::systemBus();
     bus.connect("org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager",
@@ -56,9 +56,9 @@ void SystemNotifier::initialize()
                 "org.freedesktop.UPower", "Resuming", d, SLOT(resuming()));
 }
 
-void SystemNotifier::uninitialize()
+void SystemMonitor::uninitialize()
 {
     delete d;
 }
 
-#include "systemnotifier_dbus.moc"
+#include "systemmonitor_dbus.moc"

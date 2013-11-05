@@ -9,7 +9,6 @@
 
 #include "mainwindow.h"
 #include "connectpage.h"
-#include "systemnotifier.h"
 #include "sharedtimer.h"
 #include "chatpage.h"
 #include <QDesktopServices>
@@ -119,12 +118,6 @@ void MainWindow::onAccepted()
     connection->setUserName(d.connectPage->userName());
     connection->setDisplayName(d.connectPage->displayName());
     connection->setPassword(d.connectPage->password());
-
-    connect(SystemNotifier::instance(), SIGNAL(sleep()), connection, SLOT(quit()));
-    connect(SystemNotifier::instance(), SIGNAL(wake()), connection, SLOT(open()));
-    connect(SystemNotifier::instance(), SIGNAL(online()), connection, SLOT(open()));
-    connect(SystemNotifier::instance(), SIGNAL(offline()), connection, SLOT(quit()));
-
     d.chatPage->addConnection(connection);
 }
 
@@ -150,13 +143,6 @@ void MainWindow::restoreConnections()
     settings.beginGroup("Connections");
     foreach (const QVariant& state, settings.value("connections").toList()) {
         IrcConnection* connection = new IrcConnection(this);
-
-        // TODO:
-        connect(SystemNotifier::instance(), SIGNAL(sleep()), connection, SLOT(quit()));
-        connect(SystemNotifier::instance(), SIGNAL(wake()), connection, SLOT(open()));
-        connect(SystemNotifier::instance(), SIGNAL(online()), connection, SLOT(open()));
-        connect(SystemNotifier::instance(), SIGNAL(offline()), connection, SLOT(quit()));
-
         connection->restoreState(state.toByteArray());
         d.chatPage->addConnection(connection);
     }

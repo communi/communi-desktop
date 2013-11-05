@@ -12,20 +12,20 @@
 * GNU General Public License for more details.
 */
 
-#include "systemnotifier.h"
+#include "systemmonitor.h"
 
-SystemNotifier* SystemNotifier::instance()
+SystemMonitor* SystemMonitor::instance()
 {
-    static SystemNotifier notifier;
+    static SystemMonitor notifier;
     return &notifier;
 }
 
-SystemNotifier::SystemNotifier(QObject* parent) : QObject(parent)
+SystemMonitor::SystemMonitor(QObject* parent) : QObject(parent)
 {
     initialize();
 }
 
-SystemNotifier::~SystemNotifier()
+SystemMonitor::~SystemMonitor()
 {
     uninitialize();
 }

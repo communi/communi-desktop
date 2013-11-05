@@ -12,19 +12,19 @@
 * GNU General Public License for more details.
 */
 
-#ifndef SYSTEMNOTIFIER_H
-#define SYSTEMNOTIFIER_H
+#ifndef SYSTEMMONITOR_H
+#define SYSTEMMONITOR_H
 
 #include <QObject>
 
-class SystemNotifierPrivate;
+class SystemMonitorPrivate;
 
-class SystemNotifier : public QObject
+class SystemMonitor : public QObject
 {
     Q_OBJECT
 
 public:
-    static SystemNotifier* instance();
+    static SystemMonitor* instance();
 
 signals:
     void wake();
@@ -33,14 +33,14 @@ signals:
     void offline();
 
 protected:
-    SystemNotifier(QObject* parent = 0);
-    ~SystemNotifier();
+    SystemMonitor(QObject* parent = 0);
+    ~SystemMonitor();
 
     void initialize();
     void uninitialize();
 
 private:
-    SystemNotifierPrivate* d;
+    SystemMonitorPrivate* d;
 };
 
-#endif // SYSTEMNOTIFIER_H
+#endif // SYSTEMMONITOR_H

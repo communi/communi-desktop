@@ -12,19 +12,19 @@
 * GNU General Public License for more details.
 */
 
-#ifndef NETWORKNOTIFIER_H
-#define NETWORKNOTIFIER_H
+#ifndef NETWORKMONITOR_H
+#define NETWORKMONITOR_H
 
 #include <QObject>
 #include <netlistmgr.h>
 
-class NetworkNotifier : public QObject, public INetworkListManagerEvents
+class NetworkMonitor : public QObject, public INetworkListManagerEvents
 {
     Q_OBJECT
 
 public:
-    NetworkNotifier();
-    ~NetworkNotifier();
+    NetworkMonitor();
+    ~NetworkMonitor();
 
     ULONG STDMETHODCALLTYPE AddRef();
     ULONG STDMETHODCALLTYPE Release();
@@ -43,4 +43,4 @@ private:
     IConnectionPointContainer* container;
 };
 
-#endif // NETWORKNOTIFIER_H
+#endif // NETWORKMONITOR_H

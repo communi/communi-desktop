@@ -43,7 +43,7 @@ include(../libs/backend/backend.pri)
 include(../libs/3rdparty/3rdparty.pri)
 include(../../resources/resources.pri)
 
-STATIC_PLUGINS = badge completer dock finder highlighter history menu navigator sound subject tray
+STATIC_PLUGINS = badge completer dock finder highlighter history menu monitor navigator sound subject tray
 for(PLUGIN, STATIC_PLUGINS) {
     LIBS *= -L$$BUILD_ROOT/plugins
     LIBS += -l$${PLUGIN}plugin
