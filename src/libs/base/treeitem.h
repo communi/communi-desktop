@@ -61,7 +61,6 @@ private:
     void init(IrcBuffer* buffer);
 
     struct Private {
-        int badge;
         bool blink;
         bool highlighted;
         IrcBuffer* buffer;

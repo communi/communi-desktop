@@ -31,7 +31,6 @@ TreeItem::TreeItem(IrcBuffer* buffer, TreeWidget* parent) : QTreeWidgetItem(pare
 
 void TreeItem::init(IrcBuffer* buffer)
 {
-    d.badge = 0;
     d.blink = false;
     d.buffer = buffer;
     d.highlighted = false;
@@ -71,15 +70,12 @@ TreeWidget* TreeItem::treeWidget() const
 
 int TreeItem::badge() const
 {
-    return d.badge;
+    return data(1, TreeRole::Badge).toInt();
 }
 
 void TreeItem::setBadge(int badge)
 {
-    if (d.badge != badge) {
-        d.badge = badge;
-        emitDataChanged();
-    }
+    setData(1, TreeRole::Badge, badge);
 }
 
 bool TreeItem::isHighlighted() const
@@ -110,25 +106,24 @@ void TreeItem::setHighlighted(bool highlighted)
 QVariant TreeItem::data(int column, int role) const
 {
     switch (role) {
-    case TreeRole::Badge:
-        return d.badge;
     case TreeRole::Highlight:
         return d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty());
     case Qt::BackgroundRole:
         if (column == 1 && d.blink && d.highlighted)
             return QColor("#ff4040").lighter(125); // TODO
-        return QTreeWidgetItem::data(column, role);
+        break;
     case Qt::ForegroundRole:
         if (!d.buffer->isActive())
             return treeWidget()->palette().color(QPalette::Disabled, QPalette::Text);
         if (d.blink && (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty())))
             return QColor("#ff4040"); // TODO
-        return QTreeWidgetItem::data(column, role);
+        break;
     default:
         if (column == 0 && d.buffer)
             return d.buffer->data(role);
-        return QVariant();
+        break;
     }
+    return QTreeWidgetItem::data(column, role);
 }
 
 // TODO
@@ -150,7 +145,7 @@ bool TreeItem::operator<(const QTreeWidgetItem& other) const
 
 void TreeItem::reset()
 {
-    setBadge(0);
+    setData(1, TreeRole::Badge, 0);
     setHighlighted(false);
 }
 
