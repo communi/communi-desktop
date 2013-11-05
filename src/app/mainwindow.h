@@ -10,8 +10,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QIcon>
 #include <QStackedWidget>
-#include <QSystemTrayIcon>
 
 class ChatPage;
 class IrcBuffer;
@@ -32,18 +32,13 @@ public:
     QSize sizeHint() const;
 
 protected:
-    void changeEvent(QEvent* event);
     void closeEvent(QCloseEvent* event);
 
 private slots:
-    void alert();
-    void unalert();
-    void doAlert();
     void doConnect();
     void onAccepted();
     void onRejected();
     void setCurrentBuffer(IrcBuffer* buffer);
-    void onTrayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void restoreConnections();
     void saveConnections();
 
@@ -55,7 +50,6 @@ private:
         QtDockTile* dockTile;
         ConnectPage* connectPage;
         SoundNotification* sound;
-        QSystemTrayIcon* trayIcon;
     } d;
 };
 

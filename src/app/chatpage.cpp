@@ -38,6 +38,7 @@ Q_IMPORT_PLUGIN(HistoryPlugin)
 Q_IMPORT_PLUGIN(MenuPlugin)
 Q_IMPORT_PLUGIN(NavigatorPlugin)
 Q_IMPORT_PLUGIN(SubjectPlugin)
+Q_IMPORT_PLUGIN(TrayPlugin)
 
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 {

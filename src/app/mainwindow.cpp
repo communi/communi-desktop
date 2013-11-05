@@ -65,15 +65,6 @@ MainWindow::MainWindow(QWidget* parent) : QStackedWidget(parent)
     if (QtDockTile::isAvailable())
         d.dockTile = new QtDockTile(this);
 
-    d.trayIcon = 0;
-    if (QSystemTrayIcon::isSystemTrayAvailable()) {
-        d.trayIcon = new QSystemTrayIcon(this);
-        d.trayIcon->setIcon(d.normalIcon);
-        d.trayIcon->setVisible(true);
-        connect(d.trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-                this, SLOT(onTrayIconActivated(QSystemTrayIcon::ActivationReason)));
-    }
-
     d.sound = 0;
     if (SoundNotification::isAvailable()) {
         d.sound = new SoundNotification(this);
@@ -107,13 +98,6 @@ QSize MainWindow::sizeHint() const
     return QSize(800, 600);
 }
 
-void MainWindow::changeEvent(QEvent* event)
-{
-    QWidget::changeEvent(event);
-    if (event->type() == QEvent::ActivationChange)
-        unalert();
-}
-
 void MainWindow::closeEvent(QCloseEvent* event)
 {
     if (isVisible()) {
@@ -136,42 +120,6 @@ void MainWindow::closeEvent(QCloseEvent* event)
         event->ignore();
         QTimer::singleShot(1000, qApp, SLOT(quit()));
     }
-}
-
-void MainWindow::alert()
-{
-    if (!isActiveWindow()) {
-        QApplication::alert(this);
-        if (d.dockTile)
-            d.dockTile->setBadge(d.dockTile->badge() + 1);
-        if (d.sound)
-            d.sound->play();
-        if (d.trayIcon) {
-            d.trayIcon->setIcon(d.alertIcon);
-            SharedTimer::instance()->registerReceiver(this, "doAlert");
-        }
-    }
-}
-
-void MainWindow::unalert()
-{
-    if (isActiveWindow()) {
-        if (d.dockTile)
-            d.dockTile->setBadge(0);
-        if (d.trayIcon) {
-            d.trayIcon->setIcon(d.normalIcon);
-            SharedTimer::instance()->unregisterReceiver(this, "doAlert");
-        }
-    }
-}
-
-void MainWindow::doAlert()
-{
-    QIcon current = d.trayIcon->icon();
-    if (current.cacheKey() == d.normalIcon.cacheKey())
-        d.trayIcon->setIcon(d.alertIcon);
-    else
-        d.trayIcon->setIcon(d.normalIcon);
 }
 
 void MainWindow::doConnect()
@@ -212,21 +160,6 @@ void MainWindow::setCurrentBuffer(IrcBuffer* buffer)
     } else {
         setCurrentWidget(d.connectPage);
         setWindowTitle(tr("Communi %1").arg(IRC_VERSION_STR));
-    }
-}
-
-void MainWindow::onTrayIconActivated(QSystemTrayIcon::ActivationReason reason)
-{
-    switch (reason) {
-        case QSystemTrayIcon::DoubleClick:
-            setVisible(!isVisible());
-            break;
-        case QSystemTrayIcon::Trigger:
-            raise();
-            activateWindow();
-            break;
-        default:
-            break;
     }
 }
 

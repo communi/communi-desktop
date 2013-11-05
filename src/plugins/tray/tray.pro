@@ -2,5 +2,7 @@
 # Communi
 ######################################################################
 
-TEMPLATE = subdirs
-SUBDIRS += badge completer finder highlighter history menu navigator subject tray
+HEADERS += $$PWD/trayplugin.h
+SOURCES += $$PWD/trayplugin.cpp
+
+include(../plugin.pri)
