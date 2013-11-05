@@ -32,6 +32,7 @@ HEADERS += $$PWD/treeitem.h
 HEADERS += $$PWD/treeplugin.h
 HEADERS += $$PWD/treewidget.h
 HEADERS += $$PWD/viewplugin.h
+HEADERS += $$PWD/windowplugin.h
 
 SOURCES += $$PWD/bufferview.cpp
 SOURCES += $$PWD/listdelegate.cpp

@@ -28,6 +28,7 @@
 #include "topicplugin.h"
 #include "treeplugin.h"
 #include "viewplugin.h"
+#include "windowplugin.h"
 
 Q_IMPORT_PLUGIN(BadgePlugin)
 Q_IMPORT_PLUGIN(CompleterPlugin)
@@ -62,6 +63,9 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
         ViewPlugin* viewPlugin = qobject_cast<ViewPlugin*>(instance);
         if (viewPlugin)
             viewPlugin->initialize(d.splitView);
+        WindowPlugin* windowPlugin = qobject_cast<WindowPlugin*>(instance);
+        if (windowPlugin)
+            windowPlugin->initialize(window());
     }
 
     addView(d.splitView->currentView());
@@ -76,6 +80,9 @@ ChatPage::~ChatPage()
         ViewPlugin* viewPlugin = qobject_cast<ViewPlugin*>(instance);
         if (viewPlugin)
             viewPlugin->uninitialize(d.splitView);
+        WindowPlugin* windowPlugin = qobject_cast<WindowPlugin*>(instance);
+        if (windowPlugin)
+            windowPlugin->uninitialize(window());
     }
 }
 
