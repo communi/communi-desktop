@@ -13,6 +13,7 @@ SUBDIRS += ignore
 SUBDIRS += menu
 SUBDIRS += monitor
 SUBDIRS += navigator
+SUBDIRS += reseter
 SUBDIRS += sound
 SUBDIRS += subject
 SUBDIRS += tray

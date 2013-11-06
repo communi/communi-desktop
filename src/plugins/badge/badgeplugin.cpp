@@ -20,6 +20,7 @@
 #include <QHeaderView>
 #include <IrcMessage>
 #include <IrcBuffer>
+#include <QTimer>
 
 BadgePlugin::BadgePlugin(QObject* parent) : QObject(parent)
 {
@@ -40,6 +41,8 @@ void BadgePlugin::initialize(TreeWidget* tree)
 
     connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
     connect(tree, SIGNAL(bufferRemoved(IrcBuffer*)), this, SLOT(onBufferRemoved(IrcBuffer*)));
+    connect(tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
+            this, SLOT(onCurrentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
 }
 
 void BadgePlugin::onBufferAdded(IrcBuffer* buffer)
@@ -61,6 +64,28 @@ void BadgePlugin::onMessageReceived(IrcMessage* message)
         if (item && item != d.tree->currentItem())
             item->setData(1, TreeRole::Badge, item->data(1, TreeRole::Badge).toInt() + 1);
     }
+}
+
+void BadgePlugin::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
+{
+    if (previous)
+        resetItem(previous);
+    if (current)
+        delayedResetItem(current);
+}
+
+void BadgePlugin::resetItem(QTreeWidgetItem* item)
+{
+    if (!item && !d.items.isEmpty())
+        item = d.items.dequeue();
+    if (item)
+        item->setData(1, TreeRole::Badge, 0);
+}
+
+void BadgePlugin::delayedResetItem(QTreeWidgetItem* item)
+{
+    d.items.enqueue(static_cast<TreeItem*>(item));
+    QTimer::singleShot(500, this, SLOT(resetItem()));
 }
 
 #if QT_VERSION < 0x050000

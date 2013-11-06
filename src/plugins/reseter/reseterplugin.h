@@ -12,20 +12,14 @@
 * GNU General Public License for more details.
 */
 
-#ifndef BADGEPLUGIN_H
-#define BADGEPLUGIN_H
+#ifndef RESETERPLUGIN_H
+#define RESETERPLUGIN_H
 
-#include <QQueue>
 #include <QtPlugin>
-#include <QPointer>
-#include <QTreeWidgetItem>
+#include <QShortcut>
 #include "treeplugin.h"
 
-class TreeItem;
-class IrcBuffer;
-class IrcMessage;
-
-class BadgePlugin : public QObject, public TreePlugin
+class ReseterPlugin : public QObject, public TreePlugin
 {
     Q_OBJECT
     Q_INTERFACES(TreePlugin)
@@ -34,24 +28,18 @@ class BadgePlugin : public QObject, public TreePlugin
 #endif
 
 public:
-    BadgePlugin(QObject* parent = 0);
+    ReseterPlugin(QObject* parent = 0);
 
     void initialize(TreeWidget* tree);
 
 private slots:
-    void onBufferAdded(IrcBuffer* buffer);
-    void onBufferRemoved(IrcBuffer* buffer);
-    void onMessageReceived(IrcMessage* message);
-    void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
-
-    void resetItem(QTreeWidgetItem* item = 0);
-    void delayedResetItem(QTreeWidgetItem* item);
+    void resetItems();
 
 private:
     struct Private {
         TreeWidget* tree;
-        QQueue<QPointer<TreeItem> > items;
+        QShortcut* shortcut;
     } d;
 };
 
-#endif // BADGEPLUGIN_H
+#endif // RESETERPLUGIN_H

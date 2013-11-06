@@ -21,13 +21,10 @@
 #include <IrcConnection>
 #include <IrcMessage>
 #include <IrcBuffer>
-#include <QTimer>
-#include <QEvent>
 
 HighlighterPlugin::HighlighterPlugin(QObject* parent) : QObject(parent)
 {
     d.tree = 0;
-    d.shortcut = 0;
     d.blink = false;
 }
 
@@ -39,12 +36,9 @@ void HighlighterPlugin::initialize(TreeWidget* tree)
     connect(tree, SIGNAL(bufferRemoved(IrcBuffer*)), this, SLOT(onBufferRemoved(IrcBuffer*)));
     connect(tree, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(onItemExpanded(QTreeWidgetItem*)));
     connect(tree, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
+    connect(tree, SIGNAL(itemChanged(QTreeWidgetItem*,int)), this, SLOT(onItemChanged(QTreeWidgetItem*,int)));
     connect(tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
-
-    d.shortcut = new QShortcut(tree);
-    d.shortcut->setKey(QKeySequence(tr("Ctrl+R")));
-    connect(d.shortcut, SIGNAL(activated()), this, SLOT(resetItems()));
 }
 
 void HighlighterPlugin::onBufferAdded(IrcBuffer* buffer)
@@ -84,6 +78,14 @@ void HighlighterPlugin::onItemCollapsed(QTreeWidgetItem* item)
     static_cast<TreeItem*>(item)->refresh();
 }
 
+void HighlighterPlugin::onItemChanged(QTreeWidgetItem* item, int column)
+{
+    if (column == 0 && d.items.contains(item)) {
+        if (!item->data(0, TreeRole::Highlight).toBool())
+            unhighlightItem(item);
+    }
+}
+
 void HighlighterPlugin::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
     unhighlightItem(previous);
@@ -112,12 +114,6 @@ void HighlighterPlugin::unhighlightItem(QTreeWidgetItem* item)
         item->setData(0, Qt::ForegroundRole, QVariant());
         item->setData(1, Qt::BackgroundRole, QVariant());
     }
-}
-
-void HighlighterPlugin::resetItems()
-{
-    foreach (QTreeWidgetItem* item, d.items)
-        unhighlightItem(item);
 }
 
 void HighlighterPlugin::blinkItems()

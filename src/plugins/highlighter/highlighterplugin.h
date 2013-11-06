@@ -17,7 +17,6 @@
 
 #include <QSet>
 #include <QtPlugin>
-#include <QShortcut>
 #include <QTreeWidget>
 #include "treeplugin.h"
 
@@ -43,17 +42,16 @@ private slots:
     void onMessageReceived(IrcMessage* message);
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
+    void onItemChanged(QTreeWidgetItem* item, int column);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void highlightItem(QTreeWidgetItem* item);
     void unhighlightItem(QTreeWidgetItem* item);
-    void resetItems();
     void blinkItems();
 
 private:
     struct Private {
         bool blink;
         TreeWidget* tree;
-        QShortcut* shortcut;
         QSet<QTreeWidgetItem*> items;
     } d;
 };
