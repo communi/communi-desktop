@@ -3,6 +3,7 @@
 ######################################################################
 
 TEMPLATE = subdirs
+SUBDIRS += ajax
 SUBDIRS += badge
 SUBDIRS += completer
 SUBDIRS += dock
