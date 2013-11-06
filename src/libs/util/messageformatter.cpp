@@ -29,6 +29,7 @@
 #include <IrcTextFormat>
 #include <IrcConnection>
 #include <IrcUserModel>
+#include <IrcPalette>
 #include <IrcChannel>
 #include <Irc>
 #include <QHash>
@@ -43,6 +44,24 @@ MessageFormatter::MessageFormatter(QObject* parent) : QObject(parent)
     d.timeStampFormat = "[hh:mm:ss]";
     d.userModel = new IrcUserModel(this);
     d.textFormat = new IrcTextFormat(this);
+
+    IrcPalette* palette = d.textFormat->palette();
+    palette->setColorName(Irc::Gray, "#606060");
+    palette->setColorName(Irc::LightGray, "#808080");
+
+    // http://ethanschoonover.com/solarized
+    palette->setColorName(Irc::Blue, "#268bd2");
+    palette->setColorName(Irc::Green, "#859900");
+    palette->setColorName(Irc::Red, "#dc322f");
+    palette->setColorName(Irc::Brown, "#cb4b16");
+    palette->setColorName(Irc::Purple, "#6c71c4");
+    palette->setColorName(Irc::Orange, "#cb4b16");
+    palette->setColorName(Irc::Yellow, "#b58900");
+    palette->setColorName(Irc::LightGreen, "#859900");
+    palette->setColorName(Irc::Cyan, "#2aa198");
+    palette->setColorName(Irc::LightCyan, "#2aa198");
+    palette->setColorName(Irc::LightBlue, "#268bd2");
+    palette->setColorName(Irc::Pink, "#6c71c4");
 }
 
 IrcBuffer* MessageFormatter::buffer() const
