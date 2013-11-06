@@ -22,4 +22,3 @@ unix:!mac {
 
 OTHER_FILES += $$PWD/communi.desktop
 OTHER_FILES += $$PWD/communi.rc
-OTHER_FILES += $$PWD/stylesheet.css

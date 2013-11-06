@@ -25,19 +25,19 @@
 
 MainWindow::MainWindow(QWidget* parent) : QStackedWidget(parent)
 {
-    d.normalIcon.addFile(":/icons/16x16/communi2.png");
-    d.normalIcon.addFile(":/icons/24x24/communi2.png");
-    d.normalIcon.addFile(":/icons/32x32/communi2.png");
-    d.normalIcon.addFile(":/icons/48x48/communi2.png");
-    d.normalIcon.addFile(":/icons/64x64/communi2.png");
-    d.normalIcon.addFile(":/icons/128x128/communi2.png");
+    d.normalIcon.addFile(":/icons/16x16/communi.png");
+    d.normalIcon.addFile(":/icons/24x24/communi.png");
+    d.normalIcon.addFile(":/icons/32x32/communi.png");
+    d.normalIcon.addFile(":/icons/48x48/communi.png");
+    d.normalIcon.addFile(":/icons/64x64/communi.png");
+    d.normalIcon.addFile(":/icons/128x128/communi.png");
 
-    d.alertIcon.addFile(":/icons/16x16/communi2-alert.png");
-    d.alertIcon.addFile(":/icons/24x24/communi2-alert.png");
-    d.alertIcon.addFile(":/icons/32x32/communi2-alert.png");
-    d.alertIcon.addFile(":/icons/48x48/communi2-alert.png");
-    d.alertIcon.addFile(":/icons/64x64/communi2-alert.png");
-    d.alertIcon.addFile(":/icons/128x128/communi2-alert.png");
+    d.alertIcon.addFile(":/icons/16x16/communi-alert.png");
+    d.alertIcon.addFile(":/icons/24x24/communi-alert.png");
+    d.alertIcon.addFile(":/icons/32x32/communi-alert.png");
+    d.alertIcon.addFile(":/icons/48x48/communi-alert.png");
+    d.alertIcon.addFile(":/icons/64x64/communi-alert.png");
+    d.alertIcon.addFile(":/icons/128x128/communi-alert.png");
 
 #ifndef Q_OS_MAC
     setWindowIcon(d.normalIcon);

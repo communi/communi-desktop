@@ -8,7 +8,7 @@
      <item>
       <widget class="QLabel" name="iconLabel">
        <property name="pixmap">
-        <pixmap resource="../../../resources/communi2.qrc">:/icons/64x64/communi2.png</pixmap>
+        <pixmap resource="../../../resources/communi.qrc">:/icons/64x64/communi.png</pixmap>
        </property>
       </widget>
      </item>
@@ -291,7 +291,7 @@
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
-  <include location="../../../resources/communi2.qrc"/>
+  <include location="../../../resources/communi.qrc"/>
  </resources>
  <connections/>
 </ui>
