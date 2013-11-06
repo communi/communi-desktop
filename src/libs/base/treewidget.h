@@ -34,6 +34,7 @@ public:
     TreeItem* bufferItem(IrcBuffer* buffer) const;
 
     QList<IrcConnection*> connections() const;
+    TreeItem* connectionItem(IrcConnection* connection) const;
 
 public slots:
     void addBuffer(IrcBuffer* buffer);
