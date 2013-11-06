@@ -12,15 +12,11 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 }
 
 DESTDIR = $$BUILD_ROOT/lib
+
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
-HEADERS += $$PWD/browserplugin.h
 HEADERS += $$PWD/bufferview.h
-HEADERS += $$PWD/connectionplugin.h
-HEADERS += $$PWD/documentplugin.h
-HEADERS += $$PWD/inputplugin.h
-HEADERS += $$PWD/listplugin.h
 HEADERS += $$PWD/listview.h
 HEADERS += $$PWD/splitview.h
 HEADERS += $$PWD/textbrowser.h
@@ -28,10 +24,7 @@ HEADERS += $$PWD/textdocument.h
 HEADERS += $$PWD/textinput.h
 HEADERS += $$PWD/topiclabel.h
 HEADERS += $$PWD/treeitem.h
-HEADERS += $$PWD/treeplugin.h
 HEADERS += $$PWD/treewidget.h
-HEADERS += $$PWD/viewplugin.h
-HEADERS += $$PWD/windowplugin.h
 
 SOURCES += $$PWD/bufferview.cpp
 SOURCES += $$PWD/listview.cpp
@@ -44,5 +37,6 @@ SOURCES += $$PWD/treeitem.cpp
 SOURCES += $$PWD/treewidget.cpp
 
 include(../../config.pri)
+include(plugins/plugins.pri)
 include(../backend/backend.pri)
 include(../util/util.pri)

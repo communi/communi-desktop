@@ -2,8 +2,8 @@
 # Communi
 ######################################################################
 
-DEPENDPATH += $$PWD
-INCLUDEPATH += $$PWD
+DEPENDPATH += $$PWD $$PWD/plugins
+INCLUDEPATH += $$PWD $$PWD/plugins
 
 LIBNAME = base
 include(../lib.pri)
