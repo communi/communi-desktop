@@ -47,6 +47,9 @@ public slots:
     void scrollToNextPage();
     void scrollToPreviousPage();
 
+signals:
+    void queried(const QString& user);
+
 protected:
     void keyPressEvent(QKeyEvent* event);
     void paintEvent(QPaintEvent* event);

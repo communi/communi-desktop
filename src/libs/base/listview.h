@@ -27,7 +27,6 @@ public:
 
 public slots:
     void setChannel(IrcChannel* channel);
-    void query(const QModelIndex& index);
 
 signals:
     void channelChanged(IrcChannel* channel);
@@ -35,6 +34,9 @@ signals:
 
 protected:
     QSize sizeHint() const;
+
+private slots:
+    void onDoubleClicked(const QModelIndex& index);
 
 private:
     struct Private {

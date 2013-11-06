@@ -22,7 +22,7 @@ ListView::ListView(QWidget* parent) : QListView(parent)
     d.model->setSortMethod(Irc::SortByTitle);
     setModel(d.model);
 
-    connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(query(QModelIndex)));
+    connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClicked(QModelIndex)));
 }
 
 IrcChannel* ListView::channel() const
@@ -38,14 +38,14 @@ void ListView::setChannel(IrcChannel* channel)
     }
 }
 
-void ListView::query(const QModelIndex& index)
-{
-    if (index.isValid())
-        emit queried(index.data(Irc::NameRole).toString());
-}
-
 QSize ListView::sizeHint() const
 {
     const int w = 16 * fontMetrics().width('#') + verticalScrollBar()->sizeHint().width();
     return QSize(w, QListView::sizeHint().height());
+}
+
+void ListView::onDoubleClicked(const QModelIndex& index)
+{
+    if (index.isValid())
+        emit queried(index.data(Irc::NameRole).toString());
 }

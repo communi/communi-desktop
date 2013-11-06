@@ -13,6 +13,7 @@
 #include "topiclabel.h"
 #include "textinput.h"
 #include "listview.h"
+#include <IrcBufferModel>
 #include <QVBoxLayout>
 #include <IrcChannel>
 #include <IrcBuffer>
@@ -39,6 +40,9 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     d.splitter->addWidget(d.textBrowser);
     d.splitter->addWidget(d.listView);
     d.splitter->setStretchFactor(0, 1);
+
+    connect(d.listView, SIGNAL(queried(QString)), this, SLOT(query(QString)));
+    connect(d.textBrowser, SIGNAL(queried(QString)), this, SLOT(query(QString)));
 }
 
 BufferView::~BufferView()
@@ -90,4 +94,11 @@ void BufferView::setBuffer(IrcBuffer* buffer)
 
         emit bufferChanged(buffer);
     }
+}
+
+void BufferView::query(const QString& user)
+{
+    IrcBufferModel* model = d.buffer ? d.buffer->model() : 0;
+    if (model)
+        setBuffer(model->add(user));
 }

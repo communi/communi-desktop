@@ -41,6 +41,9 @@ signals:
     void destroyed(BufferView* view);
     void bufferChanged(IrcBuffer* buffer);
 
+private slots:
+    void query(const QString& user);
+
 private:
     struct Private {
         IrcBuffer* buffer;

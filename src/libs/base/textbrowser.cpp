@@ -208,10 +208,9 @@ void TextBrowser::wheelEvent(QWheelEvent* event)
 
 void TextBrowser::onAnchorClicked(const QUrl& url)
 {
-    // TODO:
-//    if (url.scheme() == "nick")
-//        emit clicked(url.toString(QUrl::RemoveScheme));
-//    else
+    if (url.scheme() == "nick")
+        emit queried(url.toString(QUrl::RemoveScheme));
+    else
         QDesktopServices::openUrl(url);
     clearFocus();
 }

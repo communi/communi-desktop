@@ -63,10 +63,9 @@ void ListMenu::onWhoisTriggered()
 
 void ListMenu::onQueryTriggered()
 {
-    // TODO:
-//    QAction* action = qobject_cast<QAction*>(sender());
-//    if (action)
-//        QMetaObject::invokeMethod(listView, "queried", Q_ARG(QString, action->data().toString()));
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action)
+        QMetaObject::invokeMethod(d.list, "queried", Q_ARG(QString, action->data().toString()));
 }
 
 void ListMenu::onModeTriggered()
