@@ -17,25 +17,22 @@
 
 #include <QObject>
 #include <QtPlugin>
-#include "treeplugin.h"
+#include "connectionplugin.h"
 
 class IrcConnection;
 
-class ZncPlugin : public QObject, public TreePlugin // TODO
+class ZncPlugin : public QObject, public ConnectionPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreePlugin)
+    Q_INTERFACES(ConnectionPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
+    Q_PLUGIN_METADATA(IID "com.github.communi.ConnectionPlugin")
 #endif
 
 public:
     ZncPlugin(QObject* parent = 0);
 
-    void initialize(TreeWidget* tree);
-
-private slots:
-    void connectionAdded(IrcConnection* connection);
+    void initialize(IrcConnection* connection);
 };
 
 #endif // ZNCPLUGIN_H

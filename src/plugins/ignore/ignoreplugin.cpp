@@ -13,17 +13,20 @@
 */
 
 #include "ignoreplugin.h"
-#include "treewidget.h"
 #include "ignoremanager.h"
 
 IgnorePlugin::IgnorePlugin(QObject* parent) : QObject(parent)
 {
 }
 
-void IgnorePlugin::initialize(TreeWidget* tree)
+void IgnorePlugin::initialize(IrcConnection* connection)
 {
-    connect(tree, SIGNAL(connectionAdded(IrcConnection*)), IgnoreManager::instance(), SLOT(addConnection(IrcConnection*)));
-    connect(tree, SIGNAL(connectionRemoved(IrcConnection*)), IgnoreManager::instance(), SLOT(removeConnection(IrcConnection*)));
+    IgnoreManager::instance()->addConnection(connection);
+}
+
+void IgnorePlugin::uninitialize(IrcConnection* connection)
+{
+    IgnoreManager::instance()->removeConnection(connection);
 }
 
 #if QT_VERSION < 0x050000

@@ -13,7 +13,6 @@
 */
 
 #include "zncplugin.h"
-#include "treewidget.h"
 #include "zncmanager.h"
 #include <IrcConnection>
 #include <IrcBufferModel>
@@ -22,12 +21,7 @@ ZncPlugin::ZncPlugin(QObject* parent) : QObject(parent)
 {
 }
 
-void ZncPlugin::initialize(TreeWidget* tree)
-{
-    connect(tree, SIGNAL(connectionAdded(IrcConnection*)), this, SLOT(connectionAdded(IrcConnection*)));
-}
-
-void ZncPlugin::connectionAdded(IrcConnection* connection)
+void ZncPlugin::initialize(IrcConnection* connection)
 {
     new ZncManager(connection->findChild<IrcBufferModel*>()); // TODO
 }

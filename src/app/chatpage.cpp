@@ -22,6 +22,7 @@
 #include <QtPlugin>
 #include <QPluginLoader>
 #include "browserplugin.h"
+#include "connectionplugin.h"
 #include "documentplugin.h"
 #include "listplugin.h"
 #include "inputplugin.h"
@@ -125,6 +126,12 @@ void ChatPage::addConnection(IrcConnection* connection)
         connection->open();
 
     d.connections += connection;
+
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        ConnectionPlugin* connectionPlugin = qobject_cast<ConnectionPlugin*>(instance);
+        if (connectionPlugin)
+            connectionPlugin->initialize(connection);
+    }
 }
 
 void ChatPage::removeConnection(IrcConnection* connection)
@@ -145,6 +152,12 @@ void ChatPage::removeConnection(IrcConnection* connection)
 
     if (d.connections.isEmpty())
         d.splitView->reset();
+
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        ConnectionPlugin* connectionPlugin = qobject_cast<ConnectionPlugin*>(instance);
+        if (connectionPlugin)
+            connectionPlugin->uninitialize(connection);
+    }
 }
 
 void ChatPage::addBuffer(IrcBuffer* buffer)

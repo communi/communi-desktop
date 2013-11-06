@@ -12,26 +12,21 @@
 * GNU General Public License for more details.
 */
 
-#ifndef IGNOREPLUGIN_H
-#define IGNOREPLUGIN_H
+#ifndef CONNECTIONPLUGIN_H
+#define CONNECTIONPLUGIN_H
 
-#include <QObject>
 #include <QtPlugin>
-#include "connectionplugin.h"
 
-class IgnorePlugin : public QObject, public ConnectionPlugin
+class IrcConnection;
+
+class ConnectionPlugin
 {
-    Q_OBJECT
-    Q_INTERFACES(ConnectionPlugin)
-#if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "com.github.communi.ConnectionPlugin")
-#endif
-
 public:
-    IgnorePlugin(QObject* parent = 0);
-
-    void initialize(IrcConnection* connection);
-    void uninitialize(IrcConnection* connection);
+    virtual ~ConnectionPlugin() {}
+    virtual void initialize(IrcConnection*) {}
+    virtual void uninitialize(IrcConnection*) {}
 };
 
-#endif // IGNOREPLUGIN_H
+Q_DECLARE_INTERFACE(ConnectionPlugin, "com.github.communi.ConnectionPlugin")
+
+#endif // CONNECTIONPLUGIN_H

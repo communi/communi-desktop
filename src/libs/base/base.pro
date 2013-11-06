@@ -17,6 +17,7 @@ INCLUDEPATH += $$PWD
 
 HEADERS += $$PWD/browserplugin.h
 HEADERS += $$PWD/bufferview.h
+HEADERS += $$PWD/connectionplugin.h
 HEADERS += $$PWD/documentplugin.h
 HEADERS += $$PWD/inputplugin.h
 HEADERS += $$PWD/listplugin.h
