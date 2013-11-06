@@ -13,30 +13,75 @@
 */
 
 #include "soundplugin.h"
+#include "treewidget.h"
 #include "soundnotification.h"
+#include <QDesktopServices>
+#include <IrcConnection>
+#include <QApplication>
+#include <IrcMessage>
+#include <IrcBuffer>
+#include <QFile>
+#include <QDir>
+
+inline void initResource() { Q_INIT_RESOURCE(sound); }
 
 SoundPlugin::SoundPlugin(QObject* parent) : QObject(parent)
 {
+    d.tree = 0;
     d.sound = 0;
-    d.window = 0;
 }
 
-void SoundPlugin::initialize(QWidget* window)
+void SoundPlugin::initialize(TreeWidget* tree)
 {
-    d.window = window;
+    d.tree = tree;
 
-    if (SoundNotification::isAvailable()) {
+    if (!d.sound && SoundNotification::isAvailable()) {
         d.sound = new SoundNotification(this);
 
-        /* TODO:
         QDir dataDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
         if (dataDir.exists() || dataDir.mkpath(".")) {
-            QString filePath = dataDir.filePath("notify.mp3");
-            if (!QFile::exists(filePath))
-                QFile::copy(":/notify.mp3", filePath);
+            QString filePath = dataDir.filePath("sound.mp3");
+            if (!QFile::exists(filePath)) {
+                initResource();
+                QFile::copy(":/sound.mp3", filePath);
+            }
             d.sound->setFilePath(filePath);
         }
-        */
+    }
+
+    connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
+    connect(tree, SIGNAL(bufferRemoved(IrcBuffer*)), this, SLOT(onBufferRemoved(IrcBuffer*)));
+}
+
+void SoundPlugin::uninitialize(TreeWidget* tree)
+{
+    Q_UNUSED(tree);
+    d.tree = 0;
+}
+
+void SoundPlugin::onBufferAdded(IrcBuffer* buffer)
+{
+    connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
+}
+
+void SoundPlugin::onBufferRemoved(IrcBuffer* buffer)
+{
+    disconnect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
+}
+
+void SoundPlugin::onMessageReceived(IrcMessage* message)
+{
+    if (d.sound) {
+        IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
+        if (!d.tree->isActiveWindow() || buffer != d.tree->currentBuffer()) {
+            if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
+                if (message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive)) {
+                    d.sound->play();
+                    if (!d.tree->isActiveWindow())
+                        QApplication::alert(d.tree);
+                }
+            }
+        }
     }
 }
 

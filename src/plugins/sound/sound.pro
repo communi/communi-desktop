@@ -8,6 +8,8 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     CONFIG(phonon, phonon|no_phonon):QT += phonon
 }
 
+RESOURCES += sound.qrc
+
 HEADERS += $$PWD/soundnotification.h
 HEADERS += $$PWD/soundplugin.h
 

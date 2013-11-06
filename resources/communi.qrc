@@ -30,7 +30,5 @@
   <file>iconmonstr/new-view.png</file>
   <file>iconmonstr/reconnect.png</file>
   <file>iconmonstr/settings.png</file>
-
-  <file>notify.mp3</file>
 </qresource>
 </RCC>
