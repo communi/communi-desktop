@@ -40,7 +40,8 @@ private:
     struct Private {
         QWidget* window;
         QIcon alertIcon;
-        QIcon normalIcon;
+        QIcon onlineIcon;
+        QIcon offlineIcon;
         QSystemTrayIcon* tray;
     } d;
 };

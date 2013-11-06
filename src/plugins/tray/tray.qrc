@@ -1,0 +1,10 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+  <file>icons/alert-16.png</file>
+  <file>icons/alert-32.png</file>
+  <file>icons/offline-16.png</file>
+  <file>icons/offline-32.png</file>
+  <file>icons/online-16.png</file>
+  <file>icons/online-32.png</file>
+</qresource>
+</RCC>
