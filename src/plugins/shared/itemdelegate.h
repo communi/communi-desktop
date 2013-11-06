@@ -12,22 +12,27 @@
 * GNU General Public License for more details.
 */
 
-#include "listdelegate.h"
-#include <QLineEdit>
+#ifndef ITEMDELEGATE_H
+#define ITEMDELEGATE_H
 
-ListDelegate::ListDelegate(QObject* parent) : QStyledItemDelegate(parent)
-{
-}
+#include <QStyledItemDelegate>
 
-QSize ListDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+class ItemDelegate : public QStyledItemDelegate
 {
-    QSize size = QStyledItemDelegate::sizeHint(option, index);
-    static int height = 0;
-    if (!height) {
-        QLineEdit lineEdit;
-        lineEdit.setStyleSheet("QLineEdit { border: 1px solid transparent; }");
-        height = lineEdit.sizeHint().height();
-    }
-    size.setHeight(height);
-    return size;
-}
+    Q_OBJECT
+
+public:
+    explicit ItemDelegate(QObject* parent = 0);
+
+    int itemHeight() const;
+    void setItemHeight(int height);
+
+    QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
+
+private:
+    struct Private {
+        int height;
+    } d;
+};
+
+#endif // ITEMDELEGATE_H

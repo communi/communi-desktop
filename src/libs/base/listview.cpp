@@ -8,7 +8,6 @@
  */
 
 #include "listview.h"
-#include "listdelegate.h"
 #include <IrcUserModel>
 #include <QFontMetrics>
 #include <QScrollBar>
@@ -22,8 +21,6 @@ ListView::ListView(QWidget* parent) : QListView(parent)
     d.model = new IrcUserModel(this);
     d.model->setSortMethod(Irc::SortByTitle);
     setModel(d.model);
-
-    setItemDelegate(new ListDelegate(this));
 
     connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(query(QModelIndex)));
 }

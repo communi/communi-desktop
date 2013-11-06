@@ -14,25 +14,11 @@
 
 #include "treedelegate.h"
 #include <QStyleOptionViewItem>
-#include <QLineEdit>
 #include <QPalette>
 #include <QPainter>
 
-TreeDelegate::TreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
+TreeDelegate::TreeDelegate(QObject* parent) : ItemDelegate(parent)
 {
-}
-
-QSize TreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
-{
-    QSize size = QStyledItemDelegate::sizeHint(option, index);
-    static int height = 0;
-    if (!height) {
-        QLineEdit lineEdit;
-        lineEdit.setStyleSheet("QLineEdit { border: 1px solid transparent; }");
-        height = lineEdit.sizeHint().height();
-    }
-    size.setHeight(height);
-    return size;
 }
 
 void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -61,5 +47,5 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         painter->setPen(oldPen);
     }
 
-    QStyledItemDelegate::paint(painter, option, index);
+    ItemDelegate::paint(painter, option, index);
 }

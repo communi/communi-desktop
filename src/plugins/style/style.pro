@@ -2,12 +2,8 @@
 # Communi
 ######################################################################
 
-HEADERS += $$PWD/badgedelegate.h
-HEADERS += $$PWD/badgeplugin.h
-
-SOURCES += $$PWD/badgedelegate.cpp
-SOURCES += $$PWD/badgeplugin.cpp
+HEADERS += $$PWD/styleplugin.h
+SOURCES += $$PWD/styleplugin.cpp
 
 include(../plugin.pri)
 include(../shared/shared.pri)
-include(../shared/delegate.pri)

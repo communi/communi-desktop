@@ -15,16 +15,15 @@
 #ifndef TREEDELEGATE_H
 #define TREEDELEGATE_H
 
-#include <QStyledItemDelegate>
+#include "itemdelegate.h"
 
-class TreeDelegate : public QStyledItemDelegate
+class TreeDelegate : public ItemDelegate
 {
     Q_OBJECT
 
 public:
     explicit TreeDelegate(QObject* parent = 0);
 
-    QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 };
 

@@ -43,6 +43,7 @@ Q_IMPORT_PLUGIN(NavigatorPlugin)
 Q_IMPORT_PLUGIN(ReseterPlugin)
 Q_IMPORT_PLUGIN(SoundPlugin)
 Q_IMPORT_PLUGIN(SubjectPlugin)
+Q_IMPORT_PLUGIN(StylePlugin)
 Q_IMPORT_PLUGIN(TrayPlugin)
 Q_IMPORT_PLUGIN(ZncPlugin)
 

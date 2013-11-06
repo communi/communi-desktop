@@ -12,19 +12,27 @@
 * GNU General Public License for more details.
 */
 
-#ifndef LISTDELEGATE_H
-#define LISTDELEGATE_H
+#include "itemdelegate.h"
 
-#include <QStyledItemDelegate>
-
-class ListDelegate : public QStyledItemDelegate
+ItemDelegate::ItemDelegate(QObject* parent) : QStyledItemDelegate(parent)
 {
-    Q_OBJECT
+    d.height = 0;
+}
 
-public:
-    explicit ListDelegate(QObject* parent = 0);
+int ItemDelegate::itemHeight() const
+{
+    return d.height;
+}
 
-    QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
-};
+void ItemDelegate::setItemHeight(int height)
+{
+    d.height = height;
+}
 
-#endif // LISTDELEGATE_H
+QSize ItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+    QSize size = QStyledItemDelegate::sizeHint(option, index);
+    if (d.height > 0)
+        size.setHeight(d.height);
+    return size;
+}

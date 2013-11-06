@@ -15,6 +15,7 @@ SUBDIRS += monitor
 SUBDIRS += navigator
 SUBDIRS += reseter
 SUBDIRS += sound
+SUBDIRS += style
 SUBDIRS += subject
 SUBDIRS += tray
 SUBDIRS += znc

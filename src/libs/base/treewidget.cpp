@@ -13,7 +13,6 @@
 */
 
 #include "treewidget.h"
-#include "treedelegate.h"
 #include "treeitem.h"
 #include <QHeaderView>
 #include <IrcBuffer>
@@ -32,8 +31,6 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 
     setSortingEnabled(true);
     sortByColumn(0, Qt::AscendingOrder);
-
-    setItemDelegate(new TreeDelegate(this));
 
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));
