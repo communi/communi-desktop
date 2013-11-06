@@ -15,6 +15,7 @@
 #include "textinput.h"
 #include <IrcCommandParser>
 #include <IrcBufferModel>
+#include <IrcConnection>
 #include <IrcBuffer>
 
 TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
@@ -84,15 +85,19 @@ void TextInput::sendInput()
 {
     IrcBuffer* b = buffer();
     IrcCommandParser* p = parser();
-    if (!b || !p)
+    IrcConnection* c = b ? b->connection() : 0;
+    if (!c || !p)
         return;
 
     bool error = false;
     const QStringList lines = text().split(QRegExp("[\\r\\n]"), QString::SkipEmptyParts);
     foreach (const QString& line, lines) {
         if (!line.trimmed().isEmpty()) {
-            if (!b->sendCommand(p->parse(line)))
+            IrcCommand* cmd = p->parse(line);
+            if (!b->sendCommand(cmd))
                 error = true;
+            else if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::Notice || cmd->type() == IrcCommand::CtcpAction)
+                b->receiveMessage(cmd->toMessage(c->nickName(), c));
         }
     }
     if (!error)
