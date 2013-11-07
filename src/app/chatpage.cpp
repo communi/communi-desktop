@@ -62,7 +62,6 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
     connect(d.splitView, SIGNAL(viewRemoved(BufferView*)), this, SLOT(removeView(BufferView*)));
 
     setStretchFactor(1, 1);
-    setHandleWidth(1);
 
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         TreeWidgetPlugin* treePlugin = qobject_cast<TreeWidgetPlugin*>(instance);

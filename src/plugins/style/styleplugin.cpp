@@ -114,6 +114,8 @@ void StylePlugin::initialize(QWidget* window)
 {
     window->setStyleSheet(
         "QSplitter::handle {"
+        "    width: 1px;"
+        "    height: 1px;"
         "    background: palette(dark);"
         "}");
 }

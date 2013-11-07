@@ -14,7 +14,6 @@
 
 SplitView::SplitView(QWidget* parent) : QSplitter(parent)
 {
-    setHandleWidth(1);
     d.current = createBufferView(this);
     connect(d.current, SIGNAL(bufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
     connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(onFocusChanged(QWidget*,QWidget*)));
@@ -83,7 +82,6 @@ void SplitView::split(BufferView* view, Qt::Orientation orientation)
                 if (index != -1) {
                     QList<int> sizes = container->sizes();
                     QSplitter* splitter = new QSplitter(orientation, container);
-                    splitter->setHandleWidth(1);
                     container->insertWidget(index, splitter);
                     splitter->addWidget(view);
                     container->setSizes(sizes);

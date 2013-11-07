@@ -36,7 +36,6 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     layout->addWidget(d.splitter);
     layout->addWidget(d.textInput);
 
-    d.splitter->setHandleWidth(1);
     d.splitter->addWidget(d.textBrowser);
     d.splitter->addWidget(d.listView);
     d.splitter->setStretchFactor(0, 1);
