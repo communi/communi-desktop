@@ -17,22 +17,22 @@
 
 #include <QtPlugin>
 #include <QShortcut>
-#include "textinputplugin.h"
+#include "bufferviewplugin.h"
 #include "windowplugin.h"
 
-class CompleterPlugin : public QObject, public TextInputPlugin, public WindowPlugin
+class CompleterPlugin : public QObject, public BufferViewPlugin, public WindowPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TextInputPlugin WindowPlugin)
+    Q_INTERFACES(BufferViewPlugin WindowPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "Communi.TextInputPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.BufferViewPlugin")
     Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
 #endif
 
 public:
     CompleterPlugin(QObject* parent = 0);
 
-    void initialize(TextInput* input);
+    void initialize(BufferView* view);
     void initialize(QWidget* window);
 
 private:

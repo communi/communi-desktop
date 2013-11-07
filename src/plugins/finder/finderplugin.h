@@ -18,22 +18,22 @@
 #include <QObject>
 #include <QtPlugin>
 #include "treewidgetplugin.h"
-#include "textbrowserplugin.h"
+#include "bufferviewplugin.h"
 
-class FinderPlugin : public QObject, public TreeWidgetPlugin, public TextBrowserPlugin
+class FinderPlugin : public QObject, public TreeWidgetPlugin, public BufferViewPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreeWidgetPlugin TextBrowserPlugin)
+    Q_INTERFACES(TreeWidgetPlugin BufferViewPlugin)
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.TextBrowserPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.BufferViewPlugin")
 #endif
 
 public:
     explicit FinderPlugin(QObject* parent = 0);
 
     void initialize(TreeWidget* tree);
-    void initialize(TextBrowser* browser);
+    void initialize(BufferView* view);
 };
 
 #endif // FINDERPLUGIN_H

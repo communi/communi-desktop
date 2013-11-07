@@ -16,20 +16,20 @@
 #define HISTORYPLUGIN_H
 
 #include <QtPlugin>
-#include "textinputplugin.h"
+#include "bufferviewplugin.h"
 
-class HistoryPlugin : public QObject, public TextInputPlugin
+class HistoryPlugin : public QObject, public BufferViewPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TextInputPlugin)
+    Q_INTERFACES(BufferViewPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "Communi.TextInputPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.BufferViewPlugin")
 #endif
 
 public:
     HistoryPlugin(QObject* parent = 0);
 
-    void initialize(TextInput* input);
+    void initialize(BufferView* view);
 };
 
 #endif // HISTORYPLUGIN_H

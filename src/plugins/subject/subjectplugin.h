@@ -16,20 +16,20 @@
 #define SUBJECTPLUGIN_H
 
 #include <QtPlugin>
-#include "topiclabelplugin.h"
+#include "bufferviewplugin.h"
 
-class SubjectPlugin : public QObject, public TopicLabelPlugin
+class SubjectPlugin : public QObject, public BufferViewPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TopicLabelPlugin)
+    Q_INTERFACES(BufferViewPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "Communi.TopicLabelPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.BufferViewPlugin")
 #endif
 
 public:
     SubjectPlugin(QObject* parent = 0);
 
-    void initialize(TopicLabel* label);
+    void initialize(BufferView* view);
 };
 
 #endif // SUBJECTPLUGIN_H

@@ -17,31 +17,27 @@
 
 #include <QObject>
 #include <QtPlugin>
-#include "listviewplugin.h"
+#include "bufferviewplugin.h"
 #include "splitviewplugin.h"
-#include "textbrowserplugin.h"
 #include "treewidgetplugin.h"
 
 class MenuPlugin : public QObject, public TreeWidgetPlugin,
-                                   public ListViewPlugin,
-                                   public TextBrowserPlugin,
+                                   public BufferViewPlugin,
                                    public SplitViewPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreeWidgetPlugin ListViewPlugin TextBrowserPlugin SplitViewPlugin)
+    Q_INTERFACES(TreeWidgetPlugin BufferViewPlugin SplitViewPlugin)
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.ListPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.BrowserPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.ViewPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.BufferViewPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.SplitViewPlugin")
 #endif
 
 public:
     MenuPlugin(QObject* parent = 0);
 
     void initialize(TreeWidget* tree);
-    void initialize(ListView* tree);
-    void initialize(TextBrowser* browser);
+    void initialize(BufferView* view);
     void initialize(SplitView* view);
 
 private:

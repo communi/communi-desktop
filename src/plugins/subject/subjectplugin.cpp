@@ -13,15 +13,16 @@
 */
 
 #include "subjectplugin.h"
+#include "bufferview.h"
 #include "editor.h"
 
 SubjectPlugin::SubjectPlugin(QObject* parent) : QObject(parent)
 {
 }
 
-void SubjectPlugin::initialize(TopicLabel* label)
+void SubjectPlugin::initialize(BufferView* view)
 {
-    new Editor(label);
+    new Editor(view->topicLabel());
 }
 
 #if QT_VERSION < 0x050000

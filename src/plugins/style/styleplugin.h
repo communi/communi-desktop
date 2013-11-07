@@ -17,32 +17,23 @@
 
 #include <QObject>
 #include <QtPlugin>
-#include "listviewplugin.h"
-#include "textbrowserplugin.h"
+#include "bufferviewplugin.h"
 #include "textdocumentplugin.h"
-#include "textinputplugin.h"
-#include "topiclabelplugin.h"
 #include "treewidgetplugin.h"
 #include "windowplugin.h"
 
 class QtDockTile;
 
-class StylePlugin : public QObject, public TextBrowserPlugin,
+class StylePlugin : public QObject, public BufferViewPlugin,
                                     public TextDocumentPlugin,
-                                    public TextInputPlugin,
-                                    public ListViewPlugin,
-                                    public TopicLabelPlugin,
                                     public TreeWidgetPlugin,
                                     public WindowPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TextBrowserPlugin TextDocumentPlugin TextInputPlugin ListViewPlugin TopicLabelPlugin TreeWidgetPlugin WindowPlugin)
+    Q_INTERFACES(BufferViewPlugin TextDocumentPlugin TreeWidgetPlugin WindowPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "Communi.TextBrowserPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.BufferViewPlugin")
     Q_PLUGIN_METADATA(IID "Communi.TextDocumentPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.TextInputPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.ListViewPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.TopicLabelPlugin")
     Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
     Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
 #endif
@@ -50,11 +41,8 @@ class StylePlugin : public QObject, public TextBrowserPlugin,
 public:
     StylePlugin(QObject* parent = 0);
 
-    void initialize(TextBrowser* browser);
+    void initialize(BufferView* view);
     void initialize(TextDocument* doc);
-    void initialize(TextInput* input);
-    void initialize(ListView* list);
-    void initialize(TopicLabel* label);
     void initialize(TreeWidget* tree);
     void initialize(QWidget* window);
 };

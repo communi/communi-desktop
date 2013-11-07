@@ -16,6 +16,7 @@
 #include "treemenu.h"
 #include "listmenu.h"
 #include "browsermenu.h"
+#include "bufferview.h"
 
 MenuPlugin::MenuPlugin(QObject* parent) : QObject(parent)
 {
@@ -27,14 +28,10 @@ void MenuPlugin::initialize(TreeWidget* tree)
     new TreeMenu(tree);
 }
 
-void MenuPlugin::initialize(ListView* list)
+void MenuPlugin::initialize(BufferView* view)
 {
-    new ListMenu(list);
-}
-
-void MenuPlugin::initialize(TextBrowser* browser)
-{
-    new BrowserMenu(browser, d.view);
+    new ListMenu(view->listView());
+    new BrowserMenu(view->textBrowser(), d.view);
 }
 
 void MenuPlugin::initialize(SplitView *view)

@@ -13,6 +13,7 @@
 */
 
 #include "completerplugin.h"
+#include "bufferview.h"
 #include "completer.h"
 
 CompleterPlugin::CompleterPlugin(QObject* parent) : QObject(parent)
@@ -20,8 +21,9 @@ CompleterPlugin::CompleterPlugin(QObject* parent) : QObject(parent)
     d.shortcut = 0;
 }
 
-void CompleterPlugin::initialize(TextInput* input)
+void CompleterPlugin::initialize(BufferView* view)
 {
+    TextInput* input = view->textInput();
     Completer* completer = new Completer(input);
     connect(d.shortcut, SIGNAL(activated()), completer, SLOT(tryComplete()));
 }

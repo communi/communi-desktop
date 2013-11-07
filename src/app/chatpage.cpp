@@ -23,12 +23,8 @@
 #include <QPluginLoader>
 #include "bufferviewplugin.h"
 #include "connectionplugin.h"
-#include "listviewplugin.h"
 #include "splitviewplugin.h"
-#include "textbrowserplugin.h"
 #include "textdocumentplugin.h"
-#include "textinputplugin.h"
-#include "topiclabelplugin.h"
 #include "treewidgetplugin.h"
 #include "windowplugin.h"
 
@@ -130,9 +126,9 @@ void ChatPage::addConnection(IrcConnection* connection)
     d.connections += connection;
 
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        ConnectionPlugin* connectionPlugin = qobject_cast<ConnectionPlugin*>(instance);
-        if (connectionPlugin)
-            connectionPlugin->initialize(connection);
+        ConnectionPlugin* plugin = qobject_cast<ConnectionPlugin*>(instance);
+        if (plugin)
+            plugin->initialize(connection);
     }
 }
 
@@ -196,42 +192,18 @@ void ChatPage::addView(BufferView* view)
     view->textInput()->setParser(createParser(view));
 
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        BufferViewPlugin* viewPlugin = qobject_cast<BufferViewPlugin*>(instance);
-        if (viewPlugin)
-            viewPlugin->initialize(view);
-        TextBrowserPlugin* browserPlugin = qobject_cast<TextBrowserPlugin*>(instance);
-        if (browserPlugin)
-            browserPlugin->initialize(view->textBrowser());
-        TextInputPlugin* inputPlugin = qobject_cast<TextInputPlugin*>(instance);
-        if (inputPlugin)
-            inputPlugin->initialize(view->textInput());
-        ListViewPlugin* listPlugin = qobject_cast<ListViewPlugin*>(instance);
-        if (listPlugin)
-            listPlugin->initialize(view->listView());
-        TopicLabelPlugin* topicPlugin = qobject_cast<TopicLabelPlugin*>(instance);
-        if (topicPlugin)
-            topicPlugin->initialize(view->topicLabel());
+        BufferViewPlugin* plugin = qobject_cast<BufferViewPlugin*>(instance);
+        if (plugin)
+            plugin->initialize(view);
     }
 }
 
 void ChatPage::removeView(BufferView* view)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        TextBrowserPlugin* browserPlugin = qobject_cast<TextBrowserPlugin*>(instance);
-        if (browserPlugin)
-            browserPlugin->uninitialize(view->textBrowser());
-        TextInputPlugin* inputPlugin = qobject_cast<TextInputPlugin*>(instance);
-        if (inputPlugin)
-            inputPlugin->uninitialize(view->textInput());
-        ListViewPlugin* listPlugin = qobject_cast<ListViewPlugin*>(instance);
-        if (listPlugin)
-            listPlugin->uninitialize(view->listView());
-        TopicLabelPlugin* topicPlugin = qobject_cast<TopicLabelPlugin*>(instance);
-        if (topicPlugin)
-            topicPlugin->uninitialize(view->topicLabel());
-        BufferViewPlugin* viewPlugin = qobject_cast<BufferViewPlugin*>(instance);
-        if (viewPlugin)
-            viewPlugin->uninitialize(view);
+        BufferViewPlugin* plugin = qobject_cast<BufferViewPlugin*>(instance);
+        if (plugin)
+            plugin->uninitialize(view);
     }
 }
 

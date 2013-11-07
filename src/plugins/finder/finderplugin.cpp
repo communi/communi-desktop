@@ -15,6 +15,7 @@
 #include "finderplugin.h"
 #include "searchpopup.h"
 #include "searchinput.h"
+#include "bufferview.h"
 
 FinderPlugin::FinderPlugin(QObject* parent) : QObject(parent)
 {
@@ -25,9 +26,9 @@ void FinderPlugin::initialize(TreeWidget* tree)
     new SearchPopup(tree);
 }
 
-void FinderPlugin::initialize(TextBrowser* browser)
+void FinderPlugin::initialize(BufferView* view)
 {
-    new SearchInput(browser);
+    new SearchInput(view->textBrowser());
 }
 
 #if QT_VERSION < 0x050000

@@ -13,15 +13,16 @@
 */
 
 #include "historyplugin.h"
+#include "bufferview.h"
 #include "history.h"
 
 HistoryPlugin::HistoryPlugin(QObject* parent) : QObject(parent)
 {
 }
 
-void HistoryPlugin::initialize(TextInput* input)
+void HistoryPlugin::initialize(BufferView* view)
 {
-    new History(input);
+    new History(view->textInput());
 }
 
 #if QT_VERSION < 0x050000

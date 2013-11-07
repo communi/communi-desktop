@@ -21,6 +21,7 @@
 #include "listview.h"
 #include "topiclabel.h"
 #include "treewidget.h"
+#include "bufferview.h"
 
 static int baseHeight()
 {
@@ -34,13 +35,51 @@ StylePlugin::StylePlugin(QObject* parent) : QObject(parent)
 {
 }
 
-void StylePlugin::initialize(TextBrowser* browser)
+void StylePlugin::initialize(BufferView* view)
 {
-    browser->setStyleSheet(
+    view->textBrowser()->setStyleSheet(
         "TextBrowser {"
         "    border: none;"
         "    color: #000000;"
         "    background: #ffffff;"
+        "    selection-color: palette(highlighted-text);"
+        "    selection-background-color: palette(highlight);"
+        "}");
+
+    view->textInput()->setStyleSheet(
+        "TextInput {"
+        "    border: 1px solid transparent;"
+        "    border-top-color: palette(dark);"
+        "}");
+
+    ItemDelegate* delegate = new ItemDelegate(view->listView());
+    delegate->setItemHeight(baseHeight());
+    view->listView()->setItemDelegate(delegate);
+
+    view->listView()->setStyleSheet(
+        "ListView {"
+        "    border: none;"
+        "    background: palette(alternate-base);"
+        "    selection-background-color: palette(highlight);"
+        "}");
+
+    QTextDocument* doc = view->topicLabel()->findChild<QTextDocument*>();
+    if (doc)
+        doc->setDefaultStyleSheet("a { color: #4040ff }");
+
+    view->topicLabel()->setMinimumHeight(baseHeight());
+
+    view->topicLabel()->setStyleSheet(
+        "TopicLabel {"
+        "    border: 1px solid transparent;"
+        "    border-bottom-color: palette(dark);"
+        "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
+        "                                stop: 0.0 palette(light),"
+        "                                stop: 1.0 palette(button));"
+        "}"
+        "TopicLabel > QTextEdit {"
+        "    border: 1px solid transparent;"
+        "    border-bottom-color: palette(dark);"
         "    selection-color: palette(highlighted-text);"
         "    selection-background-color: palette(highlight);"
         "}");
@@ -55,53 +94,6 @@ void StylePlugin::initialize(TextDocument* doc)
         ".event     { color: #808080 }"
         ".timestamp { color: #808080; font-size: small }"
         "a { color: #4040ff }");
-}
-
-void StylePlugin::initialize(TextInput* input)
-{
-    input->setStyleSheet(
-        "TextInput {"
-        "    border: 1px solid transparent;"
-        "    border-top-color: palette(dark);"
-        "}");
-}
-
-void StylePlugin::initialize(ListView* list)
-{
-    ItemDelegate* delegate = new ItemDelegate(list);
-    delegate->setItemHeight(baseHeight());
-    list->setItemDelegate(delegate);
-
-    list->setStyleSheet(
-        "ListView {"
-        "    border: none;"
-        "    background: palette(alternate-base);"
-        "    selection-background-color: palette(highlight);"
-        "}");
-}
-
-void StylePlugin::initialize(TopicLabel* label)
-{
-    QTextDocument* doc = label->findChild<QTextDocument*>();
-    if (doc)
-        doc->setDefaultStyleSheet("a { color: #4040ff }");
-
-    label->setMinimumHeight(baseHeight());
-
-    label->setStyleSheet(
-        "TopicLabel {"
-        "    border: 1px solid transparent;"
-        "    border-bottom-color: palette(dark);"
-        "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-        "                                stop: 0.0 palette(light),"
-        "                                stop: 1.0 palette(button));"
-        "}"
-        "TopicLabel > QTextEdit {"
-        "    border: 1px solid transparent;"
-        "    border-bottom-color: palette(dark);"
-        "    selection-color: palette(highlighted-text);"
-        "    selection-background-color: palette(highlight);"
-        "}");
 }
 
 void StylePlugin::initialize(TreeWidget* tree)
