@@ -18,6 +18,7 @@ class IrcBuffer;
 class IrcMessage;
 class IrcSession;
 class ConnectPage;
+class IrcConnection;
 
 class MainWindow : public QStackedWidget
 {
@@ -38,6 +39,7 @@ private slots:
     void onRejected();
     void closeBuffer(IrcBuffer* buffer = 0);
     void setCurrentBuffer(IrcBuffer* buffer);
+    void editConnection(IrcConnection* connection);
     void restoreConnections();
     void saveConnections();
 
@@ -47,6 +49,7 @@ private:
         QIcon alertIcon;
         ChatPage* chatPage;
         ConnectPage* connectPage;
+        IrcConnection* editedConnection;
     } d;
 };
 

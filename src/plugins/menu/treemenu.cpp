@@ -29,7 +29,7 @@ TreeMenu::TreeMenu(TreeWidget* tree) : QMenu(tree)
     d.disconnectAction = addAction(tr("Disconnect"));
     d.reconnectAction = addAction(tr("Reconnect"));
     addSeparator();
-    // TODO: d.editAction = addAction(tr("Edit"), this, SLOT(onEditTriggered()));
+    d.editAction = addAction(tr("Edit"), this, SLOT(onEditTriggered()));
     d.whoisAction = addAction(tr("Whois"), this, SLOT(onWhoisTriggered()));
     d.joinAction = addAction(tr("Join"), this, SLOT(onJoinTriggered()));
     d.partAction = addAction(tr("Part"), this, SLOT(onPartTriggered()));
@@ -40,7 +40,6 @@ TreeMenu::TreeMenu(TreeWidget* tree) : QMenu(tree)
     connect(d.closeAction, SIGNAL(triggered()), this, SLOT(onCloseTriggered()));
     addAction(d.closeAction);
 
-    connect(tree, SIGNAL(currentItemChanged(TreeItem*)), this, SLOT(setup(TreeItem*)));
     tree->installEventFilter(this);
 }
 
@@ -61,7 +60,7 @@ bool TreeMenu::eventFilter(QObject *object, QEvent *event)
 
 void TreeMenu::onEditTriggered()
 {
-    // TODO: QMetaObject::invokeMethod(parent(), "editConnection", Q_ARG(IrcConnection*, d.item->connection()));
+    QMetaObject::invokeMethod(d.tree->window(), "editConnection", Q_ARG(IrcConnection*, d.item->connection()));
 }
 
 void TreeMenu::onWhoisTriggered()
@@ -102,14 +101,14 @@ void TreeMenu::updateActions()
         const bool channel = d.item->buffer()->isChannel();
         d.disconnectAction->setVisible(connected);
         d.reconnectAction->setVisible(!connected);
-        // TODO: d.editAction->setVisible(!connected && !child);
+        d.editAction->setEnabled(!connected && !child);
         d.joinAction->setVisible(connected && channel && !active);
         d.partAction->setVisible(connected && channel && active);
         d.whoisAction->setVisible(connected && child && !channel);
     } else {
         d.disconnectAction->setVisible(false);
         d.reconnectAction->setVisible(false);
-        // TODO: d.editAction->setVisible(false);
+        d.editAction->setEnabled(false);
         d.whoisAction->setVisible(false);
         d.joinAction->setVisible(false);
         d.partAction->setVisible(false);

@@ -114,7 +114,9 @@ void MainWindow::doConnect()
 
 void MainWindow::onAccepted()
 {
-    IrcConnection* connection = new IrcConnection(this);
+    IrcConnection* connection = d.editedConnection;
+    if (!connection)
+        connection = new IrcConnection(this);
     connection->setHost(d.connectPage->host());
     connection->setPort(d.connectPage->port());
     connection->setSecure(d.connectPage->isSecure());
@@ -123,12 +125,15 @@ void MainWindow::onAccepted()
     connection->setUserName(d.connectPage->userName());
     connection->setDisplayName(d.connectPage->displayName());
     connection->setPassword(d.connectPage->password());
-    d.chatPage->addConnection(connection);
+    if (!d.editedConnection)
+        d.chatPage->addConnection(connection);
+    d.editedConnection = 0;
     setCurrentWidget(d.chatPage);
 }
 
 void MainWindow::onRejected()
 {
+    d.editedConnection = 0;
     setCurrentWidget(d.chatPage);
 }
 
@@ -156,6 +161,21 @@ void MainWindow::setCurrentBuffer(IrcBuffer* buffer)
         doConnect();
         setWindowTitle(tr("Communi %1").arg(IRC_VERSION_STR));
     }
+}
+
+void MainWindow::editConnection(IrcConnection* connection)
+{
+    d.connectPage->setHost(connection->host());
+    d.connectPage->setPort(connection->port());
+    d.connectPage->setSecure(connection->isSecure());
+    d.connectPage->setNickName(connection->nickName());
+    d.connectPage->setRealName(connection->realName());
+    d.connectPage->setUserName(connection->userName());
+    d.connectPage->setDisplayName(connection->displayName());
+    d.connectPage->setPassword(connection->password());
+    setCurrentWidget(d.connectPage);
+    d.editedConnection = connection;
+    doConnect();
 }
 
 void MainWindow::restoreConnections()

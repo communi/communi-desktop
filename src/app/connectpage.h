@@ -21,13 +21,28 @@ public:
     ~ConnectPage();
 
     QString displayName() const;
+    void setDisplayName(const QString& name);
+
     QString host() const;
+    void setHost(const QString& host);
+
     int port() const;
+    void setPort(int port);
+
     bool isSecure() const;
+    void setSecure(bool secure);
+
     QString nickName() const;
-    QString realName() const;
+    void setNickName(const QString& name);
+
     QString userName() const;
+    void setUserName(const QString& name);
+
+    QString realName() const;
+    void setRealName(const QString& name);
+
     QString password() const;
+    void setPassword(const QString& password);
 
     QDialogButtonBox* buttonBox() const;
 

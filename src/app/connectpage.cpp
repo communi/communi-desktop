@@ -74,9 +74,19 @@ QString ConnectPage::displayName() const
     return fieldValue(ui.displayNameField->text(), ui.displayNameField->placeholderText());
 }
 
+void ConnectPage::setDisplayName(const QString& name)
+{
+    ui.displayNameField->setText(name);
+}
+
 QString ConnectPage::host() const
 {
     return fieldValue(ui.hostField->text(), ui.hostField->placeholderText());
+}
+
+void ConnectPage::setHost(const QString& host)
+{
+    ui.hostField->setText(host);
 }
 
 int ConnectPage::port() const
@@ -84,9 +94,19 @@ int ConnectPage::port() const
     return ui.portField->value();
 }
 
+void ConnectPage::setPort(int port)
+{
+    ui.portField->setValue(port);
+}
+
 bool ConnectPage::isSecure() const
 {
     return ui.secureField->isChecked();
+}
+
+void ConnectPage::setSecure(bool secure)
+{
+    ui.secureField->setChecked(secure);
 }
 
 QString ConnectPage::nickName() const
@@ -94,9 +114,19 @@ QString ConnectPage::nickName() const
     return fieldValue(ui.nickNameField->text(), ui.nickNameField->placeholderText());
 }
 
+void ConnectPage::setNickName(const QString& name)
+{
+    ui.nickNameField->setText(name);
+}
+
 QString ConnectPage::realName() const
 {
     return fieldValue(ui.realNameField->text(), ui.realNameField->placeholderText());
+}
+
+void ConnectPage::setRealName(const QString& name)
+{
+    ui.realNameField->setText(name);
 }
 
 QString ConnectPage::userName() const
@@ -104,9 +134,19 @@ QString ConnectPage::userName() const
     return fieldValue(ui.userNameField->text(), ui.userNameField->placeholderText());
 }
 
+void ConnectPage::setUserName(const QString& name)
+{
+    ui.userNameField->setText(name);
+}
+
 QString ConnectPage::password() const
 {
     return ui.passwordField->text();
+}
+
+void ConnectPage::setPassword(const QString& password)
+{
+    ui.passwordField->setText(password);
 }
 
 QDialogButtonBox* ConnectPage::buttonBox() const
