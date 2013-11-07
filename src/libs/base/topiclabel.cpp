@@ -13,6 +13,7 @@
 */
 
 #include "topiclabel.h"
+#include "messageformatter.h"
 #include <QTextDocument>
 #include <IrcTextFormat>
 #include <IrcCommand>
@@ -21,6 +22,7 @@
 TopicLabel::TopicLabel(QWidget* parent) : QLabel(parent)
 {
     d.channel = 0;
+    d.formatter = new MessageFormatter(this);
 
     setMargin(1);
     setWordWrap(true);
@@ -59,5 +61,5 @@ void TopicLabel::updateTopic()
     if (topic.isEmpty())
         setText(tr("-"));
     else
-        setText(IrcTextFormat().toHtml(topic)); // TODO: formatter
+        setText(d.formatter->formatHtml(topic));
 }

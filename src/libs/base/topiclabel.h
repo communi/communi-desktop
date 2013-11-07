@@ -18,6 +18,7 @@
 #include <QLabel>
 
 class IrcChannel;
+class MessageFormatter;
 
 class TopicLabel : public QLabel
 {
@@ -41,6 +42,7 @@ private slots:
 private:
     struct Private {
         IrcChannel* channel;
+        MessageFormatter* formatter;
     } d;
 };
 
