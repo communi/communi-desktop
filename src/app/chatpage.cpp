@@ -21,6 +21,7 @@
 
 #include <QtPlugin>
 #include <QPluginLoader>
+#include "bufferviewplugin.h"
 #include "connectionplugin.h"
 #include "listviewplugin.h"
 #include "splitviewplugin.h"
@@ -195,6 +196,9 @@ void ChatPage::addView(BufferView* view)
     view->textInput()->setParser(createParser(view));
 
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        BufferViewPlugin* viewPlugin = qobject_cast<BufferViewPlugin*>(instance);
+        if (viewPlugin)
+            viewPlugin->initialize(view);
         TextBrowserPlugin* browserPlugin = qobject_cast<TextBrowserPlugin*>(instance);
         if (browserPlugin)
             browserPlugin->initialize(view->textBrowser());
@@ -225,6 +229,9 @@ void ChatPage::removeView(BufferView* view)
         TopicLabelPlugin* topicPlugin = qobject_cast<TopicLabelPlugin*>(instance);
         if (topicPlugin)
             topicPlugin->uninitialize(view->topicLabel());
+        BufferViewPlugin* viewPlugin = qobject_cast<BufferViewPlugin*>(instance);
+        if (viewPlugin)
+            viewPlugin->uninitialize(view);
     }
 }
 
