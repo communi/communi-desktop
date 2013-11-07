@@ -49,6 +49,9 @@ public slots:
 signals:
     void destroyed(TreeItem* item);
 
+private slots:
+    void onBufferDestroyed();
+
 private:
     void init(IrcBuffer* buffer);
 

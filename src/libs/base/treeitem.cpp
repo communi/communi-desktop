@@ -30,14 +30,17 @@ TreeItem::TreeItem(IrcBuffer* buffer, TreeWidget* parent) : QObject(buffer), QTr
 void TreeItem::init(IrcBuffer* buffer)
 {
     d.buffer = buffer;
+    setObjectName(buffer->title());
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
     connect(buffer, SIGNAL(activeChanged(bool)), this, SLOT(refresh()));
     connect(buffer, SIGNAL(titleChanged(QString)), this, SLOT(refresh()));
+    connect(buffer, SIGNAL(destroyed(IrcBuffer*)), this, SLOT(onBufferDestroyed()));
 }
 
 TreeItem::~TreeItem()
 {
+    d.buffer = 0;
     emit destroyed(this);
 }
 
@@ -48,7 +51,9 @@ IrcBuffer* TreeItem::buffer() const
 
 IrcConnection* TreeItem::connection() const
 {
-    return d.buffer->connection();
+    if (d.buffer)
+        return d.buffer->connection();
+    return 0;
 }
 
 TreeItem* TreeItem::parentItem() const
@@ -63,7 +68,7 @@ TreeWidget* TreeItem::treeWidget() const
 
 QVariant TreeItem::data(int column, int role) const
 {
-    if (column == 0 && role == Qt::DisplayRole)
+    if (column == 0 && role == Qt::DisplayRole && d.buffer)
         return d.buffer->data(role);
     return QTreeWidgetItem::data(column, role);
 }
@@ -81,11 +86,19 @@ bool TreeItem::operator<(const QTreeWidgetItem& other) const
         QList<IrcConnection*> connections = treeWidget()->connections();
         return connections.indexOf(connection()) < connections.indexOf(otherItem->connection());
     }
-    const FriendlyModel* model = static_cast<FriendlyModel*>(d.buffer->model());
-    return model->lessThan(d.buffer, otherItem->buffer(), model->sortMethod());
+    if (d.buffer) {
+        const FriendlyModel* model = static_cast<FriendlyModel*>(d.buffer->model());
+        return model->lessThan(d.buffer, otherItem->buffer(), model->sortMethod());
+    }
+    return QTreeWidgetItem::operator<(other);
 }
 
 void TreeItem::refresh()
 {
     emitDataChanged();
+}
+
+void TreeItem::onBufferDestroyed()
+{
+    d.buffer = 0;
 }
