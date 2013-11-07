@@ -14,6 +14,7 @@
 
 #include "treedelegate.h"
 #include <QStyleOptionViewItem>
+#include <QApplication>
 #include <QPalette>
 #include <QPainter>
 
@@ -28,7 +29,7 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         const_cast<QStyleOptionViewItem&>(option).state &= ~(QStyle::State_Selected | QStyle::State_MouseOver);
 
         QColor c1 = option.palette.color(QPalette::Light);
-        QColor c2 = option.palette.color(QPalette::Button);
+        QColor c2 = qApp->palette().color(QPalette::Button); // TODO
         if (selected)
             qSwap(c1, c2);
 
