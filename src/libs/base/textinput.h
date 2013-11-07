@@ -15,6 +15,7 @@
 #ifndef TEXTINPUT_H
 #define TEXTINPUT_H
 
+#include <QPointer>
 #include <QLineEdit>
 
 class IrcBuffer;
@@ -45,8 +46,8 @@ private slots:
 
 private:
     struct Private {
-        IrcBuffer* buffer;
         IrcCommandParser* parser;
+        QPointer<IrcBuffer> buffer;
     } d;
 };
 
