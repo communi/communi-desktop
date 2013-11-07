@@ -18,22 +18,22 @@
 #include <QtPlugin>
 #include <QShortcut>
 #include "bufferviewplugin.h"
-#include "windowplugin.h"
+#include "splitviewplugin.h"
 
-class CompleterPlugin : public QObject, public BufferViewPlugin, public WindowPlugin
+class CompleterPlugin : public QObject, public BufferViewPlugin, public SplitViewPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(BufferViewPlugin WindowPlugin)
+    Q_INTERFACES(BufferViewPlugin SplitViewPlugin)
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.BufferViewPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.SplitViewPlugin")
 #endif
 
 public:
     CompleterPlugin(QObject* parent = 0);
 
     void initialize(BufferView* view);
-    void initialize(QWidget* window);
+    void initialize(SplitView* view);
 
 private:
     struct Private {

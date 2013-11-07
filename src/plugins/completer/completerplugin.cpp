@@ -14,6 +14,7 @@
 
 #include "completerplugin.h"
 #include "bufferview.h"
+#include "splitview.h"
 #include "completer.h"
 
 CompleterPlugin::CompleterPlugin(QObject* parent) : QObject(parent)
@@ -28,9 +29,9 @@ void CompleterPlugin::initialize(BufferView* view)
     connect(d.shortcut, SIGNAL(activated()), completer, SLOT(tryComplete()));
 }
 
-void CompleterPlugin::initialize(QWidget* window)
+void CompleterPlugin::initialize(SplitView* view)
 {
-    d.shortcut = new QShortcut(Qt::Key_Tab, window);
+    d.shortcut = new QShortcut(Qt::Key_Tab, view);
 }
 
 #if QT_VERSION < 0x050000
