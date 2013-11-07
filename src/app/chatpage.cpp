@@ -30,6 +30,7 @@
 
 Q_IMPORT_PLUGIN(AjaxPlugin)
 Q_IMPORT_PLUGIN(BadgePlugin)
+Q_IMPORT_PLUGIN(CommanderPlugin)
 Q_IMPORT_PLUGIN(CompleterPlugin)
 Q_IMPORT_PLUGIN(DockPlugin)
 Q_IMPORT_PLUGIN(FinderPlugin)
@@ -241,10 +242,6 @@ IrcCommandParser* ChatPage::createParser(QObject *parent)
     parser->addCommand(IrcCommand::Who, "WHO <user>");
     parser->addCommand(IrcCommand::Whois, "WHOIS <user>");
     parser->addCommand(IrcCommand::Whowas, "WHOWAS <user>");
-
-    parser->addCommand(IrcCommand::Custom, "CLEAR");
-    parser->addCommand(IrcCommand::Custom, "QUERY <user>");
-    parser->addCommand(IrcCommand::Custom, "MSG <user/channel> <message...>");
 
     return parser;
 }

@@ -94,7 +94,7 @@ void TextInput::sendInput()
     foreach (const QString& line, lines) {
         if (!line.trimmed().isEmpty()) {
             IrcCommand* cmd = p->parse(line);
-            if (!b->sendCommand(cmd))
+            if (!cmd || (!b->sendCommand(cmd) && cmd->type() != IrcCommand::Custom))
                 error = true;
             else if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::Notice || cmd->type() == IrcCommand::CtcpAction)
                 b->receiveMessage(cmd->toMessage(c->nickName(), c));
