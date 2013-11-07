@@ -16,20 +16,29 @@
 #define COMPLETERPLUGIN_H
 
 #include <QtPlugin>
+#include <QShortcut>
 #include "textinputplugin.h"
+#include "windowplugin.h"
 
-class CompleterPlugin : public QObject, public TextInputPlugin
+class CompleterPlugin : public QObject, public TextInputPlugin, public WindowPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TextInputPlugin)
+    Q_INTERFACES(TextInputPlugin WindowPlugin)
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.TextInputPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
 #endif
 
 public:
     CompleterPlugin(QObject* parent = 0);
 
     void initialize(TextInput* input);
+    void initialize(QWidget* window);
+
+private:
+    struct Private {
+        QShortcut* shortcut;
+    } d;
 };
 
 #endif // COMPLETERPLUGIN_H

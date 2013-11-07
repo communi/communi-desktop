@@ -17,11 +17,18 @@
 
 CompleterPlugin::CompleterPlugin(QObject* parent) : QObject(parent)
 {
+    d.shortcut = 0;
 }
 
 void CompleterPlugin::initialize(TextInput* input)
 {
-    new Completer(input);
+    Completer* completer = new Completer(input);
+    connect(d.shortcut, SIGNAL(activated()), completer, SLOT(tryComplete()));
+}
+
+void CompleterPlugin::initialize(QWidget* window)
+{
+    d.shortcut = new QShortcut(Qt::Key_Tab, window);
 }
 
 #if QT_VERSION < 0x050000

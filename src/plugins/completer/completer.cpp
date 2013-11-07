@@ -24,15 +24,13 @@ Completer::Completer(TextInput* input) : IrcCompleter(input)
     setBuffer(input->buffer());
 
     connect(input, SIGNAL(bufferChanged(IrcBuffer*)), this, SLOT(setBuffer(IrcBuffer*)));
-
-    QShortcut* shortcut = new QShortcut(Qt::Key_Tab, input);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(tryComplete()));
     connect(this, SIGNAL(completed(QString,int)), this, SLOT(doComplete(QString,int)));
 }
 
 void Completer::tryComplete()
 {
-    complete(d.input->text(), d.input->cursorPosition());
+    if (d.input->hasFocus())
+        complete(d.input->text(), d.input->cursorPosition());
 }
 
 void Completer::doComplete(const QString& text, int cursor)
