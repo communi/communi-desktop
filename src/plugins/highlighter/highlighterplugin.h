@@ -46,6 +46,8 @@ private slots:
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void highlightItem(QTreeWidgetItem* item);
     void unhighlightItem(QTreeWidgetItem* item);
+    void colorizeItem(QTreeWidgetItem* item);
+    void onBufferChanged();
     void blinkItems();
 
 private:

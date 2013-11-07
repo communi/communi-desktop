@@ -43,12 +43,15 @@ void HighlighterPlugin::initialize(TreeWidget* tree)
 
 void HighlighterPlugin::onBufferAdded(IrcBuffer* buffer)
 {
+    connect(buffer, SIGNAL(activeChanged(bool)), this, SLOT(onBufferChanged()));
     connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
+    colorizeItem(d.tree->bufferItem(buffer));
 }
 
 void HighlighterPlugin::onBufferRemoved(IrcBuffer* buffer)
 {
     d.items.remove(d.tree->bufferItem(buffer));
+    disconnect(buffer, SIGNAL(activeChanged(bool)), this, SLOT(onBufferChanged()));
     disconnect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
 }
 
@@ -99,8 +102,7 @@ void HighlighterPlugin::highlightItem(QTreeWidgetItem* item)
             SharedTimer::instance()->registerReceiver(this, "blinkItems");
         d.items.insert(item);
         item->setData(0, TreeRole::Highlight, true);
-        item->setData(0, Qt::ForegroundRole, QColor("#ff4040")); // TODO
-        item->setData(1, Qt::BackgroundRole, QColor("#ff4040").lighter(125)); // TODO
+        colorizeItem(item);
     }
 }
 
@@ -111,20 +113,44 @@ void HighlighterPlugin::unhighlightItem(QTreeWidgetItem* item)
         if (d.items.isEmpty())
             SharedTimer::instance()->unregisterReceiver(this, "blinkItems");
         item->setData(0, TreeRole::Highlight, false);
-        item->setData(0, Qt::ForegroundRole, QVariant());
-        item->setData(1, Qt::BackgroundRole, QVariant());
+        colorizeItem(item);
     }
+}
+
+void HighlighterPlugin::colorizeItem(QTreeWidgetItem* item)
+{
+    TreeItem* ti = static_cast<TreeItem*>(item);
+    if (ti) {
+        const bool hilite = d.blink && d.items.contains(item);
+        if (hilite) {
+            item->setData(0, Qt::ForegroundRole, QColor("#ff4040"));
+            item->setData(1, Qt::BackgroundRole, QColor("#ff4040").lighter(125)); // TODO
+        } else {
+            const IrcBuffer* buffer = ti->buffer();
+            const QColor fg = d.tree->palette().color(QPalette::Disabled, QPalette::Text);
+            item->setData(0, Qt::ForegroundRole, buffer->isActive() ? QVariant() : fg);
+            item->setData(1, Qt::BackgroundRole, QVariant());
+        }
+
+        TreeItem* pi = ti->parentItem();
+        if (pi) {
+            const IrcBuffer* buffer = pi->buffer();
+            const QColor fg = d.tree->palette().color(QPalette::Disabled, QPalette::Text);
+            pi->setData(0, Qt::ForegroundRole, hilite && !pi->isExpanded() ? QColor("#ff4040") : buffer->isActive() ? QVariant() : fg); // TODO
+        }
+    }
+}
+
+void HighlighterPlugin::onBufferChanged()
+{
+    IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
+    colorizeItem(d.tree->bufferItem(buffer));
 }
 
 void HighlighterPlugin::blinkItems()
 {
-    foreach (QTreeWidgetItem* item, d.items) {
-        item->setData(0, Qt::ForegroundRole, d.blink ? QColor("#ff4040") : QVariant()); // TODO
-        item->setData(1, Qt::BackgroundRole, d.blink ? QColor("#ff4040").lighter(125) : QVariant()); // TODO
-        QTreeWidgetItem* p = item->parent();
-        if (p)
-            p->setData(0, Qt::ForegroundRole, d.blink && !p->isExpanded() ? QColor("#ff4040") : QVariant()); // TODO
-    }
+    foreach (QTreeWidgetItem* item, d.items)
+        colorizeItem(item);
     d.blink = !d.blink;
 }
 
