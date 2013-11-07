@@ -203,8 +203,8 @@ void NavigatorPlugin::moveToMostActiveItem()
         }
 
         // as a backup, store the most active window with any sort of activity
-        const int badge = item->data(0, TreeRole::Badge).toInt();
-        if (badge > 0 && (!mostActive || mostActive->data(0, TreeRole::Badge).toInt() < badge))
+        const int badge = item->data(1, TreeRole::Badge).toInt();
+        if (badge > 0 && (!mostActive || mostActive->data(1, TreeRole::Badge).toInt() < badge))
             mostActive = item;
 
         it++;
