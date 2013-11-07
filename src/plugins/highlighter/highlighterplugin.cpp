@@ -45,7 +45,10 @@ void HighlighterPlugin::onBufferAdded(IrcBuffer* buffer)
 {
     connect(buffer, SIGNAL(activeChanged(bool)), this, SLOT(onBufferChanged()));
     connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
-    colorizeItem(d.tree->bufferItem(buffer));
+
+    TreeItem* item = d.tree->bufferItem(buffer);
+    connect(item, SIGNAL(destroyed(TreeItem*)), this, SLOT(onItemDestroyed(TreeItem*)));
+    colorizeItem(item);
 }
 
 void HighlighterPlugin::onBufferRemoved(IrcBuffer* buffer)
@@ -139,6 +142,11 @@ void HighlighterPlugin::colorizeItem(QTreeWidgetItem* item)
             pi->setData(0, Qt::ForegroundRole, hilite && !pi->isExpanded() ? QColor("#ff4040") : buffer->isActive() ? QVariant() : fg); // TODO
         }
     }
+}
+
+void HighlighterPlugin::onItemDestroyed(TreeItem* item)
+{
+    d.items.remove(item);
 }
 
 void HighlighterPlugin::onBufferChanged()

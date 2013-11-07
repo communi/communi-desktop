@@ -20,6 +20,7 @@
 #include <QTreeWidget>
 #include "treewidgetplugin.h"
 
+class TreeItem;
 class IrcBuffer;
 class IrcMessage;
 
@@ -47,6 +48,7 @@ private slots:
     void highlightItem(QTreeWidgetItem* item);
     void unhighlightItem(QTreeWidgetItem* item);
     void colorizeItem(QTreeWidgetItem* item);
+    void onItemDestroyed(TreeItem* item);
     void onBufferChanged();
     void blinkItems();
 

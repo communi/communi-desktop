@@ -17,12 +17,12 @@
 #include <IrcBufferModel>
 #include <IrcBuffer>
 
-TreeItem::TreeItem(IrcBuffer* buffer, TreeItem* parent) : QTreeWidgetItem(parent)
+TreeItem::TreeItem(IrcBuffer* buffer, TreeItem* parent) : QObject(buffer), QTreeWidgetItem(parent)
 {
     init(buffer);
 }
 
-TreeItem::TreeItem(IrcBuffer* buffer, TreeWidget* parent) : QTreeWidgetItem(parent)
+TreeItem::TreeItem(IrcBuffer* buffer, TreeWidget* parent) : QObject(buffer), QTreeWidgetItem(parent)
 {
     init(buffer);
 }
@@ -32,7 +32,6 @@ void TreeItem::init(IrcBuffer* buffer)
     d.buffer = buffer;
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-    connect(buffer, SIGNAL(destroyed()), this, SLOT(deleteLater()));
     connect(buffer, SIGNAL(activeChanged(bool)), this, SLOT(refresh()));
     connect(buffer, SIGNAL(titleChanged(QString)), this, SLOT(refresh()));
 }
