@@ -12,21 +12,21 @@
 * GNU General Public License for more details.
 */
 
-#ifndef BROWSERPLUGIN_H
-#define BROWSERPLUGIN_H
+#ifndef LISTVIEWPLUGIN_H
+#define LISTVIEWPLUGIN_H
 
 #include <QtPlugin>
 
-class TextBrowser;
+class ListView;
 
-class BrowserPlugin
+class ListViewPlugin
 {
 public:
-    virtual ~BrowserPlugin() {}
-    virtual void initialize(TextBrowser*) {}
-    virtual void uninitialize(TextBrowser*) {}
+    virtual ~ListViewPlugin() {}
+    virtual void initialize(ListView*) {}
+    virtual void uninitialize(ListView*) {}
 };
 
-Q_DECLARE_INTERFACE(BrowserPlugin, "com.github.communi.BrowserPlugin")
+Q_DECLARE_INTERFACE(ListViewPlugin, "Communi.ListViewPlugin")
 
-#endif // BROWSERPLUGIN_H
+#endif // LISTVIEWPLUGIN_H

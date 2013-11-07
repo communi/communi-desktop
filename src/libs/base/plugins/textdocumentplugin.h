@@ -12,21 +12,21 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TOPICPLUGIN_H
-#define TOPICPLUGIN_H
+#ifndef TEXTDOCUMENTPLUGIN_H
+#define TEXTDOCUMENTPLUGIN_H
 
 #include <QtPlugin>
 
-class TopicLabel;
+class TextDocument;
 
-class TopicPlugin
+class TextDocumentPlugin
 {
 public:
-    virtual ~TopicPlugin() {}
-    virtual void initialize(TopicLabel*) {}
-    virtual void uninitialize(TopicLabel*) {}
+    virtual ~TextDocumentPlugin() {}
+    virtual void initialize(TextDocument*) {}
+    virtual void uninitialize(TextDocument*) {}
 };
 
-Q_DECLARE_INTERFACE(TopicPlugin, "com.github.communi.TopicPlugin")
+Q_DECLARE_INTERFACE(TextDocumentPlugin, "Communi.TextDocumentPlugin")
 
-#endif // TOPICPLUGIN_H
+#endif // TEXTDOCUMENTPLUGIN_H

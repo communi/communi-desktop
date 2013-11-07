@@ -12,21 +12,21 @@
 * GNU General Public License for more details.
 */
 
-#ifndef DOCUMENTPLUGIN_H
-#define DOCUMENTPLUGIN_H
+#ifndef TEXTBROWSERPLUGIN_H
+#define TEXTBROWSERPLUGIN_H
 
 #include <QtPlugin>
 
-class TextDocument;
+class TextBrowser;
 
-class DocumentPlugin
+class TextBrowserPlugin
 {
 public:
-    virtual ~DocumentPlugin() {}
-    virtual void initialize(TextDocument*) {}
-    virtual void uninitialize(TextDocument*) {}
+    virtual ~TextBrowserPlugin() {}
+    virtual void initialize(TextBrowser*) {}
+    virtual void uninitialize(TextBrowser*) {}
 };
 
-Q_DECLARE_INTERFACE(DocumentPlugin, "com.github.communi.DocumentPlugin")
+Q_DECLARE_INTERFACE(TextBrowserPlugin, "Communi.TextBrowserPlugin")
 
-#endif // DOCUMENTPLUGIN_H
+#endif // TEXTBROWSERPLUGIN_H

@@ -17,14 +17,14 @@
 
 #include <QtPlugin>
 #include <QShortcut>
-#include "treeplugin.h"
+#include "treewidgetplugin.h"
 
-class ReseterPlugin : public QObject, public TreePlugin
+class ReseterPlugin : public QObject, public TreeWidgetPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreePlugin)
+    Q_INTERFACES(TreeWidgetPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
+    Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
 #endif
 
 public:

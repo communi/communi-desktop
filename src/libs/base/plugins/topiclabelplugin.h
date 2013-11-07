@@ -12,21 +12,21 @@
 * GNU General Public License for more details.
 */
 
-#ifndef INPUTPLUGIN_H
-#define INPUTPLUGIN_H
+#ifndef TOPICLABELPLUGIN_H
+#define TOPICLABELPLUGIN_H
 
 #include <QtPlugin>
 
-class TextInput;
+class TopicLabel;
 
-class InputPlugin
+class TopicLabelPlugin
 {
 public:
-    virtual ~InputPlugin() {}
-    virtual void initialize(TextInput*) {}
-    virtual void uninitialize(TextInput*) {}
+    virtual ~TopicLabelPlugin() {}
+    virtual void initialize(TopicLabel*) {}
+    virtual void uninitialize(TopicLabel*) {}
 };
 
-Q_DECLARE_INTERFACE(InputPlugin, "com.github.communi.InputPlugin")
+Q_DECLARE_INTERFACE(TopicLabelPlugin, "Communi.TopicLabelPlugin")
 
-#endif // INPUTPLUGIN_H
+#endif // TOPICLABELPLUGIN_H

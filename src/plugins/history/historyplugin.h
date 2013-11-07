@@ -16,14 +16,14 @@
 #define HISTORYPLUGIN_H
 
 #include <QtPlugin>
-#include "inputplugin.h"
+#include "textinputplugin.h"
 
-class HistoryPlugin : public QObject, public InputPlugin
+class HistoryPlugin : public QObject, public TextInputPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(InputPlugin)
+    Q_INTERFACES(TextInputPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "com.github.communi.InputPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.TextInputPlugin")
 #endif
 
 public:

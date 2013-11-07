@@ -17,20 +17,23 @@
 
 #include <QObject>
 #include <QtPlugin>
-#include "treeplugin.h"
-#include "listplugin.h"
-#include "browserplugin.h"
-#include "viewplugin.h"
+#include "listviewplugin.h"
+#include "splitviewplugin.h"
+#include "textbrowserplugin.h"
+#include "treewidgetplugin.h"
 
-class MenuPlugin : public QObject, public TreePlugin, public ListPlugin, public BrowserPlugin, public ViewPlugin
+class MenuPlugin : public QObject, public TreeWidgetPlugin,
+                                   public ListViewPlugin,
+                                   public TextBrowserPlugin,
+                                   public SplitViewPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreePlugin ListPlugin BrowserPlugin ViewPlugin)
+    Q_INTERFACES(TreeWidgetPlugin ListViewPlugin TextBrowserPlugin SplitViewPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
-    Q_PLUGIN_METADATA(IID "com.github.communi.ListPlugin")
-    Q_PLUGIN_METADATA(IID "com.github.communi.BrowserPlugin")
-    Q_PLUGIN_METADATA(IID "com.github.communi.ViewPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.ListPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.BrowserPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.ViewPlugin")
 #endif
 
 public:

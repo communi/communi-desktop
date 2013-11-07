@@ -26,6 +26,6 @@ public:
     virtual void uninitialize(QWidget*) {}
 };
 
-Q_DECLARE_INTERFACE(WindowPlugin, "com.github.communi.WindowPlugin")
+Q_DECLARE_INTERFACE(WindowPlugin, "Communi.WindowPlugin")
 
 #endif // WINDOWPLUGIN_H

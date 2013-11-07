@@ -12,21 +12,21 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TREEPLUGIN_H
-#define TREEPLUGIN_H
+#ifndef TEXTINPUTPLUGIN_H
+#define TEXTINPUTPLUGIN_H
 
 #include <QtPlugin>
 
-class TreeWidget;
+class TextInput;
 
-class TreePlugin
+class TextInputPlugin
 {
 public:
-    virtual ~TreePlugin() {}
-    virtual void initialize(TreeWidget*) {}
-    virtual void uninitialize(TreeWidget*) {}
+    virtual ~TextInputPlugin() {}
+    virtual void initialize(TextInput*) {}
+    virtual void uninitialize(TextInput*) {}
 };
 
-Q_DECLARE_INTERFACE(TreePlugin, "com.github.communi.TreePlugin")
+Q_DECLARE_INTERFACE(TextInputPlugin, "Communi.TextInputPlugin")
 
-#endif // TREEPLUGIN_H
+#endif // TEXTINPUTPLUGIN_H

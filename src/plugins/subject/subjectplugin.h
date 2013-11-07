@@ -16,14 +16,14 @@
 #define SUBJECTPLUGIN_H
 
 #include <QtPlugin>
-#include "topicplugin.h"
+#include "topiclabelplugin.h"
 
-class SubjectPlugin : public QObject, public TopicPlugin
+class SubjectPlugin : public QObject, public TopicLabelPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TopicPlugin)
+    Q_INTERFACES(TopicLabelPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "com.github.communi.TopicPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.TopicLabelPlugin")
 #endif
 
 public:

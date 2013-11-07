@@ -12,21 +12,21 @@
 * GNU General Public License for more details.
 */
 
-#ifndef LISTPLUGIN_H
-#define LISTPLUGIN_H
+#ifndef SPLITVIEWPLUGIN_H
+#define SPLITVIEWPLUGIN_H
 
 #include <QtPlugin>
 
-class ListView;
+class SplitView;
 
-class ListPlugin
+class SplitViewPlugin
 {
 public:
-    virtual ~ListPlugin() {}
-    virtual void initialize(ListView*) {}
-    virtual void uninitialize(ListView*) {}
+    virtual ~SplitViewPlugin() {}
+    virtual void initialize(SplitView*) {}
+    virtual void uninitialize(SplitView*) {}
 };
 
-Q_DECLARE_INTERFACE(ListPlugin, "com.github.communi.ListPlugin")
+Q_DECLARE_INTERFACE(SplitViewPlugin, "Communi.SplitViewPlugin")
 
-#endif // LISTPLUGIN_H
+#endif // SPLITVIEWPLUGIN_H

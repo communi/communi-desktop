@@ -12,21 +12,21 @@
 * GNU General Public License for more details.
 */
 
-#ifndef VIEWPLUGIN_H
-#define VIEWPLUGIN_H
+#ifndef TREEWIDGETPLUGIN_H
+#define TREEWIDGETPLUGIN_H
 
 #include <QtPlugin>
 
-class SplitView;
+class TreeWidget;
 
-class ViewPlugin
+class TreeWidgetPlugin
 {
 public:
-    virtual ~ViewPlugin() {}
-    virtual void initialize(SplitView*) {}
-    virtual void uninitialize(SplitView*) {}
+    virtual ~TreeWidgetPlugin() {}
+    virtual void initialize(TreeWidget*) {}
+    virtual void uninitialize(TreeWidget*) {}
 };
 
-Q_DECLARE_INTERFACE(ViewPlugin, "com.github.communi.ViewPlugin")
+Q_DECLARE_INTERFACE(TreeWidgetPlugin, "Communi.TreeWidgetPlugin")
 
-#endif // VIEWPLUGIN_H
+#endif // TREEWIDGETPLUGIN_H

@@ -27,6 +27,6 @@ public:
     virtual void uninitialize(IrcConnection*) {}
 };
 
-Q_DECLARE_INTERFACE(ConnectionPlugin, "com.github.communi.ConnectionPlugin")
+Q_DECLARE_INTERFACE(ConnectionPlugin, "Communi.ConnectionPlugin")
 
 #endif // CONNECTIONPLUGIN_H

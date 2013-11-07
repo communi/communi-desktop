@@ -17,16 +17,16 @@
 
 #include <QObject>
 #include <QtPlugin>
-#include "treeplugin.h"
-#include "browserplugin.h"
+#include "treewidgetplugin.h"
+#include "textbrowserplugin.h"
 
-class FinderPlugin : public QObject, public TreePlugin, public BrowserPlugin
+class FinderPlugin : public QObject, public TreeWidgetPlugin, public TextBrowserPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreePlugin BrowserPlugin)
+    Q_INTERFACES(TreeWidgetPlugin TextBrowserPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
-    Q_PLUGIN_METADATA(IID "com.github.communi.BrowserPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.TextBrowserPlugin")
 #endif
 
 public:

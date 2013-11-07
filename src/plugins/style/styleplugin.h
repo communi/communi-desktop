@@ -17,34 +17,34 @@
 
 #include <QObject>
 #include <QtPlugin>
-#include "browserplugin.h"
-#include "documentplugin.h"
-#include "inputplugin.h"
-#include "listplugin.h"
-#include "topicplugin.h"
-#include "treeplugin.h"
+#include "listviewplugin.h"
+#include "textbrowserplugin.h"
+#include "textdocumentplugin.h"
+#include "textinputplugin.h"
+#include "topiclabelplugin.h"
+#include "treewidgetplugin.h"
 #include "windowplugin.h"
 
 class QtDockTile;
 
-class StylePlugin : public QObject, public BrowserPlugin,
-                                    public DocumentPlugin,
-                                    public InputPlugin,
-                                    public ListPlugin,
-                                    public TopicPlugin,
-                                    public TreePlugin,
+class StylePlugin : public QObject, public TextBrowserPlugin,
+                                    public TextDocumentPlugin,
+                                    public TextInputPlugin,
+                                    public ListViewPlugin,
+                                    public TopicLabelPlugin,
+                                    public TreeWidgetPlugin,
                                     public WindowPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(BrowserPlugin DocumentPlugin InputPlugin ListPlugin TopicPlugin TreePlugin WindowPlugin)
+    Q_INTERFACES(TextBrowserPlugin TextDocumentPlugin TextInputPlugin ListViewPlugin TopicLabelPlugin TreeWidgetPlugin WindowPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "com.github.communi.BrowserPlugin")
-    Q_PLUGIN_METADATA(IID "com.github.communi.DocumentPlugin")
-    Q_PLUGIN_METADATA(IID "com.github.communi.InputPlugin")
-    Q_PLUGIN_METADATA(IID "com.github.communi.ListPlugin")
-    Q_PLUGIN_METADATA(IID "com.github.communi.TopicPlugin")
-    Q_PLUGIN_METADATA(IID "com.github.communi.TreePlugin")
-    Q_PLUGIN_METADATA(IID "com.github.communi.WindowPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.TextBrowserPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.TextDocumentPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.TextInputPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.ListViewPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.TopicLabelPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
 #endif
 
 public:

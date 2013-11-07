@@ -25,7 +25,7 @@ class TrayPlugin : public QObject, public WindowPlugin
     Q_OBJECT
     Q_INTERFACES(WindowPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "com.github.communi.WindowPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
 #endif
 
 public:

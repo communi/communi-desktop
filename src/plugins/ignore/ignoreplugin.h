@@ -24,7 +24,7 @@ class IgnorePlugin : public QObject, public ConnectionPlugin
     Q_OBJECT
     Q_INTERFACES(ConnectionPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "com.github.communi.ConnectionPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
 #endif
 
 public:
