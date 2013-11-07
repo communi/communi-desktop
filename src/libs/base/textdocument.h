@@ -54,6 +54,9 @@ public:
 public slots:
     void append(const QString& text);
 
+signals:
+    void messageReceived(IrcMessage* message);
+
 protected:
     void updateBlock(int number);
     void timerEvent(QTimerEvent* event);

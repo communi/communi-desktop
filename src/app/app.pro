@@ -46,7 +46,7 @@ include(../libs/backend/backend.pri)
 include(../libs/3rdparty/3rdparty.pri)
 include(../../resources/resources.pri)
 
-STATIC_PLUGINS = ajax badge commander completer dock finder highlighter history ignore menu monitor navigator reseter sound style subject tray znc
+STATIC_PLUGINS = ajax badge commander completer dock finder highlighter history ignore menu monitor navigator reseter sound style subject tray verifier znc
 for(PLUGIN, STATIC_PLUGINS) {
     LIBS *= -L$$BUILD_ROOT/plugins
     LIBS += -l$${PLUGIN}plugin

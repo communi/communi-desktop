@@ -20,4 +20,5 @@ SUBDIRS += sound
 SUBDIRS += style
 SUBDIRS += subject
 SUBDIRS += tray
+SUBDIRS += verifier
 SUBDIRS += znc

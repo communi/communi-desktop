@@ -200,6 +200,7 @@ void TextDocument::scrollToBottom()
 void TextDocument::receiveMessage(IrcMessage* message)
 {
     append(d.formatter->formatMessage(message));
+    emit messageReceived(message);
 }
 
 void TextDocument::appendLine(QTextCursor& cursor, const QString& line)
