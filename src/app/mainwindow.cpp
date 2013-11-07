@@ -16,6 +16,7 @@
 #include <IrcConnection>
 #include <QApplication>
 #include <QCloseEvent>
+#include <QPushButton>
 #include <IrcChannel>
 #include <QSettings>
 #include <IrcBuffer>
@@ -104,7 +105,8 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::doConnect()
 {
-    setCurrentIndex(0);
+    d.connectPage->buttonBox()->button(QDialogButtonBox::Cancel)->setEnabled(!d.chatPage->connections().isEmpty());
+    setCurrentWidget(d.connectPage);
 }
 
 void MainWindow::onAccepted()
@@ -119,6 +121,7 @@ void MainWindow::onAccepted()
     connection->setDisplayName(d.connectPage->displayName());
     connection->setPassword(d.connectPage->password());
     d.chatPage->addConnection(connection);
+    setCurrentWidget(d.chatPage);
 }
 
 void MainWindow::onRejected()
@@ -132,7 +135,7 @@ void MainWindow::setCurrentBuffer(IrcBuffer* buffer)
         setCurrentWidget(d.chatPage);
         setWindowTitle(tr("%2 - Communi %1").arg(IRC_VERSION_STR).arg(buffer->title()));
     } else {
-        setCurrentWidget(d.connectPage);
+        doConnect();
         setWindowTitle(tr("Communi %1").arg(IRC_VERSION_STR));
     }
 }
@@ -146,6 +149,8 @@ void MainWindow::restoreConnections()
         connection->restoreState(state.toByteArray());
         d.chatPage->addConnection(connection);
     }
+    if (d.chatPage->connections().isEmpty())
+        doConnect();
 }
 
 void MainWindow::saveConnections()

@@ -54,7 +54,6 @@ ConnectPage::ConnectPage(QWidget* parent) : QWidget(parent)
 
     shortcut = new QShortcut(Qt::Key_Escape, this);
     connect(shortcut, SIGNAL(activated()), ui.buttonBox->button(QDialogButtonBox::Cancel), SLOT(click()));
-    ui.buttonBox->button(QDialogButtonBox::Cancel)->setDisabled(true); // TODO
 
     connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(saveSettings()));
     connect(ui.buttonBox, SIGNAL(rejected()), this, SLOT(saveSettings()));
@@ -108,6 +107,11 @@ QString ConnectPage::userName() const
 QString ConnectPage::password() const
 {
     return ui.passwordField->text();
+}
+
+QDialogButtonBox* ConnectPage::buttonBox() const
+{
+    return ui.buttonBox;
 }
 
 static QString capitalize(const QString& str)
@@ -181,8 +185,6 @@ void ConnectPage::restoreSettings()
 
 void ConnectPage::saveSettings()
 {
-    ui.buttonBox->button(QDialogButtonBox::Cancel)->setEnabled(true); // TODO
-
     QSettings settings;
     settings.beginGroup("Credentials");
 

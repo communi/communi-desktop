@@ -29,6 +29,8 @@ public:
     QString userName() const;
     QString password() const;
 
+    QDialogButtonBox* buttonBox() const;
+
 signals:
     void accepted();
     void rejected();
