@@ -67,6 +67,9 @@ MainWindow::MainWindow(QWidget* parent) : QStackedWidget(parent)
     shortcut = new QShortcut(QKeySequence::New, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(doConnect()));
 
+    shortcut = new QShortcut(QKeySequence::Close, this);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(closeBuffer()));
+
     restoreConnections();
 }
 
@@ -127,6 +130,21 @@ void MainWindow::onAccepted()
 void MainWindow::onRejected()
 {
     setCurrentWidget(d.chatPage);
+}
+
+void MainWindow::closeBuffer(IrcBuffer* buffer)
+{
+    if (!buffer)
+        buffer = d.chatPage->currentBuffer();
+
+    IrcChannel* channel = buffer->toChannel();
+    if (channel && channel->isActive()) {
+        QString reason = tr("%1 %2 - http://%3").arg(QCoreApplication::applicationName())
+                                                .arg(QCoreApplication::applicationVersion())
+                                                .arg(QCoreApplication::organizationDomain());
+        channel->part(reason);
+    }
+    buffer->deleteLater();
 }
 
 void MainWindow::setCurrentBuffer(IrcBuffer* buffer)

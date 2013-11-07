@@ -40,10 +40,6 @@ TreeMenu::TreeMenu(TreeWidget* tree) : QMenu(tree)
     connect(d.closeAction, SIGNAL(triggered()), this, SLOT(onCloseTriggered()));
     addAction(d.closeAction);
 
-    // TODO: why the action shortcut above doesn't work?
-    QShortcut* shortcut = new QShortcut(QKeySequence::Close, tree);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(onCloseTriggered()));
-
     connect(tree, SIGNAL(currentItemChanged(TreeItem*)), this, SLOT(setup(TreeItem*)));
     tree->installEventFilter(this);
 }
@@ -83,7 +79,7 @@ void TreeMenu::onJoinTriggered()
 void TreeMenu::onPartTriggered()
 {
     IrcChannel* channel = d.item->buffer()->toChannel();
-    if (channel) {
+    if (channel && channel->isActive()) {
         QString reason = tr("%1 %2 - http://%3").arg(QCoreApplication::applicationName())
                                                 .arg(QCoreApplication::applicationVersion())
                                                 .arg(QCoreApplication::organizationDomain());
