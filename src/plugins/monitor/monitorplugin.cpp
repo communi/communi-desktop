@@ -14,20 +14,13 @@
 
 #include "monitorplugin.h"
 #include "systemmonitor.h"
-#include "treewidget.h"
 #include <IrcConnection>
 
 MonitorPlugin::MonitorPlugin(QObject* parent) : QObject(parent)
 {
 }
 
-void MonitorPlugin::initialize(TreeWidget* tree)
-{
-    connect(tree, SIGNAL(connectionAdded(IrcConnection*)), this, SLOT(onConnectionAdded(IrcConnection*)));
-    connect(tree, SIGNAL(connectionRemoved(IrcConnection*)), this, SLOT(onConnectionRemoved(IrcConnection*)));
-}
-
-void MonitorPlugin::onConnectionAdded(IrcConnection* connection)
+void MonitorPlugin::initialize(IrcConnection* connection)
 {
     connect(SystemMonitor::instance(), SIGNAL(sleep()), connection, SLOT(quit()));
     connect(SystemMonitor::instance(), SIGNAL(wake()), connection, SLOT(open()));
@@ -35,7 +28,7 @@ void MonitorPlugin::onConnectionAdded(IrcConnection* connection)
     connect(SystemMonitor::instance(), SIGNAL(offline()), connection, SLOT(quit()));
 }
 
-void MonitorPlugin::onConnectionRemoved(IrcConnection* connection)
+void MonitorPlugin::uninitialize(IrcConnection* connection)
 {
     disconnect(SystemMonitor::instance(), SIGNAL(sleep()), connection, SLOT(quit()));
     disconnect(SystemMonitor::instance(), SIGNAL(wake()), connection, SLOT(open()));

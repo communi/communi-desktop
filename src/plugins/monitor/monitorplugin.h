@@ -17,26 +17,21 @@
 
 #include <QObject>
 #include <QtPlugin>
-#include "treewidgetplugin.h"
+#include "connectionplugin.h"
 
-class IrcConnection;
-
-class MonitorPlugin : public QObject, public TreeWidgetPlugin
+class MonitorPlugin : public QObject, public ConnectionPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreeWidgetPlugin)
+    Q_INTERFACES(ConnectionPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
 #endif
 
 public:
     MonitorPlugin(QObject* parent = 0);
 
-    void initialize(TreeWidget* tree);
-
-private slots:
-    void onConnectionAdded(IrcConnection* connection);
-    void onConnectionRemoved(IrcConnection* connection);
+    void initialize(IrcConnection* connection);
+    void uninitialize(IrcConnection* connection);
 };
 
 #endif // MONITORPLUGIN_H
