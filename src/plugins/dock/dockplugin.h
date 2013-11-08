@@ -17,22 +17,33 @@
 
 #include <QObject>
 #include <QtPlugin>
+#include "connectionplugin.h"
 #include "windowplugin.h"
 
 class QtDockTile;
+class IrcMessage;
 
-class DockPlugin : public QObject, public WindowPlugin
+class DockPlugin : public QObject, public ConnectionPlugin, public WindowPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(WindowPlugin)
+    Q_INTERFACES(ConnectionPlugin WindowPlugin)
 #if QT_VERSION >= 0x050000
+    Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
     Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
 #endif
 
 public:
     DockPlugin(QObject* parent = 0);
 
+    void initialize(IrcConnection* connection);
+    void uninitialize(IrcConnection* connection);
+
     void initialize(QWidget* window);
+
+    bool eventFilter(QObject* object, QEvent* event);
+
+private slots:
+    void onMessageReceived(IrcMessage* message);
 
 private:
     struct Private {

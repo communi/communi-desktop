@@ -14,6 +14,8 @@
 
 #include "dockplugin.h"
 #include "qtdocktile.h"
+#include <IrcConnection>
+#include <QEvent>
 
 DockPlugin::DockPlugin(QObject* parent) : QObject(parent)
 {
@@ -24,9 +26,44 @@ DockPlugin::DockPlugin(QObject* parent) : QObject(parent)
 void DockPlugin::initialize(QWidget* window)
 {
     d.window = window;
+    window->installEventFilter(this);
 
     if (QtDockTile::isAvailable())
         d.dock = new QtDockTile(window);
+}
+
+void DockPlugin::initialize(IrcConnection* connection)
+{
+    if (d.dock)
+        connect(connection, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
+}
+
+void DockPlugin::uninitialize(IrcConnection* connection)
+{
+    if (d.dock)
+        disconnect(connection, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
+}
+
+void DockPlugin::onMessageReceived(IrcMessage* message)
+{
+    if (d.dock && !d.window->isActiveWindow()) {
+        if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
+            if (message->property("private").toBool() ||
+                message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive)) {
+                d.dock->setBadge(d.dock->badge() + 1);
+            }
+        }
+    }
+}
+
+bool DockPlugin::eventFilter(QObject* object, QEvent* event)
+{
+    Q_UNUSED(object);
+    if (event->type() == QEvent::ActivationChange) {
+        if (d.dock && d.window->isActiveWindow())
+            d.dock->setBadge(0);
+    }
+    return false;
 }
 
 #if QT_VERSION < 0x050000
