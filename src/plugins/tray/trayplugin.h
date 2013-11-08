@@ -17,10 +17,13 @@
 
 #include <QSet>
 #include <QObject>
+#include <QPointer>
 #include <QtPlugin>
 #include <QSystemTrayIcon>
 #include "connectionplugin.h"
 #include "windowplugin.h"
+
+class IrcMessage;
 
 class TrayPlugin : public QObject, public ConnectionPlugin, public WindowPlugin
 {
@@ -39,12 +42,17 @@ public:
 
     void initialize(QWidget* window);
 
+    bool eventFilter(QObject* object, QEvent* event);
+
 private slots:
     void updateIcon();
+    void onMessageReceived(IrcMessage* message);
     void onActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:
     struct Private {
+        bool alert;
+        bool blink;
         QWidget* window;
         QIcon alertIcon;
         QIcon onlineIcon;

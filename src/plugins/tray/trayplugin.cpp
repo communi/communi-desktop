@@ -15,6 +15,9 @@
 #include "trayplugin.h"
 #include "sharedtimer.h"
 #include <IrcConnection>
+#include <IrcMessage>
+#include <IrcBuffer>
+#include <QEvent>
 
 inline void initResource() { Q_INIT_RESOURCE(tray); }
 
@@ -22,12 +25,15 @@ TrayPlugin::TrayPlugin(QObject* parent) : QObject(parent)
 {
     d.tray = 0;
     d.window = 0;
+    d.alert = false;
+    d.blink = false;
 }
 
 void TrayPlugin::initialize(IrcConnection* connection)
 {
     if (d.tray) {
         connect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateIcon()));
+        connect(connection, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
         d.connections.insert(connection);
         updateIcon();
     }
@@ -37,6 +43,7 @@ void TrayPlugin::uninitialize(IrcConnection* connection)
 {
     if (d.tray) {
         disconnect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateIcon()));
+        disconnect(connection, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
         d.connections.remove(connection);
         updateIcon();
     }
@@ -45,6 +52,7 @@ void TrayPlugin::uninitialize(IrcConnection* connection)
 void TrayPlugin::initialize(QWidget* window)
 {
     d.window = window;
+    window->installEventFilter(this);
 
     if (QSystemTrayIcon::isSystemTrayAvailable()) {
         d.tray = new QSystemTrayIcon(window);
@@ -77,7 +85,23 @@ void TrayPlugin::updateIcon()
             break;
         }
     }
-    d.tray->setIcon(online ? d.onlineIcon : d.offlineIcon);
+    d.tray->setIcon(d.alert && d.blink ? d.alertIcon : online ? d.onlineIcon : d.offlineIcon);
+    d.blink = !d.blink;
+}
+
+void TrayPlugin::onMessageReceived(IrcMessage* message)
+{
+    if (!d.alert && !d.window->isActiveWindow()) {
+        if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
+            if (message->property("private").toBool() ||
+                message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive)) {
+                SharedTimer::instance()->registerReceiver(this, "updateIcon");
+                d.alert = true;
+                d.blink = true;
+                updateIcon();
+            }
+        }
+    }
 }
 
 void TrayPlugin::onActivated(QSystemTrayIcon::ActivationReason reason)
@@ -95,35 +119,19 @@ void TrayPlugin::onActivated(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
-/* TODO:
-void MainWindow::changeEvent(QEvent* event)
+bool TrayPlugin::eventFilter(QObject* object, QEvent* event)
 {
-    QWidget::changeEvent(event);
-    if (event->type() == QEvent::ActivationChange)
-        unalert();
-}
-
-void MainWindow::unalert()
-{
-    if (isActiveWindow()) {
-        if (d.dockTile)
-            d.dockTile->setBadge(0);
-        if (d.trayIcon) {
-            d.trayIcon->setIcon(d.normalIcon);
-            SharedTimer::instance()->unregisterReceiver(this, "doAlert");
+    Q_UNUSED(object);
+    if (event->type() == QEvent::ActivationChange) {
+        if (d.alert && d.window->isActiveWindow()) {
+            SharedTimer::instance()->unregisterReceiver(this, "updateIcon");
+            d.alert = false;
+            d.blink = false;
+            updateIcon();
         }
     }
+    return false;
 }
-
-void MainWindow::doAlert()
-{
-    QIcon current = d.trayIcon->icon();
-    if (current.cacheKey() == d.normalIcon.cacheKey())
-        d.trayIcon->setIcon(d.alertIcon);
-    else
-        d.trayIcon->setIcon(d.normalIcon);
-}
-*/
 
 #if QT_VERSION < 0x050000
 Q_EXPORT_STATIC_PLUGIN(TrayPlugin)
