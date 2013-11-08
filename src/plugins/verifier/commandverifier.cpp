@@ -17,9 +17,10 @@
 #include <IrcCommand>
 #include <IrcMessage>
 
+int CommandVerifier::Private::id = 0;
+
 CommandVerifier::CommandVerifier(IrcConnection* connection) : QObject(connection)
 {
-    d.id = 0;
     d.connection = connection;
     connection->installMessageFilter(this);
     connection->installCommandFilter(this);

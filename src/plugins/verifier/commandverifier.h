@@ -39,7 +39,7 @@ signals:
 
 private:
     struct Private {
-        int id;
+        static int id;
         IrcConnection* connection;
         QMap<quint64, IrcCommand*> commands;
     } d;

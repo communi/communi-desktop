@@ -46,7 +46,7 @@ private slots:
 
 private:
     struct Private {
-        QHash<int, TextDocument*> documents; // TODO: id's per connection!
+        QHash<int, TextDocument*> documents;
         QHash<IrcConnection*, CommandVerifier*> verifiers;
         QHash<TextDocument*, SyntaxHighlighter*> highlighters;
     } d;
