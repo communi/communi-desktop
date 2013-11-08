@@ -26,6 +26,8 @@
 
 MainWindow::MainWindow(QWidget* parent) : QStackedWidget(parent)
 {
+    d.editedConnection = 0;
+
     d.normalIcon.addFile(":/icons/16x16/communi.png");
     d.normalIcon.addFile(":/icons/24x24/communi.png");
     d.normalIcon.addFile(":/icons/32x32/communi.png");
