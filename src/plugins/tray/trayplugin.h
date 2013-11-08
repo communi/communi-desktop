@@ -15,25 +15,32 @@
 #ifndef TRAYPLUGIN_H
 #define TRAYPLUGIN_H
 
+#include <QSet>
 #include <QObject>
 #include <QtPlugin>
 #include <QSystemTrayIcon>
+#include "connectionplugin.h"
 #include "windowplugin.h"
 
-class TrayPlugin : public QObject, public WindowPlugin
+class TrayPlugin : public QObject, public ConnectionPlugin, public WindowPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(WindowPlugin)
+    Q_INTERFACES(ConnectionPlugin WindowPlugin)
 #if QT_VERSION >= 0x050000
+    Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
     Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
 #endif
 
 public:
     TrayPlugin(QObject* parent = 0);
 
+    void initialize(IrcConnection* connection);
+    void uninitialize(IrcConnection* connection);
+
     void initialize(QWidget* window);
 
 private slots:
+    void updateIcon();
     void onActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:
@@ -43,6 +50,7 @@ private:
         QIcon onlineIcon;
         QIcon offlineIcon;
         QSystemTrayIcon* tray;
+        QSet<IrcConnection*> connections;
     } d;
 };
 

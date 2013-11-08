@@ -13,6 +13,8 @@
 */
 
 #include "trayplugin.h"
+#include "sharedtimer.h"
+#include <IrcConnection>
 
 inline void initResource() { Q_INIT_RESOURCE(tray); }
 
@@ -20,6 +22,24 @@ TrayPlugin::TrayPlugin(QObject* parent) : QObject(parent)
 {
     d.tray = 0;
     d.window = 0;
+}
+
+void TrayPlugin::initialize(IrcConnection* connection)
+{
+    if (d.tray) {
+        connect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateIcon()));
+        d.connections.insert(connection);
+        updateIcon();
+    }
+}
+
+void TrayPlugin::uninitialize(IrcConnection* connection)
+{
+    if (d.tray) {
+        disconnect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateIcon()));
+        d.connections.remove(connection);
+        updateIcon();
+    }
 }
 
 void TrayPlugin::initialize(QWidget* window)
@@ -40,12 +60,24 @@ void TrayPlugin::initialize(QWidget* window)
         d.offlineIcon.addFile(":/icons/offline-16.png");
         d.offlineIcon.addFile(":/icons/offline-32.png");
 
-        d.tray->setIcon(d.onlineIcon);
+        d.tray->setIcon(d.offlineIcon);
         d.tray->setVisible(true);
 
         connect(d.tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
                 this, SLOT(onActivated(QSystemTrayIcon::ActivationReason)));
     }
+}
+
+void TrayPlugin::updateIcon()
+{
+    bool online = false;
+    foreach (IrcConnection* connection, d.connections) {
+        if (connection->isConnected()) {
+            online = true;
+            break;
+        }
+    }
+    d.tray->setIcon(online ? d.onlineIcon : d.offlineIcon);
 }
 
 void TrayPlugin::onActivated(QSystemTrayIcon::ActivationReason reason)
