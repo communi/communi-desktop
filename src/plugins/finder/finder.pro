@@ -10,4 +10,6 @@ SOURCES += $$PWD/finderplugin.cpp
 SOURCES += $$PWD/searchinput.cpp
 SOURCES += $$PWD/searchpopup.cpp
 
+RESOURCES += finder.qrc
+
 include(../plugin.pri)

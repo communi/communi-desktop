@@ -1,0 +1,7 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+  <file>icons/close.png</file>
+  <file>icons/next.png</file>
+  <file>icons/prev.png</file>
+</qresource>
+</RCC>

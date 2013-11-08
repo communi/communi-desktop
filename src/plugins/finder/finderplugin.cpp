@@ -17,8 +17,11 @@
 #include "searchinput.h"
 #include "bufferview.h"
 
+inline void initResource() { Q_INIT_RESOURCE(finder); }
+
 FinderPlugin::FinderPlugin(QObject* parent) : QObject(parent)
 {
+    initResource();
 }
 
 void FinderPlugin::initialize(TreeWidget* tree)

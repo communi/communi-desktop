@@ -49,6 +49,7 @@ public slots:
 
 signals:
     void queried(const QString& user);
+    void documentChanged(TextDocument* document);
 
 protected:
     void keyPressEvent(QKeyEvent* event);

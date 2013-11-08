@@ -41,17 +41,20 @@ TextDocument* TextBrowser::document() const
 void TextBrowser::setDocument(TextDocument* document)
 {
     TextDocument* doc = qobject_cast<TextDocument*>(QTextBrowser::document());
-    if (doc)
-        doc->deref(this);
-    if (document) {
-        document->ref(this);
-        if (d.dirty == 0 && !document->isEmpty()) {
-            setUpdatesEnabled(false);
-            d.dirty = startTimer(32);
+    if (doc != document) {
+        if (doc)
+            doc->deref(this);
+        if (document) {
+            document->ref(this);
+            if (d.dirty == 0 && !document->isEmpty()) {
+                setUpdatesEnabled(false);
+                d.dirty = startTimer(32);
+            }
+            QMetaObject::invokeMethod(this, "scrollToBottom", Qt::QueuedConnection);
         }
-        QMetaObject::invokeMethod(this, "scrollToBottom", Qt::QueuedConnection);
+        QTextBrowser::setDocument(document);
+        emit documentChanged(document);
     }
-    QTextBrowser::setDocument(document);
 }
 
 QWidget* TextBrowser::buddy() const
