@@ -51,6 +51,7 @@ signals:
     void rejected();
 
 private slots:
+    void onDisplayNameFieldChanged();
     void onHostFieldChanged();
     void onPortFieldChanged(int port);
     void onSecureFieldToggled(bool secure);
@@ -60,6 +61,8 @@ private slots:
     void reset();
 
 private:
+    QVariant defaultValue(const QString& key, const QString& field, const QVariant& defaultValue = QVariant()) const;
+
     struct Private : public Ui::ConnectPage {
         QCompleter* displayNameCompleter;
         QCompleter* hostCompleter;

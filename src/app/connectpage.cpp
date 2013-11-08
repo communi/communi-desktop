@@ -45,6 +45,7 @@ ConnectPage::ConnectPage(QWidget* parent) : QWidget(parent)
     connect(ui.buttonBox, SIGNAL(rejected()), this, SIGNAL(rejected()));
     connect(ui.buttonBox->button(QDialogButtonBox::Reset), SIGNAL(clicked()), this, SLOT(reset()));
 
+    connect(ui.displayNameField, SIGNAL(textChanged(QString)), this, SLOT(onDisplayNameFieldChanged()));
     connect(ui.hostField, SIGNAL(textChanged(QString)), this, SLOT(onHostFieldChanged()));
     connect(ui.portField, SIGNAL(valueChanged(int)), this, SLOT(onPortFieldChanged(int)));
     connect(ui.secureField, SIGNAL(toggled(bool)), this, SLOT(onSecureFieldToggled(bool)));
@@ -169,6 +170,13 @@ static QString capitalize(const QString& str)
     return str.left(1).toUpper() + str.mid(1);
 }
 
+void ConnectPage::onDisplayNameFieldChanged()
+{
+    QString name = ui.displayNameField->text();
+    if (!name.isEmpty() && ui.hostField->text().isEmpty())
+        setHost(defaultValue("hosts", name).toString());
+}
+
 void ConnectPage::onHostFieldChanged()
 {
     // pick the longest part of the url, skipping the most common domain prefixes and suffixes
@@ -185,6 +193,21 @@ void ConnectPage::onHostFieldChanged()
     }
     if (!name.isEmpty())
         ui.displayNameField->setPlaceholderText(capitalize(name));
+
+    QString displayName = ui.displayNameField->text();
+    QString host = ui.hostField->text();
+    if (!displayName.isEmpty() || !host.isEmpty()) {
+        if (port() == NORMAL_PORTS[0])
+            setPort(defaultValue("ports", displayName, defaultValue("ports", host, port()).toInt()).toInt());
+        if (!isSecure())
+            setSecure(defaultValue("secures", displayName, defaultValue("secures", host, isSecure()).toBool()).toBool());
+        if (ui.nickNameField->text().isEmpty())
+            setNickName(defaultValue("nickNames", displayName, defaultValue("nickNames", host).toString()).toString());
+        if (ui.realNameField->text().isEmpty())
+            setRealName(defaultValue("realNames", displayName, defaultValue("realNames", host).toString()).toString());
+        if (ui.userNameField->text().isEmpty())
+            setUserName(defaultValue("userNames", displayName, defaultValue("userNames", host).toString()).toString());
+    }
 }
 
 void ConnectPage::onPortFieldChanged(int port)
@@ -227,10 +250,10 @@ void ConnectPage::restoreSettings()
     ui.passwordField->setText(crypto.decryptToString(settings.value("password").toString()));
 
     ui.displayNameCompleter = createCompleter(settings.value("displayNames").toStringList(), ui.displayNameField);
-    ui.hostCompleter = createCompleter(settings.value("hosts").toStringList(), ui.hostField);
-    ui.nickNameCompleter = createCompleter(settings.value("nickNames").toStringList(), ui.nickNameField);
-    ui.realNameCompleter = createCompleter(settings.value("realNames").toStringList(), ui.realNameField);
-    ui.userNameCompleter = createCompleter(settings.value("userNames").toStringList(), ui.userNameField);
+    ui.hostCompleter = createCompleter(settings.value("allHosts").toStringList(), ui.hostField);
+    ui.nickNameCompleter = createCompleter(settings.value("allNickNames").toStringList(), ui.nickNameField);
+    ui.realNameCompleter = createCompleter(settings.value("allRealNames").toStringList(), ui.realNameField);
+    ui.userNameCompleter = createCompleter(settings.value("allUserNames").toStringList(), ui.userNameField);
 }
 
 void ConnectPage::saveSettings()
@@ -264,39 +287,60 @@ void ConnectPage::saveSettings()
     }
 
     if (!host.isEmpty()) {
-        QStringList hosts = settings.value("hosts").toStringList();
-        if (!hosts.contains(host, Qt::CaseInsensitive))
-            settings.setValue("hosts", hosts << host);
+        QStringList allHosts = settings.value("allHosts").toStringList();
+        if (!allHosts.contains(host, Qt::CaseInsensitive))
+            settings.setValue("allHosts", allHosts << host);
+
+        QMap<QString, QVariant> hosts = settings.value("hosts").toMap();
+        hosts.insert(ConnectPage::displayName(), host);
+        settings.setValue("hosts", hosts);
     }
 
     if (port != NORMAL_PORTS[0]) {
         QMap<QString, QVariant> ports = settings.value("ports").toMap();
+        ports.insert(ConnectPage::displayName(), port);
         ports.insert(ConnectPage::host(), port);
         settings.setValue("ports", ports);
     }
 
     if (secure) {
         QMap<QString, QVariant> secures = settings.value("secures").toMap();
+        secures.insert(ConnectPage::displayName(), secure);
         secures.insert(ConnectPage::host(), secure);
         settings.setValue("secures", secures);
     }
 
     if (!nickName.isEmpty()) {
-        QStringList nickNames = settings.value("nickNames").toStringList();
-        if (!nickNames.contains(nickName, Qt::CaseInsensitive))
-            settings.setValue("nickNames", nickNames << nickName);
+        QStringList allNickNames = settings.value("allNickNames").toStringList();
+        if (!allNickNames.contains(nickName, Qt::CaseInsensitive))
+            settings.setValue("allNickNames", allNickNames << nickName);
+
+        QMap<QString, QVariant> nickNames = settings.value("nickNames").toMap();
+        nickNames.insert(ConnectPage::displayName(), nickName);
+        nickNames.insert(ConnectPage::host(), nickName);
+        settings.setValue("nickNames", nickNames);
     }
 
     if (!realName.isEmpty()) {
-        QStringList realNames = settings.value("realNames").toStringList();
-        if (!realNames.contains(realName, Qt::CaseInsensitive))
-            settings.setValue("realNames", realNames << realName);
+        QStringList allRealNames = settings.value("allRealNames").toStringList();
+        if (!allRealNames.contains(realName, Qt::CaseInsensitive))
+            settings.setValue("allRealNames", allRealNames << realName);
+
+        QMap<QString, QVariant> realNames = settings.value("realNames").toMap();
+        realNames.insert(ConnectPage::displayName(), realName);
+        realNames.insert(ConnectPage::host(), realName);
+        settings.setValue("realNames", realNames);
     }
 
     if (!userName.isEmpty()) {
-        QStringList userNames = settings.value("userNames").toStringList();
-        if (!userNames.contains(userName, Qt::CaseInsensitive))
-            settings.setValue("userNames", userNames << userName);
+        QStringList allUserNames = settings.value("allUserNames").toStringList();
+        if (!allUserNames.contains(userName, Qt::CaseInsensitive))
+            settings.setValue("allUserNames", allUserNames << userName);
+
+        QMap<QString, QVariant> userNames = settings.value("userNames").toMap();
+        userNames.insert(ConnectPage::displayName(), userName);
+        userNames.insert(ConnectPage::host(), userName);
+        settings.setValue("userNames", userNames);
     }
 }
 
@@ -324,4 +368,12 @@ void ConnectPage::reset()
     ui.userNameField->clear();
     ui.passwordField->clear();
     saveSettings();
+}
+
+QVariant ConnectPage::defaultValue(const QString& key, const QString& field, const QVariant& defaultValue) const
+{
+    QSettings settings;
+    settings.beginGroup("Credentials");
+    QMap<QString, QVariant> values = settings.value(key).toMap();
+    return values.value(field, defaultValue);
 }
