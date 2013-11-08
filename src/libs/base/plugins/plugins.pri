@@ -5,6 +5,7 @@
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
+HEADERS += $$PWD/bufferplugin.h
 HEADERS += $$PWD/bufferviewplugin.h
 HEADERS += $$PWD/connectionplugin.h
 HEADERS += $$PWD/splitviewplugin.h

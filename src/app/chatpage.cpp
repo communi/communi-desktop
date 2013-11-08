@@ -21,6 +21,7 @@
 
 #include <QtPlugin>
 #include <QPluginLoader>
+#include "bufferplugin.h"
 #include "bufferviewplugin.h"
 #include "connectionplugin.h"
 #include "splitviewplugin.h"
@@ -167,9 +168,15 @@ void ChatPage::addBuffer(IrcBuffer* buffer)
     buffer->setPersistent(true);
 
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        TextDocumentPlugin* plugin = qobject_cast<TextDocumentPlugin*>(instance);
-        if (plugin)
-            plugin->initialize(doc);
+        BufferPlugin* bufferPlugin = qobject_cast<BufferPlugin*>(instance);
+        if (bufferPlugin) {
+            bufferPlugin->addBuffer(buffer);
+            connect(buffer, SIGNAL(destroyed(IrcBuffer*)), instance, SLOT(removeBuffer(IrcBuffer*)));
+            connect(this, SIGNAL(currentBufferChanged(IrcBuffer*)), instance, SLOT(setCurrentBuffer(IrcBuffer*)));
+        }
+        TextDocumentPlugin* documentPlugin = qobject_cast<TextDocumentPlugin*>(instance);
+        if (documentPlugin)
+            documentPlugin->initialize(doc);
     }
 }
 
