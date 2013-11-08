@@ -49,6 +49,15 @@ ConnectPage::ConnectPage(QWidget* parent) : QWidget(parent)
     connect(ui.portField, SIGNAL(valueChanged(int)), this, SLOT(onPortFieldChanged(int)));
     connect(ui.secureField, SIGNAL(toggled(bool)), this, SLOT(onSecureFieldToggled(bool)));
 
+    connect(ui.displayNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
+    connect(ui.hostField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
+    connect(ui.nickNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
+    connect(ui.realNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
+    connect(ui.userNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
+    connect(ui.passwordField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
+    connect(ui.portField, SIGNAL(valueChanged(int)), this, SLOT(updateUi()));
+    connect(ui.secureField, SIGNAL(toggled(bool)), this, SLOT(updateUi()));
+
     QShortcut* shortcut = new QShortcut(Qt::Key_Return, this);
     connect(shortcut, SIGNAL(activated()), ui.buttonBox->button(QDialogButtonBox::Ok), SLOT(click()));
 
@@ -58,6 +67,7 @@ ConnectPage::ConnectPage(QWidget* parent) : QWidget(parent)
     connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(saveSettings()));
     connect(ui.buttonBox, SIGNAL(rejected()), this, SLOT(saveSettings()));
     restoreSettings();
+    updateUi();
 }
 
 ConnectPage::~ConnectPage()
@@ -288,6 +298,19 @@ void ConnectPage::saveSettings()
         if (!userNames.contains(userName, Qt::CaseInsensitive))
             settings.setValue("userNames", userNames << userName);
     }
+}
+
+void ConnectPage::updateUi()
+{
+    QPushButton* button = ui.buttonBox->button(QDialogButtonBox::Reset);
+    button->setEnabled(!ui.displayNameField->text().isEmpty() ||
+                       !ui.hostField->text().isEmpty() ||
+                        ui.portField->value() != NORMAL_PORTS[0] ||
+                        ui.secureField->isChecked() ||
+                       !ui.nickNameField->text().isEmpty() ||
+                       !ui.realNameField->text().isEmpty() ||
+                       !ui.userNameField->text().isEmpty() ||
+                       !ui.passwordField->text().isEmpty());
 }
 
 void ConnectPage::reset()

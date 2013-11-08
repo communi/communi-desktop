@@ -56,6 +56,7 @@ private slots:
     void onSecureFieldToggled(bool secure);
     void restoreSettings();
     void saveSettings();
+    void updateUi();
     void reset();
 
 private:
