@@ -102,13 +102,14 @@ void TreeMenu::updateActions()
         d.disconnectAction->setVisible(connected);
         d.reconnectAction->setVisible(!connected);
         d.editAction->setEnabled(!connected && !child);
+        d.editAction->setVisible(!child);
         d.joinAction->setVisible(connected && channel && !active);
         d.partAction->setVisible(connected && channel && active);
         d.whoisAction->setVisible(connected && child && !channel);
     } else {
         d.disconnectAction->setVisible(false);
         d.reconnectAction->setVisible(false);
-        d.editAction->setEnabled(false);
+        d.editAction->setVisible(false);
         d.whoisAction->setVisible(false);
         d.joinAction->setVisible(false);
         d.partAction->setVisible(false);
