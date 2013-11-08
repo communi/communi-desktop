@@ -63,7 +63,8 @@ void HighlighterPlugin::onMessageReceived(IrcMessage* message)
     if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
         IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
 
-        if (message->property("content").toString().contains(message->connection()->nickName())) {
+        if (message->property("private").toBool() ||
+            message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive)) {
             TreeItem* item = d.tree->bufferItem(buffer);
             if (item && item != d.tree->currentItem())
                 highlightItem(item);
