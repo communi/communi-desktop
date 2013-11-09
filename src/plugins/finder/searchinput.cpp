@@ -18,7 +18,6 @@
 #include <QPropertyAnimation>
 #include <QStylePainter>
 #include <QStyleOption>
-#include <QApplication>
 #include <QHBoxLayout>
 #include <QShortcut>
 #include <QEvent>
@@ -35,71 +34,19 @@ SearchInput::SearchInput(TextBrowser* browser) : QWidget(browser)
     d.lineEdit->setAttribute(Qt::WA_MacShowFocusRect, false);
 
     d.prevButton = new QToolButton(this);
+    d.prevButton->setObjectName("prev");
     d.prevButton->setIcon(QIcon(":/icons/prev.png"));
     connect(d.prevButton, SIGNAL(clicked()), this, SLOT(findPrevious()));
 
     d.nextButton = new QToolButton(this);
+    d.nextButton->setObjectName("next");
     d.nextButton->setIcon(QIcon(":/icons/next.png"));
     connect(d.nextButton, SIGNAL(clicked()), this, SLOT(findNext()));
 
     d.closeButton = new QToolButton(this);
+    d.closeButton->setObjectName("close");
     d.closeButton->setIcon(QIcon(":/icons/close.png"));
     connect(d.closeButton, SIGNAL(clicked()), this, SLOT(animateHide()));
-
-    qApp->setStyleSheet(
-    "SearchInput > QLineEdit {"
-        "border: 1px solid palette(dark);"
-        "border-top-left-radius: 4px;"
-        "border-bottom-left-radius: 4px;"
-    "}");
-
-    d.prevButton->setStyleSheet(
-    "QToolButton {"
-        "border: 1px solid palette(dark);"
-        "border-left-color: transparent;"
-        "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-                                          "stop: 0 palette(light), stop: 1 palette(button));"
-    "}"
-    "QToolButton:pressed {"
-        "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-                                          "stop: 0 palette(button), stop: 1 palette(light));"
-    "}");
-
-    d.nextButton->setStyleSheet(
-    "QToolButton {"
-        "border: 1px solid palette(dark);"
-        "border-left-color: transparent;"
-        "border-top-right-radius: 4px;"
-        "border-bottom-right-radius: 4px;"
-        "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-                                          "stop: 0 palette(light), stop: 1 palette(button));"
-    "}"
-    "QToolButton:pressed {"
-        "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-                                          "stop: 0 palette(button), stop: 1 palette(light));"
-    "}");
-
-    d.closeButton->setStyleSheet(
-    "QToolButton {"
-        "margin: 3px;"
-        "border-radius: 6px;"
-        "background-color: transparent;"
-    "}"
-    "QToolButton:hover {"
-        "background-color: #eaaaaa;"
-        "border: 1px solid palette(dark);"
-    "}"
-    "QToolButton:pressed {"
-        "background-color: #d57070;"
-        "border: 1px solid palette(dark);"
-    "}");
-
-    setStyleSheet(
-    "SearchInput {"
-        "background-color: palette(window);"
-        "border: 1px solid palette(dark);"
-        "border-bottom-left-radius: 4px;"
-    "}");
 
     QHBoxLayout* layout = new QHBoxLayout(this);
     layout->addWidget(d.closeButton);
