@@ -39,9 +39,6 @@ public:
     void ref(TextBrowser* browser);
     void deref(TextBrowser* browser);
 
-    int note() const;
-    void setNote(int note);
-
     void addMarker(int block = -1);
     void removeMarker(int block);
 
@@ -70,7 +67,7 @@ private:
     void appendLine(QTextCursor& cursor, const QString& line);
 
     struct Private {
-        int note;
+        int ub;
         int dirty;
         IrcBuffer* buffer;
         QStringList lines;

@@ -28,7 +28,7 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
 {
     qRegisterMetaType<TextDocument*>();
 
-    d.note = -1;
+    d.ub = -1;
     d.dirty = -1;
     d.buffer = buffer;
 
@@ -65,21 +65,8 @@ void TextDocument::ref(TextBrowser* browser)
 void TextDocument::deref(TextBrowser* browser)
 {
     d.browsers.remove(browser);
-}
-
-int TextDocument::note() const
-{
-    return d.note;
-}
-
-void TextDocument::setNote(int note)
-{
-    if (d.note != note) {
-        removeMarker(d.note);
-        if (note != -1)
-            addMarker(note);
-        d.note = note;
-    }
+    if (d.browsers.isEmpty())
+        d.ub = -1;
 }
 
 void TextDocument::addMarker(int block)
@@ -138,15 +125,27 @@ void TextDocument::append(const QString& text)
 
 void TextDocument::drawMarkers(QPainter* painter, const QRect& bounds)
 {
+    int last = -1;
     if (!d.markers.isEmpty()) {
         QAbstractTextDocumentLayout* layout = documentLayout();
         foreach (int marker, d.markers) {
             QTextBlock block = findBlockByNumber(marker);
-            if (block.isValid()) {
+            if (block.isValid() && block != lastBlock()) {
                 QRect br = layout->blockBoundingRect(block).toAlignedRect();
-                if (bounds.intersects(br))
+                if (bounds.intersects(br)) {
                     painter->drawLine(br.topLeft(), br.topRight());
+                    last = qMax(marker, last);
+                }
             }
+        }
+    }
+
+    if (d.ub > 0 && d.ub >= last) {
+        QTextBlock block = findBlockByNumber(d.ub);
+        if (block.isValid()) {
+            QRect br = documentLayout()->blockBoundingRect(block).toAlignedRect();
+            if (bounds.intersects(br))
+                painter->drawLine(br.topLeft(), br.topRight());
         }
     }
 }
@@ -228,15 +227,15 @@ static void decrementHelper(QList<int>& lst, int d)
 
 void TextDocument::appendLine(QTextCursor& cursor, const QString& line)
 {
+    const int count = blockCount();
     cursor.movePosition(QTextCursor::End);
     if (!isEmpty()) {
-        const int count = blockCount();
         const int max = maximumBlockCount();
         cursor.insertBlock();
         if (count >= max) {
             const int diff = max - count + 1;
-            if (d.note > 0)
-                d.note -= diff;
+            if (d.ub > 0)
+                d.ub -= diff;
             decrementHelper(d.markers, diff);
             decrementHelper(d.highlights, diff);
         }
@@ -249,4 +248,7 @@ void TextDocument::appendLine(QTextCursor& cursor, const QString& line)
 #endif // QT_VERSION
 
     cursor.insertHtml(line);
+
+    if (d.ub == -1 && d.browsers.isEmpty())
+        d.ub = count;
 }
