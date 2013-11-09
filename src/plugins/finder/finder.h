@@ -50,9 +50,6 @@ signals:
 protected slots:
     virtual void find(const QString& text, bool forward = false, bool backward = false, bool typed = true) = 0;
 
-protected:
-    void paintEvent(QPaintEvent* event);
-
 protected slots:
     virtual void relocate() = 0;
 

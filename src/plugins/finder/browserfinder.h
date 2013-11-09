@@ -27,6 +27,8 @@ public:
     explicit BrowserFinder(TextBrowser* browser);
     ~BrowserFinder();
 
+    void setVisible(bool visible);
+
 protected slots:
     void find(const QString& text, bool forward = false, bool backward = false, bool typed = true);
     void relocate();

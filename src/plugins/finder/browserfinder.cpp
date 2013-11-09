@@ -24,7 +24,12 @@ BrowserFinder::BrowserFinder(TextBrowser* browser) : Finder(browser)
 
 BrowserFinder::~BrowserFinder()
 {
-    if (d.textBrowser) {
+}
+
+void BrowserFinder::setVisible(bool visible)
+{
+    Finder::setVisible(visible);
+    if (!visible && d.textBrowser) {
         QTextCursor cursor = d.textBrowser->textCursor();
         if (cursor.hasSelection()) {
             cursor.clearSelection();

@@ -130,13 +130,6 @@ void Finder::animateHide()
     animation->setDuration(50);
     animation->setEndValue(-sizeHint().height());
     animation->start(QAbstractAnimation::DeleteWhenStopped);
+    connect(animation, SIGNAL(destroyed()), this, SLOT(hide()));
     connect(animation, SIGNAL(destroyed()), this, SLOT(deleteLater()));
-}
-
-void Finder::paintEvent(QPaintEvent*)
-{
-    QStylePainter painter(this);
-    QStyleOption option;
-    option.init(this);
-    painter.drawPrimitive(QStyle::PE_Widget, option);
 }
