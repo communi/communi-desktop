@@ -83,29 +83,37 @@ void TextDocument::setNote(int note)
 
 void TextDocument::addMarker(int block)
 {
+    const int max = totalCount() - 1;
     if (block == -1)
-        block = totalCount() - 1;
-    d.markers.append(block);
-    updateBlock(block);
+        block = max;
+    if (block >= 0 && block <= max) {
+        QList<int>::iterator it = qLowerBound(d.markers.begin(), d.markers.end(), block);
+        d.markers.insert(it, block);
+        updateBlock(block);
+    }
 }
 
 void TextDocument::removeMarker(int block)
 {
-    if (d.markers.removeOne(block))
+    if (d.markers.removeOne(block) && block >= 0 && block < totalCount())
         updateBlock(block);
 }
 
 void TextDocument::addHighlight(int block)
 {
+    const int max = totalCount() - 1;
     if (block == -1)
-        block = totalCount() - 1;
-    d.highlights.append(block);
-    updateBlock(block);
+        block = max;
+    if (block >= 0 && block <= max) {
+        QList<int>::iterator it = qLowerBound(d.highlights.begin(), d.highlights.end(), block);
+        d.highlights.insert(it, block);
+        updateBlock(block);
+    }
 }
 
 void TextDocument::removeHighlight(int block)
 {
-    if (d.highlights.removeOne(block))
+    if (d.highlights.removeOne(block) && block >= 0 && block < totalCount())
         updateBlock(block);
 }
 
@@ -207,11 +215,31 @@ void TextDocument::receiveMessage(IrcMessage* message)
     emit messageReceived(message);
 }
 
+static void decrementHelper(QList<int>& lst, int d)
+{
+    QList<int>::iterator it;
+    for (it = lst.begin(); it != lst.end(); ++it) {
+        *it -= d;
+        if (*it < 0)
+            it = lst.erase(it);
+    }
+}
+
 void TextDocument::appendLine(QTextCursor& cursor, const QString& line)
 {
     cursor.movePosition(QTextCursor::End);
-    if (!isEmpty())
+    if (!isEmpty()) {
+        const int count = blockCount();
+        const int max = maximumBlockCount();
         cursor.insertBlock();
+        if (count >= max) {
+            const int diff = max - count + 1;
+            if (d.note > 0)
+                d.note -= diff;
+            decrementHelper(d.markers, diff);
+            decrementHelper(d.highlights, diff);
+        }
+    }
 
 #if QT_VERSION >= 0x040800
     QTextBlockFormat format = cursor.blockFormat();
