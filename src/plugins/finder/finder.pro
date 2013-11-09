@@ -2,13 +2,15 @@
 # Communi
 ######################################################################
 
+HEADERS += $$PWD/browserfinder.h
+HEADERS += $$PWD/finder.h
 HEADERS += $$PWD/finderplugin.h
-HEADERS += $$PWD/searchinput.h
-HEADERS += $$PWD/searchpopup.h
+HEADERS += $$PWD/treefinder.h
 
+SOURCES += $$PWD/browserfinder.cpp
+SOURCES += $$PWD/finder.cpp
 SOURCES += $$PWD/finderplugin.cpp
-SOURCES += $$PWD/searchinput.cpp
-SOURCES += $$PWD/searchpopup.cpp
+SOURCES += $$PWD/treefinder.cpp
 
 RESOURCES += finder.qrc
 

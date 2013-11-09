@@ -109,7 +109,7 @@ void StylePlugin::initialize(TreeWidget* tree)
         "    selection-background-color: palette(highlight);"
         "}");
 }
-#include <QApplication>
+
 void StylePlugin::initialize(QWidget* window)
 {
     window->setStyleSheet(
@@ -118,45 +118,23 @@ void StylePlugin::initialize(QWidget* window)
         "    height: 1px;"
         "    background: palette(dark);"
         "}"
-        "SearchInput {"
+        "Finder {"
             "background-color: palette(window);"
             "border: 1px solid palette(dark);"
-            "border-bottom-left-radius: 4px;"
         "}"
-        "SearchInput > QLineEdit {"
+        "Finder > QLineEdit {"
             "border: 1px solid palette(dark);"
-            "border-top-left-radius: 4px;"
-            "border-bottom-left-radius: 4px;"
+            "border-bottom-color: transparent;"
         "}"
-        "SearchInput > QToolButton {"
+        "Finder > QToolButton {"
             "border: 1px solid palette(dark);"
             "border-left-color: transparent;"
             "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
                                               "stop: 0 palette(light), stop: 1 palette(button));"
         "}"
-        "SearchInput > QToolButton:pressed {"
+        "Finder > QToolButton:pressed {"
             "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
                                               "stop: 0 palette(button), stop: 1 palette(light));"
-        "}"
-        "SearchInput > QToolButton#next {"
-            "border-top-right-radius: 4px;"
-            "border-bottom-right-radius: 4px;"
-        "}"
-        "SearchInput > QToolButton#close {"
-            "margin: 3px;"
-            "border-radius: 6px;"
-            "border-color: transparent;"
-            "background-color: transparent;"
-        "}"
-        "SearchInput > QToolButton#close:hover {"
-            "border: 1px solid palette(dark);"
-            "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-                                              "stop: 0 palette(light), stop: 1 palette(button));"
-        "}"
-        "SearchInput > QToolButton#close:pressed {"
-            "border: 1px solid palette(dark);"
-            "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-                                              "stop: 0 #ff4a4a, stop: 1 #ff8a8a);"
         "}");
 }
 

@@ -14,6 +14,7 @@
 #include "textinput.h"
 #include "listview.h"
 #include <IrcBufferModel>
+#include <QApplication>
 #include <QVBoxLayout>
 #include <IrcChannel>
 #include <IrcBuffer>
@@ -87,7 +88,9 @@ void BufferView::setBuffer(IrcBuffer* buffer)
 
         d.textInput->setBuffer(buffer);
         if (buffer) {
-            d.textInput->setFocus();
+            QWidget* focus = qApp->focusWidget();
+            if (!focus || !focus->inherits("QLineEdit") || (focus->inherits("TextInput") && !isAncestorOf(focus)))
+                d.textInput->setFocus();
             d.textBrowser->setDocument(buffer->property("document").value<TextDocument*>());
         }
 

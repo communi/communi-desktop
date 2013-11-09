@@ -14,8 +14,8 @@
 
 #include "textbrowser.h"
 #include "textdocument.h"
-#include <QCoreApplication>
 #include <QDesktopServices>
+#include <QApplication>
 #include <QScrollBar>
 #include <QKeyEvent>
 #include <QPainter>
@@ -110,7 +110,9 @@ void TextBrowser::keyPressEvent(QKeyEvent* event)
             default:
                 if (!event->matches(QKeySequence::Copy) && !event->matches(QKeySequence::SelectAll)) {
                     QCoreApplication::sendEvent(d.bud, event);
-                    d.bud->setFocus();
+                    QWidget* focus = qApp->focusWidget();
+                    if (!focus || !focus->inherits("QLineEdit") || (focus->inherits("TextInput") && !isAncestorOf(focus)))
+                        d.bud->setFocus();
                     return;
                 }
                 break;

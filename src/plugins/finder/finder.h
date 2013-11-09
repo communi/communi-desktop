@@ -12,53 +12,58 @@
 * GNU General Public License for more details.
 */
 
-#ifndef SEARCHINPUT_H
-#define SEARCHINPUT_H
+#ifndef FINDER_H
+#define FINDER_H
 
 #include <QLineEdit>
 #include <QToolButton>
 
-class TextBrowser;
-
-class SearchInput : public QWidget
+class Finder : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(int offset READ offset WRITE setOffset)
 
 public:
-    explicit SearchInput(TextBrowser* browser);
+    explicit Finder(QWidget* parent);
+    ~Finder();
 
     int offset() const;
     void setOffset(int offset);
 
+    bool hasError() const;
+    void setError(bool error);
+
 public slots:
-    void find();
+    void doFind();
+    void reFind();
     void findNext();
     void findPrevious();
 
-    bool eventFilter(QObject* object, QEvent* event);
-
-protected slots:
-    void find(const QString& text, bool forward = false, bool backward = false, bool typed = true);
-
-protected:
-    void hideEvent(QHideEvent* event);
-    void paintEvent(QPaintEvent* event);
-
-private slots:
     void animateShow();
     void animateHide();
-    void reset();
+
+    bool eventFilter(QObject* object, QEvent* event);
+
+signals:
+    void destroyed(Finder* input);
+
+protected slots:
+    virtual void find(const QString& text, bool forward = false, bool backward = false, bool typed = true) = 0;
+
+protected:
+    void paintEvent(QPaintEvent* event);
+
+protected slots:
+    virtual void relocate() = 0;
 
 private:
     struct Private {
         int offset;
+        bool error;
         QLineEdit* lineEdit;
         QToolButton* prevButton;
         QToolButton* nextButton;
-        QToolButton* closeButton;
-        TextBrowser* textBrowser;
     } d;
 };
 
-#endif // SEARCHINPUT_H
+#endif // FINDER_H

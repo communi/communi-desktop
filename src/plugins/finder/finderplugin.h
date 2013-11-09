@@ -15,25 +15,47 @@
 #ifndef FINDERPLUGIN_H
 #define FINDERPLUGIN_H
 
+#include <QSet>
 #include <QObject>
 #include <QtPlugin>
+#include <QShortcut>
+#include "splitviewplugin.h"
 #include "treewidgetplugin.h"
-#include "bufferviewplugin.h"
 
-class FinderPlugin : public QObject, public TreeWidgetPlugin, public BufferViewPlugin
+class Finder;
+
+class FinderPlugin : public QObject, public SplitViewPlugin, public TreeWidgetPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreeWidgetPlugin BufferViewPlugin)
+    Q_INTERFACES(SplitViewPlugin TreeWidgetPlugin)
 #if QT_VERSION >= 0x050000
+    Q_PLUGIN_METADATA(IID "Communi.SplitViewPlugin")
     Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.BufferViewPlugin")
 #endif
 
 public:
     explicit FinderPlugin(QObject* parent = 0);
 
+    void initialize(SplitView* view);
     void initialize(TreeWidget* tree);
-    void initialize(BufferView* view);
+
+private slots:
+    void searchTree();
+    void searchBrowser();
+    void cancelTreeSearch();
+    void cancelBrowserSearch();
+    void startSearch(Finder* input);
+    void finderDestroyed(Finder* input);
+
+private:
+    struct Private {
+        SplitView* view;
+        TreeWidget* tree;
+        QSet<Finder*> finders;
+        QShortcut* nextShortcut;
+        QShortcut* prevShortcut;
+        QShortcut* cancelShortcut;
+    } d;
 };
 
 #endif // FINDERPLUGIN_H
