@@ -41,8 +41,10 @@ public:
 
 private slots:
     void searchTree();
+    void searchList();
     void searchBrowser();
     void cancelTreeSearch();
+    void cancelListSearch();
     void cancelBrowserSearch();
     void startSearch(Finder* input);
     void finderDestroyed(Finder* input);

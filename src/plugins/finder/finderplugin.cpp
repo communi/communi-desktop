@@ -17,9 +17,11 @@
 #include "textbrowser.h"
 #include "treewidget.h"
 #include "treefinder.h"
+#include "listfinder.h"
 #include "bufferview.h"
 #include "textinput.h"
 #include "splitview.h"
+#include "listview.h"
 #include <QApplication>
 #include <QTimer>
 
@@ -44,9 +46,13 @@ void FinderPlugin::initialize(SplitView* view)
     shortcut = new QShortcut(QKeySequence("Ctrl+S"), view);
     connect(shortcut, SIGNAL(activated()), this, SLOT(searchTree()));
 
+    shortcut = new QShortcut(QKeySequence("Ctrl+U"), view);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(searchList()));
+
     d.cancelShortcut = new QShortcut(QKeySequence("Esc"), view);
     d.cancelShortcut->setEnabled(false);
     connect(d.cancelShortcut, SIGNAL(activated()), this, SLOT(cancelTreeSearch()));
+    connect(d.cancelShortcut, SIGNAL(activated()), this, SLOT(cancelListSearch()));
     connect(d.cancelShortcut, SIGNAL(activated()), this, SLOT(cancelBrowserSearch()));
 
     d.nextShortcut = new QShortcut(QKeySequence::FindNext, view);
@@ -60,6 +66,7 @@ void FinderPlugin::initialize(TreeWidget* tree)
 
 void FinderPlugin::searchTree()
 {
+    cancelListSearch();
     cancelBrowserSearch();
     Finder* finder = d.tree->findChild<TreeFinder*>();
     if (!finder)
@@ -68,11 +75,26 @@ void FinderPlugin::searchTree()
         finder->reFind();
 }
 
+void FinderPlugin::searchList()
+{
+    BufferView* view = d.view->currentView();
+    if (view && view->listView()->isVisible()) {
+        cancelTreeSearch();
+        cancelBrowserSearch();
+        Finder* finder = view->listView()->findChild<ListFinder*>();
+        if (!finder)
+            startSearch(new ListFinder(view->listView()));
+        else if (!finder->isAncestorOf(qApp->focusWidget()))
+            finder->reFind();
+    }
+}
+
 void FinderPlugin::searchBrowser()
 {
-    cancelTreeSearch();
     BufferView* view = d.view->currentView();
-    if (view) {
+    if (view && view->isVisible()) {
+        cancelListSearch();
+        cancelTreeSearch();
         Finder* finder = view->textBrowser()->findChild<BrowserFinder*>();
         if (!finder)
             startSearch(new BrowserFinder(view->textBrowser()));
@@ -100,6 +122,16 @@ void FinderPlugin::cancelTreeSearch()
     BufferView* view = d.view->currentView();
     if (view)
         view->textInput()->setFocus();
+}
+
+void FinderPlugin::cancelListSearch()
+{
+    BufferView* view = d.view->currentView();
+    if (view) {
+        Finder* finder = view->listView()->findChild<ListFinder*>();
+        if (finder)
+            finder->animateHide();
+    }
 }
 
 void FinderPlugin::cancelBrowserSearch()
