@@ -18,6 +18,7 @@
 #include <QPropertyAnimation>
 #include <QStylePainter>
 #include <QStyleOption>
+#include <QApplication>
 #include <QHBoxLayout>
 #include <QShortcut>
 #include <QEvent>
@@ -45,14 +46,11 @@ SearchInput::SearchInput(TextBrowser* browser) : QWidget(browser)
     d.closeButton->setIcon(QIcon(":/icons/close.png"));
     connect(d.closeButton, SIGNAL(clicked()), this, SLOT(animateHide()));
 
-    d.lineEdit->setStyleSheet(
-    "QLineEdit {"
+    qApp->setStyleSheet(
+    "SearchInput > QLineEdit {"
         "border: 1px solid palette(dark);"
         "border-top-left-radius: 4px;"
         "border-bottom-left-radius: 4px;"
-    "}"
-    "QLineEdit#error {"
-        "background: #ff7a7a"
     "}");
 
     d.prevButton->setStyleSheet(
@@ -96,9 +94,8 @@ SearchInput::SearchInput(TextBrowser* browser) : QWidget(browser)
         "border: 1px solid palette(dark);"
     "}");
 
-    setObjectName("container");
     setStyleSheet(
-    "QWidget#container {"
+    "SearchInput {"
         "background-color: palette(window);"
         "border: 1px solid palette(dark);"
         "border-bottom-left-radius: 4px;"
@@ -225,11 +222,7 @@ void SearchInput::find(const QString& text, bool forward, bool backward, bool ty
         animateShow();
     d.textBrowser->setTextCursor(newCursor);
     d.textBrowser->setExtraSelections(extraSelections);
-
-    d.lineEdit->setObjectName(error ? "error" : "");
-    QString css = d.lineEdit->styleSheet();
-    d.lineEdit->setStyleSheet(QString());
-    d.lineEdit->setStyleSheet(css);
+    d.lineEdit->setStyleSheet(error ? "background: #ff8a8a" : "");
 }
 
 void SearchInput::hideEvent(QHideEvent* event)
@@ -275,11 +268,7 @@ void SearchInput::animateHide()
 void SearchInput::reset()
 {
     d.lineEdit->clear();
-    d.lineEdit->setObjectName("");
-    QString css = d.lineEdit->styleSheet();
-    d.lineEdit->setStyleSheet(QString());
-    d.lineEdit->setStyleSheet(css);
-
+    d.lineEdit->setStyleSheet("");
     setOffset(-height());
     setVisible(false);
 }
