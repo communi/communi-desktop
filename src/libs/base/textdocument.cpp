@@ -181,6 +181,7 @@ void TextDocument::flushLines()
         foreach (const QString& line, d.lines)
             appendLine(cursor, line);
         cursor.endEditBlock();
+        d.lines.clear();
     }
 
     if (d.dirty > 0) {

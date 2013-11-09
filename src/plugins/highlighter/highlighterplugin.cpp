@@ -63,14 +63,17 @@ void HighlighterPlugin::onMessageReceived(IrcMessage* message)
     if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
         IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
 
-        if (message->property("private").toBool() ||
-            message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive)) {
+        const bool contains = message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive);
+
+        if (contains || message->property("private").toBool()) {
             TreeItem* item = d.tree->bufferItem(buffer);
             if (item && item != d.tree->currentItem())
                 highlightItem(item);
+        }
 
+        if (contains) {
             TextDocument* document = buffer->property("document").value<TextDocument*>();
-            document->addHighlight(document->totalCount() - 2); // TODO: -2??
+            document->addHighlight(document->totalCount() - 1);
         }
     }
 }
