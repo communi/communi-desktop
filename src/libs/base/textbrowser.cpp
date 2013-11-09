@@ -24,8 +24,6 @@ TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent)
 {
     d.bud = 0;
     d.dirty = 0;
-    d.markerColor = Qt::darkGray;
-    d.highlightColor = QColor("#ffe6e6"); // TODO: stylesheet
 
     setOpenLinks(false);
     setTabChangesFocus(true);
@@ -72,32 +70,6 @@ QWidget* TextBrowser::buddy() const
 void TextBrowser::setBuddy(QWidget* buddy)
 {
     d.bud = buddy;
-}
-
-QColor TextBrowser::markerColor() const
-{
-    return d.markerColor;
-}
-
-void TextBrowser::setMarkerColor(const QColor& color)
-{
-    if (d.markerColor != color) {
-        d.markerColor = color;
-        update();
-    }
-}
-
-QColor TextBrowser::highlightColor() const
-{
-    return d.highlightColor;
-}
-
-void TextBrowser::setHighlightColor(const QColor& color)
-{
-    if (d.highlightColor != color) {
-        d.highlightColor = color;
-        update();
-    }
 }
 
 void TextBrowser::keyPressEvent(QKeyEvent* event)
@@ -185,9 +157,7 @@ void TextBrowser::paintEvent(QPaintEvent* event)
     if (doc) {
         QPainter painter(viewport());
         painter.translate(-hoffset, -voffset);
-        painter.setPen(Qt::NoPen);
-        painter.setBrush(d.highlightColor);
-        doc->drawHighlights(&painter, bounds);
+        doc->drawBackground(&painter, bounds);
     }
 
     QTextBrowser::paintEvent(event);
@@ -195,9 +165,7 @@ void TextBrowser::paintEvent(QPaintEvent* event)
     if (doc) {
         QPainter painter(viewport());
         painter.translate(-hoffset, -voffset);
-        painter.setPen(QPen(d.markerColor, 1, Qt::DashLine));
-        painter.setBrush(Qt::NoBrush);
-        doc->drawMarkers(&painter, bounds);
+        doc->drawForeground(&painter, bounds);
     }
 
     QLinearGradient gradient(0, 0, 0, 3);

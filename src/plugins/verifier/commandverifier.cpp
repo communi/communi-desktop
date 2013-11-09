@@ -17,7 +17,7 @@
 #include <IrcCommand>
 #include <IrcMessage>
 
-int CommandVerifier::Private::id = 0;
+int CommandVerifier::Private::id = 1;
 
 CommandVerifier::CommandVerifier(IrcConnection* connection) : QObject(connection)
 {

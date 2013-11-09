@@ -16,9 +16,11 @@
 #include "textbrowser.h"
 #include "messageformatter.h"
 #include <QAbstractTextDocumentLayout>
+#include <QApplication>
 #include <QTextCursor>
 #include <QTextBlock>
 #include <IrcBuffer>
+#include <QPalette>
 #include <QPainter>
 #include <qmath.h>
 
@@ -30,7 +32,13 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
 
     d.ub = -1;
     d.dirty = -1;
+    d.lowlight = -1;
     d.buffer = buffer;
+
+    // TODO: stylesheet
+    d.markerColor = Qt::darkGray;
+    d.lowlightColor = qApp->palette().color(QPalette::AlternateBase);
+    d.highlightColor = QColor("#ffe6e6");
 
     d.formatter = new MessageFormatter(this);
     d.formatter->setBuffer(buffer);
@@ -55,6 +63,45 @@ int TextDocument::totalCount() const
     return count;
 }
 
+QColor TextDocument::markerColor() const
+{
+    return d.markerColor;
+}
+
+void TextDocument::setMarkerColor(const QColor& color)
+{
+    if (d.markerColor != color) {
+        d.markerColor = color;
+        // TODO: update();
+    }
+}
+
+QColor TextDocument::lowlightColor() const
+{
+    return d.lowlightColor;
+}
+
+void TextDocument::setLowlightColor(const QColor& color)
+{
+    if (d.lowlightColor != color) {
+        d.lowlightColor = color;
+        // TODO: update();
+    }
+}
+
+QColor TextDocument::highlightColor() const
+{
+    return d.highlightColor;
+}
+
+void TextDocument::setHighlightColor(const QColor& color)
+{
+    if (d.highlightColor != color) {
+        d.highlightColor = color;
+        // TODO: update();
+    }
+}
+
 void TextDocument::ref(TextBrowser* browser)
 {
     if (d.dirty > 0 && d.browsers.isEmpty())
@@ -69,22 +116,16 @@ void TextDocument::deref(TextBrowser* browser)
         d.ub = -1;
 }
 
-void TextDocument::addMarker(int block)
+void TextDocument::beginLowlight()
 {
-    const int max = totalCount() - 1;
-    if (block == -1)
-        block = max;
-    if (block >= 0 && block <= max) {
-        QList<int>::iterator it = qLowerBound(d.markers.begin(), d.markers.end(), block);
-        d.markers.insert(it, block);
-        updateBlock(block);
-    }
+    d.lowlight = totalCount();
+    d.lowlights.insert(d.lowlight, -1);
 }
 
-void TextDocument::removeMarker(int block)
+void TextDocument::endLowlight()
 {
-    if (d.markers.removeOne(block) && block >= 0 && block < totalCount())
-        updateBlock(block);
+    d.lowlights.insert(d.lowlight, totalCount());
+    d.lowlight = -1;
 }
 
 void TextDocument::addHighlight(int block)
@@ -123,47 +164,75 @@ void TextDocument::append(const QString& text)
     }
 }
 
-void TextDocument::drawMarkers(QPainter* painter, const QRect& bounds)
+void TextDocument::drawForeground(QPainter* painter, const QRect& bounds)
 {
-    int last = -1;
-    if (!d.markers.isEmpty()) {
-        QAbstractTextDocumentLayout* layout = documentLayout();
-        foreach (int marker, d.markers) {
-            QTextBlock block = findBlockByNumber(marker);
-            if (block.isValid() && block != lastBlock()) {
-                QRect br = layout->blockBoundingRect(block).toAlignedRect();
-                if (bounds.intersects(br)) {
-                    painter->drawLine(br.topLeft(), br.topRight());
-                    last = qMax(marker, last);
-                }
-            }
-        }
+    if (d.ub <= 1)
+        return;
+
+    const QPen oldPen = painter->pen();
+    const QBrush oldBrush = painter->brush();
+
+    painter->setPen(QPen(d.markerColor, 1, Qt::DashLine));
+    painter->setBrush(Qt::NoBrush);
+
+    QTextBlock block = findBlockByNumber(d.ub);
+    if (block.isValid()) {
+        QRect br = documentLayout()->blockBoundingRect(block).toAlignedRect();
+        if (bounds.intersects(br))
+            painter->drawLine(br.topLeft(), br.topRight());
     }
 
-    if (d.ub > 0 && d.ub >= last) {
-        QTextBlock block = findBlockByNumber(d.ub);
-        if (block.isValid()) {
-            QRect br = documentLayout()->blockBoundingRect(block).toAlignedRect();
-            if (bounds.intersects(br))
-                painter->drawLine(br.topLeft(), br.topRight());
-        }
-    }
+    painter->setPen(oldPen);
+    painter->setBrush(oldBrush);
 }
 
-void TextDocument::drawHighlights(QPainter* painter, const QRect& bounds)
+void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
 {
-    if (!d.highlights.isEmpty()) {
-        int margin = qCeil(documentMargin());
-        QAbstractTextDocumentLayout* layout = documentLayout();
-        foreach (int highlight, d.highlights) {
-            QTextBlock block = findBlockByNumber(highlight);
-            if (block.isValid()) {
-                QRect br = layout->blockBoundingRect(block).toAlignedRect();
-                if (bounds.intersects(br))
-                    painter->drawRect(br.adjusted(-margin, 0, margin, 0));
+    if (d.lowlights.isEmpty() && d.highlights.isEmpty())
+        return;
+
+    const QPen oldPen = painter->pen();
+    const QBrush oldBrush = painter->brush();
+    const qreal oldOpacity = painter->opacity();
+    const int margin = qCeil(documentMargin());
+    const QAbstractTextDocumentLayout* layout = documentLayout();
+
+    painter->setBrush(d.lowlightColor);
+    QMap<int, int>::const_iterator it;
+    for (it = d.lowlights.begin(); it != d.lowlights.end(); ++it) {
+        QTextBlock from = findBlockByNumber(it.key());
+        QTextBlock to = findBlockByNumber(it.value());
+        if (from.isValid() && to.isValid()) {
+            QRect br = layout->blockBoundingRect(from).toAlignedRect();
+            br = br.united(layout->blockBoundingRect(to).toAlignedRect());
+            if (bounds.intersects(br)) {
+                br = br.adjusted(-margin, 0, margin, 0);
+                painter->setOpacity(0.25);
+                painter->setPen(Qt::NoPen);
+                painter->drawRect(br);
+                painter->setOpacity(0.5);
+                painter->setPen(d.markerColor);
+                painter->drawLine(br.topLeft(), br.topRight());
+                painter->drawLine(br.bottomLeft(), br.bottomRight());
             }
         }
     }
+
+    painter->setOpacity(0.75);
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(d.highlightColor);
+    foreach (int highlight, d.highlights) {
+        QTextBlock block = findBlockByNumber(highlight);
+        if (block.isValid()) {
+            QRect br = layout->blockBoundingRect(block).toAlignedRect();
+            if (bounds.intersects(br))
+                painter->drawRect(br.adjusted(-margin, 0, margin, 0));
+        }
+    }
+
+    painter->setPen(oldPen);
+    painter->setBrush(oldBrush);
+    painter->setOpacity(oldOpacity);
 }
 
 void TextDocument::updateBlock(int number)
@@ -215,16 +284,6 @@ void TextDocument::receiveMessage(IrcMessage* message)
     emit messageReceived(message);
 }
 
-static void decrementHelper(QList<int>& lst, int d)
-{
-    QList<int>::iterator it;
-    for (it = lst.begin(); it != lst.end(); ++it) {
-        *it -= d;
-        if (*it < 0)
-            it = lst.erase(it);
-    }
-}
-
 void TextDocument::appendLine(QTextCursor& cursor, const QString& line)
 {
     const int count = blockCount();
@@ -236,8 +295,21 @@ void TextDocument::appendLine(QTextCursor& cursor, const QString& line)
             const int diff = max - count + 1;
             if (d.ub > 0)
                 d.ub -= diff;
-            decrementHelper(d.markers, diff);
-            decrementHelper(d.highlights, diff);
+            QList<int>::iterator i;
+            for (i = d.highlights.begin(); i != d.highlights.end(); ++i) {
+                *i -= diff;
+                if (*i < 0)
+                    i = d.highlights.erase(i);
+            }
+            QMap<int, int> ll;
+            QMap<int, int>::const_iterator j;
+            for (j = d.lowlights.begin(); j != d.lowlights.end(); ++j) {
+                int from = j.key() - diff;
+                int to = j.value() - diff;
+                if (to > 0)
+                    ll.insert(qMax(0, from), to);
+            }
+            d.lowlights = ll;
         }
     }
 
@@ -251,4 +323,6 @@ void TextDocument::appendLine(QTextCursor& cursor, const QString& line)
 
     if (d.ub == -1 && d.browsers.isEmpty())
         d.ub = count;
+    if (d.lowlight)
+        cursor.block().setUserState(1);
 }

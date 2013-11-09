@@ -18,6 +18,8 @@
 #include <QTextDocument>
 #include <QStringList>
 #include <QMetaType>
+#include <QColor>
+#include <QMap>
 #include <QSet>
 
 class IrcBuffer;
@@ -36,17 +38,26 @@ public:
 
     int totalCount() const;
 
+    QColor markerColor() const;
+    void setMarkerColor(const QColor& color);
+
+    QColor lowlightColor() const;
+    void setLowlightColor(const QColor& color);
+
+    QColor highlightColor() const;
+    void setHighlightColor(const QColor& color);
+
     void ref(TextBrowser* browser);
     void deref(TextBrowser* browser);
 
-    void addMarker(int block = -1);
-    void removeMarker(int block);
+    void beginLowlight();
+    void endLowlight();
 
     void addHighlight(int block = -1);
     void removeHighlight(int block);
 
-    void drawMarkers(QPainter* painter, const QRect& bounds);
-    void drawHighlights(QPainter* painter, const QRect& bounds);
+    void drawBackground(QPainter* painter, const QRect& bounds);
+    void drawForeground(QPainter* painter, const QRect& bounds);
 
 public slots:
     void append(const QString& text);
@@ -69,10 +80,14 @@ private:
     struct Private {
         int ub;
         int dirty;
+        int lowlight;
         IrcBuffer* buffer;
         QStringList lines;
-        QList<int> markers;
+        QColor markerColor;
+        QColor lowlightColor;
+        QColor highlightColor;
         QList<int> highlights;
+        QMap<int, int> lowlights;
         MessageFormatter* formatter;
         QSet<TextBrowser*> browsers;
     } d;

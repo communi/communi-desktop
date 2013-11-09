@@ -33,12 +33,6 @@ public:
     QWidget* buddy() const;
     void setBuddy(QWidget* buddy);
 
-    QColor markerColor() const;
-    void setMarkerColor(const QColor& color);
-
-    QColor highlightColor() const;
-    void setHighlightColor(const QColor& color);
-
     bool isAtTop() const;
     bool isAtBottom() const;
 
@@ -66,8 +60,6 @@ private:
     struct Private {
         int dirty;
         QWidget* bud;
-        QColor markerColor;
-        QColor highlightColor;
     } d;
 };
 

@@ -26,6 +26,7 @@
 */
 
 #include "zncmanager.h"
+#include "textdocument.h"
 #include <ircconnection.h>
 #include <ircmessage.h>
 #include <ircbuffer.h>
@@ -100,11 +101,15 @@ bool ZncManager::messageFilter(IrcMessage* message)
             if (content == QLatin1String("Buffer Playback...")) {
                 d.playback = true;
                 d.buffer = d.model->find(privMsg->target());
-                return true;
+                if (d.buffer)
+                    d.buffer->property("document").value<TextDocument*>()->beginLowlight();
+                return false;
             } else if (content == QLatin1String("Playback Complete.")) {
+                if (d.buffer)
+                    d.buffer->property("document").value<TextDocument*>()->endLowlight();
                 d.playback = false;
                 d.buffer = 0;
-                return true;
+                return false;
             }
         }
     } else if (message->type() == IrcMessage::Notice) {
