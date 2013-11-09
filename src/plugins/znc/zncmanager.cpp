@@ -45,16 +45,6 @@ ZncManager::~ZncManager()
 {
 }
 
-bool ZncManager::isPlaybackActive() const
-{
-    return d.playback;
-}
-
-QString ZncManager::playbackTarget() const
-{
-    return d.target;
-}
-
 IrcBufferModel* ZncManager::model() const
 {
     return d.model;
@@ -108,27 +98,13 @@ bool ZncManager::messageFilter(IrcMessage* message)
             IrcPrivateMessage* privMsg = static_cast<IrcPrivateMessage*>(message);
             QString content = privMsg->content();
             if (content == QLatin1String("Buffer Playback...")) {
-                if (!d.playback) {
-                    d.playback = true;
-                    emit playbackActiveChanged(d.playback);
-                }
-                if (d.target != privMsg->target()) {
-                    d.target = privMsg->target();
-                    d.buffer = d.model->find(d.target);
-                    emit playbackTargetChanged(d.target);
-                }
-                return false;
+                d.playback = true;
+                d.buffer = d.model->find(privMsg->target());
+                return true;
             } else if (content == QLatin1String("Playback Complete.")) {
-                if (d.playback) {
-                    d.playback = false;
-                    emit playbackActiveChanged(d.playback);
-                }
-                if (!d.target.isEmpty()) {
-                    d.buffer = 0;
-                    d.target.clear();
-                    emit playbackTargetChanged(d.target);
-                }
-                return false;
+                d.playback = false;
+                d.buffer = 0;
+                return true;
             }
         }
     } else if (message->type() == IrcMessage::Notice) {
