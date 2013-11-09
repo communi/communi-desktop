@@ -35,6 +35,7 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
     d.formatter = new MessageFormatter(this);
     d.formatter->setBuffer(buffer);
 
+    setUndoRedoEnabled(false);
     setMaximumBlockCount(1000);
 
     connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
