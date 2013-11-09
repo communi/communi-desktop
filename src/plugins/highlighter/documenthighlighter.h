@@ -12,24 +12,28 @@
 * GNU General Public License for more details.
 */
 
-#include "highlighterplugin.h"
-#include "documenthighlighter.h"
-#include "treehighlighter.h"
+#ifndef DOCUMENTHIGHLIGHTER_H
+#define DOCUMENTHIGHLIGHTER_H
 
-HighlighterPlugin::HighlighterPlugin(QObject* parent) : QObject(parent)
+#include <QObject>
+
+class IrcMessage;
+class TextDocument;
+
+class DocumentHighlighter : public QObject
 {
-}
+    Q_OBJECT
 
-void HighlighterPlugin::initialize(TextDocument* document)
-{
-    new DocumentHighlighter(document);
-}
+public:
+    DocumentHighlighter(TextDocument* document);
 
-void HighlighterPlugin::initialize(TreeWidget* tree)
-{
-    new TreeHighlighter(tree);
-}
+private slots:
+    void onMessageReceived(IrcMessage* message);
 
-#if QT_VERSION < 0x050000
-Q_EXPORT_STATIC_PLUGIN(HighlighterPlugin)
-#endif
+private:
+    struct Private {
+        TextDocument* document;
+    } d;
+};
+
+#endif // DOCUMENTHIGHLIGHTER_H

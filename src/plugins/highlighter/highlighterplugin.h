@@ -15,49 +15,23 @@
 #ifndef HIGHLIGHTERPLUGIN_H
 #define HIGHLIGHTERPLUGIN_H
 
-#include <QSet>
-#include <QtPlugin>
-#include <QTreeWidget>
+#include "textdocumentplugin.h"
 #include "treewidgetplugin.h"
 
-class TreeItem;
-class IrcBuffer;
-class IrcMessage;
-
-class HighlighterPlugin : public QObject, public TreeWidgetPlugin
+class HighlighterPlugin : public QObject, public TextDocumentPlugin, public TreeWidgetPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreeWidgetPlugin)
+    Q_INTERFACES(TextDocumentPlugin TreeWidgetPlugin)
 #if QT_VERSION >= 0x050000
+    Q_PLUGIN_METADATA(IID "Communi.TextDocumentPlugin")
     Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
 #endif
 
 public:
     HighlighterPlugin(QObject* parent = 0);
 
+    void initialize(TextDocument* document);
     void initialize(TreeWidget* tree);
-
-private slots:
-    void onBufferAdded(IrcBuffer* buffer);
-    void onBufferRemoved(IrcBuffer* buffer);
-    void onMessageReceived(IrcMessage* message);
-    void onItemExpanded(QTreeWidgetItem* item);
-    void onItemCollapsed(QTreeWidgetItem* item);
-    void onItemChanged(QTreeWidgetItem* item, int column);
-    void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
-    void highlightItem(QTreeWidgetItem* item);
-    void unhighlightItem(QTreeWidgetItem* item);
-    void colorizeItem(QTreeWidgetItem* item);
-    void onItemDestroyed(TreeItem* item);
-    void onBufferChanged();
-    void blinkItems();
-
-private:
-    struct Private {
-        bool blink;
-        TreeWidget* tree;
-        QSet<QTreeWidgetItem*> items;
-    } d;
 };
 
 #endif // HIGHLIGHTERPLUGIN_H

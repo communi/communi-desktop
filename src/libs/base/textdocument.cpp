@@ -48,7 +48,10 @@ IrcBuffer* TextDocument::buffer() const
 
 int TextDocument::totalCount() const
 {
-    return blockCount() + d.lines.count();
+    int count = d.lines.count();
+    if (!isEmpty())
+        count += blockCount();
+    return count;
 }
 
 void TextDocument::ref(TextBrowser* browser)
