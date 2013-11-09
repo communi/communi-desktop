@@ -25,6 +25,7 @@ class TextBrowser : public QTextBrowser
 
 public:
     explicit TextBrowser(QWidget* parent = 0);
+    ~TextBrowser();
 
     TextDocument* document() const;
     void setDocument(TextDocument* document);

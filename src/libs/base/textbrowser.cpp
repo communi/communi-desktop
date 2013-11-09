@@ -33,6 +33,13 @@ TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent)
     connect(this, SIGNAL(anchorClicked(QUrl)), this, SLOT(onAnchorClicked(QUrl)));
 }
 
+TextBrowser::~TextBrowser()
+{
+    TextDocument* doc = document();
+    if (doc)
+        doc->deref(this);
+}
+
 TextDocument* TextBrowser::document() const
 {
     return qobject_cast<TextDocument*>(QTextBrowser::document());
