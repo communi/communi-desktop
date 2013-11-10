@@ -26,19 +26,21 @@ TreeMenu::TreeMenu(TreeWidget* tree) : QMenu(tree)
 {
     d.item = 0;
     d.tree = tree;
-    d.disconnectAction = addAction(tr("Disconnect"));
-    d.reconnectAction = addAction(tr("Reconnect"));
-    addSeparator();
-    d.editAction = addAction(tr("Edit"), this, SLOT(onEditTriggered()));
-    d.whoisAction = addAction(tr("Whois"), this, SLOT(onWhoisTriggered()));
-    d.joinAction = addAction(tr("Join"), this, SLOT(onJoinTriggered()));
-    d.partAction = addAction(tr("Part"), this, SLOT(onPartTriggered()));
-    addSeparator();
 
+    d.disconnectAction = new QAction(tr("Disconnect"), tree);
+    d.reconnectAction = new QAction(tr("Reconnect"), tree);
+    d.editAction = new QAction(tr("Edit"), tree);
+    d.whoisAction = new QAction(tr("Whois"), tree);
+    d.joinAction = new QAction(tr("Join"), tree);
+    d.partAction = new QAction(tr("Part"), tree);
     d.closeAction = new QAction(tr("Close"), tree);
     d.closeAction->setShortcut(QKeySequence::Close);
+
+    connect(d.editAction, SIGNAL(triggered()), this, SLOT(onEditTriggered()));
+    connect(d.whoisAction, SIGNAL(triggered()), this, SLOT(onWhoisTriggered()));
+    connect(d.joinAction, SIGNAL(triggered()), this, SLOT(onJoinTriggered()));
+    connect(d.partAction, SIGNAL(triggered()), this, SLOT(onPartTriggered()));
     connect(d.closeAction, SIGNAL(triggered()), this, SLOT(onCloseTriggered()));
-    addAction(d.closeAction);
 
     tree->installEventFilter(this);
 }
@@ -149,4 +151,19 @@ void TreeMenu::setup(TreeItem* item)
         d.item = item;
     }
     updateActions();
+
+    clear();
+    addAction(d.disconnectAction);
+    addAction(d.reconnectAction);
+    addSeparator();
+    addAction(d.editAction);
+    addAction(d.whoisAction);
+    addAction(d.joinAction);
+    addAction(d.partAction);
+    if (!d.tree->actions().isEmpty()) {
+        addSeparator();
+        addActions(d.tree->actions());
+    }
+    addSeparator();
+    addAction(d.closeAction);
 }
