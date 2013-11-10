@@ -29,9 +29,6 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     setFrameStyle(QFrame::NoFrame);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    setSortingEnabled(true);
-    sortByColumn(0, Qt::AscendingOrder);
-
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));
 }
