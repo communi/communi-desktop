@@ -76,11 +76,13 @@ void BadgePlugin::onBufferRemoved(IrcBuffer* buffer)
 void BadgePlugin::onMessageReceived(IrcMessage* message)
 {
     if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
-        IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
+        if (message->nick() != QLatin1String("***") || message->ident() != QLatin1String("znc")) {
+            IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
 
-        TreeItem* item = d.tree->bufferItem(buffer);
-        if (item && item != d.tree->currentItem())
-            item->setData(1, TreeRole::Badge, item->data(1, TreeRole::Badge).toInt() + 1);
+            TreeItem* item = d.tree->bufferItem(buffer);
+            if (item && item != d.tree->currentItem())
+                item->setData(1, TreeRole::Badge, item->data(1, TreeRole::Badge).toInt() + 1);
+        }
     }
 }
 
