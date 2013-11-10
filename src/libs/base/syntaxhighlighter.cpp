@@ -31,6 +31,13 @@ void SyntaxHighlighter::setHighlightColor(const QColor& color)
 
 void SyntaxHighlighter::highlightBlock(const QString& text)
 {
-    if (currentBlockState() > 0)
-        setFormat(0, text.length(), d.color);
+    if (currentBlockState() > 0) {
+        // gray-out everything except links
+        QTextBlock block = currentBlock();
+        for (QTextBlock::iterator it = block.begin(); !it.atEnd(); ++it) {
+            QTextFragment fragment = it.fragment();
+            if (fragment.isValid() && !fragment.charFormat().isAnchor())
+                setFormat(fragment.position() - block.position(), fragment.length(), d.color);
+        }
+    }
 }
