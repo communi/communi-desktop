@@ -21,10 +21,12 @@
 #include <IrcMessage>
 #include <IrcBuffer>
 #include <QTimer>
+#include <QEvent>
 
 BadgePlugin::BadgePlugin(QObject* parent) : QObject(parent)
 {
     d.tree = 0;
+    d.block = false;
 }
 
 void BadgePlugin::initialize(TreeWidget* tree)
@@ -32,6 +34,7 @@ void BadgePlugin::initialize(TreeWidget* tree)
     d.tree = tree;
     d.tree->setColumnCount(2);
     d.tree->setItemDelegateForColumn(1, new BadgeDelegate(this));
+    d.tree->installEventFilter(this);
 
     QHeaderView* header = tree->header();
     header->setStretchLastSection(false);
@@ -43,6 +46,21 @@ void BadgePlugin::initialize(TreeWidget* tree)
     connect(tree, SIGNAL(bufferRemoved(IrcBuffer*)), this, SLOT(onBufferRemoved(IrcBuffer*)));
     connect(tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
+}
+
+bool BadgePlugin::eventFilter(QObject* object, QEvent* event)
+{
+    Q_UNUSED(object);
+    if (event->type() == QEvent::DynamicPropertyChange) {
+        bool block = d.tree->property("blockBadgeReset").toBool();
+        if (d.block != block) {
+            d.block = block;
+            QTreeWidgetItem* current = d.tree->currentItem();
+            if (!block && current)
+                delayedResetItem(current);
+        }
+    }
+    return false;
 }
 
 void BadgePlugin::onBufferAdded(IrcBuffer* buffer)
@@ -68,10 +86,12 @@ void BadgePlugin::onMessageReceived(IrcMessage* message)
 
 void BadgePlugin::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
-    if (previous)
-        resetItem(previous);
-    if (current)
-        delayedResetItem(current);
+    if (!d.block) {
+        if (previous)
+            resetItem(previous);
+        if (current)
+            delayedResetItem(current);
+    }
 }
 
 void BadgePlugin::resetItem(QTreeWidgetItem* item)

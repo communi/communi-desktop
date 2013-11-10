@@ -38,6 +38,8 @@ public:
 
     void initialize(TreeWidget* tree);
 
+    bool eventFilter(QObject* object, QEvent* event);
+
 private slots:
     void onBufferAdded(IrcBuffer* buffer);
     void onBufferRemoved(IrcBuffer* buffer);
@@ -49,6 +51,7 @@ private slots:
 
 private:
     struct Private {
+        bool block;
         TreeWidget* tree;
         QQueue<QPointer<TreeItem> > items;
     } d;

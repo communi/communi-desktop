@@ -27,6 +27,8 @@ class TreeFinder : public Finder
 public:
     explicit TreeFinder(TreeWidget* tree);
 
+    void setVisible(bool visible);
+
 protected slots:
     void find(const QString& text, bool forward = false, bool backward = false, bool typed = true);
     void relocate();

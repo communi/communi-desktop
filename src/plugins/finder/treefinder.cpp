@@ -18,7 +18,16 @@
 TreeFinder::TreeFinder(TreeWidget* tree) : Finder(tree)
 {
     d.tree = tree;
+    if (tree)
+        tree->setProperty("blockBadgeReset", true);
     connect(this, SIGNAL(returnPressed()), this, SLOT(animateHide()));
+}
+
+void TreeFinder::setVisible(bool visible)
+{
+    Finder::setVisible(visible);
+    if (!visible && d.tree)
+        d.tree->setProperty("blockBadgeReset", false);
 }
 
 void TreeFinder::find(const QString& text, bool forward, bool backward, bool typed)
