@@ -174,7 +174,7 @@ void TextDocument::append(const QString& text)
 
 void TextDocument::drawForeground(QPainter* painter, const QRect& bounds)
 {
-    if (d.ub <= 1)
+    if (d.ub <= 1 || hasLowlight(d.ub - 1))
         return;
 
     const QPen oldPen = painter->pen();
@@ -216,8 +216,13 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
             br = br.united(layout->blockBoundingRect(to).toAlignedRect());
             if (bounds.intersects(br)) {
                 const bool last = to == lastBlock();
-                if (last)
+                if (last) {
                     br.setBottom(bounds.bottom());
+                } else {
+                    QTextBlock next = to.next();
+                    if (next.isValid())
+                        br.setBottom(layout->blockBoundingRect(next).toAlignedRect().top());
+                }
                 br = br.adjusted(-margin, 0, margin, 0);
                 painter->setPen(Qt::NoPen);
                 painter->drawRect(br);
@@ -295,6 +300,16 @@ void TextDocument::receiveMessage(IrcMessage* message)
     emit messageReceived(message);
 }
 
+bool TextDocument::hasLowlight(int block) const
+{
+    QMap<int, int>::const_iterator it;
+    for (it = d.lowlights.begin(); it != d.lowlights.end(); ++it) {
+        if (block >= it.key() && (it.value() == -1 || block <= it.value()))
+            return true;
+    }
+    return false;
+}
+
 void TextDocument::appendLine(QTextCursor& cursor, const QString& line)
 {
     const int count = blockCount();
@@ -335,12 +350,6 @@ void TextDocument::appendLine(QTextCursor& cursor, const QString& line)
     if (d.ub == -1 && d.browsers.isEmpty())
         d.ub = count;
 
-    const int bn = cursor.block().blockNumber();
-    QMap<int, int>::const_iterator it;
-    for (it = d.lowlights.begin(); it != d.lowlights.end(); ++it) {
-        if (bn >= it.key() && (it.value() == -1 || bn <= it.value())) {
-            cursor.block().setUserState(1);
-            break;
-        }
-    }
+    if (hasLowlight(cursor.block().blockNumber()))
+        cursor.block().setUserState(1);
 }
