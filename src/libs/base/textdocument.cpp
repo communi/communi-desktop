@@ -209,26 +209,26 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
     painter->setBrush(d.lowlightColor);
     QMap<int, int>::const_iterator it;
     for (it = d.lowlights.begin(); it != d.lowlights.end(); ++it) {
-        QTextBlock from = findBlockByNumber(it.key());
-        QTextBlock to = findBlockByNumber(it.value());
+        const QTextBlock from = findBlockByNumber(it.key());
+        const QTextBlock to = findBlockByNumber(it.value());
         if (from.isValid() && to.isValid()) {
-            QRect br = layout->blockBoundingRect(from).toAlignedRect();
-            br = br.united(layout->blockBoundingRect(to).toAlignedRect());
+            const QRect fr = layout->blockBoundingRect(from).toAlignedRect();
+            const QRect tr = layout->blockBoundingRect(to).toAlignedRect();
+            QRect br = fr.united(tr);
             if (bounds.intersects(br)) {
-                const bool last = to == lastBlock();
-                if (last) {
-                    br.setBottom(bounds.bottom());
-                } else {
-                    QTextBlock next = to.next();
-                    if (next.isValid())
-                        br.setBottom(layout->blockBoundingRect(next).toAlignedRect().top());
+                bool atBottom = false;
+                if (to == lastBlock()) {
+                    if (qAbs(bounds.bottom() - br.bottom()) < qMin(fr.height(), tr.height()))
+                        atBottom = true;
                 }
+                if (atBottom)
+                    br.setBottom(bounds.bottom());
                 br = br.adjusted(-margin, 0, margin, 0);
                 painter->setPen(Qt::NoPen);
                 painter->drawRect(br);
                 painter->setPen(d.markerColor);
                 painter->drawLine(br.topLeft(), br.topRight());
-                if (!last)
+                if (!atBottom)
                     painter->drawLine(br.bottomLeft(), br.bottomRight());
             }
         }
