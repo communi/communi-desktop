@@ -68,11 +68,7 @@ TreeSorter TreeWidget::sorter() const
 
 void TreeWidget::setSorter(TreeSorter sorter)
 {
-    if (d.sorter != sorter) {
-        d.sorter = sorter;
-        if (isSortingEnabled())
-            sortByColumn(0, Qt::AscendingOrder);
-    }
+    d.sorter = sorter;
 }
 
 void TreeWidget::addBuffer(IrcBuffer* buffer)

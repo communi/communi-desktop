@@ -32,14 +32,19 @@ public:
     SorterPlugin(QObject* parent = 0);
 
     void initialize(TreeWidget* tree);
+    void uninitialize(TreeWidget* tree);
 
     bool eventFilter(QObject* object, QEvent* event);
 
 private slots:
-    void setSortingEnabled(bool checked);
+    void toggleSorting(bool enabled);
+    void setSortingEnabled(bool enabled);
     void onPressed(QTreeWidgetItem* item);
 
 private:
+    void saveOrder();
+    void restoreOrder();
+
     struct Private {
         QAction* action;
         TreeWidget* tree;
