@@ -22,6 +22,9 @@ class TreeItem;
 class IrcBuffer;
 class IrcConnection;
 
+typedef bool (*TreeSorter)(const TreeItem* one, const TreeItem* another);
+extern bool DefaultTreeSorter(const TreeItem* one, const TreeItem* another);
+
 class TreeWidget : public QTreeWidget
 {
     Q_OBJECT
@@ -35,6 +38,9 @@ public:
 
     QList<IrcConnection*> connections() const;
     TreeItem* connectionItem(IrcConnection* connection) const;
+
+    TreeSorter sorter() const;
+    void setSorter(TreeSorter sorter);
 
 public slots:
     void addBuffer(IrcBuffer* buffer);
@@ -57,6 +63,7 @@ private slots:
 
 private:
     struct Private {
+        TreeSorter sorter;
         QList<IrcConnection*> connections;
         QHash<IrcBuffer*, TreeItem*> bufferItems;
         QHash<IrcConnection*, TreeItem*> connectionItems;

@@ -14,7 +14,6 @@
 
 #include "treeitem.h"
 #include "treewidget.h"
-#include <IrcBufferModel>
 #include <IrcBuffer>
 
 TreeItem::TreeItem(IrcBuffer* buffer, TreeItem* parent) : QObject(buffer), QTreeWidgetItem(parent)
@@ -73,24 +72,9 @@ QVariant TreeItem::data(int column, int role) const
     return QTreeWidgetItem::data(column, role);
 }
 
-// TODO
-class FriendlyModel : public IrcBufferModel
-{
-    friend class TreeItem;
-};
-
 bool TreeItem::operator<(const QTreeWidgetItem& other) const
 {
-    const TreeItem* otherItem = static_cast<const TreeItem*>(&other);
-    if (!parentItem()) {
-        QList<IrcConnection*> connections = treeWidget()->connections();
-        return connections.indexOf(connection()) < connections.indexOf(otherItem->connection());
-    }
-    if (d.buffer) {
-        const FriendlyModel* model = static_cast<FriendlyModel*>(d.buffer->model());
-        return model->lessThan(d.buffer, otherItem->buffer(), model->sortMethod());
-    }
-    return QTreeWidgetItem::operator<(other);
+    return treeWidget()->sorter()(this, static_cast<const TreeItem*>(&other));
 }
 
 void TreeItem::refresh()

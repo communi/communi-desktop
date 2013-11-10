@@ -14,6 +14,7 @@
 
 #include "treewidget.h"
 #include "treeitem.h"
+#include <IrcBufferModel>
 #include <QHeaderView>
 #include <IrcBuffer>
 
@@ -28,6 +29,10 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     setFocusPolicy(Qt::NoFocus);
     setFrameStyle(QFrame::NoFrame);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    setSortingEnabled(true);
+    setSorter(DefaultTreeSorter);
+    sortByColumn(0, Qt::AscendingOrder);
 
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));
@@ -54,6 +59,20 @@ QList<IrcConnection*> TreeWidget::connections() const
 TreeItem* TreeWidget::connectionItem(IrcConnection* connection) const
 {
     return d.connectionItems.value(connection);
+}
+
+TreeSorter TreeWidget::sorter() const
+{
+    return d.sorter;
+}
+
+void TreeWidget::setSorter(TreeSorter sorter)
+{
+    if (d.sorter != sorter) {
+        d.sorter = sorter;
+        if (isSortingEnabled())
+            sortByColumn(0, Qt::AscendingOrder);
+    }
 }
 
 void TreeWidget::addBuffer(IrcBuffer* buffer)
@@ -103,4 +122,23 @@ void TreeWidget::onCurrentItemChanged(QTreeWidgetItem* item)
     TreeItem* ti = static_cast<TreeItem*>(item);
     emit currentItemChanged(ti);
     emit currentBufferChanged(ti ? ti->buffer() : 0);
+}
+
+// TODO
+class FriendlyModel : public IrcBufferModel
+{
+    friend bool DefaultTreeSorter(const TreeItem* one, const TreeItem* another);
+};
+
+bool DefaultTreeSorter(const TreeItem* one, const TreeItem* another)
+{
+    if (!one->parentItem()) {
+        QList<IrcConnection*> connections = one->treeWidget()->connections();
+        return connections.indexOf(one->connection()) < connections.indexOf(another->connection());
+    }
+    if (one->buffer()) {
+        const FriendlyModel* model = static_cast<FriendlyModel*>(one->buffer()->model());
+        return model->lessThan(one->buffer(), another->buffer(), model->sortMethod());
+    }
+    return one->QTreeWidgetItem::operator<(*another);
 }

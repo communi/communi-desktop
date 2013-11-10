@@ -14,8 +14,10 @@
 
 #include "sorterplugin.h"
 #include "treewidget.h"
-#include "treerole.h"
+#include "treeitem.h"
 #include <QMouseEvent>
+
+bool CustomTreeSorter(const TreeItem* one, const TreeItem* another);
 
 SorterPlugin::SorterPlugin(QObject* parent) : QObject(parent)
 {
@@ -60,15 +62,20 @@ bool SorterPlugin::eventFilter(QObject* object, QEvent* event)
 
 void SorterPlugin::setSortingEnabled(bool enabled)
 {
-    d.tree->setSortingEnabled(enabled);
-    if (enabled)
-        d.tree->sortByColumn(0, Qt::AscendingOrder);
     d.action->setChecked(enabled);
+    d.tree->setSortingEnabled(enabled);
+    d.tree->setSorter(enabled ? DefaultTreeSorter : CustomTreeSorter);
 }
 
 void SorterPlugin::onPressed(QTreeWidgetItem* item)
 {
     d.source = item;
+}
+
+bool CustomTreeSorter(const TreeItem* one, const TreeItem* another)
+{
+    // TODO:
+    return DefaultTreeSorter(one, another);
 }
 
 #if QT_VERSION < 0x050000
