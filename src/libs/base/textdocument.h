@@ -26,6 +26,7 @@ class IrcBuffer;
 class IrcMessage;
 class TextBrowser;
 class MessageFormatter;
+class SyntaxHighlighter;
 
 class TextDocument : public QTextDocument
 {
@@ -35,6 +36,7 @@ public:
     explicit TextDocument(IrcBuffer* buffer);
 
     IrcBuffer* buffer() const;
+    SyntaxHighlighter* highlighter() const;
 
     int totalCount() const;
 
@@ -90,6 +92,7 @@ private:
         QMap<int, int> lowlights;
         MessageFormatter* formatter;
         QSet<TextBrowser*> browsers;
+        SyntaxHighlighter* highlighter;
     } d;
 };
 

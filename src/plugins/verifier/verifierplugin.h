@@ -23,7 +23,6 @@
 class IrcCommand;
 class IrcMessage;
 class CommandVerifier;
-class SyntaxHighlighter;
 
 class VerifierPlugin : public QObject, public ConnectionPlugin, public TextDocumentPlugin
 {
@@ -48,7 +47,6 @@ private:
     struct Private {
         QHash<int, TextDocument*> documents;
         QHash<IrcConnection*, CommandVerifier*> verifiers;
-        QHash<TextDocument*, SyntaxHighlighter*> highlighters;
     } d;
 };
 

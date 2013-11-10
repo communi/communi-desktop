@@ -15,6 +15,7 @@
 #include "textdocument.h"
 #include "textbrowser.h"
 #include "messageformatter.h"
+#include "syntaxhighlighter.h"
 #include <QAbstractTextDocumentLayout>
 #include <QApplication>
 #include <QTextCursor>
@@ -40,6 +41,8 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
     d.lowlightColor = qApp->palette().color(QPalette::AlternateBase);
     d.highlightColor = QColor("#ffe6e6");
 
+    d.highlighter = new SyntaxHighlighter(this);
+
     d.formatter = new MessageFormatter(this);
     d.formatter->setBuffer(buffer);
 
@@ -53,6 +56,11 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
 IrcBuffer* TextDocument::buffer() const
 {
     return d.buffer;
+}
+
+SyntaxHighlighter* TextDocument::highlighter() const
+{
+    return d.highlighter;
 }
 
 int TextDocument::totalCount() const
@@ -197,6 +205,7 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
     const int margin = qCeil(documentMargin());
     const QAbstractTextDocumentLayout* layout = documentLayout();
 
+    painter->setOpacity(0.35);
     painter->setBrush(d.lowlightColor);
     QMap<int, int>::const_iterator it;
     for (it = d.lowlights.begin(); it != d.lowlights.end(); ++it) {
@@ -206,14 +215,16 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
             QRect br = layout->blockBoundingRect(from).toAlignedRect();
             br = br.united(layout->blockBoundingRect(to).toAlignedRect());
             if (bounds.intersects(br)) {
+                const bool last = to == lastBlock();
+                if (last)
+                    br.setBottom(bounds.bottom());
                 br = br.adjusted(-margin, 0, margin, 0);
-                painter->setOpacity(0.25);
                 painter->setPen(Qt::NoPen);
                 painter->drawRect(br);
-                painter->setOpacity(0.5);
                 painter->setPen(d.markerColor);
                 painter->drawLine(br.topLeft(), br.topRight());
-                painter->drawLine(br.bottomLeft(), br.bottomRight());
+                if (!last)
+                    painter->drawLine(br.bottomLeft(), br.bottomRight());
             }
         }
     }
@@ -323,6 +334,13 @@ void TextDocument::appendLine(QTextCursor& cursor, const QString& line)
 
     if (d.ub == -1 && d.browsers.isEmpty())
         d.ub = count;
-    if (d.lowlight)
-        cursor.block().setUserState(1);
+
+    const int bn = cursor.block().blockNumber();
+    QMap<int, int>::const_iterator it;
+    for (it = d.lowlights.begin(); it != d.lowlights.end(); ++it) {
+        if (bn >= it.key() && (it.value() == -1 || bn <= it.value())) {
+            cursor.block().setUserState(1);
+            break;
+        }
+    }
 }

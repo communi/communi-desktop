@@ -33,19 +33,17 @@ void VerifierPlugin::initialize(IrcConnection* connection)
 void VerifierPlugin::initialize(TextDocument* document)
 {
     connect(document, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
-    d.highlighters.insert(document, new SyntaxHighlighter(document));
 }
 
 void VerifierPlugin::onCommandVerified(int id)
 {
     TextDocument* doc = d.documents.take(id);
-    SyntaxHighlighter* highlighter = d.highlighters.value(doc);
-    if (doc && highlighter) {
+    if (doc) {
         QTextBlock block = doc->lastBlock();
         while (block.isValid()) {
             if (block.userState() == id) {
                 block.setUserState(-1);
-                highlighter->rehighlightBlock(block);
+                doc->highlighter()->rehighlightBlock(block);
                 break;
             }
             block = block.previous();
@@ -58,13 +56,12 @@ void VerifierPlugin::onMessageReceived(IrcMessage* message)
     if (message->flags() & IrcMessage::Own) {
         TextDocument* doc = qobject_cast<TextDocument*>(sender());
         CommandVerifier* verifier = d.verifiers.value(message->connection());
-        SyntaxHighlighter* highlighter = d.highlighters.value(doc);
-        if (doc && verifier && highlighter) {
+        if (doc && verifier) {
             QTextBlock block = doc->lastBlock();
             int id = verifier->currentId();
             block.setUserState(id);
             d.documents.insert(id, doc);
-            highlighter->rehighlightBlock(block);
+            doc->highlighter()->rehighlightBlock(block);
         }
     }
 }
