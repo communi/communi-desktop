@@ -44,6 +44,12 @@ bool BrowserMenu::eventFilter(QObject *object, QEvent *event)
     Q_UNUSED(object);
     if (event->type() == QEvent::ContextMenu) {
         QContextMenuEvent* cme = static_cast<QContextMenuEvent*>(event);
+        const QString anchor = d.browser->anchorAt(cme->pos());
+        if (anchor.startsWith("nick:")) {
+            QTextCursor cursor = d.browser->cursorForPosition(cme->pos());
+            cursor.select(QTextCursor::WordUnderCursor);
+            d.browser->setTextCursor(cursor);
+        }
         QMenu* menu = d.browser->createStandardContextMenu(cme->pos());
         menu->addSeparator();
         menu->addAction(d.splitVAction);
