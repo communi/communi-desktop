@@ -52,7 +52,7 @@ bool BadgePlugin::eventFilter(QObject* object, QEvent* event)
 {
     Q_UNUSED(object);
     if (event->type() == QEvent::DynamicPropertyChange) {
-        bool block = d.tree->property("blockBadgeReset").toBool();
+        bool block = d.tree->property("blockItemReset").toBool();
         if (d.block != block) {
             d.block = block;
             QTreeWidgetItem* current = d.tree->currentItem();

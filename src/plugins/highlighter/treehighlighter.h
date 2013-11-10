@@ -31,6 +31,8 @@ class TreeHighlighter : public QObject
 public:
     TreeHighlighter(TreeWidget* tree);
 
+    bool eventFilter(QObject* object, QEvent* event);
+
 private slots:
     void onBufferAdded(IrcBuffer* buffer);
     void onBufferRemoved(IrcBuffer* buffer);
@@ -49,6 +51,7 @@ private slots:
 private:
     struct Private {
         bool blink;
+        bool block;
         TreeWidget* tree;
         QSet<QTreeWidgetItem*> items;
     } d;

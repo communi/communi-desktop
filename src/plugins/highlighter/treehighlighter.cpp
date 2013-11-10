@@ -20,11 +20,14 @@
 #include <IrcConnection>
 #include <IrcMessage>
 #include <IrcBuffer>
+#include <QEvent>
 
 TreeHighlighter::TreeHighlighter(TreeWidget* tree) : QObject(tree)
 {
     d.tree = tree;
     d.blink = false;
+    d.block = false;
+    d.tree->installEventFilter(this);
 
     connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
     connect(tree, SIGNAL(bufferRemoved(IrcBuffer*)), this, SLOT(onBufferRemoved(IrcBuffer*)));
@@ -33,6 +36,20 @@ TreeHighlighter::TreeHighlighter(TreeWidget* tree) : QObject(tree)
     connect(tree, SIGNAL(itemChanged(QTreeWidgetItem*,int)), this, SLOT(onItemChanged(QTreeWidgetItem*,int)));
     connect(tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
+}
+
+bool TreeHighlighter::eventFilter(QObject* object, QEvent* event)
+{
+    Q_UNUSED(object);
+    if (event->type() == QEvent::DynamicPropertyChange) {
+        bool block = d.tree->property("blockItemReset").toBool();
+        if (d.block != block) {
+            d.block = block;
+            if (!block)
+                unhighlightItem(d.tree->currentItem());
+        }
+    }
+    return false;
 }
 
 void TreeHighlighter::onBufferAdded(IrcBuffer* buffer)
@@ -86,8 +103,10 @@ void TreeHighlighter::onItemChanged(QTreeWidgetItem* item, int column)
 
 void TreeHighlighter::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
-    unhighlightItem(previous);
-    unhighlightItem(current);
+    if (!d.block) {
+        unhighlightItem(previous);
+        unhighlightItem(current);
+    }
 }
 
 void TreeHighlighter::highlightItem(QTreeWidgetItem* item)
