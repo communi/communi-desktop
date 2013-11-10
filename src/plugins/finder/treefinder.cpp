@@ -18,6 +18,7 @@
 TreeFinder::TreeFinder(TreeWidget* tree) : Finder(tree)
 {
     d.tree = tree;
+    connect(this, SIGNAL(returnPressed()), this, SLOT(animateHide()));
 }
 
 void TreeFinder::find(const QString& text, bool forward, bool backward, bool typed)

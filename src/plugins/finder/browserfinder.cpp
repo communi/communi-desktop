@@ -20,6 +20,7 @@ BrowserFinder::BrowserFinder(TextBrowser* browser) : Finder(browser)
 {
     d.textBrowser = browser;
     connect(browser, SIGNAL(documentChanged(TextDocument*)), this, SLOT(deleteLater()));
+    connect(this, SIGNAL(returnPressed()), this, SLOT(findNext()));
 }
 
 BrowserFinder::~BrowserFinder()

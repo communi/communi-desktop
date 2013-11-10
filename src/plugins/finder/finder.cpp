@@ -51,7 +51,7 @@ Finder::Finder(QWidget* parent) : QWidget(parent)
     layout->setSpacing(0);
     layout->setMargin(0);
 
-    connect(d.lineEdit, SIGNAL(returnPressed()), this, SLOT(findNext()));
+    connect(d.lineEdit, SIGNAL(returnPressed()), this, SIGNAL(returnPressed()));
     connect(d.lineEdit, SIGNAL(textEdited(QString)), this, SLOT(find(QString)));
 }
 

@@ -30,6 +30,9 @@ protected slots:
     void find(const QString& text, bool forward = false, bool backward = false, bool typed = true);
     void relocate();
 
+private slots:
+    void onReturnPressed();
+
 private:
     struct Private {
         ListView* list;

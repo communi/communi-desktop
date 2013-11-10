@@ -19,6 +19,7 @@
 ListFinder::ListFinder(ListView* list) : Finder(list)
 {
     d.list = list;
+    connect(this, SIGNAL(returnPressed()), this, SLOT(onReturnPressed()));
 }
 
 void ListFinder::find(const QString& text, bool forward, bool backward, bool typed)
@@ -72,4 +73,17 @@ void ListFinder::relocate()
     r.setWidth(br.width() + 2);
     r.translate(-1, -offset());
     setGeometry(r);
+}
+
+void ListFinder::onReturnPressed()
+{
+    if (!d.list)
+        return;
+
+    QModelIndex index = d.list->currentIndex();
+    if (index.isValid()) {
+        const QString user = index.data(Irc::NameRole).toString();
+        QMetaObject::invokeMethod(d.list, "queried", Q_ARG(QString, user));
+        animateHide();
+    }
 }

@@ -45,6 +45,7 @@ public slots:
     bool eventFilter(QObject* object, QEvent* event);
 
 signals:
+    void returnPressed();
     void destroyed(Finder* input);
 
 protected slots:
