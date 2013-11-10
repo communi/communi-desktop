@@ -57,11 +57,13 @@ void VerifierPlugin::onMessageReceived(IrcMessage* message)
         TextDocument* doc = qobject_cast<TextDocument*>(sender());
         CommandVerifier* verifier = d.verifiers.value(message->connection());
         if (doc && verifier) {
-            QTextBlock block = doc->lastBlock();
             int id = verifier->currentId();
-            block.setUserState(id);
-            d.documents.insert(id, doc);
-            doc->highlighter()->rehighlightBlock(block);
+            if (id > 1) {
+                QTextBlock block = doc->lastBlock();
+                block.setUserState(id);
+                d.documents.insert(id, doc);
+                doc->highlighter()->rehighlightBlock(block);
+            }
         }
     }
 }
