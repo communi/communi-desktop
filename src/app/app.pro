@@ -39,17 +39,10 @@ SOURCES += $$PWD/connectpage.cpp
 SOURCES += $$PWD/main.cpp
 SOURCES += $$PWD/mainwindow.cpp
 
+include(plugins.pri)
 include(../config.pri)
 include(../libs/base/base.pri)
 include(../libs/util/util.pri)
 include(../libs/backend/backend.pri)
 include(../libs/3rdparty/3rdparty.pri)
 include(../../resources/resources.pri)
-
-STATIC_PLUGINS = ajax badge commander completer dock finder highlighter history ignore menu monitor navigator reseter sound style subject tray verifier znc
-for(PLUGIN, STATIC_PLUGINS) {
-    LIBS *= -L$$BUILD_ROOT/plugins
-    LIBS += -l$${PLUGIN}plugin
-    isEmpty(QMAKE_EXTENSION_STATICLIB):QMAKE_EXTENSION_STATICLIB = lib
-    PRE_TARGETDEPS += $$BUILD_ROOT/plugins/$${QMAKE_PREFIX_STATICLIB}$${PLUGIN}plugin.$${QMAKE_EXTENSION_STATICLIB}
-}
