@@ -74,7 +74,9 @@ MainWindow::MainWindow(QWidget* parent) : Window(parent)
     shortcut = new QShortcut(QKeySequence::Close, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(closeBuffer()));
 
-    restoreConnections();
+    d.chatPage->init();
+    if (d.chatPage->connections().isEmpty())
+        doConnect();
 }
 
 MainWindow::~MainWindow()
@@ -104,7 +106,7 @@ QSize MainWindow::sizeHint() const
 void MainWindow::closeEvent(QCloseEvent* event)
 {
     if (isVisible()) {
-        saveConnections();
+        d.chatPage->uninit();
         QList<IrcConnection*> connections = d.chatPage->connections();
         foreach (IrcConnection* connection, connections) {
             QString reason = tr("%1 %2 - http://%3").arg(QCoreApplication::applicationName())
@@ -191,27 +193,4 @@ void MainWindow::editConnection(IrcConnection* connection)
     d.stack->setCurrentWidget(d.connectPage);
     d.editedConnection = connection;
     doConnect();
-}
-
-void MainWindow::restoreConnections()
-{
-    QSettings settings;
-    settings.beginGroup("Connections");
-    foreach (const QVariant& state, settings.value("connections").toList()) {
-        IrcConnection* connection = new IrcConnection(this);
-        connection->restoreState(state.toByteArray());
-        d.chatPage->addConnection(connection);
-    }
-    if (d.chatPage->connections().isEmpty())
-        doConnect();
-}
-
-void MainWindow::saveConnections()
-{
-    QSettings settings;
-    settings.beginGroup("Connections");
-    QVariantList states;
-    foreach (IrcConnection* connection, d.chatPage->connections())
-        states += connection->saveState();
-    settings.setValue("connections", states);
 }

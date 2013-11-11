@@ -67,7 +67,14 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
     connect(d.splitView, SIGNAL(viewRemoved(BufferView*)), this, SLOT(removeView(BufferView*)));
 
     setStretchFactor(1, 1);
+}
 
+ChatPage::~ChatPage()
+{
+}
+
+void ChatPage::init()
+{
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         WindowPlugin* windowPlugin = qobject_cast<WindowPlugin*>(instance);
         if (windowPlugin)
@@ -79,11 +86,10 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
         if (viewPlugin)
             viewPlugin->initialize(d.splitView);
     }
-
     addView(d.splitView->currentView());
 }
 
-ChatPage::~ChatPage()
+void ChatPage::uninit()
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         TreeWidgetPlugin* treePlugin = qobject_cast<TreeWidgetPlugin*>(instance);

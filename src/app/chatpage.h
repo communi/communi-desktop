@@ -27,6 +27,9 @@ public:
     ChatPage(QWidget* parent = 0);
     ~ChatPage();
 
+    void init();
+    void uninit();
+
     IrcBuffer* currentBuffer() const;
 
     QList<IrcConnection*> connections() const;

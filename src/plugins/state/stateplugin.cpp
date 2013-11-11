@@ -16,6 +16,7 @@
 #include "treewidget.h"
 #include "splitview.h"
 #include "window.h"
+#include <IrcConnection>
 #include <QSettings>
 #include <QBitArray>
 #include <QDebug>
@@ -30,6 +31,14 @@ void StatePlugin::initialize(Window* window)
     settings.beginGroup("States");
     if (settings.contains("window"))
         window->restoreGeometry(settings.value("window").toByteArray());
+    settings.endGroup();
+
+    settings.beginGroup("Connections");
+    foreach (const QVariant& state, settings.value("connections").toList()) {
+        IrcConnection* connection = new IrcConnection(this);
+        connection->restoreState(state.toByteArray());
+        window->addConnection(connection);
+    }
 }
 
 void StatePlugin::uninitialize(Window* window)
@@ -37,6 +46,13 @@ void StatePlugin::uninitialize(Window* window)
     QSettings settings;
     settings.beginGroup("States");
     settings.setValue("window", window->saveGeometry());
+    settings.endGroup();
+
+    settings.beginGroup("Connections");
+    QVariantList states;
+    foreach (IrcConnection* connection, window->connections())
+        states += connection->saveState();
+    settings.setValue("connections", states);
 }
 
 void StatePlugin::initialize(SplitView* view)

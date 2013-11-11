@@ -44,8 +44,6 @@ private slots:
     void closeBuffer(IrcBuffer* buffer = 0);
     void setCurrentBuffer(IrcBuffer* buffer);
     void editConnection(IrcConnection* connection);
-    void restoreConnections();
-    void saveConnections();
 
 private:
     struct Private {
