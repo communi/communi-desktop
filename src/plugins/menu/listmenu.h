@@ -46,7 +46,8 @@ private:
         ListView* list;
         QAction* whoisAction;
         QAction* queryAction;
-        QAction* modeAction;
+        QAction* opAction;
+        QAction* voiceAction;
         QAction* kickAction;
         QAction* banAction;
     } d;

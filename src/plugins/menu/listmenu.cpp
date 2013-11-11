@@ -25,7 +25,8 @@ ListMenu::ListMenu(ListView* list) : QMenu(list)
     d.whoisAction = addAction(tr("Whois"), this, SLOT(onWhoisTriggered()));
     d.queryAction = addAction(tr("Query"), this, SLOT(onQueryTriggered()));
     addSeparator();
-    d.modeAction = addAction(tr("Mode"), this, SLOT(onModeTriggered()));
+    d.opAction = addAction(tr("Op"), this, SLOT(onModeTriggered()));
+    d.voiceAction = addAction(tr("Voice"), this, SLOT(onModeTriggered()));
     addSeparator();
     d.kickAction = addAction(tr("Kick"), this, SLOT(onKickTriggered()));
     d.banAction = addAction(tr("Ban"), this, SLOT(onBanTriggered()));
@@ -107,18 +108,18 @@ void ListMenu::setup(const QModelIndex& index)
     d.banAction->setData(name);
 
     if (prefix.contains("@")) {
-        d.modeAction->setText(tr("Deop"));
-        d.modeAction->setData(QStringList() << name << "-o");
+        d.opAction->setText(tr("Deop"));
+        d.opAction->setData(QStringList() << name << "-o");
     } else {
-        d.modeAction->setText(tr("Op"));
-        d.modeAction->setData(QStringList() << name << "+o");
+        d.opAction->setText(tr("Op"));
+        d.opAction->setData(QStringList() << name << "+o");
     }
 
     if (prefix.contains("+")) {
-        d.modeAction->setText(tr("Devoice"));
-        d.modeAction->setData(QStringList() << name << "-v");
+        d.voiceAction->setText(tr("Devoice"));
+        d.voiceAction->setData(QStringList() << name << "-v");
     } else {
-        d.modeAction->setText(tr("Voice"));
-        d.modeAction->setData(QStringList() << name << "+v");
+        d.voiceAction->setText(tr("Voice"));
+        d.voiceAction->setData(QStringList() << name << "+v");
     }
 }
