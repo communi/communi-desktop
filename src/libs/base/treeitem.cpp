@@ -74,7 +74,7 @@ QVariant TreeItem::data(int column, int role) const
 
 bool TreeItem::operator<(const QTreeWidgetItem& other) const
 {
-    return treeWidget()->sorter()(this, static_cast<const TreeItem*>(&other));
+    return treeWidget()->sortFunc()(this, static_cast<const TreeItem*>(&other));
 }
 
 void TreeItem::refresh()

@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 
     QApplication app(argc, argv);
     app.setApplicationName("CommuniNG");
-    app.setOrganizationName("CommuniNG");
+    app.setOrganizationName("Communi");
     app.setApplicationVersion(Irc::version());
     app.setOrganizationDomain("communi.github.com");
 

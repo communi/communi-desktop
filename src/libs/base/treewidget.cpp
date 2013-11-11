@@ -31,7 +31,7 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     setSortingEnabled(true);
-    setSorter(DefaultTreeSorter);
+    setSortFunc(standardTreeSortFunc);
     sortByColumn(0, Qt::AscendingOrder);
 
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
@@ -61,14 +61,14 @@ TreeItem* TreeWidget::connectionItem(IrcConnection* connection) const
     return d.connectionItems.value(connection);
 }
 
-TreeSorter TreeWidget::sorter() const
+TreeSortFunc TreeWidget::sortFunc() const
 {
-    return d.sorter;
+    return d.sortFunc;
 }
 
-void TreeWidget::setSorter(TreeSorter sorter)
+void TreeWidget::setSortFunc(TreeSortFunc func)
 {
-    d.sorter = sorter;
+    d.sortFunc = func;
 }
 
 void TreeWidget::addBuffer(IrcBuffer* buffer)
@@ -123,10 +123,10 @@ void TreeWidget::onCurrentItemChanged(QTreeWidgetItem* item)
 // TODO
 class FriendlyModel : public IrcBufferModel
 {
-    friend bool DefaultTreeSorter(const TreeItem* one, const TreeItem* another);
+    friend bool standardTreeSortFunc(const TreeItem* one, const TreeItem* another);
 };
 
-bool DefaultTreeSorter(const TreeItem* one, const TreeItem* another)
+bool standardTreeSortFunc(const TreeItem* one, const TreeItem* another)
 {
     if (!one->parentItem()) {
         QList<IrcConnection*> connections = one->treeWidget()->connections();

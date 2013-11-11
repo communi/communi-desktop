@@ -15,7 +15,6 @@
 #ifndef SORTERPLUGIN_H
 #define SORTERPLUGIN_H
 
-#include <QAction>
 #include <QtPlugin>
 #include <QTreeWidgetItem>
 #include "treewidgetplugin.h"
@@ -36,17 +35,10 @@ public:
 
     bool eventFilter(QObject* object, QEvent* event);
 
-private slots:
-    void toggleSorting(bool enabled);
-    void setSortingEnabled(bool enabled);
-    void onPressed(QTreeWidgetItem* item);
-
 private:
-    void saveOrder();
-    void restoreOrder();
+    void moveSource(QTreeWidgetItem* parent, QTreeWidgetItem* target);
 
     struct Private {
-        QAction* action;
         TreeWidget* tree;
         QTreeWidgetItem* source;
     } d;
