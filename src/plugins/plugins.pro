@@ -12,6 +12,7 @@ SUBDIRS += finder
 SUBDIRS += highlighter
 SUBDIRS += history
 SUBDIRS += ignore
+SUBDIRS += lag
 SUBDIRS += menu
 SUBDIRS += monitor
 SUBDIRS += navigator

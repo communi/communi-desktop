@@ -11,6 +11,7 @@ STATIC_PLUGINS += finder
 STATIC_PLUGINS += highlighter
 STATIC_PLUGINS += history
 STATIC_PLUGINS += ignore
+STATIC_PLUGINS += lag
 STATIC_PLUGINS += menu
 STATIC_PLUGINS += monitor
 STATIC_PLUGINS += navigator
