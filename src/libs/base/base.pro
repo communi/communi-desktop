@@ -26,6 +26,7 @@ HEADERS += $$PWD/textinput.h
 HEADERS += $$PWD/topiclabel.h
 HEADERS += $$PWD/treeitem.h
 HEADERS += $$PWD/treewidget.h
+HEADERS += $$PWD/window.h
 
 SOURCES += $$PWD/bufferview.cpp
 SOURCES += $$PWD/listview.cpp
@@ -37,6 +38,7 @@ SOURCES += $$PWD/textinput.cpp
 SOURCES += $$PWD/topiclabel.cpp
 SOURCES += $$PWD/treeitem.cpp
 SOURCES += $$PWD/treewidget.cpp
+SOURCES += $$PWD/window.cpp
 
 include(../../config.pri)
 include(plugins/plugins.pri)

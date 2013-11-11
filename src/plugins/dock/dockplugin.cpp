@@ -14,6 +14,7 @@
 
 #include "dockplugin.h"
 #include "qtdocktile.h"
+#include "window.h"
 #include <IrcConnection>
 #include <QEvent>
 
@@ -23,7 +24,7 @@ DockPlugin::DockPlugin(QObject* parent) : QObject(parent)
     d.window = 0;
 }
 
-void DockPlugin::initialize(QWidget* window)
+void DockPlugin::initialize(Window* window)
 {
     d.window = window;
     window->installEventFilter(this);

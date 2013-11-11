@@ -40,7 +40,7 @@ public:
     void initialize(IrcConnection* connection);
     void uninitialize(IrcConnection* connection);
 
-    void initialize(QWidget* window);
+    void initialize(Window* window);
 
     bool eventFilter(QObject* object, QEvent* event);
 

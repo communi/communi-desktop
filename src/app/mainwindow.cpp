@@ -16,6 +16,7 @@
 #include <IrcConnection>
 #include <QApplication>
 #include <QCloseEvent>
+#include <QVBoxLayout>
 #include <QPushButton>
 #include <IrcChannel>
 #include <QSettings>
@@ -24,7 +25,7 @@
 #include <QTimer>
 #include <QDir>
 
-MainWindow::MainWindow(QWidget* parent) : QStackedWidget(parent)
+MainWindow::MainWindow(QWidget* parent) : Window(parent)
 {
     d.editedConnection = 0;
 
@@ -47,14 +48,20 @@ MainWindow::MainWindow(QWidget* parent) : QStackedWidget(parent)
     qApp->setWindowIcon(d.normalIcon);
 #endif // Q_OS_MAC
 
+    d.stack = new QStackedWidget(this);
+    QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->addWidget(d.stack);
+    layout->setMargin(0);
+
     d.connectPage = new ConnectPage(this);
     connect(d.connectPage, SIGNAL(accepted()), this, SLOT(onAccepted()));
     connect(d.connectPage, SIGNAL(rejected()), this, SLOT(onRejected()));
-    addWidget(d.connectPage);
 
     d.chatPage = new ChatPage(this);
     connect(d.chatPage, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(setCurrentBuffer(IrcBuffer*)));
-    addWidget(d.chatPage);
+
+    d.stack->addWidget(d.connectPage);
+    d.stack->addWidget(d.chatPage);
 
     setCurrentBuffer(0);
 
@@ -72,6 +79,21 @@ MainWindow::MainWindow(QWidget* parent) : QStackedWidget(parent)
 
 MainWindow::~MainWindow()
 {
+}
+
+QList<IrcConnection*> MainWindow::connections() const
+{
+    return d.chatPage->connections();
+}
+
+void MainWindow::addConnection(IrcConnection* connection)
+{
+    d.chatPage->addConnection(connection);
+}
+
+void MainWindow::removeConnection(IrcConnection* connection)
+{
+    d.chatPage->removeConnection(connection);
 }
 
 QSize MainWindow::sizeHint() const
@@ -102,7 +124,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 void MainWindow::doConnect()
 {
     d.connectPage->buttonBox()->button(QDialogButtonBox::Cancel)->setEnabled(!d.chatPage->connections().isEmpty());
-    setCurrentWidget(d.connectPage);
+    d.stack->setCurrentWidget(d.connectPage);
 }
 
 void MainWindow::onAccepted()
@@ -121,13 +143,13 @@ void MainWindow::onAccepted()
     if (!d.editedConnection)
         d.chatPage->addConnection(connection);
     d.editedConnection = 0;
-    setCurrentWidget(d.chatPage);
+    d.stack->setCurrentWidget(d.chatPage);
 }
 
 void MainWindow::onRejected()
 {
     d.editedConnection = 0;
-    setCurrentWidget(d.chatPage);
+    d.stack->setCurrentWidget(d.chatPage);
 }
 
 void MainWindow::closeBuffer(IrcBuffer* buffer)
@@ -148,7 +170,7 @@ void MainWindow::closeBuffer(IrcBuffer* buffer)
 void MainWindow::setCurrentBuffer(IrcBuffer* buffer)
 {
     if (buffer) {
-        setCurrentWidget(d.chatPage);
+        d.stack->setCurrentWidget(d.chatPage);
         setWindowTitle(tr("%2 - Communi %1").arg(IRC_VERSION_STR).arg(buffer->title()));
     } else {
         doConnect();
@@ -166,7 +188,7 @@ void MainWindow::editConnection(IrcConnection* connection)
     d.connectPage->setUserName(connection->userName());
     d.connectPage->setDisplayName(connection->displayName());
     d.connectPage->setPassword(connection->password());
-    setCurrentWidget(d.connectPage);
+    d.stack->setCurrentWidget(d.connectPage);
     d.editedConnection = connection;
     doConnect();
 }

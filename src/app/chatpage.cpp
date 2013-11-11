@@ -13,6 +13,7 @@
 #include "bufferview.h"
 #include "textinput.h"
 #include "splitview.h"
+#include "window.h"
 #include <QCoreApplication>
 #include <IrcCommandParser>
 #include <IrcBufferModel>
@@ -68,15 +69,15 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
     setStretchFactor(1, 1);
 
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        WindowPlugin* windowPlugin = qobject_cast<WindowPlugin*>(instance);
+        if (windowPlugin)
+            windowPlugin->initialize(static_cast<Window*>(window()));
         TreeWidgetPlugin* treePlugin = qobject_cast<TreeWidgetPlugin*>(instance);
         if (treePlugin)
             treePlugin->initialize(d.treeWidget);
         SplitViewPlugin* viewPlugin = qobject_cast<SplitViewPlugin*>(instance);
         if (viewPlugin)
             viewPlugin->initialize(d.splitView);
-        WindowPlugin* windowPlugin = qobject_cast<WindowPlugin*>(instance);
-        if (windowPlugin)
-            windowPlugin->initialize(window());
     }
 
     addView(d.splitView->currentView());
@@ -93,7 +94,7 @@ ChatPage::~ChatPage()
             viewPlugin->uninitialize(d.splitView);
         WindowPlugin* windowPlugin = qobject_cast<WindowPlugin*>(instance);
         if (windowPlugin)
-            windowPlugin->uninitialize(window());
+            windowPlugin->uninitialize(static_cast<Window*>(window()));
     }
 }
 

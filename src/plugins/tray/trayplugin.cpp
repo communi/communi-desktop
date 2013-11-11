@@ -14,6 +14,7 @@
 
 #include "trayplugin.h"
 #include "sharedtimer.h"
+#include "window.h"
 #include <IrcConnection>
 #include <IrcMessage>
 #include <IrcBuffer>
@@ -49,7 +50,7 @@ void TrayPlugin::uninitialize(IrcConnection* connection)
     }
 }
 
-void TrayPlugin::initialize(QWidget* window)
+void TrayPlugin::initialize(Window* window)
 {
     d.window = window;
     window->installEventFilter(this);

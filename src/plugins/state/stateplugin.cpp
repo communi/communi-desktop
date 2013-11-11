@@ -15,6 +15,7 @@
 #include "stateplugin.h"
 #include "treewidget.h"
 #include "splitview.h"
+#include "window.h"
 #include <QSettings>
 #include <QBitArray>
 #include <QDebug>
@@ -23,7 +24,7 @@ StatePlugin::StatePlugin(QObject* parent) : QObject(parent)
 {
 }
 
-void StatePlugin::initialize(QWidget* window)
+void StatePlugin::initialize(Window* window)
 {
     QSettings settings;
     settings.beginGroup("States");
@@ -31,7 +32,7 @@ void StatePlugin::initialize(QWidget* window)
         window->restoreGeometry(settings.value("window").toByteArray());
 }
 
-void StatePlugin::uninitialize(QWidget* window)
+void StatePlugin::uninitialize(Window* window)
 {
     QSettings settings;
     settings.beginGroup("States");

@@ -16,14 +16,15 @@
 #define WINDOWPLUGIN_H
 
 #include <QtPlugin>
-#include <QWidget>
+
+class Window;
 
 class WindowPlugin
 {
 public:
     virtual ~WindowPlugin() {}
-    virtual void initialize(QWidget*) {}
-    virtual void uninitialize(QWidget*) {}
+    virtual void initialize(Window*) {}
+    virtual void uninitialize(Window*) {}
 };
 
 Q_DECLARE_INTERFACE(WindowPlugin, "Communi.WindowPlugin")

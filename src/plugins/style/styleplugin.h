@@ -44,7 +44,7 @@ public:
     void initialize(BufferView* view);
     void initialize(TextDocument* doc);
     void initialize(TreeWidget* tree);
-    void initialize(QWidget* window);
+    void initialize(Window* window);
 };
 
 #endif // STYLEPLUGIN_H

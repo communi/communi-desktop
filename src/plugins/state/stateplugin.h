@@ -33,8 +33,8 @@ class StatePlugin : public QObject, public WindowPlugin, public SplitViewPlugin,
 public:
     StatePlugin(QObject* parent = 0);
 
-    void initialize(QWidget* window);
-    void uninitialize(QWidget* window);
+    void initialize(Window* window);
+    void uninitialize(Window* window);
 
     void initialize(SplitView* view);
     void uninitialize(SplitView* view);

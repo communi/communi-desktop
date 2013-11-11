@@ -10,23 +10,27 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "window.h"
 #include <QIcon>
 #include <QStackedWidget>
 
 class ChatPage;
 class IrcBuffer;
 class IrcMessage;
-class IrcSession;
 class ConnectPage;
 class IrcConnection;
 
-class MainWindow : public QStackedWidget
+class MainWindow : public Window
 {
     Q_OBJECT
 
 public:
     MainWindow(QWidget* parent = 0);
     ~MainWindow();
+
+    QList<IrcConnection*> connections() const;
+    void addConnection(IrcConnection* connection);
+    void removeConnection(IrcConnection* connection);
 
     QSize sizeHint() const;
 
@@ -48,6 +52,7 @@ private:
         QIcon normalIcon;
         QIcon alertIcon;
         ChatPage* chatPage;
+        QStackedWidget* stack;
         ConnectPage* connectPage;
         IrcConnection* editedConnection;
     } d;

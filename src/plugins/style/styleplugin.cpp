@@ -22,6 +22,7 @@
 #include "topiclabel.h"
 #include "treewidget.h"
 #include "bufferview.h"
+#include "window.h"
 
 static int baseHeight()
 {
@@ -110,7 +111,7 @@ void StylePlugin::initialize(TreeWidget* tree)
         "}");
 }
 
-void StylePlugin::initialize(QWidget* window)
+void StylePlugin::initialize(Window* window)
 {
     window->setStyleSheet(
         "QSplitter::handle {"
