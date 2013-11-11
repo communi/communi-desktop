@@ -77,7 +77,6 @@ private slots:
     void receiveMessage(IrcMessage* message);
 
 private:
-    bool hasLowlight(int block) const;
     void appendLine(QTextCursor& cursor, const QString& line);
 
     struct Private {
