@@ -41,11 +41,15 @@ IrcChannel* TopicLabel::channel() const
 void TopicLabel::setChannel(IrcChannel* channel)
 {
     if (d.channel != channel) {
-        if (d.channel)
+        if (d.channel) {
+            disconnect(d.channel, SIGNAL(destroyed(IrcChannel*)), this, SLOT(cleanup()));
             disconnect(d.channel, SIGNAL(topicChanged(QString)), this, SLOT(updateTopic()));
+        }
         d.channel = channel;
-        if (d.channel)
+        if (d.channel) {
+            connect(d.channel, SIGNAL(destroyed(IrcChannel*)), this, SLOT(cleanup()));
             connect(d.channel, SIGNAL(topicChanged(QString)), this, SLOT(updateTopic()));
+        }
         updateTopic();
     }
 }
@@ -53,6 +57,11 @@ void TopicLabel::setChannel(IrcChannel* channel)
 void TopicLabel::sendTopic(const QString& topic)
 {
     d.channel->sendCommand(IrcCommand::createTopic(d.channel->title(), topic));
+}
+
+void TopicLabel::cleanup()
+{
+    d.channel = 0;
 }
 
 void TopicLabel::updateTopic()

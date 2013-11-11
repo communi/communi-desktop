@@ -37,6 +37,7 @@ signals:
     void channelChanged(IrcChannel* channel);
 
 private slots:
+    void cleanup();
     void updateTopic();
 
 private:
