@@ -101,8 +101,10 @@ void StatePlugin::initialize(TreeWidget* tree)
     d.current = settings.value("current").toString();
     d.parent = settings.value("parent").toString();
     d.index = settings.value("index", -1).toInt();
-    if (!d.current.isEmpty() && d.index != -1)
+    if (!d.current.isEmpty() && d.index != -1) {
         connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
+        connect(tree, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(onBufferChanged(IrcBuffer*)));
+    }
 }
 
 void StatePlugin::uninitialize(TreeWidget* tree)
@@ -130,13 +132,18 @@ void StatePlugin::onBufferAdded(IrcBuffer* buffer)
         if (item) {
             TreeItem* parent = item->parentItem();
             if ((!parent && d.parent.isEmpty()) || (parent && parent->text(0) == d.parent)) {
-                if (d.index == d.tree->indexOfTopLevelItem(parent ? parent : item)) {
+                if (d.index == d.tree->indexOfTopLevelItem(parent ? parent : item))
                     d.tree->setCurrentBuffer(buffer);
-                    disconnect(d.tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
-                }
             }
         }
     }
+}
+
+void StatePlugin::onBufferChanged(IrcBuffer* buffer)
+{
+    Q_UNUSED(buffer);
+    disconnect(d.tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
+    disconnect(d.tree, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(onBufferChanged(IrcBuffer*)));
 }
 
 #if QT_VERSION < 0x050000

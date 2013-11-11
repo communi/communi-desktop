@@ -46,6 +46,7 @@ public:
 
 private slots:
     void onBufferAdded(IrcBuffer* buffer);
+    void onBufferChanged(IrcBuffer* buffer);
 
 private:
     struct Private {
