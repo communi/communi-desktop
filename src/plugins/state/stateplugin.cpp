@@ -15,14 +15,17 @@
 #include "stateplugin.h"
 #include "treewidget.h"
 #include "splitview.h"
+#include "treeitem.h"
 #include "window.h"
 #include <IrcConnection>
+#include <IrcBuffer>
 #include <QSettings>
 #include <QBitArray>
 #include <QDebug>
 
 StatePlugin::StatePlugin(QObject* parent) : QObject(parent)
 {
+    d.index = -1;
 }
 
 void StatePlugin::initialize(Window* window)
@@ -94,6 +97,12 @@ void StatePlugin::initialize(TreeWidget* tree)
             qDebug("TODO: restore tree state");
         }
     }
+    d.tree = tree;
+    d.current = settings.value("current").toString();
+    d.parent = settings.value("parent").toString();
+    d.index = settings.value("index", -1).toInt();
+    if (!d.current.isEmpty() && d.index != -1)
+        connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
 }
 
 void StatePlugin::uninitialize(TreeWidget* tree)
@@ -107,6 +116,27 @@ void StatePlugin::uninitialize(TreeWidget* tree)
         expanded.setBit(i, item->isExpanded());
     }
     settings.setValue("expanded", expanded);
+    TreeItem* current = static_cast<TreeItem*>(tree->currentItem());
+    TreeItem* parent = current ? current->parentItem() : 0;
+    settings.setValue("parent", parent ? parent->text(0) : QString());
+    settings.setValue("current", current ? current->text(0) : QString());
+    settings.setValue("index", tree->indexOfTopLevelItem(parent ? parent : current));
+}
+
+void StatePlugin::onBufferAdded(IrcBuffer* buffer)
+{
+    if (buffer->title() == d.current) {
+        TreeItem* item = d.tree->bufferItem(buffer);
+        if (item) {
+            TreeItem* parent = item->parentItem();
+            if ((!parent && d.parent.isEmpty()) || (parent && parent->text(0) == d.parent)) {
+                if (d.index == d.tree->indexOfTopLevelItem(parent ? parent : item)) {
+                    d.tree->setCurrentBuffer(buffer);
+                    disconnect(d.tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
+                }
+            }
+        }
+    }
 }
 
 #if QT_VERSION < 0x050000

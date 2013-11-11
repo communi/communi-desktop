@@ -171,10 +171,11 @@ void ChatPage::removeConnection(IrcConnection* connection)
 
 void ChatPage::addBuffer(IrcBuffer* buffer)
 {
-    d.treeWidget->addBuffer(buffer);
     TextDocument* doc = new TextDocument(buffer);
     buffer->setProperty("document", QVariant::fromValue(doc));
     buffer->setPersistent(true);
+
+    d.treeWidget->addBuffer(buffer);
 
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         BufferPlugin* bufferPlugin = qobject_cast<BufferPlugin*>(instance);

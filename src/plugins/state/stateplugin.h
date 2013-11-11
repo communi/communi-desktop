@@ -20,6 +20,8 @@
 #include "splitviewplugin.h"
 #include "treewidgetplugin.h"
 
+class IrcBuffer;
+
 class StatePlugin : public QObject, public WindowPlugin, public SplitViewPlugin, public TreeWidgetPlugin
 {
     Q_OBJECT
@@ -41,6 +43,17 @@ public:
 
     void initialize(TreeWidget* tree);
     void uninitialize(TreeWidget* tree);
+
+private slots:
+    void onBufferAdded(IrcBuffer* buffer);
+
+private:
+    struct Private {
+        int index;
+        QString parent;
+        QString current;
+        TreeWidget* tree;
+    } d;
 };
 
 #endif // STATEPLUGIN_H
