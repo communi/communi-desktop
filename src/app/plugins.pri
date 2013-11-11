@@ -17,6 +17,7 @@ STATIC_PLUGINS += navigator
 STATIC_PLUGINS += reseter
 STATIC_PLUGINS += sorter
 STATIC_PLUGINS += sound
+STATIC_PLUGINS += state
 STATIC_PLUGINS += style
 STATIC_PLUGINS += subject
 STATIC_PLUGINS += tray

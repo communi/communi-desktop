@@ -47,11 +47,6 @@ MainWindow::MainWindow(QWidget* parent) : QStackedWidget(parent)
     qApp->setWindowIcon(d.normalIcon);
 #endif // Q_OS_MAC
 
-    QSettings settings;
-    settings.beginGroup("Geometries");
-    if (settings.contains("window"))
-        restoreGeometry(settings.value("window").toByteArray());
-
     d.connectPage = new ConnectPage(this);
     connect(d.connectPage, SIGNAL(accepted()), this, SLOT(onAccepted()));
     connect(d.connectPage, SIGNAL(rejected()), this, SLOT(onRejected()));
@@ -87,10 +82,6 @@ QSize MainWindow::sizeHint() const
 void MainWindow::closeEvent(QCloseEvent* event)
 {
     if (isVisible()) {
-        QSettings settings;
-        settings.beginGroup("Geometries");
-        settings.setValue("window", saveGeometry());
-
         saveConnections();
         QList<IrcConnection*> connections = d.chatPage->connections();
         foreach (IrcConnection* connection, connections) {

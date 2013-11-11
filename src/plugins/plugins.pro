@@ -18,6 +18,7 @@ SUBDIRS += navigator
 SUBDIRS += reseter
 SUBDIRS += sorter
 SUBDIRS += sound
+SUBDIRS += state
 SUBDIRS += style
 SUBDIRS += subject
 SUBDIRS += tray
