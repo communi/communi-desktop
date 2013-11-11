@@ -223,7 +223,7 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
                 }
                 if (atBottom)
                     br.setBottom(bounds.bottom());
-                br = br.adjusted(-margin, 0, margin, 0);
+                br = br.adjusted(-margin, 0, margin, 1);
                 painter->setPen(Qt::NoPen);
                 painter->drawRect(br);
                 painter->setPen(d.markerColor);
