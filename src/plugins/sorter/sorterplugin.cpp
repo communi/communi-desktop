@@ -36,6 +36,8 @@ bool CustomTreeSorter(const TreeItem* one, const TreeItem* another)
         order = childSortOrders()->value(parent->text(0));
     const int oidx = order.indexOf(one->text(0));
     const int aidx = order.indexOf(another->text(0));
+    if (oidx == -1 && aidx == -1)
+        return DefaultTreeSorter(one, another);
     if (oidx != -1 && aidx == -1)
         return true;
     if (aidx != -1 && oidx == -1)
@@ -101,15 +103,18 @@ void SorterPlugin::toggleSorting(bool enabled)
     if (!enabled)
         restoreOrder();
     setSortingEnabled(enabled);
+    if (!enabled)
+        d.tree->sortByColumn(0, Qt::AscendingOrder);
 }
 
 void SorterPlugin::setSortingEnabled(bool enabled)
 {
-    if (d.tree->isSortingEnabled() != enabled) {
-        d.tree->setSorter(enabled ? DefaultTreeSorter : CustomTreeSorter);
-        d.tree->setSortingEnabled(enabled);
+    const bool wasEnabled = d.tree->isSortingEnabled();
+    d.tree->setSorter(enabled ? DefaultTreeSorter : CustomTreeSorter);
+    d.tree->setSortingEnabled(enabled);
+    if (enabled && !wasEnabled)
         d.tree->sortByColumn(0, Qt::AscendingOrder);
-    }
+
     d.action->blockSignals(true);
     d.action->setChecked(enabled);
     d.action->blockSignals(false);
@@ -124,16 +129,18 @@ void SorterPlugin::saveOrder()
 {
     QSettings settings;
     settings.beginGroup("Sorting");
+    QStringList parents;
     QHash<QString, QVariant> children;
     for (int i = 0; i < d.tree->topLevelItemCount(); ++i) {
-        QStringList texts;
+        QStringList lst;
         QTreeWidgetItem* parent = d.tree->topLevelItem(i);
         for (int j = 0; j < parent->childCount(); ++j)
-            texts += parent->child(j)->text(0);
-        children.insert(parent->text(0), texts);
+            lst += parent->child(j)->text(0);
+        children.insert(parent->text(0), lst);
+        parents += parent->text(0);
     }
     settings.setValue("children", children);
-    settings.setValue("parents", *topLevelSortOrder());
+    settings.setValue("parents", parents);
 }
 
 void SorterPlugin::restoreOrder()
