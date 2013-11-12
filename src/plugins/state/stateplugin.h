@@ -46,11 +46,13 @@ public:
     void uninitialize(TreeWidget* tree);
 
 private slots:
-    void onViewAdded(BufferView* view);
-    void onViewRemoved(BufferView *view);
+    void restoreView(BufferView* view);
+    void saveView(BufferView *view);
 
     void onBufferAdded(IrcBuffer* buffer);
     void onBufferChanged(IrcBuffer* buffer);
+
+    void onSplitterMoved();
 
 private:
     struct Private {
