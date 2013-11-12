@@ -106,6 +106,9 @@ void SplitView::onViewRemoved(BufferView* view)
 {
     d.views.removeOne(view);
     emit viewRemoved(view);
+    QSplitter* splitter = qobject_cast<QSplitter*>(view->parentWidget());
+    if (splitter && splitter != this && splitter->count() == 1 && splitter->widget(0) == view)
+        splitter->deleteLater();
 }
 
 void SplitView::onBufferRemoved(IrcBuffer* buffer)
