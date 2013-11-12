@@ -39,7 +39,7 @@ private:
     struct Private {
         QAction* splitVAction;
         QAction* splitHAction;
-        QAction* closeAction;
+        QAction* unsplitAction;
         SplitView* view;
         TextBrowser* browser;
     } d;

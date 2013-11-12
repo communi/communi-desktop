@@ -33,8 +33,8 @@ BrowserMenu::BrowserMenu(TextBrowser* browser, SplitView* view) : QMenu(browser)
     d.splitHAction = new QAction(tr("Split side by side"), browser);
     connect(d.splitHAction, SIGNAL(triggered()), this, SLOT(splitHorizontal()));
 
-    d.closeAction = new QAction(tr("Close"), browser);
-    connect(d.closeAction, SIGNAL(triggered()), this, SLOT(unsplit()));
+    d.unsplitAction = new QAction(tr("Unsplit"), browser);
+    connect(d.unsplitAction, SIGNAL(triggered()), this, SLOT(unsplit()));
 
     updateActions();
 }
@@ -54,7 +54,7 @@ bool BrowserMenu::eventFilter(QObject *object, QEvent *event)
         menu->addSeparator();
         menu->addAction(d.splitVAction);
         menu->addAction(d.splitHAction);
-        menu->addAction(d.closeAction);
+        menu->addAction(d.unsplitAction);
         menu->exec(cme->globalPos());
         delete menu;
         return true;
@@ -64,7 +64,7 @@ bool BrowserMenu::eventFilter(QObject *object, QEvent *event)
 
 void BrowserMenu::updateActions()
 {
-    d.closeAction->setEnabled(d.view->views().count() > 1);
+    d.unsplitAction->setEnabled(d.view->views().count() > 1);
 }
 
 void BrowserMenu::splitVertical()
