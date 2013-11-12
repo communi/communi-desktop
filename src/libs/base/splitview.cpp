@@ -68,38 +68,36 @@ void SplitView::split(BufferView* view, Qt::Orientation orientation)
     if (view) {
         QSplitter* container = qobject_cast<QSplitter*>(view->parentWidget());
         if (container) {
+            int index = container->indexOf(view);
             const int size = (orientation == Qt::Horizontal ? container->width() : container->height()) - container->handleWidth();
             if (container->count() == 1 || container->orientation() == orientation) {
                 container->setOrientation(orientation);
-                BufferView* bv = createBufferView(container);
+                BufferView* bv = createBufferView(container, index + 1);
                 bv->setBuffer(view->buffer());
                 QList<int> sizes;
                 for (int i = 0; i < container->count(); ++i)
                     sizes += size / container->count();
                 container->setSizes(sizes);
-            } else {
-                int index = container->indexOf(view);
-                if (index != -1) {
-                    QList<int> sizes = container->sizes();
-                    QSplitter* splitter = new QSplitter(orientation, container);
-                    container->insertWidget(index, splitter);
-                    splitter->addWidget(view);
-                    container->setSizes(sizes);
-                    BufferView* bv = createBufferView(splitter);
-                    bv->setBuffer(view->buffer());
-                    splitter->setSizes(QList<int>() << size/2 << size/2);
-                }
+            } else if (index != -1) {
+                QList<int> sizes = container->sizes();
+                QSplitter* splitter = new QSplitter(orientation, container);
+                container->insertWidget(index, splitter);
+                splitter->addWidget(view);
+                container->setSizes(sizes);
+                BufferView* bv = createBufferView(splitter);
+                bv->setBuffer(view->buffer());
+                splitter->setSizes(QList<int>() << size/2 << size/2);
             }
         }
     }
 }
 
-BufferView* SplitView::createBufferView(QSplitter* splitter)
+BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
 {
     BufferView* view = new BufferView(splitter);
     connect(view, SIGNAL(destroyed(BufferView*)), this, SLOT(onViewRemoved(BufferView*)));
     d.views += view;
-    splitter->addWidget(view);
+    splitter->insertWidget(index, view);
     emit viewAdded(view);
     return view;
 }

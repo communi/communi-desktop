@@ -42,7 +42,7 @@ signals:
     void currentBufferChanged(IrcBuffer* buffer);
 
 protected:
-    BufferView* createBufferView(QSplitter* splitter);
+    BufferView* createBufferView(QSplitter* splitter, int index = -1);
 
 private slots:
     void onViewRemoved(BufferView* view);
