@@ -107,11 +107,16 @@ BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
 
 void SplitView::onViewRemoved(BufferView* view)
 {
-    d.views.removeOne(view);
-    emit viewRemoved(view);
-    QSplitter* splitter = qobject_cast<QSplitter*>(view->parentWidget());
-    if (splitter && splitter != this && splitter->count() == 1 && splitter->widget(0) == view)
-        splitter->deleteLater();
+    int index = d.views.indexOf(view);
+    if (index != -1) {
+        d.views.removeAt(index);
+        emit viewRemoved(view);
+        QSplitter* splitter = qobject_cast<QSplitter*>(view->parentWidget());
+        if (splitter && splitter != this && splitter->count() == 1 && splitter->widget(0) == view)
+            splitter->deleteLater();
+        if (d.current == view)
+            setCurrentView(d.views.value(qMax(0, index - 1)));
+    }
 }
 
 void SplitView::onBufferRemoved(IrcBuffer* buffer)
