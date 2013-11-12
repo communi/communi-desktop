@@ -63,9 +63,9 @@ void StatePlugin::initialize(SplitView* view)
     QSplitter* splitter = qobject_cast<QSplitter*>(view->parentWidget());
     if (splitter) {
         QSettings settings;
-        settings.beginGroup("States");
-        if (settings.contains("splitter"))
-            splitter->restoreState(settings.value("splitter").toByteArray());
+        settings.beginGroup("States/splitter");
+        if (settings.contains("main"))
+            splitter->restoreState(settings.value("main").toByteArray());
     } else {
         qWarning() << "StatePlugin: cannot restore ChatPage splitter state";
     }
@@ -76,8 +76,8 @@ void StatePlugin::uninitialize(SplitView* view)
     QSplitter* splitter = qobject_cast<QSplitter*>(view->parentWidget());
     if (splitter) {
         QSettings settings;
-        settings.beginGroup("States");
-        settings.setValue("splitter", splitter->saveState());
+        settings.beginGroup("States/splitter");
+        settings.setValue("main", splitter->saveState());
     } else {
         qWarning() << "StatePlugin: cannot save ChatPage splitter state";
     }
@@ -86,8 +86,7 @@ void StatePlugin::uninitialize(SplitView* view)
 void StatePlugin::initialize(TreeWidget* tree)
 {
     QSettings settings;
-    settings.beginGroup("States");
-    settings.beginGroup("tree");
+    settings.beginGroup("States/tree");
     if (settings.contains("expanded")) {
         QBitArray expanded = settings.value("expanded").toBitArray();
         if (expanded.count() == tree->topLevelItemCount()) {
@@ -110,8 +109,7 @@ void StatePlugin::initialize(TreeWidget* tree)
 void StatePlugin::uninitialize(TreeWidget* tree)
 {
     QSettings settings;
-    settings.beginGroup("States");
-    settings.beginGroup("tree");
+    settings.beginGroup("States/tree");
     QBitArray expanded(tree->topLevelItemCount());
     for (int i = 0; i < tree->topLevelItemCount(); ++i) {
         QTreeWidgetItem* item = tree->topLevelItem(i);
