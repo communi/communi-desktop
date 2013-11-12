@@ -14,6 +14,7 @@
 
 #include "textbrowser.h"
 #include "textdocument.h"
+#include <QAbstractTextDocumentLayout>
 #include <QDesktopServices>
 #include <QApplication>
 #include <QScrollBar>
@@ -35,7 +36,7 @@ TextBrowser::~TextBrowser()
 {
     TextDocument* doc = document();
     if (doc)
-        doc->deref(this);
+        doc->setVisible(false);
 }
 
 TextDocument* TextBrowser::document() const
@@ -47,10 +48,13 @@ void TextBrowser::setDocument(TextDocument* document)
 {
     TextDocument* doc = qobject_cast<TextDocument*>(QTextBrowser::document());
     if (doc != document) {
-        if (doc)
-            doc->deref(this);
+        if (doc) {
+            doc->setVisible(false);
+            disconnect(doc->documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(keetApBottom()));
+        }
         if (document) {
-            document->ref(this);
+            document->setVisible(true);
+            connect(document->documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(keetApBottom()));
             if (d.dirty == 0 && !document->isEmpty()) {
                 setUpdatesEnabled(false);
                 d.dirty = startTimer(32);
@@ -184,6 +188,12 @@ void TextBrowser::wheelEvent(QWheelEvent* event)
 #else
     QTextBrowser::wheelEvent(event);
 #endif // Q_OS_MAC
+}
+
+void TextBrowser::keetApBottom()
+{
+    if (isAtBottom())
+        QMetaObject::invokeMethod(this, "scrollToBottom", Qt::QueuedConnection);
 }
 
 void TextBrowser::onAnchorClicked(const QUrl& url)

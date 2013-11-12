@@ -54,6 +54,7 @@ protected:
     void wheelEvent(QWheelEvent* event);
 
 private slots:
+    void keetApBottom();
     void onAnchorClicked(const QUrl& url);
 
 private:

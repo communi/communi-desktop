@@ -13,7 +13,6 @@
 */
 
 #include "textdocument.h"
-#include "textbrowser.h"
 #include "messageformatter.h"
 #include "syntaxhighlighter.h"
 #include <QAbstractTextDocumentLayout>
@@ -35,6 +34,7 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
     d.dirty = -1;
     d.lowlight = -1;
     d.buffer = buffer;
+    d.visible = false;
 
     // TODO: stylesheet
     d.markerColor = Qt::darkGray;
@@ -50,7 +50,6 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
     setMaximumBlockCount(1000);
 
     connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
-    connect(documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(scrollToBottom()));
 }
 
 IrcBuffer* TextDocument::buffer() const
@@ -110,18 +109,22 @@ void TextDocument::setHighlightColor(const QColor& color)
     }
 }
 
-void TextDocument::ref(TextBrowser* browser)
+bool TextDocument::isVisible() const
 {
-    if (d.dirty > 0 && d.browsers.isEmpty())
-        flushLines();
-    d.browsers.insert(browser);
+    return d.visible;
 }
 
-void TextDocument::deref(TextBrowser* browser)
+void TextDocument::setVisible(bool visible)
 {
-    d.browsers.remove(browser);
-    if (d.browsers.isEmpty())
-        d.ub = -1;
+    if (d.visible != visible) {
+        if (visible) {
+            if (d.dirty > 0)
+                flushLines();
+        } else {
+            d.ub = -1;
+        }
+        d.visible = visible;
+    }
 }
 
 void TextDocument::beginLowlight()
@@ -157,7 +160,7 @@ void TextDocument::removeHighlight(int block)
 void TextDocument::append(const QString& text)
 {
     if (!text.isEmpty()) {
-        if (d.dirty == 0 || !d.browsers.isEmpty()) {
+        if (d.dirty == 0 || d.visible) {
             QTextCursor cursor(this);
             cursor.beginEditBlock();
             appendLine(cursor, text);
@@ -261,7 +264,7 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
 
 void TextDocument::updateBlock(int number)
 {
-    if (!d.browsers.isEmpty()) {
+    if (d.visible) {
         QTextBlock block = findBlockByNumber(number);
         if (block.isValid())
             QMetaObject::invokeMethod(documentLayout(), "updateBlock", Q_ARG(QTextBlock, block));
@@ -291,14 +294,6 @@ void TextDocument::flushLines()
     if (d.dirty > 0) {
         killTimer(d.dirty);
         d.dirty = 0;
-    }
-}
-
-void TextDocument::scrollToBottom()
-{
-    foreach (TextBrowser* browser, d.browsers) {
-        if (browser->isAtBottom())
-            QMetaObject::invokeMethod(browser, "scrollToBottom", Qt::QueuedConnection);
     }
 }
 
@@ -345,6 +340,6 @@ void TextDocument::appendLine(QTextCursor& cursor, const QString& line)
 
     cursor.insertHtml(line);
 
-    if (d.ub == -1 && d.browsers.isEmpty())
+    if (d.ub == -1 && !d.visible)
         d.ub = count;
 }

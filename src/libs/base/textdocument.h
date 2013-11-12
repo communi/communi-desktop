@@ -24,7 +24,6 @@
 
 class IrcBuffer;
 class IrcMessage;
-class TextBrowser;
 class MessageFormatter;
 class SyntaxHighlighter;
 
@@ -49,8 +48,8 @@ public:
     QColor highlightColor() const;
     void setHighlightColor(const QColor& color);
 
-    void ref(TextBrowser* browser);
-    void deref(TextBrowser* browser);
+    bool isVisible() const;
+    void setVisible(bool visible);
 
     void beginLowlight();
     void endLowlight();
@@ -73,7 +72,6 @@ protected:
 
 private slots:
     void flushLines();
-    void scrollToBottom();
     void receiveMessage(IrcMessage* message);
 
 private:
@@ -83,6 +81,7 @@ private:
         int ub;
         int dirty;
         int lowlight;
+        bool visible;
         IrcBuffer* buffer;
         QStringList lines;
         QColor markerColor;
@@ -91,7 +90,6 @@ private:
         QList<int> highlights;
         QMap<int, int> lowlights;
         MessageFormatter* formatter;
-        QSet<TextBrowser*> browsers;
         SyntaxHighlighter* highlighter;
     } d;
 };
