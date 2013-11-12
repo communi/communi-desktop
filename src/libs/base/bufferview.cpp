@@ -28,7 +28,7 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     d.textBrowser->setBuddy(d.textInput);
 
     d.splitter = new QSplitter(this);
-    d.splitter->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
+    d.splitter->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setSpacing(0);
