@@ -21,6 +21,7 @@
 #include "treewidgetplugin.h"
 
 class IrcBuffer;
+class BufferView;
 
 class StatePlugin : public QObject, public WindowPlugin, public SplitViewPlugin, public TreeWidgetPlugin
 {
@@ -45,6 +46,9 @@ public:
     void uninitialize(TreeWidget* tree);
 
 private slots:
+    void onViewAdded(BufferView* view);
+    void onViewRemoved(BufferView *view);
+
     void onBufferAdded(IrcBuffer* buffer);
     void onBufferChanged(IrcBuffer* buffer);
 
@@ -54,6 +58,7 @@ private:
         QString parent;
         QString current;
         TreeWidget* tree;
+        SplitView* view;
     } d;
 };
 

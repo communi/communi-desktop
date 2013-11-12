@@ -14,6 +14,7 @@
 
 #include "stateplugin.h"
 #include "treewidget.h"
+#include "bufferview.h"
 #include "splitview.h"
 #include "treeitem.h"
 #include "window.h"
@@ -69,6 +70,9 @@ void StatePlugin::initialize(SplitView* view)
     } else {
         qWarning() << "StatePlugin: cannot restore ChatPage splitter state";
     }
+    d.view = view;
+    connect(view, SIGNAL(viewAdded(BufferView*)), this, SLOT(onViewAdded(BufferView*)));
+    connect(view, SIGNAL(viewRemoved(BufferView*)), this, SLOT(onViewRemoved(BufferView*)));
 }
 
 void StatePlugin::uninitialize(SplitView* view)
@@ -81,6 +85,8 @@ void StatePlugin::uninitialize(SplitView* view)
     } else {
         qWarning() << "StatePlugin: cannot save ChatPage splitter state";
     }
+    if (view->currentView())
+        onViewRemoved(view->currentView());
 }
 
 void StatePlugin::initialize(TreeWidget* tree)
@@ -123,6 +129,31 @@ void StatePlugin::uninitialize(TreeWidget* tree)
     settings.setValue("index", tree->indexOfTopLevelItem(parent ? parent : current));
 }
 
+void StatePlugin::onViewAdded(BufferView* view)
+{
+    QSplitter* splitter = view->findChild<QSplitter*>();
+    if (splitter) {
+        QSettings settings;
+        settings.beginGroup("States/splitter");
+        if (settings.contains("buffer"))
+            splitter->restoreState(settings.value("buffer").toByteArray());
+    } else {
+        qWarning() << "StatePlugin: cannot restore BufferView splitter state";
+    }
+}
+
+void StatePlugin::onViewRemoved(BufferView* view)
+{
+    QSplitter* splitter = view->findChild<QSplitter*>();
+    if (splitter) {
+        QSettings settings;
+        settings.beginGroup("States/splitter");
+        settings.setValue("buffer", splitter->saveState());
+    } else {
+        qWarning() << "StatePlugin: cannot save BufferView splitter state";
+    }
+}
+
 void StatePlugin::onBufferAdded(IrcBuffer* buffer)
 {
     if (buffer->title() == d.current) {
@@ -139,9 +170,10 @@ void StatePlugin::onBufferAdded(IrcBuffer* buffer)
 
 void StatePlugin::onBufferChanged(IrcBuffer* buffer)
 {
-    Q_UNUSED(buffer);
     disconnect(d.tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
     disconnect(d.tree, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(onBufferChanged(IrcBuffer*)));
+    if (d.view->currentBuffer() == buffer)
+        onViewAdded(d.view->currentView());
 }
 
 #if QT_VERSION < 0x050000
