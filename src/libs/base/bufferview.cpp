@@ -91,7 +91,19 @@ void BufferView::setBuffer(IrcBuffer* buffer)
             QWidget* focus = qApp->focusWidget();
             if (!focus || !focus->inherits("QLineEdit") || (focus->inherits("TextInput") && !isAncestorOf(focus)))
                 d.textInput->setFocus();
-            d.textBrowser->setDocument(buffer->property("document").value<TextDocument*>());
+
+            TextDocument* doc = 0;
+            QList<TextDocument*> documents = d.buffer->findChildren<TextDocument*>();
+            // there might be multiple clones, but at least one instance
+            // must always remain there to avoid losing history...
+            Q_ASSERT(!documents.isEmpty());
+            foreach (TextDocument* d, documents) {
+                if (!d->isVisible())
+                    doc = d;
+            }
+            if (!doc)
+                doc = documents.first()->clone();
+            d.textBrowser->setDocument(doc);
         }
 
         emit bufferChanged(buffer);

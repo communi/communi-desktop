@@ -173,7 +173,6 @@ void ChatPage::removeConnection(IrcConnection* connection)
 void ChatPage::addBuffer(IrcBuffer* buffer)
 {
     TextDocument* doc = new TextDocument(buffer);
-    buffer->setProperty("document", QVariant::fromValue(doc));
     buffer->setPersistent(true);
 
     d.treeWidget->addBuffer(buffer);

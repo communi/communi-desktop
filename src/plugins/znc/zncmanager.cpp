@@ -101,12 +101,18 @@ bool ZncManager::messageFilter(IrcMessage* message)
             if (content == QLatin1String("Buffer Playback...")) {
                 d.playback = true;
                 d.buffer = d.model->find(privMsg->target());
-                if (d.buffer)
-                    d.buffer->property("document").value<TextDocument*>()->beginLowlight();
+                if (d.buffer) {
+                    QList<TextDocument*> documents = d.buffer->findChildren<TextDocument*>();
+                    foreach (TextDocument* doc, documents)
+                        doc->beginLowlight();
+                }
                 return false;
             } else if (content == QLatin1String("Playback Complete.")) {
-                if (d.buffer)
-                    d.buffer->property("document").value<TextDocument*>()->endLowlight();
+                if (d.buffer) {
+                    QList<TextDocument*> documents = d.buffer->findChildren<TextDocument*>();
+                    foreach (TextDocument* doc, documents)
+                        doc->endLowlight();
+                }
                 d.playback = false;
                 d.buffer = 0;
                 return false;

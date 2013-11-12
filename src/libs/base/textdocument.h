@@ -34,6 +34,9 @@ class TextDocument : public QTextDocument
 public:
     explicit TextDocument(IrcBuffer* buffer);
 
+    TextDocument* clone();
+    bool isClone() const;
+
     IrcBuffer* buffer() const;
     SyntaxHighlighter* highlighter() const;
 
@@ -80,6 +83,7 @@ private:
     struct Private {
         int ub;
         int dirty;
+        bool clone;
         int lowlight;
         bool visible;
         IrcBuffer* buffer;

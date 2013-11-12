@@ -35,8 +35,12 @@ TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent)
 TextBrowser::~TextBrowser()
 {
     TextDocument* doc = document();
-    if (doc)
-        doc->setVisible(false);
+    if (doc) {
+        if (doc->isClone())
+            delete doc;
+        else
+            doc->setVisible(false);
+    }
 }
 
 TextDocument* TextBrowser::document() const

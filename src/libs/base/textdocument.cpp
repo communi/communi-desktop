@@ -16,6 +16,7 @@
 #include "messageformatter.h"
 #include "syntaxhighlighter.h"
 #include <QAbstractTextDocumentLayout>
+#include <QTextDocumentFragment>
 #include <QApplication>
 #include <QTextCursor>
 #include <QTextBlock>
@@ -33,6 +34,7 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
     d.ub = -1;
     d.dirty = -1;
     d.lowlight = -1;
+    d.clone = false;
     d.buffer = buffer;
     d.visible = false;
 
@@ -50,6 +52,31 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
     setMaximumBlockCount(1000);
 
     connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
+}
+
+TextDocument* TextDocument::clone()
+{
+    if (d.dirty > 0)
+        flushLines();
+
+    TextDocument* doc = new TextDocument(d.buffer);
+    QTextCursor(doc).insertFragment(QTextDocumentFragment(this));
+    doc->rootFrame()->setFrameFormat(rootFrame()->frameFormat());
+
+    // TODO:
+    doc->d.ub = d.ub;
+    doc->d.lowlight = d.lowlight;
+    doc->d.buffer = d.buffer;
+    doc->d.highlights = d.highlights;
+    doc->d.lowlights = d.lowlights;
+    doc->d.clone = true;
+
+    return doc;
+}
+
+bool TextDocument::isClone() const
+{
+    return d.clone;
 }
 
 IrcBuffer* TextDocument::buffer() const
