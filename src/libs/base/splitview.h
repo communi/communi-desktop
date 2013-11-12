@@ -11,6 +11,7 @@
 #define SPLITVIEW_H
 
 #include <QSplitter>
+#include <QPointer>
 
 class IrcBuffer;
 class BufferView;
@@ -50,8 +51,8 @@ private slots:
 
 private:
     struct Private {
-        BufferView* current;
         QList<BufferView*> views;
+        QPointer<BufferView> current;
     } d;
 };
 
