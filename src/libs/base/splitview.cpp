@@ -82,7 +82,9 @@ void SplitView::split(BufferView* view, Qt::Orientation orientation)
                 QList<int> sizes = container->sizes();
                 QSplitter* splitter = new QSplitter(orientation, container);
                 container->insertWidget(index, splitter);
+                container->setCollapsible(index, false);
                 splitter->addWidget(view);
+                splitter->setCollapsible(0, false);
                 container->setSizes(sizes);
                 BufferView* bv = createBufferView(splitter);
                 bv->setBuffer(view->buffer());
@@ -98,6 +100,7 @@ BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
     connect(view, SIGNAL(destroyed(BufferView*)), this, SLOT(onViewRemoved(BufferView*)));
     d.views += view;
     splitter->insertWidget(index, view);
+    splitter->setCollapsible(splitter->indexOf(view), false);
     emit viewAdded(view);
     return view;
 }
