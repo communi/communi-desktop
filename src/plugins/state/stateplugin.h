@@ -16,6 +16,7 @@
 #define STATEPLUGIN_H
 
 #include <QtPlugin>
+#include <QSplitter>
 #include "windowplugin.h"
 #include "splitviewplugin.h"
 #include "treewidgetplugin.h"
@@ -55,6 +56,9 @@ private slots:
     void onSplitterMoved();
 
 private:
+    static QVariantList saveSplits(QSplitter* splitter);
+    void restoreSplits(const QVariantList& states);
+
     struct Private {
         int index;
         QString parent;
