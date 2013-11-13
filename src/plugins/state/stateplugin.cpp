@@ -196,6 +196,7 @@ static QVariant splitterState(QSplitter* splitter)
     QVariantMap state;
     state.insert("count", splitter->count());
     state.insert("state", splitter->saveState());
+    state.insert("geometry", splitter->saveGeometry());
     state.insert("orientation", splitter->orientation());
     return state;
 }
@@ -223,8 +224,10 @@ void StatePlugin::restoreSplits(const QVariantList& states)
             for (int i = 1; i < count; ++i)
                 d.view->split(view, orientation);
             QSplitter* splitter = qobject_cast<QSplitter*>(view->parentWidget());
-            if (splitter)
+            if (splitter) {
+                splitter->restoreGeometry(state.value("geometry").toByteArray());
                 splitter->restoreState(state.value("state").toByteArray());
+            }
         }
     }
 }
