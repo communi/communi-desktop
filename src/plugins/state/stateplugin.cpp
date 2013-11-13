@@ -27,6 +27,8 @@
 StatePlugin::StatePlugin(QObject* parent) : QObject(parent)
 {
     d.index = -1;
+    d.tree = 0;
+    d.view = 0;
 }
 
 void StatePlugin::initialize(Window* window)
@@ -73,9 +75,8 @@ void StatePlugin::initialize(SplitView* view)
     } else {
         qWarning() << "StatePlugin: cannot restore ChatPage splitter state";
     }
-    connect(view, SIGNAL(viewAdded(BufferView*)), this, SLOT(restoreView(BufferView*)));
-    connect(view, SIGNAL(viewRemoved(BufferView*)), this, SLOT(saveView(BufferView*)));
-    connect(view, SIGNAL(currentViewChanged(BufferView*)), this, SLOT(saveView(BufferView*)));
+    if (IrcBuffer* buffer = d.view->currentBuffer())
+        restoreBuffer(buffer);
 }
 
 void StatePlugin::uninitialize(SplitView* view)
@@ -89,8 +90,6 @@ void StatePlugin::uninitialize(SplitView* view)
     } else {
         qWarning() << "StatePlugin: cannot save ChatPage splitter state";
     }
-    if (view->currentView())
-        saveView(view->currentView());
 }
 
 void StatePlugin::initialize(TreeWidget* tree)
@@ -111,8 +110,8 @@ void StatePlugin::initialize(TreeWidget* tree)
     d.parent = settings.value("parent").toString();
     d.index = settings.value("index", -1).toInt();
     if (!d.current.isEmpty() && d.index != -1)
-        connect(tree, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(onBufferChanged(IrcBuffer*)));
-    connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
+        connect(tree, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(resetCurrent()));
+    connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(restoreBuffer(IrcBuffer*)));
 }
 
 void StatePlugin::uninitialize(TreeWidget* tree)
@@ -132,33 +131,41 @@ void StatePlugin::uninitialize(TreeWidget* tree)
     settings.setValue("index", tree->indexOfTopLevelItem(parent ? parent : current));
 }
 
-void StatePlugin::restoreView(BufferView* view)
+//void StatePlugin::restoreView(BufferView* view)
+//{
+//    QSplitter* splitter = view->findChild<QSplitter*>();
+//    if (splitter) {
+//        QSettings settings;
+//        settings.beginGroup("States/splitter");
+//        if (settings.contains("buffer"))
+//            splitter->restoreState(settings.value("buffer").toByteArray());
+//        connect(splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(onSplitterMoved()), Qt::UniqueConnection);
+//    } else {
+//        qWarning() << "StatePlugin: cannot restore BufferView splitter state";
+//    }
+//}
+
+//void StatePlugin::saveView(BufferView* view)
+//{
+//    QSplitter* splitter = view->findChild<QSplitter*>();
+//    if (splitter) {
+//        QSettings settings;
+//        settings.beginGroup("States/splitter");
+//        settings.setValue("buffer", splitter->saveState());
+//    } else {
+//        qWarning() << "StatePlugin: cannot save BufferView splitter state";
+//    }
+//}
+
+void StatePlugin::resetCurrent()
 {
-    QSplitter* splitter = view->findChild<QSplitter*>();
-    if (splitter) {
-        QSettings settings;
-        settings.beginGroup("States/splitter");
-        if (settings.contains("buffer"))
-            splitter->restoreState(settings.value("buffer").toByteArray());
-        connect(splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(onSplitterMoved()), Qt::UniqueConnection);
-    } else {
-        qWarning() << "StatePlugin: cannot restore BufferView splitter state";
-    }
+    d.index = -1;
+    d.parent.clear();
+    d.current.clear();
+    disconnect(d.tree, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(resetCurrent()));
 }
 
-void StatePlugin::saveView(BufferView* view)
-{
-    QSplitter* splitter = view->findChild<QSplitter*>();
-    if (splitter) {
-        QSettings settings;
-        settings.beginGroup("States/splitter");
-        settings.setValue("buffer", splitter->saveState());
-    } else {
-        qWarning() << "StatePlugin: cannot save BufferView splitter state";
-    }
-}
-
-void StatePlugin::onBufferAdded(IrcBuffer* buffer)
+void StatePlugin::restoreBuffer(IrcBuffer* buffer)
 {
     if (!d.current.isEmpty() && buffer->title() == d.current) {
         TreeItem* item = d.tree->bufferItem(buffer);
@@ -174,26 +181,27 @@ void StatePlugin::onBufferAdded(IrcBuffer* buffer)
             }
         }
     }
-}
 
-void StatePlugin::onBufferChanged(IrcBuffer* buffer)
-{
-    d.index = -1;
-    d.parent.clear();
-    d.current.clear();
-    disconnect(d.tree, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(onBufferChanged(IrcBuffer*)));
-    if (d.view->currentBuffer() == buffer)
-        restoreView(d.view->currentView());
-}
-
-void StatePlugin::onSplitterMoved()
-{
-    QSplitter* splitter = qobject_cast<QSplitter*>(sender());
-    if (splitter) {
-        BufferView* view = qobject_cast<BufferView*>(splitter->parentWidget());
-        if (view)
-            saveView(view);
+    // TODO: optimize
+    QList<BufferView*> views = d.view->findChildren<BufferView*>("__unrestored__");
+    foreach (BufferView* bv, views) {
+        if (bv->property("__buffer__").toString() == buffer->title()) {
+            TreeItem* item = d.tree->bufferItem(buffer);
+            TreeItem* parent = item ? item->parentItem() : 0;
+            if (bv->property("__parent__").toString() == (parent ? parent->text(0) : QString())) {
+                if (bv->property("__index__").toInt() == d.tree->indexOfTopLevelItem(parent ? parent : item)) {
+                    bv->setBuffer(buffer);
+                    bv->setObjectName(QString());
+                    bv->setProperty("__parent__", QVariant());
+                    bv->setProperty("__buffer__", QVariant());
+                    bv->setProperty("__index__", QVariant());
+                }
+            }
+        }
     }
+
+    if (d.current.isEmpty() && d.parent.isEmpty() && d.index == -1 && views.isEmpty())
+        disconnect(d.tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(restoreBuffer(IrcBuffer*)));
 }
 
 QVariantMap StatePlugin::saveSplittedViews(QSplitter* splitter) const
@@ -205,12 +213,24 @@ QVariantMap StatePlugin::saveSplittedViews(QSplitter* splitter) const
     state.insert("state", splitter->saveState());
     state.insert("geometry", splitter->saveGeometry());
     state.insert("orientation", splitter->orientation());
+    QVariantList buffers;
     QVariantList children;
     for (int i = 0; i < splitter->count(); ++i) {
         QSplitter* child = qobject_cast<QSplitter*>(splitter->widget(i));
         if (child)
             children += saveSplittedViews(child);
+        BufferView* bv = qobject_cast<BufferView*>(splitter->widget(i));
+        if (bv) {
+            TreeItem* item = d.tree->bufferItem(bv->buffer());
+            TreeItem* parent = item ? item->parentItem() : 0;
+            QVariantMap buffer;
+            buffer.insert("parent", parent ? parent->text(0) : QString());
+            buffer.insert("buffer", item ? item->text(0) : QString());
+            buffer.insert("index", d.tree->indexOfTopLevelItem(parent ? parent : item));
+            buffers += buffer;
+        }
     }
+    state.insert("buffers", buffers);
     state.insert("children", children);
     return state;
 }
@@ -223,6 +243,7 @@ void StatePlugin::restoreSplittedViews(QSplitter* splitter, const QVariantMap& s
     int count = state.value("count", -1).toInt();
     if (count > 1) {
         BufferView* bv = qobject_cast<BufferView*>(splitter->widget(0));
+        Q_ASSERT(bv);
         Qt::Orientation orientation = static_cast<Qt::Orientation>(state.value("orientation").toInt());
         for (int i = 1; i < count; ++i)
             view->split(bv, orientation);
@@ -238,6 +259,18 @@ void StatePlugin::restoreSplittedViews(QSplitter* splitter, const QVariantMap& s
                 if (parent)
                     restoreSplittedViews(parent, child, view);
             }
+        }
+    }
+
+    QVariantList buffers = state.value("buffers").toList();
+    for (int i = 0; !buffers.isEmpty() && i < splitter->count(); ++i) {
+        BufferView* bv = qobject_cast<BufferView*>(splitter->widget(i));
+        if (bv) {
+            QVariantMap buffer = buffers.takeFirst().toMap();
+            bv->setProperty("__parent__", buffer.value("parent").toString());
+            bv->setProperty("__buffer__", buffer.value("buffer").toString());
+            bv->setProperty("__index__", buffer.value("index").toInt());
+            bv->setObjectName("__unrestored__");
         }
     }
 

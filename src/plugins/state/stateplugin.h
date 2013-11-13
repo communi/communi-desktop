@@ -48,13 +48,8 @@ public:
     void uninitialize(TreeWidget* tree);
 
 private slots:
-    void restoreView(BufferView* view);
-    void saveView(BufferView *view);
-
-    void onBufferAdded(IrcBuffer* buffer);
-    void onBufferChanged(IrcBuffer* buffer);
-
-    void onSplitterMoved();
+    void resetCurrent();
+    void restoreBuffer(IrcBuffer* buffer);
 
 private:
     QVariantMap saveSplittedViews(QSplitter* splitter) const;
