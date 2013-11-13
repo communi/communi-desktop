@@ -16,6 +16,7 @@
 #define STATEPLUGIN_H
 
 #include <QtPlugin>
+#include <QVariant>
 #include <QSplitter>
 #include "windowplugin.h"
 #include "splitviewplugin.h"
