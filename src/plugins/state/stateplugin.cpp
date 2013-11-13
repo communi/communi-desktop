@@ -69,7 +69,7 @@ void StatePlugin::initialize(SplitView* view)
         if (settings.contains("main"))
             splitter->restoreState(settings.value("main").toByteArray());
         if (settings.contains("views"))
-            restoreSplits(settings.value("views").toList());
+            restoreSplittedViews(d.view, settings.value("views").toMap());
     } else {
         qWarning() << "StatePlugin: cannot restore ChatPage splitter state";
     }
@@ -85,7 +85,7 @@ void StatePlugin::uninitialize(SplitView* view)
         QSettings settings;
         settings.beginGroup("States/splitter");
         settings.setValue("main", splitter->saveState());
-        settings.setValue("views", saveSplits(d.view));
+        settings.setValue("views", saveSplittedViews(d.view));
     } else {
         qWarning() << "StatePlugin: cannot save ChatPage splitter state";
     }
@@ -191,45 +191,55 @@ void StatePlugin::onSplitterMoved()
     }
 }
 
-static QVariant splitterState(QSplitter* splitter)
+QVariantMap StatePlugin::saveSplittedViews(QSplitter* splitter) const
 {
     QVariantMap state;
     state.insert("count", splitter->count());
+    if (QSplitter* parent = qobject_cast<QSplitter*>(splitter->parentWidget()))
+        state.insert("index", parent->indexOf(splitter));
     state.insert("state", splitter->saveState());
     state.insert("geometry", splitter->saveGeometry());
     state.insert("orientation", splitter->orientation());
-    return state;
-}
-
-QVariantList StatePlugin::saveSplits(QSplitter* splitter)
-{
-    QVariantList states;
-    states += splitterState(splitter);
+    QVariantList children;
     for (int i = 0; i < splitter->count(); ++i) {
         QSplitter* child = qobject_cast<QSplitter*>(splitter->widget(i));
         if (child)
-            states += saveSplits(child);
+            children += saveSplittedViews(child);
     }
-    return states;
+    state.insert("children", children);
+    return state;
 }
 
-void StatePlugin::restoreSplits(const QVariantList& states)
+void StatePlugin::restoreSplittedViews(QSplitter* splitter, const QVariantMap& state, SplitView* view)
 {
-    foreach (const QVariant& v, states) {
-        QVariantMap state = v.toMap();
-        int count = state.value("count").toInt();
-        if (count > 1) {
-            BufferView* view = d.view->views().last();
-            Qt::Orientation orientation = static_cast<Qt::Orientation>(state.value("orientation").toInt());
-            for (int i = 1; i < count; ++i)
-                d.view->split(view, orientation);
-            QSplitter* splitter = qobject_cast<QSplitter*>(view->parentWidget());
-            if (splitter) {
-                splitter->restoreGeometry(state.value("geometry").toByteArray());
-                splitter->restoreState(state.value("state").toByteArray());
+    if (!view)
+        view = d.view;
+
+    int count = state.value("count", -1).toInt();
+    if (count > 1) {
+        BufferView* bv = qobject_cast<BufferView*>(splitter->widget(0));
+        Qt::Orientation orientation = static_cast<Qt::Orientation>(state.value("orientation").toInt());
+        for (int i = 1; i < count; ++i)
+            view->split(bv, orientation);
+
+        QVariantList children = state.value("children").toList();
+        foreach (const QVariant& v, children) {
+            QVariantMap child = v.toMap();
+            int index = child.value("index", -1).toInt();
+            Qt::Orientation ori = static_cast<Qt::Orientation>(child.value("orientation").toInt());
+            BufferView* bv = qobject_cast<BufferView*>(splitter->widget(index));
+            if (bv) {
+                QSplitter* parent = view->wrap(bv, ori);
+                if (parent)
+                    restoreSplittedViews(parent, child, view);
             }
         }
     }
+
+    if (state.contains("geometry"))
+        splitter->restoreGeometry(state.value("geometry").toByteArray());
+    if (state.contains("state"))
+        splitter->restoreState(state.value("state").toByteArray());
 }
 
 #if QT_VERSION < 0x050000

@@ -57,8 +57,8 @@ private slots:
     void onSplitterMoved();
 
 private:
-    static QVariantList saveSplits(QSplitter* splitter);
-    void restoreSplits(const QVariantList& states);
+    QVariantMap saveSplittedViews(QSplitter* splitter) const;
+    void restoreSplittedViews(QSplitter* splitter, const QVariantMap& state, SplitView* view = 0);
 
     struct Private {
         int index;
