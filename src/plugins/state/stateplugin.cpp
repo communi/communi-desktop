@@ -110,10 +110,9 @@ void StatePlugin::initialize(TreeWidget* tree)
     d.current = settings.value("current").toString();
     d.parent = settings.value("parent").toString();
     d.index = settings.value("index", -1).toInt();
-    if (!d.current.isEmpty() && d.index != -1) {
-        connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
+    if (!d.current.isEmpty() && d.index != -1)
         connect(tree, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(onBufferChanged(IrcBuffer*)));
-    }
+    connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
 }
 
 void StatePlugin::uninitialize(TreeWidget* tree)
@@ -161,13 +160,17 @@ void StatePlugin::saveView(BufferView* view)
 
 void StatePlugin::onBufferAdded(IrcBuffer* buffer)
 {
-    if (buffer->title() == d.current) {
+    if (!d.current.isEmpty() && buffer->title() == d.current) {
         TreeItem* item = d.tree->bufferItem(buffer);
         if (item) {
             TreeItem* parent = item->parentItem();
             if ((!parent && d.parent.isEmpty()) || (parent && parent->text(0) == d.parent)) {
-                if (d.index == d.tree->indexOfTopLevelItem(parent ? parent : item))
+                if (d.index == d.tree->indexOfTopLevelItem(parent ? parent : item)) {
                     d.tree->setCurrentBuffer(buffer);
+                    d.current.clear();
+                    d.parent.clear();
+                    d.index = -1;
+                }
             }
         }
     }
@@ -175,7 +178,9 @@ void StatePlugin::onBufferAdded(IrcBuffer* buffer)
 
 void StatePlugin::onBufferChanged(IrcBuffer* buffer)
 {
-    disconnect(d.tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
+    d.index = -1;
+    d.parent.clear();
+    d.current.clear();
     disconnect(d.tree, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(onBufferChanged(IrcBuffer*)));
     if (d.view->currentBuffer() == buffer)
         restoreView(d.view->currentView());
