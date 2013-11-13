@@ -62,7 +62,3 @@ bool CommandVerifier::commandFilter(IrcCommand* command)
     }
     return false;
 }
-
-#if QT_VERSION < 0x050000
-Q_EXPORT_STATIC_PLUGIN(VerifierPlugin)
-#endif
