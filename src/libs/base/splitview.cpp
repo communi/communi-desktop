@@ -81,14 +81,12 @@ void SplitView::split(BufferView* view, Qt::Orientation orientation)
                 container->setSizes(sizes);
             } else if (index != -1) {
                 QList<int> sizes = container->sizes();
-                QSplitter* splitter = new QSplitter(orientation, container);
-                container->insertWidget(index, splitter);
-                container->setCollapsible(index, false);
-                splitter->addWidget(view);
-                splitter->setCollapsible(0, false);
-                container->setSizes(sizes);
-                bv = createBufferView(splitter);
-                splitter->setSizes(QList<int>() << size/2 << size/2);
+                QSplitter* splitter = wrap(view, orientation);
+                if (splitter) {
+                    container->setSizes(sizes);
+                    bv = createBufferView(splitter);
+                    splitter->setSizes(QList<int>() << size/2 << size/2);
+                }
             }
             if (bv) {
                 bv->setBuffer(view->buffer());
@@ -96,6 +94,21 @@ void SplitView::split(BufferView* view, Qt::Orientation orientation)
             }
         }
     }
+}
+
+QSplitter* SplitView::wrap(BufferView* view, Qt::Orientation orientation)
+{
+    QSplitter* container = qobject_cast<QSplitter*>(view->parentWidget());
+    if (container) {
+        int index = container->indexOf(view);
+        QSplitter* splitter = new QSplitter(orientation, container);
+        container->insertWidget(index, splitter);
+        container->setCollapsible(index, false);
+        splitter->addWidget(view);
+        splitter->setCollapsible(0, false);
+        return splitter;
+    }
+    return 0;
 }
 
 BufferView* SplitView::createBufferView(QSplitter* splitter, int index)

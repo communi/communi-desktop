@@ -34,6 +34,7 @@ public slots:
     void reset();
     void split(Qt::Orientation orientation);
     void split(BufferView* view, Qt::Orientation orientation = Qt::Vertical);
+    QSplitter* wrap(BufferView* view, Qt::Orientation orientation = Qt::Vertical);
 
 signals:
     void viewAdded(BufferView* view);
