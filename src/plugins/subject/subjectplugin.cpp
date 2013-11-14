@@ -14,6 +14,7 @@
 
 #include "subjectplugin.h"
 #include "bufferview.h"
+#include "titlebar.h"
 #include "editor.h"
 
 SubjectPlugin::SubjectPlugin(QObject* parent) : QObject(parent)
@@ -22,7 +23,7 @@ SubjectPlugin::SubjectPlugin(QObject* parent) : QObject(parent)
 
 void SubjectPlugin::initialize(BufferView* view)
 {
-    new Editor(view->topicLabel());
+    new Editor(view->titleBar());
 }
 
 #if QT_VERSION < 0x050000

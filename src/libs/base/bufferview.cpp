@@ -10,9 +10,9 @@
 #include "bufferview.h"
 #include "textdocument.h"
 #include "textbrowser.h"
-#include "topiclabel.h"
 #include "textinput.h"
 #include "listview.h"
+#include "titlebar.h"
 #include <IrcBufferModel>
 #include <QApplication>
 #include <QVBoxLayout>
@@ -21,9 +21,9 @@
 
 BufferView::BufferView(QWidget* parent) : QWidget(parent)
 {
+    d.titleBar = new TitleBar(this);
     d.listView = new ListView(this);
     d.textInput = new TextInput(this);
-    d.topicLabel = new TopicLabel(this);
     d.textBrowser = new TextBrowser(this);
     d.textBrowser->setBuddy(d.textInput);
 
@@ -33,9 +33,10 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setSpacing(0);
     layout->setMargin(0);
-    layout->addWidget(d.topicLabel);
+    layout->addWidget(d.titleBar);
     layout->addWidget(d.splitter);
     layout->addWidget(d.textInput);
+    layout->setStretchFactor(d.splitter, 1);
 
     d.splitter->addWidget(d.textBrowser);
     d.splitter->addWidget(d.listView);
@@ -65,9 +66,9 @@ TextInput* BufferView::textInput() const
     return d.textInput;
 }
 
-TopicLabel* BufferView::topicLabel() const
+TitleBar* BufferView::titleBar() const
 {
-    return d.topicLabel;
+    return d.titleBar;
 }
 
 TextBrowser* BufferView::textBrowser() const
@@ -81,11 +82,10 @@ void BufferView::setBuffer(IrcBuffer* buffer)
         d.buffer = buffer;
 
         IrcChannel* channel = qobject_cast<IrcChannel*>(buffer);
-        d.topicLabel->setChannel(channel);
-        d.topicLabel->setVisible(channel);
         d.listView->setChannel(channel);
         d.listView->setVisible(channel);
 
+        d.titleBar->setBuffer(buffer);
         d.textInput->setBuffer(buffer);
         if (buffer) {
             QWidget* focus = qApp->focusWidget();

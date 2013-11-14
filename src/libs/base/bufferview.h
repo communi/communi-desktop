@@ -12,10 +12,10 @@
 
 #include <QSplitter>
 
+class TitleBar;
 class ListView;
 class IrcBuffer;
 class TextInput;
-class TopicLabel;
 class TextBrowser;
 
 class BufferView : public QWidget
@@ -29,9 +29,9 @@ public:
 
     IrcBuffer* buffer() const;
 
+    TitleBar* titleBar() const;
     ListView* listView() const;
     TextInput* textInput() const;
-    TopicLabel* topicLabel() const;
     TextBrowser* textBrowser() const;
 
 public slots:
@@ -47,9 +47,9 @@ private slots:
 private:
     struct Private {
         IrcBuffer* buffer;
+        TitleBar* titleBar;
         ListView* listView;
         TextInput* textInput;
-        TopicLabel* topicLabel;
         TextBrowser* textBrowser;
         QSplitter* splitter;
     } d;

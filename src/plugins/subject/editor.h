@@ -15,16 +15,17 @@
 #ifndef EDITOR_H
 #define EDITOR_H
 
+#include <QLabel>
 #include <QTextEdit>
 
-class TopicLabel;
+class TitleBar;
 
 class Editor : public QTextEdit
 {
     Q_OBJECT
 
 public:
-    Editor(TopicLabel* parent = 0);
+    Editor(TitleBar* parent = 0);
 
     bool eventFilter(QObject* object, QEvent* event);
 
@@ -36,7 +37,8 @@ protected:
 
 private:
     struct Private {
-        TopicLabel* label;
+        TitleBar* bar;
+        QLabel* label;
     } d;
 };
 

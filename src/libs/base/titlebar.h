@@ -12,39 +12,44 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TOPICLABEL_H
-#define TOPICLABEL_H
+#ifndef TITLEBAR_H
+#define TITLEBAR_H
 
 #include <QLabel>
 
-class IrcChannel;
+class IrcBuffer;
 class MessageFormatter;
 
-class TopicLabel : public QLabel
+class TitleBar : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit TopicLabel(QWidget* parent = 0);
+    explicit TitleBar(QWidget* parent = 0);
 
-    IrcChannel* channel() const;
+    IrcBuffer* buffer() const;
 
 public slots:
-    void setChannel(IrcChannel* channel);
+    void setBuffer(IrcBuffer* buffer);
     void sendTopic(const QString& topic);
 
 signals:
-    void channelChanged(IrcChannel* channel);
+    void bufferChanged(IrcBuffer* buffer);
+
+protected:
+    void paintEvent(QPaintEvent* event);
 
 private slots:
     void cleanup();
-    void updateTopic();
+    void refresh();
 
 private:
     struct Private {
-        IrcChannel* channel;
+        QLabel* titleLabel;
+        QLabel* topicLabel;
+        IrcBuffer* buffer;
         MessageFormatter* formatter;
     } d;
 };
 
-#endif // TOPICLABEL_H
+#endif // TITLEBAR_H

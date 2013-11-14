@@ -19,7 +19,7 @@
 #include "textdocument.h"
 #include "textinput.h"
 #include "listview.h"
-#include "topiclabel.h"
+#include "titlebar.h"
 #include "treewidget.h"
 #include "bufferview.h"
 #include "window.h"
@@ -64,21 +64,22 @@ void StylePlugin::initialize(BufferView* view)
         "    selection-background-color: palette(highlight);"
         "}");
 
-    QTextDocument* doc = view->topicLabel()->findChild<QTextDocument*>();
+    QLabel* label = view->titleBar()->findChild<QLabel*>("topic");
+    QTextDocument* doc = label->findChild<QTextDocument*>();
     if (doc)
         doc->setDefaultStyleSheet("a { color: #4040ff }");
 
-    view->topicLabel()->setMinimumHeight(baseHeight());
+    view->titleBar()->setMinimumHeight(baseHeight());
 
-    view->topicLabel()->setStyleSheet(
-        "TopicLabel {"
+    view->titleBar()->setStyleSheet(
+        "TitleBar {"
         "    border: 1px solid transparent;"
         "    border-bottom-color: palette(dark);"
         "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
         "                                stop: 0.0 palette(light),"
         "                                stop: 1.0 palette(button));"
         "}"
-        "TopicLabel > QTextEdit {"
+        "TitleBar > QTextEdit {"
         "    border: 1px solid transparent;"
         "    border-bottom-color: palette(dark);"
         "    selection-color: palette(highlighted-text);"

@@ -13,15 +13,17 @@
 */
 
 #include "editor.h"
-#include "topiclabel.h"
+#include "titlebar.h"
 #include <QTextDocument>
 #include <QTextBlock>
 #include <QKeyEvent>
 
-Editor::Editor(TopicLabel* label) : QTextEdit(label)
+Editor::Editor(TitleBar* bar) : QTextEdit(bar)
 {
-    d.label = label;
-    label->installEventFilter(this);
+    d.bar = bar;
+    d.label = bar->findChild<QLabel*>("topic");
+    d.label->installEventFilter(this);
+    setParent(d.label);
 
     setVisible(false);
     setAcceptRichText(false);
@@ -69,7 +71,7 @@ bool Editor::event(QEvent* event)
     case QEvent::KeyPress: {
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
         if (keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return) {
-            d.label->sendTopic(toPlainText());
+            d.bar->sendTopic(toPlainText());
             hide();
         } else if (keyEvent->key() == Qt::Key_Escape) {
             hide();
