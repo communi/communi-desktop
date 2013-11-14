@@ -40,9 +40,9 @@ TitleBar::TitleBar(QWidget* parent) : QWidget(parent)
     d.topicLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Maximum);
 
     QHBoxLayout* layout = new QHBoxLayout(this);
-    layout->addSpacing(4);
+    layout->addSpacing(3);
     layout->addWidget(d.titleLabel);
-    layout->addSpacing(4);
+    layout->addSpacing(3);
     layout->addWidget(d.topicLabel);
     layout->setMargin(2);
 
