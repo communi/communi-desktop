@@ -15,9 +15,9 @@
 #ifndef TREEDELEGATE_H
 #define TREEDELEGATE_H
 
-#include "itemdelegate.h"
+#include <QStyledItemDelegate>
 
-class TreeDelegate : public ItemDelegate
+class TreeDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 

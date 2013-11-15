@@ -14,7 +14,6 @@
 
 #include "styleplugin.h"
 #include "treedelegate.h"
-#include "itemdelegate.h"
 #include "textbrowser.h"
 #include "textdocument.h"
 #include "textinput.h"
@@ -23,14 +22,6 @@
 #include "treewidget.h"
 #include "bufferview.h"
 #include "window.h"
-
-static int baseHeight()
-{
-    // TODO:
-    QLineEdit lineEdit;
-    lineEdit.setStyleSheet("QLineEdit { border: 1px solid transparent; }");
-    return lineEdit.sizeHint().height();
-}
 
 StylePlugin::StylePlugin(QObject* parent) : QObject(parent)
 {
@@ -53,15 +44,14 @@ void StylePlugin::initialize(BufferView* view)
         "    border-top-color: palette(dark);"
         "}");
 
-    ItemDelegate* delegate = new ItemDelegate(view->listView());
-    delegate->setItemHeight(baseHeight());
-    view->listView()->setItemDelegate(delegate);
-
     view->listView()->setStyleSheet(
         "ListView {"
         "    border: none;"
         "    background: palette(alternate-base);"
         "    selection-background-color: palette(highlight);"
+        "}"
+        "ListView::item {"
+        "   height: 20px;"
         "}");
 
     QLabel* label = view->titleBar()->findChild<QLabel*>("title");
@@ -69,10 +59,9 @@ void StylePlugin::initialize(BufferView* view)
     if (doc)
         doc->setDefaultStyleSheet("a { color: #4040ff }");
 
-    view->titleBar()->setMinimumHeight(baseHeight());
-
     view->titleBar()->setStyleSheet(
         "TitleBar {"
+        "    min-height: 20px;"
         "    border: 1px solid transparent;"
         "    border-bottom-color: palette(dark);"
         "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
@@ -101,7 +90,6 @@ void StylePlugin::initialize(TextDocument* doc)
 void StylePlugin::initialize(TreeWidget* tree)
 {
     TreeDelegate* delegate = new TreeDelegate(tree);
-    delegate->setItemHeight(baseHeight());
     tree->setItemDelegate(delegate);
 
     tree->setStyleSheet(
@@ -109,6 +97,9 @@ void StylePlugin::initialize(TreeWidget* tree)
         "    border: none;"
         "    background: palette(alternate-base);"
         "    selection-background-color: palette(highlight);"
+        "}"
+        "TreeWidget::item {"
+        "    height: 20px;"
         "}");
 }
 

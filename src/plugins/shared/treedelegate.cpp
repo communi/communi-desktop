@@ -18,7 +18,7 @@
 #include <QPalette>
 #include <QPainter>
 
-TreeDelegate::TreeDelegate(QObject* parent) : ItemDelegate(parent)
+TreeDelegate::TreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
 {
 }
 
@@ -48,5 +48,5 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         painter->setPen(oldPen);
     }
 
-    ItemDelegate::paint(painter, option, index);
+    QStyledItemDelegate::paint(painter, option, index);
 }
