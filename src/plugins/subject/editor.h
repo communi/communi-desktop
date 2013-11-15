@@ -15,7 +15,6 @@
 #ifndef EDITOR_H
 #define EDITOR_H
 
-#include <QLabel>
 #include <QTextEdit>
 
 class TitleBar;
@@ -38,7 +37,6 @@ protected:
 private:
     struct Private {
         TitleBar* bar;
-        QLabel* label;
     } d;
 };
 

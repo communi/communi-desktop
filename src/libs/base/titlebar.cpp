@@ -26,24 +26,16 @@ TitleBar::TitleBar(QWidget* parent) : QWidget(parent)
     d.buffer = 0;
     d.formatter = new MessageFormatter(this);
 
-    d.titleLabel = new QLabel(this);
-    d.titleLabel->setObjectName("title");
-    d.titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    d.titleLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Ignored);
-
-    d.topicLabel = new QLabel(this);
-    d.topicLabel->setWordWrap(true);
-    d.topicLabel->setObjectName("topic");
-    d.topicLabel->setOpenExternalLinks(true);
-    d.topicLabel->setTextFormat(Qt::RichText);
-    d.topicLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    d.topicLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Maximum);
+    d.label = new QLabel(this);
+    d.label->setWordWrap(true);
+    d.label->setObjectName("title");
+    d.label->setOpenExternalLinks(true);
+    d.label->setTextFormat(Qt::RichText);
+    d.label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
     QHBoxLayout* layout = new QHBoxLayout(this);
     layout->addSpacing(3);
-    layout->addWidget(d.titleLabel);
-    layout->addSpacing(3);
-    layout->addWidget(d.topicLabel);
+    layout->addWidget(d.label);
     layout->setMargin(2);
 
     refresh();
@@ -84,11 +76,21 @@ void TitleBar::setBuffer(IrcBuffer* buffer)
     }
 }
 
-void TitleBar::sendTopic(const QString& topic)
+QString TitleBar::topic() const
 {
     IrcChannel* channel = qobject_cast<IrcChannel*>(d.buffer);
     if (channel)
-        channel->sendCommand(IrcCommand::createTopic(channel->title(), topic));
+        return channel->topic();
+    return QString();
+}
+
+void TitleBar::setTopic(const QString& topic)
+{
+    IrcChannel* channel = qobject_cast<IrcChannel*>(d.buffer);
+    if (channel) {
+        if (channel->topic() != topic)
+            channel->sendCommand(IrcCommand::createTopic(channel->title(), topic));
+    }
 }
 
 void TitleBar::paintEvent(QPaintEvent* event)
@@ -108,10 +110,10 @@ void TitleBar::cleanup()
 
 void TitleBar::refresh()
 {
-    d.titleLabel->setText(d.buffer ? d.buffer->title() : QString());
+    QString title = d.buffer ? d.buffer->title() : QString();
     IrcChannel* channel = qobject_cast<IrcChannel*>(d.buffer);
-    if (channel)
-        d.topicLabel->setText(d.formatter->formatHtml(channel->topic().isEmpty() ? tr("-") : channel->topic()));
-    else
-        d.topicLabel->clear();
+    QString topic = channel ? channel->topic() : QString();
+    if (!topic.isEmpty())
+        title = tr("%1: %2").arg(title, d.formatter->formatHtml(topic));
+    d.label->setText(title);
 }

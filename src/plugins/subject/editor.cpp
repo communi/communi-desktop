@@ -16,36 +16,41 @@
 #include "titlebar.h"
 #include <QTextDocument>
 #include <QTextBlock>
+#include <IrcChannel>
 #include <QKeyEvent>
 
 Editor::Editor(TitleBar* bar) : QTextEdit(bar)
 {
     d.bar = bar;
-    d.label = bar->findChild<QLabel*>("topic");
-    d.label->installEventFilter(this);
-    setParent(d.label);
+    QLabel* label = bar->findChild<QLabel*>("title");
+    if (label)
+        label->installEventFilter(this);
 
     setVisible(false);
     setAcceptRichText(false);
     setTabChangesFocus(true);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    // keep the text visually in place...
-    document()->setIndentWidth(3);
-    document()->setDocumentMargin(1);
-    QTextCursor cursor(document());
-    QTextBlockFormat format = cursor.blockFormat();
-    format.setIndent(1);
-    cursor.setBlockFormat(format);
 }
 
 void Editor::edit()
 {
-    setPlainText(d.label->findChild<QTextDocument*>()->toPlainText());
-    resize(d.label->size()); // TODO: layout?
-    setFocus();
-    show();
+    IrcChannel* channel = qobject_cast<IrcChannel*>(d.bar->buffer());
+    if (channel) {
+        setPlainText(channel->topic());
+
+        // keep the text visually in place...
+        document()->setIndentWidth(3);
+        document()->setDocumentMargin(1);
+        QTextCursor cursor(document());
+        QTextBlockFormat format = cursor.blockFormat();
+        format.setIndent(1);
+        cursor.setBlockFormat(format);
+
+        resize(parentWidget()->size()); // TODO: layout?
+        setFocus();
+        show();
+    }
 }
 
 bool Editor::eventFilter(QObject* object, QEvent* event)
@@ -71,7 +76,7 @@ bool Editor::event(QEvent* event)
     case QEvent::KeyPress: {
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
         if (keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return) {
-            d.bar->sendTopic(toPlainText());
+            d.bar->setTopic(toPlainText());
             hide();
         } else if (keyEvent->key() == Qt::Key_Escape) {
             hide();

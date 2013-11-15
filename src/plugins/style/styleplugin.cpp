@@ -64,7 +64,7 @@ void StylePlugin::initialize(BufferView* view)
         "    selection-background-color: palette(highlight);"
         "}");
 
-    QLabel* label = view->titleBar()->findChild<QLabel*>("topic");
+    QLabel* label = view->titleBar()->findChild<QLabel*>("title");
     QTextDocument* doc = label->findChild<QTextDocument*>();
     if (doc)
         doc->setDefaultStyleSheet("a { color: #4040ff }");

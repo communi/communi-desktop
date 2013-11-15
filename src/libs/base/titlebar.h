@@ -28,10 +28,11 @@ public:
     explicit TitleBar(QWidget* parent = 0);
 
     IrcBuffer* buffer() const;
+    QString topic() const;
 
 public slots:
     void setBuffer(IrcBuffer* buffer);
-    void sendTopic(const QString& topic);
+    void setTopic(const QString& topic);
 
 signals:
     void bufferChanged(IrcBuffer* buffer);
@@ -45,8 +46,7 @@ private slots:
 
 private:
     struct Private {
-        QLabel* titleLabel;
-        QLabel* topicLabel;
+        QLabel* label;
         IrcBuffer* buffer;
         MessageFormatter* formatter;
     } d;
