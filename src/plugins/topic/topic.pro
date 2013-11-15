@@ -2,10 +2,10 @@
 # Communi
 ######################################################################
 
-HEADERS += $$PWD/editor.h
-HEADERS += $$PWD/subjectplugin.h
+HEADERS += $$PWD/topiceditor.h
+HEADERS += $$PWD/topicplugin.h
 
-SOURCES += $$PWD/editor.cpp
-SOURCES += $$PWD/subjectplugin.cpp
+SOURCES += $$PWD/topiceditor.cpp
+SOURCES += $$PWD/topicplugin.cpp
 
 include(../plugin.pri)

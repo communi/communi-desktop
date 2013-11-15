@@ -12,20 +12,19 @@
 * GNU General Public License for more details.
 */
 
-#include "subjectplugin.h"
+#include "topicplugin.h"
+#include "topiceditor.h"
 #include "bufferview.h"
-#include "titlebar.h"
-#include "editor.h"
 
-SubjectPlugin::SubjectPlugin(QObject* parent) : QObject(parent)
+TopicPlugin::TopicPlugin(QObject* parent) : QObject(parent)
 {
 }
 
-void SubjectPlugin::initialize(BufferView* view)
+void TopicPlugin::initialize(BufferView* view)
 {
-    new Editor(view->titleBar());
+    new TopicEditor(view->titleBar());
 }
 
 #if QT_VERSION < 0x050000
-Q_EXPORT_STATIC_PLUGIN(SubjectPlugin)
+Q_EXPORT_STATIC_PLUGIN(TopicPlugin)
 #endif

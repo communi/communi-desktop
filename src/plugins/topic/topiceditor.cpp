@@ -12,14 +12,14 @@
 * GNU General Public License for more details.
 */
 
-#include "editor.h"
+#include "topiceditor.h"
 #include "titlebar.h"
 #include <QTextDocument>
 #include <QTextBlock>
 #include <IrcChannel>
 #include <QKeyEvent>
 
-Editor::Editor(TitleBar* bar) : QTextEdit(bar)
+TopicEditor::TopicEditor(TitleBar* bar) : QTextEdit(bar)
 {
     d.bar = bar;
     QLabel* label = bar->findChild<QLabel*>("title");
@@ -33,7 +33,7 @@ Editor::Editor(TitleBar* bar) : QTextEdit(bar)
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
-void Editor::edit()
+void TopicEditor::edit()
 {
     IrcChannel* channel = qobject_cast<IrcChannel*>(d.bar->buffer());
     if (channel) {
@@ -53,7 +53,7 @@ void Editor::edit()
     }
 }
 
-bool Editor::eventFilter(QObject* object, QEvent* event)
+bool TopicEditor::eventFilter(QObject* object, QEvent* event)
 {
     Q_UNUSED(object);
     switch (event->type()) {
@@ -67,7 +67,7 @@ bool Editor::eventFilter(QObject* object, QEvent* event)
     return QTextEdit::eventFilter(object, event);
 }
 
-bool Editor::event(QEvent* event)
+bool TopicEditor::event(QEvent* event)
 {
     switch (event->type()) {
     case QEvent::FocusOut:

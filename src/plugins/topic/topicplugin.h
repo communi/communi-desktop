@@ -12,13 +12,13 @@
 * GNU General Public License for more details.
 */
 
-#ifndef SUBJECTPLUGIN_H
-#define SUBJECTPLUGIN_H
+#ifndef TOPICPLUGIN_H
+#define TOPICPLUGIN_H
 
 #include <QtPlugin>
 #include "bufferviewplugin.h"
 
-class SubjectPlugin : public QObject, public BufferViewPlugin
+class TopicPlugin : public QObject, public BufferViewPlugin
 {
     Q_OBJECT
     Q_INTERFACES(BufferViewPlugin)
@@ -27,9 +27,9 @@ class SubjectPlugin : public QObject, public BufferViewPlugin
 #endif
 
 public:
-    SubjectPlugin(QObject* parent = 0);
+    TopicPlugin(QObject* parent = 0);
 
     void initialize(BufferView* view);
 };
 
-#endif // SUBJECTPLUGIN_H
+#endif // TOPICPLUGIN_H

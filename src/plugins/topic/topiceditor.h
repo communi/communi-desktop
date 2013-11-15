@@ -12,19 +12,19 @@
 * GNU General Public License for more details.
 */
 
-#ifndef EDITOR_H
-#define EDITOR_H
+#ifndef TOPICEDITOR_H
+#define TOPICEDITOR_H
 
 #include <QTextEdit>
 
 class TitleBar;
 
-class Editor : public QTextEdit
+class TopicEditor : public QTextEdit
 {
     Q_OBJECT
 
 public:
-    Editor(TitleBar* parent = 0);
+    TopicEditor(TitleBar* parent = 0);
 
     bool eventFilter(QObject* object, QEvent* event);
 
@@ -40,4 +40,4 @@ private:
     } d;
 };
 
-#endif // EDITOR_H
+#endif // TOPICEDITOR_H
