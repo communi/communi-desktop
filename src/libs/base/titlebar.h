@@ -20,7 +20,7 @@
 class IrcBuffer;
 class MessageFormatter;
 
-class TitleBar : public QWidget
+class TitleBar : public QLabel
 {
     Q_OBJECT
 
@@ -37,16 +37,12 @@ public slots:
 signals:
     void bufferChanged(IrcBuffer* buffer);
 
-protected:
-    void paintEvent(QPaintEvent* event);
-
 private slots:
     void cleanup();
     void refresh();
 
 private:
     struct Private {
-        QLabel* label;
         IrcBuffer* buffer;
         MessageFormatter* formatter;
     } d;

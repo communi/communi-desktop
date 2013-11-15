@@ -22,9 +22,7 @@
 TopicEditor::TopicEditor(TitleBar* bar) : QTextEdit(bar)
 {
     d.bar = bar;
-    QLabel* label = bar->findChild<QLabel*>("title");
-    if (label)
-        label->installEventFilter(this);
+    bar->installEventFilter(this);
 
     setVisible(false);
     setAcceptRichText(false);

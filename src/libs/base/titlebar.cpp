@@ -15,30 +15,17 @@
 #include "titlebar.h"
 #include "messageformatter.h"
 #include <IrcTextFormat>
-#include <QStylePainter>
-#include <QStyleOption>
-#include <QHBoxLayout>
 #include <IrcCommand>
 #include <IrcChannel>
 
-TitleBar::TitleBar(QWidget* parent) : QWidget(parent)
+TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
 {
     d.buffer = 0;
     d.formatter = new MessageFormatter(this);
 
-    d.label = new QLabel(this);
-    d.label->setWordWrap(true);
-    d.label->setObjectName("title");
-    d.label->setOpenExternalLinks(true);
-    d.label->setTextFormat(Qt::RichText);
-    d.label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-
-    QHBoxLayout* layout = new QHBoxLayout(this);
-    layout->addSpacing(3);
-    layout->addWidget(d.label);
-    layout->setMargin(2);
-
-    refresh();
+    setWordWrap(true);
+    setOpenExternalLinks(true);
+    setTextFormat(Qt::RichText);
 }
 
 IrcBuffer* TitleBar::buffer() const
@@ -93,15 +80,6 @@ void TitleBar::setTopic(const QString& topic)
     }
 }
 
-void TitleBar::paintEvent(QPaintEvent* event)
-{
-    Q_UNUSED(event);
-    QStylePainter painter(this);
-    QStyleOption option;
-    option.init(this);
-    painter.drawPrimitive(QStyle::PE_Widget, option);
-}
-
 void TitleBar::cleanup()
 {
     d.buffer = 0;
@@ -115,5 +93,5 @@ void TitleBar::refresh()
     QString topic = channel ? channel->topic() : QString();
     if (!topic.isEmpty())
         title = tr("%1: %2").arg(title, d.formatter->formatHtml(topic));
-    d.label->setText(title);
+    setText(title);
 }
