@@ -60,6 +60,7 @@ TextDocument* TextDocument::clone()
         flushLines();
 
     TextDocument* doc = new TextDocument(d.buffer);
+    doc->setDefaultStyleSheet(defaultStyleSheet());
     QTextCursor(doc).insertFragment(QTextDocumentFragment(this));
     doc->rootFrame()->setFrameFormat(rootFrame()->frameFormat());
 
