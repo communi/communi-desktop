@@ -146,6 +146,12 @@ void StylePlugin::initialize(Window* window)
         "}"
         "Finder > QToolButton {"
             "border-left-color: transparent;"
+        "}"
+        "Finder > QToolButton#prev {"
+            "image: url(:/images/up.png)"
+        "}"
+        "Finder > QToolButton#next {"
+            "image: url(:/images/down.png)"
         "}");
 }
 

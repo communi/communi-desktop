@@ -25,15 +25,11 @@
 #include <QApplication>
 #include <QTimer>
 
-inline void initResource() { Q_INIT_RESOURCE(finder); }
-
 FinderPlugin::FinderPlugin(QObject* parent) : QObject(parent)
 {
     d.view = 0;
     d.nextShortcut = 0;
     d.prevShortcut = 0;
-
-    initResource();
 }
 
 void FinderPlugin::initialize(SplitView* view)

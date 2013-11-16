@@ -34,13 +34,11 @@ Finder::Finder(QWidget* parent) : QWidget(parent)
 
     d.prevButton = new QToolButton(this);
     d.prevButton->setObjectName("prev");
-    d.prevButton->setIcon(QIcon(":/icons/prev.png"));
     d.prevButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
     connect(d.prevButton, SIGNAL(clicked()), this, SLOT(findPrevious()));
 
     d.nextButton = new QToolButton(this);
     d.nextButton->setObjectName("next");
-    d.nextButton->setIcon(QIcon(":/icons/next.png"));
     d.nextButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
     connect(d.nextButton, SIGNAL(clicked()), this, SLOT(findNext()));
 

@@ -14,6 +14,4 @@ SOURCES += $$PWD/finderplugin.cpp
 SOURCES += $$PWD/listfinder.cpp
 SOURCES += $$PWD/treefinder.cpp
 
-RESOURCES += finder.qrc
-
 include(../plugin.pri)
