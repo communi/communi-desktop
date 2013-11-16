@@ -13,6 +13,7 @@
 */
 
 #include "menuplugin.h"
+#include "titlemenu.h"
 #include "treemenu.h"
 #include "listmenu.h"
 #include "browsermenu.h"
@@ -31,7 +32,8 @@ void MenuPlugin::initialize(TreeWidget* tree)
 void MenuPlugin::initialize(BufferView* view)
 {
     new ListMenu(view->listView());
-    new BrowserMenu(view->textBrowser(), d.view);
+    new BrowserMenu(view->textBrowser());
+    new TitleMenu(view->titleBar(), d.view);
 }
 
 void MenuPlugin::initialize(SplitView *view)

@@ -14,29 +14,13 @@
 
 #include "browsermenu.h"
 #include "textbrowser.h"
-#include "bufferview.h"
-#include "splitview.h"
 #include <QContextMenuEvent>
+#include <QMenu>
 
-BrowserMenu::BrowserMenu(TextBrowser* browser, SplitView* view) : QMenu(browser)
+BrowserMenu::BrowserMenu(TextBrowser* browser) : QObject(browser)
 {
-    d.view = view;
     d.browser = browser;
     browser->viewport()->installEventFilter(this);
-
-    connect(d.view, SIGNAL(viewAdded(BufferView*)), this, SLOT(updateActions()));
-    connect(d.view, SIGNAL(viewRemoved(BufferView*)), this, SLOT(updateActions()));
-
-    d.splitVAction = new QAction(tr("Split"), browser);
-    connect(d.splitVAction, SIGNAL(triggered()), this, SLOT(splitVertical()));
-
-    d.splitHAction = new QAction(tr("Split side by side"), browser);
-    connect(d.splitHAction, SIGNAL(triggered()), this, SLOT(splitHorizontal()));
-
-    d.unsplitAction = new QAction(tr("Unsplit"), browser);
-    connect(d.unsplitAction, SIGNAL(triggered()), this, SLOT(unsplit()));
-
-    updateActions();
 }
 
 bool BrowserMenu::eventFilter(QObject *object, QEvent *event)
@@ -51,40 +35,9 @@ bool BrowserMenu::eventFilter(QObject *object, QEvent *event)
             d.browser->setTextCursor(cursor);
         }
         QMenu* menu = d.browser->createStandardContextMenu(cme->pos());
-        menu->addSeparator();
-        menu->addAction(d.splitVAction);
-        menu->addAction(d.splitHAction);
-        menu->addAction(d.unsplitAction);
         menu->exec(cme->globalPos());
-        delete menu;
+        menu->deleteLater();
         return true;
     }
     return false;
-}
-
-void BrowserMenu::updateActions()
-{
-    d.unsplitAction->setEnabled(d.view->views().count() > 1);
-}
-
-void BrowserMenu::splitVertical()
-{
-    d.view->split(Qt::Vertical);
-}
-
-void BrowserMenu::splitHorizontal()
-{
-    d.view->split(Qt::Horizontal);
-}
-
-void BrowserMenu::unsplit()
-{
-    QWidget* parent = d.browser->parentWidget();
-    while (parent) {
-        if (qobject_cast<BufferView*>(parent)) {
-            parent->deleteLater();
-            break;
-        }
-        parent = parent->parentWidget();
-    }
 }

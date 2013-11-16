@@ -12,25 +12,34 @@
 * GNU General Public License for more details.
 */
 
-#ifndef BROWSERMENU_H
-#define BROWSERMENU_H
+#ifndef TITLEMENU_H
+#define TITLEMENU_H
 
-#include <QObject>
+#include <QAction>
 
-class TextBrowser;
+class TitleBar;
+class SplitView;
 
-class BrowserMenu : public QObject
+class TitleMenu : public QObject
 {
     Q_OBJECT
 
 public:
-    BrowserMenu(TextBrowser* browser);
+    TitleMenu(TitleBar* bar, SplitView* view);
 
-    bool eventFilter(QObject *object, QEvent *event);
+private slots:
+    void updateActions();
+    void splitVertical();
+    void splitHorizontal();
+    void unsplit();
 
 private:
     struct Private {
-        TextBrowser* browser;
+        QAction* splitVAction;
+        QAction* splitHAction;
+        QAction* unsplitAction;
+        SplitView* view;
+        TitleBar* bar;
     } d;
 };
 
