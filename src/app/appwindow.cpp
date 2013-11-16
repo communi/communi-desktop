@@ -9,21 +9,15 @@
 
 #include "appwindow.h"
 #include "connectpage.h"
-#include "sharedtimer.h"
 #include "chatpage.h"
-#include <QDesktopServices>
-#include <IrcBufferModel>
 #include <IrcConnection>
 #include <QApplication>
 #include <QCloseEvent>
 #include <QVBoxLayout>
 #include <QPushButton>
-#include <IrcChannel>
-#include <QSettings>
 #include <IrcBuffer>
 #include <QShortcut>
 #include <QTimer>
-#include <QDir>
 
 AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
 {
