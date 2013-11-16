@@ -36,6 +36,9 @@ public:
     void addConnection(IrcConnection* connection);
     void removeConnection(IrcConnection* connection);
 
+public slots:
+    void closeBuffer(IrcBuffer* buffer = 0);
+
 signals:
     void currentBufferChanged(IrcBuffer* buffer);
 

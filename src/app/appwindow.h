@@ -41,7 +41,6 @@ private slots:
     void doConnect();
     void onAccepted();
     void onRejected();
-    void closeBuffer(IrcBuffer* buffer = 0);
     void setCurrentBuffer(IrcBuffer* buffer);
     void editConnection(IrcConnection* connection);
 

@@ -72,7 +72,7 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
     connect(shortcut, SIGNAL(activated()), this, SLOT(doConnect()));
 
     shortcut = new QShortcut(QKeySequence::Close, this);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(closeBuffer()));
+    connect(shortcut, SIGNAL(activated()), d.chatPage, SLOT(closeBuffer()));
 
     d.chatPage->init();
     if (d.chatPage->connections().isEmpty())
@@ -152,21 +152,6 @@ void AppWindow::onRejected()
 {
     d.editedConnection = 0;
     d.stack->setCurrentWidget(d.chatPage);
-}
-
-void AppWindow::closeBuffer(IrcBuffer* buffer)
-{
-    if (!buffer)
-        buffer = d.chatPage->currentBuffer();
-
-    IrcChannel* channel = buffer->toChannel();
-    if (channel && channel->isActive()) {
-        QString reason = tr("%1 %2 - http://%3").arg(QCoreApplication::applicationName())
-                                                .arg(QCoreApplication::applicationVersion())
-                                                .arg(QCoreApplication::organizationDomain());
-        channel->part(reason);
-    }
-    buffer->deleteLater();
 }
 
 void AppWindow::setCurrentBuffer(IrcBuffer* buffer)

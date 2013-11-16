@@ -18,6 +18,7 @@
 #include <IrcCommandParser>
 #include <IrcBufferModel>
 #include <IrcConnection>
+#include <IrcChannel>
 #include <IrcBuffer>
 
 #include <QtPlugin>
@@ -52,6 +53,13 @@ Q_IMPORT_PLUGIN(TopicPlugin)
 Q_IMPORT_PLUGIN(TrayPlugin)
 Q_IMPORT_PLUGIN(VerifierPlugin)
 Q_IMPORT_PLUGIN(ZncPlugin)
+
+static QString applicationDescription()
+{
+    return ChatPage::tr("%1 %2 - http://%3").arg(QCoreApplication::applicationName())
+                                            .arg(QCoreApplication::applicationVersion())
+                                            .arg(QCoreApplication::organizationDomain());
+}
 
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 {
@@ -152,10 +160,7 @@ void ChatPage::removeConnection(IrcConnection* connection)
     d.connections.removeOne(connection);
 
     if (connection->isActive()) {
-        QString reason = tr("%1 %2 - http://%3").arg(QCoreApplication::applicationName())
-                                                .arg(QCoreApplication::applicationVersion())
-                                                .arg(QCoreApplication::organizationDomain());
-        connection->quit(reason);
+        connection->quit(applicationDescription());
         connection->close();
     }
     connection->deleteLater();
@@ -168,6 +173,17 @@ void ChatPage::removeConnection(IrcConnection* connection)
         if (connectionPlugin)
             connectionPlugin->uninitialize(connection);
     }
+}
+
+void ChatPage::closeBuffer(IrcBuffer* buffer)
+{
+    if (!buffer)
+        buffer = d.treeWidget->currentBuffer();
+
+    IrcChannel* channel = buffer->toChannel();
+    if (channel && channel->isActive())
+        channel->part(applicationDescription());
+    buffer->deleteLater();
 }
 
 void ChatPage::addBuffer(IrcBuffer* buffer)
