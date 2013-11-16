@@ -7,25 +7,25 @@
  * completely or partially.
  */
 
-#ifndef WINDOW_H
-#define WINDOW_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
 #include <QWidget>
 
 class IrcBuffer;
 class IrcConnection;
 
-class Window : public QWidget
+class MainWindow : public QWidget
 {
     Q_OBJECT
 
 public:
-    Window(QWidget* parent = 0);
-    ~Window();
+    MainWindow(QWidget* parent = 0);
+    ~MainWindow();
 
     virtual QList<IrcConnection*> connections() const = 0;
     virtual void addConnection(IrcConnection* connection) = 0;
     virtual void removeConnection(IrcConnection* connection) = 0;
 };
 
-#endif // WINDOW_H
+#endif // MAINWINDOW_H

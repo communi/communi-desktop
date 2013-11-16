@@ -14,7 +14,7 @@
 
 #include "trayplugin.h"
 #include "sharedtimer.h"
-#include "window.h"
+#include "mainwindow.h"
 #include <IrcConnection>
 #include <IrcMessage>
 #include <IrcBuffer>
@@ -46,7 +46,7 @@ void TrayPlugin::uninitialize(IrcConnection* connection)
     updateIcon();
 }
 
-void TrayPlugin::initialize(Window* window)
+void TrayPlugin::initialize(MainWindow* window)
 {
     d.window = window;
     window->installEventFilter(this);

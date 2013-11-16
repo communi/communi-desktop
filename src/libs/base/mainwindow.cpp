@@ -7,12 +7,12 @@
  * completely or partially.
  */
 
-#include "window.h"
+#include "mainwindow.h"
 
-Window::Window(QWidget* parent) : QWidget(parent)
+MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 {
 }
 
-Window::~Window()
+MainWindow::~MainWindow()
 {
 }

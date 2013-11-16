@@ -20,22 +20,22 @@
 #include "bufferviewplugin.h"
 #include "textdocumentplugin.h"
 #include "treewidgetplugin.h"
-#include "windowplugin.h"
+#include "mainwindowplugin.h"
 
 class QtDockTile;
 
 class StylePlugin : public QObject, public BufferViewPlugin,
                                     public TextDocumentPlugin,
                                     public TreeWidgetPlugin,
-                                    public WindowPlugin
+                                    public MainWindowPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(BufferViewPlugin TextDocumentPlugin TreeWidgetPlugin WindowPlugin)
+    Q_INTERFACES(BufferViewPlugin TextDocumentPlugin TreeWidgetPlugin MainWindowPlugin)
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.BufferViewPlugin")
     Q_PLUGIN_METADATA(IID "Communi.TextDocumentPlugin")
     Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.MainWindowPlugin")
 #endif
 
 public:
@@ -44,7 +44,7 @@ public:
     void initialize(BufferView* view);
     void initialize(TextDocument* doc);
     void initialize(TreeWidget* tree);
-    void initialize(Window* window);
+    void initialize(MainWindow* window);
 };
 
 #endif // STYLEPLUGIN_H

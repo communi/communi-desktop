@@ -21,7 +21,7 @@
 #include "titlebar.h"
 #include "treewidget.h"
 #include "bufferview.h"
-#include "window.h"
+#include "mainwindow.h"
 
 inline void initResource() { Q_INIT_RESOURCE(style); }
 
@@ -106,7 +106,7 @@ void StylePlugin::initialize(TreeWidget* tree)
         "}");
 }
 
-void StylePlugin::initialize(Window* window)
+void StylePlugin::initialize(MainWindow* window)
 {
     window->setStyleSheet(
         "QSplitter::handle {"

@@ -12,21 +12,21 @@
 * GNU General Public License for more details.
 */
 
-#ifndef WINDOWPLUGIN_H
-#define WINDOWPLUGIN_H
+#ifndef MAINWINDOWPLUGIN_H
+#define MAINWINDOWPLUGIN_H
 
 #include <QtPlugin>
 
-class Window;
+class MainWindow;
 
-class WindowPlugin
+class MainWindowPlugin
 {
 public:
-    virtual ~WindowPlugin() {}
-    virtual void initialize(Window*) {}
-    virtual void uninitialize(Window*) {}
+    virtual ~MainWindowPlugin() {}
+    virtual void initialize(MainWindow*) {}
+    virtual void uninitialize(MainWindow*) {}
 };
 
-Q_DECLARE_INTERFACE(WindowPlugin, "Communi.WindowPlugin")
+Q_DECLARE_INTERFACE(MainWindowPlugin, "Communi.MainWindowPlugin")
 
-#endif // WINDOWPLUGIN_H
+#endif // MAINWINDOWPLUGIN_H

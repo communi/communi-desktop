@@ -25,7 +25,7 @@
 #include <QTimer>
 #include <QDir>
 
-AppWindow::AppWindow(QWidget* parent) : Window(parent)
+AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
 {
     d.editedConnection = 0;
 

@@ -18,19 +18,19 @@
 #include <QtPlugin>
 #include <QVariant>
 #include <QSplitter>
-#include "windowplugin.h"
+#include "mainwindowplugin.h"
 #include "splitviewplugin.h"
 #include "treewidgetplugin.h"
 
 class IrcBuffer;
 class BufferView;
 
-class StatePlugin : public QObject, public WindowPlugin, public SplitViewPlugin, public TreeWidgetPlugin
+class StatePlugin : public QObject, public MainWindowPlugin, public SplitViewPlugin, public TreeWidgetPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(WindowPlugin SplitViewPlugin TreeWidgetPlugin)
+    Q_INTERFACES(MainWindowPlugin SplitViewPlugin TreeWidgetPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.MainWindowPlugin")
     Q_PLUGIN_METADATA(IID "Communi.SplitViewPlugin")
     Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
 #endif
@@ -38,8 +38,8 @@ class StatePlugin : public QObject, public WindowPlugin, public SplitViewPlugin,
 public:
     StatePlugin(QObject* parent = 0);
 
-    void initialize(Window* window);
-    void uninitialize(Window* window);
+    void initialize(MainWindow* window);
+    void uninitialize(MainWindow* window);
 
     void initialize(SplitView* view);
     void uninitialize(SplitView* view);

@@ -10,7 +10,7 @@
 #ifndef APPWINDOW_H
 #define APPWINDOW_H
 
-#include "window.h"
+#include "mainwindow.h"
 #include <QIcon>
 #include <QStackedWidget>
 
@@ -20,7 +20,7 @@ class IrcMessage;
 class ConnectPage;
 class IrcConnection;
 
-class AppWindow : public Window
+class AppWindow : public MainWindow
 {
     Q_OBJECT
 

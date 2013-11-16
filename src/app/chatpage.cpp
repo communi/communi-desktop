@@ -13,7 +13,7 @@
 #include "bufferview.h"
 #include "textinput.h"
 #include "splitview.h"
-#include "window.h"
+#include "mainwindow.h"
 #include <QCoreApplication>
 #include <IrcCommandParser>
 #include <IrcBufferModel>
@@ -28,7 +28,7 @@
 #include "splitviewplugin.h"
 #include "textdocumentplugin.h"
 #include "treewidgetplugin.h"
-#include "windowplugin.h"
+#include "mainwindowplugin.h"
 
 Q_IMPORT_PLUGIN(AjaxPlugin)
 Q_IMPORT_PLUGIN(BadgePlugin)
@@ -77,9 +77,9 @@ ChatPage::~ChatPage()
 void ChatPage::init()
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        WindowPlugin* windowPlugin = qobject_cast<WindowPlugin*>(instance);
+        MainWindowPlugin* windowPlugin = qobject_cast<MainWindowPlugin*>(instance);
         if (windowPlugin)
-            windowPlugin->initialize(static_cast<Window*>(window()));
+            windowPlugin->initialize(static_cast<MainWindow*>(window()));
         TreeWidgetPlugin* treePlugin = qobject_cast<TreeWidgetPlugin*>(instance);
         if (treePlugin)
             treePlugin->initialize(d.treeWidget);
@@ -99,9 +99,9 @@ void ChatPage::uninit()
         SplitViewPlugin* viewPlugin = qobject_cast<SplitViewPlugin*>(instance);
         if (viewPlugin)
             viewPlugin->uninitialize(d.splitView);
-        WindowPlugin* windowPlugin = qobject_cast<WindowPlugin*>(instance);
+        MainWindowPlugin* windowPlugin = qobject_cast<MainWindowPlugin*>(instance);
         if (windowPlugin)
-            windowPlugin->uninitialize(static_cast<Window*>(window()));
+            windowPlugin->uninitialize(static_cast<MainWindow*>(window()));
     }
 }
 

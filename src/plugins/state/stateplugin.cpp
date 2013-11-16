@@ -17,7 +17,7 @@
 #include "bufferview.h"
 #include "splitview.h"
 #include "treeitem.h"
-#include "window.h"
+#include "mainwindow.h"
 #include <IrcConnection>
 #include <IrcBuffer>
 #include <QSettings>
@@ -31,7 +31,7 @@ StatePlugin::StatePlugin(QObject* parent) : QObject(parent)
     d.view = 0;
 }
 
-void StatePlugin::initialize(Window* window)
+void StatePlugin::initialize(MainWindow* window)
 {
     QSettings settings;
     settings.beginGroup("States");
@@ -47,7 +47,7 @@ void StatePlugin::initialize(Window* window)
     }
 }
 
-void StatePlugin::uninitialize(Window* window)
+void StatePlugin::uninitialize(MainWindow* window)
 {
     QSettings settings;
     settings.beginGroup("States");

@@ -18,6 +18,7 @@ INCLUDEPATH += $$PWD
 
 HEADERS += $$PWD/bufferview.h
 HEADERS += $$PWD/listview.h
+HEADERS += $$PWD/mainwindow.h
 HEADERS += $$PWD/splitview.h
 HEADERS += $$PWD/syntaxhighlighter.h
 HEADERS += $$PWD/textbrowser.h
@@ -26,10 +27,10 @@ HEADERS += $$PWD/textinput.h
 HEADERS += $$PWD/titlebar.h
 HEADERS += $$PWD/treeitem.h
 HEADERS += $$PWD/treewidget.h
-HEADERS += $$PWD/window.h
 
 SOURCES += $$PWD/bufferview.cpp
 SOURCES += $$PWD/listview.cpp
+SOURCES += $$PWD/mainwindow.cpp
 SOURCES += $$PWD/splitview.cpp
 SOURCES += $$PWD/syntaxhighlighter.cpp
 SOURCES += $$PWD/textbrowser.cpp
@@ -38,7 +39,6 @@ SOURCES += $$PWD/textinput.cpp
 SOURCES += $$PWD/titlebar.cpp
 SOURCES += $$PWD/treeitem.cpp
 SOURCES += $$PWD/treewidget.cpp
-SOURCES += $$PWD/window.cpp
 
 include(../../config.pri)
 include(plugins/plugins.pri)
