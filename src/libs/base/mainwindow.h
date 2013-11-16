@@ -12,7 +12,6 @@
 
 #include <QWidget>
 
-class IrcBuffer;
 class IrcConnection;
 
 class MainWindow : public QWidget
@@ -23,9 +22,20 @@ public:
     MainWindow(QWidget* parent = 0);
     ~MainWindow();
 
-    virtual QList<IrcConnection*> connections() const = 0;
-    virtual void addConnection(IrcConnection* connection) = 0;
-    virtual void removeConnection(IrcConnection* connection) = 0;
+    QList<IrcConnection*> connections() const;
+
+public slots:
+    void addConnection(IrcConnection* connection);
+    void removeConnection(IrcConnection* connection);
+
+signals:
+    void connectionAdded(IrcConnection* connection);
+    void connectionRemoved(IrcConnection* connection);
+
+private:
+    struct Private {
+        QList<IrcConnection*> connections;
+    } d;
 };
 
 #endif // MAINWINDOW_H

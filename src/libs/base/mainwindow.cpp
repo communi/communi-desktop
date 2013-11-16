@@ -8,6 +8,7 @@
  */
 
 #include "mainwindow.h"
+#include <IrcConnection>
 
 MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 {
@@ -15,4 +16,22 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 
 MainWindow::~MainWindow()
 {
+}
+
+QList<IrcConnection*> MainWindow::connections() const
+{
+    return d.connections;
+}
+
+void MainWindow::addConnection(IrcConnection* connection)
+{
+    d.connections += connection;
+    connect(connection, SIGNAL(destroyed(IrcConnection*)), this, SLOT(removeConnection(IrcConnection*)));
+    emit connectionAdded(connection);
+}
+
+void MainWindow::removeConnection(IrcConnection* connection)
+{
+    if (d.connections.removeOne(connection))
+        emit connectionRemoved(connection);
 }

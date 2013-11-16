@@ -55,6 +55,8 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
 
     d.chatPage = new ChatPage(this);
     connect(d.chatPage, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(updateTitle()));
+    connect(this, SIGNAL(connectionAdded(IrcConnection*)), d.chatPage, SLOT(initConnection(IrcConnection*)));
+    connect(this, SIGNAL(connectionRemoved(IrcConnection*)), d.chatPage, SLOT(uninitConnection(IrcConnection*)));
 
     d.stack->addWidget(d.connectPage);
     d.stack->addWidget(d.chatPage);
@@ -69,30 +71,14 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
     connect(shortcut, SIGNAL(activated()), d.chatPage, SLOT(closeBuffer()));
 
     d.chatPage->init();
-    if (d.chatPage->connections().isEmpty())
+    if (connections().isEmpty())
         doConnect();
+    else
+        d.stack->setCurrentWidget(d.chatPage);
 }
 
 AppWindow::~AppWindow()
 {
-}
-
-QList<IrcConnection*> AppWindow::connections() const
-{
-    return d.chatPage->connections();
-}
-
-void AppWindow::addConnection(IrcConnection* connection)
-{
-    d.chatPage->addConnection(connection);
-    d.stack->setCurrentWidget(d.chatPage);
-}
-
-void AppWindow::removeConnection(IrcConnection* connection)
-{
-    d.chatPage->removeConnection(connection);
-    if (d.chatPage->connections().isEmpty())
-        doConnect();
 }
 
 QSize AppWindow::sizeHint() const
@@ -104,8 +90,7 @@ void AppWindow::closeEvent(QCloseEvent* event)
 {
     if (isVisible()) {
         d.chatPage->uninit();
-        QList<IrcConnection*> connections = d.chatPage->connections();
-        foreach (IrcConnection* connection, connections) {
+        foreach (IrcConnection* connection, connections()) {
             QString reason = tr("%1 %2 - http://%3").arg(QCoreApplication::applicationName())
                                                     .arg(QCoreApplication::applicationVersion())
                                                     .arg(QCoreApplication::organizationDomain());
@@ -122,7 +107,7 @@ void AppWindow::closeEvent(QCloseEvent* event)
 
 void AppWindow::doConnect()
 {
-    d.connectPage->buttonBox()->button(QDialogButtonBox::Cancel)->setEnabled(!d.chatPage->connections().isEmpty());
+    d.connectPage->buttonBox()->button(QDialogButtonBox::Cancel)->setEnabled(!connections().isEmpty());
     d.stack->setCurrentWidget(d.connectPage);
 }
 
@@ -140,7 +125,7 @@ void AppWindow::onAccepted()
     connection->setDisplayName(d.connectPage->displayName());
     connection->setPassword(d.connectPage->password());
     if (!d.editedConnection)
-        d.chatPage->addConnection(connection);
+        addConnection(connection);
     d.editedConnection = 0;
     d.stack->setCurrentWidget(d.chatPage);
 }

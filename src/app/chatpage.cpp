@@ -72,8 +72,8 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
     connect(d.treeWidget, SIGNAL(currentBufferChanged(IrcBuffer*)), d.splitView, SLOT(setCurrentBuffer(IrcBuffer*)));
     connect(d.splitView, SIGNAL(currentBufferChanged(IrcBuffer*)), d.treeWidget, SLOT(setCurrentBuffer(IrcBuffer*)));
 
-    connect(d.splitView, SIGNAL(viewAdded(BufferView*)), this, SLOT(addView(BufferView*)));
-    connect(d.splitView, SIGNAL(viewRemoved(BufferView*)), this, SLOT(removeView(BufferView*)));
+    connect(d.splitView, SIGNAL(viewAdded(BufferView*)), this, SLOT(initView(BufferView*)));
+    connect(d.splitView, SIGNAL(viewRemoved(BufferView*)), this, SLOT(uninitView(BufferView*)));
 
     setStretchFactor(1, 1);
 }
@@ -95,7 +95,7 @@ void ChatPage::init()
         if (viewPlugin)
             viewPlugin->initialize(d.splitView);
     }
-    addView(d.splitView->currentView());
+    initView(d.splitView->currentView());
 }
 
 void ChatPage::uninit()
@@ -118,12 +118,7 @@ IrcBuffer* ChatPage::currentBuffer() const
     return d.treeWidget->currentBuffer();
 }
 
-QList<IrcConnection*> ChatPage::connections() const
-{
-    return d.connections;
-}
-
-void ChatPage::addConnection(IrcConnection* connection)
+void ChatPage::initConnection(IrcConnection* connection)
 {
     IrcBufferModel* bufferModel = new IrcBufferModel(connection);
     bufferModel->setSortMethod(Irc::SortByTitle);
@@ -133,17 +128,15 @@ void ChatPage::addConnection(IrcConnection* connection)
     connect(connection, SIGNAL(displayNameChanged(QString)), serverBuffer, SLOT(setName(QString)));
     connect(bufferModel, SIGNAL(messageIgnored(IrcMessage*)), serverBuffer, SLOT(receiveMessage(IrcMessage*)));
 
-    connect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(addBuffer(IrcBuffer*)));
-    connect(bufferModel, SIGNAL(removed(IrcBuffer*)), this, SLOT(removeBuffer(IrcBuffer*)));
+    connect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(initBuffer(IrcBuffer*)));
+    connect(bufferModel, SIGNAL(removed(IrcBuffer*)), this, SLOT(uninitBuffer(IrcBuffer*)));
 
-    addBuffer(serverBuffer);
+    initBuffer(serverBuffer);
     if (!d.treeWidget->currentBuffer())
         d.treeWidget->setCurrentBuffer(serverBuffer);
 
     if (!connection->isActive() && connection->isEnabled())
         connection->open();
-
-    d.connections += connection;
 
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         ConnectionPlugin* plugin = qobject_cast<ConnectionPlugin*>(instance);
@@ -152,12 +145,11 @@ void ChatPage::addConnection(IrcConnection* connection)
     }
 }
 
-void ChatPage::removeConnection(IrcConnection* connection)
+void ChatPage::uninitConnection(IrcConnection* connection)
 {
     IrcBufferModel* bufferModel = connection->findChild<IrcBufferModel*>();
-    disconnect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(addBuffer(IrcBuffer*)));
-    disconnect(bufferModel, SIGNAL(removed(IrcBuffer*)), this, SLOT(removeBuffer(IrcBuffer*)));
-    d.connections.removeOne(connection);
+    disconnect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(initBuffer(IrcBuffer*)));
+    disconnect(bufferModel, SIGNAL(removed(IrcBuffer*)), this, SLOT(uninitBuffer(IrcBuffer*)));
 
     if (connection->isActive()) {
         connection->quit(applicationDescription());
@@ -165,8 +157,9 @@ void ChatPage::removeConnection(IrcConnection* connection)
     }
     connection->deleteLater();
 
-    if (d.connections.isEmpty())
-        d.splitView->reset();
+    // TODO:
+//    if (d.connections.isEmpty())
+//        d.splitView->reset();
 
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         ConnectionPlugin* connectionPlugin = qobject_cast<ConnectionPlugin*>(instance);
@@ -186,7 +179,7 @@ void ChatPage::closeBuffer(IrcBuffer* buffer)
     buffer->deleteLater();
 }
 
-void ChatPage::addBuffer(IrcBuffer* buffer)
+void ChatPage::initBuffer(IrcBuffer* buffer)
 {
     TextDocument* doc = new TextDocument(buffer);
     buffer->setPersistent(true);
@@ -206,11 +199,8 @@ void ChatPage::addBuffer(IrcBuffer* buffer)
     }
 }
 
-void ChatPage::removeBuffer(IrcBuffer* buffer)
+void ChatPage::uninitBuffer(IrcBuffer* buffer)
 {
-    if (buffer->isSticky())
-        static_cast<MainWindow*>(window())->removeConnection(buffer->connection()); // TODO
-
     TextDocument* doc = buffer->property("document").value<TextDocument*>();
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         TextDocumentPlugin* plugin = qobject_cast<TextDocumentPlugin*>(instance);
@@ -219,9 +209,12 @@ void ChatPage::removeBuffer(IrcBuffer* buffer)
     }
 
     d.treeWidget->removeBuffer(buffer);
+
+    if (buffer->isSticky())
+        buffer->connection()->deleteLater();
 }
 
-void ChatPage::addView(BufferView* view)
+void ChatPage::initView(BufferView* view)
 {
     view->textInput()->setParser(createParser(view));
 
@@ -232,7 +225,7 @@ void ChatPage::addView(BufferView* view)
     }
 }
 
-void ChatPage::removeView(BufferView* view)
+void ChatPage::uninitView(BufferView* view)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         BufferViewPlugin* plugin = qobject_cast<BufferViewPlugin*>(instance);

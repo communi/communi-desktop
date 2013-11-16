@@ -28,10 +28,6 @@ public:
     AppWindow(QWidget* parent = 0);
     ~AppWindow();
 
-    QList<IrcConnection*> connections() const;
-    void addConnection(IrcConnection* connection);
-    void removeConnection(IrcConnection* connection);
-
     QSize sizeHint() const;
 
 protected:

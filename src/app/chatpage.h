@@ -32,10 +32,6 @@ public:
 
     IrcBuffer* currentBuffer() const;
 
-    QList<IrcConnection*> connections() const;
-    void addConnection(IrcConnection* connection);
-    void removeConnection(IrcConnection* connection);
-
 public slots:
     void closeBuffer(IrcBuffer* buffer = 0);
 
@@ -43,10 +39,12 @@ signals:
     void currentBufferChanged(IrcBuffer* buffer);
 
 private slots:
-    void addBuffer(IrcBuffer* buffer);
-    void removeBuffer(IrcBuffer* buffer);
-    void addView(BufferView* view);
-    void removeView(BufferView* view);
+    void initConnection(IrcConnection* connection);
+    void uninitConnection(IrcConnection* connection);
+    void initView(BufferView* view);
+    void uninitView(BufferView* view);
+    void initBuffer(IrcBuffer* buffer);
+    void uninitBuffer(IrcBuffer* buffer);
 
 private:
     static IrcCommandParser* createParser(QObject* parent);
@@ -54,7 +52,6 @@ private:
     struct Private {
         SplitView* splitView;
         TreeWidget* treeWidget;
-        QList<IrcConnection*> connections;
     } d;
 };
 
