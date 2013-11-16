@@ -16,6 +16,7 @@
 #define TITLEBAR_H
 
 #include <QLabel>
+#include <QToolButton>
 
 class IrcBuffer;
 class MessageFormatter;
@@ -37,6 +38,10 @@ public slots:
 signals:
     void bufferChanged(IrcBuffer* buffer);
 
+protected:
+    bool event(QEvent* event);
+    void resizeEvent(QResizeEvent* event);
+
 private slots:
     void cleanup();
     void refresh();
@@ -44,6 +49,8 @@ private slots:
 private:
     struct Private {
         IrcBuffer* buffer;
+        QToolButton* menuButton;
+        QToolButton* closeButton;
         MessageFormatter* formatter;
     } d;
 };
