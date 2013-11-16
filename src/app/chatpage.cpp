@@ -209,7 +209,7 @@ void ChatPage::addBuffer(IrcBuffer* buffer)
 void ChatPage::removeBuffer(IrcBuffer* buffer)
 {
     if (buffer->isSticky())
-        removeConnection(buffer->connection());
+        static_cast<MainWindow*>(window())->removeConnection(buffer->connection()); // TODO
 
     TextDocument* doc = buffer->property("document").value<TextDocument*>();
     foreach (QObject* instance, QPluginLoader::staticInstances()) {

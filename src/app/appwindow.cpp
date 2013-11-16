@@ -43,6 +43,8 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
 #endif // Q_OS_MAC
 
     d.stack = new QStackedWidget(this);
+    connect(d.stack, SIGNAL(currentChanged(int)), this, SLOT(updateTitle()));
+
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(d.stack);
     layout->setMargin(0);
@@ -52,12 +54,10 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
     connect(d.connectPage, SIGNAL(rejected()), this, SLOT(onRejected()));
 
     d.chatPage = new ChatPage(this);
-    connect(d.chatPage, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(setCurrentBuffer(IrcBuffer*)));
+    connect(d.chatPage, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(updateTitle()));
 
     d.stack->addWidget(d.connectPage);
     d.stack->addWidget(d.chatPage);
-
-    setCurrentBuffer(0);
 
     QShortcut* shortcut = new QShortcut(QKeySequence::Quit, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(close()));
@@ -85,11 +85,14 @@ QList<IrcConnection*> AppWindow::connections() const
 void AppWindow::addConnection(IrcConnection* connection)
 {
     d.chatPage->addConnection(connection);
+    d.stack->setCurrentWidget(d.chatPage);
 }
 
 void AppWindow::removeConnection(IrcConnection* connection)
 {
     d.chatPage->removeConnection(connection);
+    if (d.chatPage->connections().isEmpty())
+        doConnect();
 }
 
 QSize AppWindow::sizeHint() const
@@ -148,15 +151,13 @@ void AppWindow::onRejected()
     d.stack->setCurrentWidget(d.chatPage);
 }
 
-void AppWindow::setCurrentBuffer(IrcBuffer* buffer)
+void AppWindow::updateTitle()
 {
-    if (buffer) {
-        d.stack->setCurrentWidget(d.chatPage);
-        setWindowTitle(tr("%2 - Communi %1").arg(IRC_VERSION_STR).arg(buffer->title()));
-    } else {
-        doConnect();
-        setWindowTitle(tr("Communi %1").arg(IRC_VERSION_STR));
-    }
+    IrcBuffer* buffer = d.chatPage->currentBuffer();
+    if (!buffer || d.stack->currentWidget() == d.connectPage)
+        setWindowTitle(QCoreApplication::applicationName());
+    else
+        setWindowTitle(tr("%1 - %2").arg(buffer->title(), QCoreApplication::applicationName()));
 }
 
 void AppWindow::editConnection(IrcConnection* connection)
