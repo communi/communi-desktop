@@ -51,11 +51,6 @@ TreeItem* TreeWidget::bufferItem(IrcBuffer* buffer) const
     return d.bufferItems.value(buffer);
 }
 
-QList<IrcConnection*> TreeWidget::connections() const
-{
-    return d.connections;
-}
-
 TreeItem* TreeWidget::connectionItem(IrcConnection* connection) const
 {
     return d.connectionItems.value(connection);
@@ -80,7 +75,6 @@ void TreeWidget::addBuffer(IrcBuffer* buffer)
         IrcConnection* connection = buffer->connection();
         d.connectionItems.insert(connection, item);
         d.connections.append(connection);
-        emit connectionAdded(connection);
     } else {
         TreeItem* parent = d.connectionItems.value(buffer->connection());
         item = new TreeItem(buffer, parent);
@@ -95,7 +89,6 @@ void TreeWidget::removeBuffer(IrcBuffer* buffer)
         IrcConnection* connection = buffer->connection();
         d.connectionItems.remove(connection);
         d.connections.removeOne(connection);
-        emit connectionRemoved(connection);
     }
     emit bufferRemoved(buffer);
     delete d.bufferItems.take(buffer);
@@ -129,7 +122,7 @@ class FriendlyModel : public IrcBufferModel
 bool standardTreeSortFunc(const TreeItem* one, const TreeItem* another)
 {
     if (!one->parentItem()) {
-        QList<IrcConnection*> connections = one->treeWidget()->connections();
+        QList<IrcConnection*> connections = one->treeWidget()->d.connections;
         return connections.indexOf(one->connection()) < connections.indexOf(another->connection());
     }
     if (one->buffer()) {

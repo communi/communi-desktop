@@ -49,8 +49,16 @@ void CommanderPlugin::initialize(SplitView* view)
 void CommanderPlugin::initialize(TreeWidget* tree)
 {
     d.tree = tree;
-    connect(tree, SIGNAL(connectionAdded(IrcConnection*)), this, SLOT(onConnectionAdded(IrcConnection*)));
-    connect(tree, SIGNAL(connectionRemoved(IrcConnection*)), this, SLOT(onConnectionRemoved(IrcConnection*)));
+}
+
+void CommanderPlugin::initialize(IrcConnection* connection)
+{
+    connection->installCommandFilter(this);
+}
+
+void CommanderPlugin::uninitialize(IrcConnection* connection)
+{
+    connection->removeCommandFilter(this);
 }
 
 bool CommanderPlugin::commandFilter(IrcCommand* command)
@@ -101,16 +109,6 @@ bool CommanderPlugin::commandFilter(IrcCommand* command)
         }
     }
     return false;
-}
-
-void CommanderPlugin::onConnectionAdded(IrcConnection* connection)
-{
-    connection->installCommandFilter(this);
-}
-
-void CommanderPlugin::onConnectionRemoved(IrcConnection* connection)
-{
-    connection->removeCommandFilter(this);
 }
 
 #if QT_VERSION < 0x050000

@@ -35,8 +35,6 @@ public:
 
     IrcBuffer* currentBuffer() const;
     TreeItem* bufferItem(IrcBuffer* buffer) const;
-
-    QList<IrcConnection*> connections() const;
     TreeItem* connectionItem(IrcConnection* connection) const;
 
     TreeSortFunc sortFunc() const;
@@ -50,8 +48,6 @@ public slots:
 signals:
     void bufferAdded(IrcBuffer* buffer);
     void bufferRemoved(IrcBuffer* buffer);
-    void connectionAdded(IrcConnection* connection);
-    void connectionRemoved(IrcConnection* connection);
     void currentItemChanged(TreeItem* item);
     void currentBufferChanged(IrcBuffer* buffer);
 
@@ -62,6 +58,7 @@ private slots:
     void onCurrentItemChanged(QTreeWidgetItem* item);
 
 private:
+    friend bool standardTreeSortFunc(const TreeItem* one, const TreeItem* another);
     struct Private {
         TreeSortFunc sortFunc;
         QList<IrcConnection*> connections;

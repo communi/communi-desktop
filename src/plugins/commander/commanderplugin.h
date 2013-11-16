@@ -17,19 +17,21 @@
 
 #include <QtPlugin>
 #include <IrcCommandFilter>
+#include "connectionplugin.h"
 #include "bufferviewplugin.h"
 #include "splitviewplugin.h"
 #include "treewidgetplugin.h"
 
 class IrcConnection;
 
-class CommanderPlugin : public QObject, public IrcCommandFilter,
+class CommanderPlugin : public QObject, public IrcCommandFilter, public ConnectionPlugin,
                         public BufferViewPlugin, public SplitViewPlugin, public TreeWidgetPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(IrcCommandFilter BufferViewPlugin SplitViewPlugin TreeWidgetPlugin)
+    Q_INTERFACES(IrcCommandFilter ConnectionPlugin BufferViewPlugin SplitViewPlugin TreeWidgetPlugin)
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.BufferViewPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
     Q_PLUGIN_METADATA(IID "Communi.SplitViewPlugin")
     Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
 #endif
@@ -40,12 +42,10 @@ public:
     void initialize(BufferView* view);
     void initialize(SplitView* view);
     void initialize(TreeWidget* tree);
+    void initialize(IrcConnection* connection);
+    void uninitialize(IrcConnection* connection);
 
     bool commandFilter(IrcCommand* command);
-
-private slots:
-    void onConnectionAdded(IrcConnection* connection);
-    void onConnectionRemoved(IrcConnection* connection);
 
 private:
     struct Private {

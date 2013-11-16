@@ -18,16 +18,18 @@
 #include <QSet>
 #include <QMovie>
 #include <QtPlugin>
+#include "connectionplugin.h"
 #include "treewidgetplugin.h"
 
 class TreeItem;
 class IrcConnection;
 
-class AjaxPlugin : public QObject, public TreeWidgetPlugin
+class AjaxPlugin : public QObject, public ConnectionPlugin, public TreeWidgetPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreeWidgetPlugin)
+    Q_INTERFACES(ConnectionPlugin TreeWidgetPlugin)
 #if QT_VERSION >= 0x050000
+    Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
     Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
 #endif
 
@@ -36,11 +38,12 @@ public:
 
     void initialize(TreeWidget* tree);
 
+    void initialize(IrcConnection* connection);
+    void uninitialize(IrcConnection* connection);
+
 private slots:
     void updateLoader();
     void updateConnection();
-    void onConnectionAdded(IrcConnection* connection);
-    void onConnectionRemoved(IrcConnection* connection);
 
 private:
     struct Private {
