@@ -23,8 +23,11 @@
 #include "bufferview.h"
 #include "window.h"
 
+inline void initResource() { Q_INIT_RESOURCE(style); }
+
 StylePlugin::StylePlugin(QObject* parent) : QObject(parent)
 {
+    initResource();
 }
 
 void StylePlugin::initialize(BufferView* view)
@@ -130,6 +133,12 @@ void StylePlugin::initialize(Window* window)
         "TitleBar > QToolButton {"
             "border-top-color: transparent;"
             "border-right-color: transparent;"
+        "}"
+        "TitleBar > QToolButton#menu {"
+            "image: url(:/images/down.png)"
+        "}"
+        "TitleBar > QToolButton#close {"
+            "image: url(:/images/close.png)"
         "}"
         "Finder > QLineEdit {"
             "border: 1px solid palette(dark);"
