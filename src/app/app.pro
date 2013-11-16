@@ -30,14 +30,14 @@ INSTALLS += target
 
 FORMS += $$PWD/connectpage.ui
 
+HEADERS += $$PWD/appwindow.h
 HEADERS += $$PWD/chatpage.h
 HEADERS += $$PWD/connectpage.h
-HEADERS += $$PWD/mainwindow.h
 
+SOURCES += $$PWD/appwindow.cpp
 SOURCES += $$PWD/chatpage.cpp
 SOURCES += $$PWD/connectpage.cpp
 SOURCES += $$PWD/main.cpp
-SOURCES += $$PWD/mainwindow.cpp
 
 include(plugins.pri)
 include(../config.pri)

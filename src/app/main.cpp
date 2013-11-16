@@ -12,7 +12,7 @@
 * GNU General Public License for more details.
 */
 
-#include "mainwindow.h"
+#include "appwindow.h"
 #include <QApplication>
 #include <QNetworkProxy>
 #include <QIcon>
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
     app.setApplicationVersion(Irc::version());
     app.setOrganizationDomain("communi.github.com");
 
-    MainWindow window;
+    AppWindow window;
     QStringList args = app.arguments();
 
     QUrl proxy;

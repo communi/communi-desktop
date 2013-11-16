@@ -7,8 +7,8 @@
  * completely or partially.
  */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef APPWINDOW_H
+#define APPWINDOW_H
 
 #include "window.h"
 #include <QIcon>
@@ -20,13 +20,13 @@ class IrcMessage;
 class ConnectPage;
 class IrcConnection;
 
-class MainWindow : public Window
+class AppWindow : public Window
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget* parent = 0);
-    ~MainWindow();
+    AppWindow(QWidget* parent = 0);
+    ~AppWindow();
 
     QList<IrcConnection*> connections() const;
     void addConnection(IrcConnection* connection);
@@ -56,4 +56,4 @@ private:
     } d;
 };
 
-#endif // MAINWINDOW_H
+#endif // APPWINDOW_H

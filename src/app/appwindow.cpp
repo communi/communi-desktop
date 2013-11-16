@@ -7,7 +7,7 @@
  * completely or partially.
  */
 
-#include "mainwindow.h"
+#include "appwindow.h"
 #include "connectpage.h"
 #include "sharedtimer.h"
 #include "chatpage.h"
@@ -25,7 +25,7 @@
 #include <QTimer>
 #include <QDir>
 
-MainWindow::MainWindow(QWidget* parent) : Window(parent)
+AppWindow::AppWindow(QWidget* parent) : Window(parent)
 {
     d.editedConnection = 0;
 
@@ -79,31 +79,31 @@ MainWindow::MainWindow(QWidget* parent) : Window(parent)
         doConnect();
 }
 
-MainWindow::~MainWindow()
+AppWindow::~AppWindow()
 {
 }
 
-QList<IrcConnection*> MainWindow::connections() const
+QList<IrcConnection*> AppWindow::connections() const
 {
     return d.chatPage->connections();
 }
 
-void MainWindow::addConnection(IrcConnection* connection)
+void AppWindow::addConnection(IrcConnection* connection)
 {
     d.chatPage->addConnection(connection);
 }
 
-void MainWindow::removeConnection(IrcConnection* connection)
+void AppWindow::removeConnection(IrcConnection* connection)
 {
     d.chatPage->removeConnection(connection);
 }
 
-QSize MainWindow::sizeHint() const
+QSize AppWindow::sizeHint() const
 {
     return QSize(800, 600);
 }
 
-void MainWindow::closeEvent(QCloseEvent* event)
+void AppWindow::closeEvent(QCloseEvent* event)
 {
     if (isVisible()) {
         d.chatPage->uninit();
@@ -123,13 +123,13 @@ void MainWindow::closeEvent(QCloseEvent* event)
     }
 }
 
-void MainWindow::doConnect()
+void AppWindow::doConnect()
 {
     d.connectPage->buttonBox()->button(QDialogButtonBox::Cancel)->setEnabled(!d.chatPage->connections().isEmpty());
     d.stack->setCurrentWidget(d.connectPage);
 }
 
-void MainWindow::onAccepted()
+void AppWindow::onAccepted()
 {
     IrcConnection* connection = d.editedConnection;
     if (!connection)
@@ -148,13 +148,13 @@ void MainWindow::onAccepted()
     d.stack->setCurrentWidget(d.chatPage);
 }
 
-void MainWindow::onRejected()
+void AppWindow::onRejected()
 {
     d.editedConnection = 0;
     d.stack->setCurrentWidget(d.chatPage);
 }
 
-void MainWindow::closeBuffer(IrcBuffer* buffer)
+void AppWindow::closeBuffer(IrcBuffer* buffer)
 {
     if (!buffer)
         buffer = d.chatPage->currentBuffer();
@@ -169,7 +169,7 @@ void MainWindow::closeBuffer(IrcBuffer* buffer)
     buffer->deleteLater();
 }
 
-void MainWindow::setCurrentBuffer(IrcBuffer* buffer)
+void AppWindow::setCurrentBuffer(IrcBuffer* buffer)
 {
     if (buffer) {
         d.stack->setCurrentWidget(d.chatPage);
@@ -180,7 +180,7 @@ void MainWindow::setCurrentBuffer(IrcBuffer* buffer)
     }
 }
 
-void MainWindow::editConnection(IrcConnection* connection)
+void AppWindow::editConnection(IrcConnection* connection)
 {
     d.connectPage->setHost(connection->host());
     d.connectPage->setPort(connection->port());
