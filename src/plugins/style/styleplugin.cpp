@@ -34,27 +34,27 @@ void StylePlugin::initialize(BufferView* view)
 {
     view->textBrowser()->setStyleSheet(
         "TextBrowser {"
-        "    border: none;"
-        "    color: #000000;"
-        "    background: #ffffff;"
-        "    selection-color: palette(highlighted-text);"
-        "    selection-background-color: palette(highlight);"
+            "border: none;"
+            "color: #000000;"
+            "background: #ffffff;"
+            "selection-color: palette(highlighted-text);"
+            "selection-background-color: palette(highlight);"
         "}");
 
     view->textInput()->setStyleSheet(
         "TextInput {"
-        "    border: 1px solid transparent;"
-        "    border-top-color: palette(dark);"
+            "border: 1px solid transparent;"
+            "border-top-color: palette(dark);"
         "}");
 
     view->listView()->setStyleSheet(
         "ListView {"
-        "    border: none;"
-        "    background: palette(alternate-base);"
-        "    selection-background-color: palette(highlight);"
+            "border: none;"
+            "background: palette(alternate-base);"
+            "selection-background-color: palette(highlight);"
         "}"
         "ListView::item {"
-        "   height: 20px;"
+            "height: 20px;"
         "}");
 
     QLabel* label = view->titleBar()->findChild<QLabel*>("title");
@@ -64,18 +64,18 @@ void StylePlugin::initialize(BufferView* view)
 
     view->titleBar()->setStyleSheet(
         "TitleBar {"
-        "    min-height: 18px;"
-        "    border: 1px solid transparent;"
-        "    border-bottom-color: palette(dark);"
-        "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-        "                                stop: 0.0 palette(light),"
-        "                                stop: 1.0 palette(button));"
+            "min-height: 18px;"
+            "border: 1px solid transparent;"
+            "border-bottom-color: palette(dark);"
+            "background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
+                                        "stop: 0.0 palette(light),"
+                                        "stop: 1.0 palette(button));"
         "}"
         "TitleBar > QTextEdit {"
-        "    border: 1px solid transparent;"
-        "    border-bottom-color: palette(dark);"
-        "    selection-color: palette(highlighted-text);"
-        "    selection-background-color: palette(highlight);"
+            "border: 1px solid transparent;"
+            "border-bottom-color: palette(dark);"
+            "selection-color: palette(highlighted-text);"
+            "selection-background-color: palette(highlight);"
         "}");
 }
 
@@ -97,12 +97,12 @@ void StylePlugin::initialize(TreeWidget* tree)
 
     tree->setStyleSheet(
         "TreeWidget {"
-        "    border: none;"
-        "    background: palette(alternate-base);"
-        "    selection-background-color: palette(highlight);"
+            "border: none;"
+            "background: palette(alternate-base);"
+            "selection-background-color: palette(highlight);"
         "}"
         "TreeWidget::item {"
-        "    height: 20px;"
+            "height: 20px;"
         "}");
 }
 
