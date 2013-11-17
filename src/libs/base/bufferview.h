@@ -17,6 +17,7 @@ class ListView;
 class IrcBuffer;
 class TextInput;
 class TextBrowser;
+class TextDocument;
 
 class BufferView : public QWidget
 {
@@ -42,6 +43,7 @@ signals:
     void destroyed(BufferView* view);
     void bufferChanged(IrcBuffer* buffer);
     void bufferClosed(IrcBuffer* buffer);
+    void cloned(TextDocument* doc);
 
 private slots:
     void query(const QString& user);

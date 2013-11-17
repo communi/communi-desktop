@@ -16,6 +16,7 @@ class IrcBuffer;
 class SplitView;
 class TreeWidget;
 class BufferView;
+class TextDocument;
 class IrcConnection;
 class IrcCommandParser;
 
@@ -45,6 +46,8 @@ private slots:
     void uninitView(BufferView* view);
     void initBuffer(IrcBuffer* buffer);
     void uninitBuffer(IrcBuffer* buffer);
+    void initDocument(TextDocument* doc);
+    void uninitDocument(TextDocument* doc);
 
 private:
     static IrcCommandParser* createParser(QObject* parent);

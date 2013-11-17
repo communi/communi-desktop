@@ -182,26 +182,21 @@ void ChatPage::initBuffer(IrcBuffer* buffer)
     d.treeWidget->addBuffer(buffer);
 
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        BufferPlugin* bufferPlugin = qobject_cast<BufferPlugin*>(instance);
-        if (bufferPlugin) {
-            bufferPlugin->addBuffer(buffer);
+        BufferPlugin* plugin = qobject_cast<BufferPlugin*>(instance);
+        if (plugin) {
+            plugin->addBuffer(buffer);
             connect(buffer, SIGNAL(destroyed(IrcBuffer*)), instance, SLOT(removeBuffer(IrcBuffer*)));
             connect(this, SIGNAL(currentBufferChanged(IrcBuffer*)), instance, SLOT(setCurrentBuffer(IrcBuffer*)));
         }
-        TextDocumentPlugin* documentPlugin = qobject_cast<TextDocumentPlugin*>(instance);
-        if (documentPlugin)
-            documentPlugin->initialize(doc);
     }
+    initDocument(doc);
 }
 
 void ChatPage::uninitBuffer(IrcBuffer* buffer)
 {
-    TextDocument* doc = buffer->property("document").value<TextDocument*>();
-    foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        TextDocumentPlugin* plugin = qobject_cast<TextDocumentPlugin*>(instance);
-        if (plugin)
-            plugin->uninitialize(doc);
-    }
+    QList<TextDocument*> documents = buffer->findChildren<TextDocument*>();
+    foreach (TextDocument* doc, documents)
+        uninitDocument(doc);
 
     d.treeWidget->removeBuffer(buffer);
 
@@ -209,10 +204,29 @@ void ChatPage::uninitBuffer(IrcBuffer* buffer)
         buffer->connection()->deleteLater();
 }
 
+void ChatPage::initDocument(TextDocument* doc)
+{
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        TextDocumentPlugin* plugin = qobject_cast<TextDocumentPlugin*>(instance);
+        if (plugin)
+            plugin->initialize(doc);
+    }
+}
+
+void ChatPage::uninitDocument(TextDocument* doc)
+{
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        TextDocumentPlugin* plugin = qobject_cast<TextDocumentPlugin*>(instance);
+        if (plugin)
+            plugin->uninitialize(doc);
+    }
+}
+
 void ChatPage::initView(BufferView* view)
 {
     view->textInput()->setParser(createParser(view));
     connect(view, SIGNAL(bufferClosed(IrcBuffer*)), this, SLOT(closeBuffer(IrcBuffer*)));
+    connect(view, SIGNAL(cloned(TextDocument*)), this, SLOT(initDocument(TextDocument*)));
 
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         BufferViewPlugin* plugin = qobject_cast<BufferViewPlugin*>(instance);

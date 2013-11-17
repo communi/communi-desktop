@@ -101,8 +101,10 @@ void BufferView::setBuffer(IrcBuffer* buffer)
                 if (!d->isVisible())
                     doc = d;
             }
-            if (!doc)
+            if (!doc) {
                 doc = documents.first()->clone();
+                emit cloned(doc);
+            }
             d.textBrowser->setDocument(doc);
         }
 
