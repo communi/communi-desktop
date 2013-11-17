@@ -12,21 +12,34 @@
 * GNU General Public License for more details.
 */
 
-#include "titleplugin.h"
-#include "titleextension.h"
-#include "topiceditor.h"
-#include "bufferview.h"
+#ifndef TITLEEXTENSION_H
+#define TITLEEXTENSION_H
 
-TitlePlugin::TitlePlugin(QObject* parent) : QObject(parent)
+#include <QToolButton>
+
+class TitleBar;
+
+class TitleExtension : public QObject
 {
-}
+    Q_OBJECT
 
-void TitlePlugin::initialize(BufferView* view)
-{
-    new TopicEditor(view->titleBar());
-    new TitleExtension(view->titleBar());
-}
+public:
+    TitleExtension(TitleBar* bar);
 
-#if QT_VERSION < 0x050000
-Q_EXPORT_STATIC_PLUGIN(TitlePlugin)
-#endif
+    bool eventFilter(QObject* object, QEvent* event);
+
+private slots:
+    void aboutToShowMenu();
+    void aboutToHideMenu();
+    void updateButtons();
+
+private:
+    struct Private {
+        bool menu;
+        TitleBar* bar;
+        QToolButton* menuButton;
+        QToolButton* closeButton;
+    } d;
+};
+
+#endif // TITLEEXTENSION_H

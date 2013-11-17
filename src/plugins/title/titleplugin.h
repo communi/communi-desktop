@@ -16,10 +16,7 @@
 #define TITLEPLUGIN_H
 
 #include <QtPlugin>
-#include <QToolButton>
 #include "bufferviewplugin.h"
-
-class TitleBar;
 
 class TitlePlugin : public QObject, public BufferViewPlugin
 {
@@ -33,21 +30,6 @@ public:
     TitlePlugin(QObject* parent = 0);
 
     void initialize(BufferView* view);
-
-    bool eventFilter(QObject* object, QEvent* event);
-
-private slots:
-    void aboutToShowMenu();
-    void aboutToHideMenu();
-    void updateButtons();
-
-private:
-    struct Private {
-        bool menu;
-        TitleBar* bar;
-        QToolButton* menuButton;
-        QToolButton* closeButton;
-    } d;
 };
 
 #endif // TITLEPLUGIN_H
