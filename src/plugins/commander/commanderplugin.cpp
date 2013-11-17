@@ -72,12 +72,8 @@ bool CommanderPlugin::commandFilter(IrcCommand* command)
         } else if (cmd == "CLOSE") {
             IrcBuffer* buffer = d.view->currentBuffer();
             IrcChannel* channel = buffer->toChannel();
-            if (channel) {
-                QString reason = tr("%1 %2 - http://%3").arg(QCoreApplication::applicationName())
-                                                        .arg(QCoreApplication::applicationVersion())
-                                                        .arg(QCoreApplication::organizationDomain());
-                channel->part(reason);
-            }
+            if (channel)
+                channel->part(qApp->property("description").toString());
             buffer->deleteLater();
             return true;
         } else if (cmd == "MSG") {

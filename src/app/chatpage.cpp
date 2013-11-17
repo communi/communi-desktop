@@ -54,13 +54,6 @@ Q_IMPORT_PLUGIN(TrayPlugin)
 Q_IMPORT_PLUGIN(VerifierPlugin)
 Q_IMPORT_PLUGIN(ZncPlugin)
 
-static QString applicationDescription()
-{
-    return ChatPage::tr("%1 %2 - http://%3").arg(QCoreApplication::applicationName())
-                                            .arg(QCoreApplication::applicationVersion())
-                                            .arg(QCoreApplication::organizationDomain());
-}
-
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 {
     d.splitView = new SplitView(this);
@@ -154,7 +147,7 @@ void ChatPage::uninitConnection(IrcConnection* connection)
     disconnect(bufferModel, SIGNAL(removed(IrcBuffer*)), this, SLOT(uninitBuffer(IrcBuffer*)));
 
     if (connection->isActive()) {
-        connection->quit(applicationDescription());
+        connection->quit(qApp->property("description").toString());
         connection->close();
     }
     connection->deleteLater();
@@ -177,7 +170,7 @@ void ChatPage::closeBuffer(IrcBuffer* buffer)
 
     IrcChannel* channel = buffer->toChannel();
     if (channel && channel->isActive())
-        channel->part(applicationDescription());
+        channel->part(qApp->property("description").toString());
     buffer->deleteLater();
 }
 

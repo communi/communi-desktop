@@ -91,10 +91,7 @@ void AppWindow::closeEvent(QCloseEvent* event)
     if (isVisible()) {
         d.chatPage->uninit();
         foreach (IrcConnection* connection, connections()) {
-            QString reason = tr("%1 %2 - http://%3").arg(QCoreApplication::applicationName())
-                                                    .arg(QCoreApplication::applicationVersion())
-                                                    .arg(QCoreApplication::organizationDomain());
-            connection->quit(reason);
+            connection->quit(qApp->property("description").toString());
             connection->close();
         }
 

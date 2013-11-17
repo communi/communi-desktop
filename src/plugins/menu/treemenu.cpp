@@ -80,12 +80,8 @@ void TreeMenu::onJoinTriggered()
 void TreeMenu::onPartTriggered()
 {
     IrcChannel* channel = d.item->buffer()->toChannel();
-    if (channel && channel->isActive()) {
-        QString reason = tr("%1 %2 - http://%3").arg(QCoreApplication::applicationName())
-                                                .arg(QCoreApplication::applicationVersion())
-                                                .arg(QCoreApplication::organizationDomain());
-        channel->part(reason);
-    }
+    if (channel && channel->isActive())
+        channel->part(qApp->property("description").toString());
 }
 
 void TreeMenu::onCloseTriggered()

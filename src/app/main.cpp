@@ -41,6 +41,9 @@ int main(int argc, char* argv[])
     app.setOrganizationName("Communi");
     app.setApplicationVersion(Irc::version());
     app.setOrganizationDomain("communi.github.com");
+    app.setProperty("description", AppWindow::tr("%1 %2 - http://%3").arg(app.applicationName())
+                                                                     .arg(app.applicationVersion())
+                                                                     .arg(app.organizationDomain()));
 
     AppWindow window;
     QStringList args = app.arguments();
