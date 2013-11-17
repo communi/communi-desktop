@@ -12,8 +12,8 @@
 * GNU General Public License for more details.
 */
 
-#ifndef STYLEPLUGIN_H
-#define STYLEPLUGIN_H
+#ifndef THEMEPLUGIN_H
+#define THEMEPLUGIN_H
 
 #include <QObject>
 #include <QtPlugin>
@@ -24,7 +24,7 @@
 
 class QtDockTile;
 
-class StylePlugin : public QObject, public BufferViewPlugin,
+class ThemePlugin : public QObject, public BufferViewPlugin,
                                     public TextDocumentPlugin,
                                     public TreeWidgetPlugin,
                                     public MainWindowPlugin
@@ -39,7 +39,7 @@ class StylePlugin : public QObject, public BufferViewPlugin,
 #endif
 
 public:
-    StylePlugin(QObject* parent = 0);
+    ThemePlugin(QObject* parent = 0);
 
     void initialize(BufferView* view);
     void initialize(TextDocument* doc);
@@ -47,4 +47,4 @@ public:
     void initialize(MainWindow* window);
 };
 
-#endif // STYLEPLUGIN_H
+#endif // THEMEPLUGIN_H

@@ -12,7 +12,7 @@
 * GNU General Public License for more details.
 */
 
-#include "styleplugin.h"
+#include "themeplugin.h"
 #include "treedelegate.h"
 #include "textbrowser.h"
 #include "textdocument.h"
@@ -23,14 +23,14 @@
 #include "bufferview.h"
 #include "mainwindow.h"
 
-inline void initResource() { Q_INIT_RESOURCE(style); }
+inline void initResource() { Q_INIT_RESOURCE(theme); }
 
-StylePlugin::StylePlugin(QObject* parent) : QObject(parent)
+ThemePlugin::ThemePlugin(QObject* parent) : QObject(parent)
 {
     initResource();
 }
 
-void StylePlugin::initialize(BufferView* view)
+void ThemePlugin::initialize(BufferView* view)
 {
     view->textBrowser()->setStyleSheet(
         "TextBrowser {"
@@ -79,7 +79,7 @@ void StylePlugin::initialize(BufferView* view)
         "}");
 }
 
-void StylePlugin::initialize(TextDocument* doc)
+void ThemePlugin::initialize(TextDocument* doc)
 {
     doc->setDefaultStyleSheet(
         ".highlight { color: #ff4040 }"
@@ -90,7 +90,7 @@ void StylePlugin::initialize(TextDocument* doc)
         "a { color: #4040ff }");
 }
 
-void StylePlugin::initialize(TreeWidget* tree)
+void ThemePlugin::initialize(TreeWidget* tree)
 {
     TreeDelegate* delegate = new TreeDelegate(tree);
     tree->setItemDelegate(delegate);
@@ -106,7 +106,7 @@ void StylePlugin::initialize(TreeWidget* tree)
         "}");
 }
 
-void StylePlugin::initialize(MainWindow* window)
+void ThemePlugin::initialize(MainWindow* window)
 {
     window->setStyleSheet(
         "QSplitter::handle {"
@@ -162,5 +162,5 @@ void StylePlugin::initialize(MainWindow* window)
 }
 
 #if QT_VERSION < 0x050000
-Q_EXPORT_STATIC_PLUGIN(StylePlugin)
+Q_EXPORT_STATIC_PLUGIN(ThemePlugin)
 #endif
