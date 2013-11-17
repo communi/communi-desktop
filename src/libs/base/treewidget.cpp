@@ -101,6 +101,14 @@ void TreeWidget::setCurrentBuffer(IrcBuffer* buffer)
         setCurrentItem(item);
 }
 
+void TreeWidget::closeBuffer(IrcBuffer* buffer)
+{
+    if (!buffer)
+        buffer = currentBuffer();
+    if (buffer)
+        emit bufferClosed(buffer);
+}
+
 QSize TreeWidget::sizeHint() const
 {
     return QSize(20 * fontMetrics().width('#'), QTreeWidget::sizeHint().height());

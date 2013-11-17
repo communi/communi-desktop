@@ -44,12 +44,14 @@ public slots:
     void addBuffer(IrcBuffer* buffer);
     void removeBuffer(IrcBuffer* buffer);
     void setCurrentBuffer(IrcBuffer* buffer);
+    void closeBuffer(IrcBuffer* buffer = 0);
 
 signals:
     void bufferAdded(IrcBuffer* buffer);
     void bufferRemoved(IrcBuffer* buffer);
     void currentItemChanged(TreeItem* item);
     void currentBufferChanged(IrcBuffer* buffer);
+    void bufferClosed(IrcBuffer* buffer);
 
 protected:
     QSize sizeHint() const;
