@@ -95,7 +95,7 @@ bool ZncManager::messageFilter(IrcMessage* message)
     }
 
     if (message->type() == IrcMessage::Private) {
-        if (message->nick() == QLatin1String("***") && message->ident() == QLatin1String("znc")) {
+        if (message->nick() == QLatin1String("***")) {
             IrcPrivateMessage* privMsg = static_cast<IrcPrivateMessage*>(message);
             QString content = privMsg->content();
             if (content == QLatin1String("Buffer Playback...")) {
