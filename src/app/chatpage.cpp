@@ -212,6 +212,7 @@ void ChatPage::uninitBuffer(IrcBuffer* buffer)
 void ChatPage::initView(BufferView* view)
 {
     view->textInput()->setParser(createParser(view));
+    connect(view, SIGNAL(bufferClosed(IrcBuffer*)), this, SLOT(closeBuffer(IrcBuffer*)));
 
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         BufferViewPlugin* plugin = qobject_cast<BufferViewPlugin*>(instance);

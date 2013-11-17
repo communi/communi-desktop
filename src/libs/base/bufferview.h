@@ -36,10 +36,12 @@ public:
 
 public slots:
     void setBuffer(IrcBuffer* buffer);
+    void closeBuffer();
 
 signals:
     void destroyed(BufferView* view);
     void bufferChanged(IrcBuffer* buffer);
+    void bufferClosed(IrcBuffer* buffer);
 
 private slots:
     void query(const QString& user);

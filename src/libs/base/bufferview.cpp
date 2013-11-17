@@ -110,6 +110,12 @@ void BufferView::setBuffer(IrcBuffer* buffer)
     }
 }
 
+void BufferView::closeBuffer()
+{
+    if (d.buffer)
+        emit bufferClosed(d.buffer);
+}
+
 void BufferView::query(const QString& user)
 {
     IrcBufferModel* model = d.buffer ? d.buffer->model() : 0;
