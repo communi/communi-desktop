@@ -15,32 +15,15 @@
 #include "titlebar.h"
 #include "messageformatter.h"
 #include <IrcTextFormat>
-#include <QActionEvent>
 #include <IrcCommand>
 #include <IrcChannel>
-#include <QAction>
-#include <QEvent>
-#include <QMenu>
 
 TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
 {
     d.buffer = 0;
     d.formatter = new MessageFormatter(this);
 
-    d.closeButton = new QToolButton(this);
-    d.closeButton->setObjectName("close");
-    d.closeButton->setVisible(false);
-    d.closeButton->adjustSize();
-
-    d.menuButton = new QToolButton(this);
-    d.menuButton->setObjectName("menu");
-    d.menuButton->setPopupMode(QToolButton::InstantPopup);
-    d.menuButton->setMenu(new QMenu(d.menuButton));
-    d.menuButton->setVisible(false);
-    d.menuButton->adjustSize();
-
     setWordWrap(true);
-    setAttribute(Qt::WA_Hover);
     setOpenExternalLinks(true);
     setTextFormat(Qt::RichText);
 }
@@ -95,39 +78,6 @@ void TitleBar::setTopic(const QString& topic)
         if (channel->topic() != topic)
             channel->sendCommand(IrcCommand::createTopic(channel->title(), topic));
     }
-}
-
-bool TitleBar::event(QEvent* event)
-{
-    switch (event->type()) {
-    case QEvent::Enter:
-        d.closeButton->setVisible(true);
-        d.menuButton->setVisible(!d.menuButton->menu()->actions().isEmpty());
-        break;
-    case QEvent::Leave:
-        d.closeButton->setVisible(false);
-        d.menuButton->setVisible(false);
-        break;
-    case QEvent::ActionAdded:
-        d.menuButton->menu()->addAction(static_cast<QActionEvent*>(event)->action());
-        break;
-    case QEvent::ActionRemoved:
-        d.menuButton->menu()->removeAction(static_cast<QActionEvent*>(event)->action());
-        break;
-    default:
-        break;
-    }
-    return QLabel::event(event);
-}
-
-void TitleBar::resizeEvent(QResizeEvent* event)
-{
-    QLabel::resizeEvent(event);
-    QRect r = d.closeButton->rect();
-    r.moveTopRight(rect().topRight());
-    d.closeButton->setGeometry(r);
-    r.moveTopRight(d.closeButton->geometry().topLeft() - QPoint(1, 0));
-    d.menuButton->setGeometry(r);
 }
 
 void TitleBar::cleanup()

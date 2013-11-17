@@ -3,9 +3,9 @@
 ######################################################################
 
 HEADERS += $$PWD/topiceditor.h
-HEADERS += $$PWD/topicplugin.h
+HEADERS += $$PWD/titleplugin.h
 
 SOURCES += $$PWD/topiceditor.cpp
-SOURCES += $$PWD/topicplugin.cpp
+SOURCES += $$PWD/titleplugin.cpp
 
 include(../plugin.pri)

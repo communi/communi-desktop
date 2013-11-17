@@ -12,13 +12,14 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TOPICPLUGIN_H
-#define TOPICPLUGIN_H
+#ifndef TITLEPLUGIN_H
+#define TITLEPLUGIN_H
 
 #include <QtPlugin>
+#include <QToolButton>
 #include "bufferviewplugin.h"
 
-class TopicPlugin : public QObject, public BufferViewPlugin
+class TitlePlugin : public QObject, public BufferViewPlugin
 {
     Q_OBJECT
     Q_INTERFACES(BufferViewPlugin)
@@ -27,9 +28,17 @@ class TopicPlugin : public QObject, public BufferViewPlugin
 #endif
 
 public:
-    TopicPlugin(QObject* parent = 0);
+    TitlePlugin(QObject* parent = 0);
 
     void initialize(BufferView* view);
+
+    bool eventFilter(QObject* object, QEvent* event);
+
+private:
+    struct Private {
+        QToolButton* menuButton;
+        QToolButton* closeButton;
+    } d;
 };
 
-#endif // TOPICPLUGIN_H
+#endif // TITLEPLUGIN_H
