@@ -135,6 +135,14 @@ bool TextBrowser::isAtBottom() const
     return verticalScrollBar()->value() >= verticalScrollBar()->maximum();
 }
 
+void TextBrowser::clear()
+{
+    QTextBrowser::clear();
+    TextDocument* doc = document();
+    if (doc)
+        doc->reset();
+}
+
 void TextBrowser::scrollToTop()
 {
     verticalScrollBar()->triggerAction(QScrollBar::SliderToMinimum);

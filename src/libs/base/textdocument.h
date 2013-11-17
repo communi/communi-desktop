@@ -64,6 +64,7 @@ public:
     void drawForeground(QPainter* painter, const QRect& bounds);
 
 public slots:
+    void reset();
     void append(const QString& text);
 
 signals:

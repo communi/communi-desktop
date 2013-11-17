@@ -185,6 +185,14 @@ void TextDocument::removeHighlight(int block)
         updateBlock(block);
 }
 
+void TextDocument::reset()
+{
+    d.ub = -1;
+    d.lowlight = -1;
+    d.lowlights.clear();
+    d.highlights.clear();
+}
+
 void TextDocument::append(const QString& text)
 {
     if (!text.isEmpty()) {

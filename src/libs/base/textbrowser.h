@@ -37,6 +37,7 @@ public:
     bool isAtBottom() const;
 
 public slots:
+    void clear();
     void scrollToTop();
     void scrollToBottom();
     void scrollToNextPage();
