@@ -23,7 +23,7 @@
 #include "bufferview.h"
 #include "mainwindow.h"
 
-inline void initResource() { Q_INIT_RESOURCE(theme); }
+inline void initResource() { Q_INIT_RESOURCE(default); }
 
 ThemePlugin::ThemePlugin(QObject* parent) : QObject(parent)
 {

@@ -1,5 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
-<qresource>
+<qresource prefix="/themes/default">
+  <file>default.index</file>
+  <file>default.css</file>
   <file>images/close.png</file>
   <file>images/down.png</file>
   <file>images/left.png</file>
