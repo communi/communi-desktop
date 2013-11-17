@@ -42,6 +42,16 @@ TreeMenu::TreeMenu(TreeWidget* tree) : QMenu(tree)
     connect(d.partAction, SIGNAL(triggered()), this, SLOT(onPartTriggered()));
     connect(d.closeAction, SIGNAL(triggered()), this, SLOT(onCloseTriggered()));
 
+    addAction(d.disconnectAction);
+    addAction(d.reconnectAction);
+    addSeparator();
+    addAction(d.editAction);
+    addAction(d.whoisAction);
+    addAction(d.joinAction);
+    addAction(d.partAction);
+    addSeparator();
+    addAction(d.closeAction);
+
     tree->installEventFilter(this);
 }
 
@@ -147,19 +157,4 @@ void TreeMenu::setup(TreeItem* item)
         d.item = item;
     }
     updateActions();
-
-    clear();
-    addAction(d.disconnectAction);
-    addAction(d.reconnectAction);
-    addSeparator();
-    addAction(d.editAction);
-    addAction(d.whoisAction);
-    addAction(d.joinAction);
-    addAction(d.partAction);
-    if (!d.tree->actions().isEmpty()) {
-        addSeparator();
-        addActions(d.tree->actions());
-    }
-    addSeparator();
-    addAction(d.closeAction);
 }
