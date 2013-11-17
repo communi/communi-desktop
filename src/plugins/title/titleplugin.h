@@ -19,6 +19,8 @@
 #include <QToolButton>
 #include "bufferviewplugin.h"
 
+class TitleBar;
+
 class TitlePlugin : public QObject, public BufferViewPlugin
 {
     Q_OBJECT
@@ -34,8 +36,15 @@ public:
 
     bool eventFilter(QObject* object, QEvent* event);
 
+private slots:
+    void aboutToShowMenu();
+    void aboutToHideMenu();
+    void updateButtons();
+
 private:
     struct Private {
+        bool menu;
+        TitleBar* bar;
         QToolButton* menuButton;
         QToolButton* closeButton;
     } d;

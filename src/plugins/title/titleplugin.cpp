@@ -23,63 +23,80 @@
 
 TitlePlugin::TitlePlugin(QObject* parent) : QObject(parent)
 {
+    d.menu = false;
 }
 
 void TitlePlugin::initialize(BufferView* view)
 {
-    TitleBar* bar = view->titleBar();
-    bar->setAttribute(Qt::WA_Hover);
-    bar->installEventFilter(this);
+    d.bar = view->titleBar();
+    d.bar->setAttribute(Qt::WA_Hover);
+    d.bar->installEventFilter(this);
 
-    new TopicEditor(bar);
+    new TopicEditor(d.bar);
 
-    d.closeButton = new QToolButton(bar);
+    d.closeButton = new QToolButton(d.bar);
     d.closeButton->setObjectName("close");
     d.closeButton->setVisible(false);
     d.closeButton->adjustSize();
     connect(d.closeButton, SIGNAL(clicked()), view, SLOT(closeBuffer()));
 
-    d.menuButton = new QToolButton(bar);
+    d.menuButton = new QToolButton(d.bar);
     d.menuButton->setObjectName("menu");
     d.menuButton->setPopupMode(QToolButton::InstantPopup);
-    d.menuButton->setMenu(new QMenu(d.menuButton));
-    d.menuButton->menu()->addActions(bar->actions());
     d.menuButton->setVisible(false);
     d.menuButton->adjustSize();
+
+    QMenu* menu = new QMenu(d.menuButton);
+    connect(menu, SIGNAL(aboutToShow()), this, SLOT(aboutToShowMenu()));
+    connect(menu, SIGNAL(aboutToHide()), this, SLOT(aboutToHideMenu()));
+    menu->addActions(d.bar->actions());
+    d.menuButton->setMenu(menu);
 }
 
 bool TitlePlugin::eventFilter(QObject* object, QEvent* event)
 {
-    TitleBar* bar = qobject_cast<TitleBar*>(object);
-    if (bar) {
-        switch (event->type()) {
-        case QEvent::Enter:
-            d.closeButton->setVisible(true);
-            d.menuButton->setVisible(!d.menuButton->menu()->actions().isEmpty());
-            break;
-        case QEvent::Leave:
-            d.closeButton->setVisible(false);
-            d.menuButton->setVisible(false);
-            break;
-        case QEvent::ActionAdded:
-            d.menuButton->menu()->addAction(static_cast<QActionEvent*>(event)->action());
-            break;
-        case QEvent::ActionRemoved:
-            d.menuButton->menu()->removeAction(static_cast<QActionEvent*>(event)->action());
-            break;
-        case QEvent::Resize: {
-            QRect r = d.closeButton->rect();
-            r.moveTopRight(bar->rect().topRight());
-            d.closeButton->setGeometry(r);
-            r.moveTopRight(d.closeButton->geometry().topLeft() - QPoint(1, 0));
-            d.menuButton->setGeometry(r);
-            break;
-        }
-        default:
-            break;
-        }
+    switch (event->type()) {
+    case QEvent::Enter:
+    case QEvent::Leave:
+        updateButtons();
+        break;
+    case QEvent::ActionAdded:
+        d.menuButton->menu()->addAction(static_cast<QActionEvent*>(event)->action());
+        break;
+    case QEvent::ActionRemoved:
+        d.menuButton->menu()->removeAction(static_cast<QActionEvent*>(event)->action());
+        break;
+    case QEvent::Resize: {
+        QRect r = d.closeButton->rect();
+        r.moveTopRight(d.bar->rect().topRight());
+        d.closeButton->setGeometry(r);
+        r.moveTopRight(d.closeButton->geometry().topLeft() - QPoint(1, 0));
+        d.menuButton->setGeometry(r);
+        break;
+    }
+    default:
+        break;
     }
     return QObject::eventFilter(object, event);
+}
+
+void TitlePlugin::aboutToShowMenu()
+{
+    d.menu = true;
+    updateButtons();
+}
+
+void TitlePlugin::aboutToHideMenu()
+{
+    d.menu = false;
+    updateButtons();
+}
+
+void TitlePlugin::updateButtons()
+{
+    bool hover = d.bar->underMouse();
+    d.closeButton->setVisible(d.menu || hover);
+    d.menuButton->setVisible(d.menu || (hover && !d.menuButton->menu()->actions().isEmpty()));
 }
 
 #if QT_VERSION < 0x050000
