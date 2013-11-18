@@ -2,4 +2,5 @@
 # Communi
 ######################################################################
 
+RESOURCES += $$PWD/dark/dark.qrc
 RESOURCES += $$PWD/default/default.qrc
