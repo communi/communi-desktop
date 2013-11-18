@@ -12,15 +12,37 @@
 * GNU General Public License for more details.
 */
 
-#ifndef STYLESHEET_H
-#define STYLESHEET_H
+#ifndef THEME_H
+#define THEME_H
 
+#include <QMap>
 #include <QString>
+#include <QPalette>
 
-class StyleSheet
+class Theme
 {
 public:
     bool load(const QString& filePath);
+
+    QString attribute(const QString& key) const;
+
+    QString prefix() const;
+
+    QString docStyleSheet() const;
+    QString appStyleSheet() const;
+
+    QPalette appPalette() const;
+    QMap<int, QString> ircPalette() const;
+
+private:
+    struct Private {
+        QString prefix;
+        QString css;
+        QString qss;
+        QPalette palette;
+        QMap<int, QString> colors;
+        QMap<QString, QString> attributes;
+    } d;
 };
 
-#endif // STYLESHEET_H
+#endif // THEME_H

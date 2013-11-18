@@ -1,9 +1,0 @@
-[Theme]
-Name=Default
-Version=1.0
-Description=The default Communi theme
-Maintainer=J-P Nurmi <jpnurmi@gmail.com>
-
-[Files]
-Prefix=:/default
-Stylesheet=default.css

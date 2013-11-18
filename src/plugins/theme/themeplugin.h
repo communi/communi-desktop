@@ -17,34 +17,32 @@
 
 #include <QObject>
 #include <QtPlugin>
-#include "bufferviewplugin.h"
-#include "textdocumentplugin.h"
-#include "treewidgetplugin.h"
+#include "theme.h"
 #include "mainwindowplugin.h"
+#include "treewidgetplugin.h"
+#include "textdocumentplugin.h"
 
-class QtDockTile;
-
-class ThemePlugin : public QObject, public BufferViewPlugin,
-                                    public TextDocumentPlugin,
-                                    public TreeWidgetPlugin,
-                                    public MainWindowPlugin
+class ThemePlugin : public QObject, public MainWindowPlugin, public TreeWidgetPlugin, public TextDocumentPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(BufferViewPlugin TextDocumentPlugin TreeWidgetPlugin MainWindowPlugin)
+    Q_INTERFACES(MainWindowPlugin TreeWidgetPlugin TextDocumentPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "Communi.BufferViewPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.TextDocumentPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
     Q_PLUGIN_METADATA(IID "Communi.MainWindowPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.TextDocumentPlugin")
 #endif
 
 public:
     ThemePlugin(QObject* parent = 0);
 
-    void initialize(BufferView* view);
-    void initialize(TextDocument* doc);
-    void initialize(TreeWidget* tree);
     void initialize(MainWindow* window);
+    void initialize(TreeWidget* tree);
+    void initialize(TextDocument* doc);
+
+private:
+    struct Private {
+        Theme theme;
+    } d;
 };
 
 #endif // THEMEPLUGIN_H

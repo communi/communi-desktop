@@ -1,0 +1,110 @@
+TextBrowser {
+    border: none;
+    color: #000000;
+    background: #ffffff;
+    selection-color: palette(highlighted-text);
+    selection-background-color: palette(highlight);
+}
+
+TextInput {
+    border: 1px solid transparent;
+    border-top-color: palette(dark);
+}
+
+ListView {
+    border: none;
+    background: palette(alternate-base);
+    selection-background-color: palette(highlight);
+}
+
+ListView::item {
+    height: 20px;
+}
+
+TitleBar {
+    min-height: 18px;
+    border: 1px solid transparent;
+    border-bottom-color: palette(dark);
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0.0 palette(light),
+                                stop: 1.0 palette(button));
+}
+
+TitleBar > QTextEdit {
+    border: 1px solid transparent;
+    border-bottom-color: palette(dark);
+    selection-color: palette(highlighted-text);
+    selection-background-color: palette(highlight);
+}
+
+TreeWidget {
+    border: none;
+    background: palette(alternate-base);
+    selection-background-color: palette(highlight);
+}
+
+TreeWidget::item {
+    height: 20px;
+}
+
+QSplitter::handle {
+    width: 1px;
+    height: 1px;
+    background: palette(dark);
+}
+
+QToolButton {
+    border: 1px solid palette(dark);
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 palette(light), stop: 1 palette(button));
+}
+
+QToolButton:pressed {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 palette(button), stop: 1 palette(light));
+}
+
+QToolButton::menu-indicator {
+    image: none;
+}
+
+TitleBar > QToolButton {
+    min-width: 20px;
+    max-width: 20px;
+    min-height: 18px;
+    max-height: 18px;
+    border-top-color: transparent;
+    border-right-color: transparent;
+}
+
+TitleBar > QToolButton#menu {
+    image: url(:/images/down.png)
+}
+
+TitleBar > QToolButton#close {
+    image: url(:/images/close.png)
+}
+
+Finder > QToolButton {
+    min-width: 20px;
+    max-width: 20px;
+    min-height: 20px;
+    max-height: 20px;
+}
+
+Finder > QLineEdit {
+    border: 1px solid palette(dark);
+    border-bottom-color: transparent;
+}
+
+Finder > QToolButton {
+    border-left-color: transparent;
+}
+
+Finder > QToolButton#prev {
+    image: url(:/images/up.png)
+}
+
+Finder > QToolButton#next {
+    image: url(:/images/down.png)
+}
