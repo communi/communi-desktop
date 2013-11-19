@@ -12,8 +12,9 @@ document=:/themes/dark/dark.css
 application=:/themes/dark/dark.qss
 
 [QPalette]
+light=#222222
+button=#444444
+button-text=#dedede
 TextBrowser/shadow=black
-TreeWidget/button=#444444
-TreeWidget/button-text=#ffffff
 TreeWidget/highlight=#ff8080
 TreeWidget/highlighted-text=#ff4040

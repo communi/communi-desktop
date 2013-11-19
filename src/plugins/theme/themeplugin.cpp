@@ -45,8 +45,9 @@ void ThemePlugin::initialize(TreeWidget* tree)
 
 void ThemePlugin::initialize(MainWindow* window)
 {
+    qApp->setPalette(d.theme.palette());
     foreach (const QString& name, d.theme.palettes())
-        qApp->setPalette(d.theme.palette(name), name.toUtf8());
+        qApp->setPalette(d.theme.palette(name),name.toUtf8());
     window->setStyleSheet(d.theme.appStyleSheet());
 }
 
