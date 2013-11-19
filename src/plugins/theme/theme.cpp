@@ -40,9 +40,14 @@ QString Theme::appStyleSheet() const
     return d.qss;
 }
 
-QPalette Theme::appPalette() const
+QStringList Theme::palettes() const
 {
-    return d.palette;
+    return d.palettes.keys();
+}
+
+QPalette Theme::palette(const QString& name) const
+{
+    return d.palettes.value(name);
 }
 
 QMap<int, QString> Theme::ircPalette() const
@@ -127,6 +132,29 @@ static QString readFile(const QString& filePath)
     return QString();
 }
 
+static QPalette readPalette(const QSettings& settings)
+{
+    QPalette palette;
+    palette.setColor(QPalette::AlternateBase, parseColorValue(settings.value("alternate-base").toString(), palette.color(QPalette::AlternateBase)));
+    palette.setColor(QPalette::Base, parseColorValue(settings.value("base").toString(), palette.color(QPalette::Base)));
+    palette.setColor(QPalette::BrightText, parseColorValue(settings.value("bright-text").toString(), palette.color(QPalette::BrightText)));
+    palette.setColor(QPalette::Button, parseColorValue(settings.value("button").toString(), palette.color(QPalette::Button)));
+    palette.setColor(QPalette::ButtonText, parseColorValue(settings.value("button-text").toString(), palette.color(QPalette::ButtonText)));
+    palette.setColor(QPalette::Dark, parseColorValue(settings.value("dark").toString(), palette.color(QPalette::Dark)));
+    palette.setColor(QPalette::Highlight, parseColorValue(settings.value("highlight").toString(), palette.color(QPalette::Highlight)));
+    palette.setColor(QPalette::HighlightedText, parseColorValue(settings.value("highlighted-text").toString(), palette.color(QPalette::HighlightedText)));
+    palette.setColor(QPalette::Light, parseColorValue(settings.value("light").toString(), palette.color(QPalette::Light)));
+    palette.setColor(QPalette::Link, parseColorValue(settings.value("link").toString(), palette.color(QPalette::Link)));
+    palette.setColor(QPalette::LinkVisited, parseColorValue(settings.value("link-visited").toString(), palette.color(QPalette::LinkVisited)));
+    palette.setColor(QPalette::Mid, parseColorValue(settings.value("mid").toString(), palette.color(QPalette::Mid)));
+    palette.setColor(QPalette::Midlight, parseColorValue(settings.value("midlight").toString(), palette.color(QPalette::Midlight)));
+    palette.setColor(QPalette::Shadow, parseColorValue(settings.value("shadow").toString(), palette.color(QPalette::Shadow)));
+    palette.setColor(QPalette::Text, parseColorValue(settings.value("text").toString(), palette.color(QPalette::Text)));
+    palette.setColor(QPalette::Window, parseColorValue(settings.value("window").toString(), palette.color(QPalette::Window)));
+    palette.setColor(QPalette::WindowText, parseColorValue(settings.value("window-text").toString(), palette.color(QPalette::WindowText)));
+    return palette;
+}
+
 bool Theme::load(const QString& filePath)
 {
     QSettings settings(filePath, QSettings::IniFormat);
@@ -154,23 +182,12 @@ bool Theme::load(const QString& filePath)
 
     if (groups.contains("QPalette")) {
         settings.beginGroup("QPalette");
-        d.palette.setColor(QPalette::AlternateBase, parseColorValue(settings.value("alternate-base").toString(), qApp->palette().color(QPalette::AlternateBase)));
-        d.palette.setColor(QPalette::Base, parseColorValue(settings.value("base").toString(), qApp->palette().color(QPalette::Base)));
-        d.palette.setColor(QPalette::BrightText, parseColorValue(settings.value("bright-text").toString(), qApp->palette().color(QPalette::BrightText)));
-        d.palette.setColor(QPalette::Button, parseColorValue(settings.value("button").toString(), qApp->palette().color(QPalette::Button)));
-        d.palette.setColor(QPalette::ButtonText, parseColorValue(settings.value("button-text").toString(), qApp->palette().color(QPalette::ButtonText)));
-        d.palette.setColor(QPalette::Dark, parseColorValue(settings.value("dark").toString(), qApp->palette().color(QPalette::Dark)));
-        d.palette.setColor(QPalette::Highlight, parseColorValue(settings.value("highlight").toString(), qApp->palette().color(QPalette::Highlight)));
-        d.palette.setColor(QPalette::HighlightedText, parseColorValue(settings.value("highlighted-text").toString(), qApp->palette().color(QPalette::HighlightedText)));
-        d.palette.setColor(QPalette::Light, parseColorValue(settings.value("light").toString(), qApp->palette().color(QPalette::Light)));
-        d.palette.setColor(QPalette::Link, parseColorValue(settings.value("link").toString(), qApp->palette().color(QPalette::Link)));
-        d.palette.setColor(QPalette::LinkVisited, parseColorValue(settings.value("link-visited").toString(), qApp->palette().color(QPalette::LinkVisited)));
-        d.palette.setColor(QPalette::Mid, parseColorValue(settings.value("mid").toString(), qApp->palette().color(QPalette::Mid)));
-        d.palette.setColor(QPalette::Midlight, parseColorValue(settings.value("midlight").toString(), qApp->palette().color(QPalette::Midlight)));
-        d.palette.setColor(QPalette::Shadow, parseColorValue(settings.value("shadow").toString(), qApp->palette().color(QPalette::Shadow)));
-        d.palette.setColor(QPalette::Text, parseColorValue(settings.value("text").toString(), qApp->palette().color(QPalette::Text)));
-        d.palette.setColor(QPalette::Window, parseColorValue(settings.value("window").toString(), qApp->palette().color(QPalette::Window)));
-        d.palette.setColor(QPalette::WindowText, parseColorValue(settings.value("window-text").toString(), qApp->palette().color(QPalette::WindowText)));
+        d.palettes.insert(QString(), readPalette(settings));
+        foreach (const QString& group, settings.childGroups()) {
+            settings.beginGroup(group);
+            d.palettes.insert(group, readPalette(settings));
+            settings.endGroup();
+        }
         settings.endGroup();
     }
 

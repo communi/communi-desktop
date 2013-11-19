@@ -31,7 +31,9 @@ public:
     QString docStyleSheet() const;
     QString appStyleSheet() const;
 
-    QPalette appPalette() const;
+    QStringList palettes() const;
+    QPalette palette(const QString& name = QString()) const;
+
     QMap<int, QString> ircPalette() const;
 
 private:
@@ -39,8 +41,8 @@ private:
         QString prefix;
         QString css;
         QString qss;
-        QPalette palette;
         QMap<int, QString> colors;
+        QMap<QString, QPalette> palettes;
         QMap<QString, QString> attributes;
     } d;
 };
