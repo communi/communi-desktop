@@ -185,7 +185,7 @@ void TextBrowser::paintEvent(QPaintEvent* event)
     }
 
     QLinearGradient gradient(0, 0, 0, 3);
-    gradient.setColorAt(0.0, palette().color(QPalette::Dark));
+    gradient.setColorAt(0.0, palette().color(QPalette::Shadow));
     gradient.setColorAt(1.0, Qt::transparent);
 
     QPainter painter(viewport());

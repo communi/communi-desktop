@@ -105,7 +105,7 @@ static QColor parseRgbaColor(const QString& str)
     return QColor();
 }
 
-static QColor parseColorValue(const QString& str, const QColor& defaultColor)
+static QColor parseColorValue(const QString& str, const QColor& defaultColor = QColor())
 {
     QColor color;
     if (str.startsWith("palette(") && str.endsWith(")"))

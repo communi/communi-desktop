@@ -17,6 +17,7 @@
 #include "textdocument.h"
 #include "treewidget.h"
 #include "mainwindow.h"
+#include <QApplication>
 
 inline void initResources()
 {
@@ -44,7 +45,7 @@ void ThemePlugin::initialize(TreeWidget* tree)
 
 void ThemePlugin::initialize(MainWindow* window)
 {
-    window->setPalette(d.theme.appPalette());
+    qApp->setPalette(d.theme.appPalette()); // TODO: per class?
     window->setStyleSheet(d.theme.appStyleSheet());
 }
 
