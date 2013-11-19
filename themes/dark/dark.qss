@@ -19,19 +19,15 @@ TextInput {
 }
 
 QAbstractItemView::item {
-    color: #dedede;
     height: 20px;
 }
 
 QAbstractItemView::item:hover {
-    background: #222222;
+    background: transparent;
 }
 
 QAbstractItemView::item:selected {
-    background: #444444;
-}
-
-QAbstractItemView::item:hover:selected {
+    color: #dedede;
     background: #444444;
 }
 

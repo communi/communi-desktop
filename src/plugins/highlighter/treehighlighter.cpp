@@ -136,12 +136,14 @@ void TreeHighlighter::colorizeItem(QTreeWidgetItem* item)
     TreeItem* ti = static_cast<TreeItem*>(item);
     if (ti) {
         const bool hilite = d.blink && d.items.contains(item);
+        const QColor fg = d.tree->palette().color(QPalette::Disabled, QPalette::Text);
+        const QColor ht = d.tree->palette().color(QPalette::HighlightedText);
+        const QColor hl = d.tree->palette().color(QPalette::Highlight);
         if (hilite) {
-            item->setData(0, Qt::ForegroundRole, QColor("#ff4040"));
-            item->setData(1, Qt::BackgroundRole, QColor("#ff4040").lighter(125)); // TODO
+            item->setData(0, Qt::ForegroundRole, ht);
+            item->setData(1, Qt::BackgroundRole, hl);
         } else {
             const IrcBuffer* buffer = ti->buffer();
-            const QColor fg = d.tree->palette().color(QPalette::Disabled, QPalette::Text);
             item->setData(0, Qt::ForegroundRole, buffer->isActive() ? QVariant() : fg);
             item->setData(1, Qt::BackgroundRole, QVariant());
         }
@@ -149,8 +151,7 @@ void TreeHighlighter::colorizeItem(QTreeWidgetItem* item)
         TreeItem* pi = ti->parentItem();
         if (pi) {
             const IrcBuffer* buffer = pi->buffer();
-            const QColor fg = d.tree->palette().color(QPalette::Disabled, QPalette::Text);
-            pi->setData(0, Qt::ForegroundRole, hilite && !pi->isExpanded() ? QColor("#ff4040") : buffer->isActive() ? QVariant() : fg); // TODO
+            pi->setData(0, Qt::ForegroundRole, hilite && !pi->isExpanded() ? ht : buffer->isActive() ? QVariant() : fg); // TODO
         }
     }
 }
