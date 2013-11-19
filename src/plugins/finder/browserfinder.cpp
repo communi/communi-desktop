@@ -16,7 +16,7 @@
 #include "textbrowser.h"
 #include "textdocument.h"
 
-BrowserFinder::BrowserFinder(TextBrowser* browser) : Finder(browser)
+BrowserFinder::BrowserFinder(TextBrowser* browser) : Finder(browser->viewport())
 {
     d.textBrowser = browser;
     connect(browser, SIGNAL(documentChanged(TextDocument*)), this, SLOT(deleteLater()));

@@ -16,7 +16,7 @@
 #include "listview.h"
 #include <Irc>
 
-ListFinder::ListFinder(ListView* list) : Finder(list)
+ListFinder::ListFinder(ListView* list) : Finder(list->viewport())
 {
     d.list = list;
     connect(this, SIGNAL(returnPressed()), this, SLOT(onReturnPressed()));

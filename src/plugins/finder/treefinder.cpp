@@ -15,7 +15,7 @@
 #include "treefinder.h"
 #include "treewidget.h"
 
-TreeFinder::TreeFinder(TreeWidget* tree) : Finder(tree)
+TreeFinder::TreeFinder(TreeWidget* tree) : Finder(tree->viewport())
 {
     d.tree = tree;
     if (tree)
