@@ -14,6 +14,7 @@
 
 #include "titleextension.h"
 #include "titlebar.h"
+#include <QPropertyAnimation>
 #include <QActionEvent>
 #include <QAction>
 #include <QEvent>
@@ -45,7 +46,19 @@ TitleExtension::TitleExtension(TitleBar* bar) : QObject(bar)
     menu->addActions(d.bar->actions());
     d.menuButton->setMenu(menu);
 
+    d.offset = -d.closeButton->sizeHint().height();
     updateButtons();
+}
+
+int TitleExtension::offset() const
+{
+    return d.offset;
+}
+
+void TitleExtension::setOffset(int offset)
+{
+    d.offset = offset;
+    relocate();
 }
 
 bool TitleExtension::eventFilter(QObject* object, QEvent* event)
@@ -82,13 +95,40 @@ void TitleExtension::aboutToHideMenu()
 
 void TitleExtension::updateButtons()
 {
-    bool hover = d.bar->underMouse();
-    d.closeButton->setVisible(d.menu || hover);
-    d.menuButton->setVisible(d.menu || (hover && !d.menuButton->menu()->actions().isEmpty()));
+    if (d.menu || d.bar->underMouse()) {
+        d.closeButton->show();
+        d.menuButton->setVisible(!d.menuButton->menu()->actions().isEmpty());
+        animateShow();
+    } else {
+        animateHide();
+    }
+    relocate();
+}
 
+void TitleExtension::animateShow()
+{
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "offset");
+    animation->setDuration(50);
+    animation->setEndValue(0);
+    animation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void TitleExtension::animateHide()
+{
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "offset");
+    animation->setDuration(50);
+    animation->setEndValue(-d.closeButton->sizeHint().height());
+    animation->start(QAbstractAnimation::DeleteWhenStopped);
+    connect(animation, SIGNAL(destroyed()), d.closeButton, SLOT(hide()));
+    connect(animation, SIGNAL(destroyed()), d.menuButton, SLOT(hide()));
+}
+
+void TitleExtension::relocate()
+{
     QRect r = d.closeButton->rect();
     r.moveTopRight(d.bar->rect().topRight());
+    r.translate(0, d.offset);
     d.closeButton->setGeometry(r);
-    r.moveTopRight(d.closeButton->geometry().topLeft() - QPoint(1, 0));
+    r.moveRight(r.left() - 1);
     d.menuButton->setGeometry(r);
 }

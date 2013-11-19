@@ -22,9 +22,13 @@ class TitleBar;
 class TitleExtension : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(int offset READ offset WRITE setOffset)
 
 public:
     TitleExtension(TitleBar* bar);
+
+    int offset() const;
+    void setOffset(int offset);
 
     bool eventFilter(QObject* object, QEvent* event);
 
@@ -33,9 +37,15 @@ private slots:
     void aboutToHideMenu();
     void updateButtons();
 
+    void animateShow();
+    void animateHide();
+
+    void relocate();
+
 private:
     struct Private {
         bool menu;
+        int offset;
         TitleBar* bar;
         QToolButton* menuButton;
         QToolButton* closeButton;
