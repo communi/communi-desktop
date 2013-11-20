@@ -11,7 +11,7 @@ TextBrowser {
 }
 
 TextInput {
-    border-top-color: palette(dark);
+    border-top: 1px solid palette(mid);
 }
 
 QAbstractItemView::item {
@@ -20,36 +20,32 @@ QAbstractItemView::item {
 
 TitleBar {
     min-height: 18px;
-    border: 1px solid transparent;
-    border-bottom-color: palette(dark);
+    border-bottom: 1px solid palette(mid);
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0.0 #444444,
-                                stop: 1.0 #222222);
+                                stop: 0.0 palette(light),
+                                stop: 1.0 palette(dark));
     color: #dedede;
 }
 
 TitleBar > QTextEdit {
-    border: 1px solid transparent;
-    border-bottom-color: palette(dark);
+    border-bottom: 1px solid palette(mid);
 }
 
 QSplitter::handle {
     width: 1px;
     height: 1px;
-    background: palette(dark);
+    background: palette(mid);
 }
 
 QToolButton {
-    border: 1px solid palette(dark);
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0.0 #444444,
-                                stop: 1.0 #222222);
+    border: 1px solid palette(mid);
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 palette(light), stop: 1 palette(dark));
 }
 
 QToolButton:pressed {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0.0 #222222,
-                                stop: 1.0 #444444);
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 palette(dark), stop: 1 palette(light));
 }
 
 QToolButton::menu-indicator {
@@ -81,8 +77,8 @@ Finder > QToolButton {
 }
 
 Finder > QLineEdit {
-    border-top-color: palette(dark);
-    border-left-color: palette(dark);
+    border: 1px solid palette(mid);
+    border-bottom-color: transparent;
 }
 
 Finder > QToolButton {

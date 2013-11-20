@@ -13,10 +13,11 @@ application=:/themes/dark/dark.qss
 
 [QPalette]
 base=#222222
-light=#222222
-button=#444444
-button-text=#dedede
+light=#444444
+dark=#222222
 highlight=#283ecc
 highlighted-text=#324aff
+mid=#444444
+midlight=#dedede
 shadow=black
 text=#dedede
