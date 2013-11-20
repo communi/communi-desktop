@@ -40,14 +40,9 @@ QString Theme::appStyleSheet() const
     return d.qss;
 }
 
-QStringList Theme::palettes() const
+QPalette Theme::appPalette() const
 {
-    return d.palettes.keys();
-}
-
-QPalette Theme::palette(const QString& name) const
-{
-    return d.palettes.value(name);
+    return d.palette;
 }
 
 QMap<int, QString> Theme::ircPalette() const
@@ -182,12 +177,7 @@ bool Theme::load(const QString& filePath)
 
     if (groups.contains("QPalette")) {
         settings.beginGroup("QPalette");
-        d.palettes.insert(QString(), readPalette(settings));
-        foreach (const QString& group, settings.childGroups()) {
-            settings.beginGroup(group);
-            d.palettes.insert(group, readPalette(settings));
-            settings.endGroup();
-        }
+        d.palette = readPalette(settings);
         settings.endGroup();
     }
 

@@ -45,9 +45,10 @@ void ThemePlugin::initialize(TreeWidget* tree)
 
 void ThemePlugin::initialize(MainWindow* window)
 {
-    qApp->setPalette(d.theme.palette());
-    foreach (const QString& name, d.theme.palettes())
-        qApp->setPalette(d.theme.palette(name),name.toUtf8());
+    // TODO: app or window palette? would it make sense to keep the app palette pristine,
+    //       so that it can be restored, and only customize the window palette instead?
+    //       ...or even apply to all widgets?
+    qApp->setPalette(d.theme.appPalette());
     window->setStyleSheet(d.theme.appStyleSheet());
 }
 
