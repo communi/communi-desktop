@@ -12,10 +12,11 @@ document=:/themes/dark/dark.css
 application=:/themes/dark/dark.qss
 
 [QPalette]
+base=#222222
 light=#222222
 button=#444444
 button-text=#dedede
-highlight=#283ECC
-highlighted-text=#324AFF
+highlight=#283ecc
+highlighted-text=#324aff
 shadow=black
 text=#dedede

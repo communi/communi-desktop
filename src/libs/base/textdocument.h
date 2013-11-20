@@ -74,6 +74,7 @@ private:
         int ub;
         int dirty;
         bool clone;
+        bool drawUb;
         int lowlight;
         bool visible;
         IrcBuffer* buffer;
