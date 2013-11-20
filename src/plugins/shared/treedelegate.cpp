@@ -29,7 +29,7 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 
         QPalette pal; // TODO
         QColor c1 = pal.color(QPalette::Light);
-        QColor c2 = pal.color(QPalette::Button);
+        QColor c2 = pal.color(QPalette::Dark);
         if (selected)
             qSwap(c1, c2);
 
@@ -43,7 +43,7 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             lines += QLine(option.rect.topLeft(), option.rect.topRight());
         lines += QLine(option.rect.bottomLeft(), option.rect.bottomRight());
         QPen oldPen = painter->pen();
-        painter->setPen(pal.color(QPalette::Dark));
+        painter->setPen(pal.color(QPalette::Mid));
         painter->drawLines(lines);
         painter->setPen(oldPen);
     }

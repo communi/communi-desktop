@@ -37,7 +37,7 @@ void BadgeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
 
         QColor color = index.data(Qt::BackgroundRole).value<QColor>();
         if (!color.isValid())
-            color = QPalette().color(QPalette::Button); // TODO
+            color = QPalette().color(QPalette::Mid);
 
         painter->save();
         painter->setPen(Qt::NoPen);
@@ -62,7 +62,7 @@ void BadgeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
         else
             txt = QFontMetrics(font).elidedText(QString::number(badge), Qt::ElideRight, option.rect.width());
 
-        painter->setPen(QPalette().color(QPalette::ButtonText)); // TODO
+        painter->setPen(QPalette().color(QPalette::Midlight)); // TODO
         painter->drawText(option.rect, Qt::AlignCenter, txt);
         painter->restore();
     }

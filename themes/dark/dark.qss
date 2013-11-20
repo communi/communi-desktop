@@ -2,10 +2,6 @@ QAbstractItemView, QTextEdit, QLineEdit {
     border: none;
     color: #dedede;
     background: #222222;
-}
-
-QTextEdit, QLineEdit {
-    border: 1px solid transparent;
     selection-color: #dedede;
     selection-background-color: #444444;
 }
@@ -20,15 +16,6 @@ TextInput {
 
 QAbstractItemView::item {
     height: 20px;
-}
-
-QAbstractItemView::item:hover {
-    background: transparent;
-}
-
-QAbstractItemView::item:selected {
-    color: #dedede;
-    background: #444444;
 }
 
 TitleBar {

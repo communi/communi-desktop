@@ -28,8 +28,8 @@ inline void initResources()
 ThemePlugin::ThemePlugin(QObject* parent) : QObject(parent)
 {
     initResources();
-    d.theme.load(":/themes/dark/dark.theme");
-    //d.theme.load(":/themes/default/default.theme");
+    //d.theme.load(":/themes/dark/dark.theme");
+    d.theme.load(":/themes/default/default.theme");
 }
 
 void ThemePlugin::initialize(TextDocument* doc)

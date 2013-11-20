@@ -1,67 +1,50 @@
-TextBrowser {
+QAbstractItemView, QTextEdit, QLineEdit {
     border: none;
     color: #000000;
+    background: #edf3fe;
+    selection-color: #000000;
+    selection-background-color: #b5d5ff;
+}
+
+TextBrowser {
     background: #ffffff;
-    selection-color: palette(highlighted-text);
-    selection-background-color: palette(highlight);
 }
 
 TextInput {
-    border: 1px solid transparent;
-    border-top-color: palette(dark);
+    border-top: 1px solid #bfbfbf;
 }
 
-ListView {
-    border: none;
-    background: palette(alternate-base);
-    selection-background-color: palette(highlight);
-}
-
-ListView::item {
+QAbstractItemView::item {
     height: 20px;
 }
 
 TitleBar {
     min-height: 18px;
-    border: 1px solid transparent;
-    border-bottom-color: palette(dark);
+    border-bottom: 1px solid #bfbfbf;
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                 stop: 0.0 palette(light),
-                                stop: 1.0 palette(button));
+                                stop: 1.0 palette(dark));
 }
 
 TitleBar > QTextEdit {
-    border: 1px solid transparent;
-    border-bottom-color: palette(dark);
-    selection-color: palette(highlighted-text);
-    selection-background-color: palette(highlight);
-}
-
-TreeWidget {
-    border: none;
-    background: palette(alternate-base);
-    selection-background-color: palette(highlight);
-}
-
-TreeWidget::item {
-    height: 20px;
+    border-bottom: 1px solid #bfbfbf;
 }
 
 QSplitter::handle {
     width: 1px;
     height: 1px;
-    background: palette(dark);
+    background: #bfbfbf;
 }
 
 QToolButton {
-    border: 1px solid palette(dark);
+    border: 1px solid #bfbfbf;
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 palette(light), stop: 1 palette(button));
+                                      stop: 0 palette(light), stop: 1 palette(dark));
 }
 
 QToolButton:pressed {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 palette(button), stop: 1 palette(light));
+                                      stop: 0 palette(dark), stop: 1 palette(light));
 }
 
 QToolButton::menu-indicator {
@@ -93,7 +76,7 @@ Finder > QToolButton {
 }
 
 Finder > QLineEdit {
-    border: 1px solid palette(dark);
+    border: 1px solid #bfbfbf;
     border-bottom-color: transparent;
 }
 
