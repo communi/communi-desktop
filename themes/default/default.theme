@@ -10,3 +10,8 @@ prefix=:/themes/default
 [StyleSheets]
 document=:/themes/default/default.css
 application=:/themes/default/default.qss
+
+[QPalette]
+highlight=#ff8080
+highlighted-text=#ff4040
+shadow=gray

@@ -38,11 +38,6 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
     d.buffer = buffer;
     d.visible = false;
 
-    // TODO: stylesheet
-    d.markerColor = Qt::darkGray;
-    d.lowlightColor = qApp->palette().color(QPalette::AlternateBase);
-    d.highlightColor = QColor("#ffd6d6");
-
     d.highlighter = new SyntaxHighlighter(this);
 
     d.formatter = new MessageFormatter(this);
@@ -96,45 +91,6 @@ int TextDocument::totalCount() const
     if (!isEmpty())
         count += blockCount();
     return count;
-}
-
-QColor TextDocument::markerColor() const
-{
-    return d.markerColor;
-}
-
-void TextDocument::setMarkerColor(const QColor& color)
-{
-    if (d.markerColor != color) {
-        d.markerColor = color;
-        // TODO: update();
-    }
-}
-
-QColor TextDocument::lowlightColor() const
-{
-    return d.lowlightColor;
-}
-
-void TextDocument::setLowlightColor(const QColor& color)
-{
-    if (d.lowlightColor != color) {
-        d.lowlightColor = color;
-        // TODO: update();
-    }
-}
-
-QColor TextDocument::highlightColor() const
-{
-    return d.highlightColor;
-}
-
-void TextDocument::setHighlightColor(const QColor& color)
-{
-    if (d.highlightColor != color) {
-        d.highlightColor = color;
-        // TODO: update();
-    }
 }
 
 bool TextDocument::isVisible() const
@@ -219,46 +175,48 @@ void TextDocument::drawForeground(QPainter* painter, const QRect& bounds)
     const QPen oldPen = painter->pen();
     const QBrush oldBrush = painter->brush();
     painter->setBrush(Qt::NoBrush);
+    const QColor markerColor = QPalette().color(QPalette::Disabled, QPalette::Text);
 
     bool drawUb = d.ub > 1;
-    if (!d.lowlights.isEmpty()) {
-        const qreal oldOpacity = painter->opacity();
-        const QAbstractTextDocumentLayout* layout = documentLayout();
-        const int margin = qCeil(documentMargin());
-        QMap<int, int>::const_iterator it;
-        for (it = d.lowlights.begin(); it != d.lowlights.end(); ++it) {
-            const QTextBlock from = findBlockByNumber(it.key());
-            const QTextBlock to = findBlockByNumber(it.value());
-            if (from.isValid() && to.isValid()) {
-                const QRect fr = layout->blockBoundingRect(from).toAlignedRect();
-                const QRect tr = layout->blockBoundingRect(to).toAlignedRect();
-                QRect br = fr.united(tr);
-                if (bounds.intersects(br)) {
-                    bool atBottom = false;
-                    if (to == lastBlock()) {
-                        if (qAbs(bounds.bottom() - br.bottom()) < qMin(fr.height(), tr.height()))
-                            atBottom = true;
-                    }
-                    if (atBottom)
-                        br.setBottom(bounds.bottom());
-                    br = br.adjusted(-margin, 0, margin, 1);
-                    painter->setOpacity(0.2);
-                    painter->fillRect(br, d.lowlightColor);
-                    painter->setPen(d.markerColor);
-                    painter->setOpacity(0.5);
-                    painter->drawLine(br.topLeft(), br.topRight());
-                    if (!atBottom)
-                        painter->drawLine(br.bottomLeft(), br.bottomRight());
-                    if (drawUb && d.ub - 1 >= it.key() && (it.value() == -1 || d.ub - 1 <= it.value()))
-                        drawUb = false;
-                }
-            }
-        }
-        painter->setOpacity(oldOpacity);
-    }
+//    if (!d.lowlights.isEmpty()) {
+//        const qreal oldOpacity = painter->opacity();
+//        const QAbstractTextDocumentLayout* layout = documentLayout();
+//        const int margin = qCeil(documentMargin());
+//        const QColor lowlightColor = QPalette().color(QPalette::AlternateBase);
+//        QMap<int, int>::const_iterator it;
+//        for (it = d.lowlights.begin(); it != d.lowlights.end(); ++it) {
+//            const QTextBlock from = findBlockByNumber(it.key());
+//            const QTextBlock to = findBlockByNumber(it.value());
+//            if (from.isValid() && to.isValid()) {
+//                const QRect fr = layout->blockBoundingRect(from).toAlignedRect();
+//                const QRect tr = layout->blockBoundingRect(to).toAlignedRect();
+//                QRect br = fr.united(tr);
+//                if (bounds.intersects(br)) {
+//                    bool atBottom = false;
+//                    if (to == lastBlock()) {
+//                        if (qAbs(bounds.bottom() - br.bottom()) < qMin(fr.height(), tr.height()))
+//                            atBottom = true;
+//                    }
+//                    if (atBottom)
+//                        br.setBottom(bounds.bottom());
+//                    br = br.adjusted(-margin, 0, margin, 1);
+//                    painter->setOpacity(0.2);
+//                    painter->fillRect(br, lowlightColor);
+//                    painter->setPen(markerColor);
+//                    painter->setOpacity(0.5);
+//                    painter->drawLine(br.topLeft(), br.topRight());
+//                    if (!atBottom)
+//                        painter->drawLine(br.bottomLeft(), br.bottomRight());
+//                    if (drawUb && d.ub - 1 >= it.key() && (it.value() == -1 || d.ub - 1 <= it.value()))
+//                        drawUb = false;
+//                }
+//            }
+//        }
+//        painter->setOpacity(oldOpacity);
+//    }
 
     if (drawUb) {
-        painter->setPen(QPen(d.markerColor, 1, Qt::DashLine));
+        painter->setPen(QPen(markerColor, 1, Qt::DashLine));
         QTextBlock block = findBlockByNumber(d.ub);
         if (block.isValid()) {
             QRect br = documentLayout()->blockBoundingRect(block).toAlignedRect();
@@ -282,8 +240,9 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
     const int margin = qCeil(documentMargin());
     const QAbstractTextDocumentLayout* layout = documentLayout();
 
-    painter->setPen(QColor("#ffb6b6")); // TODO
-    painter->setBrush(d.highlightColor);
+    painter->setOpacity(0.25);
+    painter->setPen(QPalette().color(QPalette::HighlightedText));
+    painter->setBrush(QPalette().color(QPalette::Highlight));
     foreach (int highlight, d.highlights) {
         QTextBlock block = findBlockByNumber(highlight);
         if (block.isValid()) {

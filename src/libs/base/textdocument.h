@@ -18,9 +18,7 @@
 #include <QTextDocument>
 #include <QStringList>
 #include <QMetaType>
-#include <QColor>
 #include <QMap>
-#include <QSet>
 
 class IrcBuffer;
 class IrcMessage;
@@ -41,15 +39,6 @@ public:
     SyntaxHighlighter* highlighter() const;
 
     int totalCount() const;
-
-    QColor markerColor() const;
-    void setMarkerColor(const QColor& color);
-
-    QColor lowlightColor() const;
-    void setLowlightColor(const QColor& color);
-
-    QColor highlightColor() const;
-    void setHighlightColor(const QColor& color);
 
     bool isVisible() const;
     void setVisible(bool visible);
@@ -89,9 +78,6 @@ private:
         bool visible;
         IrcBuffer* buffer;
         QStringList lines;
-        QColor markerColor;
-        QColor lowlightColor;
-        QColor highlightColor;
         QList<int> highlights;
         QMap<int, int> lowlights;
         MessageFormatter* formatter;
