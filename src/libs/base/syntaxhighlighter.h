@@ -24,16 +24,8 @@ class SyntaxHighlighter : public QSyntaxHighlighter
 public:
     SyntaxHighlighter(QTextDocument* document);
 
-    QColor highlightColor() const;
-    void setHighlightColor(const QColor& color);
-
 protected:
     void highlightBlock(const QString &text);
-
-private:
-    struct Private {
-        QColor color;
-    } d;
 };
 
 #endif // SYNTAXHIGHLIGHTER_H

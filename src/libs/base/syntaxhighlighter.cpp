@@ -13,20 +13,10 @@
 */
 
 #include "syntaxhighlighter.h"
+#include <QPalette>
 
 SyntaxHighlighter::SyntaxHighlighter(QTextDocument* document) : QSyntaxHighlighter(document)
 {
-    d.color = QColor("#808080"); // TODO
-}
-
-QColor SyntaxHighlighter::highlightColor() const
-{
-    return d.color;
-}
-
-void SyntaxHighlighter::setHighlightColor(const QColor& color)
-{
-    d.color = color;
 }
 
 void SyntaxHighlighter::highlightBlock(const QString& text)
@@ -37,7 +27,7 @@ void SyntaxHighlighter::highlightBlock(const QString& text)
         for (QTextBlock::iterator it = block.begin(); !it.atEnd(); ++it) {
             QTextFragment fragment = it.fragment();
             if (fragment.isValid() && !fragment.charFormat().isAnchor())
-                setFormat(fragment.position() - block.position(), fragment.length(), d.color);
+                setFormat(fragment.position() - block.position(), fragment.length(), QPalette().color(QPalette::Disabled, QPalette::Text));
         }
     }
 }
