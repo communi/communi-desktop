@@ -17,6 +17,8 @@
 #include "textdocument.h"
 #include "treewidget.h"
 #include "mainwindow.h"
+#include "bufferview.h"
+#include "titlebar.h"
 #include <QApplication>
 
 inline void initResources()
@@ -32,9 +34,13 @@ ThemePlugin::ThemePlugin(QObject* parent) : QObject(parent)
     //d.theme.load(":/themes/default/default.theme");
 }
 
-void ThemePlugin::initialize(TextDocument* doc)
+void ThemePlugin::initialize(MainWindow* window)
 {
-    doc->setDefaultStyleSheet(d.theme.docStyleSheet());
+    // TODO: app or window palette? would it make sense to keep the app palette pristine,
+    //       so that it can be restored, and only customize the window palette instead?
+    //       ...or even apply to all widgets?
+    qApp->setPalette(d.theme.appPalette());
+    window->setStyleSheet(d.theme.appStyleSheet());
 }
 
 void ThemePlugin::initialize(TreeWidget* tree)
@@ -44,13 +50,17 @@ void ThemePlugin::initialize(TreeWidget* tree)
     tree->setItemDelegate(delegate);
 }
 
-void ThemePlugin::initialize(MainWindow* window)
+void ThemePlugin::initialize(TextDocument* doc)
 {
-    // TODO: app or window palette? would it make sense to keep the app palette pristine,
-    //       so that it can be restored, and only customize the window palette instead?
-    //       ...or even apply to all widgets?
-    qApp->setPalette(d.theme.appPalette());
-    window->setStyleSheet(d.theme.appStyleSheet());
+    doc->setDefaultStyleSheet(d.theme.docStyleSheet());
+}
+
+void ThemePlugin::initialize(BufferView* view)
+{
+    TitleBar* bar = view->titleBar();
+    QTextDocument* doc = bar->findChild<QTextDocument*>();
+    if (doc)
+        doc->setDefaultStyleSheet(d.theme.docStyleSheet());
 }
 
 #if QT_VERSION < 0x050000
