@@ -16,7 +16,7 @@
 #include "listview.h"
 #include <Irc>
 
-ListFinder::ListFinder(ListView* list) : Finder(list->viewport())
+ListFinder::ListFinder(ListView* list) : Finder(list)
 {
     d.list = list;
     connect(this, SIGNAL(returnPressed()), this, SLOT(onReturnPressed()));
@@ -73,6 +73,7 @@ void ListFinder::relocate()
     r.setWidth(br.width() + 2);
     r.translate(-1, -offset());
     setGeometry(r);
+    raise();
 }
 
 void ListFinder::onReturnPressed()

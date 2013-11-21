@@ -16,7 +16,7 @@
 #include "textbrowser.h"
 #include "textdocument.h"
 
-BrowserFinder::BrowserFinder(TextBrowser* browser) : Finder(browser->viewport())
+BrowserFinder::BrowserFinder(TextBrowser* browser) : Finder(browser)
 {
     d.textBrowser = browser;
     connect(browser, SIGNAL(documentChanged(TextDocument*)), this, SLOT(deleteLater()));
@@ -99,4 +99,5 @@ void BrowserFinder::relocate()
     r.moveBottomRight(br.bottomRight());
     r.translate(1, -offset());
     setGeometry(r);
+    raise();
 }

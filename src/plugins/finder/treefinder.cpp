@@ -15,7 +15,7 @@
 #include "treefinder.h"
 #include "treewidget.h"
 
-TreeFinder::TreeFinder(TreeWidget* tree) : Finder(tree->viewport())
+TreeFinder::TreeFinder(TreeWidget* tree) : Finder(tree)
 {
     d.tree = tree;
     if (tree)
@@ -81,6 +81,7 @@ void TreeFinder::relocate()
     r.setWidth(br.width() + 2);
     r.translate(-1, -offset());
     setGeometry(r);
+    raise();
 }
 
 QTreeWidgetItem* TreeFinder::lastItem() const
