@@ -10,4 +10,3 @@ SOURCES += $$PWD/badgeplugin.cpp
 
 include(../plugin.pri)
 include(../shared/shared.pri)
-include(../shared/delegate.pri)

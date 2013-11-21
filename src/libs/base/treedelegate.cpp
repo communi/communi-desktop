@@ -14,8 +14,11 @@
 
 #include "treedelegate.h"
 #include <QStyleOptionViewItem>
+#include <QLinearGradient>
 #include <QPalette>
 #include <QPainter>
+#include <QVector>
+#include <QStyle>
 
 TreeDelegate::TreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
 {
@@ -27,7 +30,7 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         const bool selected = option.state & QStyle::State_Selected;
         const_cast<QStyleOptionViewItem&>(option).state &= ~(QStyle::State_Selected | QStyle::State_MouseOver);
 
-        QPalette pal; // TODO
+        QPalette pal;
         QColor c1 = pal.color(QPalette::Light);
         QColor c2 = pal.color(QPalette::Dark);
         if (selected)
