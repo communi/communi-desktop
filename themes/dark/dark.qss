@@ -18,6 +18,14 @@ QAbstractItemView::item {
     height: 20px;
 }
 
+QAbstractItemView::item:selected, QAbstractItemView::item:selected:hover {
+    background-color: #444444;
+}
+
+QAbstractItemView::item:!selected:hover {
+    background-color: transparent;
+}
+
 TitleBar {
     min-height: 18px;
     border-bottom: 1px solid palette(mid);
