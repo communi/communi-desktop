@@ -61,11 +61,11 @@ TitleBar > QToolButton {
 }
 
 TitleBar > QToolButton#menu {
-    image: url(:/images/down.png)
+    image: url(:/themes/default/images/down.png)
 }
 
 TitleBar > QToolButton#close {
-    image: url(:/images/close.png)
+    image: url(:/themes/default/images/close.png)
 }
 
 Finder > QToolButton {
@@ -85,9 +85,9 @@ Finder > QToolButton {
 }
 
 Finder > QToolButton#prev {
-    image: url(:/images/up.png)
+    image: url(:/themes/default/images/up.png)
 }
 
 Finder > QToolButton#next {
-    image: url(:/images/down.png)
+    image: url(:/themes/default/images/down.png)
 }
