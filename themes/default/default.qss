@@ -6,7 +6,7 @@ QAbstractItemView, QTextEdit, QLineEdit {
     selection-background-color: #b5d5ff;
 }
 
-TextBrowser {
+TextInput, TextBrowser {
     background: #ffffff;
 }
 
