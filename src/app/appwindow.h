@@ -18,6 +18,7 @@ class ChatPage;
 class IrcBuffer;
 class IrcMessage;
 class ConnectPage;
+class SettingsPage;
 class IrcConnection;
 
 class AppWindow : public MainWindow
@@ -38,6 +39,7 @@ private slots:
     void onAccepted();
     void onRejected();
     void updateTitle();
+    void showSettings();
     void editConnection(IrcConnection* connection);
 
 private:
@@ -47,6 +49,7 @@ private:
         ChatPage* chatPage;
         QStackedWidget* stack;
         ConnectPage* connectPage;
+        SettingsPage* settingsPage;
         IrcConnection* editedConnection;
     } d;
 };

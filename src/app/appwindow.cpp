@@ -8,6 +8,7 @@
  */
 
 #include "appwindow.h"
+#include "settingspage.h"
 #include "connectpage.h"
 #include "chatpage.h"
 #include <IrcConnection>
@@ -53,11 +54,16 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
     connect(d.connectPage, SIGNAL(accepted()), this, SLOT(onAccepted()));
     connect(d.connectPage, SIGNAL(rejected()), this, SLOT(onRejected()));
 
+    d.settingsPage = new SettingsPage(this);
+    connect(d.settingsPage, SIGNAL(accepted()), this, SLOT(TODO()));
+    connect(d.settingsPage, SIGNAL(rejected()), this, SLOT(onRejected()));
+
     d.chatPage = new ChatPage(this);
     connect(d.chatPage, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(updateTitle()));
     connect(this, SIGNAL(connectionAdded(IrcConnection*)), d.chatPage, SLOT(initConnection(IrcConnection*)));
     connect(this, SIGNAL(connectionRemoved(IrcConnection*)), d.chatPage, SLOT(uninitConnection(IrcConnection*)));
 
+    d.stack->addWidget(d.settingsPage);
     d.stack->addWidget(d.connectPage);
     d.stack->addWidget(d.chatPage);
 
@@ -66,6 +72,9 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
 
     shortcut = new QShortcut(QKeySequence::New, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(doConnect()));
+
+    shortcut = new QShortcut(QKeySequence::Preferences, this);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(showSettings()));
 
     shortcut = new QShortcut(QKeySequence::Close, this);
     connect(shortcut, SIGNAL(activated()), d.chatPage, SLOT(closeBuffer()));
@@ -140,6 +149,11 @@ void AppWindow::updateTitle()
         setWindowTitle(QCoreApplication::applicationName());
     else
         setWindowTitle(tr("%1 - %2").arg(buffer->title(), QCoreApplication::applicationName()));
+}
+
+void AppWindow::showSettings()
+{
+    d.stack->setCurrentWidget(d.settingsPage);
 }
 
 void AppWindow::editConnection(IrcConnection* connection)
