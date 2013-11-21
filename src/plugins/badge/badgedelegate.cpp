@@ -62,7 +62,7 @@ void BadgeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
         else
             txt = QFontMetrics(font).elidedText(QString::number(badge), Qt::ElideRight, option.rect.width());
 
-        painter->setPen(QPalette().color(QPalette::Midlight)); // TODO
+        painter->setPen(QPalette().color(QPalette::Midlight));
         painter->drawText(option.rect, Qt::AlignCenter, txt);
         painter->restore();
     }

@@ -58,7 +58,7 @@ void LagPlugin::updateConnection(IrcConnection* connection, qint64 lag)
         QPixmap pixmap(16, 16);
         pixmap.fill(Qt::transparent);
         QPainter painter(&pixmap);
-        painter.setPen(d.tree->palette().color(QPalette::Dark)); // TODO
+        painter.setPen(QPalette().color(QPalette::Mid));
         QColor color(Qt::transparent);
         if (lag > 0) {
             qreal f = qMin(100.0, qSqrt(lag)) / 100;
