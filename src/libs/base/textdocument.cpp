@@ -170,26 +170,20 @@ void TextDocument::append(const QString& text)
 
 void TextDocument::drawForeground(QPainter* painter, const QRect& bounds)
 {
-    if (d.ub <= 1)
-        return;
-
-    const QPen oldPen = painter->pen();
-    const QBrush oldBrush = painter->brush();
-    painter->setBrush(Qt::NoBrush);
-    const QColor markerColor = QPalette().color(QPalette::Disabled, QPalette::Text);
-
     if (d.drawUb) {
-        painter->setPen(QPen(markerColor, 1, Qt::DashLine));
+        const QPen oldPen = painter->pen();
+        const QBrush oldBrush = painter->brush();
+        painter->setBrush(Qt::NoBrush);
+        painter->setPen(QPen(QPalette().color(QPalette::Mid), 1, Qt::DashLine));
         QTextBlock block = findBlockByNumber(d.ub);
         if (block.isValid()) {
             QRect br = documentLayout()->blockBoundingRect(block).toAlignedRect();
             if (bounds.intersects(br))
                 painter->drawLine(br.topLeft(), br.topRight());
         }
+        painter->setPen(oldPen);
+        painter->setBrush(oldBrush);
     }
-
-    painter->setPen(oldPen);
-    painter->setBrush(oldBrush);
 }
 
 void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
@@ -205,10 +199,9 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
 
     d.drawUb = d.ub > 1;
     if (!d.lowlights.isEmpty()) {
-        const qreal oldOpacity = painter->opacity();
         const QAbstractTextDocumentLayout* layout = documentLayout();
         const int margin = qCeil(documentMargin());
-        const QColor markerColor = QPalette().color(QPalette::Disabled, QPalette::Text);
+        const QColor markerColor = QPalette().color(QPalette::Mid);
         const QColor lowlightColor = QPalette().color(QPalette::AlternateBase);
         QMap<int, int>::const_iterator it;
         for (it = d.lowlights.begin(); it != d.lowlights.end(); ++it) {
@@ -237,7 +230,6 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
                 }
             }
         }
-        painter->setOpacity(oldOpacity);
     }
 
     painter->setOpacity(0.25);
