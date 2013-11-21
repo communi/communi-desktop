@@ -34,12 +34,14 @@ FORMS += $$PWD/settingspage.ui
 HEADERS += $$PWD/appwindow.h
 HEADERS += $$PWD/chatpage.h
 HEADERS += $$PWD/connectpage.h
+HEADERS += $$PWD/pluginloader.h
 HEADERS += $$PWD/settingspage.h
 
 SOURCES += $$PWD/appwindow.cpp
 SOURCES += $$PWD/chatpage.cpp
 SOURCES += $$PWD/connectpage.cpp
 SOURCES += $$PWD/main.cpp
+SOURCES += $$PWD/pluginloader.cpp
 SOURCES += $$PWD/settingspage.cpp
 
 include(plugins.pri)
