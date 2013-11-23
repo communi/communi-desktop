@@ -1,43 +1,42 @@
-QAbstractItemView, QTextEdit, QLineEdit {
+TextInput, TextBrowser {
     border: none;
     color: #000000;
-    background: #edf3fe;
-    selection-color: #000000;
-    selection-background-color: #b5d5ff;
-}
-
-TextInput, TextBrowser {
     background: #ffffff;
 }
 
 TextInput {
-    border-top: 1px solid #bfbfbf;
+    border-top: 1px solid palette(mid);
 }
 
-QAbstractItemView::item {
+TreeWidget, ListView {
+    border: none;
+    background: palette(alternate-base);
+}
+
+TreeWidget::item, ListView::item {
     height: 20px;
 }
 
 TitleBar {
     min-height: 18px;
-    border-bottom: 1px solid #bfbfbf;
+    border-bottom: 1px solid palette(mid);
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                 stop: 0.0 palette(light),
                                 stop: 1.0 palette(dark));
 }
 
 TitleBar > QTextEdit {
-    border-bottom: 1px solid #bfbfbf;
+    border-bottom: 1px solid palette(mid);
 }
 
 QSplitter::handle {
     width: 1px;
     height: 1px;
-    background: #bfbfbf;
+    background: palette(mid);
 }
 
 QToolButton {
-    border: 1px solid #bfbfbf;
+    border: 1px solid palette(mid);
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                       stop: 0 palette(light), stop: 1 palette(dark));
 }
@@ -76,7 +75,7 @@ Finder > QToolButton {
 }
 
 Finder > QLineEdit {
-    border: 1px solid #bfbfbf;
+    border: 1px solid palette(mid);
     border-bottom-color: transparent;
 }
 

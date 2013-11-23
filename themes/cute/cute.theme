@@ -12,12 +12,9 @@ document=:/themes/cute/cute.css
 application=:/themes/cute/cute.qss
 
 [QPalette]
-base=#edf3fe
 light=#fdfdfd
 dark=#e0e0e0
 highlight=#ff8080
 highlighted-text=#ff4040
 mid=#bec3cb
 midlight=#ffffff
-shadow=gray
-disabled/text=#808080
