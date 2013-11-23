@@ -24,7 +24,7 @@ DockPlugin::DockPlugin(QObject* parent) : QObject(parent)
     d.window = 0;
 }
 
-void DockPlugin::initialize(MainWindow* window)
+void DockPlugin::initWindow(MainWindow* window)
 {
     d.window = window;
     window->installEventFilter(this);
@@ -33,13 +33,13 @@ void DockPlugin::initialize(MainWindow* window)
         d.dock = new QtDockTile(window);
 }
 
-void DockPlugin::initialize(IrcConnection* connection)
+void DockPlugin::initConnection(IrcConnection* connection)
 {
     if (d.dock)
         connect(connection, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
 }
 
-void DockPlugin::uninitialize(IrcConnection* connection)
+void DockPlugin::cleanupConnection(IrcConnection* connection)
 {
     if (d.dock)
         disconnect(connection, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));

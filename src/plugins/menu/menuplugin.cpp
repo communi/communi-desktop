@@ -24,19 +24,19 @@ MenuPlugin::MenuPlugin(QObject* parent) : QObject(parent)
     d.view = 0;
 }
 
-void MenuPlugin::initialize(TreeWidget* tree)
+void MenuPlugin::initTree(TreeWidget* tree)
 {
     new TreeMenu(tree);
 }
 
-void MenuPlugin::initialize(BufferView* view)
+void MenuPlugin::initView(BufferView* view)
 {
     new ListMenu(view->listView());
     new BrowserMenu(view->textBrowser());
     new TitleMenu(view->titleBar(), d.view);
 }
 
-void MenuPlugin::initialize(SplitView *view)
+void MenuPlugin::initView(SplitView *view)
 {
     d.view = view;
 }

@@ -22,14 +22,14 @@ CompleterPlugin::CompleterPlugin(QObject* parent) : QObject(parent)
     d.shortcut = 0;
 }
 
-void CompleterPlugin::initialize(BufferView* view)
+void CompleterPlugin::initView(BufferView* view)
 {
     TextInput* input = view->textInput();
     Completer* completer = new Completer(input);
     connect(d.shortcut, SIGNAL(activated()), completer, SLOT(tryComplete()));
 }
 
-void CompleterPlugin::initialize(SplitView* view)
+void CompleterPlugin::initView(SplitView* view)
 {
     d.shortcut = new QShortcut(Qt::Key_Tab, view);
 }

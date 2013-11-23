@@ -29,25 +29,25 @@ public:
 
 public slots:
     void initWindow(MainWindow* window);
-    void uninitWindow(MainWindow* window);
+    void cleanupWindow(MainWindow* window);
 
     void initBuffer(IrcBuffer* buffer);
-    void uninitBuffer(IrcBuffer* buffer);
+    void cleanupBuffer(IrcBuffer* buffer);
 
     void initConnection(IrcConnection* connection);
-    void uninitConnection(IrcConnection* connection);
+    void cleanupConnection(IrcConnection* connection);
 
     void initView(BufferView* view);
-    void uninitView(BufferView* view);
+    void cleanupView(BufferView* view);
 
     void initView(SplitView* view);
-    void uninitView(SplitView* view);
+    void cleanupView(SplitView* view);
 
     void initDocument(TextDocument* doc);
-    void uninitDocument(TextDocument* doc);
+    void cleanupDocument(TextDocument* doc);
 
     void initTree(TreeWidget* tree);
-    void uninitTree(TreeWidget* tree);
+    void cleanupTree(TreeWidget* tree);
 
 private:
     PluginLoader(QObject* parent = 0);

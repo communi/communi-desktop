@@ -29,7 +29,7 @@ class TitlePlugin : public QObject, public BufferViewPlugin
 public:
     TitlePlugin(QObject* parent = 0);
 
-    void initialize(BufferView* view);
+    void initView(BufferView* view);
 };
 
 #endif // TITLEPLUGIN_H

@@ -36,7 +36,7 @@ class BadgePlugin : public QObject, public TreeWidgetPlugin
 public:
     BadgePlugin(QObject* parent = 0);
 
-    void initialize(TreeWidget* tree);
+    void initTree(TreeWidget* tree);
 
     bool eventFilter(QObject* object, QEvent* event);
 

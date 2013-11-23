@@ -23,8 +23,8 @@ class ConnectionPlugin
 {
 public:
     virtual ~ConnectionPlugin() {}
-    virtual void initialize(IrcConnection*) {}
-    virtual void uninitialize(IrcConnection*) {}
+    virtual void initConnection(IrcConnection*) {}
+    virtual void cleanupConnection(IrcConnection*) {}
 };
 
 Q_DECLARE_INTERFACE(ConnectionPlugin, "Communi.ConnectionPlugin")

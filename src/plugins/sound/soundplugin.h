@@ -34,8 +34,8 @@ class SoundPlugin : public QObject, public TreeWidgetPlugin
 public:
     SoundPlugin(QObject* parent = 0);
 
-    void initialize(TreeWidget* tree);
-    void uninitialize(TreeWidget* tree);
+    void initTree(TreeWidget* tree);
+    void cleanupTree(TreeWidget* tree);
 
 private slots:
     void onBufferAdded(IrcBuffer* buffer);

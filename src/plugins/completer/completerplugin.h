@@ -32,8 +32,8 @@ class CompleterPlugin : public QObject, public BufferViewPlugin, public SplitVie
 public:
     CompleterPlugin(QObject* parent = 0);
 
-    void initialize(BufferView* view);
-    void initialize(SplitView* view);
+    void initView(BufferView* view);
+    void initView(SplitView* view);
 
 private:
     struct Private {

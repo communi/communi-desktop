@@ -35,10 +35,10 @@ class DockPlugin : public QObject, public ConnectionPlugin, public MainWindowPlu
 public:
     DockPlugin(QObject* parent = 0);
 
-    void initialize(IrcConnection* connection);
-    void uninitialize(IrcConnection* connection);
+    void initConnection(IrcConnection* connection);
+    void cleanupConnection(IrcConnection* connection);
 
-    void initialize(MainWindow* window);
+    void initWindow(MainWindow* window);
 
     bool eventFilter(QObject* object, QEvent* event);
 

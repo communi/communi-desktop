@@ -36,10 +36,10 @@ class AjaxPlugin : public QObject, public ConnectionPlugin, public TreeWidgetPlu
 public:
     AjaxPlugin(QObject* parent = 0);
 
-    void initialize(TreeWidget* tree);
+    void initTree(TreeWidget* tree);
 
-    void initialize(IrcConnection* connection);
-    void uninitialize(IrcConnection* connection);
+    void initConnection(IrcConnection* connection);
+    void cleanupConnection(IrcConnection* connection);
 
 private slots:
     void updateLoader();

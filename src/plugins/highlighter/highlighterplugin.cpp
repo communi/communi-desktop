@@ -20,12 +20,12 @@ HighlighterPlugin::HighlighterPlugin(QObject* parent) : QObject(parent)
 {
 }
 
-void HighlighterPlugin::initialize(TextDocument* document)
+void HighlighterPlugin::initDocument(TextDocument* document)
 {
     new DocumentHighlighter(document);
 }
 
-void HighlighterPlugin::initialize(TreeWidget* tree)
+void HighlighterPlugin::initTree(TreeWidget* tree)
 {
     new TreeHighlighter(tree);
 }

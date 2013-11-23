@@ -22,7 +22,7 @@ ReseterPlugin::ReseterPlugin(QObject* parent) : QObject(parent)
     d.shortcut = 0;
 }
 
-void ReseterPlugin::initialize(TreeWidget* tree)
+void ReseterPlugin::initTree(TreeWidget* tree)
 {
     d.tree = tree;
 

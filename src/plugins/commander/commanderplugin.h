@@ -39,11 +39,11 @@ class CommanderPlugin : public QObject, public IrcCommandFilter, public Connecti
 public:
     CommanderPlugin(QObject* parent = 0);
 
-    void initialize(BufferView* view);
-    void initialize(SplitView* view);
-    void initialize(TreeWidget* tree);
-    void initialize(IrcConnection* connection);
-    void uninitialize(IrcConnection* connection);
+    void initView(BufferView* view);
+    void initView(SplitView* view);
+    void initTree(TreeWidget* tree);
+    void initConnection(IrcConnection* connection);
+    void cleanupConnection(IrcConnection* connection);
 
     bool commandFilter(IrcCommand* command);
 

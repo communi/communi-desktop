@@ -63,16 +63,16 @@ void PluginLoader::initWindow(MainWindow* window)
     foreach (QObject* instance, pluginInstances()) {
         MainWindowPlugin* plugin = qobject_cast<MainWindowPlugin*>(instance);
         if (plugin)
-            plugin->initialize(window);
+            plugin->initWindow(window);
     }
 }
 
-void PluginLoader::uninitWindow(MainWindow* window)
+void PluginLoader::cleanupWindow(MainWindow* window)
 {
     foreach (QObject* instance, pluginInstances()) {
         MainWindowPlugin* plugin = qobject_cast<MainWindowPlugin*>(instance);
         if (plugin)
-            plugin->uninitialize(window);
+            plugin->cleanupWindow(window);
     }
 }
 
@@ -81,16 +81,16 @@ void PluginLoader::initBuffer(IrcBuffer* buffer)
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         BufferPlugin* plugin = qobject_cast<BufferPlugin*>(instance);
         if (plugin)
-            plugin->addBuffer(buffer);
+            plugin->initBuffer(buffer);
     }
 }
 
-void PluginLoader::uninitBuffer(IrcBuffer* buffer)
+void PluginLoader::cleanupBuffer(IrcBuffer* buffer)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         BufferPlugin* plugin = qobject_cast<BufferPlugin*>(instance);
         if (plugin)
-            plugin->removeBuffer(buffer);
+            plugin->cleanupBuffer(buffer);
     }
 }
 
@@ -99,16 +99,16 @@ void PluginLoader::initConnection(IrcConnection* connection)
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         ConnectionPlugin* plugin = qobject_cast<ConnectionPlugin*>(instance);
         if (plugin)
-            plugin->initialize(connection);
+            plugin->initConnection(connection);
     }
 }
 
-void PluginLoader::uninitConnection(IrcConnection* connection)
+void PluginLoader::cleanupConnection(IrcConnection* connection)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         ConnectionPlugin* plugin = qobject_cast<ConnectionPlugin*>(instance);
         if (plugin)
-            plugin->uninitialize(connection);
+            plugin->cleanupConnection(connection);
     }
 }
 
@@ -117,16 +117,16 @@ void PluginLoader::initView(BufferView* view)
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         BufferViewPlugin* plugin = qobject_cast<BufferViewPlugin*>(instance);
         if (plugin)
-            plugin->initialize(view);
+            plugin->initView(view);
     }
 }
 
-void PluginLoader::uninitView(BufferView* view)
+void PluginLoader::cleanupView(BufferView* view)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         BufferViewPlugin* plugin = qobject_cast<BufferViewPlugin*>(instance);
         if (plugin)
-            plugin->uninitialize(view);
+            plugin->cleanupView(view);
     }
 }
 
@@ -135,16 +135,16 @@ void PluginLoader::initView(SplitView* view)
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         SplitViewPlugin* plugin = qobject_cast<SplitViewPlugin*>(instance);
         if (plugin)
-            plugin->initialize(view);
+            plugin->initView(view);
     }
 }
 
-void PluginLoader::uninitView(SplitView* view)
+void PluginLoader::cleanupView(SplitView* view)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         SplitViewPlugin* plugin = qobject_cast<SplitViewPlugin*>(instance);
         if (plugin)
-            plugin->uninitialize(view);
+            plugin->cleanupView(view);
     }
 }
 
@@ -153,16 +153,16 @@ void PluginLoader::initDocument(TextDocument* doc)
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         TextDocumentPlugin* plugin = qobject_cast<TextDocumentPlugin*>(instance);
         if (plugin)
-            plugin->initialize(doc);
+            plugin->initDocument(doc);
     }
 }
 
-void PluginLoader::uninitDocument(TextDocument* doc)
+void PluginLoader::cleanupDocument(TextDocument* doc)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         TextDocumentPlugin* plugin = qobject_cast<TextDocumentPlugin*>(instance);
         if (plugin)
-            plugin->uninitialize(doc);
+            plugin->cleanupDocument(doc);
     }
 }
 
@@ -171,15 +171,15 @@ void PluginLoader::initTree(TreeWidget* tree)
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         TreeWidgetPlugin* plugin = qobject_cast<TreeWidgetPlugin*>(instance);
         if (plugin)
-            plugin->initialize(tree);
+            plugin->initTree(tree);
     }
 }
 
-void PluginLoader::uninitTree(TreeWidget* tree)
+void PluginLoader::cleanupTree(TreeWidget* tree)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         TreeWidgetPlugin* plugin = qobject_cast<TreeWidgetPlugin*>(instance);
         if (plugin)
-            plugin->uninitialize(tree);
+            plugin->cleanupTree(tree);
     }
 }

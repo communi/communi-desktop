@@ -23,11 +23,8 @@ class BufferPlugin
 {
 public:
     virtual ~BufferPlugin() {}
-
-public slots:
-    virtual void addBuffer(IrcBuffer*) {}
-    virtual void removeBuffer(IrcBuffer*) {}
-    virtual void setCurrentBuffer(IrcBuffer*) {}
+    virtual void initBuffer(IrcBuffer*) {}
+    virtual void cleanupBuffer(IrcBuffer*) {}
 };
 
 Q_DECLARE_INTERFACE(BufferPlugin, "Communi.BufferPlugin")

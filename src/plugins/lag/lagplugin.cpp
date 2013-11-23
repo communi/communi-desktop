@@ -26,7 +26,7 @@ LagPlugin::LagPlugin(QObject* parent) : QObject(parent)
     d.tree = 0;
 }
 
-void LagPlugin::initialize(IrcConnection* connection)
+void LagPlugin::initConnection(IrcConnection* connection)
 {
     connect(connection, SIGNAL(connected()), this, SLOT(updateConnection()));
 
@@ -36,7 +36,7 @@ void LagPlugin::initialize(IrcConnection* connection)
     connect(connection, SIGNAL(connected()), timer, SLOT(_irc_pingServer()));
 }
 
-void LagPlugin::initialize(TreeWidget* tree)
+void LagPlugin::initTree(TreeWidget* tree)
 {
     d.tree = tree;
 }

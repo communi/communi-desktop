@@ -31,7 +31,7 @@ SoundPlugin::SoundPlugin(QObject* parent) : QObject(parent)
     d.sound = 0;
 }
 
-void SoundPlugin::initialize(TreeWidget* tree)
+void SoundPlugin::initTree(TreeWidget* tree)
 {
     d.tree = tree;
 
@@ -53,7 +53,7 @@ void SoundPlugin::initialize(TreeWidget* tree)
     connect(tree, SIGNAL(bufferRemoved(IrcBuffer*)), this, SLOT(onBufferRemoved(IrcBuffer*)));
 }
 
-void SoundPlugin::uninitialize(TreeWidget* tree)
+void SoundPlugin::cleanupTree(TreeWidget* tree)
 {
     Q_UNUSED(tree);
     d.tree = 0;

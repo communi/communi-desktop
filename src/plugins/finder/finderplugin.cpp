@@ -32,7 +32,7 @@ FinderPlugin::FinderPlugin(QObject* parent) : QObject(parent)
     d.prevShortcut = 0;
 }
 
-void FinderPlugin::initialize(SplitView* view)
+void FinderPlugin::initView(SplitView* view)
 {
     d.view = view;
 
@@ -55,7 +55,7 @@ void FinderPlugin::initialize(SplitView* view)
     d.prevShortcut = new QShortcut(QKeySequence::FindPrevious, view);
 }
 
-void FinderPlugin::initialize(TreeWidget* tree)
+void FinderPlugin::initTree(TreeWidget* tree)
 {
     d.tree = tree;
 }

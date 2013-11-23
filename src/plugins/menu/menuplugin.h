@@ -36,9 +36,9 @@ class MenuPlugin : public QObject, public TreeWidgetPlugin,
 public:
     MenuPlugin(QObject* parent = 0);
 
-    void initialize(TreeWidget* tree);
-    void initialize(BufferView* view);
-    void initialize(SplitView* view);
+    void initTree(TreeWidget* tree);
+    void initView(BufferView* view);
+    void initView(SplitView* view);
 
 private:
     struct Private {

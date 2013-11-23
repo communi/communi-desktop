@@ -32,7 +32,7 @@ CommanderPlugin::CommanderPlugin(QObject* parent) : QObject(parent)
     d.tree = 0;
 }
 
-void CommanderPlugin::initialize(BufferView* view)
+void CommanderPlugin::initView(BufferView* view)
 {
     IrcCommandParser* parser = view->textInput()->parser();
     parser->addCommand(IrcCommand::Custom, "CLEAR");
@@ -41,22 +41,22 @@ void CommanderPlugin::initialize(BufferView* view)
     parser->addCommand(IrcCommand::Custom, "QUERY <user> (<message...>)");
 }
 
-void CommanderPlugin::initialize(SplitView* view)
+void CommanderPlugin::initView(SplitView* view)
 {
     d.view = view;
 }
 
-void CommanderPlugin::initialize(TreeWidget* tree)
+void CommanderPlugin::initTree(TreeWidget* tree)
 {
     d.tree = tree;
 }
 
-void CommanderPlugin::initialize(IrcConnection* connection)
+void CommanderPlugin::initConnection(IrcConnection* connection)
 {
     connection->installCommandFilter(this);
 }
 
-void CommanderPlugin::uninitialize(IrcConnection* connection)
+void CommanderPlugin::cleanupConnection(IrcConnection* connection)
 {
     connection->removeCommandFilter(this);
 }

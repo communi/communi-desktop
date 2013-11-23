@@ -34,7 +34,7 @@ ThemePlugin::ThemePlugin(QObject* parent) : QObject(parent)
     //d.theme.load(":/themes/dark/dark.theme");
 }
 
-void ThemePlugin::initialize(MainWindow* window)
+void ThemePlugin::initWindow(MainWindow* window)
 {
     // TODO: app or window palette? would it make sense to keep the app palette pristine,
     //       so that it can be restored, and only customize the window palette instead?
@@ -43,19 +43,19 @@ void ThemePlugin::initialize(MainWindow* window)
     window->setStyleSheet(d.theme.appStyleSheet());
 }
 
-void ThemePlugin::initialize(TreeWidget* tree)
+void ThemePlugin::initTree(TreeWidget* tree)
 {
     // TODO
     TreeDelegate* delegate = new TreeDelegate(tree);
     tree->setItemDelegate(delegate);
 }
 
-void ThemePlugin::initialize(TextDocument* doc)
+void ThemePlugin::initDocument(TextDocument* doc)
 {
     doc->setDefaultStyleSheet(d.theme.docStyleSheet());
 }
 
-void ThemePlugin::initialize(BufferView* view)
+void ThemePlugin::initView(BufferView* view)
 {
     TitleBar* bar = view->titleBar();
     QTextDocument* doc = bar->findChild<QTextDocument*>();

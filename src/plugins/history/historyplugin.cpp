@@ -20,7 +20,7 @@ HistoryPlugin::HistoryPlugin(QObject* parent) : QObject(parent)
 {
 }
 
-void HistoryPlugin::initialize(BufferView* view)
+void HistoryPlugin::initView(BufferView* view)
 {
     new History(view->textInput());
 }

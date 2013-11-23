@@ -23,8 +23,8 @@ class SplitViewPlugin
 {
 public:
     virtual ~SplitViewPlugin() {}
-    virtual void initialize(SplitView*) {}
-    virtual void uninitialize(SplitView*) {}
+    virtual void initView(SplitView*) {}
+    virtual void cleanupView(SplitView*) {}
 };
 
 Q_DECLARE_INTERFACE(SplitViewPlugin, "Communi.SplitViewPlugin")

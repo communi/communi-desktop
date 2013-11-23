@@ -31,7 +31,7 @@ StatePlugin::StatePlugin(QObject* parent) : QObject(parent)
     d.view = 0;
 }
 
-void StatePlugin::initialize(MainWindow* window)
+void StatePlugin::initWindow(MainWindow* window)
 {
     QSettings settings;
     settings.beginGroup("States");
@@ -47,7 +47,7 @@ void StatePlugin::initialize(MainWindow* window)
     }
 }
 
-void StatePlugin::uninitialize(MainWindow* window)
+void StatePlugin::cleanupWindow(MainWindow* window)
 {
     QSettings settings;
     settings.beginGroup("States");
@@ -61,7 +61,7 @@ void StatePlugin::uninitialize(MainWindow* window)
     settings.setValue("connections", states);
 }
 
-void StatePlugin::initialize(SplitView* view)
+void StatePlugin::initView(SplitView* view)
 {
     d.view = view;
     QSplitter* splitter = qobject_cast<QSplitter*>(view->parentWidget());
@@ -79,7 +79,7 @@ void StatePlugin::initialize(SplitView* view)
         restoreBuffer(buffer);
 }
 
-void StatePlugin::uninitialize(SplitView* view)
+void StatePlugin::cleanupView(SplitView* view)
 {
     QSplitter* splitter = qobject_cast<QSplitter*>(view->parentWidget());
     if (splitter) {
@@ -92,7 +92,7 @@ void StatePlugin::uninitialize(SplitView* view)
     }
 }
 
-void StatePlugin::initialize(TreeWidget* tree)
+void StatePlugin::initTree(TreeWidget* tree)
 {
     QSettings settings;
     settings.beginGroup("States/tree");
@@ -114,7 +114,7 @@ void StatePlugin::initialize(TreeWidget* tree)
     connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(restoreBuffer(IrcBuffer*)));
 }
 
-void StatePlugin::uninitialize(TreeWidget* tree)
+void StatePlugin::cleanupTree(TreeWidget* tree)
 {
     QSettings settings;
     settings.beginGroup("States/tree");

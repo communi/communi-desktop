@@ -21,7 +21,7 @@ TitlePlugin::TitlePlugin(QObject* parent) : QObject(parent)
 {
 }
 
-void TitlePlugin::initialize(BufferView* view)
+void TitlePlugin::initView(BufferView* view)
 {
     new TopicEditor(view->titleBar());
     new TitleExtension(view->titleBar());

@@ -32,7 +32,7 @@ class ZncPlugin : public QObject, public ConnectionPlugin
 public:
     ZncPlugin(QObject* parent = 0);
 
-    void initialize(IrcConnection* connection);
+    void initConnection(IrcConnection* connection);
 };
 
 #endif // ZNCPLUGIN_H

@@ -30,8 +30,8 @@ class IgnorePlugin : public QObject, public ConnectionPlugin
 public:
     IgnorePlugin(QObject* parent = 0);
 
-    void initialize(IrcConnection* connection);
-    void uninitialize(IrcConnection* connection);
+    void initConnection(IrcConnection* connection);
+    void cleanupConnection(IrcConnection* connection);
 };
 
 #endif // IGNOREPLUGIN_H

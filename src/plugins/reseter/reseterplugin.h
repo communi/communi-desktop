@@ -30,7 +30,7 @@ class ReseterPlugin : public QObject, public TreeWidgetPlugin
 public:
     ReseterPlugin(QObject* parent = 0);
 
-    void initialize(TreeWidget* tree);
+    void initTree(TreeWidget* tree);
 
 private slots:
     void resetItems();

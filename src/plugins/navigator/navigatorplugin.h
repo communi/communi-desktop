@@ -31,7 +31,7 @@ class NavigatorPlugin : public QObject, public TreeWidgetPlugin
 public:
     explicit NavigatorPlugin(QObject* parent = 0);
 
-    void initialize(TreeWidget* tree);
+    void initTree(TreeWidget* tree);
 
     QTreeWidgetItem* currentItem() const;
     void setCurrentItem(QTreeWidgetItem* item);

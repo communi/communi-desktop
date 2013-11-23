@@ -21,7 +21,7 @@ ZncPlugin::ZncPlugin(QObject* parent) : QObject(parent)
 {
 }
 
-void ZncPlugin::initialize(IrcConnection* connection)
+void ZncPlugin::initConnection(IrcConnection* connection)
 {
     new ZncManager(connection->findChild<IrcBufferModel*>()); // TODO
 }

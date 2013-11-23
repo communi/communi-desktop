@@ -36,8 +36,8 @@ class VerifierPlugin : public QObject, public ConnectionPlugin, public TextDocum
 public:
     VerifierPlugin(QObject* parent = 0);
 
-    void initialize(IrcConnection* connection);
-    void initialize(TextDocument* document);
+    void initConnection(IrcConnection* connection);
+    void initDocument(TextDocument* document);
 
 private slots:
     void onCommandVerified(int id);

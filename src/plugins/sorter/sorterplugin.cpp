@@ -23,7 +23,7 @@ SorterPlugin::SorterPlugin(QObject* parent) : QObject(parent)
     d.source = 0;
 }
 
-void SorterPlugin::initialize(TreeWidget* tree)
+void SorterPlugin::initTree(TreeWidget* tree)
 {
     d.tree = tree;
     Sorter::restore();
@@ -31,7 +31,7 @@ void SorterPlugin::initialize(TreeWidget* tree)
     tree->viewport()->installEventFilter(this);
 }
 
-void SorterPlugin::uninitialize(TreeWidget* tree)
+void SorterPlugin::cleanupTree(TreeWidget* tree)
 {
     tree->viewport()->removeEventFilter(this);
 }

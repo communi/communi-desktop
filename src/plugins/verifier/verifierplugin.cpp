@@ -23,14 +23,14 @@ VerifierPlugin::VerifierPlugin(QObject* parent) : QObject(parent)
 {
 }
 
-void VerifierPlugin::initialize(IrcConnection* connection)
+void VerifierPlugin::initConnection(IrcConnection* connection)
 {
     CommandVerifier* verifier = new CommandVerifier(connection);
     connect(verifier, SIGNAL(verified(int)), this, SLOT(onCommandVerified(int)));
     d.verifiers.insert(connection, verifier);
 }
 
-void VerifierPlugin::initialize(TextDocument* document)
+void VerifierPlugin::initDocument(TextDocument* document)
 {
     connect(document, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
 }

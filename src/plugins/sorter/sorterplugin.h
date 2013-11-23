@@ -30,8 +30,8 @@ class SorterPlugin : public QObject, public TreeWidgetPlugin
 public:
     SorterPlugin(QObject* parent = 0);
 
-    void initialize(TreeWidget* tree);
-    void uninitialize(TreeWidget* tree);
+    void initTree(TreeWidget* tree);
+    void cleanupTree(TreeWidget* tree);
 
     bool eventFilter(QObject* object, QEvent* event);
 

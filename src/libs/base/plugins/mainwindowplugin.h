@@ -23,8 +23,8 @@ class MainWindowPlugin
 {
 public:
     virtual ~MainWindowPlugin() {}
-    virtual void initialize(MainWindow*) {}
-    virtual void uninitialize(MainWindow*) {}
+    virtual void initWindow(MainWindow*) {}
+    virtual void cleanupWindow(MainWindow*) {}
 };
 
 Q_DECLARE_INTERFACE(MainWindowPlugin, "Communi.MainWindowPlugin")

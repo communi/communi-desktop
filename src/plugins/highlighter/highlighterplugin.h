@@ -30,8 +30,8 @@ class HighlighterPlugin : public QObject, public TextDocumentPlugin, public Tree
 public:
     HighlighterPlugin(QObject* parent = 0);
 
-    void initialize(TextDocument* document);
-    void initialize(TreeWidget* tree);
+    void initDocument(TextDocument* document);
+    void initTree(TreeWidget* tree);
 };
 
 #endif // HIGHLIGHTERPLUGIN_H

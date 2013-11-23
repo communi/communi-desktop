@@ -33,8 +33,8 @@ class LagPlugin : public QObject, public ConnectionPlugin, public TreeWidgetPlug
 public:
     LagPlugin(QObject* parent = 0);
 
-    void initialize(IrcConnection* connection);
-    void initialize(TreeWidget* tree);
+    void initConnection(IrcConnection* connection);
+    void initTree(TreeWidget* tree);
 
 private slots:
     void updateLag(qint64 lag);

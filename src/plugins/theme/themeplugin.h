@@ -37,10 +37,10 @@ class ThemePlugin : public QObject, public MainWindowPlugin, public TreeWidgetPl
 public:
     ThemePlugin(QObject* parent = 0);
 
-    void initialize(MainWindow* window);
-    void initialize(TreeWidget* tree);
-    void initialize(TextDocument* doc);
-    void initialize(BufferView* view);
+    void initWindow(MainWindow* window);
+    void initTree(TreeWidget* tree);
+    void initDocument(TextDocument* doc);
+    void initView(BufferView* view);
 
 private:
     struct Private {

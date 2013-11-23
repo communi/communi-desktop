@@ -29,7 +29,7 @@ class HistoryPlugin : public QObject, public BufferViewPlugin
 public:
     HistoryPlugin(QObject* parent = 0);
 
-    void initialize(BufferView* view);
+    void initView(BufferView* view);
 };
 
 #endif // HISTORYPLUGIN_H

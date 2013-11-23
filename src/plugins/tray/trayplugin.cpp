@@ -30,7 +30,7 @@ TrayPlugin::TrayPlugin(QObject* parent) : QObject(parent)
     d.blink = false;
 }
 
-void TrayPlugin::initialize(IrcConnection* connection)
+void TrayPlugin::initConnection(IrcConnection* connection)
 {
     connect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateIcon()));
     connect(connection, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
@@ -38,7 +38,7 @@ void TrayPlugin::initialize(IrcConnection* connection)
     updateIcon();
 }
 
-void TrayPlugin::uninitialize(IrcConnection* connection)
+void TrayPlugin::cleanupConnection(IrcConnection* connection)
 {
     disconnect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateIcon()));
     disconnect(connection, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
@@ -46,7 +46,7 @@ void TrayPlugin::uninitialize(IrcConnection* connection)
     updateIcon();
 }
 
-void TrayPlugin::initialize(MainWindow* window)
+void TrayPlugin::initWindow(MainWindow* window)
 {
     d.window = window;
     window->installEventFilter(this);

@@ -38,14 +38,14 @@ class StatePlugin : public QObject, public MainWindowPlugin, public SplitViewPlu
 public:
     StatePlugin(QObject* parent = 0);
 
-    void initialize(MainWindow* window);
-    void uninitialize(MainWindow* window);
+    void initWindow(MainWindow* window);
+    void cleanupWindow(MainWindow* window);
 
-    void initialize(SplitView* view);
-    void uninitialize(SplitView* view);
+    void initView(SplitView* view);
+    void cleanupView(SplitView* view);
 
-    void initialize(TreeWidget* tree);
-    void uninitialize(TreeWidget* tree);
+    void initTree(TreeWidget* tree);
+    void cleanupTree(TreeWidget* tree);
 
 private slots:
     void resetCurrent();

@@ -82,13 +82,13 @@ void ChatPage::init()
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         MainWindowPlugin* windowPlugin = qobject_cast<MainWindowPlugin*>(instance);
         if (windowPlugin)
-            windowPlugin->initialize(static_cast<MainWindow*>(window()));
+            windowPlugin->initWindow(static_cast<MainWindow*>(window()));
         TreeWidgetPlugin* treePlugin = qobject_cast<TreeWidgetPlugin*>(instance);
         if (treePlugin)
-            treePlugin->initialize(d.treeWidget);
+            treePlugin->initTree(d.treeWidget);
         SplitViewPlugin* viewPlugin = qobject_cast<SplitViewPlugin*>(instance);
         if (viewPlugin)
-            viewPlugin->initialize(d.splitView);
+            viewPlugin->initView(d.splitView);
     }
     initView(d.splitView->currentView());
 }
@@ -98,13 +98,13 @@ void ChatPage::uninit()
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         TreeWidgetPlugin* treePlugin = qobject_cast<TreeWidgetPlugin*>(instance);
         if (treePlugin)
-            treePlugin->uninitialize(d.treeWidget);
+            treePlugin->cleanupTree(d.treeWidget);
         SplitViewPlugin* viewPlugin = qobject_cast<SplitViewPlugin*>(instance);
         if (viewPlugin)
-            viewPlugin->uninitialize(d.splitView);
+            viewPlugin->cleanupView(d.splitView);
         MainWindowPlugin* windowPlugin = qobject_cast<MainWindowPlugin*>(instance);
         if (windowPlugin)
-            windowPlugin->uninitialize(static_cast<MainWindow*>(window()));
+            windowPlugin->cleanupWindow(static_cast<MainWindow*>(window()));
     }
 }
 
@@ -136,7 +136,7 @@ void ChatPage::initConnection(IrcConnection* connection)
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         ConnectionPlugin* plugin = qobject_cast<ConnectionPlugin*>(instance);
         if (plugin)
-            plugin->initialize(connection);
+            plugin->initConnection(connection);
     }
 }
 
@@ -159,7 +159,7 @@ void ChatPage::uninitConnection(IrcConnection* connection)
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         ConnectionPlugin* connectionPlugin = qobject_cast<ConnectionPlugin*>(instance);
         if (connectionPlugin)
-            connectionPlugin->uninitialize(connection);
+            connectionPlugin->cleanupConnection(connection);
     }
 }
 
@@ -183,11 +183,8 @@ void ChatPage::initBuffer(IrcBuffer* buffer)
 
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         BufferPlugin* plugin = qobject_cast<BufferPlugin*>(instance);
-        if (plugin) {
-            plugin->addBuffer(buffer);
-            connect(buffer, SIGNAL(destroyed(IrcBuffer*)), instance, SLOT(removeBuffer(IrcBuffer*)));
-            connect(this, SIGNAL(currentBufferChanged(IrcBuffer*)), instance, SLOT(setCurrentBuffer(IrcBuffer*)));
-        }
+        if (plugin)
+            plugin->initBuffer(buffer);
     }
     initDocument(doc);
 }
@@ -202,6 +199,12 @@ void ChatPage::uninitBuffer(IrcBuffer* buffer)
 
     if (buffer->isSticky())
         buffer->connection()->deleteLater();
+
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        BufferPlugin* plugin = qobject_cast<BufferPlugin*>(instance);
+        if (plugin)
+            plugin->cleanupBuffer(buffer);
+    }
 }
 
 void ChatPage::initDocument(TextDocument* doc)
@@ -209,7 +212,7 @@ void ChatPage::initDocument(TextDocument* doc)
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         TextDocumentPlugin* plugin = qobject_cast<TextDocumentPlugin*>(instance);
         if (plugin)
-            plugin->initialize(doc);
+            plugin->initDocument(doc);
     }
 }
 
@@ -218,7 +221,7 @@ void ChatPage::uninitDocument(TextDocument* doc)
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         TextDocumentPlugin* plugin = qobject_cast<TextDocumentPlugin*>(instance);
         if (plugin)
-            plugin->uninitialize(doc);
+            plugin->cleanupDocument(doc);
     }
 }
 
@@ -231,7 +234,7 @@ void ChatPage::initView(BufferView* view)
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         BufferViewPlugin* plugin = qobject_cast<BufferViewPlugin*>(instance);
         if (plugin)
-            plugin->initialize(view);
+            plugin->initView(view);
     }
 }
 
@@ -240,7 +243,7 @@ void ChatPage::uninitView(BufferView* view)
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         BufferViewPlugin* plugin = qobject_cast<BufferViewPlugin*>(instance);
         if (plugin)
-            plugin->uninitialize(view);
+            plugin->cleanupView(view);
     }
 }
 

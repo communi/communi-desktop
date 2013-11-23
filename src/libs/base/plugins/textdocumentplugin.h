@@ -23,8 +23,8 @@ class TextDocumentPlugin
 {
 public:
     virtual ~TextDocumentPlugin() {}
-    virtual void initialize(TextDocument*) {}
-    virtual void uninitialize(TextDocument*) {}
+    virtual void initDocument(TextDocument*) {}
+    virtual void cleanupDocument(TextDocument*) {}
 };
 
 Q_DECLARE_INTERFACE(TextDocumentPlugin, "Communi.TextDocumentPlugin")

@@ -23,8 +23,8 @@ class BufferViewPlugin
 {
 public:
     virtual ~BufferViewPlugin() {}
-    virtual void initialize(BufferView*) {}
-    virtual void uninitialize(BufferView*) {}
+    virtual void initView(BufferView*) {}
+    virtual void cleanupView(BufferView*) {}
 };
 
 Q_DECLARE_INTERFACE(BufferViewPlugin, "Communi.BufferViewPlugin")

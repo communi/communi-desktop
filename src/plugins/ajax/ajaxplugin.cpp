@@ -26,7 +26,7 @@ AjaxPlugin::AjaxPlugin(QObject* parent) : QObject(parent)
     d.movie = 0;
 }
 
-void AjaxPlugin::initialize(TreeWidget* tree)
+void AjaxPlugin::initTree(TreeWidget* tree)
 {
     d.tree = tree;
 
@@ -69,12 +69,12 @@ void AjaxPlugin::updateConnection()
     }
 }
 
-void AjaxPlugin::initialize(IrcConnection* connection)
+void AjaxPlugin::initConnection(IrcConnection* connection)
 {
     connect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateConnection()));
 }
 
-void AjaxPlugin::uninitialize(IrcConnection* connection)
+void AjaxPlugin::cleanupConnection(IrcConnection* connection)
 {
     disconnect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateConnection()));
     foreach (TreeItem* item, d.items) {

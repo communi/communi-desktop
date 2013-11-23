@@ -36,8 +36,8 @@ class FinderPlugin : public QObject, public SplitViewPlugin, public TreeWidgetPl
 public:
     explicit FinderPlugin(QObject* parent = 0);
 
-    void initialize(SplitView* view);
-    void initialize(TreeWidget* tree);
+    void initView(SplitView* view);
+    void initTree(TreeWidget* tree);
 
 private slots:
     void searchTree();

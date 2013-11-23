@@ -29,7 +29,7 @@ BadgePlugin::BadgePlugin(QObject* parent) : QObject(parent)
     d.block = false;
 }
 
-void BadgePlugin::initialize(TreeWidget* tree)
+void BadgePlugin::initTree(TreeWidget* tree)
 {
     d.tree = tree;
     d.tree->setColumnCount(2);
