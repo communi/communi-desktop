@@ -8,6 +8,7 @@
  */
 
 #include "appwindow.h"
+#include "pluginloader.h"
 #include "settingspage.h"
 #include "connectpage.h"
 #include "chatpage.h"
@@ -61,7 +62,7 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
     d.chatPage = new ChatPage(this);
     connect(d.chatPage, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(updateTitle()));
     connect(this, SIGNAL(connectionAdded(IrcConnection*)), d.chatPage, SLOT(initConnection(IrcConnection*)));
-    connect(this, SIGNAL(connectionRemoved(IrcConnection*)), d.chatPage, SLOT(uninitConnection(IrcConnection*)));
+    connect(this, SIGNAL(connectionRemoved(IrcConnection*)), d.chatPage, SLOT(cleanupConnection(IrcConnection*)));
 
     d.stack->addWidget(d.settingsPage);
     d.stack->addWidget(d.connectPage);
@@ -79,6 +80,8 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
     shortcut = new QShortcut(QKeySequence::Close, this);
     connect(shortcut, SIGNAL(activated()), d.chatPage, SLOT(closeBuffer()));
 
+    PluginLoader::instance()->initWindow(this);
+
     d.chatPage->init();
     if (connections().isEmpty())
         doConnect();
@@ -88,6 +91,7 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
 
 AppWindow::~AppWindow()
 {
+    PluginLoader::instance()->cleanupWindow(this);
 }
 
 QSize AppWindow::sizeHint() const
@@ -98,7 +102,7 @@ QSize AppWindow::sizeHint() const
 void AppWindow::closeEvent(QCloseEvent* event)
 {
     if (isVisible()) {
-        d.chatPage->uninit();
+        d.chatPage->cleanup();
         foreach (IrcConnection* connection, connections()) {
             connection->quit(qApp->property("description").toString());
             connection->close();

@@ -16,7 +16,6 @@ class IrcBuffer;
 class SplitView;
 class TreeWidget;
 class BufferView;
-class TextDocument;
 class IrcConnection;
 class IrcCommandParser;
 
@@ -29,7 +28,7 @@ public:
     ~ChatPage();
 
     void init();
-    void uninit();
+    void cleanup();
 
     IrcBuffer* currentBuffer() const;
 
@@ -41,13 +40,11 @@ signals:
 
 private slots:
     void initConnection(IrcConnection* connection);
-    void uninitConnection(IrcConnection* connection);
+    void cleanupConnection(IrcConnection* connection);
     void initView(BufferView* view);
-    void uninitView(BufferView* view);
+    void cleanupView(BufferView* view);
     void initBuffer(IrcBuffer* buffer);
-    void uninitBuffer(IrcBuffer* buffer);
-    void initDocument(TextDocument* doc);
-    void uninitDocument(TextDocument* doc);
+    void cleanupBuffer(IrcBuffer* buffer);
 
 private:
     static IrcCommandParser* createParser(QObject* parent);
