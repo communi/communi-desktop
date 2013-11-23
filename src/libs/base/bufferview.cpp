@@ -21,6 +21,8 @@
 
 BufferView::BufferView(QWidget* parent) : QWidget(parent)
 {
+    d.buffer = 0;
+
     d.titleBar = new TitleBar(this);
     d.listView = new ListView(this);
     d.textInput = new TextInput(this);
