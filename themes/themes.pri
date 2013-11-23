@@ -2,5 +2,5 @@
 # Communi
 ######################################################################
 
+include(cute/cute.pri)
 include(dark/dark.pri)
-include(default/default.pri)

@@ -1,15 +1,15 @@
 [Theme]
-name=Default
+name=Cute
 version=1.0
-description=The default Communi theme
+description=A cute Communi theme
 maintainer=J-P Nurmi <jpnurmi@gmail.com>
 
 [Resources]
-prefix=:/themes/default
+prefix=:/themes/cute
 
 [StyleSheets]
-document=:/themes/default/default.css
-application=:/themes/default/default.qss
+document=:/themes/cute/cute.css
+application=:/themes/cute/cute.qss
 
 [QPalette]
 base=#edf3fe

@@ -1,8 +1,8 @@
 <!DOCTYPE RCC><RCC version="1.0">
-<qresource prefix="/themes/default">
-  <file>default.css</file>
-  <file>default.qss</file>
-  <file>default.theme</file>
+<qresource prefix="/themes/cute">
+  <file>cute.css</file>
+  <file>cute.qss</file>
+  <file>cute.theme</file>
   <file>images/close.png</file>
   <file>images/down.png</file>
   <file>images/left.png</file>

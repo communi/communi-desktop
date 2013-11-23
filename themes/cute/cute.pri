@@ -2,8 +2,8 @@
 # Communi
 ######################################################################
 
-RESOURCES += $$PWD/default.qrc
+RESOURCES += $$PWD/cute.qrc
 
-OTHER_FILES += $$PWD/default.css
-OTHER_FILES += $$PWD/default.qss
-OTHER_FILES += $$PWD/default.theme
+OTHER_FILES += $$PWD/cute.css
+OTHER_FILES += $$PWD/cute.qss
+OTHER_FILES += $$PWD/cute.theme

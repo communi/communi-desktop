@@ -23,15 +23,15 @@
 
 inline void initResources()
 {
+    Q_INIT_RESOURCE(cute);
     Q_INIT_RESOURCE(dark);
-    Q_INIT_RESOURCE(default);
 }
 
 ThemePlugin::ThemePlugin(QObject* parent) : QObject(parent)
 {
     initResources();
+    d.theme.load(":/themes/cute/cute.theme");
     //d.theme.load(":/themes/dark/dark.theme");
-    d.theme.load(":/themes/default/default.theme");
 }
 
 void ThemePlugin::initialize(MainWindow* window)
