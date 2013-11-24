@@ -54,7 +54,7 @@ void LagPlugin::updateConnection(IrcConnection* connection, qint64 lag)
         connection = qobject_cast<IrcConnection*>(sender());
     TreeItem* item = d.tree->connectionItem(connection);
     if (item) {
-        item->setToolTip(1, lag > 0 ? tr("%1ms").arg(lag) : QString());
+        item->setToolTip(0, lag > 0 ? tr("%1ms").arg(lag) : QString());
         QPixmap pixmap(16, 16);
         pixmap.fill(Qt::transparent);
         QPainter painter(&pixmap);
@@ -67,7 +67,7 @@ void LagPlugin::updateConnection(IrcConnection* connection, qint64 lag)
         painter.setBrush(color);
         painter.setRenderHint(QPainter::Antialiasing);
         painter.drawEllipse(4, 4, 8, 8);
-        item->setIcon(1, pixmap);
+        item->setIcon(0, pixmap);
     }
 }
 

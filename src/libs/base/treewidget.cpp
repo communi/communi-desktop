@@ -71,6 +71,7 @@ void TreeWidget::addBuffer(IrcBuffer* buffer)
     TreeItem* item = 0;
     if (buffer->isSticky()) {
         item = new TreeItem(buffer, this);
+        item->setFirstColumnSpanned(true);
         item->setExpanded(true);
         IrcConnection* connection = buffer->connection();
         d.connectionItems.insert(connection, item);

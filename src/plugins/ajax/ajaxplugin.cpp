@@ -41,7 +41,7 @@ void AjaxPlugin::updateLoader()
 {
     QPixmap pixmap = d.movie->currentPixmap();
     foreach (TreeItem* item, d.items)
-        item->setIcon(1, pixmap);
+        item->setIcon(0, pixmap);
 }
 
 void AjaxPlugin::updateConnection()
@@ -51,10 +51,10 @@ void AjaxPlugin::updateConnection()
         TreeItem* item = d.tree->connectionItem(connection);
         if (item) {
             if (connection->isActive() && !connection->isConnected()) {
-                item->setIcon(1, d.movie->currentPixmap());
+                item->setIcon(0, d.movie->currentPixmap());
                 d.items.insert(item);
             } else {
-                item->setIcon(1, QIcon());
+                item->setIcon(0, QIcon());
                 d.items.remove(item);
             }
         }

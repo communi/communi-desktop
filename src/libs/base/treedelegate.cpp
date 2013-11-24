@@ -28,7 +28,11 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 {
     if (!index.parent().isValid()) {
         const bool selected = option.state & QStyle::State_Selected;
-        const_cast<QStyleOptionViewItem&>(option).state &= ~(QStyle::State_Selected | QStyle::State_MouseOver);
+        QStyleOptionViewItem& opt = const_cast<QStyleOptionViewItem&>(option);
+        opt.state &= ~(QStyle::State_Selected | QStyle::State_MouseOver);
+        opt.decorationPosition = QStyleOptionViewItem::Right;
+        opt.decorationAlignment = Qt::AlignCenter;
+        opt.features |= QStyleOptionViewItem::HasDecoration;
 
         QPalette pal;
         QColor c1 = pal.color(QPalette::Light);
