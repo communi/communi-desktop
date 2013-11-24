@@ -28,6 +28,8 @@ TreeHighlighter::TreeHighlighter(TreeWidget* tree) : QObject(tree)
     d.blink = false;
     d.block = false;
     d.tree->installEventFilter(this);
+    for (int i = 0; i < tree->topLevelItemCount(); ++i)
+        colorizeItem(tree->topLevelItem(i));
 
     connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
     connect(tree, SIGNAL(bufferRemoved(IrcBuffer*)), this, SLOT(onBufferRemoved(IrcBuffer*)));
