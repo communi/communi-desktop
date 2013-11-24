@@ -19,6 +19,7 @@
 #include <QPainter>
 #include <QPointer>
 #include <QStyle>
+#include <QColor>
 
 class TreeHeader : public QWidget
 {
@@ -36,7 +37,9 @@ protected:
     {
         QStyleOptionHeader option;
         option.init(this);
-        option.state = d.state;
+        option.state = (d.state | QStyle::State_Raised | QStyle::State_Horizontal);
+        if (d.state & QStyle::State_Selected)
+            option.state |= (QStyle::State_Sunken | QStyle::State_On);
         option.icon = d.icon;
         option.text = d.text;
         option.position = QStyleOptionHeader::OnlyOneSection;
@@ -63,6 +66,14 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         if (!header)
             header = new TreeHeader(const_cast<QWidget*>(option.widget));
 
+        QPalette pal = option.palette;
+        QVariant fg = index.data(Qt::ForegroundRole);
+        if (fg.isValid()) {
+            pal.setColor(QPalette::Text, fg.value<QColor>());
+            pal.setColor(QPalette::ButtonText, fg.value<QColor>());
+            pal.setColor(QPalette::WindowText, fg.value<QColor>());
+        }
+        header->setPalette(pal);
         header->setText(index.data(Qt::DisplayRole).toString());
         header->setIcon(index.data(Qt::DecorationRole).value<QIcon>());
         header->setState(option.state);
