@@ -43,7 +43,7 @@ public:
 
 private slots:
     void updateLoader();
-    void updateConnection();
+    void updateConnection(IrcConnection* connection = 0);
 
 private:
     struct Private {

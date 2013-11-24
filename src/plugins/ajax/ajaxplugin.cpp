@@ -44,9 +44,10 @@ void AjaxPlugin::updateLoader()
         item->setIcon(0, pixmap);
 }
 
-void AjaxPlugin::updateConnection()
+void AjaxPlugin::updateConnection(IrcConnection* connection)
 {
-    IrcConnection* connection = qobject_cast<IrcConnection*>(sender());
+    if (!connection)
+        connection = qobject_cast<IrcConnection*>(sender());
     if (connection) {
         TreeItem* item = d.tree->connectionItem(connection);
         if (item) {
@@ -72,6 +73,8 @@ void AjaxPlugin::updateConnection()
 void AjaxPlugin::initConnection(IrcConnection* connection)
 {
     connect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateConnection()));
+    if (d.tree)
+        updateConnection(connection);
 }
 
 void AjaxPlugin::cleanupConnection(IrcConnection* connection)
