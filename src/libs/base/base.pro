@@ -17,6 +17,7 @@ DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
 HEADERS += $$PWD/bufferview.h
+HEADERS += $$PWD/colorscheme.h
 HEADERS += $$PWD/listview.h
 HEADERS += $$PWD/mainwindow.h
 HEADERS += $$PWD/splitview.h
@@ -30,6 +31,7 @@ HEADERS += $$PWD/treeitem.h
 HEADERS += $$PWD/treewidget.h
 
 SOURCES += $$PWD/bufferview.cpp
+SOURCES += $$PWD/colorscheme.cpp
 SOURCES += $$PWD/listview.cpp
 SOURCES += $$PWD/mainwindow.cpp
 SOURCES += $$PWD/splitview.cpp
