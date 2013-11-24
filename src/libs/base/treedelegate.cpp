@@ -14,11 +14,43 @@
 
 #include "treedelegate.h"
 #include <QStyleOptionViewItem>
-#include <QLinearGradient>
-#include <QPalette>
+#include <QStyleOptionHeader>
+#include <QStylePainter>
 #include <QPainter>
-#include <QVector>
+#include <QPointer>
 #include <QStyle>
+
+class TreeHeader : public QWidget
+{
+    Q_OBJECT
+
+public:
+    TreeHeader(QWidget* parent = 0) : QWidget(parent) { d.state = QStyle::State_None; }
+
+    void setText(const QString& text) { d.text = text; }
+    void setIcon(const QIcon& icon) { d.icon = icon; }
+    void setState(QStyle::State state) { d.state = state; }
+
+protected:
+    void paintEvent(QPaintEvent*)
+    {
+        QStyleOptionHeader option;
+        option.init(this);
+        option.state = d.state;
+        option.icon = d.icon;
+        option.text = d.text;
+        option.position = QStyleOptionHeader::OnlyOneSection;
+        QStylePainter painter(this);
+        painter.drawControl(QStyle::CE_Header, option);
+    }
+
+private:
+    struct Private {
+        QIcon icon;
+        QString text;
+        QStyle::State state;
+    } d;
+};
 
 TreeDelegate::TreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
 {
@@ -27,33 +59,20 @@ TreeDelegate::TreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
 void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     if (!index.parent().isValid()) {
-        const bool selected = option.state & QStyle::State_Selected;
-        QStyleOptionViewItem& opt = const_cast<QStyleOptionViewItem&>(option);
-        opt.state &= ~(QStyle::State_Selected | QStyle::State_MouseOver);
-        opt.decorationPosition = QStyleOptionViewItem::Right;
-        opt.decorationAlignment = Qt::AlignCenter;
-        opt.features |= QStyleOptionViewItem::HasDecoration;
+        static QPointer<TreeHeader> header;
+        if (!header)
+            header = new TreeHeader(const_cast<QWidget*>(option.widget));
 
-        QPalette pal;
-        QColor c1 = pal.color(QPalette::Light);
-        QColor c2 = pal.color(QPalette::Dark);
-        if (selected)
-            qSwap(c1, c2);
-
-        QLinearGradient gradient(option.rect.topLeft(), option.rect.bottomLeft());
-        gradient.setColorAt(0.0, c1);
-        gradient.setColorAt(1.0, c2);
-        painter->fillRect(option.rect, gradient);
-
-        QVector<QLine> lines;
-        if (index.row() > 0)
-            lines += QLine(option.rect.topLeft(), option.rect.topRight());
-        lines += QLine(option.rect.bottomLeft(), option.rect.bottomRight());
-        QPen oldPen = painter->pen();
-        painter->setPen(pal.color(QPalette::Mid));
-        painter->drawLines(lines);
-        painter->setPen(oldPen);
+        header->setText(index.data(Qt::DisplayRole).toString());
+        header->setIcon(index.data(Qt::DecorationRole).value<QIcon>());
+        header->setState(option.state);
+        header->setGeometry(option.rect);
+        painter->translate(option.rect.topLeft());
+        header->render(painter);
+        painter->translate(-option.rect.topLeft());
+    } else {
+        QStyledItemDelegate::paint(painter, option, index);
     }
-
-    QStyledItemDelegate::paint(painter, option, index);
 }
+
+#include "treedelegate.moc"
