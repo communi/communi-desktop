@@ -39,6 +39,8 @@ void LagPlugin::initConnection(IrcConnection* connection)
 void LagPlugin::initTree(TreeWidget* tree)
 {
     d.tree = tree;
+    for (int i = 0; i < tree->topLevelItemCount(); ++i)
+        updateConnection(static_cast<TreeItem*>(tree->topLevelItem(i))->connection());
 }
 
 void LagPlugin::updateLag(qint64 lag)
