@@ -39,7 +39,7 @@ protected:
         option.init(this);
         option.state = (d.state | QStyle::State_Raised | QStyle::State_Horizontal);
         if (d.state & QStyle::State_Selected)
-            option.state |= (QStyle::State_Sunken | QStyle::State_On);
+            option.state |= QStyle::State_On;
         option.icon = d.icon;
         option.text = d.text;
         option.position = QStyleOptionHeader::OnlyOneSection;
