@@ -29,6 +29,12 @@ TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
     setWordWrap(true);
     setOpenExternalLinks(true);
     setTextFormat(Qt::RichText);
+
+#ifdef Q_OS_MAC
+    QFont font;
+    font.setPointSize(11.0);
+    setFont(font);
+#endif
 }
 
 IrcBuffer* TitleBar::buffer() const
@@ -93,6 +99,18 @@ void TitleBar::paintEvent(QPaintEvent* event)
     painter.drawControl(QStyle::CE_HeaderSection, option);
 
     QLabel::paintEvent(event);
+}
+
+void TitleBar::resizeEvent(QResizeEvent* event)
+{
+    QStyleOptionHeader option;
+    option.init(this);
+    option.state = (QStyle::State_Raised | QStyle::State_Horizontal);
+    option.position = QStyleOptionHeader::OnlyOneSection;
+    QRect ser = style()->subElementRect(QStyle::SE_HeaderLabel, &option, this);
+    setContentsMargins(ser.x(), ser.y(), width () - ser.x() - ser.width(), height() - ser.y() - ser.height());
+
+    QLabel::resizeEvent(event);
 }
 
 void TitleBar::cleanup()
