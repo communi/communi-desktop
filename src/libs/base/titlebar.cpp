@@ -14,9 +14,12 @@
 
 #include "titlebar.h"
 #include "messageformatter.h"
+#include <QStyleOptionHeader>
+#include <QStylePainter>
 #include <IrcTextFormat>
 #include <IrcCommand>
 #include <IrcChannel>
+#include <QStyle>
 
 TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
 {
@@ -78,6 +81,18 @@ void TitleBar::setTopic(const QString& topic)
         if (channel->topic() != topic)
             channel->sendCommand(IrcCommand::createTopic(channel->title(), topic));
     }
+}
+
+void TitleBar::paintEvent(QPaintEvent* event)
+{
+    QStyleOptionHeader option;
+    option.init(this);
+    option.state = (QStyle::State_Raised | QStyle::State_Horizontal);
+    option.position = QStyleOptionHeader::OnlyOneSection;
+    QStylePainter painter(this);
+    painter.drawControl(QStyle::CE_HeaderSection, option);
+
+    QLabel::paintEvent(event);
 }
 
 void TitleBar::cleanup()

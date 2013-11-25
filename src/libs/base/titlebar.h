@@ -37,6 +37,9 @@ public slots:
 signals:
     void bufferChanged(IrcBuffer* buffer);
 
+protected:
+    void paintEvent(QPaintEvent* event);
+
 private slots:
     void cleanup();
     void refresh();
