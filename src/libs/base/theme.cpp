@@ -18,7 +18,7 @@
 Theme::Theme(QObject* parent) : QObject(parent)
 {
     QPalette pal;
-    d.badge = qMakePair(pal.buttonText(), pal.button());
+    d.badge = qMakePair(pal.buttonText(), pal.mid());
     d.flash = qMakePair(QBrush(qRgb(255, 64, 64)), QBrush(qRgb(255, 80, 80)));
     d.highlight = qMakePair(QBrush(qRgba(255, 64, 64, 64)), QBrush(qRgba(255, 80, 80, 64)));
     d.lowlight = qMakePair(pal.mid(), pal.alternateBase());

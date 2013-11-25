@@ -14,6 +14,7 @@
 
 #include "badgedelegate.h"
 #include "treerole.h"
+#include "theme.h"
 #include <QStyleOptionViewItem>
 #include <QPalette>
 #include <QPainter>
@@ -35,13 +36,14 @@ void BadgeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
         rect.setHeight(ascent + qMax(option.rect.height() % 2, ascent % 2));
         rect.moveCenter(option.rect.center());
 
-        QColor color = index.data(Qt::BackgroundRole).value<QColor>();
-        if (!color.isValid())
-            color = QPalette().color(QPalette::Mid);
+        QBrush brush = Theme::instance()->badge(Theme::Background);
+        QVariant bg = index.data(Qt::BackgroundRole);
+        if (bg.isValid())
+            brush = bg.value<QBrush>();
 
         painter->save();
         painter->setPen(Qt::NoPen);
-        painter->setBrush(color);
+        painter->setBrush(brush);
         painter->setRenderHint(QPainter::Antialiasing);
         painter->drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
         painter->restore();
