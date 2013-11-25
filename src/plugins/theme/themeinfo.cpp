@@ -12,7 +12,7 @@
 * GNU General Public License for more details.
 */
 
-#include "theme.h"
+#include "themeinfo.h"
 #include <QApplication>
 #include <QSettings>
 #include <QPalette>
@@ -20,32 +20,32 @@
 #include <QFile>
 #include <Irc>
 
-QString Theme::attribute(const QString& key) const
+QString ThemeInfo::attribute(const QString& key) const
 {
     return d.attributes.value(key);
 }
 
-QString Theme::prefix() const
+QString ThemeInfo::prefix() const
 {
     return d.prefix;
 }
 
-QString Theme::docStyleSheet() const
+QString ThemeInfo::docStyleSheet() const
 {
     return d.css;
 }
 
-QString Theme::appStyleSheet() const
+QString ThemeInfo::appStyleSheet() const
 {
     return d.qss;
 }
 
-QPalette Theme::appPalette() const
+QPalette ThemeInfo::appPalette() const
 {
     return d.palette;
 }
 
-QMap<int, QString> Theme::ircPalette() const
+QMap<int, QString> ThemeInfo::ircPalette() const
 {
     return d.colors;
 }
@@ -148,7 +148,7 @@ static void fillPalette(const QSettings& settings, QPalette& palette, QPalette::
     palette.setColor(group, QPalette::WindowText, parseColorValue(settings.value("window-text").toString(), palette.color(group, QPalette::WindowText)));
 }
 
-bool Theme::load(const QString& filePath)
+bool ThemeInfo::load(const QString& filePath)
 {
     QSettings settings(filePath, QSettings::IniFormat);
 

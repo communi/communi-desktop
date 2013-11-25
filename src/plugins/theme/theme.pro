@@ -2,10 +2,10 @@
 # Communi
 ######################################################################
 
-HEADERS += $$PWD/theme.h
+HEADERS += $$PWD/themeinfo.h
 HEADERS += $$PWD/themeplugin.h
 
-SOURCES += $$PWD/theme.cpp
+SOURCES += $$PWD/themeinfo.cpp
 SOURCES += $$PWD/themeplugin.cpp
 
 include(../plugin.pri)

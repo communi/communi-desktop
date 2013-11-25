@@ -17,7 +17,7 @@
 
 #include <QObject>
 #include <QtPlugin>
-#include "theme.h"
+#include "themeinfo.h"
 #include "mainwindowplugin.h"
 #include "treewidgetplugin.h"
 #include "textdocumentplugin.h"
@@ -44,7 +44,7 @@ public:
 
 private:
     struct Private {
-        Theme theme;
+        ThemeInfo theme;
     } d;
 };
 

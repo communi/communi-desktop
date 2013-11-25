@@ -12,14 +12,14 @@
 * GNU General Public License for more details.
 */
 
-#ifndef THEME_H
-#define THEME_H
+#ifndef THEMEINFO_H
+#define THEMEINFO_H
 
 #include <QMap>
 #include <QString>
 #include <QPalette>
 
-class Theme
+class ThemeInfo
 {
 public:
     bool load(const QString& filePath);
@@ -45,4 +45,4 @@ private:
     } d;
 };
 
-#endif // THEME_H
+#endif // THEMEINFO_H
