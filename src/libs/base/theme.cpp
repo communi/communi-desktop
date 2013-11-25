@@ -12,10 +12,10 @@
 * GNU General Public License for more details.
 */
 
-#include "colorscheme.h"
+#include "theme.h"
 #include <QPalette>
 
-ColorScheme::ColorScheme(QObject* parent) : QObject(parent)
+Theme::Theme(QObject* parent) : QObject(parent)
 {
     QPalette pal;
     d.badge = qMakePair(pal.buttonText(), pal.button());
@@ -26,15 +26,15 @@ ColorScheme::ColorScheme(QObject* parent) : QObject(parent)
     d.dash = pal.color(QPalette::Mid);
 }
 
-ColorScheme* ColorScheme::instance()
+Theme* Theme::instance()
 {
-    static ColorScheme scheme;
-    return &scheme;
+    static Theme theme;
+    return &theme;
 }
 
-static QBrush brushRole(const QPair<QBrush, QBrush>& brushes, ColorScheme::Role role)
+static QBrush brushRole(const QPair<QBrush, QBrush>& brushes, Theme::Role role)
 {
-    return role == ColorScheme::Foreground ? brushes.first : brushes.second;
+    return role == Theme::Foreground ? brushes.first : brushes.second;
 }
 
 static bool setBrushValue(QBrush* brush, const QBrush& value)
@@ -47,65 +47,65 @@ static bool setBrushValue(QBrush* brush, const QBrush& value)
     return false;
 }
 
-static bool setBrushRole(QPair<QBrush, QBrush>* brushes, const QBrush& brush, ColorScheme::Role role)
+static bool setBrushRole(QPair<QBrush, QBrush>* brushes, const QBrush& brush, Theme::Role role)
 {
     Q_ASSERT(brushes);
-    if (role == ColorScheme::Foreground)
+    if (role == Theme::Foreground)
         return setBrushValue(&brushes->first, brush);
     else
         return setBrushValue(&brushes->second, brush);
 }
 
-QBrush ColorScheme::badge(Role role) const
+QBrush Theme::badge(Role role) const
 {
     return brushRole(d.badge, role);
 }
 
-void ColorScheme::setBadge(Role role, const QBrush& brush)
+void Theme::setBadge(Role role, const QBrush& brush)
 {
     if (setBrushRole(&d.badge, brush, role))
         emit changed();
 }
 
-QBrush ColorScheme::flash(Role role) const
+QBrush Theme::flash(Role role) const
 {
     return brushRole(d.flash, role);
 }
 
-void ColorScheme::setFlash(Role role, const QBrush& brush)
+void Theme::setFlash(Role role, const QBrush& brush)
 {
     if (setBrushRole(&d.flash, brush, role))
         emit changed();
 }
 
-QBrush ColorScheme::highlight(Role role) const
+QBrush Theme::highlight(Role role) const
 {
     return brushRole(d.highlight, role);
 }
 
-void ColorScheme::setHighlight(Role role, const QBrush& brush)
+void Theme::setHighlight(Role role, const QBrush& brush)
 {
     if (setBrushRole(&d.highlight, brush, role))
         emit changed();
 }
 
-QBrush ColorScheme::lowlight(Role role) const
+QBrush Theme::lowlight(Role role) const
 {
     return brushRole(d.lowlight, role);
 }
 
-void ColorScheme::setLowlight(Role role, const QBrush& brush)
+void Theme::setLowlight(Role role, const QBrush& brush)
 {
     if (setBrushRole(&d.lowlight, brush, role))
         emit changed();
 }
 
-QColor ColorScheme::border() const
+QColor Theme::border() const
 {
     return d.border;
 }
 
-void ColorScheme::setBorder(const QColor& color)
+void Theme::setBorder(const QColor& color)
 {
     if (d.border != color) {
         d.border = color;
@@ -113,12 +113,12 @@ void ColorScheme::setBorder(const QColor& color)
     }
 }
 
-QColor ColorScheme::dash() const
+QColor Theme::dash() const
 {
     return d.dash;
 }
 
-void ColorScheme::setDash(const QColor& color)
+void Theme::setDash(const QColor& color)
 {
     if (d.dash != color) {
         d.dash = color;

@@ -12,22 +12,20 @@
 * GNU General Public License for more details.
 */
 
-#ifndef COLORSCHEME_H
-#define COLORSCHEME_H
+#ifndef THEME_H
+#define THEME_H
 
 #include <QObject>
 #include <QColor>
 #include <QBrush>
 #include <QPair>
 
-#define colorScheme ColorScheme::instance()
-
-class ColorScheme : public QObject
+class Theme : public QObject
 {
     Q_OBJECT
 
 public:
-    static ColorScheme* instance();
+    static Theme* instance();
 
     enum Role { Foreground, Background };
 
@@ -53,7 +51,7 @@ signals:
     void changed();
 
 private:
-    ColorScheme(QObject* parent = 0);
+    Theme(QObject* parent = 0);
 
     struct Private {
         QPair<QBrush, QBrush> badge;
@@ -65,4 +63,4 @@ private:
     } d;
 };
 
-#endif // COLORSCHEME_H
+#endif // THEME_H
