@@ -18,15 +18,8 @@
 ColorScheme::ColorScheme(QObject* parent) : QObject(parent)
 {
     QPalette pal;
-
-    QLinearGradient headerGradient(QPointF(0.0, 0.0), QPointF(0.0, 1.0));
-    headerGradient.setCoordinateMode(QGradient::ObjectBoundingMode);
-    headerGradient.setColorAt(0.0, Qt::red); //pal.color(QPalette::Light));
-    headerGradient.setColorAt(1.0, Qt::green); //pal.color(QPalette::Dark));
-
     d.badge = qMakePair(pal.buttonText(), pal.button());
     d.flash = qMakePair(QBrush(qRgb(255, 64, 64)), QBrush(qRgb(255, 80, 80)));
-    d.header = qMakePair(pal.buttonText(), QBrush(headerGradient));
     d.highlight = qMakePair(QBrush(qRgba(255, 64, 64, 64)), QBrush(qRgba(255, 80, 80, 64)));
     d.lowlight = qMakePair(pal.mid(), pal.alternateBase());
     d.border = pal.color(QPalette::Mid);
@@ -82,17 +75,6 @@ QBrush ColorScheme::flash(Role role) const
 void ColorScheme::setFlash(Role role, const QBrush& brush)
 {
     if (setBrushRole(&d.flash, brush, role))
-        emit changed();
-}
-
-QBrush ColorScheme::header(Role role) const
-{
-    return brushRole(d.header, role);
-}
-
-void ColorScheme::setHeader(Role role, const QBrush& brush)
-{
-    if (setBrushRole(&d.header, brush, role))
         emit changed();
 }
 

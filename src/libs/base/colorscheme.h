@@ -37,9 +37,6 @@ public:
     QBrush flash(Role role) const;
     void setFlash(Role role, const QBrush& brush);
 
-    QBrush header(Role role) const;
-    void setHeader(Role role, const QBrush& brush);
-
     QBrush highlight(Role role) const;
     void setHighlight(Role role, const QBrush& brush);
 
@@ -61,7 +58,6 @@ private:
     struct Private {
         QPair<QBrush, QBrush> badge;
         QPair<QBrush, QBrush> flash;
-        QPair<QBrush, QBrush> header;
         QPair<QBrush, QBrush> highlight;
         QPair<QBrush, QBrush> lowlight;
         QColor border;
