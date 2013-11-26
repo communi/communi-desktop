@@ -40,14 +40,14 @@ QString ThemeInfo::appStyleSheet() const
     return d.qss;
 }
 
-QPalette ThemeInfo::appPalette() const
-{
-    return d.palette;
-}
-
-QMap<int, QString> ThemeInfo::ircPalette() const
+QMap<int, QString> ThemeInfo::colors() const
 {
     return d.colors;
+}
+
+QMap<QString, QPalette> ThemeInfo::palettes() const
+{
+    return d.palettes;
 }
 
 static QColor parsePaletteColor(const QString& str)
@@ -148,6 +148,24 @@ static void fillPalette(const QSettings& settings, QPalette& palette, QPalette::
     palette.setColor(group, QPalette::WindowText, parseColorValue(settings.value("window-text").toString(), palette.color(group, QPalette::WindowText)));
 }
 
+static QPalette readPalette(QSettings& settings)
+{
+    QPalette palette;
+    fillPalette(settings, palette, QPalette::Normal);
+    settings.beginGroup("normal");
+    fillPalette(settings, palette, QPalette::Normal);
+    settings.endGroup();
+    settings.beginGroup("disabled");
+    fillPalette(settings, palette, QPalette::Disabled);
+    settings.endGroup();
+    settings.beginGroup("inactive");
+    fillPalette(settings, palette, QPalette::Inactive);
+    settings.endGroup();
+    settings.beginGroup("active");
+    fillPalette(settings, palette, QPalette::Active);
+    return palette;
+}
+
 bool ThemeInfo::load(const QString& filePath)
 {
     QSettings settings(filePath, QSettings::IniFormat);
@@ -175,19 +193,11 @@ bool ThemeInfo::load(const QString& filePath)
 
     if (groups.contains("QPalette")) {
         settings.beginGroup("QPalette");
-        fillPalette(settings, d.palette, QPalette::Normal);
-        settings.beginGroup("normal");
-        fillPalette(settings, d.palette, QPalette::Normal);
-        settings.endGroup();
-        settings.beginGroup("disabled");
-        fillPalette(settings, d.palette, QPalette::Disabled);
-        settings.endGroup();
-        settings.beginGroup("inactive");
-        fillPalette(settings, d.palette, QPalette::Inactive);
-        settings.endGroup();
-        settings.beginGroup("active");
-        fillPalette(settings, d.palette, QPalette::Active);
-        settings.endGroup();
+        foreach (const QString& group, settings.childGroups()) {
+            settings.beginGroup(group);
+            d.palettes.insert(group, readPalette(settings));
+            settings.endGroup();
+        }
         settings.endGroup();
     }
 

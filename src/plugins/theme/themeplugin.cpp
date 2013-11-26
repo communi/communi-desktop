@@ -36,10 +36,9 @@ ThemePlugin::ThemePlugin(QObject* parent) : QObject(parent)
 
 void ThemePlugin::initWindow(MainWindow* window)
 {
-    // TODO: app or window palette? would it make sense to keep the app palette pristine,
-    //       so that it can be restored, and only customize the window palette instead?
-    //       ...or even apply to all widgets?
-    qApp->setPalette(d.theme.appPalette());
+    QMap<QString, QPalette> palettes = d.theme.palettes();
+    foreach (const QString& name, palettes.keys())
+        QApplication::setPalette(palettes.value(name), name.toUtf8());
     window->setStyleSheet(d.theme.appStyleSheet());
 }
 
