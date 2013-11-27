@@ -16,22 +16,19 @@
 #define HIGHLIGHTERPLUGIN_H
 
 #include "textdocumentplugin.h"
-#include "treewidgetplugin.h"
 
-class HighlighterPlugin : public QObject, public TextDocumentPlugin, public TreeWidgetPlugin
+class HighlighterPlugin : public QObject, public TextDocumentPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TextDocumentPlugin TreeWidgetPlugin)
+    Q_INTERFACES(TextDocumentPlugin)
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.TextDocumentPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
 #endif
 
 public:
     HighlighterPlugin(QObject* parent = 0);
 
     void initDocument(TextDocument* document);
-    void initTree(TreeWidget* tree);
 };
 
 #endif // HIGHLIGHTERPLUGIN_H

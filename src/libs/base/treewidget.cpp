@@ -13,9 +13,11 @@
 */
 
 #include "treewidget.h"
+#include "sharedtimer.h"
 #include "treeitem.h"
 #include "treerole.h"
 #include <IrcBufferModel>
+#include <IrcConnection>
 #include <QHeaderView>
 #include <IrcMessage>
 #include <IrcBuffer>
@@ -44,6 +46,8 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     header()->setResizeMode(1, QHeaderView::Fixed);
     header()->resizeSection(1, fontMetrics().width("999"));
 
+    connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(onItemExpanded(QTreeWidgetItem*)));
+    connect(this, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
 }
@@ -82,8 +86,10 @@ bool TreeWidget::blockItemReset(bool block)
     if (d.block != block) {
         d.block = block;
         QTreeWidgetItem* current = currentItem();
-        if (!block && current)
+        if (!block && current) {
             delayedResetItem(current);
+            unhighlightItem(current);
+        }
     }
     return wasBlocked;
 }
@@ -102,6 +108,7 @@ void TreeWidget::addBuffer(IrcBuffer* buffer)
         TreeItem* parent = d.connectionItems.value(buffer->connection());
         item = new TreeItem(buffer, parent);
     }
+    connect(item, SIGNAL(destroyed(TreeItem*)), this, SLOT(onItemDestroyed(TreeItem*)));
     connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
     d.bufferItems.insert(buffer, item);
     emit bufferAdded(buffer);
@@ -156,28 +163,107 @@ void TreeWidget::delayedResetItem(QTreeWidgetItem* item)
 void TreeWidget::onMessageReceived(IrcMessage* message)
 {
     if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
-        if (message->nick() != QLatin1String("***") || message->ident() != QLatin1String("znc")) {
-            IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
-
-            TreeItem* item = bufferItem(buffer);
-            if (item && item != currentItem())
-                item->setData(1, TreeRole::Badge, item->data(1, TreeRole::Badge).toInt() + 1);
+        TreeItem* item = bufferItem(qobject_cast<IrcBuffer*>(sender()));
+        if (item) {
+            if (item != currentItem()) {
+                if (message->nick() != QLatin1String("***") || message->ident() != QLatin1String("znc"))
+                    item->setData(1, TreeRole::Badge, item->data(1, TreeRole::Badge).toInt() + 1);
+                if (message->property("private").toBool() ||
+                        message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive)) {
+                    highlightItem(item);
+                }
+            }
         }
     }
+}
+
+void TreeWidget::onItemExpanded(QTreeWidgetItem* item)
+{
+    static_cast<TreeItem*>(item)->refresh();
+}
+
+void TreeWidget::onItemCollapsed(QTreeWidgetItem* item)
+{
+    static_cast<TreeItem*>(item)->refresh();
 }
 
 void TreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
     if (!d.block) {
-        if (previous)
+        if (previous) {
             resetItem(previous);
-        if (current)
+            unhighlightItem(previous);
+        }
+        if (current) {
             delayedResetItem(current);
+            unhighlightItem(current);
+        }
     }
 
     TreeItem* item = static_cast<TreeItem*>(current);
     emit currentItemChanged(item);
     emit currentBufferChanged(item ? item->buffer() : 0);
+}
+
+void TreeWidget::onItemDestroyed(TreeItem* item)
+{
+    d.resetItems.removeOne(item);
+    d.highlightedItems.remove(item);
+}
+
+void TreeWidget::blinkItems()
+{
+    foreach (QTreeWidgetItem* item, d.highlightedItems)
+        colorizeItem(item);
+    d.blink = !d.blink;
+}
+
+void TreeWidget::highlightItem(QTreeWidgetItem* item)
+{
+    if (item && !d.highlightedItems.contains(item)) {
+        if (d.highlightedItems.isEmpty())
+            SharedTimer::instance()->registerReceiver(this, "blinkItems");
+        d.highlightedItems.insert(item);
+        item->setData(0, TreeRole::Highlight, true);
+        colorizeItem(item);
+    }
+}
+
+void TreeWidget::unhighlightItem(QTreeWidgetItem* item)
+{
+    if (item && d.highlightedItems.contains(item)) {
+        d.highlightedItems.remove(item);
+        if (d.highlightedItems.isEmpty())
+            SharedTimer::instance()->unregisterReceiver(this, "blinkItems");
+        item->setData(0, TreeRole::Highlight, false);
+        colorizeItem(item);
+    }
+}
+
+void TreeWidget::colorizeItem(QTreeWidgetItem* item)
+{
+    TreeItem* ti = static_cast<TreeItem*>(item);
+    if (ti) {
+        const bool hilite = d.blink && d.highlightedItems.contains(item);
+        QPalette pal;
+        const QColor dt = pal.color(QPalette::Disabled, QPalette::Text);
+        const QColor ht = pal.color(QPalette::HighlightedText);
+        const QColor hl = pal.color(QPalette::Highlight);
+        if (hilite) {
+            item->setData(0, Qt::ForegroundRole, ht);
+            item->setData(1, Qt::BackgroundRole, hl);
+        } else {
+            const IrcBuffer* buffer = ti->buffer();
+            item->setData(0, Qt::ForegroundRole, buffer->isActive() ? QVariant() : dt);
+            item->setData(1, Qt::BackgroundRole, QVariant());
+        }
+
+        TreeItem* pi = ti->parentItem();
+        if (pi) {
+            const IrcBuffer* buffer = pi->buffer();
+            pi->setData(0, Qt::ForegroundRole, hilite && !pi->isExpanded() ? ht : buffer->isActive() ? QVariant() : dt);
+        }
+    }
 }
 
 // TODO

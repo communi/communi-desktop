@@ -65,15 +65,25 @@ private slots:
     void resetItem(QTreeWidgetItem* item = 0);
     void delayedResetItem(QTreeWidgetItem* item);
     void onMessageReceived(IrcMessage* message);
+    void onItemExpanded(QTreeWidgetItem* item);
+    void onItemCollapsed(QTreeWidgetItem* item);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+    void onItemDestroyed(TreeItem* item);
+    void blinkItems();
 
 private:
+    void highlightItem(QTreeWidgetItem* item);
+    void unhighlightItem(QTreeWidgetItem* item);
+    void colorizeItem(QTreeWidgetItem* item);
+
     friend bool standardTreeSortFunc(const TreeItem* one, const TreeItem* another);
     struct Private {
         bool block;
+        bool blink;
         TreeSortFunc sortFunc;
         QList<IrcConnection*> connections;
         QQueue<QPointer<TreeItem> > resetItems;
+        QSet<QTreeWidgetItem*> highlightedItems;
         QHash<IrcBuffer*, TreeItem*> bufferItems;
         QHash<IrcConnection*, TreeItem*> connectionItems;
     } d;

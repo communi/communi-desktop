@@ -14,7 +14,6 @@
 
 #include "highlighterplugin.h"
 #include "documenthighlighter.h"
-#include "treehighlighter.h"
 
 HighlighterPlugin::HighlighterPlugin(QObject* parent) : QObject(parent)
 {
@@ -25,10 +24,6 @@ void HighlighterPlugin::initDocument(TextDocument* document)
     new DocumentHighlighter(document);
 }
 
-void HighlighterPlugin::initTree(TreeWidget* tree)
-{
-    new TreeHighlighter(tree);
-}
 
 #if QT_VERSION < 0x050000
 Q_EXPORT_STATIC_PLUGIN(HighlighterPlugin)
