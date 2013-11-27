@@ -57,6 +57,23 @@ private:
     } d;
 };
 
+class TreeBadge : public QWidget
+{
+    Q_OBJECT
+
+public:
+    TreeBadge(QWidget* parent = 0) : QWidget(parent) { }
+
+protected:
+    void paintEvent(QPaintEvent*)
+    {
+        QStyleOption option;
+        option.init(this);
+        QStylePainter painter(this);
+        painter.drawPrimitive(QStyle::PE_Widget, option);
+    }
+};
+
 TreeDelegate::TreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
 {
 }
