@@ -9,4 +9,3 @@ SOURCES += $$PWD/sorter.cpp
 SOURCES += $$PWD/sorterplugin.cpp
 
 include(../plugin.pri)
-include(../shared/shared.pri)

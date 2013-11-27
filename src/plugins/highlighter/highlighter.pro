@@ -11,5 +11,4 @@ SOURCES += $$PWD/highlighterplugin.cpp
 SOURCES += $$PWD/treehighlighter.cpp
 
 include(../plugin.pri)
-include(../shared/shared.pri)
 include(../../libs/util/util.pri)

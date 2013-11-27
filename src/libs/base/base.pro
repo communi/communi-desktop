@@ -28,6 +28,7 @@ HEADERS += $$PWD/theme.h
 HEADERS += $$PWD/titlebar.h
 HEADERS += $$PWD/treedelegate.h
 HEADERS += $$PWD/treeitem.h
+HEADERS += $$PWD/treerole.h
 HEADERS += $$PWD/treewidget.h
 
 SOURCES += $$PWD/bufferview.cpp
