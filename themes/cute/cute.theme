@@ -13,7 +13,7 @@ application=:/themes/cute/cute.qss
 
 [QPalette]
 TreeBadge/text=#ffffff
-TreeBadge/background=palette(dark)
+TreeBadge/base=palette(dark)
 TreeBadge/highlight=#ff8080
 TreeBadge/highlighted-text=#ffffff
 TreeItem/highlighted-text=#ff4040

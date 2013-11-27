@@ -121,7 +121,7 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 
             painter->save();
             painter->setPen(Qt::NoPen);
-            painter->setBrush(badge->palette().color(hilite ? QPalette::Highlight : QPalette::Background));
+            painter->setBrush(badge->palette().color(hilite ? QPalette::Highlight : QPalette::Base));
             painter->setRenderHint(QPainter::Antialiasing);
             painter->drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
             painter->restore();
