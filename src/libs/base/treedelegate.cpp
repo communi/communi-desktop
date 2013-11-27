@@ -101,10 +101,11 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         header->render(painter);
         painter->translate(-option.rect.topLeft());
     } else {
-        int num = 0;
-        if (index.parent().isValid())
-            num = index.data(TreeRole::Badge).toInt();
+        static QPointer<TreeBadge> badge;
+        if (!badge)
+            badge = new TreeBadge(const_cast<QWidget*>(option.widget));
 
+        int num = index.data(TreeRole::Badge).toInt();
         if (num > 0) {
             QRect rect;
             rect.setWidth(option.rect.width() - 2);
@@ -112,7 +113,7 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             rect.setHeight(ascent + qMax(option.rect.height() % 2, ascent % 2));
             rect.moveCenter(option.rect.center());
 
-            QBrush brush = QPalette().color(QPalette::Mid); // Theme::instance()->badge(Theme::Background);
+            QBrush brush = badge->palette().color(QPalette::Background);
             QVariant bg = index.data(Qt::BackgroundRole);
             if (bg.isValid())
                 brush = bg.value<QBrush>();
@@ -140,7 +141,7 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             else
                 txt = QFontMetrics(font).elidedText(QString::number(num), Qt::ElideRight, option.rect.width());
 
-            painter->setPen(QPalette().color(QPalette::Midlight));
+            painter->setPen(badge->palette().color(QPalette::Text));
             painter->drawText(option.rect, Qt::AlignCenter, txt);
             painter->restore();
         }
