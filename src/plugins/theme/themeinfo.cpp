@@ -134,11 +134,13 @@ static QString readFile(const QString& filePath)
 static void fillPalette(const QSettings& settings, QPalette& palette, QPalette::ColorGroup group)
 {
     palette.setColor(group, QPalette::AlternateBase, parseColorValue(settings.value("alternate-base").toString(), palette.color(group, QPalette::AlternateBase)));
+    palette.setColor(group, QPalette::Background, parseColorValue(settings.value("background").toString(), palette.color(group, QPalette::Background)));
     palette.setColor(group, QPalette::Base, parseColorValue(settings.value("base").toString(), palette.color(group, QPalette::Base)));
     palette.setColor(group, QPalette::BrightText, parseColorValue(settings.value("bright-text").toString(), palette.color(group, QPalette::BrightText)));
     palette.setColor(group, QPalette::Button, parseColorValue(settings.value("button").toString(), palette.color(group, QPalette::Button)));
     palette.setColor(group, QPalette::ButtonText, parseColorValue(settings.value("button-text").toString(), palette.color(group, QPalette::ButtonText)));
     palette.setColor(group, QPalette::Dark, parseColorValue(settings.value("dark").toString(), palette.color(group, QPalette::Dark)));
+    palette.setColor(group, QPalette::Foreground, parseColorValue(settings.value("foreground").toString(), palette.color(group, QPalette::Foreground)));
     palette.setColor(group, QPalette::Highlight, parseColorValue(settings.value("highlight").toString(), palette.color(group, QPalette::Highlight)));
     palette.setColor(group, QPalette::HighlightedText, parseColorValue(settings.value("highlighted-text").toString(), palette.color(group, QPalette::HighlightedText)));
     palette.setColor(group, QPalette::Light, parseColorValue(settings.value("light").toString(), palette.color(group, QPalette::Light)));
