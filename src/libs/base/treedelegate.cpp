@@ -101,11 +101,11 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         header->render(painter);
         painter->translate(-option.rect.topLeft());
     } else {
-        int badge = 0;
+        int num = 0;
         if (index.parent().isValid())
-            badge = index.data(TreeRole::Badge).toInt();
+            num = index.data(TreeRole::Badge).toInt();
 
-        if (badge > 0) {
+        if (num > 0) {
             QRect rect;
             rect.setWidth(option.rect.width() - 2);
             const int ascent = option.fontMetrics.ascent();
@@ -127,7 +127,7 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 
         QStyledItemDelegate::paint(painter, option, index);
 
-        if (badge > 0) {
+        if (num > 0) {
             painter->save();
             QFont font;
             if (font.pointSize() != -1)
@@ -135,10 +135,10 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             painter->setFont(font);
 
             QString txt;
-            if (badge > 999)
+            if (num > 999)
                 txt = QLatin1String("...");
             else
-                txt = QFontMetrics(font).elidedText(QString::number(badge), Qt::ElideRight, option.rect.width());
+                txt = QFontMetrics(font).elidedText(QString::number(num), Qt::ElideRight, option.rect.width());
 
             painter->setPen(QPalette().color(QPalette::Midlight));
             painter->drawText(option.rect, Qt::AlignCenter, txt);
