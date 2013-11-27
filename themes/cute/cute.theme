@@ -12,5 +12,7 @@ document=:/themes/cute/cute.css
 application=:/themes/cute/cute.qss
 
 [QPalette]
-TreeBadge/text=palette(midlight)
+TreeBadge/text=#ffffff
 TreeBadge/background=palette(dark)
+TreeBadge/highlight=#ff8080
+TreeBadge/highlighted-text=#ffffff

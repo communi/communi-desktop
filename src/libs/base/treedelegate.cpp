@@ -114,9 +114,8 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             rect.moveCenter(option.rect.center());
 
             QBrush brush = badge->palette().color(QPalette::Background);
-            QVariant bg = index.data(Qt::BackgroundRole);
-            if (bg.isValid())
-                brush = bg.value<QBrush>();
+            if (index.data(TreeRole::Highlight).toBool())
+                brush = badge->palette().color(QPalette::Highlight);
 
             painter->save();
             painter->setPen(Qt::NoPen);
@@ -141,7 +140,11 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             else
                 txt = QFontMetrics(font).elidedText(QString::number(num), Qt::ElideRight, option.rect.width());
 
-            painter->setPen(badge->palette().color(QPalette::Text));
+            QColor pen = badge->palette().color(QPalette::Text);
+            if (index.data(TreeRole::Highlight).toBool())
+                pen = badge->palette().color(QPalette::HighlightedText);
+
+            painter->setPen(pen);
             painter->drawText(option.rect, Qt::AlignCenter, txt);
             painter->restore();
         }
