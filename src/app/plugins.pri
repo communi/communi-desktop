@@ -7,7 +7,6 @@ STATIC_PLUGINS += commander
 STATIC_PLUGINS += completer
 STATIC_PLUGINS += dock
 STATIC_PLUGINS += finder
-STATIC_PLUGINS += highlighter
 STATIC_PLUGINS += history
 STATIC_PLUGINS += ignore
 STATIC_PLUGINS += lag

@@ -8,7 +8,6 @@ SUBDIRS += commander
 SUBDIRS += completer
 SUBDIRS += dock
 SUBDIRS += finder
-SUBDIRS += highlighter
 SUBDIRS += history
 SUBDIRS += ignore
 SUBDIRS += lag

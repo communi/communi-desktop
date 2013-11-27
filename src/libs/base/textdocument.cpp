@@ -17,6 +17,7 @@
 #include "syntaxhighlighter.h"
 #include <QAbstractTextDocumentLayout>
 #include <QTextDocumentFragment>
+#include <IrcConnection>
 #include <QApplication>
 #include <QTextCursor>
 #include <QTextBlock>
@@ -287,6 +288,13 @@ void TextDocument::flushLines()
 void TextDocument::receiveMessage(IrcMessage* message)
 {
     append(d.formatter->formatMessage(message));
+    if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
+        if (!(message->flags() & IrcMessage::Own)) {
+            const bool contains = message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive);
+            if (contains)
+                addHighlight(totalCount() - 1);
+        }
+    }
     emit messageReceived(message);
 }
 
