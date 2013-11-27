@@ -133,43 +133,71 @@ static QString readFile(const QString& filePath)
 
 static void fillPalette(const QSettings& settings, QPalette& palette, QPalette::ColorGroup group)
 {
-    palette.setColor(group, QPalette::AlternateBase, parseColorValue(settings.value("alternate-base").toString(), palette.color(group, QPalette::AlternateBase)));
-    palette.setColor(group, QPalette::Background, parseColorValue(settings.value("background").toString(), palette.color(group, QPalette::Background)));
-    palette.setColor(group, QPalette::Base, parseColorValue(settings.value("base").toString(), palette.color(group, QPalette::Base)));
-    palette.setColor(group, QPalette::BrightText, parseColorValue(settings.value("bright-text").toString(), palette.color(group, QPalette::BrightText)));
-    palette.setColor(group, QPalette::Button, parseColorValue(settings.value("button").toString(), palette.color(group, QPalette::Button)));
-    palette.setColor(group, QPalette::ButtonText, parseColorValue(settings.value("button-text").toString(), palette.color(group, QPalette::ButtonText)));
-    palette.setColor(group, QPalette::Dark, parseColorValue(settings.value("dark").toString(), palette.color(group, QPalette::Dark)));
-    palette.setColor(group, QPalette::Foreground, parseColorValue(settings.value("foreground").toString(), palette.color(group, QPalette::Foreground)));
-    palette.setColor(group, QPalette::Highlight, parseColorValue(settings.value("highlight").toString(), palette.color(group, QPalette::Highlight)));
-    palette.setColor(group, QPalette::HighlightedText, parseColorValue(settings.value("highlighted-text").toString(), palette.color(group, QPalette::HighlightedText)));
-    palette.setColor(group, QPalette::Light, parseColorValue(settings.value("light").toString(), palette.color(group, QPalette::Light)));
-    palette.setColor(group, QPalette::Link, parseColorValue(settings.value("link").toString(), palette.color(group, QPalette::Link)));
-    palette.setColor(group, QPalette::LinkVisited, parseColorValue(settings.value("link-visited").toString(), palette.color(group, QPalette::LinkVisited)));
-    palette.setColor(group, QPalette::Mid, parseColorValue(settings.value("mid").toString(), palette.color(group, QPalette::Mid)));
-    palette.setColor(group, QPalette::Midlight, parseColorValue(settings.value("midlight").toString(), palette.color(group, QPalette::Midlight)));
-    palette.setColor(group, QPalette::Shadow, parseColorValue(settings.value("shadow").toString(), palette.color(group, QPalette::Shadow)));
-    palette.setColor(group, QPalette::Text, parseColorValue(settings.value("text").toString(), palette.color(group, QPalette::Text)));
-    palette.setColor(group, QPalette::Window, parseColorValue(settings.value("window").toString(), palette.color(group, QPalette::Window)));
-    palette.setColor(group, QPalette::WindowText, parseColorValue(settings.value("window-text").toString(), palette.color(group, QPalette::WindowText)));
+    if (settings.contains("alternate-base"))
+        palette.setColor(group, QPalette::AlternateBase, parseColorValue(settings.value("alternate-base").toString(), palette.color(group, QPalette::AlternateBase)));
+    if (settings.contains("background"))
+        palette.setColor(group, QPalette::Background, parseColorValue(settings.value("background").toString(), palette.color(group, QPalette::Background)));
+    if (settings.contains("base"))
+        palette.setColor(group, QPalette::Base, parseColorValue(settings.value("base").toString(), palette.color(group, QPalette::Base)));
+    if (settings.contains("bright-text"))
+        palette.setColor(group, QPalette::BrightText, parseColorValue(settings.value("bright-text").toString(), palette.color(group, QPalette::BrightText)));
+    if (settings.contains("button"))
+        palette.setColor(group, QPalette::Button, parseColorValue(settings.value("button").toString(), palette.color(group, QPalette::Button)));
+    if (settings.contains("button-text"))
+        palette.setColor(group, QPalette::ButtonText, parseColorValue(settings.value("button-text").toString(), palette.color(group, QPalette::ButtonText)));
+    if (settings.contains("dark"))
+        palette.setColor(group, QPalette::Dark, parseColorValue(settings.value("dark").toString(), palette.color(group, QPalette::Dark)));
+    if (settings.contains("foreground"))
+        palette.setColor(group, QPalette::Foreground, parseColorValue(settings.value("foreground").toString(), palette.color(group, QPalette::Foreground)));
+    if (settings.contains("highlight"))
+        palette.setColor(group, QPalette::Highlight, parseColorValue(settings.value("highlight").toString(), palette.color(group, QPalette::Highlight)));
+    if (settings.contains("highlighted-text"))
+        palette.setColor(group, QPalette::HighlightedText, parseColorValue(settings.value("highlighted-text").toString(), palette.color(group, QPalette::HighlightedText)));
+    if (settings.contains("light"))
+        palette.setColor(group, QPalette::Light, parseColorValue(settings.value("light").toString(), palette.color(group, QPalette::Light)));
+    if (settings.contains("link"))
+        palette.setColor(group, QPalette::Link, parseColorValue(settings.value("link").toString(), palette.color(group, QPalette::Link)));
+    if (settings.contains("link-visited"))
+        palette.setColor(group, QPalette::LinkVisited, parseColorValue(settings.value("link-visited").toString(), palette.color(group, QPalette::LinkVisited)));
+    if (settings.contains("mid"))
+        palette.setColor(group, QPalette::Mid, parseColorValue(settings.value("mid").toString(), palette.color(group, QPalette::Mid)));
+    if (settings.contains("midlight"))
+        palette.setColor(group, QPalette::Midlight, parseColorValue(settings.value("midlight").toString(), palette.color(group, QPalette::Midlight)));
+    if (settings.contains("shadow"))
+        palette.setColor(group, QPalette::Shadow, parseColorValue(settings.value("shadow").toString(), palette.color(group, QPalette::Shadow)));
+    if (settings.contains("text"))
+        palette.setColor(group, QPalette::Text, parseColorValue(settings.value("text").toString(), palette.color(group, QPalette::Text)));
+    if (settings.contains("window"))
+        palette.setColor(group, QPalette::Window, parseColorValue(settings.value("window").toString(), palette.color(group, QPalette::Window)));
+    if (settings.contains("window-text"))
+        palette.setColor(group, QPalette::WindowText, parseColorValue(settings.value("window-text").toString(), palette.color(group, QPalette::WindowText)));
 }
 
 static QPalette readPalette(QSettings& settings)
 {
     QPalette palette;
     fillPalette(settings, palette, QPalette::Normal);
-    settings.beginGroup("normal");
-    fillPalette(settings, palette, QPalette::Normal);
-    settings.endGroup();
-    settings.beginGroup("disabled");
-    fillPalette(settings, palette, QPalette::Disabled);
-    settings.endGroup();
-    settings.beginGroup("inactive");
-    fillPalette(settings, palette, QPalette::Inactive);
-    settings.endGroup();
-    settings.beginGroup("active");
-    fillPalette(settings, palette, QPalette::Active);
-    settings.endGroup();
+    QStringList groups = settings.childGroups();
+    if (groups.contains("normal")) {
+        settings.beginGroup("normal");
+        fillPalette(settings, palette, QPalette::Normal);
+        settings.endGroup();
+    }
+    if (groups.contains("disabled")) {
+        settings.beginGroup("disabled");
+        fillPalette(settings, palette, QPalette::Disabled);
+        settings.endGroup();
+    }
+    if (groups.contains("inactive")) {
+        settings.beginGroup("inactive");
+        fillPalette(settings, palette, QPalette::Inactive);
+        settings.endGroup();
+    }
+    if (groups.contains("active")) {
+        settings.beginGroup("active");
+        fillPalette(settings, palette, QPalette::Active);
+        settings.endGroup();
+    }
     return palette;
 }
 
