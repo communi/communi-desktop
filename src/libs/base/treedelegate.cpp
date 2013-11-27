@@ -81,6 +81,7 @@ TreeDelegate::TreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
 
 void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
+    bool active = index.data(TreeRole::Active).toBool();
     bool hilite = index.data(TreeRole::Highlight).toBool();
 
     if (!index.parent().isValid()) {
@@ -97,6 +98,7 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             pal.setColor(QPalette::WindowText, header->palette().color(QPalette::HighlightedText));
         }
         header->setPalette(pal);
+        header->setEnabled(active);
         header->setText(index.data(Qt::DisplayRole).toString());
         header->setIcon(index.data(Qt::DecorationRole).value<QIcon>());
         header->setState(option.state);
@@ -129,6 +131,8 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 
         if (hilite)
             const_cast<QStyleOptionViewItem&>(option).palette.setColor(QPalette::Text, QApplication::palette("TreeItem").color(QPalette::HighlightedText));
+        if (!active)
+            const_cast<QStyleOptionViewItem&>(option).palette.setColor(QPalette::Text, option.palette.color(QPalette::Disabled, QPalette::Text));
 
         QStyledItemDelegate::paint(painter, option, index);
 
