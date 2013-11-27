@@ -15,7 +15,6 @@ SUBDIRS += lag
 SUBDIRS += menu
 SUBDIRS += monitor
 SUBDIRS += navigator
-SUBDIRS += reseter
 SUBDIRS += sorter
 SUBDIRS += sound
 SUBDIRS += state

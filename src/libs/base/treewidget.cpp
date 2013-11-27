@@ -22,6 +22,7 @@
 #include <QHeaderView>
 #include <IrcMessage>
 #include <IrcBuffer>
+#include <QShortcut>
 #include <QTimer>
 
 TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
@@ -53,6 +54,10 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     connect(this, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
+
+    QShortcut* shortcut = new QShortcut(this);
+    shortcut->setKey(QKeySequence(tr("Ctrl+R")));
+    connect(shortcut, SIGNAL(activated()), this, SLOT(resetItems()));
 }
 
 IrcBuffer* TreeWidget::currentBuffer() const
@@ -219,6 +224,16 @@ void TreeWidget::blinkItems()
     foreach (QTreeWidgetItem* item, d.highlightedItems)
         updateHighlight(item);
     d.blink = !d.blink;
+}
+
+void TreeWidget::resetItems()
+{
+    QTreeWidgetItemIterator it(this);
+    while (*it) {
+        resetBadge(*it);
+        unhighlightItem(*it);
+        ++it;
+    }
 }
 
 void TreeWidget::highlightItem(QTreeWidgetItem* item)

@@ -70,6 +70,7 @@ private slots:
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void onItemDestroyed(TreeItem* item);
     void blinkItems();
+    void resetItems();
 
 private:
     void highlightItem(QTreeWidgetItem* item);
