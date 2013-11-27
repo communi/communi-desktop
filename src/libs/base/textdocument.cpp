@@ -197,6 +197,7 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
     const qreal oldOpacity = painter->opacity();
     const int margin = qCeil(documentMargin());
     const QAbstractTextDocumentLayout* layout = documentLayout();
+    const QPalette palette = QApplication::palette("TextDocument");
 
     d.drawUb = d.ub > 1;
     if (!d.lowlights.isEmpty()) {
@@ -233,9 +234,8 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
         }
     }
 
-    painter->setOpacity(0.25);
-    painter->setPen(QPalette().color(QPalette::HighlightedText));
-    painter->setBrush(QPalette().color(QPalette::Highlight));
+    painter->setPen(palette.color(QPalette::Mid));
+    painter->setBrush(palette.color(QPalette::Highlight));
     foreach (int highlight, d.highlights) {
         QTextBlock block = findBlockByNumber(highlight);
         if (block.isValid()) {

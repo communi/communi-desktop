@@ -18,3 +18,4 @@ TreeBadge/highlight=#ff8080
 TreeBadge/highlighted-text=#ffffff
 TreeItem/highlighted-text=#ff4040
 TreeHeader/highlighted-text=#ff4040
+TextDocument/highlight=rgba(255,64,64,64)
