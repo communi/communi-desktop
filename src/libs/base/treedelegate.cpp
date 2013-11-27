@@ -17,6 +17,7 @@
 #include <QStyleOptionViewItem>
 #include <QStyleOptionHeader>
 #include <QStylePainter>
+#include <QApplication>
 #include <QPalette>
 #include <QPainter>
 #include <QPointer>
@@ -80,17 +81,18 @@ TreeDelegate::TreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
 
 void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
+    bool hilite = index.data(TreeRole::Highlight).toBool();
+
     if (!index.parent().isValid()) {
         static QPointer<TreeHeader> header;
         if (!header)
             header = new TreeHeader(const_cast<QWidget*>(option.widget));
 
         QPalette pal = option.palette;
-        QVariant fg = index.data(Qt::ForegroundRole);
-        if (fg.isValid()) {
-            pal.setColor(QPalette::Text, fg.value<QColor>());
-            pal.setColor(QPalette::ButtonText, fg.value<QColor>());
-            pal.setColor(QPalette::WindowText, fg.value<QColor>());
+        if (hilite) {
+            pal.setColor(QPalette::Text, header->palette().color(QPalette::HighlightedText));
+            pal.setColor(QPalette::ButtonText, header->palette().color(QPalette::HighlightedText));
+            pal.setColor(QPalette::WindowText, header->palette().color(QPalette::HighlightedText));
         }
         header->setPalette(pal);
         header->setText(index.data(Qt::DisplayRole).toString());
@@ -113,17 +115,16 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             rect.setHeight(ascent + qMax(option.rect.height() % 2, ascent % 2));
             rect.moveCenter(option.rect.center());
 
-            QBrush brush = badge->palette().color(QPalette::Background);
-            if (index.data(TreeRole::Highlight).toBool())
-                brush = badge->palette().color(QPalette::Highlight);
-
             painter->save();
             painter->setPen(Qt::NoPen);
-            painter->setBrush(brush);
+            painter->setBrush(badge->palette().color(hilite ? QPalette::Highlight : QPalette::Background));
             painter->setRenderHint(QPainter::Antialiasing);
             painter->drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
             painter->restore();
         }
+
+        if (hilite)
+            const_cast<QStyleOptionViewItem&>(option).palette.setColor(QPalette::Text, QApplication::palette("TreeItem").color(QPalette::HighlightedText));
 
         QStyledItemDelegate::paint(painter, option, index);
 
@@ -140,11 +141,7 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             else
                 txt = QFontMetrics(font).elidedText(QString::number(num), Qt::ElideRight, option.rect.width());
 
-            QColor pen = badge->palette().color(QPalette::Text);
-            if (index.data(TreeRole::Highlight).toBool())
-                pen = badge->palette().color(QPalette::HighlightedText);
-
-            painter->setPen(pen);
+            painter->setPen(badge->palette().color(hilite ? QPalette::HighlightedText : QPalette::Text));
             painter->drawText(option.rect, Qt::AlignCenter, txt);
             painter->restore();
         }
