@@ -214,7 +214,7 @@ void TreeWidget::onItemDestroyed(TreeItem* item)
 void TreeWidget::blinkItems()
 {
     foreach (QTreeWidgetItem* item, d.highlightedItems)
-        colorizeItem(item);
+        updateHighlight(item);
     d.blink = !d.blink;
 }
 
@@ -224,8 +224,7 @@ void TreeWidget::highlightItem(QTreeWidgetItem* item)
         if (d.highlightedItems.isEmpty())
             SharedTimer::instance()->registerReceiver(this, "blinkItems");
         d.highlightedItems.insert(item);
-        item->setData(0, TreeRole::Highlight, true);
-        colorizeItem(item);
+        updateHighlight(item);
     }
 }
 
@@ -235,34 +234,20 @@ void TreeWidget::unhighlightItem(QTreeWidgetItem* item)
         d.highlightedItems.remove(item);
         if (d.highlightedItems.isEmpty())
             SharedTimer::instance()->unregisterReceiver(this, "blinkItems");
-        item->setData(0, TreeRole::Highlight, false);
-        colorizeItem(item);
+        updateHighlight(item);
     }
 }
 
-void TreeWidget::colorizeItem(QTreeWidgetItem* item)
+void TreeWidget::updateHighlight(QTreeWidgetItem* item)
 {
     TreeItem* ti = static_cast<TreeItem*>(item);
     if (ti) {
         const bool hilite = d.blink && d.highlightedItems.contains(item);
-        QPalette pal;
-        const QColor dt = pal.color(QPalette::Disabled, QPalette::Text);
-        const QColor ht = pal.color(QPalette::HighlightedText);
-        const QColor hl = pal.color(QPalette::Highlight);
-        if (hilite) {
-            item->setData(0, Qt::ForegroundRole, ht);
-            item->setData(1, Qt::BackgroundRole, hl);
-        } else {
-            const IrcBuffer* buffer = ti->buffer();
-            item->setData(0, Qt::ForegroundRole, buffer->isActive() ? QVariant() : dt);
-            item->setData(1, Qt::BackgroundRole, QVariant());
-        }
-
+        item->setData(0, TreeRole::Highlight, hilite);
+        item->setData(1, TreeRole::Highlight, hilite);
         TreeItem* pi = ti->parentItem();
-        if (pi) {
-            const IrcBuffer* buffer = pi->buffer();
-            pi->setData(0, Qt::ForegroundRole, hilite && !pi->isExpanded() ? ht : buffer->isActive() ? QVariant() : dt);
-        }
+        if (pi)
+            pi->setData(0, TreeRole::Highlight, hilite && !pi->isExpanded());
     }
 }
 

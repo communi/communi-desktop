@@ -74,7 +74,7 @@ private slots:
 private:
     void highlightItem(QTreeWidgetItem* item);
     void unhighlightItem(QTreeWidgetItem* item);
-    void colorizeItem(QTreeWidgetItem* item);
+    void updateHighlight(QTreeWidgetItem* item);
 
     friend bool standardTreeSortFunc(const TreeItem* one, const TreeItem* another);
     struct Private {
