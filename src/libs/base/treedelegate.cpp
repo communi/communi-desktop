@@ -13,9 +13,11 @@
 */
 
 #include "treedelegate.h"
+#include "treerole.h"
 #include <QStyleOptionViewItem>
 #include <QStyleOptionHeader>
 #include <QStylePainter>
+#include <QPalette>
 #include <QPainter>
 #include <QPointer>
 #include <QStyle>
@@ -82,7 +84,59 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         header->render(painter);
         painter->translate(-option.rect.topLeft());
     } else {
+        int badge = 0;
+        if (index.parent().isValid())
+            badge = index.data(TreeRole::Badge).toInt();
+
+        if (badge > 0) {
+            QRect rect;
+            rect.setWidth(option.rect.width() - 2);
+            const int ascent = option.fontMetrics.ascent();
+            rect.setHeight(ascent + qMax(option.rect.height() % 2, ascent % 2));
+            rect.moveCenter(option.rect.center());
+
+            QBrush brush = QPalette().color(QPalette::Mid); // Theme::instance()->badge(Theme::Background);
+            QVariant bg = index.data(Qt::BackgroundRole);
+            if (bg.isValid())
+                brush = bg.value<QBrush>();
+
+            painter->save();
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(brush);
+            painter->setRenderHint(QPainter::Antialiasing);
+            painter->drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
+            painter->restore();
+        }
+
         QStyledItemDelegate::paint(painter, option, index);
+
+        if (badge > 0) {
+            painter->save();
+            QFont font;
+            if (font.pointSize() != -1)
+                font.setPointSizeF(0.8 * font.pointSizeF());
+            painter->setFont(font);
+
+            QString txt;
+            if (badge > 999)
+                txt = QLatin1String("...");
+            else
+                txt = QFontMetrics(font).elidedText(QString::number(badge), Qt::ElideRight, option.rect.width());
+
+            painter->setPen(QPalette().color(QPalette::Midlight));
+            painter->drawText(option.rect, Qt::AlignCenter, txt);
+            painter->restore();
+        }
+    }
+}
+
+void TreeDelegate::initStyleOption(QStyleOptionViewItem* option, const QModelIndex& index) const
+{
+    QStyledItemDelegate::initStyleOption(option, index);
+    if (index.parent().isValid()) {
+        QStyleOptionViewItemV4* v4 = qstyleoption_cast<QStyleOptionViewItemV4*>(option);
+        if (v4)
+            v4->backgroundBrush = Qt::transparent;
     }
 }
 

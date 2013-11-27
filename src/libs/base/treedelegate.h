@@ -25,6 +25,9 @@ public:
     explicit TreeDelegate(QObject* parent = 0);
 
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+
+protected:
+    void initStyleOption(QStyleOptionViewItem* option, const QModelIndex& index) const;
 };
 
 #endif // TREEDELEGATE_H

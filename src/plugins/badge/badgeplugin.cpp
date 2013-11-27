@@ -13,7 +13,6 @@
 */
 
 #include "badgeplugin.h"
-#include "badgedelegate.h"
 #include "treewidget.h"
 #include "treeitem.h"
 #include "treerole.h"
@@ -33,7 +32,6 @@ void BadgePlugin::initTree(TreeWidget* tree)
 {
     d.tree = tree;
     d.tree->setColumnCount(2);
-    d.tree->setItemDelegateForColumn(1, new BadgeDelegate(this));
     d.tree->installEventFilter(this);
 
     QHeaderView* header = tree->header();
