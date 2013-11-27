@@ -87,7 +87,7 @@ bool TreeWidget::blockItemReset(bool block)
         d.block = block;
         QTreeWidgetItem* current = currentItem();
         if (!block && current) {
-            delayedResetItem(current);
+            delayedResetBadge(current);
             unhighlightItem(current);
         }
     }
@@ -146,18 +146,18 @@ QSize TreeWidget::sizeHint() const
     return QSize(20 * fontMetrics().width('#'), QTreeWidget::sizeHint().height());
 }
 
-void TreeWidget::resetItem(QTreeWidgetItem* item)
+void TreeWidget::resetBadge(QTreeWidgetItem* item)
 {
-    if (!item && !d.resetItems.isEmpty())
-        item = d.resetItems.dequeue();
+    if (!item && !d.resetBadges.isEmpty())
+        item = d.resetBadges.dequeue();
     if (item)
         item->setData(1, TreeRole::Badge, 0);
 }
 
-void TreeWidget::delayedResetItem(QTreeWidgetItem* item)
+void TreeWidget::delayedResetBadge(QTreeWidgetItem* item)
 {
-    d.resetItems.enqueue(static_cast<TreeItem*>(item));
-    QTimer::singleShot(500, this, SLOT(resetItem()));
+    d.resetBadges.enqueue(static_cast<TreeItem*>(item));
+    QTimer::singleShot(500, this, SLOT(resetBadge()));
 }
 
 void TreeWidget::onMessageReceived(IrcMessage* message)
@@ -191,11 +191,11 @@ void TreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem*
 {
     if (!d.block) {
         if (previous) {
-            resetItem(previous);
+            resetBadge(previous);
             unhighlightItem(previous);
         }
         if (current) {
-            delayedResetItem(current);
+            delayedResetBadge(current);
             unhighlightItem(current);
         }
     }
@@ -207,7 +207,7 @@ void TreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem*
 
 void TreeWidget::onItemDestroyed(TreeItem* item)
 {
-    d.resetItems.removeOne(item);
+    d.resetBadges.removeOne(item);
     d.highlightedItems.remove(item);
 }
 

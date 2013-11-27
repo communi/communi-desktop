@@ -62,8 +62,8 @@ protected:
     QSize sizeHint() const;
 
 private slots:
-    void resetItem(QTreeWidgetItem* item = 0);
-    void delayedResetItem(QTreeWidgetItem* item);
+    void resetBadge(QTreeWidgetItem* item = 0);
+    void delayedResetBadge(QTreeWidgetItem* item);
     void onMessageReceived(IrcMessage* message);
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
@@ -82,7 +82,7 @@ private:
         bool blink;
         TreeSortFunc sortFunc;
         QList<IrcConnection*> connections;
-        QQueue<QPointer<TreeItem> > resetItems;
+        QQueue<QPointer<TreeItem> > resetBadges;
         QSet<QTreeWidgetItem*> highlightedItems;
         QHash<IrcBuffer*, TreeItem*> bufferItems;
         QHash<IrcConnection*, TreeItem*> connectionItems;
