@@ -54,6 +54,8 @@ static QColor parsePaletteColor(const QString& str)
 {
     if (str == "alternate-base")
         return qApp->palette().color(QPalette::AlternateBase);
+    else if (str == "background")
+        return qApp->palette().color(QPalette::Background);
     else if (str == "base")
         return qApp->palette().color(QPalette::Base);
     else if (str == "bright-text")
@@ -64,6 +66,8 @@ static QColor parsePaletteColor(const QString& str)
         return qApp->palette().color(QPalette::ButtonText);
     else if (str == "dark")
         return qApp->palette().color(QPalette::Dark);
+    else if (str == "foreground")
+        return qApp->palette().color(QPalette::Foreground);
     else if (str == "highlight")
         return qApp->palette().color(QPalette::Highlight);
     else if (str == "highlighted-text")
