@@ -13,9 +13,7 @@
 */
 
 #include "themeplugin.h"
-#include "treedelegate.h"
 #include "textdocument.h"
-#include "treewidget.h"
 #include "mainwindow.h"
 #include "bufferview.h"
 #include "titlebar.h"
@@ -40,13 +38,6 @@ void ThemePlugin::initWindow(MainWindow* window)
     foreach (const QString& name, palettes.keys())
         QApplication::setPalette(palettes.value(name), name.toUtf8());
     window->setStyleSheet(d.theme.appStyleSheet());
-}
-
-void ThemePlugin::initTree(TreeWidget* tree)
-{
-    // TODO
-    TreeDelegate* delegate = new TreeDelegate(tree);
-    tree->setItemDelegate(delegate);
 }
 
 void ThemePlugin::initDocument(TextDocument* doc)

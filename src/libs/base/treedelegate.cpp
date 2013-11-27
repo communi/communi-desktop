@@ -85,8 +85,10 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 
     if (!index.parent().isValid()) {
         static QPointer<TreeHeader> header;
-        if (!header)
+        if (!header) {
             header = new TreeHeader(const_cast<QWidget*>(option.widget));
+            header->setVisible(false);
+        }
 
         QPalette pal = option.palette;
         if (hilite) {
@@ -104,8 +106,10 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         painter->translate(-option.rect.topLeft());
     } else {
         static QPointer<TreeBadge> badge;
-        if (!badge)
+        if (!badge) {
             badge = new TreeBadge(const_cast<QWidget*>(option.widget));
+            badge->setVisible(false);
+        }
 
         int num = index.data(TreeRole::Badge).toInt();
         if (num > 0) {

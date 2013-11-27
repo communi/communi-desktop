@@ -13,6 +13,7 @@
 */
 
 #include "treewidget.h"
+#include "treedelegate.h"
 #include "sharedtimer.h"
 #include "treeitem.h"
 #include "treerole.h"
@@ -36,6 +37,8 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     setFocusPolicy(Qt::NoFocus);
     setFrameStyle(QFrame::NoFrame);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    setItemDelegate(new TreeDelegate(this));
 
     setSortingEnabled(true);
     setSortFunc(standardTreeSortFunc);
