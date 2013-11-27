@@ -169,6 +169,7 @@ static QPalette readPalette(QSettings& settings)
     settings.endGroup();
     settings.beginGroup("active");
     fillPalette(settings, palette, QPalette::Active);
+    settings.endGroup();
     return palette;
 }
 
