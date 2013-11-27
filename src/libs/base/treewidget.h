@@ -16,10 +16,13 @@
 #define TREEWIDGET_H
 
 #include <QHash>
+#include <QQueue>
+#include <QPointer>
 #include <QTreeWidget>
 
 class TreeItem;
 class IrcBuffer;
+class IrcMessage;
 class IrcConnection;
 
 typedef bool (*TreeSortFunc)(const TreeItem* one, const TreeItem* another);
@@ -40,6 +43,8 @@ public:
     TreeSortFunc sortFunc() const;
     void setSortFunc(TreeSortFunc func);
 
+    bool blockItemReset(bool block);
+
 public slots:
     void addBuffer(IrcBuffer* buffer);
     void removeBuffer(IrcBuffer* buffer);
@@ -57,13 +62,18 @@ protected:
     QSize sizeHint() const;
 
 private slots:
-    void onCurrentItemChanged(QTreeWidgetItem* item);
+    void resetItem(QTreeWidgetItem* item = 0);
+    void delayedResetItem(QTreeWidgetItem* item);
+    void onMessageReceived(IrcMessage* message);
+    void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
 
 private:
     friend bool standardTreeSortFunc(const TreeItem* one, const TreeItem* another);
     struct Private {
+        bool block;
         TreeSortFunc sortFunc;
         QList<IrcConnection*> connections;
+        QQueue<QPointer<TreeItem> > resetItems;
         QHash<IrcBuffer*, TreeItem*> bufferItems;
         QHash<IrcConnection*, TreeItem*> connectionItems;
     } d;

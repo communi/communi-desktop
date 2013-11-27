@@ -20,7 +20,6 @@
 #include "mainwindowplugin.h"
 
 Q_IMPORT_PLUGIN(AjaxPlugin)
-Q_IMPORT_PLUGIN(BadgePlugin)
 Q_IMPORT_PLUGIN(CommanderPlugin)
 Q_IMPORT_PLUGIN(CompleterPlugin)
 Q_IMPORT_PLUGIN(DockPlugin)

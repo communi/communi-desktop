@@ -14,14 +14,19 @@
 
 #include "treewidget.h"
 #include "treeitem.h"
+#include "treerole.h"
 #include <IrcBufferModel>
 #include <QHeaderView>
+#include <IrcMessage>
 #include <IrcBuffer>
+#include <QTimer>
 
 TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
+    d.block = false;
+
     setAnimated(true);
-    setColumnCount(1);
+    setColumnCount(2);
     setIndentation(0);
     setHeaderHidden(true);
     setRootIsDecorated(false);
@@ -34,8 +39,13 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     setSortFunc(standardTreeSortFunc);
     sortByColumn(0, Qt::AscendingOrder);
 
+    header()->setStretchLastSection(false);
+    header()->setResizeMode(0, QHeaderView::Stretch);
+    header()->setResizeMode(1, QHeaderView::Fixed);
+    header()->resizeSection(1, fontMetrics().width("999"));
+
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
-            this, SLOT(onCurrentItemChanged(QTreeWidgetItem*)));
+            this, SLOT(onCurrentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
 }
 
 IrcBuffer* TreeWidget::currentBuffer() const
@@ -66,6 +76,18 @@ void TreeWidget::setSortFunc(TreeSortFunc func)
     d.sortFunc = func;
 }
 
+bool TreeWidget::blockItemReset(bool block)
+{
+    bool wasBlocked = d.block;
+    if (d.block != block) {
+        d.block = block;
+        QTreeWidgetItem* current = currentItem();
+        if (!block && current)
+            delayedResetItem(current);
+    }
+    return wasBlocked;
+}
+
 void TreeWidget::addBuffer(IrcBuffer* buffer)
 {
     TreeItem* item = 0;
@@ -80,6 +102,7 @@ void TreeWidget::addBuffer(IrcBuffer* buffer)
         TreeItem* parent = d.connectionItems.value(buffer->connection());
         item = new TreeItem(buffer, parent);
     }
+    connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
     d.bufferItems.insert(buffer, item);
     emit bufferAdded(buffer);
 }
@@ -91,6 +114,7 @@ void TreeWidget::removeBuffer(IrcBuffer* buffer)
         d.connectionItems.remove(connection);
         d.connections.removeOne(connection);
     }
+    disconnect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
     emit bufferRemoved(buffer);
     delete d.bufferItems.take(buffer);
 }
@@ -115,11 +139,45 @@ QSize TreeWidget::sizeHint() const
     return QSize(20 * fontMetrics().width('#'), QTreeWidget::sizeHint().height());
 }
 
-void TreeWidget::onCurrentItemChanged(QTreeWidgetItem* item)
+void TreeWidget::resetItem(QTreeWidgetItem* item)
 {
-    TreeItem* ti = static_cast<TreeItem*>(item);
-    emit currentItemChanged(ti);
-    emit currentBufferChanged(ti ? ti->buffer() : 0);
+    if (!item && !d.resetItems.isEmpty())
+        item = d.resetItems.dequeue();
+    if (item)
+        item->setData(1, TreeRole::Badge, 0);
+}
+
+void TreeWidget::delayedResetItem(QTreeWidgetItem* item)
+{
+    d.resetItems.enqueue(static_cast<TreeItem*>(item));
+    QTimer::singleShot(500, this, SLOT(resetItem()));
+}
+
+void TreeWidget::onMessageReceived(IrcMessage* message)
+{
+    if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
+        if (message->nick() != QLatin1String("***") || message->ident() != QLatin1String("znc")) {
+            IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
+
+            TreeItem* item = bufferItem(buffer);
+            if (item && item != currentItem())
+                item->setData(1, TreeRole::Badge, item->data(1, TreeRole::Badge).toInt() + 1);
+        }
+    }
+}
+
+void TreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
+{
+    if (!d.block) {
+        if (previous)
+            resetItem(previous);
+        if (current)
+            delayedResetItem(current);
+    }
+
+    TreeItem* item = static_cast<TreeItem*>(current);
+    emit currentItemChanged(item);
+    emit currentBufferChanged(item ? item->buffer() : 0);
 }
 
 // TODO

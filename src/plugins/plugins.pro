@@ -4,7 +4,6 @@
 
 TEMPLATE = subdirs
 SUBDIRS += ajax
-SUBDIRS += badge
 SUBDIRS += commander
 SUBDIRS += completer
 SUBDIRS += dock
