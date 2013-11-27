@@ -13,6 +13,7 @@
 */
 
 #include "treeitem.h"
+#include "treerole.h"
 #include "treewidget.h"
 #include <IrcBuffer>
 
@@ -67,6 +68,8 @@ TreeWidget* TreeItem::treeWidget() const
 
 QVariant TreeItem::data(int column, int role) const
 {
+    if (role == TreeRole::Active)
+        return d.buffer->isActive();
     if (column == 0 && role == Qt::DisplayRole && d.buffer)
         return d.buffer->data(role);
     return QTreeWidgetItem::data(column, role);

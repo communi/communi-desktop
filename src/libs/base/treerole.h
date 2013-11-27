@@ -19,7 +19,8 @@
 
 namespace TreeRole {
     enum {
-        Badge = Qt::UserRole,
+        Active = Qt::UserRole,
+        Badge,
         Highlight
     };
 }
