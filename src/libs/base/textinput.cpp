@@ -24,6 +24,7 @@ TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
 {
     setAttribute(Qt::WA_MacShowFocusRect, false);
 
+    d.index = 0;
     d.buffer = 0;
     d.parser = 0;
 
@@ -34,6 +35,12 @@ TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
 
     QShortcut* shortcut = new QShortcut(Qt::Key_Tab, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(tryComplete()));
+
+    shortcut = new QShortcut(Qt::Key_Up, this);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(goBackward()));
+
+    shortcut = new QShortcut(Qt::Key_Down, this);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(goForward()));
 
     connect(this, SIGNAL(returnPressed()), this, SLOT(sendInput()));
 }
@@ -76,6 +83,9 @@ void TextInput::setBuffer(IrcBuffer* buffer)
     if (d.buffer != buffer) {
         unbind(d.buffer, d.parser);
         bind(buffer, d.parser);
+        if (d.buffer)
+            d.histories.insert(d.buffer, d.history);
+        d.history = d.histories.value(buffer);
         d.buffer = buffer;
         emit bufferChanged(buffer);
     }
@@ -91,6 +101,22 @@ void TextInput::setParser(IrcCommandParser* parser)
     }
 }
 
+void TextInput::goBackward()
+{
+    if (!text().isEmpty() && !d.history.contains(text()))
+        d.current = text();
+    if (d.index > 0)
+        setText(d.history.value(--d.index));
+}
+
+void TextInput::goForward()
+{
+    if (d.index < d.history.count())
+        setText(d.history.value(++d.index));
+    if (text().isEmpty())
+        setText(d.current);
+}
+
 void TextInput::sendInput()
 {
     IrcBuffer* b = buffer();
@@ -98,6 +124,12 @@ void TextInput::sendInput()
     IrcConnection* c = b ? b->connection() : 0;
     if (!c || !p)
         return;
+
+    if (!text().isEmpty()) {
+        d.current.clear();
+        d.history.append(text());
+        d.index = d.history.count();
+    }
 
     bool error = false;
     const QStringList lines = text().split(QRegExp("[\\r\\n]"), QString::SkipEmptyParts);

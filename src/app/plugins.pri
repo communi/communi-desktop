@@ -6,7 +6,6 @@ STATIC_PLUGINS += ajax
 STATIC_PLUGINS += commander
 STATIC_PLUGINS += dock
 STATIC_PLUGINS += finder
-STATIC_PLUGINS += history
 STATIC_PLUGINS += ignore
 STATIC_PLUGINS += lag
 STATIC_PLUGINS += menu

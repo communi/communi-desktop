@@ -7,7 +7,6 @@ SUBDIRS += ajax
 SUBDIRS += commander
 SUBDIRS += dock
 SUBDIRS += finder
-SUBDIRS += history
 SUBDIRS += ignore
 SUBDIRS += lag
 SUBDIRS += menu

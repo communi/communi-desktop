@@ -15,8 +15,10 @@
 #ifndef TEXTINPUT_H
 #define TEXTINPUT_H
 
+#include <QHash>
 #include <QPointer>
 #include <QLineEdit>
+#include <QStringList>
 
 class IrcBuffer;
 class IrcCompleter;
@@ -43,15 +45,21 @@ signals:
     void parserChanged(IrcCommandParser* parser);
 
 private slots:
+    void goBackward();
+    void goForward();
     void sendInput();
     void tryComplete();
     void doComplete(const QString& text, int cursor);
 
 private:
     struct Private {
+        int index;
+        QString current;
+        QStringList history;
         IrcCompleter* completer;
         IrcCommandParser* parser;
         QPointer<IrcBuffer> buffer;
+        QHash<IrcBuffer*, QStringList> histories;
     } d;
 };
 
