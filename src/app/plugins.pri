@@ -10,7 +10,6 @@ STATIC_PLUGINS += ignore
 STATIC_PLUGINS += lag
 STATIC_PLUGINS += menu
 STATIC_PLUGINS += monitor
-STATIC_PLUGINS += navigator
 STATIC_PLUGINS += sorter
 STATIC_PLUGINS += sound
 STATIC_PLUGINS += state

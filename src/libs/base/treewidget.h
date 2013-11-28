@@ -51,6 +51,16 @@ public slots:
     void setCurrentBuffer(IrcBuffer* buffer);
     void closeBuffer(IrcBuffer* buffer = 0);
 
+    void moveToNextItem();
+    void moveToPrevItem();
+
+    void moveToNextActiveItem();
+    void moveToPrevActiveItem();
+
+    void expandCurrentConnection();
+    void collapseCurrentConnection();
+    void moveToMostActiveItem();
+
 signals:
     void bufferAdded(IrcBuffer* buffer);
     void bufferRemoved(IrcBuffer* buffer);
@@ -77,7 +87,14 @@ private:
     void unhighlightItem(QTreeWidgetItem* item);
     void updateHighlight(QTreeWidgetItem* item);
 
+    QTreeWidgetItem* lastItem() const;
+    QTreeWidgetItem* nextItem(QTreeWidgetItem* from) const;
+    QTreeWidgetItem* previousItem(QTreeWidgetItem* from) const;
+    QTreeWidgetItem* findNextItem(QTreeWidgetItem* from, int column, int role) const;
+    QTreeWidgetItem* findPrevItem(QTreeWidgetItem* from, int column, int role) const;
+
     friend bool standardTreeSortFunc(const TreeItem* one, const TreeItem* another);
+
     struct Private {
         bool block;
         bool blink;

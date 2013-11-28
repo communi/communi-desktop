@@ -55,7 +55,43 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(onCurrentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
 
+#ifdef Q_OS_MAC
+    QString navigate(tr("Ctrl+Alt+%1"));
+    QString nextActive(tr("Shift+Ctrl+Alt+%1"));
+#else
+    QString navigate(tr("Alt+%1"));
+    QString nextActive(tr("Shift+Alt+%1"));
+#endif
+
     QShortcut* shortcut = new QShortcut(this);
+    shortcut->setKey(QKeySequence(navigate.arg("Up")));
+    connect(shortcut, SIGNAL(activated()), this, SLOT(moveToPrevItem()));
+
+    shortcut = new QShortcut(this);
+    shortcut->setKey(QKeySequence(navigate.arg("Down")));
+    connect(shortcut, SIGNAL(activated()), this, SLOT(moveToNextItem()));
+
+    shortcut = new QShortcut(this);
+    shortcut->setKey(QKeySequence(nextActive.arg("Up")));
+    connect(shortcut, SIGNAL(activated()), this, SLOT(moveToPrevActiveItem()));
+
+    shortcut = new QShortcut(this);
+    shortcut->setKey(QKeySequence(nextActive.arg("Down")));
+    connect(shortcut, SIGNAL(activated()), this, SLOT(moveToNextActiveItem()));
+
+    shortcut = new QShortcut(this);
+    shortcut->setKey(QKeySequence(navigate.arg("Right")));
+    connect(shortcut, SIGNAL(activated()), this, SLOT(expandCurrentConnection()));
+
+    shortcut = new QShortcut(this);
+    shortcut->setKey(QKeySequence(navigate.arg("Left")));
+    connect(shortcut, SIGNAL(activated()), this, SLOT(collapseCurrentConnection()));
+
+    shortcut = new QShortcut(this);
+    shortcut->setKey(QKeySequence(tr("Ctrl+L")));
+    connect(shortcut, SIGNAL(activated()), this, SLOT(moveToMostActiveItem()));
+
+    shortcut = new QShortcut(this);
     shortcut->setKey(QKeySequence(tr("Ctrl+R")));
     connect(shortcut, SIGNAL(activated()), this, SLOT(resetItems()));
 }
@@ -147,6 +183,85 @@ void TreeWidget::closeBuffer(IrcBuffer* buffer)
         buffer = currentBuffer();
     if (buffer)
         emit bufferClosed(buffer);
+}
+
+void TreeWidget::moveToNextItem()
+{
+    QTreeWidgetItem* item = nextItem(currentItem());
+    if (!item)
+        item = topLevelItem(0);
+    setCurrentItem(item);
+}
+
+void TreeWidget::moveToPrevItem()
+{
+    QTreeWidgetItem* item = previousItem(currentItem());
+    if (!item)
+        item = lastItem();
+    setCurrentItem(item);
+}
+
+void TreeWidget::moveToNextActiveItem()
+{
+    QTreeWidgetItem* item = findNextItem(currentItem(), 0, TreeRole::Highlight);
+    if (!item)
+        item = findNextItem(currentItem(), 1, TreeRole::Badge);
+    if (item)
+        setCurrentItem(item);
+}
+
+void TreeWidget::moveToPrevActiveItem()
+{
+    QTreeWidgetItem* item = findPrevItem(currentItem(), 0, TreeRole::Highlight);
+    if (!item)
+        item = findPrevItem(currentItem(), 1, TreeRole::Badge);
+    if (item)
+        setCurrentItem(item);
+}
+
+void TreeWidget::moveToMostActiveItem()
+{
+    QTreeWidgetItem* mostActive = 0;
+    QTreeWidgetItemIterator it(this, QTreeWidgetItemIterator::Unselected);
+    while (*it) {
+        QTreeWidgetItem* item = *it;
+
+        if (item->data(0, TreeRole::Highlight).toBool()) {
+            // we found a channel hilight or PM to us
+            setCurrentItem(item);
+            return;
+        }
+
+        // as a backup, store the most active window with any sort of activity
+        const int badge = item->data(1, TreeRole::Badge).toInt();
+        if (badge > 0 && (!mostActive || mostActive->data(1, TreeRole::Badge).toInt() < badge))
+            mostActive = item;
+
+        it++;
+    }
+
+    if (mostActive)
+        setCurrentItem(mostActive);
+}
+
+void TreeWidget::expandCurrentConnection()
+{
+    QTreeWidgetItem* item = currentItem();
+    if (item && item->parent())
+        item = item->parent();
+    if (item)
+        expandItem(item);
+}
+
+void TreeWidget::collapseCurrentConnection()
+{
+    QTreeWidgetItem* item = currentItem();
+    if (item && item->parent())
+        item = item->parent();
+    if (item) {
+        collapseItem(item);
+        setCurrentItem(item);
+    }
 }
 
 QSize TreeWidget::sizeHint() const
@@ -267,6 +382,64 @@ void TreeWidget::updateHighlight(QTreeWidgetItem* item)
         if (pi)
             pi->setData(0, TreeRole::Highlight, hilite && !pi->isExpanded());
     }
+}
+
+QTreeWidgetItem* TreeWidget::lastItem() const
+{
+    QTreeWidgetItem* item = topLevelItem(topLevelItemCount() - 1);
+    if (item->childCount() > 0)
+        item = item->child(item->childCount() - 1);
+    return item;
+}
+
+QTreeWidgetItem* TreeWidget::nextItem(QTreeWidgetItem* from) const
+{
+    if (!from)
+        return 0;
+    QTreeWidgetItemIterator it(from);
+    while (*++it) {
+        if (!(*it)->parent() || (*it)->parent()->isExpanded())
+            break;
+    }
+    return *it;
+}
+
+QTreeWidgetItem* TreeWidget::previousItem(QTreeWidgetItem* from) const
+{
+    if (!from)
+        return 0;
+    QTreeWidgetItemIterator it(from);
+    while (*--it) {
+        if (!(*it)->parent() || (*it)->parent()->isExpanded())
+            break;
+    }
+    return *it;
+}
+
+QTreeWidgetItem* TreeWidget::findNextItem(QTreeWidgetItem* from, int column, int role) const
+{
+    if (from) {
+        QTreeWidgetItemIterator it(from);
+        while (*++it && *it != from) {
+            QTreeWidgetItem* item = *it;
+            if (item->data(column, role).toBool())
+                return item;
+        }
+    }
+    return 0;
+}
+
+QTreeWidgetItem* TreeWidget::findPrevItem(QTreeWidgetItem* from, int column, int role) const
+{
+    if (from) {
+        QTreeWidgetItemIterator it(from);
+        while (*--it && *it != from) {
+            QTreeWidgetItem* item = *it;
+            if (item->data(column, role).toBool())
+                return item;
+        }
+    }
+    return 0;
 }
 
 // TODO
