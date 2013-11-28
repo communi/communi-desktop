@@ -38,8 +38,8 @@ int main(int argc, char* argv[])
 #endif
 
     QApplication app(argc, argv);
-    app.setApplicationName("CommuniNG");
-    app.setOrganizationName("Communi");
+    app.setApplicationName("Communi");
+    app.setOrganizationName("CommuniNG");
     app.setApplicationVersion(Irc::version());
     app.setOrganizationDomain("communi.github.com");
     app.setProperty("description", AppWindow::tr("%1 %2 - http://%3").arg(app.applicationName())

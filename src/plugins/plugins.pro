@@ -8,6 +8,7 @@ SUBDIRS += commander
 SUBDIRS += dock
 SUBDIRS += finder
 SUBDIRS += ignore
+SUBDIRS += importer
 SUBDIRS += lag
 SUBDIRS += menu
 SUBDIRS += monitor

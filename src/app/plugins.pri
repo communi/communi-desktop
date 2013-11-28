@@ -7,6 +7,7 @@ STATIC_PLUGINS += commander
 STATIC_PLUGINS += dock
 STATIC_PLUGINS += finder
 STATIC_PLUGINS += ignore
+STATIC_PLUGINS += importer
 STATIC_PLUGINS += lag
 STATIC_PLUGINS += menu
 STATIC_PLUGINS += monitor
