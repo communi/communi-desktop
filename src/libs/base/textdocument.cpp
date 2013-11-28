@@ -203,8 +203,8 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
     if (!d.lowlights.isEmpty()) {
         const QAbstractTextDocumentLayout* layout = documentLayout();
         const int margin = qCeil(documentMargin());
-        const QColor markerColor = QPalette().color(QPalette::Mid);
-        const QColor lowlightColor = QPalette().color(QPalette::AlternateBase);
+        const QColor markerColor = palette.color(QPalette::Mid);
+        const QColor lowlightColor = palette.color(QPalette::Midlight);
         QMap<int, int>::const_iterator it;
         for (it = d.lowlights.begin(); it != d.lowlights.end(); ++it) {
             const QTextBlock from = findBlockByNumber(it.key());
