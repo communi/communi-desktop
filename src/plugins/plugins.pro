@@ -5,7 +5,6 @@
 TEMPLATE = subdirs
 SUBDIRS += ajax
 SUBDIRS += commander
-SUBDIRS += completer
 SUBDIRS += dock
 SUBDIRS += finder
 SUBDIRS += history

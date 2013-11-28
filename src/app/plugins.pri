@@ -4,7 +4,6 @@
 
 STATIC_PLUGINS += ajax
 STATIC_PLUGINS += commander
-STATIC_PLUGINS += completer
 STATIC_PLUGINS += dock
 STATIC_PLUGINS += finder
 STATIC_PLUGINS += history

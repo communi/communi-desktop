@@ -21,7 +21,6 @@
 
 Q_IMPORT_PLUGIN(AjaxPlugin)
 Q_IMPORT_PLUGIN(CommanderPlugin)
-Q_IMPORT_PLUGIN(CompleterPlugin)
 Q_IMPORT_PLUGIN(DockPlugin)
 Q_IMPORT_PLUGIN(FinderPlugin)
 Q_IMPORT_PLUGIN(HistoryPlugin)

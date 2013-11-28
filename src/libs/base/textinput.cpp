@@ -16,7 +16,9 @@
 #include <IrcCommandParser>
 #include <IrcBufferModel>
 #include <IrcConnection>
+#include <IrcCompleter>
 #include <IrcBuffer>
+#include <QShortcut>
 
 TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
 {
@@ -24,6 +26,14 @@ TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
 
     d.buffer = 0;
     d.parser = 0;
+
+    d.completer = new IrcCompleter(this);
+    connect(this, SIGNAL(bufferChanged(IrcBuffer*)), d.completer, SLOT(setBuffer(IrcBuffer*)));
+    connect(this, SIGNAL(parserChanged(IrcCommandParser*)), d.completer, SLOT(setParser(IrcCommandParser*)));
+    connect(d.completer, SIGNAL(completed(QString,int)), this, SLOT(doComplete(QString,int)));
+
+    QShortcut* shortcut = new QShortcut(Qt::Key_Tab, this);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(tryComplete()));
 
     connect(this, SIGNAL(returnPressed()), this, SLOT(sendInput()));
 }
@@ -105,4 +115,15 @@ void TextInput::sendInput()
     }
     if (!error)
         clear();
+}
+
+void TextInput::tryComplete()
+{
+    d.completer->complete(text(), cursorPosition());
+}
+
+void TextInput::doComplete(const QString& text, int cursor)
+{
+    setText(text);
+    setCursorPosition(cursor);
 }

@@ -19,6 +19,7 @@
 #include <QLineEdit>
 
 class IrcBuffer;
+class IrcCompleter;
 class IrcCommandParser;
 
 class TextInput : public QLineEdit
@@ -43,9 +44,12 @@ signals:
 
 private slots:
     void sendInput();
+    void tryComplete();
+    void doComplete(const QString& text, int cursor);
 
 private:
     struct Private {
+        IrcCompleter* completer;
         IrcCommandParser* parser;
         QPointer<IrcBuffer> buffer;
     } d;
