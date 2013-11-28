@@ -1,7 +1,6 @@
-QAbstractItemView, QTextEdit, QLineEdit {
+TextBrowser, TextInput {
     border: none;
     color: #dedede;
-    background: #222222;
     selection-color: #dedede;
     selection-background-color: #444444;
 }
@@ -11,49 +10,71 @@ TextBrowser {
 }
 
 TextInput {
-    border-top: 1px solid palette(mid);
+    background: #222222;
+    border-top: 1px solid #444444;
 }
 
-QAbstractItemView::item {
+TreeWidget, ListView {
+    border: none;
+    background: #222222;
+    selection-background-color: palette(highlight);
+}
+
+TreeWidget::item {
     height: 20px;
 }
 
-QAbstractItemView::item:selected, QAbstractItemView::item:selected:hover {
+ListView::item {
+    color: #dedede;
+    height: 20px;
+}
+
+TreeWidget::item:selected, TreeWidget::item:selected:hover {
+    color: #dedede;
     background-color: #444444;
 }
 
-QAbstractItemView::item:!selected:hover {
+ListView::item:selected, ListView::item:selected:hover {
+    color: #dedede;
+    background-color: #444444;
+}
+
+TreeWidget::item:!selected:hover, ListView::item:!selected:hover {
     background-color: transparent;
 }
 
-TitleBar {
-    min-height: 18px;
-    border-bottom: 1px solid palette(mid);
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0.0 palette(light),
-                                stop: 1.0 palette(dark));
+TreeHeader::section, TitleBar::section {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #444444, stop: 1 #222222);
     color: #dedede;
+    padding-left: 4px;
+    border-bottom: 1px solid #444444;
+}
+
+TitleBar {
+    color: #dedede;
+    min-height: 20px;
 }
 
 TitleBar > QTextEdit {
-    border-bottom: 1px solid palette(mid);
+    border-bottom: 1px solid #444444;
 }
 
 QSplitter::handle {
     width: 1px;
     height: 1px;
-    background: palette(mid);
+    background: #444444;
 }
 
 QToolButton {
-    border: 1px solid palette(mid);
+    border: 1px solid #444444;
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 palette(light), stop: 1 palette(dark));
+                                      stop: 0 #444444, stop: 1 #222222);
 }
 
 QToolButton:pressed {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 palette(dark), stop: 1 palette(light));
+                                      stop: 0 #222222, stop: 1 #444444);
 }
 
 QToolButton::menu-indicator {
@@ -85,7 +106,11 @@ Finder > QToolButton {
 }
 
 Finder > QLineEdit {
-    border: 1px solid palette(mid);
+    color: #dedede;
+    background: #222222;
+    selection-color: #dedede;
+    selection-background-color: #444444;
+    border: 1px solid #444444;
     border-bottom-color: transparent;
 }
 
@@ -103,7 +128,7 @@ Finder > QToolButton#next {
 
 QScrollBar {
     border: 1px solid transparent;
-    border-left-color: palette(dark);
+    border-left-color: #444444;
     background: #222222;
     width: 14px;
 }

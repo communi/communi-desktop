@@ -77,7 +77,7 @@ bool Finder::hasError() const
 void Finder::setError(bool error)
 {
     d.error = error;
-    d.lineEdit->setStyleSheet(QString("background: %1").arg(QPalette().color(error ? QPalette::Highlight : QPalette::Base).name()));
+    d.lineEdit->setStyleSheet(QString("background: %1").arg(palette().color(error ? QPalette::Highlight : QPalette::Base).name()));
 }
 
 bool Finder::eventFilter(QObject* object, QEvent* event)
