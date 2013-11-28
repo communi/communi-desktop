@@ -8,8 +8,10 @@
  */
 
 #include "splitview.h"
+#include "textinput.h"
 #include "bufferview.h"
 #include <QApplication>
+#include <QShortcut>
 #include <IrcBuffer>
 
 SplitView::SplitView(QWidget* parent) : QSplitter(parent)
@@ -17,6 +19,20 @@ SplitView::SplitView(QWidget* parent) : QSplitter(parent)
     d.current = createBufferView(this);
     connect(d.current, SIGNAL(bufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
     connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(onFocusChanged(QWidget*,QWidget*)));
+
+#ifdef Q_OS_MAC
+    QString next = tr("Alt+Tab");
+    QString previous = tr("Shift+Alt+Tab");
+#else
+    QString next = tr("Ctrl+Tab");
+    QString previous = tr("Shift+Ctrl+Tab");
+#endif
+
+    QShortcut* shortcut = new QShortcut(QKeySequence(next), this);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(activateNextView()));
+
+    shortcut = new QShortcut(QKeySequence(previous), this);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(activatePreviousView()));
 }
 
 IrcBuffer* SplitView::currentBuffer() const
@@ -38,8 +54,8 @@ QList<BufferView*> SplitView::views() const
 
 void SplitView::setCurrentView(BufferView *view)
 {
-    if (view)
-        view->setFocus();
+    if (view && view->textInput())
+        view->textInput()->setFocus();
 }
 
 void SplitView::setCurrentBuffer(IrcBuffer* buffer)
@@ -119,6 +135,24 @@ BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
     splitter->insertWidget(index, view);
     splitter->setCollapsible(splitter->indexOf(view), false);
     return view;
+}
+
+void SplitView::activateNextView()
+{
+    if (d.views.count() > 1) {
+        int index = d.views.indexOf(d.current) + 1;
+        setCurrentView(d.views.value(index % d.views.count()));
+    }
+}
+
+void SplitView::activatePreviousView()
+{
+    if (d.views.count() > 1) {
+        int index = d.views.indexOf(d.current) - 1;
+        if (index < 0)
+            index = d.views.count() - 1;
+        setCurrentView(d.views.value(index));
+    }
 }
 
 void SplitView::onViewRemoved(BufferView* view)
