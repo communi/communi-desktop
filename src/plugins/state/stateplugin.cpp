@@ -227,6 +227,8 @@ QVariantMap StatePlugin::saveSplittedViews(QSplitter* splitter) const
             buffer.insert("parent", parent ? parent->text(0) : QString());
             buffer.insert("buffer", item ? item->text(0) : QString());
             buffer.insert("index", d.tree->indexOfTopLevelItem(parent ? parent : item));
+            if (QSplitter* sp = bv->findChild<QSplitter*>())
+                buffer.insert("state", sp->saveState());
             buffers += buffer;
         }
     }
@@ -270,6 +272,10 @@ void StatePlugin::restoreSplittedViews(QSplitter* splitter, const QVariantMap& s
             bv->setProperty("__parent__", buffer.value("parent").toString());
             bv->setProperty("__buffer__", buffer.value("buffer").toString());
             bv->setProperty("__index__", buffer.value("index").toInt());
+            if (buffer.contains("state")) {
+                if (QSplitter* sp = bv->findChild<QSplitter*>())
+                    sp->restoreState(buffer.value("state").toByteArray());
+            }
             bv->setObjectName("__unrestored__");
         }
     }
