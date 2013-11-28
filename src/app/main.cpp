@@ -15,6 +15,7 @@
 #include "appwindow.h"
 #include <QApplication>
 #include <QNetworkProxy>
+#include <QSettings>
 #include <QIcon>
 #include <QUrl>
 #include <Irc>
@@ -45,8 +46,9 @@ int main(int argc, char* argv[])
                                                                      .arg(app.applicationVersion())
                                                                      .arg(app.organizationDomain()));
 
-    AppWindow window;
     QStringList args = app.arguments();
+    if (args.contains("-reset"))
+        QSettings().clear();
 
     QUrl proxy;
     int index = args.indexOf("-proxy");
@@ -56,6 +58,7 @@ int main(int argc, char* argv[])
         proxy = QUrl(qgetenv("http_proxy"));
     setApplicationProxy(proxy);
 
+    AppWindow window;
     window.show();
     return app.exec();
 }
