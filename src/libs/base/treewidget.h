@@ -70,6 +70,9 @@ signals:
 
 protected:
     QSize sizeHint() const;
+    void mousePressEvent(QMouseEvent* event);
+    void mouseMoveEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent* event);
 
 private slots:
     void resetBadge(QTreeWidgetItem* item = 0);
@@ -83,6 +86,8 @@ private slots:
     void resetItems();
 
 private:
+    void swapItems(QTreeWidgetItem* source, QTreeWidgetItem* target);
+
     void highlightItem(QTreeWidgetItem* item);
     void unhighlightItem(QTreeWidgetItem* item);
     void updateHighlight(QTreeWidgetItem* item);
@@ -99,6 +104,7 @@ private:
         bool block;
         bool blink;
         TreeSortFunc sortFunc;
+        QTreeWidgetItem* source;
         QList<IrcConnection*> connections;
         QQueue<QPointer<TreeItem> > resetBadges;
         QSet<QTreeWidgetItem*> highlightedItems;

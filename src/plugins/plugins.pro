@@ -12,7 +12,6 @@ SUBDIRS += importer
 SUBDIRS += lag
 SUBDIRS += menu
 SUBDIRS += monitor
-SUBDIRS += sorter
 SUBDIRS += sound
 SUBDIRS += state
 SUBDIRS += theme

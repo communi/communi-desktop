@@ -12,8 +12,8 @@
 * GNU General Public License for more details.
 */
 
-#ifndef SORTER_H
-#define SORTER_H
+#ifndef TREESORTER_H
+#define TREESORTER_H
 
 #include "treewidget.h"
 #include <QStringList>
@@ -21,7 +21,7 @@
 
 typedef QHash<QString, QStringList> QHashStringList;
 
-class Sorter
+class TreeSorter
 {
 public:
     static bool isEnabled();
@@ -39,4 +39,4 @@ private:
     static QStringList parents;
     static QHashStringList children;
 };
-#endif // SORTER_H
+#endif // TREESORTER_H

@@ -28,6 +28,7 @@ HEADERS += $$PWD/titlebar.h
 HEADERS += $$PWD/treedelegate.h
 HEADERS += $$PWD/treeitem.h
 HEADERS += $$PWD/treerole.h
+HEADERS += $$PWD/treesorter.h
 HEADERS += $$PWD/treewidget.h
 
 SOURCES += $$PWD/bufferview.cpp
@@ -41,6 +42,7 @@ SOURCES += $$PWD/textinput.cpp
 SOURCES += $$PWD/titlebar.cpp
 SOURCES += $$PWD/treedelegate.cpp
 SOURCES += $$PWD/treeitem.cpp
+SOURCES += $$PWD/treesorter.cpp
 SOURCES += $$PWD/treewidget.cpp
 
 include(../../config.pri)

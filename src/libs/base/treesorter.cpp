@@ -12,21 +12,21 @@
 * GNU General Public License for more details.
 */
 
-#include "sorter.h"
+#include "treesorter.h"
 #include "treeitem.h"
 #include "treewidget.h"
 #include <QSettings>
 
-bool Sorter::enabled = true;
-QStringList Sorter::parents;
-QHashStringList Sorter::children;
+bool TreeSorter::enabled = true;
+QStringList TreeSorter::parents;
+QHashStringList TreeSorter::children;
 
-bool Sorter::isEnabled()
+bool TreeSorter::isEnabled()
 {
     return enabled;
 }
 
-void Sorter::setEnabled(TreeWidget* tree, bool value)
+void TreeSorter::setEnabled(TreeWidget* tree, bool value)
 {
     if (enabled != value) {
         enabled = value;
@@ -34,7 +34,7 @@ void Sorter::setEnabled(TreeWidget* tree, bool value)
     }
 }
 
-void Sorter::init(TreeWidget* tree)
+void TreeSorter::init(TreeWidget* tree)
 {
     parents.clear();
     children.clear();
@@ -48,7 +48,7 @@ void Sorter::init(TreeWidget* tree)
     }
 }
 
-void Sorter::save()
+void TreeSorter::save()
 {
     QSettings settings;
     settings.beginGroup("Sorting");
@@ -62,7 +62,7 @@ void Sorter::save()
     settings.setValue("parents", parents);
 }
 
-void Sorter::restore()
+void TreeSorter::restore()
 {
     QSettings settings;
     settings.beginGroup("Sorting");
@@ -75,7 +75,7 @@ void Sorter::restore()
     parents = settings.value("parents").toStringList();
 }
 
-bool Sorter::sort(const TreeItem* one, const TreeItem* another)
+bool TreeSorter::sort(const TreeItem* one, const TreeItem* another)
 {
     QStringList order;
     const TreeItem* parent = one->parentItem();

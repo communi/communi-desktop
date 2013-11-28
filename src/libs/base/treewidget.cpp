@@ -15,11 +15,13 @@
 #include "treewidget.h"
 #include "treedelegate.h"
 #include "sharedtimer.h"
+#include "treesorter.h"
 #include "treeitem.h"
 #include "treerole.h"
 #include <IrcBufferModel>
 #include <IrcConnection>
 #include <QHeaderView>
+#include <QMouseEvent>
 #include <IrcMessage>
 #include <IrcBuffer>
 #include <QShortcut>
@@ -28,6 +30,7 @@
 TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
     d.block = false;
+    d.source = 0;
 
     setAnimated(true);
     setColumnCount(2);
@@ -94,6 +97,9 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     shortcut = new QShortcut(this);
     shortcut->setKey(QKeySequence(tr("Ctrl+R")));
     connect(shortcut, SIGNAL(activated()), this, SLOT(resetItems()));
+
+    TreeSorter::restore();
+    setSortFunc(&TreeSorter::sort);
 }
 
 IrcBuffer* TreeWidget::currentBuffer() const
@@ -269,6 +275,36 @@ QSize TreeWidget::sizeHint() const
     return QSize(20 * fontMetrics().width('#'), QTreeWidget::sizeHint().height());
 }
 
+void TreeWidget::mousePressEvent(QMouseEvent* event)
+{
+    d.source = itemAt(event->pos());
+    QTreeWidget::mousePressEvent(event);
+}
+
+void TreeWidget::mouseMoveEvent(QMouseEvent* event)
+{
+    QTreeWidgetItem* target = itemAt(event->pos());
+    if (target && d.source != target) {
+        QTreeWidgetItem* parent = target->parent();
+        if (parent == d.source->parent()) {
+            TreeSorter::setEnabled(this, false);
+            swapItems(d.source, target);
+        }
+    }
+    QTreeWidget::mouseMoveEvent(event);
+}
+
+void TreeWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (d.source && !TreeSorter::isEnabled()) {
+        TreeSorter::init(this);
+        TreeSorter::save();
+    }
+    TreeSorter::setEnabled(this, true);
+    d.source = 0;
+    QTreeWidget::mouseReleaseEvent(event);
+}
+
 void TreeWidget::resetBadge(QTreeWidgetItem* item)
 {
     if (!item && !d.resetBadges.isEmpty())
@@ -349,6 +385,20 @@ void TreeWidget::resetItems()
         unhighlightItem(*it);
         ++it;
     }
+}
+
+void TreeWidget::swapItems(QTreeWidgetItem* source, QTreeWidgetItem* target)
+{
+    QTreeWidgetItem* parent = source->parent();
+    if (!parent)
+        parent = invisibleRootItem();
+    const bool se = source->isExpanded();
+    const bool te = target->isExpanded();
+    const int idx = parent->indexOfChild(target);
+    parent->takeChild(parent->indexOfChild(source));
+    parent->insertChild(idx, source);
+    source->setExpanded(se);
+    target->setExpanded(te);
 }
 
 void TreeWidget::highlightItem(QTreeWidgetItem* item)
