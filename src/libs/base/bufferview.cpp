@@ -108,6 +108,8 @@ void BufferView::setBuffer(IrcBuffer* buffer)
                 emit cloned(doc);
             }
             d.textBrowser->setDocument(doc);
+        } else {
+            d.textBrowser->setDocument(0);
         }
 
         emit bufferChanged(buffer);

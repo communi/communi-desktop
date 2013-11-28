@@ -63,6 +63,7 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
     connect(d.chatPage, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(updateTitle()));
     connect(this, SIGNAL(connectionAdded(IrcConnection*)), d.chatPage, SLOT(initConnection(IrcConnection*)));
     connect(this, SIGNAL(connectionRemoved(IrcConnection*)), d.chatPage, SLOT(cleanupConnection(IrcConnection*)));
+    connect(this, SIGNAL(connectionRemoved(IrcConnection*)), this, SLOT(cleanupConnection(IrcConnection*)));
 
     d.stack->addWidget(d.settingsPage);
     d.stack->addWidget(d.connectPage);
@@ -173,4 +174,11 @@ void AppWindow::editConnection(IrcConnection* connection)
     d.stack->setCurrentWidget(d.connectPage);
     d.editedConnection = connection;
     doConnect();
+}
+
+void AppWindow::cleanupConnection(IrcConnection* connection)
+{
+    Q_UNUSED(connection);
+    if (connections().isEmpty())
+        doConnect();
 }

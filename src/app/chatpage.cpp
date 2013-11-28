@@ -98,10 +98,6 @@ void ChatPage::cleanupConnection(IrcConnection* connection)
     }
     connection->deleteLater();
 
-    // TODO:
-//    if (d.connections.isEmpty())
-//        d.splitView->reset();
-
     PluginLoader::instance()->cleanupConnection(connection);
 }
 

@@ -41,6 +41,7 @@ private slots:
     void updateTitle();
     void showSettings();
     void editConnection(IrcConnection* connection);
+    void cleanupConnection(IrcConnection* connection);
 
 private:
     struct Private {
