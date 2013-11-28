@@ -40,6 +40,9 @@ protected:
     {
         QStyleOptionHeader option;
         option.init(this);
+#ifdef Q_OS_WIN
+        option.rect.adjust(0, 0, 0, 1);
+#endif
         option.state = (d.state | QStyle::State_Raised | QStyle::State_Horizontal);
         if (d.state & QStyle::State_Selected)
             option.state |= QStyle::State_On;

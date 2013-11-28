@@ -93,6 +93,9 @@ void TitleBar::paintEvent(QPaintEvent* event)
 {
     QStyleOptionHeader option;
     option.init(this);
+#ifdef Q_OS_WIN
+    option.rect.adjust(0, 0, 0, 1);
+#endif
     option.state = (QStyle::State_Raised | QStyle::State_Horizontal);
     option.position = QStyleOptionHeader::OnlyOneSection;
     QStylePainter painter(this);
