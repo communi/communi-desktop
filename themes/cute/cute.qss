@@ -39,12 +39,12 @@ TreeBadge:on {
     background: #ff8080;
 }
 
-TreeHeader::section:on {
+TreeHeader::section:on, TreeWidget::item:on {
     color: #ff4040;
 }
 
-TreeWidget::item:on {
-    color: #ff4040
+TreeHeader::section:off, TreeWidget::item:off {
+    color: palette(dark);
 }
 
 QSplitter::handle {

@@ -29,12 +29,11 @@ class TreeHeader : public QWidget
     Q_OBJECT
 
 public:
-    TreeHeader(QWidget* parent = 0) : QWidget(parent) { d.highlighted = false; d.state = QStyle::State_None; }
+    TreeHeader(QWidget* parent = 0) : QWidget(parent) { d.state = QStyle::State_None; }
 
     void setText(const QString& text) { d.text = text; }
     void setIcon(const QIcon& icon) { d.icon = icon; }
     void setState(QStyle::State state) { d.state = state; }
-    void setHighlighted(bool highlighted) { d.highlighted = highlighted; }
 
 protected:
     void paintEvent(QPaintEvent*)
@@ -45,8 +44,6 @@ protected:
         option.rect.adjust(0, 0, 0, 1);
 #endif
         option.state = (d.state | QStyle::State_Raised | QStyle::State_Horizontal);
-        if (d.highlighted)
-            option.state |= QStyle::State_On;
         option.icon = d.icon;
         option.text = d.text;
         option.position = QStyleOptionHeader::OnlyOneSection;
@@ -58,7 +55,6 @@ private:
     struct Private {
         QIcon icon;
         QString text;
-        bool highlighted;
         QStyle::State state;
     } d;
 };
@@ -104,8 +100,13 @@ TreeDelegate::TreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
 
 void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    bool active = index.data(TreeRole::Active).toBool();
     bool hilite = index.data(TreeRole::Highlight).toBool();
+    if (hilite)
+        const_cast<QStyleOptionViewItem&>(option).state |= QStyle::State_On;
+
+    bool active = index.data(TreeRole::Active).toBool();
+    if (!active)
+        const_cast<QStyleOptionViewItem&>(option).state |= QStyle::State_Off;
 
     if (!index.parent().isValid()) {
         static QPointer<TreeHeader> header;
@@ -114,8 +115,6 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             header->setVisible(false);
         }
 
-        header->setEnabled(active);
-        header->setHighlighted(hilite);
         header->setText(index.data(Qt::DisplayRole).toString());
         header->setIcon(index.data(Qt::DecorationRole).value<QIcon>());
         header->setState(option.state);
@@ -131,11 +130,6 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             badge->setAttribute(Qt::WA_NoSystemBackground);
             badge->setVisible(false);
         }
-
-        if (hilite)
-            const_cast<QStyleOptionViewItem&>(option).state |= QStyle::State_On;
-        if (!active)
-            const_cast<QStyleOptionViewItem&>(option).state &= !QStyle::State_Enabled;
 
         QStyledItemDelegate::paint(painter, option, index);
 
