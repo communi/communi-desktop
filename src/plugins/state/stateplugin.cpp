@@ -17,7 +17,6 @@
 #include "bufferview.h"
 #include "splitview.h"
 #include "treeitem.h"
-#include "mainwindow.h"
 #include <IrcConnection>
 #include <IrcBuffer>
 #include <QSettings>
@@ -26,33 +25,8 @@
 
 StatePlugin::StatePlugin(QObject* parent) : QObject(parent)
 {
-//    d.index = -1;
     d.tree = 0;
     d.view = 0;
-}
-
-void StatePlugin::initWindow(MainWindow* window)
-{
-    QSettings settings;
-    if (settings.contains("geometry"))
-        window->restoreGeometry(settings.value("geometry").toByteArray());
-
-    foreach (const QVariant& state, settings.value("connections").toList()) {
-        IrcConnection* connection = new IrcConnection(this);
-        connection->restoreState(state.toByteArray());
-        window->addConnection(connection);
-    }
-}
-
-void StatePlugin::cleanupWindow(MainWindow* window)
-{
-    QSettings settings;
-    settings.setValue("geometry", window->saveGeometry());
-
-    QVariantList states;
-    foreach (IrcConnection* connection, window->connections())
-        states += connection->saveState();
-    settings.setValue("connections", states);
 }
 
 void StatePlugin::initView(SplitView* view)

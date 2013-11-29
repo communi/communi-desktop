@@ -19,6 +19,7 @@
 #include <QPushButton>
 #include <IrcBuffer>
 #include <QShortcut>
+#include <QSettings>
 #include <QTimer>
 
 AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
@@ -81,7 +82,17 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
     shortcut = new QShortcut(QKeySequence::Close, this);
     connect(shortcut, SIGNAL(activated()), d.chatPage, SLOT(closeBuffer()));
 
+    QSettings settings;
+    if (settings.contains("geometry"))
+        restoreGeometry(settings.value("geometry").toByteArray());
+
     PluginLoader::instance()->initWindow(this);
+
+    foreach (const QVariant& state, settings.value("connections").toList()) {
+        IrcConnection* connection = new IrcConnection(this);
+        connection->restoreState(state.toByteArray());
+        addConnection(connection);
+    }
 
     d.chatPage->init();
     if (connections().isEmpty())
@@ -92,6 +103,14 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
 
 AppWindow::~AppWindow()
 {
+    QSettings settings;
+    settings.setValue("geometry", saveGeometry());
+
+    QVariantList states;
+    foreach (IrcConnection* connection, connections())
+        states += connection->saveState();
+    settings.setValue("connections", states);
+
     PluginLoader::instance()->cleanupWindow(this);
 }
 
