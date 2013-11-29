@@ -32,8 +32,6 @@ public:
     static void save();
     static void restore();
 
-    static bool sort(const TreeItem* one, const TreeItem* another);
-
     static bool enabled;
     static QStringList parents;
     static QHashStringList children;

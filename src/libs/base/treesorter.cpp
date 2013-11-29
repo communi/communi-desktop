@@ -50,27 +50,28 @@ void TreeSorter::init(TreeWidget* tree)
 
 void TreeSorter::save()
 {
-    QSettings settings;
-    settings.beginGroup("Sorting");
+    QVariantMap sort;
     QHash<QString, QVariant> variants;
     QHashIterator<QString, QStringList> it(children);
     while (it.hasNext()) {
         it.next();
         variants.insert(it.key(), it.value());
     }
-    settings.setValue("children", variants);
-    settings.setValue("parents", parents);
+    sort.insert("children", variants);
+    sort.insert("parents", parents);
+    QSettings settings;
+    settings.setValue("sort", sort);
 }
 
 void TreeSorter::restore()
 {
     QSettings settings;
-    settings.beginGroup("Sorting");
+    QVariantMap sort = settings.value("sort").toMap();
     children.clear();
-    QHashIterator<QString, QVariant> it(settings.value("children").toHash());
+    QHashIterator<QString, QVariant> it(sort.value("children").toHash());
     while (it.hasNext()) {
         it.next();
         children.insert(it.key(), it.value().toStringList());
     }
-    parents = settings.value("parents").toStringList();
+    parents = sort.value("parents").toStringList();
 }
