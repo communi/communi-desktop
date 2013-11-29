@@ -65,7 +65,7 @@ ConnectPage::ConnectPage(QWidget* parent) : QWidget(parent)
     shortcut = new QShortcut(Qt::Key_Escape, this);
     connect(shortcut, SIGNAL(activated()), ui.buttonBox->button(QDialogButtonBox::Cancel), SLOT(click()));
 
-    connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(saveSettings()));
+    connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(reset()));
     connect(ui.buttonBox, SIGNAL(rejected()), this, SLOT(saveSettings()));
     restoreSettings();
     updateUi();
