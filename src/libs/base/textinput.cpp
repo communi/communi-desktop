@@ -137,6 +137,7 @@ void TextInput::sendInput()
         if (!line.trimmed().isEmpty()) {
             IrcCommand* cmd = p->parse(line);
             if (cmd) {
+                cmd->setProperty("TextInput", true);
                 b->sendCommand(cmd);
                 if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::Notice || cmd->type() == IrcCommand::CtcpAction)
                     b->receiveMessage(cmd->toMessage(c->nickName(), c));

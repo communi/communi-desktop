@@ -49,6 +49,7 @@ void CommanderPlugin::initView(SplitView* view)
 void CommanderPlugin::initTree(TreeWidget* tree)
 {
     d.tree = tree;
+    connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
 }
 
 void CommanderPlugin::initConnection(IrcConnection* connection)
@@ -63,7 +64,10 @@ void CommanderPlugin::cleanupConnection(IrcConnection* connection)
 
 bool CommanderPlugin::commandFilter(IrcCommand* command)
 {
-    if (command->type() == IrcCommand::Custom) {
+    if (command->type() == IrcCommand::Join) {
+        if (command->property("TextInput").toBool())
+            d.chans += command->toString().split(" ", QString::SkipEmptyParts).value(1);
+    } else if (command->type() == IrcCommand::Custom) {
         const QString cmd = command->parameters().value(0);
         const QStringList params = command->parameters().mid(1);
         if (cmd == "CLEAR") {
@@ -105,6 +109,14 @@ bool CommanderPlugin::commandFilter(IrcCommand* command)
         }
     }
     return false;
+}
+
+void CommanderPlugin::onBufferAdded(IrcBuffer* buffer)
+{
+    if (buffer->isChannel() && d.chans.contains(buffer->title())) {
+        d.chans.removeAll(buffer->title());
+        d.tree->setCurrentBuffer(buffer);
+    }
 }
 
 #if QT_VERSION < 0x050000

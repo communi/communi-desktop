@@ -16,12 +16,14 @@
 #define COMMANDERPLUGIN_H
 
 #include <QtPlugin>
+#include <QStringList>
 #include <IrcCommandFilter>
 #include "connectionplugin.h"
 #include "bufferviewplugin.h"
 #include "splitviewplugin.h"
 #include "treewidgetplugin.h"
 
+class IrcBuffer;
 class IrcConnection;
 
 class CommanderPlugin : public QObject, public IrcCommandFilter, public ConnectionPlugin,
@@ -47,10 +49,14 @@ public:
 
     bool commandFilter(IrcCommand* command);
 
+private slots:
+    void onBufferAdded(IrcBuffer* buffer);
+
 private:
     struct Private {
         SplitView* view;
         TreeWidget* tree;
+        QStringList chans;
     } d;
 };
 
