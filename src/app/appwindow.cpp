@@ -99,12 +99,16 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
         doConnect();
     else
         d.stack->setCurrentWidget(d.chatPage);
+
+    if (settings.contains("state"))
+        d.chatPage->restoreState(settings.value("state").toByteArray());
 }
 
 AppWindow::~AppWindow()
 {
     QSettings settings;
     settings.setValue("geometry", saveGeometry());
+    settings.setValue("state", d.chatPage->saveState());
 
     QVariantList states;
     foreach (IrcConnection* connection, connections())

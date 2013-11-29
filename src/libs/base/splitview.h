@@ -27,6 +27,9 @@ public:
     BufferView* currentView() const;
     QList<BufferView*> views() const;
 
+    QByteArray saveState() const;
+    void restoreState(const QByteArray& state);
+
 public slots:
     void setCurrentView(BufferView* view);
     void setCurrentBuffer(IrcBuffer* buffer);
@@ -50,10 +53,14 @@ private slots:
     void activatePreviousView();
 
     void onViewRemoved(BufferView* view);
+    void onBufferAdded(IrcBuffer* buffer);
     void onBufferRemoved(IrcBuffer* buffer);
     void onFocusChanged(QWidget* old, QWidget* now);
 
 private:
+    QVariantMap saveSplittedViews(const QSplitter* splitter) const;
+    void restoreSplittedViews(QSplitter* splitter, const QVariantMap& state);
+
     struct Private {
         QList<BufferView*> views;
         QPointer<BufferView> current;

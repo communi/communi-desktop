@@ -13,7 +13,6 @@ SUBDIRS += lag
 SUBDIRS += menu
 SUBDIRS += monitor
 SUBDIRS += sound
-SUBDIRS += state
 SUBDIRS += theme
 SUBDIRS += title
 SUBDIRS += tray

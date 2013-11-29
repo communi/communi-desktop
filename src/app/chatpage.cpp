@@ -51,17 +51,10 @@ void ChatPage::init()
     PluginLoader::instance()->initTree(d.treeWidget);
     PluginLoader::instance()->initView(d.splitView);
     initView(d.splitView->currentView());
-
-    QSettings settings;
-    if (settings.contains("tree"))
-        d.treeWidget->restoreState(settings.value("tree").toByteArray());
 }
 
 void ChatPage::cleanup()
 {
-    QSettings settings;
-    settings.setValue("tree", d.treeWidget->saveState());
-
     PluginLoader::instance()->cleanupTree(d.treeWidget);
     PluginLoader::instance()->cleanupView(d.splitView);
 }
@@ -69,6 +62,33 @@ void ChatPage::cleanup()
 IrcBuffer* ChatPage::currentBuffer() const
 {
     return d.treeWidget->currentBuffer();
+}
+
+QByteArray ChatPage::saveState() const
+{
+    QVariantMap state;
+    state.insert("splitter", QSplitter::saveState());
+    state.insert("views", d.splitView->saveState());
+    state.insert("tree", d.treeWidget->saveState());
+
+    QByteArray data;
+    QDataStream out(&data, QIODevice::WriteOnly);
+    out << state;
+    return data;
+}
+
+void ChatPage::restoreState(const QByteArray& data)
+{
+    QVariantMap state;
+    QDataStream in(data);
+    in >> state;
+
+    if (state.contains("tree"))
+        d.treeWidget->restoreState(state.value("tree").toByteArray());
+    if (state.contains("splitter"))
+        QSplitter::restoreState(state.value("splitter").toByteArray());
+    if (state.contains("views"))
+        d.splitView->restoreState(state.value("views").toByteArray());
 }
 
 void ChatPage::initConnection(IrcConnection* connection)

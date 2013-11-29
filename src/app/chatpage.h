@@ -32,6 +32,9 @@ public:
 
     IrcBuffer* currentBuffer() const;
 
+    QByteArray saveState() const;
+    void restoreState(const QByteArray& state);
+
 public slots:
     void closeBuffer(IrcBuffer* buffer = 0);
 
