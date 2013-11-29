@@ -73,7 +73,10 @@ class TreeBadge : public QWidget
     Q_OBJECT
 
 public:
-    TreeBadge(QWidget* parent = 0) : QWidget(parent) { }
+    TreeBadge(QWidget* parent = 0) : QWidget(parent) { badge = 0; hilite = false; }
+
+    void setNum(int num) { badge = num; }
+    void setHighlighted(int highlighted) { hilite = highlighted; }
 
 protected:
     void paintEvent(QPaintEvent*)
@@ -82,7 +85,38 @@ protected:
         option.init(this);
         QStylePainter painter(this);
         painter.drawPrimitive(QStyle::PE_Widget, option);
+
+        if (badge > 0) {
+            QRect rect;
+            rect.setWidth(option.rect.width() - 2);
+            const int ascent = option.fontMetrics.ascent();
+            rect.setHeight(ascent + qMax(option.rect.height() % 2, ascent % 2));
+            rect.moveCenter(option.rect.center());
+
+            painter.setPen(Qt::NoPen);
+            painter.setBrush(palette().color(hilite ? QPalette::Highlight : QPalette::Base));
+            painter.setRenderHint(QPainter::Antialiasing);
+            painter.drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
+
+            QFont font;
+            if (font.pointSize() != -1)
+                font.setPointSizeF(0.8 * font.pointSizeF());
+            painter.setFont(font);
+
+            QString txt;
+            if (badge > 999)
+                txt = QLatin1String("...");
+            else
+                txt = QFontMetrics(font).elidedText(QString::number(badge), Qt::ElideRight, option.rect.width());
+
+            painter.setPen(palette().color(hilite ? QPalette::HighlightedText : QPalette::Text));
+            painter.drawText(option.rect, Qt::AlignCenter, txt);
+        }
     }
+
+private:
+    int badge;
+    bool hilite;
 };
 
 TreeDelegate::TreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
@@ -114,23 +148,8 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         static QPointer<TreeBadge> badge;
         if (!badge) {
             badge = new TreeBadge(const_cast<QWidget*>(option.widget));
+            badge->setAttribute(Qt::WA_NoBackground);
             badge->setVisible(false);
-        }
-
-        int num = index.data(TreeRole::Badge).toInt();
-        if (num > 0) {
-            QRect rect;
-            rect.setWidth(option.rect.width() - 2);
-            const int ascent = option.fontMetrics.ascent();
-            rect.setHeight(ascent + qMax(option.rect.height() % 2, ascent % 2));
-            rect.moveCenter(option.rect.center());
-
-            painter->save();
-            painter->setPen(Qt::NoPen);
-            painter->setBrush(badge->palette().color(hilite ? QPalette::Highlight : QPalette::Base));
-            painter->setRenderHint(QPainter::Antialiasing);
-            painter->drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
-            painter->restore();
         }
 
         if (hilite)
@@ -142,22 +161,15 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 
         QStyledItemDelegate::paint(painter, option, index);
 
+        int num = index.data(TreeRole::Badge).toInt();
         if (num > 0) {
-            painter->save();
-            QFont font;
-            if (font.pointSize() != -1)
-                font.setPointSizeF(0.8 * font.pointSizeF());
-            painter->setFont(font);
+            badge->setNum(num);
+            badge->setHighlighted(hilite);
 
-            QString txt;
-            if (num > 999)
-                txt = QLatin1String("...");
-            else
-                txt = QFontMetrics(font).elidedText(QString::number(num), Qt::ElideRight, option.rect.width());
-
-            painter->setPen(badge->palette().color(hilite ? QPalette::HighlightedText : QPalette::Text));
-            painter->drawText(option.rect, Qt::AlignCenter, txt);
-            painter->restore();
+            badge->setGeometry(option.rect);
+            painter->translate(option.rect.topLeft());
+            badge->render(painter);
+            painter->translate(-option.rect.topLeft());
         }
     }
 }
