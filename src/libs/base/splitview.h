@@ -39,6 +39,9 @@ public slots:
     void split(BufferView* view, Qt::Orientation orientation = Qt::Vertical);
     QSplitter* wrap(BufferView* view, Qt::Orientation orientation = Qt::Vertical);
 
+    void initBuffer(IrcBuffer* buffer);
+    void cleanupBuffer(IrcBuffer* buffer);
+
 signals:
     void viewAdded(BufferView* view);
     void viewRemoved(BufferView* view);
@@ -53,8 +56,6 @@ private slots:
     void activatePreviousView();
 
     void onViewRemoved(BufferView* view);
-    void onBufferAdded(IrcBuffer* buffer);
-    void onBufferRemoved(IrcBuffer* buffer);
     void onFocusChanged(QWidget* old, QWidget* now);
 
 private:

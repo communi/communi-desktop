@@ -10,6 +10,7 @@
 #include "splitview.h"
 #include "textinput.h"
 #include "bufferview.h"
+#include <IrcConnection>
 #include <QApplication>
 #include <QShortcut>
 #include <IrcBuffer>
@@ -60,11 +61,8 @@ void SplitView::setCurrentView(BufferView *view)
 
 void SplitView::setCurrentBuffer(IrcBuffer* buffer)
 {
-    if (d.current) {
-        if (buffer)
-            connect(buffer, SIGNAL(destroyed(IrcBuffer*)), this, SLOT(onBufferRemoved(IrcBuffer*)), Qt::UniqueConnection);
+    if (d.current)
         d.current->setBuffer(buffer);
-    }
 }
 
 QByteArray SplitView::saveState() const
@@ -148,6 +146,35 @@ QSplitter* SplitView::wrap(BufferView* view, Qt::Orientation orientation)
     return 0;
 }
 
+void SplitView::initBuffer(IrcBuffer* buffer)
+{
+    IrcConnection* connection = buffer->connection();
+    if (connection) {
+        const QString uuid = connection->userData().toString();
+        if (!uuid.isEmpty()) {
+            // TODO: optimize
+            QList<BufferView*> views = findChildren<BufferView*>("__unrestored__");
+            foreach (BufferView* bv, views) {
+                if (bv->property("__uuid__").toString() == uuid &&
+                        bv->property("__buffer__").toString() == buffer->title()) {
+                    bv->setBuffer(buffer);
+                    bv->setObjectName(QString());
+                    bv->setProperty("__buffer__", QVariant());
+                    bv->setProperty("__uuid__", QVariant());
+                }
+            }
+        }
+    }
+}
+
+void SplitView::cleanupBuffer(IrcBuffer* buffer)
+{
+    foreach (BufferView* view, d.views) {
+        if (view->buffer() == buffer)
+            view->setBuffer(d.current->buffer());
+    }
+}
+
 BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
 {
     BufferView* view = new BufferView(splitter);
@@ -190,35 +217,6 @@ void SplitView::onViewRemoved(BufferView* view)
     }
 }
 
-void SplitView::onBufferAdded(IrcBuffer* buffer)
-{
-    // TODO: optimize
-//    QList<BufferView*> views = findChildren<BufferView*>("__unrestored__");
-//    foreach (BufferView* bv, views) {
-//        if (bv->property("__buffer__").toString() == buffer->title()) {
-//            TreeItem* item = d.tree->bufferItem(buffer);
-//            TreeItem* parent = item ? item->parentItem() : 0;
-//            if (bv->property("__parent__").toString() == (parent ? parent->text(0) : QString())) {
-//                if (bv->property("__index__").toInt() == d.tree->indexOfTopLevelItem(parent ? parent : item)) {
-//                    bv->setBuffer(buffer);
-//                    bv->setObjectName(QString());
-//                    bv->setProperty("__parent__", QVariant());
-//                    bv->setProperty("__buffer__", QVariant());
-//                    bv->setProperty("__index__", QVariant());
-//                }
-//            }
-//        }
-//    }
-}
-
-void SplitView::onBufferRemoved(IrcBuffer* buffer)
-{
-    foreach (BufferView* view, d.views) {
-        if (view->buffer() == buffer)
-            view->setBuffer(d.current->buffer());
-    }
-}
-
 void SplitView::onFocusChanged(QWidget*, QWidget* widget)
 {
     while (widget) {
@@ -254,15 +252,14 @@ QVariantMap SplitView::saveSplittedViews(const QSplitter* splitter) const
             children += saveSplittedViews(child);
         BufferView* bv = qobject_cast<BufferView*>(splitter->widget(i));
         if (bv) {
-//            TreeItem* item = d.tree->bufferItem(bv->buffer());
-//            TreeItem* parent = item ? item->parentItem() : 0;
-            QVariantMap buffer;
-//            buffer.insert("parent", parent ? parent->text(0) : QString());
-//            buffer.insert("buffer", item ? item->text(0) : QString());
-//            buffer.insert("index", d.tree->indexOfTopLevelItem(parent ? parent : item));
+            QVariantMap buf;
+            IrcBuffer* buffer = bv->buffer();
+            IrcConnection* connection = buffer ? buffer->connection() : 0;
+            buf.insert("buffer", buffer ? buffer->title() : QString());
+            buf.insert("uuid", connection ? connection->userData().toString() : QString());
             if (QSplitter* sp = bv->findChild<QSplitter*>())
-                buffer.insert("state", sp->saveState());
-            buffers += buffer;
+                buf.insert("state", sp->saveState());
+            buffers += buf;
         }
     }
     state.insert("buffers", buffers);
@@ -298,13 +295,12 @@ void SplitView::restoreSplittedViews(QSplitter* splitter, const QVariantMap& sta
     for (int i = 0; !buffers.isEmpty() && i < splitter->count(); ++i) {
         BufferView* bv = qobject_cast<BufferView*>(splitter->widget(i));
         if (bv) {
-            QVariantMap buffer = buffers.takeFirst().toMap();
-            bv->setProperty("__parent__", buffer.value("parent").toString());
-            bv->setProperty("__buffer__", buffer.value("buffer").toString());
-            bv->setProperty("__index__", buffer.value("index").toInt());
-            if (buffer.contains("state")) {
+            QVariantMap buf = buffers.takeFirst().toMap();
+            bv->setProperty("__buffer__", buf.value("buffer").toString());
+            bv->setProperty("__uuid__", buf.value("uuid").toString());
+            if (buf.contains("state")) {
                 if (QSplitter* sp = bv->findChild<QSplitter*>())
-                    sp->restoreState(buffer.value("state").toByteArray());
+                    sp->restoreState(buf.value("state").toByteArray());
             }
             bv->setObjectName("__unrestored__");
         }

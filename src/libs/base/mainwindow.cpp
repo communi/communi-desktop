@@ -9,6 +9,7 @@
 
 #include "mainwindow.h"
 #include <IrcConnection>
+#include <QUuid>
 
 MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 {
@@ -25,6 +26,9 @@ QList<IrcConnection*> MainWindow::connections() const
 
 void MainWindow::addConnection(IrcConnection* connection)
 {
+    if (!connection->userData().isValid())
+        connection->setUserData(QUuid::createUuid().toString());
+
     d.connections += connection;
     connect(connection, SIGNAL(destroyed(IrcConnection*)), this, SLOT(removeConnection(IrcConnection*)));
     emit connectionAdded(connection);

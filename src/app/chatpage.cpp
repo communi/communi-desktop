@@ -146,6 +146,7 @@ void ChatPage::initBuffer(IrcBuffer* buffer)
     buffer->setPersistent(true);
 
     d.treeWidget->addBuffer(buffer);
+    d.splitView->initBuffer(buffer);
 
     PluginLoader::instance()->initBuffer(buffer);
     PluginLoader::instance()->initDocument(doc);
@@ -158,6 +159,7 @@ void ChatPage::cleanupBuffer(IrcBuffer* buffer)
         PluginLoader::instance()->cleanupDocument(doc);
 
     d.treeWidget->removeBuffer(buffer);
+    d.splitView->cleanupBuffer(buffer);
 
     if (buffer->isSticky())
         buffer->connection()->deleteLater();
