@@ -113,14 +113,24 @@ static QColor parseColorValue(const QVariant& value, const QColor& defaultColor 
 {
     QColor color;
     QString str = value.type() == QVariant::StringList ? value.toStringList().join(",") : value.toString();
-    if (str.startsWith("palette(") && str.endsWith(")"))
-        color = parsePaletteColor(str.mid(8, str.length() - 9));
-    else if (str.startsWith("rgb(") && str.endsWith(")"))
-        color = parseRgbColor(str.mid(4, str.length() - 5));
-    else if (str.startsWith("rgba(") && str.endsWith(")"))
-        color = parseRgbaColor(str.mid(5, str.length() - 6));
+
+    int idx = str.indexOf(")");
+    if (str.startsWith("palette("))
+        color = parsePaletteColor(str.mid(8, idx - 8));
+    else if (str.startsWith("rgb("))
+        color = parseRgbColor(str.mid(4, idx - 4));
+    else if (str.startsWith("rgba("))
+        color = parseRgbaColor(str.mid(5, idx - 5));
     else if (QColor::isValidColor(str))
         color = QColor(str);
+
+    str = str.mid(idx + 1);
+    idx = str.indexOf(")");
+    if (str.startsWith(".darker("))
+        color = color.darker(str.mid(8, idx - 8).toInt());
+    else if (str.startsWith(".lighter("))
+        color = color.lighter(str.mid(9, idx - 9).toInt());
+
     return color.isValid() ? color : defaultColor;
 }
 
