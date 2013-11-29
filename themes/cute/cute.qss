@@ -43,6 +43,10 @@ TreeHeader::section:on {
     color: #ff4040;
 }
 
+TreeWidget::item:on {
+    color: #ff4040
+}
+
 QSplitter::handle {
     width: 1px;
     height: 1px;

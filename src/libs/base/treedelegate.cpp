@@ -133,11 +133,9 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         }
 
         if (hilite)
-            const_cast<QStyleOptionViewItem&>(option).palette.setColor(QPalette::Text, QApplication::palette("TreeItem").color(QPalette::HighlightedText));
-        else
-            const_cast<QStyleOptionViewItem&>(option).palette.setColor(QPalette::Text, QApplication::palette("TreeItem").color(QPalette::Text));
+            const_cast<QStyleOptionViewItem&>(option).state |= QStyle::State_On;
         if (!active)
-            const_cast<QStyleOptionViewItem&>(option).palette.setColor(QPalette::Text, option.palette.color(QPalette::Disabled, QPalette::Text));
+            const_cast<QStyleOptionViewItem&>(option).state &= !QStyle::State_Enabled;
 
         QStyledItemDelegate::paint(painter, option, index);
 
