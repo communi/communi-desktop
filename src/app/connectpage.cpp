@@ -236,22 +236,24 @@ static QCompleter* createCompleter(const QStringList& list, QLineEdit* lineEdit)
 void ConnectPage::restoreSettings()
 {
     QSettings settings;
-    ui.displayNameField->setText(settings.value("displayName").toString());
-    ui.hostField->setText(settings.value("host").toString());
-    ui.portField->setValue(settings.value("port", NORMAL_PORTS[0]).toInt());
-    ui.secureField->setChecked(settings.value("secure", false).toBool());
-    ui.nickNameField->setText(settings.value("nickName").toString());
-    ui.realNameField->setText(settings.value("realName").toString());
-    ui.userNameField->setText(settings.value("userName").toString());
+    QVariantMap credentials = settings.value("credentials").toMap();
+
+    ui.displayNameField->setText(credentials.value("displayName").toString());
+    ui.hostField->setText(credentials.value("host").toString());
+    ui.portField->setValue(credentials.value("port", NORMAL_PORTS[0]).toInt());
+    ui.secureField->setChecked(credentials.value("secure", false).toBool());
+    ui.nickNameField->setText(credentials.value("nickName").toString());
+    ui.realNameField->setText(credentials.value("realName").toString());
+    ui.userNameField->setText(credentials.value("userName").toString());
 
     SimpleCrypt crypto(Q_UINT64_C(0x600af3d6a24df27c));
-    ui.passwordField->setText(crypto.decryptToString(settings.value("password").toString()));
+    ui.passwordField->setText(crypto.decryptToString(credentials.value("password").toString()));
 
-    ui.displayNameCompleter = createCompleter(settings.value("displayNames").toStringList(), ui.displayNameField);
-    ui.hostCompleter = createCompleter(settings.value("allHosts").toStringList(), ui.hostField);
-    ui.nickNameCompleter = createCompleter(settings.value("allNickNames").toStringList(), ui.nickNameField);
-    ui.realNameCompleter = createCompleter(settings.value("allRealNames").toStringList(), ui.realNameField);
-    ui.userNameCompleter = createCompleter(settings.value("allUserNames").toStringList(), ui.userNameField);
+    ui.displayNameCompleter = createCompleter(credentials.value("displayNames").toStringList(), ui.displayNameField);
+    ui.hostCompleter = createCompleter(credentials.value("allHosts").toStringList(), ui.hostField);
+    ui.nickNameCompleter = createCompleter(credentials.value("allNickNames").toStringList(), ui.nickNameField);
+    ui.realNameCompleter = createCompleter(credentials.value("allRealNames").toStringList(), ui.realNameField);
+    ui.userNameCompleter = createCompleter(credentials.value("allUserNames").toStringList(), ui.userNameField);
 }
 
 void ConnectPage::saveSettings()
@@ -265,79 +267,82 @@ void ConnectPage::saveSettings()
     const QString userName = ui.userNameField->text();
 
     QSettings settings;
-    settings.setValue("displayName", displayName);
-    settings.setValue("host", host);
-    settings.setValue("port", port);
-    settings.setValue("secure", secure);
-    settings.setValue("nickName", nickName);
-    settings.setValue("realName", realName);
-    settings.setValue("userName", userName);
+    QVariantMap credentials = settings.value("credentials").toMap();
+    credentials.insert("displayName", displayName);
+    credentials.insert("host", host);
+    credentials.insert("port", port);
+    credentials.insert("secure", secure);
+    credentials.insert("nickName", nickName);
+    credentials.insert("realName", realName);
+    credentials.insert("userName", userName);
 
     SimpleCrypt crypto(Q_UINT64_C(0x600af3d6a24df27c));
-    settings.setValue("password", crypto.encryptToString(ui.passwordField->text()));
+    credentials.insert("password", crypto.encryptToString(ui.passwordField->text()));
 
     if (!displayName.isEmpty()) {
-        QStringList displayNames = settings.value("displayNames").toStringList();
+        QStringList displayNames = credentials.value("displayNames").toStringList();
         if (!displayNames.contains(displayName, Qt::CaseInsensitive))
-            settings.setValue("displayNames", displayNames << displayName);
+            credentials.insert("displayNames", displayNames << displayName);
     }
 
     if (!host.isEmpty()) {
-        QStringList allHosts = settings.value("allHosts").toStringList();
+        QStringList allHosts = credentials.value("allHosts").toStringList();
         if (!allHosts.contains(host, Qt::CaseInsensitive))
-            settings.setValue("allHosts", allHosts << host);
+            credentials.insert("allHosts", allHosts << host);
 
-        QMap<QString, QVariant> hosts = settings.value("hosts").toMap();
+        QMap<QString, QVariant> hosts = credentials.value("hosts").toMap();
         hosts.insert(ConnectPage::displayName(), host);
-        settings.setValue("hosts", hosts);
+        credentials.insert("hosts", hosts);
     }
 
     if (port != NORMAL_PORTS[0]) {
-        QMap<QString, QVariant> ports = settings.value("ports").toMap();
+        QMap<QString, QVariant> ports = credentials.value("ports").toMap();
         ports.insert(ConnectPage::displayName(), port);
         ports.insert(ConnectPage::host(), port);
-        settings.setValue("ports", ports);
+        credentials.insert("ports", ports);
     }
 
     if (secure) {
-        QMap<QString, QVariant> secures = settings.value("secures").toMap();
+        QMap<QString, QVariant> secures = credentials.value("secures").toMap();
         secures.insert(ConnectPage::displayName(), secure);
         secures.insert(ConnectPage::host(), secure);
-        settings.setValue("secures", secures);
+        credentials.insert("secures", secures);
     }
 
     if (!nickName.isEmpty()) {
-        QStringList allNickNames = settings.value("allNickNames").toStringList();
+        QStringList allNickNames = credentials.value("allNickNames").toStringList();
         if (!allNickNames.contains(nickName, Qt::CaseInsensitive))
-            settings.setValue("allNickNames", allNickNames << nickName);
+            credentials.insert("allNickNames", allNickNames << nickName);
 
-        QMap<QString, QVariant> nickNames = settings.value("nickNames").toMap();
+        QMap<QString, QVariant> nickNames = credentials.value("nickNames").toMap();
         nickNames.insert(ConnectPage::displayName(), nickName);
         nickNames.insert(ConnectPage::host(), nickName);
-        settings.setValue("nickNames", nickNames);
+        credentials.insert("nickNames", nickNames);
     }
 
     if (!realName.isEmpty()) {
-        QStringList allRealNames = settings.value("allRealNames").toStringList();
+        QStringList allRealNames = credentials.value("allRealNames").toStringList();
         if (!allRealNames.contains(realName, Qt::CaseInsensitive))
-            settings.setValue("allRealNames", allRealNames << realName);
+            credentials.insert("allRealNames", allRealNames << realName);
 
-        QMap<QString, QVariant> realNames = settings.value("realNames").toMap();
+        QMap<QString, QVariant> realNames = credentials.value("realNames").toMap();
         realNames.insert(ConnectPage::displayName(), realName);
         realNames.insert(ConnectPage::host(), realName);
-        settings.setValue("realNames", realNames);
+        credentials.insert("realNames", realNames);
     }
 
     if (!userName.isEmpty()) {
-        QStringList allUserNames = settings.value("allUserNames").toStringList();
+        QStringList allUserNames = credentials.value("allUserNames").toStringList();
         if (!allUserNames.contains(userName, Qt::CaseInsensitive))
-            settings.setValue("allUserNames", allUserNames << userName);
+            credentials.insert("allUserNames", allUserNames << userName);
 
-        QMap<QString, QVariant> userNames = settings.value("userNames").toMap();
+        QMap<QString, QVariant> userNames = credentials.value("userNames").toMap();
         userNames.insert(ConnectPage::displayName(), userName);
         userNames.insert(ConnectPage::host(), userName);
-        settings.setValue("userNames", userNames);
+        credentials.insert("userNames", userNames);
     }
+
+    settings.setValue("credentials", credentials);
 }
 
 void ConnectPage::updateUi()
@@ -369,6 +374,7 @@ void ConnectPage::reset()
 QVariant ConnectPage::defaultValue(const QString& key, const QString& field, const QVariant& defaultValue) const
 {
     QSettings settings;
-    QMap<QString, QVariant> values = settings.value(key).toMap();
+    QVariantMap credentials = settings.value("credentials").toMap();
+    QMap<QString, QVariant> values = credentials.value(key).toMap();
     return values.value(field, defaultValue);
 }
