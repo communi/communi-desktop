@@ -29,11 +29,12 @@ class TreeHeader : public QWidget
     Q_OBJECT
 
 public:
-    TreeHeader(QWidget* parent = 0) : QWidget(parent) { d.state = QStyle::State_None; }
+    TreeHeader(QWidget* parent = 0) : QWidget(parent) { d.highlighted = false; d.state = QStyle::State_None; }
 
     void setText(const QString& text) { d.text = text; }
     void setIcon(const QIcon& icon) { d.icon = icon; }
     void setState(QStyle::State state) { d.state = state; }
+    void setHighlighted(bool highlighted) { d.highlighted = highlighted; }
 
 protected:
     void paintEvent(QPaintEvent*)
@@ -49,6 +50,11 @@ protected:
         option.icon = d.icon;
         option.text = d.text;
         option.position = QStyleOptionHeader::OnlyOneSection;
+        if (d.highlighted) {
+            option.palette.setColor(QPalette::Text, option.palette.color(QPalette::HighlightedText));
+            option.palette.setColor(QPalette::ButtonText, option.palette.color(QPalette::HighlightedText));
+            option.palette.setColor(QPalette::WindowText, option.palette.color(QPalette::HighlightedText));
+        }
         QStylePainter painter(this);
         painter.drawControl(QStyle::CE_Header, option);
     }
@@ -57,6 +63,7 @@ private:
     struct Private {
         QIcon icon;
         QString text;
+        bool highlighted;
         QStyle::State state;
     } d;
 };
@@ -94,14 +101,8 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
             header->setVisible(false);
         }
 
-        QPalette pal = header->palette();
-        if (hilite) {
-            pal.setColor(QPalette::Text, header->palette().color(QPalette::HighlightedText));
-            pal.setColor(QPalette::ButtonText, header->palette().color(QPalette::HighlightedText));
-            pal.setColor(QPalette::WindowText, header->palette().color(QPalette::HighlightedText));
-        }
-        header->setPalette(pal);
         header->setEnabled(active);
+        header->setHighlighted(hilite);
         header->setText(index.data(Qt::DisplayRole).toString());
         header->setIcon(index.data(Qt::DecorationRole).value<QIcon>());
         header->setState(option.state);
