@@ -34,12 +34,9 @@ StatePlugin::StatePlugin(QObject* parent) : QObject(parent)
 void StatePlugin::initWindow(MainWindow* window)
 {
     QSettings settings;
-    settings.beginGroup("States");
     if (settings.contains("window"))
         window->restoreGeometry(settings.value("window").toByteArray());
-    settings.endGroup();
 
-    settings.beginGroup("Connections");
     foreach (const QVariant& state, settings.value("connections").toList()) {
         IrcConnection* connection = new IrcConnection(this);
         connection->restoreState(state.toByteArray());
@@ -50,11 +47,8 @@ void StatePlugin::initWindow(MainWindow* window)
 void StatePlugin::cleanupWindow(MainWindow* window)
 {
     QSettings settings;
-    settings.beginGroup("States");
     settings.setValue("window", window->saveGeometry());
-    settings.endGroup();
 
-    settings.beginGroup("Connections");
     QVariantList states;
     foreach (IrcConnection* connection, window->connections())
         states += connection->saveState();
@@ -67,7 +61,7 @@ void StatePlugin::initView(SplitView* view)
     QSplitter* splitter = qobject_cast<QSplitter*>(view->parentWidget());
     if (splitter) {
         QSettings settings;
-        settings.beginGroup("States/splitter");
+        settings.beginGroup("splitter");
         if (settings.contains("main"))
             splitter->restoreState(settings.value("main").toByteArray());
         if (settings.contains("views"))
@@ -84,7 +78,7 @@ void StatePlugin::cleanupView(SplitView* view)
     QSplitter* splitter = qobject_cast<QSplitter*>(view->parentWidget());
     if (splitter) {
         QSettings settings;
-        settings.beginGroup("States/splitter");
+        settings.beginGroup("splitter");
         settings.setValue("main", splitter->saveState());
         settings.setValue("views", saveSplittedViews(d.view));
     } else {
@@ -95,7 +89,7 @@ void StatePlugin::cleanupView(SplitView* view)
 void StatePlugin::initTree(TreeWidget* tree)
 {
     QSettings settings;
-    settings.beginGroup("States/tree");
+    settings.beginGroup("tree");
     if (settings.contains("expanded")) {
         QBitArray expanded = settings.value("expanded").toBitArray();
         if (expanded.count() == tree->topLevelItemCount()) {
@@ -117,7 +111,7 @@ void StatePlugin::initTree(TreeWidget* tree)
 void StatePlugin::cleanupTree(TreeWidget* tree)
 {
     QSettings settings;
-    settings.beginGroup("States/tree");
+    settings.beginGroup("tree");
     QBitArray expanded(tree->topLevelItemCount());
     for (int i = 0; i < tree->topLevelItemCount(); ++i) {
         QTreeWidgetItem* item = tree->topLevelItem(i);
@@ -130,32 +124,6 @@ void StatePlugin::cleanupTree(TreeWidget* tree)
     settings.setValue("current", current ? current->text(0) : QString());
     settings.setValue("index", tree->indexOfTopLevelItem(parent ? parent : current));
 }
-
-//void StatePlugin::restoreView(BufferView* view)
-//{
-//    QSplitter* splitter = view->findChild<QSplitter*>();
-//    if (splitter) {
-//        QSettings settings;
-//        settings.beginGroup("States/splitter");
-//        if (settings.contains("buffer"))
-//            splitter->restoreState(settings.value("buffer").toByteArray());
-//        connect(splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(onSplitterMoved()), Qt::UniqueConnection);
-//    } else {
-//        qWarning() << "StatePlugin: cannot restore BufferView splitter state";
-//    }
-//}
-
-//void StatePlugin::saveView(BufferView* view)
-//{
-//    QSplitter* splitter = view->findChild<QSplitter*>();
-//    if (splitter) {
-//        QSettings settings;
-//        settings.beginGroup("States/splitter");
-//        settings.setValue("buffer", splitter->saveState());
-//    } else {
-//        qWarning() << "StatePlugin: cannot save BufferView splitter state";
-//    }
-//}
 
 void StatePlugin::resetCurrent()
 {

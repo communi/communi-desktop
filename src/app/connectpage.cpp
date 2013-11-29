@@ -236,8 +236,6 @@ static QCompleter* createCompleter(const QStringList& list, QLineEdit* lineEdit)
 void ConnectPage::restoreSettings()
 {
     QSettings settings;
-    settings.beginGroup("Credentials");
-
     ui.displayNameField->setText(settings.value("displayName").toString());
     ui.hostField->setText(settings.value("host").toString());
     ui.portField->setValue(settings.value("port", NORMAL_PORTS[0]).toInt());
@@ -258,9 +256,6 @@ void ConnectPage::restoreSettings()
 
 void ConnectPage::saveSettings()
 {
-    QSettings settings;
-    settings.beginGroup("Credentials");
-
     const QString displayName = ui.displayNameField->text();
     const QString host = ui.hostField->text();
     const int port = ui.portField->value();
@@ -269,6 +264,7 @@ void ConnectPage::saveSettings()
     const QString realName = ui.realNameField->text();
     const QString userName = ui.userNameField->text();
 
+    QSettings settings;
     settings.setValue("displayName", displayName);
     settings.setValue("host", host);
     settings.setValue("port", port);
@@ -373,7 +369,6 @@ void ConnectPage::reset()
 QVariant ConnectPage::defaultValue(const QString& key, const QString& field, const QVariant& defaultValue) const
 {
     QSettings settings;
-    settings.beginGroup("Credentials");
     QMap<QString, QVariant> values = settings.value(key).toMap();
     return values.value(field, defaultValue);
 }
