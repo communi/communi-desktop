@@ -74,18 +74,3 @@ void TreeSorter::restore()
     }
     parents = settings.value("parents").toStringList();
 }
-
-bool TreeSorter::sort(const TreeItem* one, const TreeItem* another)
-{
-    QStringList order;
-    const TreeItem* parent = one->parentItem();
-    if (!parent)
-        order = parents;
-    else if (enabled)
-        order = children.value(parent->text(0));
-    const int oidx = order.indexOf(one->text(0));
-    const int aidx = order.indexOf(another->text(0));
-    if (oidx == -1  || aidx == -1)
-        return standardTreeSortFunc(one, another);
-    return oidx < aidx;
-}

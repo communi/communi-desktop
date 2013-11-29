@@ -34,7 +34,6 @@ public:
 
     static bool sort(const TreeItem* one, const TreeItem* another);
 
-private:
     static bool enabled;
     static QStringList parents;
     static QHashStringList children;

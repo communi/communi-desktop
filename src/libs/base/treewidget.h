@@ -25,9 +25,6 @@ class IrcBuffer;
 class IrcMessage;
 class IrcConnection;
 
-typedef bool (*TreeSortFunc)(const TreeItem* one, const TreeItem* another);
-bool standardTreeSortFunc(const TreeItem* one, const TreeItem* another);
-
 class TreeWidget : public QTreeWidget
 {
     Q_OBJECT
@@ -39,9 +36,6 @@ public:
     IrcBuffer* currentBuffer() const;
     TreeItem* bufferItem(IrcBuffer* buffer) const;
     TreeItem* connectionItem(IrcConnection* connection) const;
-
-    TreeSortFunc sortFunc() const;
-    void setSortFunc(TreeSortFunc func);
 
     bool blockItemReset(bool block);
 
@@ -98,12 +92,12 @@ private:
     QTreeWidgetItem* findNextItem(QTreeWidgetItem* from, int column, int role) const;
     QTreeWidgetItem* findPrevItem(QTreeWidgetItem* from, int column, int role) const;
 
-    friend bool standardTreeSortFunc(const TreeItem* one, const TreeItem* another);
+    friend class TreeItem;
+    bool lessThan(const TreeItem* one, const TreeItem* another) const;
 
     struct Private {
         bool block;
         bool blink;
-        TreeSortFunc sortFunc;
         QTreeWidgetItem* source;
         QList<IrcConnection*> connections;
         QQueue<QPointer<TreeItem> > resetBadges;

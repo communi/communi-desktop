@@ -45,7 +45,6 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     setItemDelegate(new TreeDelegate(this));
 
     setSortingEnabled(true);
-    setSortFunc(standardTreeSortFunc);
     sortByColumn(0, Qt::AscendingOrder);
 
     header()->setStretchLastSection(false);
@@ -99,7 +98,6 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     connect(shortcut, SIGNAL(activated()), this, SLOT(resetItems()));
 
     TreeSorter::restore();
-    setSortFunc(&TreeSorter::sort);
 }
 
 IrcBuffer* TreeWidget::currentBuffer() const
@@ -118,16 +116,6 @@ TreeItem* TreeWidget::bufferItem(IrcBuffer* buffer) const
 TreeItem* TreeWidget::connectionItem(IrcConnection* connection) const
 {
     return d.connectionItems.value(connection);
-}
-
-TreeSortFunc TreeWidget::sortFunc() const
-{
-    return d.sortFunc;
-}
-
-void TreeWidget::setSortFunc(TreeSortFunc func)
-{
-    d.sortFunc = func;
 }
 
 bool TreeWidget::blockItemReset(bool block)
@@ -495,18 +483,29 @@ QTreeWidgetItem* TreeWidget::findPrevItem(QTreeWidgetItem* from, int column, int
 // TODO
 class FriendlyModel : public IrcBufferModel
 {
-    friend bool standardTreeSortFunc(const TreeItem* one, const TreeItem* another);
+    friend class TreeWidget;
 };
 
-bool standardTreeSortFunc(const TreeItem* one, const TreeItem* another)
+bool TreeWidget::lessThan(const TreeItem* one, const TreeItem* another) const
 {
-    if (!one->parentItem()) {
-        QList<IrcConnection*> connections = one->treeWidget()->d.connections;
-        return connections.indexOf(one->connection()) < connections.indexOf(another->connection());
+    QStringList order;
+    const TreeItem* parent = one->parentItem();
+    if (!parent)
+        order = TreeSorter::parents;
+    else if (TreeSorter::isEnabled())
+        order = TreeSorter::children.value(parent->text(0));
+    const int oidx = order.indexOf(one->text(0));
+    const int aidx = order.indexOf(another->text(0));
+    if (oidx == -1  || aidx == -1) {
+        if (!one->parentItem()) {
+            QList<IrcConnection*> connections = one->treeWidget()->d.connections;
+            return connections.indexOf(one->connection()) < connections.indexOf(another->connection());
+        }
+        if (one->buffer()) {
+            const FriendlyModel* model = static_cast<FriendlyModel*>(one->buffer()->model());
+            return model->lessThan(one->buffer(), another->buffer(), model->sortMethod());
+        }
+        return one->QTreeWidgetItem::operator<(*another);
     }
-    if (one->buffer()) {
-        const FriendlyModel* model = static_cast<FriendlyModel*>(one->buffer()->model());
-        return model->lessThan(one->buffer(), another->buffer(), model->sortMethod());
-    }
-    return one->QTreeWidgetItem::operator<(*another);
+    return oidx < aidx;
 }
