@@ -45,10 +45,8 @@ public:
     void cleanupView(SplitView* view);
 
     void initTree(TreeWidget* tree);
-    void cleanupTree(TreeWidget* tree);
 
 private slots:
-    void resetCurrent();
     void restoreBuffer(IrcBuffer* buffer);
 
 private:
@@ -56,9 +54,6 @@ private:
     void restoreSplittedViews(QSplitter* splitter, const QVariantMap& state, SplitView* view = 0);
 
     struct Private {
-        int index;
-        QString parent;
-        QString current;
         TreeWidget* tree;
         SplitView* view;
     } d;

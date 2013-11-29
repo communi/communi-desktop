@@ -26,7 +26,7 @@
 
 StatePlugin::StatePlugin(QObject* parent) : QObject(parent)
 {
-    d.index = -1;
+//    d.index = -1;
     d.tree = 0;
     d.view = 0;
 }
@@ -84,70 +84,15 @@ void StatePlugin::cleanupView(SplitView* view)
     }
 }
 
+
 void StatePlugin::initTree(TreeWidget* tree)
 {
-    QSettings settings;
-    settings.beginGroup("tree");
-    if (settings.contains("expanded")) {
-        QBitArray expanded = settings.value("expanded").toBitArray();
-        if (expanded.count() == tree->topLevelItemCount()) {
-            for (int i = 0; i < expanded.count(); ++i)
-                tree->topLevelItem(i)->setExpanded(expanded.testBit(i));
-        } else {
-            qDebug("TODO: restore tree state");
-        }
-    }
     d.tree = tree;
-    d.current = settings.value("current").toString();
-    d.parent = settings.value("parent").toString();
-    d.index = settings.value("index", -1).toInt();
-    if (!d.current.isEmpty() && d.index != -1)
-        connect(tree, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(resetCurrent()));
     connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(restoreBuffer(IrcBuffer*)));
-}
-
-void StatePlugin::cleanupTree(TreeWidget* tree)
-{
-    QSettings settings;
-    settings.beginGroup("tree");
-    QBitArray expanded(tree->topLevelItemCount());
-    for (int i = 0; i < tree->topLevelItemCount(); ++i) {
-        QTreeWidgetItem* item = tree->topLevelItem(i);
-        expanded.setBit(i, item->isExpanded());
-    }
-    settings.setValue("expanded", expanded);
-    TreeItem* current = static_cast<TreeItem*>(tree->currentItem());
-    TreeItem* parent = current ? current->parentItem() : 0;
-    settings.setValue("parent", parent ? parent->text(0) : QString());
-    settings.setValue("current", current ? current->text(0) : QString());
-    settings.setValue("index", tree->indexOfTopLevelItem(parent ? parent : current));
-}
-
-void StatePlugin::resetCurrent()
-{
-    d.index = -1;
-    d.parent.clear();
-    d.current.clear();
-    disconnect(d.tree, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(resetCurrent()));
 }
 
 void StatePlugin::restoreBuffer(IrcBuffer* buffer)
 {
-    if (!d.current.isEmpty() && buffer->title() == d.current) {
-        TreeItem* item = d.tree->bufferItem(buffer);
-        if (item) {
-            TreeItem* parent = item->parentItem();
-            if ((!parent && d.parent.isEmpty()) || (parent && parent->text(0) == d.parent)) {
-                if (d.index == d.tree->indexOfTopLevelItem(parent ? parent : item)) {
-                    d.tree->setCurrentBuffer(buffer);
-                    d.current.clear();
-                    d.parent.clear();
-                    d.index = -1;
-                }
-            }
-        }
-    }
-
     // TODO: optimize
     QList<BufferView*> views = d.view->findChildren<BufferView*>("__unrestored__");
     foreach (BufferView* bv, views) {
@@ -165,9 +110,6 @@ void StatePlugin::restoreBuffer(IrcBuffer* buffer)
             }
         }
     }
-
-    if (d.current.isEmpty() && d.parent.isEmpty() && d.index == -1 && views.isEmpty())
-        disconnect(d.tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(restoreBuffer(IrcBuffer*)));
 }
 
 QVariantMap StatePlugin::saveSplittedViews(QSplitter* splitter) const

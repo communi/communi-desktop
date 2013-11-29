@@ -25,6 +25,7 @@
 #include <IrcBuffer>
 #include <QShortcut>
 #include <QSettings>
+#include <QBitArray>
 #include <QTimer>
 
 TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
@@ -143,6 +144,35 @@ void TreeWidget::setSortingBlocked(bool blocked)
     if (d.sortingBlocked != blocked) {
         d.sortingBlocked = blocked;
         setSortingEnabled(!blocked);
+    }
+}
+
+QByteArray TreeWidget::saveState() const
+{
+    QVariantMap state;
+    QBitArray expanded(topLevelItemCount());
+    for (int i = 0; i < topLevelItemCount(); ++i)
+        expanded.setBit(i, topLevelItem(i)->isExpanded());
+    state.insert("expanded", expanded);
+
+    QByteArray data;
+    QDataStream out(&data, QIODevice::WriteOnly);
+    out << state;
+    return data;
+}
+
+void TreeWidget::restoreState(const QByteArray& data)
+{
+    QVariantMap state;
+    QDataStream in(data);
+    in >> state;
+
+    if (state.contains("expanded")) {
+        QBitArray expanded = state.value("expanded").toBitArray();
+        if (expanded.count() == topLevelItemCount()) {
+            for (int i = 0; i < expanded.count(); ++i)
+                topLevelItem(i)->setExpanded(expanded.testBit(i));
+        }
     }
 }
 

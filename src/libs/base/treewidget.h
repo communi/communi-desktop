@@ -45,6 +45,9 @@ public:
     bool isSortingBlocked() const;
     void setSortingBlocked(bool blocked);
 
+    QByteArray saveState() const;
+    void restoreState(const QByteArray& state);
+
 public slots:
     void addBuffer(IrcBuffer* buffer);
     void removeBuffer(IrcBuffer* buffer);

@@ -21,6 +21,7 @@
 #include <IrcConnection>
 #include <IrcChannel>
 #include <IrcBuffer>
+#include <QSettings>
 
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 {
@@ -50,10 +51,17 @@ void ChatPage::init()
     PluginLoader::instance()->initTree(d.treeWidget);
     PluginLoader::instance()->initView(d.splitView);
     initView(d.splitView->currentView());
+
+    QSettings settings;
+    if (settings.contains("tree"))
+        d.treeWidget->restoreState(settings.value("tree").toByteArray());
 }
 
 void ChatPage::cleanup()
 {
+    QSettings settings;
+    settings.setValue("tree", d.treeWidget->saveState());
+
     PluginLoader::instance()->cleanupTree(d.treeWidget);
     PluginLoader::instance()->cleanupView(d.splitView);
 }
