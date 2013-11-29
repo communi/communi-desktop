@@ -13,17 +13,20 @@
 */
 
 #include "textinput.h"
+#include <QStyleOptionFrame>
 #include <IrcCommandParser>
 #include <IrcBufferModel>
 #include <IrcConnection>
 #include <IrcCompleter>
 #include <IrcBuffer>
 #include <QShortcut>
+#include <QPainter>
 
 TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
 {
     setAttribute(Qt::WA_MacShowFocusRect, false);
 
+    d.hint = "...";
     d.index = 0;
     d.buffer = 0;
     d.parser = 0;
@@ -43,6 +46,7 @@ TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
     connect(shortcut, SIGNAL(activated()), this, SLOT(goForward()));
 
     connect(this, SIGNAL(returnPressed()), this, SLOT(sendInput()));
+    connect(this, SIGNAL(textChanged(QString)), this, SLOT(updateHint(QString)));
 }
 
 IrcBuffer* TextInput::buffer() const
@@ -98,6 +102,77 @@ void TextInput::setParser(IrcCommandParser* parser)
         bind(d.buffer, parser);
         d.parser = parser;
         emit parserChanged(parser);
+    }
+}
+
+// copied from qlineedit.cpp:
+#define vMargin 1
+#define hMargin 2
+
+void TextInput::paintEvent(QPaintEvent* event)
+{
+    QLineEdit::paintEvent(event);
+
+    if (!d.hint.isEmpty()) {
+        QStyleOptionFrameV2 option;
+        initStyleOption(&option);
+
+        QRect r = style()->subElementRect(QStyle::SE_LineEditContents, &option, this);
+        int left, top, right, bottom;
+        getTextMargins(&left, &top, &right, &bottom);
+        r.adjust(left, top, -right, -bottom);
+        r.adjust(hMargin, vMargin, -hMargin, -vMargin);
+
+        QString txt = text();
+        if (!txt.isEmpty()) {
+            if (!txt.endsWith(" "))
+                txt += " ";
+            r.adjust(fontMetrics().width(txt), 0, 0, 0);
+        }
+
+        QPainter painter(this);
+        QColor color = palette().text().color();
+        color.setAlpha(128);
+        painter.setPen(color);
+
+        QString hint = fontMetrics().elidedText(d.hint, Qt::ElideRight, r.width());
+        painter.drawText(r, alignment(), hint);
+    }
+}
+
+void TextInput::updateHint(const QString& text)
+{
+    QString match;
+    QStringList params;
+    QStringList suggestions;
+    if (d.parser) {
+        if (text.startsWith('/')) {
+            QStringList words = text.mid(1).split(" ");
+            QString command = words.value(0);
+            params = words.mid(1);
+            foreach (const QString& available, d.parser->commands()) {
+                if (!command.compare(available, Qt::CaseInsensitive)) {
+                    match = available;
+                    break;
+                } else if (params.isEmpty() && available.startsWith(command, Qt::CaseInsensitive)) {
+                    suggestions += available;
+                }
+            }
+        }
+    }
+
+    if (!match.isEmpty()) {
+        QStringList syntax = d.parser->syntax(match).split(" ", QString::SkipEmptyParts).mid(1);
+        if (!params.isEmpty())
+            d.hint = QStringList(syntax.mid(params.count() - 1)).join(" ");
+        else
+            d.hint = syntax.join(" ");
+    } else if (suggestions.isEmpty()) {
+        d.hint = text.isEmpty() ? "..." : "";
+    } else if (suggestions.count() == 1) {
+        d.hint = d.parser->syntax(suggestions.first());
+    } else {
+        d.hint = suggestions.join(" ");
     }
 }
 

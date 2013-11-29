@@ -44,7 +44,11 @@ signals:
     void bufferChanged(IrcBuffer* buffer);
     void parserChanged(IrcCommandParser* parser);
 
+protected:
+    void paintEvent(QPaintEvent* event);
+
 private slots:
+    void updateHint(const QString& text);
     void goBackward();
     void goForward();
     void sendInput();
@@ -54,6 +58,7 @@ private slots:
 private:
     struct Private {
         int index;
+        QString hint;
         QString current;
         QStringList history;
         IrcCompleter* completer;
