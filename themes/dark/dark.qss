@@ -21,6 +21,7 @@ TreeWidget, ListView {
 }
 
 TreeWidget::item {
+    color: #dedede;
     height: 20px;
 }
 
@@ -49,6 +50,27 @@ TreeHeader::section, TitleBar::section {
     color: #dedede;
     padding-left: 4px;
     border-bottom: 1px solid #444444;
+}
+
+TreeBadge {
+    color: #dedede;
+    margin: 3px;
+    font-size: 9pt;
+    border-radius: 6px;
+    background: #444444;
+}
+
+TreeBadge:on {
+    color: #ffffff;
+    background: #283ecc;
+}
+
+TreeHeader::section:on {
+    color: #324aff;
+}
+
+TreeWidget::item:on {
+    color: #324aff
 }
 
 TitleBar {

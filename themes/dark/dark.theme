@@ -14,14 +14,6 @@ application=:/themes/dark/dark.qss
 [QPalette]
 Finder/base=#222222
 Finder/highlight=#283ecc
-TreeBadge/text=#ffffff
-TreeBadge/base=#444444
-TreeBadge/highlight=#283ecc
-TreeBadge/highlighted-text=#ffffff
-TreeItem/text=#dedede
-TreeItem/highlighted-text=#324aff
-TreeHeader/text=#dedede
-TreeHeader/highlighted-text=#324aff
 TextDocument/highlight=rgba(64,64,255,64)
 TextDocument/midlight=#222222
 TextDocument/mid=#444444
