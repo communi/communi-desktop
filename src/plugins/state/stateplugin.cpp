@@ -34,8 +34,8 @@ StatePlugin::StatePlugin(QObject* parent) : QObject(parent)
 void StatePlugin::initWindow(MainWindow* window)
 {
     QSettings settings;
-    if (settings.contains("window"))
-        window->restoreGeometry(settings.value("window").toByteArray());
+    if (settings.contains("geometry"))
+        window->restoreGeometry(settings.value("geometry").toByteArray());
 
     foreach (const QVariant& state, settings.value("connections").toList()) {
         IrcConnection* connection = new IrcConnection(this);
@@ -47,7 +47,7 @@ void StatePlugin::initWindow(MainWindow* window)
 void StatePlugin::cleanupWindow(MainWindow* window)
 {
     QSettings settings;
-    settings.setValue("window", window->saveGeometry());
+    settings.setValue("geometry", window->saveGeometry());
 
     QVariantList states;
     foreach (IrcConnection* connection, window->connections())
@@ -61,9 +61,8 @@ void StatePlugin::initView(SplitView* view)
     QSplitter* splitter = qobject_cast<QSplitter*>(view->parentWidget());
     if (splitter) {
         QSettings settings;
-        settings.beginGroup("splitter");
-        if (settings.contains("main"))
-            splitter->restoreState(settings.value("main").toByteArray());
+        if (settings.contains("splitter"))
+            splitter->restoreState(settings.value("splitter").toByteArray());
         if (settings.contains("views"))
             restoreSplittedViews(d.view, settings.value("views").toMap());
     } else {
@@ -78,8 +77,7 @@ void StatePlugin::cleanupView(SplitView* view)
     QSplitter* splitter = qobject_cast<QSplitter*>(view->parentWidget());
     if (splitter) {
         QSettings settings;
-        settings.beginGroup("splitter");
-        settings.setValue("main", splitter->saveState());
+        settings.setValue("splitter", splitter->saveState());
         settings.setValue("views", saveSplittedViews(d.view));
     } else {
         qWarning() << "StatePlugin: cannot save ChatPage splitter state";
