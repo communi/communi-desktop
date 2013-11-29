@@ -39,6 +39,10 @@ TreeBadge:on {
     background: #ff8080;
 }
 
+TreeHeader::section:on {
+    color: #ff4040;
+}
+
 QSplitter::handle {
     width: 1px;
     height: 1px;

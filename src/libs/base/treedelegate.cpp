@@ -45,16 +45,11 @@ protected:
         option.rect.adjust(0, 0, 0, 1);
 #endif
         option.state = (d.state | QStyle::State_Raised | QStyle::State_Horizontal);
-        if (d.state & QStyle::State_Selected)
+        if (d.highlighted)
             option.state |= QStyle::State_On;
         option.icon = d.icon;
         option.text = d.text;
         option.position = QStyleOptionHeader::OnlyOneSection;
-        if (d.highlighted) {
-            option.palette.setColor(QPalette::Text, option.palette.color(QPalette::HighlightedText));
-            option.palette.setColor(QPalette::ButtonText, option.palette.color(QPalette::HighlightedText));
-            option.palette.setColor(QPalette::WindowText, option.palette.color(QPalette::HighlightedText));
-        }
         QStylePainter painter(this);
         painter.drawControl(QStyle::CE_Header, option);
     }
