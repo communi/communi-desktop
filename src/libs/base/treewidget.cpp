@@ -15,7 +15,6 @@
 #include "treewidget.h"
 #include "treedelegate.h"
 #include "sharedtimer.h"
-#include "treesorter.h"
 #include "treeitem.h"
 #include "treerole.h"
 #include <IrcBufferModel>
@@ -25,12 +24,14 @@
 #include <IrcMessage>
 #include <IrcBuffer>
 #include <QShortcut>
+#include <QSettings>
 #include <QTimer>
 
 TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
     d.block = false;
     d.source = 0;
+    d.sortingBlocked = false;
 
     setAnimated(true);
     setColumnCount(2);
@@ -97,7 +98,7 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     shortcut->setKey(QKeySequence(tr("Ctrl+R")));
     connect(shortcut, SIGNAL(activated()), this, SLOT(resetItems()));
 
-    TreeSorter::restore();
+    restoreSortOrder();
 }
 
 IrcBuffer* TreeWidget::currentBuffer() const
@@ -130,6 +131,19 @@ bool TreeWidget::blockItemReset(bool block)
         }
     }
     return wasBlocked;
+}
+
+bool TreeWidget::isSortingBlocked() const
+{
+    return d.sortingBlocked;
+}
+
+void TreeWidget::setSortingBlocked(bool blocked)
+{
+    if (d.sortingBlocked != blocked) {
+        d.sortingBlocked = blocked;
+        setSortingEnabled(!blocked);
+    }
 }
 
 void TreeWidget::addBuffer(IrcBuffer* buffer)
@@ -275,7 +289,7 @@ void TreeWidget::mouseMoveEvent(QMouseEvent* event)
     if (target && d.source != target) {
         QTreeWidgetItem* parent = target->parent();
         if (parent == d.source->parent()) {
-            TreeSorter::setEnabled(this, false);
+            setSortingBlocked(true);
             swapItems(d.source, target);
         }
     }
@@ -284,11 +298,11 @@ void TreeWidget::mouseMoveEvent(QMouseEvent* event)
 
 void TreeWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-    if (d.source && !TreeSorter::isEnabled()) {
-        TreeSorter::init(this);
-        TreeSorter::save();
+    if (d.source && isSortingBlocked()) {
+        initSortOrder();
+        saveSortOrder();
     }
-    TreeSorter::setEnabled(this, true);
+    setSortingBlocked(false);
     d.source = 0;
     QTreeWidget::mouseReleaseEvent(event);
 }
@@ -491,9 +505,9 @@ bool TreeWidget::lessThan(const TreeItem* one, const TreeItem* another) const
     QStringList order;
     const TreeItem* parent = one->parentItem();
     if (!parent)
-        order = TreeSorter::parents;
-    else if (TreeSorter::isEnabled())
-        order = TreeSorter::children.value(parent->text(0));
+        order = d.parentOrder;
+    else if (!isSortingBlocked())
+        order = d.childrenOrders.value(parent->text(0));
     const int oidx = order.indexOf(one->text(0));
     const int aidx = order.indexOf(another->text(0));
     if (oidx == -1  || aidx == -1) {
@@ -508,4 +522,46 @@ bool TreeWidget::lessThan(const TreeItem* one, const TreeItem* another) const
         return one->QTreeWidgetItem::operator<(*another);
     }
     return oidx < aidx;
+}
+
+void TreeWidget::initSortOrder()
+{
+    d.parentOrder.clear();
+    d.childrenOrders.clear();
+    for (int i = 0; i < topLevelItemCount(); ++i) {
+        QStringList lst;
+        QTreeWidgetItem* parent = topLevelItem(i);
+        for (int j = 0; j < parent->childCount(); ++j)
+            lst += parent->child(j)->text(0);
+        d.childrenOrders.insert(parent->text(0), lst);
+        d.parentOrder += parent->text(0);
+    }
+}
+
+void TreeWidget::saveSortOrder()
+{
+    QHash<QString, QVariant> variants;
+    QHashIterator<QString, QStringList> it(d.childrenOrders);
+    while (it.hasNext()) {
+        it.next();
+        variants.insert(it.key(), it.value());
+    }
+    QVariantMap sorting;
+    sorting.insert("children", variants);
+    sorting.insert("parents", d.parentOrder);
+    QSettings settings;
+    settings.setValue("sorting", sorting);
+}
+
+void TreeWidget::restoreSortOrder()
+{
+    QSettings settings;
+    QVariantMap sorting = settings.value("sorting").toMap();
+    d.childrenOrders.clear();
+    QHashIterator<QString, QVariant> it(sorting.value("children").toHash());
+    while (it.hasNext()) {
+        it.next();
+        d.childrenOrders.insert(it.key(), it.value().toStringList());
+    }
+    d.parentOrder = sorting.value("parents").toStringList();
 }

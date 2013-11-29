@@ -19,11 +19,14 @@
 #include <QQueue>
 #include <QPointer>
 #include <QTreeWidget>
+#include <QStringList>
 
 class TreeItem;
 class IrcBuffer;
 class IrcMessage;
 class IrcConnection;
+
+typedef QHash<QString, QStringList> QHashStringList;
 
 class TreeWidget : public QTreeWidget
 {
@@ -38,6 +41,9 @@ public:
     TreeItem* connectionItem(IrcConnection* connection) const;
 
     bool blockItemReset(bool block);
+
+    bool isSortingBlocked() const;
+    void setSortingBlocked(bool blocked);
 
 public slots:
     void addBuffer(IrcBuffer* buffer);
@@ -92,13 +98,20 @@ private:
     QTreeWidgetItem* findNextItem(QTreeWidgetItem* from, int column, int role) const;
     QTreeWidgetItem* findPrevItem(QTreeWidgetItem* from, int column, int role) const;
 
+    void initSortOrder();
+    void saveSortOrder();
+    void restoreSortOrder();
+
     friend class TreeItem;
     bool lessThan(const TreeItem* one, const TreeItem* another) const;
 
     struct Private {
         bool block;
         bool blink;
+        bool sortingBlocked;
         QTreeWidgetItem* source;
+        QStringList parentOrder;
+        QHashStringList childrenOrders;
         QList<IrcConnection*> connections;
         QQueue<QPointer<TreeItem> > resetBadges;
         QSet<QTreeWidgetItem*> highlightedItems;
