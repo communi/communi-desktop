@@ -395,12 +395,16 @@ void TreeWidget::swapItems(QTreeWidgetItem* source, QTreeWidgetItem* target)
     if (!parent)
         parent = invisibleRootItem();
     const bool se = source->isExpanded();
+    const bool ss = source->isFirstColumnSpanned();
     const bool te = target->isExpanded();
+    const bool ts = target->isFirstColumnSpanned();
     const int idx = parent->indexOfChild(target);
     parent->takeChild(parent->indexOfChild(source));
     parent->insertChild(idx, source);
     source->setExpanded(se);
+    source->setFirstColumnSpanned(ss);
     target->setExpanded(te);
+    target->setFirstColumnSpanned(ts);
 }
 
 void TreeWidget::highlightItem(QTreeWidgetItem* item)
