@@ -73,50 +73,34 @@ class TreeBadge : public QWidget
     Q_OBJECT
 
 public:
-    TreeBadge(QWidget* parent = 0) : QWidget(parent) { badge = 0; hilite = false; }
+    TreeBadge(QWidget* parent = 0) : QWidget(parent) { d.num = 0; d.hilite = false; }
 
-    void setNum(int num) { badge = num; }
-    void setHighlighted(int highlighted) { hilite = highlighted; }
+    void setNum(int num) { d.num = num; }
+    void setHighlighted(int hilite) { d.hilite = hilite; }
 
 protected:
     void paintEvent(QPaintEvent*)
     {
         QStyleOption option;
         option.init(this);
+        if (d.hilite)
+            option.state |= QStyle::State_On;
         QStylePainter painter(this);
         painter.drawPrimitive(QStyle::PE_Widget, option);
 
-        if (badge > 0) {
-            QRect rect;
-            rect.setWidth(option.rect.width() - 2);
-            const int ascent = option.fontMetrics.ascent();
-            rect.setHeight(ascent + qMax(option.rect.height() % 2, ascent % 2));
-            rect.moveCenter(option.rect.center());
-
-            painter.setPen(Qt::NoPen);
-            painter.setBrush(palette().color(hilite ? QPalette::Highlight : QPalette::Base));
-            painter.setRenderHint(QPainter::Antialiasing);
-            painter.drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
-
-            QFont font;
-            if (font.pointSize() != -1)
-                font.setPointSizeF(0.8 * font.pointSizeF());
-            painter.setFont(font);
-
-            QString txt;
-            if (badge > 999)
-                txt = QLatin1String("...");
-            else
-                txt = QFontMetrics(font).elidedText(QString::number(badge), Qt::ElideRight, option.rect.width());
-
-            painter.setPen(palette().color(hilite ? QPalette::HighlightedText : QPalette::Text));
-            painter.drawText(option.rect, Qt::AlignCenter, txt);
-        }
+        QString txt;
+        if (d.num > 999)
+            txt = QLatin1String("...");
+        else
+            txt = option.fontMetrics.elidedText(QString::number(d.num), Qt::ElideRight, option.rect.width());
+        painter.drawText(option.rect, Qt::AlignCenter, txt);
     }
 
 private:
-    int badge;
-    bool hilite;
+    struct Private {
+        int num;
+        bool hilite;
+    } d;
 };
 
 TreeDelegate::TreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
@@ -148,7 +132,8 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         static QPointer<TreeBadge> badge;
         if (!badge) {
             badge = new TreeBadge(const_cast<QWidget*>(option.widget));
-            badge->setAttribute(Qt::WA_NoBackground);
+            badge->setAttribute(Qt::WA_TranslucentBackground);
+            badge->setAttribute(Qt::WA_NoSystemBackground);
             badge->setVisible(false);
         }
 

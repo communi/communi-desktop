@@ -26,6 +26,19 @@ TitleBar > QTextEdit {
     border-bottom: 1px solid palette(mid);
 }
 
+TreeBadge {
+    color: #ffffff;
+    margin: 3px;
+    font-size: 9pt;
+    border-radius: 6px;
+    background: palette(dark);
+}
+
+TreeBadge:on {
+    color: #ffffff;
+    background: #ff8080;
+}
+
 QSplitter::handle {
     width: 1px;
     height: 1px;
