@@ -28,7 +28,6 @@ void MonitorPlugin::initConnection(IrcConnection* connection)
     connect(SystemMonitor::instance(), SIGNAL(sleep()), connection, SLOT(quit()));
     connect(SystemMonitor::instance(), SIGNAL(sleep()), connection, SLOT(close()));
 
-    connect(SystemMonitor::instance(), SIGNAL(offline()), connection, SLOT(quit()));
     connect(SystemMonitor::instance(), SIGNAL(offline()), connection, SLOT(close()));
 }
 
@@ -40,7 +39,6 @@ void MonitorPlugin::cleanupConnection(IrcConnection* connection)
     disconnect(SystemMonitor::instance(), SIGNAL(sleep()), connection, SLOT(quit()));
     disconnect(SystemMonitor::instance(), SIGNAL(sleep()), connection, SLOT(close()));
 
-    disconnect(SystemMonitor::instance(), SIGNAL(offline()), connection, SLOT(quit()));
     disconnect(SystemMonitor::instance(), SIGNAL(offline()), connection, SLOT(close()));
 }
 
