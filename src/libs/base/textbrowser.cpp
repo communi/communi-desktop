@@ -16,15 +16,21 @@
 #include "textdocument.h"
 #include <QAbstractTextDocumentLayout>
 #include <QDesktopServices>
+#include <QStylePainter>
+#include <QStyleOption>
 #include <QApplication>
 #include <QScrollBar>
 #include <QKeyEvent>
 #include <QPainter>
 
+class TextShadow : public QFrame { Q_OBJECT };
+
 TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent)
 {
     d.bud = 0;
     d.dirty = 0;
+    d.shadow = new TextShadow;
+    d.shadow->setParent(this);
 
     setOpenLinks(false);
     setTabChangesFocus(true);
@@ -123,6 +129,8 @@ void TextBrowser::resizeEvent(QResizeEvent* event)
 {
     QTextBrowser::resizeEvent(event);
 
+    d.shadow->resize(width(), d.shadow->height());
+
     // http://www.qtsoftware.com/developer/task-tracker/index_html?method=entry&id=240940
     QMetaObject::invokeMethod(this, "scrollToBottom", Qt::QueuedConnection);
 }
@@ -194,13 +202,6 @@ void TextBrowser::paintEvent(QPaintEvent* event)
         painter.translate(-hoffset, -voffset);
         doc->drawForeground(&painter, bounds);
     }
-
-    QLinearGradient gradient(0, 0, 0, 3);
-    gradient.setColorAt(0.0, palette().color(QPalette::Shadow));
-    gradient.setColorAt(1.0, Qt::transparent);
-
-    QPainter painter(viewport());
-    painter.fillRect(0, 0, width(), 3, gradient);
 }
 
 void TextBrowser::wheelEvent(QWheelEvent* event)
@@ -227,3 +228,5 @@ void TextBrowser::onAnchorClicked(const QUrl& url)
         QDesktopServices::openUrl(url);
     clearFocus();
 }
+
+#include "textbrowser.moc"

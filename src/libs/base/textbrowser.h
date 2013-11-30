@@ -17,6 +17,7 @@
 
 #include <QTextBrowser>
 
+class TextShadow;
 class TextDocument;
 
 class TextBrowser : public QTextBrowser
@@ -63,6 +64,7 @@ private:
     struct Private {
         int dirty;
         QWidget* bud;
+        TextShadow* shadow;
     } d;
 };
 
