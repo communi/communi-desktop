@@ -73,6 +73,7 @@ signals:
 
 protected:
     QSize sizeHint() const;
+    void contextMenuEvent(QContextMenuEvent* event);
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent* event);
@@ -87,6 +88,12 @@ private slots:
     void onItemDestroyed(TreeItem* item);
     void blinkItems();
     void resetItems();
+
+    void onEditTriggered();
+    void onWhoisTriggered();
+    void onJoinTriggered();
+    void onPartTriggered();
+    void onCloseTriggered();
 
 private:
     void swapItems(QTreeWidgetItem* source, QTreeWidgetItem* target);
@@ -107,6 +114,8 @@ private:
 
     friend class TreeItem;
     bool lessThan(const TreeItem* one, const TreeItem* another) const;
+
+    QMenu* createContextMenu(TreeItem* item);
 
     struct Private {
         bool block;

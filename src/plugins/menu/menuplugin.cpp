@@ -14,18 +14,12 @@
 
 #include "menuplugin.h"
 #include "titlemenu.h"
-#include "treemenu.h"
 #include "browsermenu.h"
 #include "bufferview.h"
 
 MenuPlugin::MenuPlugin(QObject* parent) : QObject(parent)
 {
     d.view = 0;
-}
-
-void MenuPlugin::initTree(TreeWidget* tree)
-{
-    new TreeMenu(tree);
 }
 
 void MenuPlugin::initView(BufferView* view)

@@ -19,14 +19,19 @@
 #include "treerole.h"
 #include <IrcBufferModel>
 #include <IrcConnection>
+#include <QApplication>
 #include <QHeaderView>
 #include <QMouseEvent>
 #include <IrcMessage>
+#include <IrcCommand>
+#include <IrcChannel>
 #include <IrcBuffer>
 #include <QShortcut>
 #include <QSettings>
 #include <QBitArray>
+#include <QAction>
 #include <QTimer>
+#include <QMenu>
 
 TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
@@ -307,6 +312,16 @@ QSize TreeWidget::sizeHint() const
     return QSize(20 * fontMetrics().width('#'), QTreeWidget::sizeHint().height());
 }
 
+void TreeWidget::contextMenuEvent(QContextMenuEvent* event)
+{
+    TreeItem* item = static_cast<TreeItem*>(itemAt(event->pos()));
+    if (item) {
+        QMenu* menu = createContextMenu(item);
+        menu->exec(event->globalPos());
+        delete menu;
+    }
+}
+
 void TreeWidget::mousePressEvent(QMouseEvent* event)
 {
     d.source = itemAt(event->pos());
@@ -416,6 +431,56 @@ void TreeWidget::resetItems()
         resetBadge(*it);
         unhighlightItem(*it);
         ++it;
+    }
+}
+
+void TreeWidget::onEditTriggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action) {
+        TreeItem* item = action->data().value<TreeItem*>();
+        QMetaObject::invokeMethod(window(), "editConnection", Q_ARG(IrcConnection*, item->connection()));
+    }
+}
+
+void TreeWidget::onWhoisTriggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action) {
+        TreeItem* item = action->data().value<TreeItem*>();
+        IrcCommand* command = IrcCommand::createWhois(item->text(0));
+        item->connection()->sendCommand(command);
+    }
+}
+
+void TreeWidget::onJoinTriggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action) {
+        TreeItem* item = action->data().value<TreeItem*>();
+        IrcCommand* command = IrcCommand::createJoin(item->text(0));
+        item->connection()->sendCommand(command);
+    }
+}
+
+void TreeWidget::onPartTriggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action) {
+        TreeItem* item = action->data().value<TreeItem*>();
+        IrcChannel* channel = item->buffer()->toChannel();
+        if (channel && channel->isActive())
+            channel->part(qApp->property("description").toString());
+    }
+}
+
+void TreeWidget::onCloseTriggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action) {
+        TreeItem* item = action->data().value<TreeItem*>();
+        onPartTriggered();
+        item->buffer()->deleteLater();
     }
 }
 
@@ -598,4 +663,50 @@ void TreeWidget::restoreSortOrder()
         d.childrenOrders.insert(it.key(), it.value().toStringList());
     }
     d.parentOrder = sorting.value("parents").toStringList();
+}
+
+QMenu* TreeWidget::createContextMenu(TreeItem* item)
+{
+    QMenu* menu = new QMenu(this);
+    connect(item, SIGNAL(destroyed(TreeItem*)), menu, SLOT(deleteLater()));
+
+    const bool child = item->parentItem();
+    const bool connected = item->connection()->isActive();
+    const bool active = item->buffer()->isActive();
+    const bool channel = item->buffer()->isChannel();
+
+    if (connected) {
+        QAction* disconnectAction = menu->addAction(tr("Disconnect"));
+        connect(disconnectAction, SIGNAL(triggered()), item->connection(), SLOT(setDisabled()));
+        connect(disconnectAction, SIGNAL(triggered()), item->connection(), SLOT(quit()));
+    } else {
+        QAction* reconnectAction = menu->addAction(tr("Reconnect"));
+        connect(reconnectAction, SIGNAL(triggered()), item->connection(), SLOT(setEnabled()));
+        connect(reconnectAction, SIGNAL(triggered()), item->connection(), SLOT(open()));
+    }
+    menu->addSeparator();
+
+    if (!child) {
+        QAction* editAction = menu->addAction(tr("Edit"), this, SLOT(onEditTriggered()));
+        editAction->setData(QVariant::fromValue(item));
+        editAction->setEnabled(!connected);
+    }
+
+    if (connected && child) {
+        QAction* action = 0;
+        if (!channel)
+            action = menu->addAction(tr("Whois"), this, SLOT(onWhoisTriggered()));
+        else if (!active)
+            action = menu->addAction(tr("Join"), this, SLOT(onJoinTriggered()));
+        else
+            action = menu->addAction(tr("Part"), this, SLOT(onPartTriggered()));
+        action->setData(QVariant::fromValue(item));
+    }
+
+    menu->addSeparator();
+    QAction* closeAction = menu->addAction(tr("Close"), this, SLOT(onCloseTriggered()));
+    closeAction->setShortcut(QKeySequence::Close);
+    closeAction->setData(QVariant::fromValue(item));
+
+    return menu;
 }

@@ -19,16 +19,13 @@
 #include <QtPlugin>
 #include "bufferviewplugin.h"
 #include "splitviewplugin.h"
-#include "treewidgetplugin.h"
 
-class MenuPlugin : public QObject, public TreeWidgetPlugin,
-                                   public BufferViewPlugin,
+class MenuPlugin : public QObject, public BufferViewPlugin,
                                    public SplitViewPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreeWidgetPlugin BufferViewPlugin SplitViewPlugin)
+    Q_INTERFACES(BufferViewPlugin SplitViewPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
     Q_PLUGIN_METADATA(IID "Communi.BufferViewPlugin")
     Q_PLUGIN_METADATA(IID "Communi.SplitViewPlugin")
 #endif
@@ -36,7 +33,6 @@ class MenuPlugin : public QObject, public TreeWidgetPlugin,
 public:
     MenuPlugin(QObject* parent = 0);
 
-    void initTree(TreeWidget* tree);
     void initView(BufferView* view);
     void initView(SplitView* view);
 
