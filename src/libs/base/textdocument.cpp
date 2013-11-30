@@ -13,21 +13,38 @@
 */
 
 #include "textdocument.h"
-#include "styleparser.h"
 #include "messageformatter.h"
 #include "syntaxhighlighter.h"
 #include <QAbstractTextDocumentLayout>
 #include <QTextDocumentFragment>
 #include <IrcConnection>
+#include <QStylePainter>
 #include <QApplication>
+#include <QStyleOption>
 #include <QTextCursor>
 #include <QTextBlock>
 #include <IrcBuffer>
 #include <QPalette>
+#include <QPointer>
 #include <QPainter>
+#include <QFrame>
 #include <qmath.h>
 
 static int delay = 1000;
+
+class TextFrame : public QFrame
+{
+    void paintEvent(QPaintEvent*)
+    {
+        QStyleOption option;
+        option.init(this);
+        QStylePainter painter(this);
+        painter.drawPrimitive(QStyle::PE_Widget, option);
+    }
+};
+
+class TextHighlight : public TextFrame { Q_OBJECT };
+class TextLowlight : public TextFrame { Q_OBJECT };
 
 TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
 {
@@ -61,10 +78,7 @@ void TextDocument::setStyleSheet(const QString& css)
 {
     if (d.css != css) {
         d.css = css;
-        QPalette pal;
-        pal.setColor(QPalette::Midlight, StyleParser::parseColor(css, ".lowlight", pal.color(QPalette::Midlight)));
-        pal.setColor(QPalette::Highlight, StyleParser::parseColor(css, ".highlight", pal.color(QPalette::Highlight)));
-        d.palette = pal;
+        // TODO: rebuild the doc?
         setDefaultStyleSheet(css);
     }
 }
@@ -194,7 +208,7 @@ void TextDocument::drawForeground(QPainter* painter, const QRect& bounds)
         const QPen oldPen = painter->pen();
         const QBrush oldBrush = painter->brush();
         painter->setBrush(Qt::NoBrush);
-        painter->setPen(QPen(d.palette.color(QPalette::Mid), 1, Qt::DashLine));
+        painter->setPen(QPen(QPalette().color(QPalette::Mid), 1, Qt::DashLine));
         QTextBlock block = findBlockByNumber(d.ub);
         if (block.isValid()) {
             QRect br = documentLayout()->blockBoundingRect(block).toAlignedRect();
@@ -211,18 +225,31 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
     if (d.highlights.isEmpty() && d.lowlights.isEmpty())
         return;
 
-    const QPen oldPen = painter->pen();
-    const QBrush oldBrush = painter->brush();
-    const qreal oldOpacity = painter->opacity();
     const int margin = qCeil(documentMargin());
     const QAbstractTextDocumentLayout* layout = documentLayout();
+
+    static QPointer<TextLowlight> lowlightFrame = 0;
+    if (!lowlightFrame) {
+        lowlightFrame = new TextLowlight;
+        lowlightFrame->setParent(static_cast<QWidget*>(painter->device()));
+        lowlightFrame->setAttribute(Qt::WA_TranslucentBackground);
+        lowlightFrame->setAttribute(Qt::WA_NoSystemBackground);
+        lowlightFrame->setVisible(false);
+    }
+
+    static QPointer<TextHighlight> highlightFrame = 0;
+    if (!highlightFrame) {
+        highlightFrame = new TextHighlight;
+        highlightFrame->setParent(static_cast<QWidget*>(painter->device()));
+        highlightFrame->setAttribute(Qt::WA_TranslucentBackground);
+        highlightFrame->setAttribute(Qt::WA_NoSystemBackground);
+        highlightFrame->setVisible(false);
+    }
 
     d.drawUb = d.ub > 1;
     if (!d.lowlights.isEmpty()) {
         const QAbstractTextDocumentLayout* layout = documentLayout();
         const int margin = qCeil(documentMargin());
-        const QColor markerColor = d.palette.color(QPalette::Mid);
-        const QColor lowlightColor = d.palette.color(QPalette::Midlight);
         QMap<int, int>::const_iterator it;
         for (it = d.lowlights.begin(); it != d.lowlights.end(); ++it) {
             const QTextBlock from = findBlockByNumber(it.key());
@@ -238,13 +265,12 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
                             atBottom = true;
                     }
                     if (atBottom)
-                        br.setBottom(bounds.bottom());
-                    br = br.adjusted(-margin, 0, margin, 1);
-                    painter->fillRect(br, lowlightColor);
-                    painter->setPen(markerColor);
-                    painter->drawLine(br.topLeft(), br.topRight());
-                    if (!atBottom)
-                        painter->drawLine(br.bottomLeft(), br.bottomRight());
+                        br.setBottom(bounds.bottom() + 1);
+                    br.adjust(-margin - 1, 0, margin + 1, 0);
+                    painter->translate(br.topLeft());
+                    lowlightFrame->setGeometry(br);
+                    lowlightFrame->render(painter);
+                    painter->translate(-br.topLeft());
                     if (d.drawUb && d.ub - 1 >= it.key() && (it.value() == -1 || d.ub - 1 <= it.value()))
                         d.drawUb = false;
                 }
@@ -252,20 +278,19 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
         }
     }
 
-    painter->setPen(d.palette.color(QPalette::Mid));
-    painter->setBrush(d.palette.color(QPalette::Highlight));
     foreach (int highlight, d.highlights) {
         QTextBlock block = findBlockByNumber(highlight);
         if (block.isValid()) {
             QRect br = layout->blockBoundingRect(block).toAlignedRect();
-            if (bounds.intersects(br))
-                painter->drawRect(br.adjusted(-margin - 1, 0, margin + 1, 0));
+            if (bounds.intersects(br)) {
+                br.adjust(-margin - 1, 0, margin + 1, 0);
+                painter->translate(br.topLeft());
+                highlightFrame->setGeometry(br);
+                highlightFrame->render(painter);
+                painter->translate(-br.topLeft());
+            }
         }
     }
-
-    painter->setPen(oldPen);
-    painter->setBrush(oldBrush);
-    painter->setOpacity(oldOpacity);
 }
 
 void TextDocument::updateBlock(int number)
@@ -356,3 +381,5 @@ void TextDocument::appendLine(QTextCursor& cursor, const QString& line)
     if (d.ub == -1 && !d.visible)
         d.ub = count;
 }
+
+#include "textdocument.moc"

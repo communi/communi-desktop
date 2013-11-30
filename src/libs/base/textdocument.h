@@ -18,7 +18,6 @@
 #include <QTextDocument>
 #include <QStringList>
 #include <QMetaType>
-#include <QPalette>
 #include <QMap>
 
 class IrcBuffer;
@@ -82,7 +81,6 @@ private:
         QString css;
         int lowlight;
         bool visible;
-        QPalette palette;
         IrcBuffer* buffer;
         QStringList lines;
         QList<int> highlights;

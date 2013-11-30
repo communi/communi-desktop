@@ -26,6 +26,16 @@ TitleBar > QTextEdit {
     border-bottom: 1px solid palette(mid);
 }
 
+TextLowlight {
+    border: 1px solid palette(mid);
+    background-color: palette(midlight);
+}
+
+TextHighlight {
+    border: 1px solid palette(mid);
+    background-color: rgba(255,64,64,64);
+}
+
 TreeBadge {
     color: #ffffff;
     margin: 3px;
