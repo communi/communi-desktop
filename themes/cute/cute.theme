@@ -3,10 +3,5 @@ name=Cute
 version=1.0
 description=A cute Communi theme
 maintainer=J-P Nurmi <jpnurmi@gmail.com>
-
-[Resources]
-prefix=:/themes/cute
-
-[StyleSheets]
-document=:/themes/cute/cute.css
 application=:/themes/cute/cute.qss
+document=:/themes/cute/cute.css

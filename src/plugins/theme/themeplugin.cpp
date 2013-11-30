@@ -34,12 +34,12 @@ ThemePlugin::ThemePlugin(QObject* parent) : QObject(parent)
 
 void ThemePlugin::initWindow(MainWindow* window)
 {
-    window->setStyleSheet(d.theme.appStyleSheet());
+    window->setStyleSheet(d.theme.attribute("application"));
 }
 
 void ThemePlugin::initDocument(TextDocument* doc)
 {
-    doc->setStyleSheet(d.theme.docStyleSheet());
+    doc->setStyleSheet(d.theme.attribute("document"));
 }
 
 void ThemePlugin::initView(BufferView* view)
@@ -47,7 +47,7 @@ void ThemePlugin::initView(BufferView* view)
     TitleBar* bar = view->titleBar();
     QTextDocument* doc = bar->findChild<QTextDocument*>();
     if (doc)
-        doc->setDefaultStyleSheet(d.theme.docStyleSheet());
+        doc->setDefaultStyleSheet(d.theme.attribute("document"));
 }
 
 #if QT_VERSION < 0x050000

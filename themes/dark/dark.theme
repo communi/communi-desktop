@@ -3,13 +3,8 @@ name=Dark
 version=1.0
 description=A dark Communi theme
 maintainer=J-P Nurmi <jpnurmi@gmail.com>
-
-[Resources]
-prefix=:/themes/dark
-
-[StyleSheets]
-document=:/themes/dark/dark.css
 application=:/themes/dark/dark.qss
+document=:/themes/dark/dark.css
 
 [QPalette]
 Finder/base=#222222

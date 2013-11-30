@@ -17,7 +17,6 @@
 
 #include <QMap>
 #include <QString>
-#include <QPalette>
 
 class ThemeInfo
 {
@@ -26,16 +25,8 @@ public:
 
     QString attribute(const QString& key) const;
 
-    QString prefix() const;
-
-    QString docStyleSheet() const;
-    QString appStyleSheet() const;
-
 private:
     struct Private {
-        QString prefix;
-        QString css;
-        QString qss;
         QMap<QString, QString> attributes;
     } d;
 };

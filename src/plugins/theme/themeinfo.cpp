@@ -13,32 +13,13 @@
 */
 
 #include "themeinfo.h"
-#include "styleparser.h"
-#include <QApplication>
+#include <QStringList>
 #include <QSettings>
-#include <QPalette>
-#include <QColor>
 #include <QFile>
-#include <Irc>
 
 QString ThemeInfo::attribute(const QString& key) const
 {
     return d.attributes.value(key);
-}
-
-QString ThemeInfo::prefix() const
-{
-    return d.prefix;
-}
-
-QString ThemeInfo::docStyleSheet() const
-{
-    return d.css;
-}
-
-QString ThemeInfo::appStyleSheet() const
-{
-    return d.qss;
 }
 
 static QString readFile(const QString& filePath)
@@ -58,21 +39,9 @@ bool ThemeInfo::load(const QString& filePath)
         settings.beginGroup("Theme");
         foreach (const QString& key, settings.childKeys())
             d.attributes.insert(key, settings.value(key).toString());
+        d.attributes.insert("document", readFile(settings.value("document").toString()));
+        d.attributes.insert("application", readFile(settings.value("application").toString()));
         settings.endGroup();
     }
-
-    if (groups.contains("Resources")) {
-        settings.beginGroup("Resources");
-        d.prefix = settings.value("prefix").toString();
-        settings.endGroup();
-    }
-
-    if (groups.contains("StyleSheets")) {
-        settings.beginGroup("StyleSheets");
-        d.css = readFile(settings.value("document").toString());
-        d.qss = readFile(settings.value("application").toString());
-        settings.endGroup();
-    }
-
     return !d.attributes.value("name").isEmpty();
 }
