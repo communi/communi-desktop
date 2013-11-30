@@ -13,6 +13,7 @@
 */
 
 #include "themeinfo.h"
+#include "styleparser.h"
 #include <QApplication>
 #include <QSettings>
 #include <QPalette>
@@ -50,88 +51,10 @@ QMap<QString, QPalette> ThemeInfo::palettes() const
     return d.palettes;
 }
 
-static QColor parsePaletteColor(const QString& str)
+static QColor parseColorValue(const QVariant& value, const QColor& fallback = QColor())
 {
-    if (str == "alternate-base")
-        return qApp->palette().color(QPalette::AlternateBase);
-    else if (str == "background")
-        return qApp->palette().color(QPalette::Background);
-    else if (str == "base")
-        return qApp->palette().color(QPalette::Base);
-    else if (str == "bright-text")
-        return qApp->palette().color(QPalette::BrightText);
-    else if (str == "button")
-        return qApp->palette().color(QPalette::Button);
-    else if (str == "button-text")
-        return qApp->palette().color(QPalette::ButtonText);
-    else if (str == "dark")
-        return qApp->palette().color(QPalette::Dark);
-    else if (str == "foreground")
-        return qApp->palette().color(QPalette::Foreground);
-    else if (str == "highlight")
-        return qApp->palette().color(QPalette::Highlight);
-    else if (str == "highlighted-text")
-        return qApp->palette().color(QPalette::HighlightedText);
-    else if (str == "light")
-        return qApp->palette().color(QPalette::Light);
-    else if (str == "link")
-        return qApp->palette().color(QPalette::Link);
-    else if (str == "link-visited")
-        return qApp->palette().color(QPalette::LinkVisited);
-    else if (str == "mid")
-        return qApp->palette().color(QPalette::Mid);
-    else if (str == "midlight")
-        return qApp->palette().color(QPalette::Midlight);
-    else if (str == "shadow")
-        return qApp->palette().color(QPalette::Shadow);
-    else if (str == "text")
-        return qApp->palette().color(QPalette::Text);
-    else if (str == "window")
-        return qApp->palette().color(QPalette::Window);
-    else if (str == "window-text")
-        return qApp->palette().color(QPalette::WindowText);
-    return QColor();
-}
-
-static QColor parseRgbColor(const QString& str)
-{
-    QStringList rgb = str.split(",", QString::SkipEmptyParts);
-    if (rgb.count() == 3)
-        return QColor(rgb.first().toInt(), rgb.at(1).toInt(), rgb.last().toInt());
-    return QColor();
-}
-
-static QColor parseRgbaColor(const QString& str)
-{
-    QStringList rgba = str.split(",", QString::SkipEmptyParts);
-    if (rgba.count() == 4)
-        return QColor(rgba.first().toInt(), rgba.at(1).toInt(), rgba.at(2).toInt(), rgba.last().toInt());
-    return QColor();
-}
-
-static QColor parseColorValue(const QVariant& value, const QColor& defaultColor = QColor())
-{
-    QColor color;
     QString str = value.type() == QVariant::StringList ? value.toStringList().join(",") : value.toString();
-
-    int idx = str.indexOf(")");
-    if (str.startsWith("palette("))
-        color = parsePaletteColor(str.mid(8, idx - 8));
-    else if (str.startsWith("rgb("))
-        color = parseRgbColor(str.mid(4, idx - 4));
-    else if (str.startsWith("rgba("))
-        color = parseRgbaColor(str.mid(5, idx - 5));
-    else if (QColor::isValidColor(str))
-        color = QColor(str);
-
-    str = str.mid(idx + 1);
-    idx = str.indexOf(")");
-    if (str.startsWith(".darker("))
-        color = color.darker(str.mid(8, idx - 8).toInt());
-    else if (str.startsWith(".lighter("))
-        color = color.lighter(str.mid(9, idx - 9).toInt());
-
-    return color.isValid() ? color : defaultColor;
+    return StyleParser::parseColor(str, fallback);
 }
 
 static QString readFile(const QString& filePath)
