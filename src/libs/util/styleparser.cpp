@@ -103,7 +103,7 @@ static QColor parseHslaColor(const QString& str)
     return QColor();
 }
 
-QColor StyleParser::parseColor(const QString& str, const QColor& fallback)
+static QColor parseColorValue(const QString& str, const QColor& fallback)
 {
     QColor color;
     int idx = str.indexOf(")");
@@ -128,4 +128,56 @@ QColor StyleParser::parseColor(const QString& str, const QColor& fallback)
         color = color.lighter(ext.mid(9, idx - 9).toInt());
 
     return color.isValid() ? color : fallback;
+}
+
+static QString parseBlock(const QString& css, const QString& element)
+{
+    int index = css.indexOf(element);
+    if (index != -1) {
+        int from = css.indexOf("{", index);
+        if (from != -1) {
+            int to = css.indexOf("}", from);
+            if (to != -1)
+                return css.mid(from + 1, to - from - 1).trimmed();
+        }
+    }
+    return QString();
+}
+
+static QString parseValue(const QString& block, const QString& rule)
+{
+    int index = block.indexOf(rule);
+    if (index != -1) {
+        int from = block.indexOf(":", index);
+        if (from != -1) {
+            int to = block.indexOf(";", from);
+            if (to == -1)
+                to = block.indexOf("}", from);
+            if (to != -1)
+                return block.mid(from + 1, to - from - 1).trimmed();
+        }
+    }
+    return QString();
+}
+
+QColor StyleParser::parseColor(const QString& css, const QString& selector, const QColor& fallback)
+{
+    QString block = parseBlock(css, selector);
+    if (!block.isEmpty()) {
+        QString value = parseValue(block, "color");
+        if (!value.isEmpty())
+            return parseColorValue(value, fallback);
+    }
+    return fallback;
+}
+
+QColor StyleParser::parseBackground(const QString& css, const QString& selector, const QColor& fallback)
+{
+    QString block = parseBlock(css, selector);
+    if (!block.isEmpty()) {
+        QString value = parseValue(block, "background-color");
+        if (!value.isEmpty())
+            return parseColorValue(value, fallback);
+    }
+    return fallback;
 }

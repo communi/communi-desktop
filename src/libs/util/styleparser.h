@@ -42,7 +42,10 @@ public:
     // - hsla(359,255,255,255)
     // - ^.darker(200)
     // - ^.lighter(150)
-    static QColor parseColor(const QString& str, const QColor& fallback = QColor());
+
+    // selector { color: foo; background-color: bar }
+    static QColor parseColor(const QString& css, const QString& selector, const QColor& fallback = QColor());
+    static QColor parseBackground(const QString& css, const QString& selector, const QColor& fallback = QColor());
 };
 
 #endif // STYLEPARSER_H
