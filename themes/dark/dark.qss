@@ -52,6 +52,22 @@ TreeHeader::section, TitleBar::section {
     border-bottom: 1px solid #444444;
 }
 
+TextLowlight {
+    border: 1px solid #444444;
+    background-color: #222222;
+}
+
+TextHighlight {
+    border: 1px solid #444444;
+    background-color: rgba(64,64,255,64);
+}
+
+TextShadow {
+    max-height: 5px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #222222, stop: 1 transparent);
+}
+
 TreeBadge {
     color: #dedede;
     margin: 3px;
