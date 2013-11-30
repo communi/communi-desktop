@@ -11,7 +11,6 @@ STATIC_PLUGINS += importer
 STATIC_PLUGINS += lag
 STATIC_PLUGINS += monitor
 STATIC_PLUGINS += sound
-STATIC_PLUGINS += theme
 STATIC_PLUGINS += title
 STATIC_PLUGINS += tray
 STATIC_PLUGINS += verifier

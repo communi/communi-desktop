@@ -11,11 +11,13 @@
 #define CHATPAGE_H
 
 #include <QSplitter>
+#include "themeinfo.h"
 
 class IrcBuffer;
 class SplitView;
 class TreeWidget;
 class BufferView;
+class TextDocument;
 class IrcConnection;
 class IrcCommandParser;
 
@@ -48,11 +50,13 @@ private slots:
     void cleanupView(BufferView* view);
     void initBuffer(IrcBuffer* buffer);
     void cleanupBuffer(IrcBuffer* buffer);
+    void initDocument(TextDocument* document);
 
 private:
     static IrcCommandParser* createParser(QObject* parent);
 
     struct Private {
+        ThemeInfo theme;
         SplitView* splitView;
         TreeWidget* treeWidget;
     } d;

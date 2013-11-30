@@ -14,6 +14,7 @@
 #include "bufferview.h"
 #include "textinput.h"
 #include "splitview.h"
+#include "titlebar.h"
 #include "mainwindow.h"
 #include <QCoreApplication>
 #include <IrcCommandParser>
@@ -40,6 +41,9 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
     connect(d.splitView, SIGNAL(viewRemoved(BufferView*)), this, SLOT(cleanupView(BufferView*)));
 
     setStretchFactor(1, 1);
+
+    d.theme.load(":/themes/cute/cute.theme");
+    //d.theme.load(":/themes/dark/dark.theme");
 }
 
 ChatPage::~ChatPage()
@@ -48,6 +52,8 @@ ChatPage::~ChatPage()
 
 void ChatPage::init()
 {
+    window()->setStyleSheet(d.theme.attribute("application"));
+
     PluginLoader::instance()->initTree(d.treeWidget);
     PluginLoader::instance()->initView(d.splitView);
     initView(d.splitView->currentView());
@@ -149,7 +155,7 @@ void ChatPage::initBuffer(IrcBuffer* buffer)
     d.splitView->initBuffer(buffer);
 
     PluginLoader::instance()->initBuffer(buffer);
-    PluginLoader::instance()->initDocument(doc);
+    initDocument(doc);
 }
 
 void ChatPage::cleanupBuffer(IrcBuffer* buffer)
@@ -169,9 +175,14 @@ void ChatPage::cleanupBuffer(IrcBuffer* buffer)
 
 void ChatPage::initView(BufferView* view)
 {
+    TitleBar* bar = view->titleBar();
+    QTextDocument* doc = bar->findChild<QTextDocument*>();
+    if (doc)
+        doc->setDefaultStyleSheet(d.theme.attribute("document"));
+
     view->textInput()->setParser(createParser(view));
     connect(view, SIGNAL(bufferClosed(IrcBuffer*)), this, SLOT(closeBuffer(IrcBuffer*)));
-    connect(view, SIGNAL(cloned(TextDocument*)), PluginLoader::instance(), SLOT(initDocument(TextDocument*)));
+    connect(view, SIGNAL(cloned(TextDocument*)), this, SLOT(initDocument(TextDocument*)));
 
     PluginLoader::instance()->initView(view);
 }
@@ -179,6 +190,12 @@ void ChatPage::initView(BufferView* view)
 void ChatPage::cleanupView(BufferView* view)
 {
     PluginLoader::instance()->cleanupView(view);
+}
+
+void ChatPage::initDocument(TextDocument* document)
+{
+    document->setStyleSheet(d.theme.attribute("document"));
+    PluginLoader::instance()->initDocument(document);
 }
 
 IrcCommandParser* ChatPage::createParser(QObject *parent)

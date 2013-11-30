@@ -42,6 +42,7 @@ HEADERS += $$PWD/chatpage.h
 HEADERS += $$PWD/connectpage.h
 HEADERS += $$PWD/pluginloader.h
 HEADERS += $$PWD/settingspage.h
+HEADERS += $$PWD/themeinfo.h
 
 SOURCES += $$PWD/appwindow.cpp
 SOURCES += $$PWD/chatpage.cpp
@@ -49,6 +50,7 @@ SOURCES += $$PWD/connectpage.cpp
 SOURCES += $$PWD/main.cpp
 SOURCES += $$PWD/pluginloader.cpp
 SOURCES += $$PWD/settingspage.cpp
+SOURCES += $$PWD/themeinfo.cpp
 
 include(plugins.pri)
 include(../config.pri)
@@ -57,3 +59,6 @@ include(../libs/util/util.pri)
 include(../libs/backend/backend.pri)
 include(../libs/3rdparty/3rdparty.pri)
 include(../../resources/resources.pri)
+
+# TODO:
+include($$SOURCE_ROOT/themes/themes.pri)

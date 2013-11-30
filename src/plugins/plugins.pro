@@ -12,7 +12,6 @@ SUBDIRS += importer
 SUBDIRS += lag
 SUBDIRS += monitor
 SUBDIRS += sound
-SUBDIRS += theme
 SUBDIRS += title
 SUBDIRS += tray
 SUBDIRS += verifier
