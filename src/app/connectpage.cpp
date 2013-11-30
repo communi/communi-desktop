@@ -41,6 +41,9 @@ ConnectPage::ConnectPage(QWidget* parent) : QWidget(parent)
     ui.nickNameField->setPlaceholderText(ui.nickNameField->placeholderText().arg(qrand() % 9999));
     ui.realNameField->setPlaceholderText(ui.realNameField->placeholderText().arg(IRC_VERSION_STR));
 
+    connect(ui.buttonBox, SIGNAL(accepted()), ui.displayNameField, SLOT(setFocus()));
+    connect(ui.buttonBox, SIGNAL(rejected()), ui.displayNameField, SLOT(setFocus()));
+
     connect(ui.buttonBox, SIGNAL(accepted()), this, SIGNAL(accepted()));
     connect(ui.buttonBox, SIGNAL(rejected()), this, SIGNAL(rejected()));
     connect(ui.buttonBox->button(QDialogButtonBox::Reset), SIGNAL(clicked()), this, SLOT(reset()));
@@ -65,6 +68,7 @@ ConnectPage::ConnectPage(QWidget* parent) : QWidget(parent)
     shortcut = new QShortcut(Qt::Key_Escape, this);
     connect(shortcut, SIGNAL(activated()), ui.buttonBox->button(QDialogButtonBox::Cancel), SLOT(click()));
 
+    connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(saveSettings()));
     connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(reset()));
     connect(ui.buttonBox, SIGNAL(rejected()), this, SLOT(saveSettings()));
     restoreSettings();
