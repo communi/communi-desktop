@@ -1,20 +1,23 @@
-a {
-    color: #5078ff;
-}
+a { color: #5078ff; }
+.timestamp { color: #808080; font-size: small }
 
-.notice {
-    color: #a54242;
-}
+.notice { color: #a54242; }
+.action { color: #8b388b; }
+.event { color: #808080; }
 
-.action {
-    color: #8b388b;
-}
+.gray { color: #606060; }
+.lightgray { color: #808080; }
 
-.event {
-    color: #808080;
-}
-
-.timestamp {
-    color: #808080;
-    font-size: small
-}
+/* http://ethanschoonover.com/solarized */
+.blue { color: #268bd2; }
+.green { color: #859900;}
+.red { color: #dc322f;}
+.brown { color: #cb4b16;}
+.purple { color: #6c71c4;}
+.orange { color: #cb4b16;}
+.yellow { color: #b58900;}
+.lightgreen { color: 859900#;}
+.cyan { color: #2aa198;}
+.lightcyan { color: #2aa198;}
+.lightblue { color: #268bd2;}
+.pink { color: #6c71c4;}
