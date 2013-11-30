@@ -34,11 +34,20 @@ signals:
 
 protected:
     QSize sizeHint() const;
+    void contextMenuEvent(QContextMenuEvent* event);
 
 private slots:
     void onDoubleClicked(const QModelIndex& index);
 
+    void onWhoisTriggered();
+    void onQueryTriggered();
+    void onModeTriggered();
+    void onKickTriggered();
+    void onBanTriggered();
+
 private:
+    QMenu* createContextMenu(const QModelIndex& index);
+
     struct Private {
         IrcUserModel* model;
     } d;
