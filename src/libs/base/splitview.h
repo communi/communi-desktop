@@ -49,6 +49,7 @@ signals:
     void currentBufferChanged(IrcBuffer* buffer);
 
 protected:
+    void contextMenuEvent(QContextMenuEvent* event);
     BufferView* createBufferView(QSplitter* splitter, int index = -1);
 
 private slots:
@@ -58,11 +59,19 @@ private slots:
     void onViewRemoved(BufferView* view);
     void onFocusChanged(QWidget* old, QWidget* now);
 
+    void updateActions();
+    void splitVertical();
+    void splitHorizontal();
+    void unsplit();
+
 private:
     QVariantMap saveSplittedViews(const QSplitter* splitter) const;
     void restoreSplittedViews(QSplitter* splitter, const QVariantMap& state);
 
     struct Private {
+        QAction* splitVAction;
+        QAction* splitHAction;
+        QAction* unsplitAction;
         QList<BufferView*> views;
         QPointer<BufferView> current;
     } d;

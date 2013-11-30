@@ -80,6 +80,17 @@ void TextBrowser::setBuddy(QWidget* buddy)
     d.bud = buddy;
 }
 
+void TextBrowser::contextMenuEvent(QContextMenuEvent* event)
+{
+    const QString anchor = anchorAt(event->pos());
+    if (anchor.startsWith("nick:")) {
+        QTextCursor cursor = cursorForPosition(event->pos());
+        cursor.select(QTextCursor::WordUnderCursor);
+        setTextCursor(cursor);
+    }
+    event->ignore();
+}
+
 void TextBrowser::keyPressEvent(QKeyEvent* event)
 {
     // for example:

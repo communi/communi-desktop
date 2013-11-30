@@ -10,7 +10,6 @@ SUBDIRS += finder
 SUBDIRS += ignore
 SUBDIRS += importer
 SUBDIRS += lag
-SUBDIRS += menu
 SUBDIRS += monitor
 SUBDIRS += sound
 SUBDIRS += theme

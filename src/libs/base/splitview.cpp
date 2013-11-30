@@ -9,14 +9,28 @@
 
 #include "splitview.h"
 #include "textinput.h"
+#include "titlebar.h"
 #include "bufferview.h"
+#include "textbrowser.h"
+#include <QContextMenuEvent>
 #include <IrcConnection>
 #include <QApplication>
 #include <QShortcut>
 #include <IrcBuffer>
+#include <QAction>
+#include <QMenu>
 
 SplitView::SplitView(QWidget* parent) : QSplitter(parent)
 {
+    d.splitVAction = new QAction(tr("Split"), this);
+    connect(d.splitVAction, SIGNAL(triggered()), this, SLOT(splitVertical()));
+
+    d.splitHAction = new QAction(tr("Split side by side"), this);
+    connect(d.splitHAction, SIGNAL(triggered()), this, SLOT(splitHorizontal()));
+
+    d.unsplitAction = new QAction(tr("Unsplit"), this);
+    connect(d.unsplitAction, SIGNAL(triggered()), this, SLOT(unsplit()));
+
     d.current = createBufferView(this);
     connect(d.current, SIGNAL(bufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
     connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(onFocusChanged(QWidget*,QWidget*)));
@@ -34,6 +48,10 @@ SplitView::SplitView(QWidget* parent) : QSplitter(parent)
 
     shortcut = new QShortcut(QKeySequence(previous), this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(activatePreviousView()));
+
+    connect(this, SIGNAL(viewAdded(BufferView*)), this, SLOT(updateActions()));
+    connect(this, SIGNAL(viewRemoved(BufferView*)), this, SLOT(updateActions()));
+    updateActions();
 }
 
 IrcBuffer* SplitView::currentBuffer() const
@@ -175,10 +193,27 @@ void SplitView::cleanupBuffer(IrcBuffer* buffer)
     }
 }
 
+void SplitView::contextMenuEvent(QContextMenuEvent* event)
+{
+    QWidget* child = childAt(event->pos());
+    TextBrowser* browser = qobject_cast<TextBrowser*>(child ? child->parentWidget() : 0);
+    if (browser) {
+        QMenu* menu = browser->createStandardContextMenu(browser->mapFromGlobal(event->globalPos()));
+        menu->addSeparator();
+        menu->addAction(d.splitVAction);
+        menu->addAction(d.splitHAction);
+        menu->addAction(d.unsplitAction);
+        menu->exec(event->globalPos());
+    }
+}
+
 BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
 {
     BufferView* view = new BufferView(splitter);
     connect(view, SIGNAL(destroyed(BufferView*)), this, SLOT(onViewRemoved(BufferView*)));
+    view->titleBar()->addAction(d.splitVAction);
+    view->titleBar()->addAction(d.splitHAction);
+    view->titleBar()->addAction(d.unsplitAction);
     d.views += view;
     splitter->insertWidget(index, view);
     splitter->setCollapsible(splitter->indexOf(view), false);
@@ -310,4 +345,25 @@ void SplitView::restoreSplittedViews(QSplitter* splitter, const QVariantMap& sta
         splitter->restoreGeometry(state.value("geometry").toByteArray());
     if (state.contains("state"))
         splitter->restoreState(state.value("state").toByteArray());
+}
+
+void SplitView::updateActions()
+{
+    d.unsplitAction->setEnabled(d.views.count() > 1);
+}
+
+void SplitView::splitVertical()
+{
+    split(Qt::Vertical);
+}
+
+void SplitView::splitHorizontal()
+{
+    split(Qt::Horizontal);
+}
+
+void SplitView::unsplit()
+{
+    if (d.current)
+        d.current->deleteLater();
 }
