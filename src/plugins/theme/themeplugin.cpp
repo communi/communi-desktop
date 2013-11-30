@@ -34,9 +34,6 @@ ThemePlugin::ThemePlugin(QObject* parent) : QObject(parent)
 
 void ThemePlugin::initWindow(MainWindow* window)
 {
-    QMap<QString, QPalette> palettes = d.theme.palettes();
-    foreach (const QString& name, palettes.keys())
-        QApplication::setPalette(palettes.value(name), name.toUtf8());
     window->setStyleSheet(d.theme.appStyleSheet());
 }
 

@@ -31,16 +31,11 @@ public:
     QString docStyleSheet() const;
     QString appStyleSheet() const;
 
-    QMap<int, QString> colors() const;
-    QMap<QString, QPalette> palettes() const;
-
 private:
     struct Private {
         QString prefix;
         QString css;
         QString qss;
-        QMap<int, QString> colors;
-        QMap<QString, QPalette> palettes;
         QMap<QString, QString> attributes;
     } d;
 };
