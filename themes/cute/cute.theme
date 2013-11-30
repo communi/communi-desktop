@@ -10,6 +10,3 @@ prefix=:/themes/cute
 [StyleSheets]
 document=:/themes/cute/cute.css
 application=:/themes/cute/cute.qss
-
-[QPalette]
-TextDocument/highlight=rgba(255,64,64,64)

@@ -18,6 +18,7 @@
 #include <QTextDocument>
 #include <QStringList>
 #include <QMetaType>
+#include <QPalette>
 #include <QMap>
 
 class IrcBuffer;
@@ -31,6 +32,9 @@ class TextDocument : public QTextDocument
 
 public:
     explicit TextDocument(IrcBuffer* buffer);
+
+    QString styleSheet() const;
+    void setStyleSheet(const QString& css);
 
     TextDocument* clone();
     bool isClone() const;
@@ -75,8 +79,10 @@ private:
         int dirty;
         bool clone;
         bool drawUb;
+        QString css;
         int lowlight;
         bool visible;
+        QPalette palette;
         IrcBuffer* buffer;
         QStringList lines;
         QList<int> highlights;

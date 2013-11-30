@@ -39,7 +39,7 @@ void ThemePlugin::initWindow(MainWindow* window)
 
 void ThemePlugin::initDocument(TextDocument* doc)
 {
-    doc->setDefaultStyleSheet(d.theme.docStyleSheet());
+    doc->setStyleSheet(d.theme.docStyleSheet());
 }
 
 void ThemePlugin::initView(BufferView* view)
