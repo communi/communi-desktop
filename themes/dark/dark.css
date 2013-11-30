@@ -5,6 +5,9 @@ a { color: #5078ff; }
 .action { color: #8b388b; }
 .event { color: #808080; }
 
+.lowlight { color: #222222; border: #444444; }
+.highlight { color: rgba(64,64,255,64); border: #444444; }
+
 .gray { color: #606060; }
 .lightgray { color: #808080; }
 

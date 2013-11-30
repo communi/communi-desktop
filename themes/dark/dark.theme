@@ -9,7 +9,4 @@ document=:/themes/dark/dark.css
 [QPalette]
 Finder/base=#222222
 Finder/highlight=#283ecc
-TextDocument/highlight=rgba(64,64,255,64)
-TextDocument/midlight=#222222
-TextDocument/mid=#444444
 TextBrowser/shadow=#000000
