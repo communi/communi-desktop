@@ -38,8 +38,7 @@ void VerifierPlugin::initDocument(TextDocument* document)
 
 void VerifierPlugin::onCommandVerified(int id)
 {
-    TextDocument* doc = d.documents.take(id);
-    if (doc) {
+    foreach (QTextDocument* doc, d.documents.values(id)) {
         SyntaxHighlighter* highlighter = doc->findChild<SyntaxHighlighter*>();
         if (highlighter) {
             QTextBlock block = doc->lastBlock();
@@ -53,6 +52,7 @@ void VerifierPlugin::onCommandVerified(int id)
             }
         }
     }
+    d.documents.remove(id);
 }
 
 void VerifierPlugin::onMessageReceived(IrcMessage* message)
@@ -67,7 +67,7 @@ void VerifierPlugin::onMessageReceived(IrcMessage* message)
                 if (highlighter) {
                     QTextBlock block = doc->lastBlock();
                     block.setUserState(id);
-                    d.documents.insert(id, doc);
+                    d.documents.insertMulti(id, doc);
                     highlighter->rehighlightBlock(block);
                 }
             }

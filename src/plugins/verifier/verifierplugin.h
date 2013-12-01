@@ -17,6 +17,7 @@
 
 #include <QHash>
 #include <QtPlugin>
+#include <QMultiHash>
 #include "connectionplugin.h"
 #include "textdocumentplugin.h"
 
@@ -45,7 +46,7 @@ private slots:
 
 private:
     struct Private {
-        QHash<int, TextDocument*> documents;
+        QMultiHash<int, TextDocument*> documents;
         QHash<IrcConnection*, CommandVerifier*> verifiers;
     } d;
 };
