@@ -32,6 +32,7 @@ void VerifierPlugin::initConnection(IrcConnection* connection)
 
 void VerifierPlugin::initDocument(TextDocument* document)
 {
+    new SyntaxHighlighter(document);
     connect(document, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
 }
 
@@ -39,14 +40,17 @@ void VerifierPlugin::onCommandVerified(int id)
 {
     TextDocument* doc = d.documents.take(id);
     if (doc) {
-        QTextBlock block = doc->lastBlock();
-        while (block.isValid()) {
-            if (block.userState() == id) {
-                block.setUserState(-1);
-                doc->highlighter()->rehighlightBlock(block);
-                break;
+        SyntaxHighlighter* highlighter = doc->findChild<SyntaxHighlighter*>();
+        if (highlighter) {
+            QTextBlock block = doc->lastBlock();
+            while (block.isValid()) {
+                if (block.userState() == id) {
+                    block.setUserState(-1);
+                    highlighter->rehighlightBlock(block);
+                    break;
+                }
+                block = block.previous();
             }
-            block = block.previous();
         }
     }
 }
@@ -59,10 +63,13 @@ void VerifierPlugin::onMessageReceived(IrcMessage* message)
         if (doc && verifier) {
             int id = verifier->currentId();
             if (id > 1) {
-                QTextBlock block = doc->lastBlock();
-                block.setUserState(id);
-                d.documents.insert(id, doc);
-                doc->highlighter()->rehighlightBlock(block);
+                SyntaxHighlighter* highlighter = doc->findChild<SyntaxHighlighter*>();
+                if (highlighter) {
+                    QTextBlock block = doc->lastBlock();
+                    block.setUserState(id);
+                    d.documents.insert(id, doc);
+                    highlighter->rehighlightBlock(block);
+                }
             }
         }
     }

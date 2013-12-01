@@ -23,7 +23,6 @@
 class IrcBuffer;
 class IrcMessage;
 class MessageFormatter;
-class SyntaxHighlighter;
 
 class TextDocument : public QTextDocument
 {
@@ -39,7 +38,6 @@ public:
     bool isClone() const;
 
     IrcBuffer* buffer() const;
-    SyntaxHighlighter* highlighter() const;
 
     int totalCount() const;
 
@@ -86,7 +84,6 @@ private:
         QList<int> highlights;
         QMap<int, int> lowlights;
         MessageFormatter* formatter;
-        SyntaxHighlighter* highlighter;
     } d;
 };
 

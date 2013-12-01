@@ -14,7 +14,6 @@
 
 #include "textdocument.h"
 #include "messageformatter.h"
-#include "syntaxhighlighter.h"
 #include <QAbstractTextDocumentLayout>
 #include <QTextDocumentFragment>
 #include <IrcConnection>
@@ -57,8 +56,6 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
     d.drawUb = false;
     d.buffer = buffer;
     d.visible = false;
-
-    d.highlighter = new SyntaxHighlighter(this);
 
     d.formatter = new MessageFormatter(this);
     d.formatter->setBuffer(buffer);
@@ -113,11 +110,6 @@ bool TextDocument::isClone() const
 IrcBuffer* TextDocument::buffer() const
 {
     return d.buffer;
-}
-
-SyntaxHighlighter* TextDocument::highlighter() const
-{
-    return d.highlighter;
 }
 
 int TextDocument::totalCount() const
