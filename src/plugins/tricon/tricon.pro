@@ -2,9 +2,9 @@
 # Communi
 ######################################################################
 
-HEADERS += $$PWD/ajaxplugin.h
-SOURCES += $$PWD/ajaxplugin.cpp
+HEADERS += $$PWD/triconplugin.h
+SOURCES += $$PWD/triconplugin.cpp
 
-RESOURCES += ajax.qrc
+RESOURCES += tricon.qrc
 
 include(../plugin.pri)

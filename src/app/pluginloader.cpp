@@ -19,17 +19,16 @@
 #include "treewidgetplugin.h"
 #include "mainwindowplugin.h"
 
-Q_IMPORT_PLUGIN(AjaxPlugin)
 Q_IMPORT_PLUGIN(CommanderPlugin)
 Q_IMPORT_PLUGIN(DockPlugin)
 Q_IMPORT_PLUGIN(FinderPlugin)
 Q_IMPORT_PLUGIN(IgnorePlugin)
 Q_IMPORT_PLUGIN(ImporterPlugin)
-Q_IMPORT_PLUGIN(LagPlugin)
 Q_IMPORT_PLUGIN(MonitorPlugin)
 Q_IMPORT_PLUGIN(SoundPlugin)
 Q_IMPORT_PLUGIN(TitlePlugin)
 Q_IMPORT_PLUGIN(TrayPlugin)
+Q_IMPORT_PLUGIN(TriconPlugin)
 Q_IMPORT_PLUGIN(VerifierPlugin)
 Q_IMPORT_PLUGIN(ZncPlugin)
 

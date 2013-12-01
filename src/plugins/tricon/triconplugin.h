@@ -12,16 +12,19 @@
 * GNU General Public License for more details.
 */
 
-#ifndef LAGPLUGIN_H
-#define LAGPLUGIN_H
+#ifndef TRICONPLUGIN_H
+#define TRICONPLUGIN_H
 
+#include <QSet>
+#include <QMovie>
 #include <QtPlugin>
 #include "connectionplugin.h"
 #include "treewidgetplugin.h"
 
 class TreeItem;
+class IrcConnection;
 
-class LagPlugin : public QObject, public ConnectionPlugin, public TreeWidgetPlugin
+class TriconPlugin : public QObject, public ConnectionPlugin, public TreeWidgetPlugin
 {
     Q_OBJECT
     Q_INTERFACES(ConnectionPlugin TreeWidgetPlugin)
@@ -31,19 +34,24 @@ class LagPlugin : public QObject, public ConnectionPlugin, public TreeWidgetPlug
 #endif
 
 public:
-    LagPlugin(QObject* parent = 0);
+    TriconPlugin(QObject* parent = 0);
 
-    void initConnection(IrcConnection* connection);
     void initTree(TreeWidget* tree);
 
+    void initConnection(IrcConnection* connection);
+    void cleanupConnection(IrcConnection* connection);
+
 private slots:
+    void updateLoader();
     void updateLag(qint64 lag);
     void updateConnection(IrcConnection* connection = 0, qint64 lag = -1);
 
 private:
     struct Private {
+        QMovie movie;
         TreeWidget* tree;
+        QSet<TreeItem*> items;
     } d;
 };
 
-#endif // LAGPLUGIN_H
+#endif // TRICONPLUGIN_H

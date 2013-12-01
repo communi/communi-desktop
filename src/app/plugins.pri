@@ -2,17 +2,16 @@
 # Communi
 ######################################################################
 
-STATIC_PLUGINS += ajax
 STATIC_PLUGINS += commander
 STATIC_PLUGINS += dock
 STATIC_PLUGINS += finder
 STATIC_PLUGINS += ignore
 STATIC_PLUGINS += importer
-STATIC_PLUGINS += lag
 STATIC_PLUGINS += monitor
 STATIC_PLUGINS += sound
 STATIC_PLUGINS += title
 STATIC_PLUGINS += tray
+STATIC_PLUGINS += tricon
 STATIC_PLUGINS += verifier
 STATIC_PLUGINS += znc
 
