@@ -366,12 +366,6 @@ void SplitView::showContextMenu(const QPoint& pos)
 {
     TextBrowser* browser = qobject_cast<TextBrowser*>(sender());
     if (browser) {
-        // QTextEdit::createStandardContextMenu() expects document coordinates
-        QPoint pt = pos;
-        QScrollBar* hbar = browser->horizontalScrollBar();
-        pt.rx() += browser->isRightToLeft() ? hbar->maximum() - hbar->value() : hbar->value();
-        pt.ry() += browser->verticalScrollBar()->value();
-
         // select nick under to enable "Copy"
         const QString anchor = browser->anchorAt(pos);
         if (anchor.startsWith("nick:")) {
@@ -380,20 +374,46 @@ void SplitView::showContextMenu(const QPoint& pos)
             browser->setTextCursor(cursor);
         }
 
-        QMenu* menu = browser->createStandardContextMenu(pt);
+        QMenu* menu = browser->createContextMenu(pos);
 
-        // disable "Copy Link Location" for nicks
-        if (anchor.startsWith("nick:")) {
-            QAction* action = menu->actions().value(1);
-            if (action)
-                action->setDisabled(true);
+        QAction* restoreUsers = 0;
+        QAction* restoreViews = 0;
+
+        if (!anchor.startsWith("nick:")) {
+            menu->addSeparator();
+            menu->addAction(d.splitVAction);
+            menu->addAction(d.splitHAction);
+            menu->addAction(d.unsplitAction);
+
+            QAction* separator = 0;
+
+            IrcBuffer* buffer = browser->buffer();
+            if (buffer && buffer->isChannel()) {
+                QSplitter* splitter = qobject_cast<QSplitter*>(browser->parentWidget());
+                if (splitter && splitter->sizes().value(1) == 0) {
+                    separator = menu->addSeparator();
+                    restoreUsers = menu->addAction(tr("Restore users"));
+                }
+            }
+
+            QSplitter* splitter = window()->findChild<QSplitter*>();
+            if (splitter && splitter->sizes().value(0) == 0) {
+                if (!separator)
+                    menu->addSeparator();
+                restoreViews = menu->addAction(tr("Restore views"));
+            }
         }
 
-        menu->addSeparator();
-        menu->addAction(d.splitVAction);
-        menu->addAction(d.splitHAction);
-        menu->addAction(d.unsplitAction);
-        menu->exec(browser->viewport()->mapToGlobal(pos));
+        QAction* action = menu->exec(browser->viewport()->mapToGlobal(pos));
+
+        QSplitter* restoreSplitter = 0;
+        if (action == restoreUsers)
+            restoreSplitter = qobject_cast<QSplitter*>(browser->parentWidget());
+        else if (action == restoreViews)
+            restoreSplitter = window()->findChild<QSplitter*>();
+        if (restoreSplitter)
+            restoreSplitter->setSizes(QList<int>() << restoreSplitter->widget(0)->sizeHint().width() << restoreSplitter->widget(1)->sizeHint().width());
+
         menu->deleteLater();
 
         // clear automatically done nick selection
