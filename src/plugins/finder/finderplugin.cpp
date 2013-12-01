@@ -120,6 +120,7 @@ void FinderPlugin::cancelListSearch()
         Finder* finder = view->listView()->findChild<ListFinder*>();
         if (finder)
             finder->animateHide();
+        view->textInput()->setFocus();
     }
 }
 
@@ -130,6 +131,7 @@ void FinderPlugin::cancelBrowserSearch()
         Finder* finder = view->textBrowser()->findChild<BrowserFinder*>();
         if (finder)
             finder->animateHide();
+        view->textInput()->setFocus();
     }
 }
 

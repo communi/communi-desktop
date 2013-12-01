@@ -37,7 +37,6 @@ void BrowserFinder::setVisible(bool visible)
             d.textBrowser->setTextCursor(cursor);
         }
         d.textBrowser->setExtraSelections(QList<QTextEdit::ExtraSelection>());
-        d.textBrowser->buddy()->setFocus();
     }
 }
 
