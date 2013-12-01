@@ -27,7 +27,6 @@
 #include <IrcChannel>
 #include <IrcBuffer>
 #include <QShortcut>
-#include <QSettings>
 #include <QBitArray>
 #include <QAction>
 #include <QTimer>
@@ -103,8 +102,6 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     shortcut = new QShortcut(this);
     shortcut->setKey(QKeySequence(tr("Ctrl+R")));
     connect(shortcut, SIGNAL(activated()), this, SLOT(resetItems()));
-
-    restoreSortOrder();
 }
 
 IrcBuffer* TreeWidget::currentBuffer() const
@@ -159,6 +156,7 @@ QByteArray TreeWidget::saveState() const
     for (int i = 0; i < topLevelItemCount(); ++i)
         expanded.setBit(i, topLevelItem(i)->isExpanded());
     state.insert("expanded", expanded);
+    state.insert("sorting", d.sorting);
 
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -178,6 +176,10 @@ void TreeWidget::restoreState(const QByteArray& data)
             for (int i = 0; i < expanded.count(); ++i)
                 topLevelItem(i)->setExpanded(expanded.testBit(i));
         }
+    }
+    if (state.contains("sorting")) {
+        d.sorting = state.value("sorting").toMap();
+        restoreSortOrder();
     }
 }
 
@@ -645,24 +647,19 @@ void TreeWidget::saveSortOrder()
         it.next();
         variants.insert(it.key(), it.value());
     }
-    QVariantMap sorting;
-    sorting.insert("children", variants);
-    sorting.insert("parents", d.parentOrder);
-    QSettings settings;
-    settings.setValue("sorting", sorting);
+    d.sorting.insert("children", variants);
+    d.sorting.insert("parents", d.parentOrder);
 }
 
 void TreeWidget::restoreSortOrder()
 {
-    QSettings settings;
-    QVariantMap sorting = settings.value("sorting").toMap();
     d.childrenOrders.clear();
-    QHashIterator<QString, QVariant> it(sorting.value("children").toHash());
+    QHashIterator<QString, QVariant> it(d.sorting.value("children").toHash());
     while (it.hasNext()) {
         it.next();
         d.childrenOrders.insert(it.key(), it.value().toStringList());
     }
-    d.parentOrder = sorting.value("parents").toStringList();
+    d.parentOrder = d.sorting.value("parents").toStringList();
 }
 
 QMenu* TreeWidget::createContextMenu(TreeItem* item)

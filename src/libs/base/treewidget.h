@@ -120,6 +120,7 @@ private:
     struct Private {
         bool block;
         bool blink;
+        QVariantMap sorting;
         bool sortingBlocked;
         QTreeWidgetItem* source;
         QStringList parentOrder;
