@@ -3,12 +3,5 @@
   <file>cute.css</file>
   <file>cute.qss</file>
   <file>cute.theme</file>
-  <file>images/close.png</file>
-  <file>images/down.png</file>
-  <file>images/down-gray.png</file>
-  <file>images/left.png</file>
-  <file>images/right.png</file>
-  <file>images/up.png</file>
-  <file>images/up-gray.png</file>
 </qresource>
 </RCC>
