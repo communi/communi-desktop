@@ -45,6 +45,7 @@ signals:
     void parserChanged(IrcCommandParser* parser);
 
 protected:
+    bool event(QEvent* event);
     void paintEvent(QPaintEvent* event);
 
 private slots:

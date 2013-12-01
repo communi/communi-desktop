@@ -19,7 +19,7 @@
 #include <IrcConnection>
 #include <IrcCompleter>
 #include <IrcBuffer>
-#include <QShortcut>
+#include <QKeyEvent>
 #include <QPainter>
 
 TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
@@ -35,15 +35,6 @@ TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
     connect(this, SIGNAL(bufferChanged(IrcBuffer*)), d.completer, SLOT(setBuffer(IrcBuffer*)));
     connect(this, SIGNAL(parserChanged(IrcCommandParser*)), d.completer, SLOT(setParser(IrcCommandParser*)));
     connect(d.completer, SIGNAL(completed(QString,int)), this, SLOT(doComplete(QString,int)));
-
-    QShortcut* shortcut = new QShortcut(Qt::Key_Tab, this);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(tryComplete()));
-
-    shortcut = new QShortcut(Qt::Key_Up, this);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(goBackward()));
-
-    shortcut = new QShortcut(Qt::Key_Down, this);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(goForward()));
 
     connect(this, SIGNAL(returnPressed()), this, SLOT(sendInput()));
     connect(this, SIGNAL(textChanged(QString)), this, SLOT(updateHint(QString)));
@@ -103,6 +94,26 @@ void TextInput::setParser(IrcCommandParser* parser)
         d.parser = parser;
         emit parserChanged(parser);
     }
+}
+
+bool TextInput::event(QEvent* event)
+{
+    if (event->type() == QEvent::KeyPress) {
+        switch (static_cast<QKeyEvent*>(event)->key()) {
+        case Qt::Key_Tab:
+            tryComplete();
+            return true;
+        case Qt::Key_Up:
+            goBackward();
+            return true;
+        case Qt::Key_Down:
+            goForward();
+            return true;
+        default:
+            break;
+        }
+    }
+    return QLineEdit::event(event);
 }
 
 // copied from qlineedit.cpp:
