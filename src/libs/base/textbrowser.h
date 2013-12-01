@@ -17,6 +17,7 @@
 
 #include <QTextBrowser>
 
+class IrcBuffer;
 class TextShadow;
 class TextDocument;
 
@@ -28,6 +29,8 @@ public:
     explicit TextBrowser(QWidget* parent = 0);
     ~TextBrowser();
 
+    IrcBuffer* buffer() const;
+
     TextDocument* document() const;
     void setDocument(TextDocument* document);
 
@@ -36,6 +39,8 @@ public:
 
     bool isAtTop() const;
     bool isAtBottom() const;
+
+    QMenu* createContextMenu(const QPoint& pos);
 
 public slots:
     void clear();
@@ -58,6 +63,9 @@ protected:
 private slots:
     void keepAtBottom();
     void onAnchorClicked(const QUrl& url);
+
+    void onWhoisTriggered();
+    void onQueryTriggered();
 
 private:
     struct Private {

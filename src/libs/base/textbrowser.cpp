@@ -19,9 +19,13 @@
 #include <QStylePainter>
 #include <QStyleOption>
 #include <QApplication>
+#include <IrcCommand>
 #include <QScrollBar>
+#include <IrcBuffer>
 #include <QKeyEvent>
 #include <QPainter>
+#include <QAction>
+#include <QMenu>
 
 class TextShadow : public QFrame { Q_OBJECT };
 
@@ -48,6 +52,14 @@ TextBrowser::~TextBrowser()
         else
             doc->setVisible(false);
     }
+}
+
+IrcBuffer* TextBrowser::buffer() const
+{
+    TextDocument* doc = document();
+    if (doc)
+        return doc->buffer();
+    return 0;
 }
 
 TextDocument* TextBrowser::document() const
@@ -144,6 +156,41 @@ bool TextBrowser::isAtBottom() const
     return verticalScrollBar()->value() >= verticalScrollBar()->maximum();
 }
 
+QMenu* TextBrowser::createContextMenu(const QPoint& pos)
+{
+    // QTextEdit::createStandardContextMenu() expects document coordinates
+    QPoint docPos = pos;
+    QScrollBar* hbar = horizontalScrollBar();
+    docPos.rx() += isRightToLeft() ? hbar->maximum() - hbar->value() : hbar->value();
+    docPos.ry() += verticalScrollBar()->value();
+
+    QMenu* menu = createStandardContextMenu(docPos);
+
+    const QString anchor = anchorAt(pos);
+    if (anchor.startsWith("nick:")) {
+        // disable "Copy Link Location" for nicks
+        QAction* action = menu->actions().value(1);
+        if (action)
+            action->setDisabled(true);
+
+        // inject query & whois
+        QAction* separator = menu->insertSeparator(menu->actions().value(0));
+
+        QAction* queryAction = new QAction(tr("Query"), menu);
+        menu->insertAction(separator, queryAction);
+        connect(queryAction, SIGNAL(triggered()), this, SLOT(onQueryTriggered()));
+
+        QAction* whoisAction = new QAction(tr("Whois"), menu);
+        menu->insertAction(queryAction, whoisAction);
+        connect(whoisAction, SIGNAL(triggered()), this, SLOT(onWhoisTriggered()));
+
+        QString nick = QUrl(anchor).toString(QUrl::RemoveScheme);
+        queryAction->setData(nick);
+        whoisAction->setData(nick);
+    }
+    return menu;
+}
+
 void TextBrowser::clear()
 {
     QTextBrowser::clear();
@@ -217,6 +264,22 @@ void TextBrowser::onAnchorClicked(const QUrl& url)
     else
         QDesktopServices::openUrl(url);
     clearFocus();
+}
+
+void TextBrowser::onWhoisTriggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action) {
+        IrcCommand* command = IrcCommand::createWhois(action->data().toString());
+        buffer()->sendCommand(command);
+    }
+}
+
+void TextBrowser::onQueryTriggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action)
+        emit queried(action->data().toString());
 }
 
 #include "textbrowser.moc"
