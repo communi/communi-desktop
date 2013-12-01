@@ -15,8 +15,9 @@
 #ifndef TRICONPLUGIN_H
 #define TRICONPLUGIN_H
 
-#include <QSet>
+#include <QList>
 #include <QMovie>
+#include <QPointer>
 #include <QtPlugin>
 #include "connectionplugin.h"
 #include "treewidgetplugin.h"
@@ -50,7 +51,7 @@ private:
     struct Private {
         QMovie movie;
         TreeWidget* tree;
-        QSet<TreeItem*> items;
+        QList<QPointer<TreeItem> > items;
     } d;
 };
 

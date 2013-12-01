@@ -56,16 +56,18 @@ void TriconPlugin::cleanupConnection(IrcConnection* connection)
 {
     disconnect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateConnection()));
     foreach (TreeItem* item, d.items) {
-        if (item->connection() == connection)
-            d.items.remove(item);
+        if (!item || item->connection() == connection)
+            d.items.removeOne(item);
     }
 }
 
 void TriconPlugin::updateLoader()
 {
     QPixmap pixmap = d.movie.currentPixmap();
-    foreach (TreeItem* item, d.items)
-        item->setIcon(0, pixmap);
+    foreach (TreeItem* item, d.items) {
+        if (item)
+            item->setIcon(0, pixmap);
+    }
 }
 
 void TriconPlugin::updateLag(qint64 lag)
@@ -84,7 +86,8 @@ void TriconPlugin::updateConnection(IrcConnection* connection, qint64 lag)
         item->setToolTip(0, lag > 0 ? tr("%1ms").arg(lag) : QString());
         if (connection->isActive() && !connection->isConnected()) {
             item->setIcon(0, d.movie.currentPixmap());
-            d.items.insert(item);
+            if (!d.items.contains(item))
+                d.items.append(item);
         } else {
             QPixmap pixmap(16, 16);
             pixmap.fill(Qt::transparent);
@@ -99,7 +102,7 @@ void TriconPlugin::updateConnection(IrcConnection* connection, qint64 lag)
             painter.setRenderHint(QPainter::Antialiasing);
             painter.drawEllipse(4, 4, 8, 8);
             item->setIcon(0, pixmap);
-            d.items.remove(item);
+            d.items.removeOne(item);
         }
     }
 
