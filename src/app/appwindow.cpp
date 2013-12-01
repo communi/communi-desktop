@@ -22,10 +22,16 @@
 #include <QShortcut>
 #include <QSettings>
 #include <QTimer>
+#include <QDir>
 
 AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
 {
     d.editedConnection = 0;
+
+    // TODO
+    QDir::addSearchPath("black", ":/images/black");
+    QDir::addSearchPath("gray", ":/images/gray");
+    QDir::addSearchPath("white", ":/images/white");
 
     d.normalIcon.addFile(":/icons/16x16/communi.png");
     d.normalIcon.addFile(":/icons/24x24/communi.png");
