@@ -55,14 +55,12 @@ void ChatPage::init()
     window()->setStyleSheet(d.theme.attribute("application"));
 
     PluginLoader::instance()->initTree(d.treeWidget);
-    PluginLoader::instance()->initView(d.splitView);
     initView(d.splitView->currentView());
 }
 
 void ChatPage::cleanup()
 {
     PluginLoader::instance()->cleanupTree(d.treeWidget);
-    PluginLoader::instance()->cleanupView(d.splitView);
 }
 
 IrcBuffer* ChatPage::currentBuffer() const

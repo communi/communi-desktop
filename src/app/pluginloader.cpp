@@ -14,7 +14,6 @@
 #include "bufferplugin.h"
 #include "bufferviewplugin.h"
 #include "connectionplugin.h"
-#include "splitviewplugin.h"
 #include "textdocumentplugin.h"
 #include "treewidgetplugin.h"
 #include "mainwindowplugin.h"
@@ -115,24 +114,6 @@ void PluginLoader::cleanupView(BufferView* view)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         BufferViewPlugin* plugin = qobject_cast<BufferViewPlugin*>(instance);
-        if (plugin)
-            plugin->cleanupView(view);
-    }
-}
-
-void PluginLoader::initView(SplitView* view)
-{
-    foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        SplitViewPlugin* plugin = qobject_cast<SplitViewPlugin*>(instance);
-        if (plugin)
-            plugin->initView(view);
-    }
-}
-
-void PluginLoader::cleanupView(SplitView* view)
-{
-    foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        SplitViewPlugin* plugin = qobject_cast<SplitViewPlugin*>(instance);
         if (plugin)
             plugin->cleanupView(view);
     }

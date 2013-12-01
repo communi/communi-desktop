@@ -13,7 +13,6 @@
 #include <QObject>
 
 class IrcBuffer;
-class SplitView;
 class MainWindow;
 class TreeWidget;
 class BufferView;
@@ -39,9 +38,6 @@ public slots:
 
     void initView(BufferView* view);
     void cleanupView(BufferView* view);
-
-    void initView(SplitView* view);
-    void cleanupView(SplitView* view);
 
     void initDocument(TextDocument* doc);
     void cleanupDocument(TextDocument* doc);
