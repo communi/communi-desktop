@@ -202,6 +202,7 @@ IrcCommandParser* ChatPage::createParser(QObject *parent)
     parser->setTriggers(QStringList("/"));
     parser->setTolerant(true);
 
+    // TODO: IrcCommandParser: static default commands?
     parser->addCommand(IrcCommand::CtcpAction, "ACTION <target> <message...>");
     parser->addCommand(IrcCommand::Admin, "ADMIN (<server>)");
     parser->addCommand(IrcCommand::Away, "AWAY (<reason...>)");
