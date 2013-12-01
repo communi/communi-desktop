@@ -20,44 +20,37 @@
 #include "listfinder.h"
 #include "bufferview.h"
 #include "textinput.h"
-#include "splitview.h"
 #include "listview.h"
 #include <QApplication>
 #include <QTimer>
 
 FinderPlugin::FinderPlugin(QObject* parent) : QObject(parent)
 {
-    d.view = 0;
     d.nextShortcut = 0;
     d.prevShortcut = 0;
-}
-
-void FinderPlugin::initView(SplitView* view)
-{
-    d.view = view;
-
-    QShortcut* shortcut = new QShortcut(QKeySequence::Find, view);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(searchBrowser()));
-
-    shortcut = new QShortcut(QKeySequence("Ctrl+S"), view);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(searchTree()));
-
-    shortcut = new QShortcut(QKeySequence("Ctrl+U"), view);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(searchList()));
-
-    d.cancelShortcut = new QShortcut(QKeySequence("Esc"), view);
-    d.cancelShortcut->setEnabled(false);
-    connect(d.cancelShortcut, SIGNAL(activated()), this, SLOT(cancelTreeSearch()));
-    connect(d.cancelShortcut, SIGNAL(activated()), this, SLOT(cancelListSearch()));
-    connect(d.cancelShortcut, SIGNAL(activated()), this, SLOT(cancelBrowserSearch()));
-
-    d.nextShortcut = new QShortcut(QKeySequence::FindNext, view);
-    d.prevShortcut = new QShortcut(QKeySequence::FindPrevious, view);
 }
 
 void FinderPlugin::initTree(TreeWidget* tree)
 {
     d.tree = tree;
+
+    QShortcut* shortcut = new QShortcut(QKeySequence::Find, d.tree);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(searchBrowser()));
+
+    shortcut = new QShortcut(QKeySequence("Ctrl+S"), d.tree);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(searchTree()));
+
+    shortcut = new QShortcut(QKeySequence("Ctrl+U"), d.tree);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(searchList()));
+
+    d.cancelShortcut = new QShortcut(QKeySequence("Esc"), d.tree);
+    d.cancelShortcut->setEnabled(false);
+    connect(d.cancelShortcut, SIGNAL(activated()), this, SLOT(cancelTreeSearch()));
+    connect(d.cancelShortcut, SIGNAL(activated()), this, SLOT(cancelListSearch()));
+    connect(d.cancelShortcut, SIGNAL(activated()), this, SLOT(cancelBrowserSearch()));
+
+    d.nextShortcut = new QShortcut(QKeySequence::FindNext, d.tree);
+    d.prevShortcut = new QShortcut(QKeySequence::FindPrevious, d.tree);
 }
 
 void FinderPlugin::searchTree()
@@ -73,7 +66,7 @@ void FinderPlugin::searchTree()
 
 void FinderPlugin::searchList()
 {
-    BufferView* view = d.view->currentView();
+    BufferView* view = BufferView::current();
     if (view && view->listView()->isVisible()) {
         cancelTreeSearch();
         cancelBrowserSearch();
@@ -87,7 +80,7 @@ void FinderPlugin::searchList()
 
 void FinderPlugin::searchBrowser()
 {
-    BufferView* view = d.view->currentView();
+    BufferView* view = BufferView::current();
     if (view && view->isVisible()) {
         cancelListSearch();
         cancelTreeSearch();
@@ -115,14 +108,14 @@ void FinderPlugin::cancelTreeSearch()
     Finder* finder = d.tree->findChild<TreeFinder*>();
     if (finder)
         finder->animateHide();
-    BufferView* view = d.view->currentView();
+    BufferView* view = BufferView::current();
     if (view)
         view->textInput()->setFocus();
 }
 
 void FinderPlugin::cancelListSearch()
 {
-    BufferView* view = d.view->currentView();
+    BufferView* view = BufferView::current();
     if (view) {
         Finder* finder = view->listView()->findChild<ListFinder*>();
         if (finder)
@@ -132,7 +125,7 @@ void FinderPlugin::cancelListSearch()
 
 void FinderPlugin::cancelBrowserSearch()
 {
-    BufferView* view = d.view->currentView();
+    BufferView* view = BufferView::current();
     if (view) {
         Finder* finder = view->textBrowser()->findChild<BrowserFinder*>();
         if (finder)

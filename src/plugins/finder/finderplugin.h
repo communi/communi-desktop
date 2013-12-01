@@ -19,24 +19,21 @@
 #include <QObject>
 #include <QtPlugin>
 #include <QShortcut>
-#include "splitviewplugin.h"
 #include "treewidgetplugin.h"
 
 class Finder;
 
-class FinderPlugin : public QObject, public SplitViewPlugin, public TreeWidgetPlugin
+class FinderPlugin : public QObject, public TreeWidgetPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(SplitViewPlugin TreeWidgetPlugin)
+    Q_INTERFACES(TreeWidgetPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "Communi.SplitViewPlugin")
     Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
 #endif
 
 public:
     explicit FinderPlugin(QObject* parent = 0);
 
-    void initView(SplitView* view);
     void initTree(TreeWidget* tree);
 
 private slots:
@@ -51,7 +48,6 @@ private slots:
 
 private:
     struct Private {
-        SplitView* view;
         TreeWidget* tree;
         QSet<Finder*> finders;
         QShortcut* nextShortcut;
