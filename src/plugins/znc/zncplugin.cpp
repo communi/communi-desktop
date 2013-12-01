@@ -14,8 +14,10 @@
 
 #include "zncplugin.h"
 #include "zncmanager.h"
+#include "textdocument.h"
 #include <IrcConnection>
 #include <IrcBufferModel>
+#include <IrcBuffer>
 
 ZncPlugin::ZncPlugin(QObject* parent) : QObject(parent)
 {
@@ -23,7 +25,23 @@ ZncPlugin::ZncPlugin(QObject* parent) : QObject(parent)
 
 void ZncPlugin::initConnection(IrcConnection* connection)
 {
-    new ZncManager(connection->findChild<IrcBufferModel*>()); // TODO
+    ZncManager* manager = new ZncManager(connection->findChild<IrcBufferModel*>()); // TODO
+    connect(manager, SIGNAL(playbackBegin(IrcBuffer*)), this, SLOT(onPlaybackBegin(IrcBuffer*)));
+    connect(manager, SIGNAL(playbackEnd(IrcBuffer*)), this, SLOT(onPlaybackEnd(IrcBuffer*)));
+}
+
+void ZncPlugin::onPlaybackBegin(IrcBuffer* buffer)
+{
+    QList<TextDocument*> documents = buffer->findChildren<TextDocument*>();
+    foreach (TextDocument* doc, documents)
+        doc->beginLowlight();
+}
+
+void ZncPlugin::onPlaybackEnd(IrcBuffer* buffer)
+{
+    QList<TextDocument*> documents = buffer->findChildren<TextDocument*>();
+    foreach (TextDocument* doc, documents)
+        doc->endLowlight();
 }
 
 #if QT_VERSION < 0x050000

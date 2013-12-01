@@ -19,6 +19,7 @@
 #include <QtPlugin>
 #include "connectionplugin.h"
 
+class IrcBuffer;
 class IrcConnection;
 
 class ZncPlugin : public QObject, public ConnectionPlugin
@@ -33,6 +34,10 @@ public:
     ZncPlugin(QObject* parent = 0);
 
     void initConnection(IrcConnection* connection);
+
+private slots:
+    void onPlaybackBegin(IrcBuffer* buffer);
+    void onPlaybackEnd(IrcBuffer* buffer);
 };
 
 #endif // ZNCPLUGIN_H
