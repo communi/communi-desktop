@@ -57,7 +57,6 @@ TextDocument* TextBrowser::document() const
 void TextBrowser::setDocument(TextDocument* document)
 {
     TextDocument* doc = qobject_cast<TextDocument*>(QTextBrowser::document());
-    QTextBrowser::setDocument(document);
     if (doc != document) {
         if (doc) {
             doc->setVisible(false);
@@ -72,6 +71,7 @@ void TextBrowser::setDocument(TextDocument* document)
             }
             QMetaObject::invokeMethod(this, "scrollToBottom", Qt::QueuedConnection);
         }
+        QTextBrowser::setDocument(document);
         emit documentChanged(document);
     }
 }
