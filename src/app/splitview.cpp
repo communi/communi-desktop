@@ -15,6 +15,7 @@
 #include <QContextMenuEvent>
 #include <IrcConnection>
 #include <QApplication>
+#include <QScrollBar>
 #include <QShortcut>
 #include <IrcBuffer>
 #include <QAction>
@@ -202,7 +203,11 @@ void SplitView::contextMenuEvent(QContextMenuEvent* event)
     QWidget* child = childAt(event->pos());
     TextBrowser* browser = qobject_cast<TextBrowser*>(child ? child->parentWidget() : 0);
     if (browser) {
-        QMenu* menu = browser->createStandardContextMenu(browser->mapFromGlobal(event->globalPos()));
+        QPoint pt = browser->mapFromGlobal(event->globalPos());
+        QScrollBar* hbar = browser->horizontalScrollBar();
+        pt.rx() += browser->isRightToLeft() ? hbar->maximum() - hbar->value() : hbar->value();
+        pt.ry() += browser->verticalScrollBar()->value();
+        QMenu* menu = browser->createStandardContextMenu(pt);
         menu->addSeparator();
         menu->addAction(d.splitVAction);
         menu->addAction(d.splitHAction);
