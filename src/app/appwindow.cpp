@@ -12,6 +12,7 @@
 #include "settingspage.h"
 #include "connectpage.h"
 #include "chatpage.h"
+#include <IrcBufferModel>
 #include <IrcConnection>
 #include <QApplication>
 #include <QCloseEvent>
@@ -88,10 +89,15 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
 
     PluginLoader::instance()->initWindow(this);
 
-    foreach (const QVariant& state, settings.value("connections").toList()) {
+    foreach (const QVariant& v, settings.value("connections").toList()) {
+        QVariantMap state = v.toMap();
         IrcConnection* connection = new IrcConnection(this);
-        connection->restoreState(state.toByteArray());
+        connection->restoreState(state.value("connection").toByteArray());
         addConnection(connection);
+        if (state.contains("model") && connection->isEnabled()) {
+            connection->setProperty("__modelState__", state.value("model").toByteArray());
+            connect(connection, SIGNAL(connected()), this, SLOT(delayedRestoreConnection()));
+        }
     }
 
     d.chatPage->init();
@@ -111,8 +117,14 @@ AppWindow::~AppWindow()
     settings.setValue("state", d.chatPage->saveState());
 
     QVariantList states;
-    foreach (IrcConnection* connection, connections())
-        states += connection->saveState();
+    foreach (IrcConnection* connection, connections()) {
+        QVariantMap state;
+        state.insert("connection", connection->saveState());
+        IrcBufferModel* model = connection->findChild<IrcBufferModel*>();
+        if (model)
+            state.insert("model", model->saveState());
+        states += state;
+    }
     settings.setValue("connections", states);
 
     PluginLoader::instance()->cleanupWindow(this);
@@ -204,4 +216,31 @@ void AppWindow::cleanupConnection(IrcConnection* connection)
     Q_UNUSED(connection);
     if (connections().isEmpty())
         doConnect();
+}
+
+void AppWindow::restoreConnection(IrcConnection* connection)
+{
+    if (!connection && !d.restoredConnections.isEmpty())
+        connection = d.restoredConnections.dequeue();
+    if (connection && connection->isConnected()) {
+        QByteArray state = connection->property("__modelState__").toByteArray();
+        if (!state.isNull()) {
+            IrcBufferModel* model = connection->findChild<IrcBufferModel*>();
+            if (model && model->count() == 1)
+                model->restoreState(state);
+        }
+        connection->setProperty("__modelState__", QVariant());
+    }
+}
+
+void AppWindow::delayedRestoreConnection()
+{
+    IrcConnection* connection = qobject_cast<IrcConnection*>(sender());
+    if (connection) {
+        // give bouncers 1 second to start joining channels, otherwise a
+        // non-bouncer connection is assumed and model state is restored
+        disconnect(connection, SIGNAL(connected()), this, SLOT(delayedRestoreConnection()));
+        QTimer::singleShot(1000, this, SLOT(restoreConnection()));
+        d.restoredConnections.enqueue(connection);
+    }
 }

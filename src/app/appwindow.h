@@ -12,6 +12,7 @@
 
 #include "mainwindow.h"
 #include <QIcon>
+#include <QQueue>
 #include <QStackedWidget>
 
 class ChatPage;
@@ -42,6 +43,8 @@ private slots:
     void showSettings();
     void editConnection(IrcConnection* connection);
     void cleanupConnection(IrcConnection* connection);
+    void restoreConnection(IrcConnection* connection = 0);
+    void delayedRestoreConnection();
 
 private:
     struct Private {
@@ -52,6 +55,7 @@ private:
         ConnectPage* connectPage;
         SettingsPage* settingsPage;
         IrcConnection* editedConnection;
+        QQueue<IrcConnection*> restoredConnections;
     } d;
 };
 
