@@ -34,6 +34,7 @@ TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent)
 
     setOpenLinks(false);
     setTabChangesFocus(true);
+    setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(this, SIGNAL(anchorClicked(QUrl)), this, SLOT(onAnchorClicked(QUrl)));
 }
@@ -84,17 +85,6 @@ QWidget* TextBrowser::buddy() const
 void TextBrowser::setBuddy(QWidget* buddy)
 {
     d.bud = buddy;
-}
-
-void TextBrowser::contextMenuEvent(QContextMenuEvent* event)
-{
-    const QString anchor = anchorAt(event->pos());
-    if (anchor.startsWith("nick:")) {
-        QTextCursor cursor = cursorForPosition(event->pos());
-        cursor.select(QTextCursor::WordUnderCursor);
-        setTextCursor(cursor);
-    }
-    event->ignore();
 }
 
 void TextBrowser::keyPressEvent(QKeyEvent* event)

@@ -198,28 +198,11 @@ void SplitView::cleanupBuffer(IrcBuffer* buffer)
     }
 }
 
-void SplitView::contextMenuEvent(QContextMenuEvent* event)
-{
-    QWidget* child = childAt(event->pos());
-    TextBrowser* browser = qobject_cast<TextBrowser*>(child ? child->parentWidget() : 0);
-    if (browser) {
-        QPoint pt = browser->mapFromGlobal(event->globalPos());
-        QScrollBar* hbar = browser->horizontalScrollBar();
-        pt.rx() += browser->isRightToLeft() ? hbar->maximum() - hbar->value() : hbar->value();
-        pt.ry() += browser->verticalScrollBar()->value();
-        QMenu* menu = browser->createStandardContextMenu(pt);
-        menu->addSeparator();
-        menu->addAction(d.splitVAction);
-        menu->addAction(d.splitHAction);
-        menu->addAction(d.unsplitAction);
-        menu->exec(event->globalPos());
-    }
-}
-
 BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
 {
     BufferView* view = new BufferView(splitter);
     connect(view, SIGNAL(destroyed(BufferView*)), this, SLOT(onViewRemoved(BufferView*)));
+    connect(view->textBrowser(), SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
     view->titleBar()->addAction(d.splitVAction);
     view->titleBar()->addAction(d.splitHAction);
     view->titleBar()->addAction(d.unsplitAction);
@@ -377,4 +360,47 @@ void SplitView::unsplit()
     BufferView* view = currentView();
     if (view)
         view->deleteLater();
+}
+
+void SplitView::showContextMenu(const QPoint& pos)
+{
+    TextBrowser* browser = qobject_cast<TextBrowser*>(sender());
+    if (browser) {
+        // QTextEdit::createStandardContextMenu() expects document coordinates
+        QPoint pt = pos;
+        QScrollBar* hbar = browser->horizontalScrollBar();
+        pt.rx() += browser->isRightToLeft() ? hbar->maximum() - hbar->value() : hbar->value();
+        pt.ry() += browser->verticalScrollBar()->value();
+
+        // select nick under to enable "Copy"
+        const QString anchor = browser->anchorAt(pos);
+        if (anchor.startsWith("nick:")) {
+            QTextCursor cursor = browser->cursorForPosition(pos);
+            cursor.select(QTextCursor::WordUnderCursor);
+            browser->setTextCursor(cursor);
+        }
+
+        QMenu* menu = browser->createStandardContextMenu(pt);
+
+        // disable "Copy Link Location" for nicks
+        if (anchor.startsWith("nick:")) {
+            QAction* action = menu->actions().value(1);
+            if (action)
+                action->setDisabled(true);
+        }
+
+        menu->addSeparator();
+        menu->addAction(d.splitVAction);
+        menu->addAction(d.splitHAction);
+        menu->addAction(d.unsplitAction);
+        menu->exec(browser->viewport()->mapToGlobal(pos));
+        menu->deleteLater();
+
+        // clear automatically done nick selection
+        if (anchor.startsWith("nick:")) {
+            QTextCursor cursor = browser->textCursor();
+            cursor.clearSelection();
+            browser->setTextCursor(cursor);
+        }
+    }
 }

@@ -49,7 +49,6 @@ signals:
     void currentBufferChanged(IrcBuffer* buffer);
 
 protected:
-    void contextMenuEvent(QContextMenuEvent* event);
     BufferView* createBufferView(QSplitter* splitter, int index = -1);
 
 private slots:
@@ -63,6 +62,8 @@ private slots:
     void splitVertical();
     void splitHorizontal();
     void unsplit();
+
+    void showContextMenu(const QPoint& pos);
 
 private:
     QVariantMap saveSplittedViews(const QSplitter* splitter) const;

@@ -49,7 +49,6 @@ signals:
     void documentChanged(TextDocument* document);
 
 protected:
-    void contextMenuEvent(QContextMenuEvent* event);
     void keyPressEvent(QKeyEvent* event);
     void paintEvent(QPaintEvent* event);
     void resizeEvent(QResizeEvent* event);
