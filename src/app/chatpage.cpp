@@ -10,6 +10,7 @@
 #include "chatpage.h"
 #include "treeitem.h"
 #include "treewidget.h"
+#include "themeloader.h"
 #include "textdocument.h"
 #include "pluginloader.h"
 #include "bufferview.h"
@@ -45,8 +46,9 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 
     setStretchFactor(1, 1);
 
-    d.theme.load(":/themes/cute/cute.theme");
-    //d.theme.load(":/themes/dark/dark.theme");
+    // TODO:
+    ThemeLoader* loader = ThemeLoader::instance();
+    d.theme = loader->theme("cute");
 }
 
 ChatPage::~ChatPage()

@@ -10,7 +10,10 @@
 #ifndef THEMELOADER_H
 #define THEMELOADER_H
 
+#include <QHash>
 #include <QObject>
+#include <QStringList>
+#include "themeinfo.h"
 
 class ThemeLoader : public QObject
 {
@@ -19,8 +22,16 @@ class ThemeLoader : public QObject
 public:
     static ThemeLoader* instance();
 
+    QStringList themes() const;
+    ThemeInfo theme(const QString& name) const;
+
 private:
     ThemeLoader(QObject* parent = 0);
+
+    struct Private {
+        QStringList themes;
+        QHash<QString, QString> paths;
+    } d;
 };
 
 #endif // THEMELOADER_H
