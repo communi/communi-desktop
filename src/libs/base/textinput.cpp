@@ -79,9 +79,10 @@ void TextInput::setBuffer(IrcBuffer* buffer)
         unbind(d.buffer, d.parser);
         bind(buffer, d.parser);
         if (d.buffer)
-            d.histories.insert(d.buffer, d.history);
-        d.history = d.histories.value(buffer);
+            d.states.insert(d.buffer, saveState());
         d.buffer = buffer;
+        if (buffer)
+            restoreState(d.states.value(buffer));
         emit bufferChanged(buffer);
     }
 }
@@ -245,4 +246,26 @@ void TextInput::doComplete(const QString& text, int cursor)
 {
     setText(text);
     setCursorPosition(cursor);
+}
+
+QByteArray TextInput::saveState() const
+{
+    QByteArray data;
+    QDataStream out(&data, QIODevice::WriteOnly);
+    out << d.index << d.hint << d.current << d.history;
+    out << text() << cursorPosition() << selectionStart() << selectedText().length();
+    return data;
+}
+
+void TextInput::restoreState(const QByteArray& state)
+{
+    QDataStream in(state);
+    in >> d.index >> d.hint >> d.current >> d.history;
+    QString txt;
+    int pos, start, len;
+    in >> txt >> pos >> start >> len;
+    setText(txt);
+    setCursorPosition(pos);
+    if (start != -1)
+        setSelection(start, len);
 }

@@ -57,6 +57,9 @@ private slots:
     void doComplete(const QString& text, int cursor);
 
 private:
+    QByteArray saveState() const;
+    void restoreState(const QByteArray& state);
+
     struct Private {
         int index;
         QString hint;
@@ -65,7 +68,7 @@ private:
         IrcCompleter* completer;
         IrcCommandParser* parser;
         QPointer<IrcBuffer> buffer;
-        QHash<IrcBuffer*, QStringList> histories;
+        QHash<IrcBuffer*, QByteArray> states;
     } d;
 };
 
