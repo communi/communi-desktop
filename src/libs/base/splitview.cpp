@@ -31,9 +31,10 @@ SplitView::SplitView(QWidget* parent) : QSplitter(parent)
     d.unsplitAction = new QAction(tr("Unsplit"), this);
     connect(d.unsplitAction, SIGNAL(triggered()), this, SLOT(unsplit()));
 
-    d.current = createBufferView(this);
-    connect(d.current, SIGNAL(bufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
+    BufferView* view = createBufferView(this);
+    connect(view, SIGNAL(bufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
     connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(onFocusChanged(QWidget*,QWidget*)));
+    BufferView::setCurrent(view);
 
 #ifdef Q_OS_MAC
     QString next = tr("Alt+Tab");
@@ -56,14 +57,15 @@ SplitView::SplitView(QWidget* parent) : QSplitter(parent)
 
 IrcBuffer* SplitView::currentBuffer() const
 {
-    if (d.current)
-        return d.current->buffer();
+    BufferView* view = BufferView::current();
+    if (view)
+        return view->buffer();
     return 0;
 }
 
 BufferView* SplitView::currentView() const
 {
-    return d.current;
+    return BufferView::current();
 }
 
 QList<BufferView*> SplitView::views() const
@@ -79,8 +81,9 @@ void SplitView::setCurrentView(BufferView *view)
 
 void SplitView::setCurrentBuffer(IrcBuffer* buffer)
 {
-    if (d.current)
-        d.current->setBuffer(buffer);
+    BufferView* view = currentView();
+    if (view)
+        view->setBuffer(buffer);
 }
 
 QByteArray SplitView::saveState() const
@@ -108,13 +111,14 @@ void SplitView::reset()
 {
     qDeleteAll(d.views);
     d.views.clear();
-    d.current = createBufferView(this);
-    emit viewAdded(d.current);
+    BufferView* view = createBufferView(this);
+    BufferView::setCurrent(view);
+    emit viewAdded(view);
 }
 
 void SplitView::split(Qt::Orientation orientation)
 {
-    split(d.current, orientation);
+    split(currentView(), orientation);
 }
 
 void SplitView::split(BufferView* view, Qt::Orientation orientation)
@@ -189,7 +193,7 @@ void SplitView::cleanupBuffer(IrcBuffer* buffer)
 {
     foreach (BufferView* view, d.views) {
         if (view->buffer() == buffer)
-            view->setBuffer(d.current->buffer());
+            view->setBuffer(currentBuffer());
     }
 }
 
@@ -223,7 +227,7 @@ BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
 void SplitView::activateNextView()
 {
     if (d.views.count() > 1) {
-        int index = d.views.indexOf(d.current) + 1;
+        int index = d.views.indexOf(currentView()) + 1;
         setCurrentView(d.views.value(index % d.views.count()));
     }
 }
@@ -231,7 +235,7 @@ void SplitView::activateNextView()
 void SplitView::activatePreviousView()
 {
     if (d.views.count() > 1) {
-        int index = d.views.indexOf(d.current) - 1;
+        int index = d.views.indexOf(currentView()) - 1;
         if (index < 0)
             index = d.views.count() - 1;
         setCurrentView(d.views.value(index));
@@ -247,7 +251,7 @@ void SplitView::onViewRemoved(BufferView* view)
         QSplitter* splitter = qobject_cast<QSplitter*>(view->parentWidget());
         if (splitter && splitter != this && splitter->count() == 1 && splitter->widget(0) == view)
             splitter->deleteLater();
-        if (d.current == view)
+        if (view == currentView())
             setCurrentView(d.views.value(qMax(0, index - 1)));
     }
 }
@@ -256,12 +260,13 @@ void SplitView::onFocusChanged(QWidget*, QWidget* widget)
 {
     while (widget) {
         BufferView* view = qobject_cast<BufferView*>(widget);
-        if (view && d.current != view) {
-            if (d.current)
-                disconnect(d.current, SIGNAL(bufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
-            d.current = view;
-            if (d.current)
-                connect(d.current, SIGNAL(bufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
+        BufferView* current = currentView();
+        if (view && current != view) {
+            if (current)
+                disconnect(current, SIGNAL(bufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
+            BufferView::setCurrent(view);
+            if (view)
+                connect(view, SIGNAL(bufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
             emit currentViewChanged(view);
             emit currentBufferChanged(view->buffer());
             break;
@@ -364,6 +369,7 @@ void SplitView::splitHorizontal()
 
 void SplitView::unsplit()
 {
-    if (d.current)
-        d.current->deleteLater();
+    BufferView* view = currentView();
+    if (view)
+        view->deleteLater();
 }

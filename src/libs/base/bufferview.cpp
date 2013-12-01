@@ -19,6 +19,8 @@
 #include <IrcChannel>
 #include <IrcBuffer>
 
+QPointer<BufferView> BufferView::Private::current;
+
 BufferView::BufferView(QWidget* parent) : QWidget(parent)
 {
     d.buffer = 0;
@@ -51,6 +53,16 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
 BufferView::~BufferView()
 {
     emit destroyed(this);
+}
+
+BufferView* BufferView::current()
+{
+    return Private::current;
+}
+
+void BufferView::setCurrent(BufferView* current)
+{
+    Private::current = current;
 }
 
 IrcBuffer* BufferView::buffer() const
