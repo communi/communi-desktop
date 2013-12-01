@@ -103,6 +103,7 @@ void ChatPage::initConnection(IrcConnection* connection)
     IrcBuffer* serverBuffer = bufferModel->add(connection->displayName());
     serverBuffer->setSticky(true);
     connect(connection, SIGNAL(displayNameChanged(QString)), serverBuffer, SLOT(setName(QString)));
+    // TODO: more fine-grained delivery (WHOIS replies etc. to the current buffer)
     connect(bufferModel, SIGNAL(messageIgnored(IrcMessage*)), serverBuffer, SLOT(receiveMessage(IrcMessage*)));
 
     connect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(initBuffer(IrcBuffer*)));
