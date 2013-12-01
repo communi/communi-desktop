@@ -15,7 +15,6 @@
 #include "commanderplugin.h"
 #include "treewidget.h"
 #include "bufferview.h"
-#include "splitview.h"
 #include "textinput.h"
 #include "listview.h"
 #include "textbrowser.h"
@@ -28,7 +27,6 @@
 
 CommanderPlugin::CommanderPlugin(QObject* parent) : QObject(parent)
 {
-    d.view = 0;
     d.tree = 0;
 }
 
@@ -39,11 +37,6 @@ void CommanderPlugin::initView(BufferView* view)
     parser->addCommand(IrcCommand::Custom, "CLOSE");
     parser->addCommand(IrcCommand::Custom, "MSG <user/channel> <message...>");
     parser->addCommand(IrcCommand::Custom, "QUERY <user> (<message...>)");
-}
-
-void CommanderPlugin::initView(SplitView* view)
-{
-    d.view = view;
 }
 
 void CommanderPlugin::initTree(TreeWidget* tree)
@@ -71,10 +64,10 @@ bool CommanderPlugin::commandFilter(IrcCommand* command)
         const QString cmd = command->parameters().value(0);
         const QStringList params = command->parameters().mid(1);
         if (cmd == "CLEAR") {
-            d.view->currentView()->textBrowser()->clear();
+            BufferView::current()->textBrowser()->clear();
             return true;
         } else if (cmd == "CLOSE") {
-            IrcBuffer* buffer = d.view->currentBuffer();
+            IrcBuffer* buffer = BufferView::current()->buffer();
             IrcChannel* channel = buffer->toChannel();
             if (channel)
                 channel->part(qApp->property("description").toString());
@@ -84,7 +77,7 @@ bool CommanderPlugin::commandFilter(IrcCommand* command)
             const QString target = params.value(0);
             const QString message = QStringList(params.mid(1)).join(" ");
             if (!message.isEmpty()) {
-                IrcBuffer* buffer = d.view->currentBuffer()->model()->add(target);
+                IrcBuffer* buffer = BufferView::current()->buffer()->model()->add(target);
                 IrcCommand* command = IrcCommand::createMessage(target, message);
                 if (buffer->sendCommand(command)) {
                     IrcConnection* connection = buffer->connection();
@@ -96,7 +89,7 @@ bool CommanderPlugin::commandFilter(IrcCommand* command)
         } else if (cmd == "QUERY") {
             const QString target = params.value(0);
             const QString message = QStringList(params.mid(1)).join(" ");
-            IrcBuffer* buffer = d.view->currentBuffer()->model()->add(target);
+            IrcBuffer* buffer = BufferView::current()->buffer()->model()->add(target);
             if (!message.isEmpty()) {
                 IrcCommand* command = IrcCommand::createMessage(target, message);
                 if (buffer->sendCommand(command)) {
