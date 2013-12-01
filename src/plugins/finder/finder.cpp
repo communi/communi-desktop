@@ -76,8 +76,14 @@ bool Finder::hasError() const
 
 void Finder::setError(bool error)
 {
-    d.error = error;
-    d.lineEdit->setStyleSheet(QString("background: %1").arg(palette().color(error ? QPalette::Highlight : QPalette::Base).name()));
+    if (d.error != error) {
+        d.error = error;
+        // force restyle
+        setStyleSheet(QString());
+        d.lineEdit->setStyleSheet(QString());
+        d.nextButton->setEnabled(!error);
+        d.prevButton->setEnabled(!error);
+    }
 }
 
 bool Finder::eventFilter(QObject* object, QEvent* event)

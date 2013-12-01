@@ -21,6 +21,7 @@
 class Finder : public QWidget
 {
     Q_OBJECT
+    Q_PROPERTY(bool error READ hasError)
     Q_PROPERTY(int offset READ offset WRITE setOffset)
 
 public:
