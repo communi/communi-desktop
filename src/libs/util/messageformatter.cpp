@@ -321,7 +321,7 @@ QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* message)
     const QString sender = formatNick(message->nick(), message->flags() & IrcMessage::Own);
     const QString msg = formatHtml(message->content());
     if (message->isAction())
-        return QCoreApplication::translate("MessageFormatter", "* %1 %2").arg(sender, msg);
+        return QCoreApplication::translate("MessageFormatter", "* %1 %2").arg(message->nick(), msg);
     else if (message->isRequest())
         return QCoreApplication::translate("MessageFormatter", "! %1 requested %2").arg(sender, msg.split(" ").value(0).toLower());
     else
