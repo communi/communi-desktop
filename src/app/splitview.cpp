@@ -284,6 +284,7 @@ QVariantMap SplitView::saveSplittedViews(const QSplitter* splitter) const
             IrcBuffer* buffer = bv->buffer();
             IrcConnection* connection = buffer ? buffer->connection() : 0;
             buf.insert("buffer", buffer ? buffer->title() : QString());
+            buf.insert("current", bv == BufferView::current());
             buf.insert("uuid", connection ? connection->userData().toString() : QString());
             if (QSplitter* sp = bv->findChild<QSplitter*>())
                 buf.insert("state", sp->saveState());
@@ -330,6 +331,8 @@ void SplitView::restoreSplittedViews(QSplitter* splitter, const QVariantMap& sta
                 if (QSplitter* sp = bv->findChild<QSplitter*>())
                     sp->restoreState(buf.value("state").toByteArray());
             }
+            if (buf.value("current", false).toBool())
+                setCurrentView(bv);
             bv->setObjectName("__unrestored__");
         }
     }

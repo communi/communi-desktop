@@ -102,10 +102,6 @@ void BufferView::setBuffer(IrcBuffer* buffer)
         d.titleBar->setBuffer(buffer);
         d.textInput->setBuffer(buffer);
         if (buffer) {
-            QWidget* focus = qApp->focusWidget();
-            if (!focus || !focus->inherits("QLineEdit") || (focus->inherits("TextInput") && !isAncestorOf(focus)))
-                d.textInput->setFocus();
-
             TextDocument* doc = 0;
             QList<TextDocument*> documents = d.buffer->findChildren<TextDocument*>();
             // there might be multiple clones, but at least one instance
