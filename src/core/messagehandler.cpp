@@ -168,7 +168,7 @@ void MessageHandler::handleNickMessage(IrcNickMessage* message)
                     view->receiveMessage(message);
             }
             if (!oldNick.compare(view->receiver(), Qt::CaseInsensitive)) {
-                emit viewToBeRenamed(view->receiver(), message->nick());
+                emit viewToBeRenamed(view->receiver(), message->newNick());
                 if (!d.views.contains(newNick)) {
                     MessageView* object = d.views.take(oldNick);
                     d.views.insert(newNick, object);
