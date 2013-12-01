@@ -526,12 +526,12 @@ void MessageView::receiveMessage(IrcMessage* message)
                 else if (content == QLatin1String("Playback Complete."))
                     ignore = true;
             }
-            if (static_cast<IrcPrivateMessage*>(message)->content().contains(d.connection->nickName()))
+            if (!(message->flags() & IrcMessage::Own) && static_cast<IrcPrivateMessage*>(message)->content().contains(d.connection->nickName()))
                 options.highlight = true;
             break;
         }
         case IrcMessage::Notice:
-            if (static_cast<IrcNoticeMessage*>(message)->content().contains(d.connection->nickName()))
+            if (!(message->flags() & IrcMessage::Own) && static_cast<IrcNoticeMessage*>(message)->content().contains(d.connection->nickName()))
                 options.highlight = true;
             break;
         case IrcMessage::Topic:
