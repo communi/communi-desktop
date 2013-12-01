@@ -12,6 +12,7 @@
 
 #include <QSplitter>
 #include <QPointer>
+#include <QVariant>
 
 class IrcBuffer;
 class BufferView;

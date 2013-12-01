@@ -16,6 +16,7 @@
 #define TREEITEM_H
 
 #include <QObject>
+#include <QMetaType>
 #include <QTreeWidgetItem>
 
 class IrcBuffer;
@@ -59,5 +60,7 @@ private:
         IrcBuffer* buffer;
     } d;
 };
+
+Q_DECLARE_METATYPE(TreeItem*)
 
 #endif // TREEITEM_H

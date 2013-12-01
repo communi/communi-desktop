@@ -38,6 +38,8 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     d.source = 0;
     d.sortingBlocked = false;
 
+    qRegisterMetaType<TreeItem*>();
+
     setAnimated(true);
     setColumnCount(2);
     setIndentation(0);
