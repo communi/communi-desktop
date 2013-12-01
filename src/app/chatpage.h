@@ -51,6 +51,7 @@ private slots:
     void initBuffer(IrcBuffer* buffer);
     void cleanupBuffer(IrcBuffer* buffer);
     void initDocument(TextDocument* document);
+    void onSocketError();
 
 private:
     static IrcCommandParser* createParser(QObject* parent);

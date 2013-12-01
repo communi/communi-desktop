@@ -8,6 +8,7 @@
  */
 
 #include "chatpage.h"
+#include "treeitem.h"
 #include "treewidget.h"
 #include "textdocument.h"
 #include "pluginloader.h"
@@ -20,9 +21,11 @@
 #include <IrcCommandParser>
 #include <IrcBufferModel>
 #include <IrcConnection>
+#include <QStringList>
 #include <IrcChannel>
 #include <IrcBuffer>
 #include <QSettings>
+#include <Irc>
 
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 {
@@ -107,6 +110,7 @@ void ChatPage::initConnection(IrcConnection* connection)
     connect(bufferModel, SIGNAL(messageIgnored(IrcMessage*)), serverBuffer, SLOT(receiveMessage(IrcMessage*)));
 
     connect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(initBuffer(IrcBuffer*)));
+    connect(connection, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onSocketError()));
 
     initBuffer(serverBuffer);
     if (!d.treeWidget->currentBuffer())
@@ -195,6 +199,28 @@ void ChatPage::initDocument(TextDocument* document)
 {
     document->setStyleSheet(d.theme.attribute("document"));
     PluginLoader::instance()->initDocument(document);
+}
+
+void ChatPage::onSocketError()
+{
+    IrcConnection* connection = qobject_cast<IrcConnection*>(sender());
+    if (connection) {
+        IrcBufferModel* model = connection->findChild<IrcBufferModel*>(); // TODO
+        if (model) {
+            IrcBuffer* buffer = model->get(0);
+            if (buffer) {
+                QStringList params = QStringList() << connection->nickName() << connection->socket()->errorString();
+                IrcMessage* message = IrcMessage::fromParameters(buffer->title(), QString::number(Irc::ERR_UNKNOWNERROR), params, connection);
+                foreach (TextDocument* doc, buffer->findChildren<TextDocument*>())
+                    doc->receiveMessage(message);
+                delete message;
+
+                TreeItem* item = d.treeWidget->connectionItem(connection);
+                if (item && d.treeWidget->currentItem() != item)
+                    d.treeWidget->highlightItem(item);
+            }
+        }
+    }
 }
 
 IrcCommandParser* ChatPage::createParser(QObject *parent)

@@ -56,6 +56,7 @@ public:
 public slots:
     void reset();
     void append(const QString& text);
+    void receiveMessage(IrcMessage* message);
 
 signals:
     void messageReceived(IrcMessage* message);
@@ -66,7 +67,6 @@ protected:
 
 private slots:
     void flushLines();
-    void receiveMessage(IrcMessage* message);
 
 private:
     void appendLine(QTextCursor& cursor, const QString& line);

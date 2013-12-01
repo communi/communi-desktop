@@ -54,6 +54,9 @@ public slots:
     void setCurrentBuffer(IrcBuffer* buffer);
     void closeBuffer(IrcBuffer* buffer = 0);
 
+    void highlightItem(QTreeWidgetItem* item);
+    void unhighlightItem(QTreeWidgetItem* item);
+
     void moveToNextItem();
     void moveToPrevItem();
 
@@ -96,11 +99,8 @@ private slots:
     void onCloseTriggered();
 
 private:
-    void swapItems(QTreeWidgetItem* source, QTreeWidgetItem* target);
-
-    void highlightItem(QTreeWidgetItem* item);
-    void unhighlightItem(QTreeWidgetItem* item);
     void updateHighlight(QTreeWidgetItem* item);
+    void swapItems(QTreeWidgetItem* source, QTreeWidgetItem* target);
 
     QTreeWidgetItem* lastItem() const;
     QTreeWidgetItem* nextItem(QTreeWidgetItem* from) const;

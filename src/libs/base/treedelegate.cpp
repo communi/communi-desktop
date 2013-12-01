@@ -105,7 +105,7 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         const_cast<QStyleOptionViewItem&>(option).state |= QStyle::State_On;
 
     bool active = index.data(TreeRole::Active).toBool();
-    if (!active)
+    if (!hilite && !active)
         const_cast<QStyleOptionViewItem&>(option).state |= QStyle::State_Off;
 
     if (!index.parent().isValid()) {
