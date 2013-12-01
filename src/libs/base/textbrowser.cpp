@@ -61,11 +61,11 @@ void TextBrowser::setDocument(TextDocument* document)
     if (doc != document) {
         if (doc) {
             doc->setVisible(false);
-            disconnect(doc->documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(keetApBottom()));
+            disconnect(doc->documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(keepAtBottom()));
         }
         if (document) {
             document->setVisible(true);
-            connect(document->documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(keetApBottom()));
+            connect(document->documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(keepAtBottom()));
             if (d.dirty == 0 && !document->isEmpty()) {
                 setUpdatesEnabled(false);
                 d.dirty = startTimer(32);
@@ -214,7 +214,7 @@ void TextBrowser::wheelEvent(QWheelEvent* event)
 #endif // Q_OS_MAC
 }
 
-void TextBrowser::keetApBottom()
+void TextBrowser::keepAtBottom()
 {
     if (isAtBottom())
         QMetaObject::invokeMethod(this, "scrollToBottom", Qt::QueuedConnection);
