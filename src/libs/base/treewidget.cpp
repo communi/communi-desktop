@@ -417,6 +417,7 @@ void TreeWidget::onItemDestroyed(TreeItem* item)
 {
     d.resetBadges.removeOne(item);
     d.highlightedItems.remove(item);
+    d.bufferItems.remove(item->buffer());
 }
 
 void TreeWidget::blinkItems()

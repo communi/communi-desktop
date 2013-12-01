@@ -40,8 +40,8 @@ void TreeItem::init(IrcBuffer* buffer)
 
 TreeItem::~TreeItem()
 {
-    d.buffer = 0;
     emit destroyed(this);
+    d.buffer = 0;
 }
 
 IrcBuffer* TreeItem::buffer() const

@@ -106,7 +106,6 @@ void ChatPage::initConnection(IrcConnection* connection)
     connect(bufferModel, SIGNAL(messageIgnored(IrcMessage*)), serverBuffer, SLOT(receiveMessage(IrcMessage*)));
 
     connect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(initBuffer(IrcBuffer*)));
-    connect(bufferModel, SIGNAL(removed(IrcBuffer*)), this, SLOT(cleanupBuffer(IrcBuffer*)));
 
     initBuffer(serverBuffer);
     if (!d.treeWidget->currentBuffer())
@@ -122,7 +121,6 @@ void ChatPage::cleanupConnection(IrcConnection* connection)
 {
     IrcBufferModel* bufferModel = connection->findChild<IrcBufferModel*>();
     disconnect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(initBuffer(IrcBuffer*)));
-    disconnect(bufferModel, SIGNAL(removed(IrcBuffer*)), this, SLOT(cleanupBuffer(IrcBuffer*)));
 
     if (connection->isActive()) {
         connection->quit(qApp->property("description").toString());
@@ -154,6 +152,8 @@ void ChatPage::initBuffer(IrcBuffer* buffer)
 
     PluginLoader::instance()->initBuffer(buffer);
     initDocument(doc);
+
+    connect(buffer, SIGNAL(destroyed(IrcBuffer*)), this, SLOT(cleanupBuffer(IrcBuffer*)));
 }
 
 void ChatPage::cleanupBuffer(IrcBuffer* buffer)
