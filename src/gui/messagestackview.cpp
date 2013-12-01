@@ -154,21 +154,18 @@ void MessageStackView::closeView(int index)
             else if (view->viewType() == ViewInfo::Channel)
                 d.connection->sendCommand(IrcCommand::createPart(view->receiver()));
         }
-        d.handler.removeView(view->receiver());
+        removeView(view->receiver());
     }
 }
 
 void MessageStackView::renameView(const QString& from, const QString& to)
 {
-    if (!d.views.contains(to.toLower())) {
-        MessageView* view = d.views.take(from.toLower());
-        if (view) {
-            view->setReceiver(to);
-            d.views.insert(to.toLower(), view);
-            emit viewRenamed(view);
-        }
-    } else if (currentView() == d.views.value(from.toLower())) {
-        setCurrentWidget(d.views.value(to.toLower()));
+    removeView(to);
+    MessageView* view = d.views.take(from.toLower());
+    if (view) {
+        view->setReceiver(to);
+        d.views.insert(to.toLower(), view);
+        emit viewRenamed(view);
     }
 }
 
