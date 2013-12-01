@@ -16,6 +16,7 @@
 #define TITLEBAR_H
 
 #include <QLabel>
+#include <QTextEdit>
 
 class IrcBuffer;
 class MessageFormatter;
@@ -38,16 +39,20 @@ signals:
     void bufferChanged(IrcBuffer* buffer);
 
 protected:
+    bool eventFilter(QObject* object, QEvent* event);
+    void mouseDoubleClickEvent(QMouseEvent* event);
     void paintEvent(QPaintEvent* event);
     void resizeEvent(QResizeEvent* event);
 
 private slots:
     void cleanup();
     void refresh();
+    void edit();
 
 private:
     struct Private {
         IrcBuffer* buffer;
+        QTextEdit* editor;
         MessageFormatter* formatter;
     } d;
 };

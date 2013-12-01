@@ -14,7 +14,6 @@
 
 #include "titleplugin.h"
 #include "titleextension.h"
-#include "topiceditor.h"
 #include "bufferview.h"
 
 TitlePlugin::TitlePlugin(QObject* parent) : QObject(parent)
@@ -23,7 +22,6 @@ TitlePlugin::TitlePlugin(QObject* parent) : QObject(parent)
 
 void TitlePlugin::initView(BufferView* view)
 {
-    new TopicEditor(view->titleBar());
     new TitleExtension(view->titleBar());
 }
 

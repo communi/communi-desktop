@@ -17,6 +17,7 @@
 #include <QStyleOptionHeader>
 #include <QStylePainter>
 #include <IrcTextFormat>
+#include <QMouseEvent>
 #include <IrcCommand>
 #include <IrcChannel>
 #include <QStyle>
@@ -24,6 +25,7 @@
 TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
 {
     d.buffer = 0;
+    d.editor = new QTextEdit(this);
     d.formatter = new MessageFormatter(this);
 
     setWordWrap(true);
@@ -35,6 +37,13 @@ TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
     font.setPointSize(11.0);
     setFont(font);
 #endif
+
+    d.editor->setVisible(false);
+    d.editor->setAcceptRichText(false);
+    d.editor->setTabChangesFocus(true);
+    d.editor->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    d.editor->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    d.editor->installEventFilter(this);
 }
 
 IrcBuffer* TitleBar::buffer() const
@@ -89,6 +98,35 @@ void TitleBar::setTopic(const QString& topic)
     }
 }
 
+bool TitleBar::eventFilter(QObject* object, QEvent* event)
+{
+    Q_UNUSED(object);
+    switch (event->type()) {
+    case QEvent::FocusOut:
+        d.editor->hide();
+        break;
+    case QEvent::KeyPress: {
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return) {
+            setTopic(d.editor->toPlainText());
+            d.editor->hide();
+        } else if (keyEvent->key() == Qt::Key_Escape) {
+            d.editor->hide();
+        }
+        break;
+    }
+    default:
+        break;
+    }
+    return false;
+}
+
+void TitleBar::mouseDoubleClickEvent(QMouseEvent* event)
+{
+    edit();
+    d.editor->setTextCursor(d.editor->cursorForPosition(event->pos()));
+}
+
 void TitleBar::paintEvent(QPaintEvent* event)
 {
     QStyleOptionHeader option;
@@ -130,4 +168,24 @@ void TitleBar::refresh()
     if (!topic.isEmpty())
         title = tr("%1: %2").arg(title, d.formatter->formatHtml(topic));
     setText(title);
+}
+
+void TitleBar::edit()
+{
+    IrcChannel* channel = qobject_cast<IrcChannel*>(d.buffer);
+    if (channel) {
+        d.editor->setPlainText(channel->topic());
+
+        // keep the text visually in place...
+        d.editor->document()->setIndentWidth(3);
+        d.editor->document()->setDocumentMargin(1);
+        QTextCursor cursor(d.editor->document());
+        QTextBlockFormat format = cursor.blockFormat();
+        format.setIndent(1);
+        cursor.setBlockFormat(format);
+
+        d.editor->resize(size()); // TODO: layout?
+        d.editor->setFocus();
+        d.editor->show();
+    }
 }
