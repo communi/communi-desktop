@@ -11,7 +11,6 @@ SUBDIRS += importer
 SUBDIRS += monitor
 SUBDIRS += overlay
 SUBDIRS += sound
-SUBDIRS += title
 SUBDIRS += tray
 SUBDIRS += tricon
 SUBDIRS += verifier

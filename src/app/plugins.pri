@@ -10,7 +10,6 @@ STATIC_PLUGINS += importer
 STATIC_PLUGINS += monitor
 STATIC_PLUGINS += overlay
 STATIC_PLUGINS += sound
-STATIC_PLUGINS += title
 STATIC_PLUGINS += tray
 STATIC_PLUGINS += tricon
 STATIC_PLUGINS += verifier

@@ -21,6 +21,7 @@
 #include <IrcCommand>
 #include <IrcChannel>
 #include <QStyle>
+#include <QMenu>
 
 TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
 {
@@ -44,6 +45,17 @@ TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
     d.editor->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     d.editor->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     d.editor->installEventFilter(this);
+
+    d.closeButton = new QToolButton(this);
+    d.closeButton->setObjectName("close");
+    d.closeButton->adjustSize();
+    connect(d.closeButton, SIGNAL(clicked()), parent, SLOT(closeBuffer()));
+
+    d.menuButton = new QToolButton(this);
+    d.menuButton->setObjectName("menu");
+    d.menuButton->setMenu(new QMenu(d.menuButton));
+    d.menuButton->setPopupMode(QToolButton::InstantPopup);
+    d.menuButton->adjustSize();
 }
 
 IrcBuffer* TitleBar::buffer() const
@@ -98,6 +110,15 @@ void TitleBar::setTopic(const QString& topic)
     }
 }
 
+bool TitleBar::event(QEvent* event)
+{
+    if (event->type() == QEvent::ActionAdded)
+        d.menuButton->menu()->addAction(static_cast<QActionEvent*>(event)->action());
+    else if (event->type() == QEvent::ActionRemoved)
+        d.menuButton->menu()->removeAction(static_cast<QActionEvent*>(event)->action());
+    return QLabel::event(event);
+}
+
 bool TitleBar::eventFilter(QObject* object, QEvent* event)
 {
     Q_UNUSED(object);
@@ -144,8 +165,15 @@ void TitleBar::paintEvent(QPaintEvent* event)
 
 void TitleBar::resizeEvent(QResizeEvent* event)
 {
+    QRect r = d.closeButton->rect();
+    r.moveTopRight(rect().topRight());
+    d.closeButton->setGeometry(r);
+    r.moveRight(r.left() - 1);
+    d.menuButton->setGeometry(r);
+
     QStyleOptionHeader option;
     option.init(this);
+    option.rect.setRight(r.left() - 1);
     option.state = (QStyle::State_Raised | QStyle::State_Horizontal);
     option.position = QStyleOptionHeader::OnlyOneSection;
     QRect ser = style()->subElementRect(QStyle::SE_HeaderLabel, &option, this);

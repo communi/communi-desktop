@@ -17,6 +17,7 @@
 
 #include <QLabel>
 #include <QTextEdit>
+#include <QToolButton>
 
 class IrcBuffer;
 class MessageFormatter;
@@ -39,6 +40,7 @@ signals:
     void bufferChanged(IrcBuffer* buffer);
 
 protected:
+    bool event(QEvent* event);
     bool eventFilter(QObject* object, QEvent* event);
     void mouseDoubleClickEvent(QMouseEvent* event);
     void paintEvent(QPaintEvent* event);
@@ -53,6 +55,8 @@ private:
     struct Private {
         IrcBuffer* buffer;
         QTextEdit* editor;
+        QToolButton* menuButton;
+        QToolButton* closeButton;
         MessageFormatter* formatter;
     } d;
 };

@@ -89,6 +89,7 @@ TitleBar > QToolButton {
     max-width: 20px;
     min-height: 18px;
     max-height: 18px;
+    background-color: transparent;
     border-top-color: transparent;
     border-right-color: transparent;
 }
