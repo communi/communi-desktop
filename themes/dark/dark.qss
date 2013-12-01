@@ -5,6 +5,10 @@ TextBrowser, TextInput {
     selection-background-color: #444444;
 }
 
+SplitView {
+    background: #000000;
+}
+
 TextBrowser {
     background: #000000;
 }
