@@ -24,6 +24,7 @@
 #include "completer.h"
 #include <QAbstractTextDocumentLayout>
 #include <QDesktopServices>
+#include <QScrollBar>
 #include <QTextBlock>
 #include <QShortcut>
 #include <QKeyEvent>
@@ -346,7 +347,11 @@ bool MessageView::eventFilter(QObject* object, QEvent* event)
 {
     if (object == d.textBrowser->viewport() && event->type() == QEvent::ContextMenu) {
         QContextMenuEvent* menuEvent = static_cast<QContextMenuEvent*>(event);
-        QMenu* menu = d.textBrowser->createStandardContextMenu(menuEvent->pos());
+
+        QPoint pt = menuEvent->pos();
+        pt.rx() += d.textBrowser->isRightToLeft() ? d.textBrowser->horizontalScrollBar()->maximum() - d.textBrowser->horizontalScrollBar()->value() : d.textBrowser->horizontalScrollBar()->value();
+        pt.ry() += d.textBrowser->verticalScrollBar()->value();
+        QMenu* menu = d.textBrowser->createStandardContextMenu(pt);
 
         QAction* query = 0;
         QAction* whois = 0;
@@ -356,6 +361,10 @@ bool MessageView::eventFilter(QObject* object, QEvent* event)
         QUrl link(d.textBrowser->anchorAt(menuEvent->pos()));
         if (link.scheme() == "nick") {
             QAction* separator = menu->insertSeparator(menu->actions().value(0));
+
+            QTextCursor cursor = d.textBrowser->cursorForPosition(menuEvent->pos());
+            cursor.select(QTextCursor::WordUnderCursor);
+            d.textBrowser->setTextCursor(cursor);
 
             query = new QAction(tr("Query"), menu);
             menu->insertAction(separator, query);
