@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="TODO/">
+  <file alias="ajax-loader-dark.gif">resources/ajax-loader-dark.gif</file>
+  <file alias="ajax-loader-light.gif">resources/ajax-loader-light.gif</file>
+  <file alias="reconnect.png">resources/reconnect.png</file>
+  <file alias="reconnect-pressed.png">resources/reconnect-pressed.png</file>
+</qresource>
+</RCC>

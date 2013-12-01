@@ -9,6 +9,7 @@ SUBDIRS += finder
 SUBDIRS += ignore
 SUBDIRS += importer
 SUBDIRS += monitor
+SUBDIRS += overlay
 SUBDIRS += sound
 SUBDIRS += title
 SUBDIRS += tray
