@@ -12,6 +12,6 @@ DEFINES += IRC_STATIC
 include(../../config.pri)
 
 !exists(libcommuni/src/src.pri) {
-    error(A Git submodule is missing. Run \'git submodule update --init\' in $${_PRO_FILE_PWD_}.)
+    error(A Git submodule is missing. Run \'git submodule update --init\' in $${SOURCE_ROOT}.)
 }
 include(libcommuni/src/src.pri)
