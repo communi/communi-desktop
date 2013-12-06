@@ -23,12 +23,6 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     CONFIG(phonon, phonon|no_phonon):QT += phonon
 }
 
-mac {
-    themes.files = $$SOURCE_ROOT/themes/cute $$SOURCE_ROOT/themes/dark
-    themes.path = Contents/Resources/themes
-    QMAKE_BUNDLE_DATA += themes
-}
-
 win32:target.path = $$[QT_INSTALL_BINS]
 else:mac:target.path = /Applications
 else:target.path = /usr/bin
@@ -63,6 +57,4 @@ include(../libs/util/util.pri)
 include(../libs/backend/backend.pri)
 include(../libs/3rdparty/3rdparty.pri)
 include(../../resources/resources.pri)
-
-# TODO:
 include($$SOURCE_ROOT/themes/themes.pri)

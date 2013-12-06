@@ -8,31 +8,23 @@
  */
 
 #include "themeloader.h"
+#include <QApplication>
 #include <QFileInfo>
 #include <QDebug>
-#include <QDir>
 
 ThemeLoader::ThemeLoader(QObject* parent) : QObject(parent)
 {
-#ifdef Q_OS_MAC
-    QDir dir = QDir::current();
-    if (dir.dirName() == "MacOS" && dir.cd("../Resources/themes")) {
-        foreach (const QString& theme, dir.entryList(QDir::NoDotAndDotDot | QDir::Dirs)) {
-            if (dir.cd(theme)) {
-                foreach (const QString& fn, dir.entryList(QStringList("*.theme"), QDir::Files)) {
-                    d.themes.append(theme);
-                    d.paths.insert(theme, dir.filePath(fn));
-                }
-                dir.cdUp();
-            }
-        }
-    }
-#else
     d.themes.append("cute");
     d.paths.insert("cute", ":/themes/cute/cute.theme");
 
-    d.themes.append("dark");
-    d.paths.insert("dark", ":/themes/dark/dark.theme");
+#if defined(Q_OS_MAC)
+    QDir dir = QDir::current();
+    if (dir.dirName() == "MacOS" && dir.cd("../Resources/themes"))
+        load(dir);
+#elif defined(Q_OS_WIN)
+    QDir dir(QApplication::applicationDirPath());
+    if (dir.cd("themes"))
+        load(dir);
 #endif
 }
 
@@ -52,4 +44,19 @@ ThemeInfo ThemeLoader::theme(const QString& name) const
     ThemeInfo info;
     info.load(d.paths.value(name));
     return info;
+}
+
+void ThemeLoader::load(QDir dir)
+{
+    QStringList dirs = dir.entryList(QDir::NoDotAndDotDot | QDir::Dirs);
+    foreach (const QString& sd, dirs) {
+        if (dir.cd(sd)) {
+            QStringList files = dir.entryList(QStringList("*.theme"), QDir::Files);
+            foreach (const QString& fn, files) {
+                d.themes.append(sd);
+                d.paths.insert(sd, dir.filePath(fn));
+            }
+            dir.cdUp();
+        }
+    }
 }

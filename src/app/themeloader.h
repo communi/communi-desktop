@@ -10,6 +10,7 @@
 #ifndef THEMELOADER_H
 #define THEMELOADER_H
 
+#include <QDir>
 #include <QHash>
 #include <QObject>
 #include <QStringList>
@@ -27,6 +28,8 @@ public:
 
 private:
     ThemeLoader(QObject* parent = 0);
+
+    void load(QDir dir);
 
     struct Private {
         QStringList themes;
