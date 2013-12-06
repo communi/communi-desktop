@@ -45,7 +45,7 @@ TextShadow {
 TreeBadge {
     color: #ffffff;
     margin: 3px;
-    font-size: 9pt;
+    font-size: 8px;
     border-radius: 6px;
     background: palette(dark);
 }
