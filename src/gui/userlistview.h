@@ -22,7 +22,6 @@ class IrcChannel;
 class IrcConnection;
 class IrcMessage;
 class IrcCommand;
-class MenuFactory;
 class IrcUserModel;
 
 class UserListView : public QListView
@@ -44,9 +43,6 @@ public:
     IrcUserModel* userModel() const;
     bool hasUser(const QString& user) const;
 
-    MenuFactory* menuFactory() const;
-    void setMenuFactory(MenuFactory* factory);
-
 signals:
     void queried(const QString& user);
     void doubleClicked(const QString& user);
@@ -61,7 +57,6 @@ private slots:
 
 private:
     struct Private {
-        MenuFactory* menuFactory;
         QPointer<IrcChannel> channel;
         QPointer<IrcConnection> connection;
         QPointer<IrcUserModel> userModel;

@@ -13,9 +13,9 @@
 */
 
 #include "userlistview.h"
+#include "userlistmenu.h"
 #include "styledscrollbar.h"
 #include "itemdelegate.h"
-#include "menufactory.h"
 #include <IrcChannel>
 #include <IrcConnection>
 #include <IrcUserModel>
@@ -27,7 +27,6 @@
 
 UserListView::UserListView(QWidget* parent) : QListView(parent)
 {
-    d.menuFactory = 0;
     setItemDelegate(new ItemDelegate(this));
     connect(this, SIGNAL(doubleClicked(QModelIndex)), SLOT(onDoubleClicked(QModelIndex)));
 
@@ -84,30 +83,12 @@ bool UserListView::hasUser(const QString& user) const
     return false;
 }
 
-MenuFactory* UserListView::menuFactory() const
-{
-    if (!d.menuFactory) {
-        UserListView* that = const_cast<UserListView*>(this);
-        that->d.menuFactory = new MenuFactory(that);
-    }
-    return d.menuFactory;
-}
-
-void UserListView::setMenuFactory(MenuFactory* factory)
-{
-    if (d.menuFactory && d.menuFactory->parent() == this)
-        delete d.menuFactory;
-    d.menuFactory = factory;
-}
-
 void UserListView::contextMenuEvent(QContextMenuEvent* event)
 {
     QModelIndex index = indexAt(event->pos());
     if (index.isValid()) {
-        QMenu* menu = menuFactory()->createUserListMenu(index.data(Irc::PrefixRole).toString(),
-                                                        index.data(Irc::NameRole).toString(), this);
-        menu->exec(event->globalPos());
-        menu->deleteLater();
+        UserListMenu menu(this);
+        menu.exec(event->globalPos());
     }
 }
 

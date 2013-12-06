@@ -12,22 +12,34 @@
 * GNU General Public License for more details.
 */
 
-#ifndef MENUFACTORY_H
-#define MENUFACTORY_H
+#ifndef USERLISTMENU_H
+#define USERLISTMENU_H
 
 #include <QMenu>
 
 class UserListView;
 
-class MenuFactory : public QObject
+class UserListMenu : public QMenu
 {
     Q_OBJECT
 
 public:
-    MenuFactory(QObject* parent);
-    virtual ~MenuFactory();
+    UserListMenu(UserListView* parent);
 
-    virtual QMenu* createUserListMenu(const QString& prefix, const QString& name, UserListView* listView);
+public slots:
+    void exec(const QPoint& pos);
+
+private slots:
+    void onWhoisTriggered();
+    void onQueryTriggered();
+    void onModeTriggered();
+    void onKickTriggered();
+    void onBanTriggered();
+
+private:
+    struct Private {
+        UserListView* view;
+    } d;
 };
 
-#endif // MENUFACTORY_H
+#endif // USERLISTMENU_H
