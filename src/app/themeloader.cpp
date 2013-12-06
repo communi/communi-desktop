@@ -25,6 +25,13 @@ ThemeLoader::ThemeLoader(QObject* parent) : QObject(parent)
     QDir dir(QApplication::applicationDirPath());
     if (dir.cd("themes"))
         load(dir);
+#elif defined(Q_OS_UNIX)
+    QDir sys("/usr/share/themes/communi");
+    if (sys.exists())
+        load(sys);
+    QDir home = QDir::home();
+    if (home.cd(".local/share/themes/communi"))
+        load(home);
 #endif
 }
 
