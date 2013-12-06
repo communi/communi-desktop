@@ -3,6 +3,5 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS += backend util base 3rdparty
-util.depends += backend
-base.depends += util
+SUBDIRS += backend base 3rdparty
+base.depends += backend

@@ -42,4 +42,8 @@ SOURCES += $$PWD/treewidget.cpp
 include(../../config.pri)
 include(plugins/plugins.pri)
 include(../backend/backend.pri)
-include(../util/util.pri)
+
+!exists(shared/shared.pri) {
+    error(A Git submodule is missing. Run \'git submodule update --init\' in $${SOURCE_ROOT}.)
+}
+include(shared/shared.pri)

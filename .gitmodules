@@ -1,6 +1,6 @@
 [submodule "src/libs/backend/libcommuni"]
 	path = src/libs/backend/libcommuni
 	url = git://github.com/communi/libcommuni.git
-[submodule "src/libs/util/shared"]
-	path = src/libs/util/shared
+[submodule "src/libs/base/shared"]
+	path = src/libs/base/shared
 	url = git://github.com/communi/communi-shared.git
