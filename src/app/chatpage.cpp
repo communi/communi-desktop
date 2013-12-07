@@ -82,7 +82,7 @@ void ChatPage::setTheme(const QString& theme)
     if (d.theme.name() != theme) {
         d.theme = ThemeLoader::instance()->theme(theme);
 
-        QString css = d.theme.attribute("style");
+        QString css = d.theme.style();
         window()->setStyleSheet(css);
 
         QTreeWidgetItemIterator it(d.treeWidget);
@@ -211,7 +211,7 @@ void ChatPage::initView(BufferView* view)
     TitleBar* bar = view->titleBar();
     QTextDocument* doc = bar->findChild<QTextDocument*>();
     if (doc)
-        doc->setDefaultStyleSheet(d.theme.attribute("style"));
+        doc->setDefaultStyleSheet(d.theme.style());
 
     view->textInput()->setParser(createParser(view));
     connect(view, SIGNAL(bufferClosed(IrcBuffer*)), this, SLOT(closeBuffer(IrcBuffer*)));
@@ -227,7 +227,7 @@ void ChatPage::cleanupView(BufferView* view)
 
 void ChatPage::initDocument(TextDocument* document)
 {
-    document->setStyleSheet(d.theme.attribute("style"));
+    document->setStyleSheet(d.theme.style());
     PluginLoader::instance()->initDocument(document);
 }
 

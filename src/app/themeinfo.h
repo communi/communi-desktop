@@ -15,20 +15,27 @@
 #ifndef THEMEINFO_H
 #define THEMEINFO_H
 
-#include <QMap>
 #include <QString>
 
 class ThemeInfo
 {
 public:
+    bool isValid() const;
     bool load(const QString& filePath);
 
     QString name() const;
-    QString attribute(const QString& key) const;
+    QString author() const;
+    QString version() const;
+    QString description() const;
+    QString style() const;
 
 private:
     struct Private {
-        QMap<QString, QString> attributes;
+        QString name;
+        QString author;
+        QString version;
+        QString description;
+        QString style;
     } d;
 };
 

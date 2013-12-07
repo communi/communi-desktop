@@ -19,14 +19,34 @@
 #include <QFile>
 #include <QDir>
 
-QString ThemeInfo::name() const
+bool ThemeInfo::isValid() const
 {
-    return d.attributes.value("name");
+    return !d.name.isEmpty();
 }
 
-QString ThemeInfo::attribute(const QString& key) const
+QString ThemeInfo::name() const
 {
-    return d.attributes.value(key);
+    return d.name;
+}
+
+QString ThemeInfo::author() const
+{
+    return d.author;
+}
+
+QString ThemeInfo::version() const
+{
+    return d.version;
+}
+
+QString ThemeInfo::description() const
+{
+    return d.description;
+}
+
+QString ThemeInfo::style() const
+{
+    return d.style;
 }
 
 static QString readFile(const QDir& dir, const QString& fileName)
@@ -48,10 +68,12 @@ bool ThemeInfo::load(const QString& filePath)
     QStringList groups = settings.childGroups();
     if (groups.contains("Theme")) {
         settings.beginGroup("Theme");
-        foreach (const QString& key, settings.childKeys())
-            d.attributes.insert(key, settings.value(key).toString());
-        d.attributes.insert("style", readFile(QFileInfo(filePath).dir(), settings.value("style").toString()));
+        d.name = settings.value("name").toString();
+        d.author = settings.value("author").toString();
+        d.version = settings.value("version").toString();
+        d.description = settings.value("description").toString();
+        d.style = readFile(QFileInfo(filePath).dir(), settings.value("style").toString());
         settings.endGroup();
     }
-    return !d.attributes.value("name").isEmpty();
+    return isValid();
 }
