@@ -5,7 +5,3 @@ description=A dark Communi theme
 maintainer=J-P Nurmi <jpnurmi@gmail.com>
 application=dark.qss
 document=dark.css
-
-[QPalette]
-Finder/base=#222222
-Finder/highlight=#283ecc
