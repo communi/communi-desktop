@@ -15,7 +15,9 @@
 #include "themeinfo.h"
 #include <QStringList>
 #include <QSettings>
+#include <QFileInfo>
 #include <QFile>
+#include <QDir>
 
 QString ThemeInfo::name() const
 {
@@ -27,9 +29,13 @@ QString ThemeInfo::attribute(const QString& key) const
     return d.attributes.value(key);
 }
 
-static QString readFile(const QString& filePath)
+static QString readFile(const QDir& dir, const QString& fileName)
 {
-    QFile file(filePath);
+    QFile file;
+    if (QFileInfo(fileName).isRelative())
+        file.setFileName(dir.filePath(fileName));
+    else
+        file.setFileName(fileName);
     if (file.open(QFile::ReadOnly | QIODevice::Text))
         return QString::fromUtf8(file.readAll());
     return QString();
@@ -44,8 +50,8 @@ bool ThemeInfo::load(const QString& filePath)
         settings.beginGroup("Theme");
         foreach (const QString& key, settings.childKeys())
             d.attributes.insert(key, settings.value(key).toString());
-        d.attributes.insert("document", readFile(settings.value("document").toString()));
-        d.attributes.insert("application", readFile(settings.value("application").toString()));
+        d.attributes.insert("document", readFile(QFileInfo(filePath).dir(), settings.value("document").toString()));
+        d.attributes.insert("application", readFile(QFileInfo(filePath).dir(), settings.value("application").toString()));
         settings.endGroup();
     }
     return !d.attributes.value("name").isEmpty();
