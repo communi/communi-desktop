@@ -189,8 +189,9 @@ void TitleBar::resizeEvent(QResizeEvent* event)
 
     QStyleOptionHeader option;
     option.initFrom(this);
+    option.rect.setRight(r.left() - 1);
     QRect ser = style()->subElementRect(QStyle::SE_HeaderLabel, &option, this);
-    setIndent(ser.x());
+    setContentsMargins(ser.x(), ser.y(), width() - ser.x() - ser.width(), height() - ser.y() - ser.height());
 
     QLabel::resizeEvent(event);
 }
