@@ -24,7 +24,7 @@ TitleBar > QTextEdit {
 
 TextLowlight {
     border: 1px solid palette(mid);
-    background-color: palette(midlight);
+    background-color:#f6f6f6;
 }
 
 TextHighlight {
