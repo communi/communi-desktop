@@ -33,7 +33,7 @@ private:
 
     struct Private {
         QStringList themes;
-        QHash<QString, QString> paths;
+        QHash<QString, ThemeInfo> infos;
     } d;
 };
 

@@ -14,8 +14,11 @@
 
 ThemeLoader::ThemeLoader(QObject* parent) : QObject(parent)
 {
-    d.themes.append("cute");
-    d.paths.insert("cute", ":/themes/cute/cute.theme");
+    ThemeInfo info;
+    if (!info.load(":/themes/cute/cute.theme"))
+        qWarning() << "Failed to load cute.theme";
+    d.themes.append(info.name());
+    d.infos.insert(info.name(), info);
 
 #if defined(Q_OS_MAC)
     QDir dir = QDir::current();
@@ -48,9 +51,7 @@ QStringList ThemeLoader::themes() const
 
 ThemeInfo ThemeLoader::theme(const QString& name) const
 {
-    ThemeInfo info;
-    info.load(d.paths.value(name));
-    return info;
+    return d.infos.value(name);
 }
 
 void ThemeLoader::load(QDir dir)
@@ -60,8 +61,11 @@ void ThemeLoader::load(QDir dir)
         if (dir.cd(sd)) {
             QStringList files = dir.entryList(QStringList("*.theme"), QDir::Files);
             foreach (const QString& fn, files) {
-                d.themes.append(sd);
-                d.paths.insert(sd, dir.filePath(fn));
+                ThemeInfo info;
+                if (info.load(dir.filePath(fn))) {
+                    d.themes.append(info.name());
+                    d.infos.insert(info.name(), info);
+                }
             }
             dir.cdUp();
         }

@@ -125,7 +125,7 @@ void ChatPage::restoreState(const QByteArray& data)
     if (state.contains("theme"))
         setTheme(state.value("theme").toString());
     else
-        setTheme("cute");
+        setTheme("Cute");
 }
 
 void ChatPage::initConnection(IrcConnection* connection)
