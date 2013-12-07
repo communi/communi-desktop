@@ -23,6 +23,7 @@ class ThemeInfo
 public:
     bool load(const QString& filePath);
 
+    QString name() const;
     QString attribute(const QString& key) const;
 
 private:

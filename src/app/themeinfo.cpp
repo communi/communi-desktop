@@ -17,6 +17,11 @@
 #include <QSettings>
 #include <QFile>
 
+QString ThemeInfo::name() const
+{
+    return d.attributes.value("name");
+}
+
 QString ThemeInfo::attribute(const QString& key) const
 {
     return d.attributes.value(key);
