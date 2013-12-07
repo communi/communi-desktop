@@ -32,6 +32,10 @@ public:
     void init();
     void cleanup();
 
+    QString theme() const;
+    QStringList themes() const;
+    void setTheme(const QString& theme);
+
     IrcBuffer* currentBuffer() const;
 
     QByteArray saveState() const;

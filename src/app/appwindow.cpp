@@ -193,6 +193,8 @@ void AppWindow::onConnectAccepted()
 
 void AppWindow::onSettingsAccepted()
 {
+    d.chatPage->setTheme(d.settingsPage->theme());
+    d.stack->setCurrentWidget(d.chatPage);
 }
 
 void AppWindow::onRejected()
@@ -212,6 +214,7 @@ void AppWindow::updateTitle()
 
 void AppWindow::showSettings()
 {
+    d.settingsPage->setThemes(d.chatPage->themes());
     d.stack->setCurrentWidget(d.settingsPage);
 }
 

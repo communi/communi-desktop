@@ -45,10 +45,6 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
     connect(d.splitView, SIGNAL(viewRemoved(BufferView*)), this, SLOT(cleanupView(BufferView*)));
 
     setStretchFactor(1, 1);
-
-    // TODO:
-    ThemeLoader* loader = ThemeLoader::instance();
-    d.theme = loader->theme("cute");
 }
 
 ChatPage::~ChatPage()
@@ -57,8 +53,6 @@ ChatPage::~ChatPage()
 
 void ChatPage::init()
 {
-    window()->setStyleSheet(d.theme.attribute("application"));
-
     PluginLoader::instance()->initTree(d.treeWidget);
     initView(d.splitView->currentView());
 }
@@ -73,12 +67,41 @@ IrcBuffer* ChatPage::currentBuffer() const
     return d.treeWidget->currentBuffer();
 }
 
+QString ChatPage::theme() const
+{
+    return d.theme.name();
+}
+
+QStringList ChatPage::themes() const
+{
+    return ThemeLoader::instance()->themes();
+}
+
+void ChatPage::setTheme(const QString& theme)
+{
+    if (d.theme.name() != theme) {
+        d.theme = ThemeLoader::instance()->theme(theme);
+        window()->setStyleSheet(d.theme.attribute("application"));
+
+        QString css = d.theme.attribute("document");
+        QTreeWidgetItemIterator it(d.treeWidget);
+        while (*it) {
+            TreeItem* item = static_cast<TreeItem*>(*it);
+            QList<TextDocument*> documents = item->buffer()->findChildren<TextDocument*>();
+            foreach (TextDocument* doc, documents)
+                doc->setStyleSheet(css);
+            it++;
+        }
+    }
+}
+
 QByteArray ChatPage::saveState() const
 {
     QVariantMap state;
     state.insert("splitter", QSplitter::saveState());
     state.insert("views", d.splitView->saveState());
     state.insert("tree", d.treeWidget->saveState());
+    state.insert("theme", d.theme.name());
 
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -98,6 +121,10 @@ void ChatPage::restoreState(const QByteArray& data)
         QSplitter::restoreState(state.value("splitter").toByteArray());
     if (state.contains("views"))
         d.splitView->restoreState(state.value("views").toByteArray());
+    if (state.contains("theme"))
+        setTheme(state.value("theme").toString());
+    else
+        setTheme("cute");
 }
 
 void ChatPage::initConnection(IrcConnection* connection)
