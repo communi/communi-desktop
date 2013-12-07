@@ -2,5 +2,5 @@
 name=Dark
 version=1.0
 description=A dark Communi theme
-maintainer=J-P Nurmi <jpnurmi@gmail.com>
+author=J-P Nurmi <jpnurmi@gmail.com>
 style=dark.css
