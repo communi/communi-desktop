@@ -59,11 +59,11 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
     setCentralWidget(d.stack);
 
     d.connectPage = new ConnectPage(this);
-    connect(d.connectPage, SIGNAL(accepted()), this, SLOT(onAccepted()));
+    connect(d.connectPage, SIGNAL(accepted()), this, SLOT(onConnectAccepted()));
     connect(d.connectPage, SIGNAL(rejected()), this, SLOT(onRejected()));
 
     d.settingsPage = new SettingsPage(this);
-    connect(d.settingsPage, SIGNAL(accepted()), this, SLOT(TODO()));
+    connect(d.settingsPage, SIGNAL(accepted()), this, SLOT(onSettingsAccepted()));
     connect(d.settingsPage, SIGNAL(rejected()), this, SLOT(onRejected()));
 
     d.chatPage = new ChatPage(this);
@@ -172,7 +172,7 @@ void AppWindow::doConnect()
     d.stack->setCurrentWidget(d.connectPage);
 }
 
-void AppWindow::onAccepted()
+void AppWindow::onConnectAccepted()
 {
     IrcConnection* connection = d.editedConnection;
     if (!connection)
@@ -189,6 +189,10 @@ void AppWindow::onAccepted()
         addConnection(connection);
     d.editedConnection = 0;
     d.stack->setCurrentWidget(d.chatPage);
+}
+
+void AppWindow::onSettingsAccepted()
+{
 }
 
 void AppWindow::onRejected()

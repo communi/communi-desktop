@@ -37,7 +37,8 @@ protected:
 
 private slots:
     void doConnect();
-    void onAccepted();
+    void onConnectAccepted();
+    void onSettingsAccepted();
     void onRejected();
     void updateTitle();
     void showSettings();
