@@ -52,6 +52,7 @@ SOURCES += $$PWD/themeloader.cpp
 
 include(plugins.pri)
 include(../config.pri)
+include(../plugins/api/api.pri)
 include(../libs/base/base.pri)
 include(../libs/backend/backend.pri)
 include(../libs/3rdparty/3rdparty.pri)

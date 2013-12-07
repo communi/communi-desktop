@@ -17,5 +17,6 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 }
 
 include(../config.pri)
+include(api/api.pri)
 include(../libs/base/base.pri)
 include(../libs/backend/backend.pri)
