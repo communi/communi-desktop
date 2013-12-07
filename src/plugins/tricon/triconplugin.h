@@ -52,6 +52,7 @@ private:
         QMovie movie;
         TreeWidget* tree;
         QList<QPointer<TreeItem> > items;
+        QList<QPointer<IrcConnection> > connections;
     } d;
 };
 

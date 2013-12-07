@@ -29,15 +29,15 @@ TriconPlugin::TriconPlugin(QObject* parent) : QObject(parent)
 
     initResource();
     d.movie.setFileName(":/ajax-loader.gif");
+    connect(&d.movie, SIGNAL(frameChanged(int)), this, SLOT(updateLoader()));
 }
 
 void TriconPlugin::initTree(TreeWidget* tree)
 {
     d.tree = tree;
-    for (int i = 0; i < tree->topLevelItemCount(); ++i)
-        updateConnection(static_cast<TreeItem*>(tree->topLevelItem(i))->connection());
-
-    connect(&d.movie, SIGNAL(frameChanged(int)), this, SLOT(updateLoader()));
+    foreach (IrcConnection* connection, d.connections)
+        updateConnection(connection);
+    d.connections.clear();
 }
 
 void TriconPlugin::initConnection(IrcConnection* connection)
@@ -45,6 +45,8 @@ void TriconPlugin::initConnection(IrcConnection* connection)
     connect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateConnection()));
     if (d.tree)
         updateConnection(connection);
+    else
+        d.connections += connection;
 
     IrcLagTimer* timer = new IrcLagTimer(connection);
     connect(timer, SIGNAL(lagChanged(qint64)), this, SLOT(updateLag(qint64)));
@@ -114,7 +116,6 @@ void TriconPlugin::updateConnection(IrcConnection* connection, qint64 lag)
             d.movie.start();
     }
 }
-
 
 #if QT_VERSION < 0x050000
 Q_EXPORT_STATIC_PLUGIN(TriconPlugin)
