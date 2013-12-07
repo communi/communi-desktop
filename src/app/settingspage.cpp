@@ -28,3 +28,14 @@ SettingsPage::SettingsPage(QWidget* parent) : QWidget(parent)
 SettingsPage::~SettingsPage()
 {
 }
+
+QString SettingsPage::theme() const
+{
+    return ui.comboBox->currentText();
+}
+
+void SettingsPage::setThemes(const QStringList& themes)
+{
+    ui.comboBox->clear();
+    ui.comboBox->addItems(themes);
+}

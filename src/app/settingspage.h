@@ -20,6 +20,9 @@ public:
     SettingsPage(QWidget* parent = 0);
     ~SettingsPage();
 
+    QString theme() const;
+    void setThemes(const QStringList& themes);
+
 signals:
     void accepted();
     void rejected();
