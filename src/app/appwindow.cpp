@@ -16,12 +16,13 @@
 #include <IrcConnection>
 #include <QApplication>
 #include <QCloseEvent>
-#include <QVBoxLayout>
 #include <QPushButton>
 #include <IrcBuffer>
 #include <QShortcut>
 #include <QSettings>
+#include <QMenuBar>
 #include <QTimer>
+#include <QMenu>
 #include <QDir>
 
 AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
@@ -55,9 +56,7 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
     d.stack = new QStackedWidget(this);
     connect(d.stack, SIGNAL(currentChanged(int)), this, SLOT(updateTitle()));
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
-    layout->addWidget(d.stack);
-    layout->setMargin(0);
+    setCentralWidget(d.stack);
 
     d.connectPage = new ConnectPage(this);
     connect(d.connectPage, SIGNAL(accepted()), this, SLOT(onAccepted()));
@@ -88,6 +87,16 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
 
     shortcut = new QShortcut(QKeySequence::Close, this);
     connect(shortcut, SIGNAL(activated()), d.chatPage, SLOT(closeBuffer()));
+
+#ifdef Q_OS_MAC
+    QMenu* menu = new QMenu(this);
+    menuBar()->addMenu(menu);
+
+    QAction* action = new QAction(tr("Preferences"), this);
+    action->setMenuRole(QAction::PreferencesRole);
+    connect(action, SIGNAL(triggered()), this, SLOT(showSettings()));
+    menu->addAction(action);
+#endif // Q_OS_MAC
 
     QSettings settings;
     if (settings.contains("geometry"))

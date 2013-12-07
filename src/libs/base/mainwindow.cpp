@@ -11,7 +11,7 @@
 #include <IrcConnection>
 #include <QUuid>
 
-MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
 }
 
