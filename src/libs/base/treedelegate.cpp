@@ -98,6 +98,20 @@ TreeDelegate::TreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
 {
 }
 
+QSize TreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+    QSize sz = QStyledItemDelegate::sizeHint(option, index);
+    if (!index.parent().isValid()) {
+        QStyleOptionHeader opt;
+        opt.QStyleOption::operator=(option);
+        opt.text = index.data(Qt::DisplayRole).toString();
+        opt.icon = index.data(Qt::DecorationRole).value<QIcon>();
+        sz = sz.expandedTo(qApp->style()->sizeFromContents(QStyle::CT_HeaderSection, &opt, option.rect.size()));
+    }
+    return sz;
+}
+
+
 void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     bool hilite = index.data(TreeRole::Highlight).toBool();
