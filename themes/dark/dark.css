@@ -24,3 +24,197 @@ a { color: #5078ff; }
 .lightcyan { color: #2aa198;}
 .lightblue { color: #268bd2;}
 .pink { color: #6c71c4;}
+
+TextBrowser, TextInput {
+    border: none;
+    color: #dedede;
+    selection-color: #dedede;
+    selection-background-color: #444444;
+}
+
+SplitView {
+    background: #000000;
+}
+
+TextBrowser {
+    background: #000000;
+}
+
+TextInput {
+    background: #222222;
+    border-top: 1px solid #444444;
+}
+
+TreeWidget, ListView {
+    border: none;
+    background: #222222;
+    selection-background-color: palette(highlight);
+}
+
+TreeWidget::item {
+    color: #dedede;
+    height: 20px;
+}
+
+ListView::item {
+    color: #dedede;
+    height: 20px;
+}
+
+TreeWidget::item:selected, TreeWidget::item:selected:hover {
+    color: #dedede;
+    background-color: #444444;
+}
+
+ListView::item:selected, ListView::item:selected:hover {
+    color: #dedede;
+    background-color: #444444;
+}
+
+TreeWidget::item:!selected:hover, ListView::item:!selected:hover {
+    background-color: transparent;
+}
+
+TreeHeader::section, TitleBar::section {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #444444, stop: 1 #222222);
+    color: #dedede;
+    padding-left: 4px;
+    border-bottom: 1px solid #444444;
+}
+
+TextLowlight {
+    border: 1px solid #444444;
+    background-color: #222222;
+}
+
+TextHighlight {
+    border: 1px solid #444444;
+    background-color: rgba(64,64,255,64);
+}
+
+TextShadow {
+    max-height: 5px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #222222, stop: 1 transparent);
+}
+
+TreeBadge {
+    color: #dedede;
+    margin: 3px;
+    font-size: 8px;
+    border-radius: 6px;
+    background: #444444;
+}
+
+TreeBadge:on {
+    color: #ffffff;
+    background: #283ecc;
+}
+
+TreeHeader::section:on {
+    color: #324aff;
+}
+
+TreeWidget::item:on {
+    color: #324aff
+}
+
+TitleBar {
+    color: #dedede;
+    min-height: 20px;
+}
+
+TitleBar > QTextEdit {
+    border-bottom: 1px solid #444444;
+}
+
+QSplitter::handle {
+    width: 1px;
+    height: 1px;
+    background: #444444;
+}
+
+QToolButton {
+    border: 1px solid #444444;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #444444, stop: 1 #222222);
+}
+
+QToolButton:pressed {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #222222, stop: 1 #444444);
+}
+
+QToolButton::menu-indicator {
+    image: none;
+}
+
+TitleBar > QToolButton {
+    min-width: 20px;
+    max-width: 20px;
+    min-height: 18px;
+    max-height: 18px;
+    border-top-color: transparent;
+    border-right-color: transparent;
+}
+
+TitleBar > QToolButton#menu {
+    image: url(white:down.png)
+}
+
+TitleBar > QToolButton#close {
+    image: url(white:close.png)
+}
+
+Finder > QToolButton {
+    min-width: 20px;
+    max-width: 20px;
+    min-height: 20px;
+    max-height: 20px;
+}
+
+Finder > QLineEdit {
+    color: #dedede;
+    background: #222222;
+    selection-color: #dedede;
+    selection-background-color: #444444;
+    border: 1px solid #444444;
+    border-bottom-color: transparent;
+}
+
+Finder > QToolButton {
+    border-left-color: transparent;
+}
+
+Finder > QToolButton#prev {
+    image: url(white:up.png)
+}
+
+Finder > QToolButton#next {
+    image: url(white:down.png)
+}
+
+QScrollBar {
+    border: 1px solid transparent;
+    border-left-color: #444444;
+    background: #222222;
+    width: 14px;
+}
+
+QScrollBar::handle {
+    background: #444444;
+    border-radius: 4px;
+    margin: 1px 1px 1px 2px;
+    min-height: 24px;
+}
+
+QScrollBar::handle:pressed {
+    background: #666666;
+}
+
+QScrollBar::add-line, QScrollBar::sub-line, QScrollBar::up-arrow, QScrollBar::down-arrow, QScrollBar::add-page, QScrollBar::sub-page {
+    width: 0;
+    height: 0;
+    background: none;
+}

@@ -1,7 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource prefix="/themes/dark">
   <file>dark.css</file>
-  <file>dark.qss</file>
   <file>dark.theme</file>
 </qresource>
 </RCC>

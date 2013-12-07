@@ -3,5 +3,4 @@ name=cute
 version=1.0
 description=A cute Communi theme
 maintainer=J-P Nurmi <jpnurmi@gmail.com>
-application=:/themes/cute/cute.qss
-document=:/themes/cute/cute.css
+style=:/themes/cute/cute.css

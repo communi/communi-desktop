@@ -3,5 +3,4 @@ name=dark
 version=1.0
 description=A dark Communi theme
 maintainer=J-P Nurmi <jpnurmi@gmail.com>
-application=dark.qss
-document=dark.css
+style=dark.css

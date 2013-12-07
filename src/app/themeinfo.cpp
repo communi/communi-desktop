@@ -50,8 +50,7 @@ bool ThemeInfo::load(const QString& filePath)
         settings.beginGroup("Theme");
         foreach (const QString& key, settings.childKeys())
             d.attributes.insert(key, settings.value(key).toString());
-        d.attributes.insert("document", readFile(QFileInfo(filePath).dir(), settings.value("document").toString()));
-        d.attributes.insert("application", readFile(QFileInfo(filePath).dir(), settings.value("application").toString()));
+        d.attributes.insert("style", readFile(QFileInfo(filePath).dir(), settings.value("style").toString()));
         settings.endGroup();
     }
     return !d.attributes.value("name").isEmpty();

@@ -1,7 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource prefix="/themes/cute">
   <file>cute.css</file>
-  <file>cute.qss</file>
   <file>cute.theme</file>
 </qresource>
 </RCC>
