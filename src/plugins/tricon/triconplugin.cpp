@@ -100,7 +100,7 @@ void TriconPlugin::updateConnection(IrcConnection* connection, qint64 lag)
             }
             painter.setBrush(color);
             painter.setRenderHint(QPainter::Antialiasing);
-            painter.drawEllipse(4, 4, 8, 8);
+            painter.drawEllipse(4, 5, 8, 8);
             item->setIcon(0, pixmap);
             d.items.removeOne(item);
         }
