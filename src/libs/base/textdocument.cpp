@@ -16,6 +16,7 @@
 #include "messageformatter.h"
 #include <QAbstractTextDocumentLayout>
 #include <QTextDocumentFragment>
+#include <QTextBlockUserData>
 #include <IrcConnection>
 #include <QStylePainter>
 #include <QApplication>
@@ -30,6 +31,12 @@
 #include <qmath.h>
 
 static int delay = 1000;
+
+class TextBlockUserData : public QTextBlockUserData
+{
+public:
+    QString line;
+};
 
 class TextFrame : public QFrame
 {
@@ -75,8 +82,8 @@ void TextDocument::setStyleSheet(const QString& css)
 {
     if (d.css != css) {
         d.css = css;
-        // TODO: rebuild the doc?
         setDefaultStyleSheet(css);
+        rebuild();
     }
 }
 
@@ -333,6 +340,21 @@ void TextDocument::receiveMessage(IrcMessage* message)
     emit messageReceived(message);
 }
 
+void TextDocument::rebuild()
+{
+    QStringList lines;
+    QTextBlock block = begin();
+    while (block.isValid()) {
+        TextBlockUserData* data = static_cast<TextBlockUserData*>(block.userData());
+        if (data)
+            lines += data->line;
+        block = block.next();
+    }
+    clear();
+    foreach (const QString& line, lines)
+        append(line);
+}
+
 void TextDocument::appendLine(QTextCursor& cursor, const QString& line)
 {
     const int count = blockCount();
@@ -369,6 +391,11 @@ void TextDocument::appendLine(QTextCursor& cursor, const QString& line)
 #endif // QT_VERSION
 
     cursor.insertHtml(line);
+
+    TextBlockUserData* data = new TextBlockUserData;
+    data->line = line;
+    QTextBlock block = cursor.block();
+    block.setUserData(data);
 
     if (d.ub == -1 && !d.visible)
         d.ub = count;

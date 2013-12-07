@@ -69,6 +69,7 @@ private slots:
     void flushLines();
 
 private:
+    void rebuild();
     void appendLine(QTextCursor& cursor, const QString& line);
 
     struct Private {
