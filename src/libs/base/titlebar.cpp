@@ -17,9 +17,12 @@
 #include <QStyleOptionHeader>
 #include <QStylePainter>
 #include <IrcTextFormat>
+#include <QApplication>
 #include <QMouseEvent>
+#include <QHeaderView>
 #include <IrcCommand>
 #include <IrcChannel>
+#include <QTreeView>
 #include <QStyle>
 #include <QMenu>
 
@@ -56,6 +59,19 @@ TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
     d.menuButton->setMenu(new QMenu(d.menuButton));
     d.menuButton->setPopupMode(QToolButton::InstantPopup);
     d.menuButton->adjustSize();
+}
+
+QSize TitleBar::minimumSizeHint() const
+{
+    // QMacStyle wants a QHeaderView that is a child of QTreeView :/
+    QTreeView tree;
+    QStyleOptionHeader option;
+    return style()->sizeFromContents(QStyle::CT_HeaderSection, &option, QSize(), tree.header());
+}
+
+int TitleBar::heightForWidth(int width) const
+{
+    return qMax(minimumSizeHint().height(), QLabel::heightForWidth(width));
 }
 
 IrcBuffer* TitleBar::buffer() const
@@ -172,12 +188,9 @@ void TitleBar::resizeEvent(QResizeEvent* event)
     d.menuButton->setGeometry(r);
 
     QStyleOptionHeader option;
-    option.init(this);
-    option.rect.setRight(r.left() - 1);
-    option.state = (QStyle::State_Raised | QStyle::State_Horizontal);
-    option.position = QStyleOptionHeader::OnlyOneSection;
+    option.initFrom(this);
     QRect ser = style()->subElementRect(QStyle::SE_HeaderLabel, &option, this);
-    setContentsMargins(ser.x(), ser.y(), width () - ser.x() - ser.width(), height() - ser.y() - ser.height());
+    setIndent(ser.x());
 
     QLabel::resizeEvent(event);
 }

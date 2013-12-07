@@ -18,6 +18,8 @@
 #include <QStyleOptionHeader>
 #include <QStylePainter>
 #include <QApplication>
+#include <QHeaderView>
+#include <QTreeView>
 #include <QPalette>
 #include <QPainter>
 #include <QPointer>
@@ -102,15 +104,15 @@ QSize TreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelInd
 {
     QSize sz = QStyledItemDelegate::sizeHint(option, index);
     if (!index.parent().isValid()) {
+        // QMacStyle wants a QHeaderView that is a child of QTreeView :/
+        QTreeView tree;
         QStyleOptionHeader opt;
-        opt.QStyleOption::operator=(option);
-        opt.text = index.data(Qt::DisplayRole).toString();
-        opt.icon = index.data(Qt::DecorationRole).value<QIcon>();
-        sz = sz.expandedTo(qApp->style()->sizeFromContents(QStyle::CT_HeaderSection, &opt, option.rect.size()));
+        QSize ss = qApp->style()->sizeFromContents(QStyle::CT_HeaderSection, &opt, QSize(), tree.header());
+        if (ss.isValid())
+            return ss;
     }
     return sz;
 }
-
 
 void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {

@@ -32,6 +32,9 @@ public:
     IrcBuffer* buffer() const;
     QString topic() const;
 
+    QSize minimumSizeHint() const;
+    int heightForWidth(int width) const;
+
 public slots:
     void setBuffer(IrcBuffer* buffer);
     void setTopic(const QString& topic);
