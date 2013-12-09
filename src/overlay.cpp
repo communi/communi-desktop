@@ -45,7 +45,7 @@ void Overlay::setBusy(bool busy)
     QMovie* mov = movie();
     if (busy) {
         if (!mov) {
-            mov = new QMovie(QString(":/resources/ajax-loader-%1.gif").arg(d.dark ? "dark" : "light"), QByteArray(), this);
+            mov = new QMovie(QString(":/resources/loader-%1.mng").arg(d.dark ? "dark" : "light"), QByteArray(), this);
             setMovie(mov);
         }
         mov->start();
@@ -64,7 +64,7 @@ void Overlay::setDark(bool dark)
     if (d.dark != dark) {
         d.dark = dark;
         if (movie())
-            movie()->setFileName(QString(":/resources/ajax-loader-%1.gif").arg(d.dark ? "dark" : "light"));
+            movie()->setFileName(QString(":/resources/loader-%1.mng").arg(d.dark ? "dark" : "light"));
     }
 }
 
