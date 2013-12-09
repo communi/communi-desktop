@@ -3,8 +3,8 @@
   <file>resources/light.css</file>
   <file>resources/dark.css</file>
 
-  <file>resources/ajax-loader-light.gif</file>
-  <file>resources/ajax-loader-dark.gif</file>
+  <file>resources/loader-light.mng</file>
+  <file>resources/loader-dark.mng</file>
 
   <file>resources/icons/16x16/communi.png</file>
   <file>resources/icons/24x24/communi.png</file>
