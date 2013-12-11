@@ -98,6 +98,10 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
     action->setMenuRole(QAction::PreferencesRole);
     connect(action, SIGNAL(triggered()), this, SLOT(showSettings()));
     menu->addAction(action);
+#else
+    // TODO:
+    QShortcut* s = new QShortcut(QKeySequence("Ctrl+Alt+Shift+S"), this);
+    connect(s, SIGNAL(activated()), this, SLOT(showSettings()));
 #endif // Q_OS_MAC
 
     QSettings settings;
