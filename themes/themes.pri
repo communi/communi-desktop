@@ -2,7 +2,13 @@
 # Communi
 ######################################################################
 
-include(cute/cute.pri)
+RESOURCES += $$PWD/cute/cute.qrc
+
+!build_pass {
+    OTHER_FILES += $$files(*.css, true)
+    OTHER_FILES += $$files(*.qss, true)
+    OTHER_FILES += $$files(*.theme, true)
+}
 
 win32 {
     themes.files = $$SOURCE_ROOT/themes/dark
