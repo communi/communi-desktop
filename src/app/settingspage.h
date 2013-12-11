@@ -21,7 +21,6 @@ public:
     ~SettingsPage();
 
     QString theme() const;
-    void setThemes(const QStringList& themes);
 
 signals:
     void accepted();

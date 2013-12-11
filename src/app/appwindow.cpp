@@ -62,10 +62,6 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
     connect(d.connectPage, SIGNAL(accepted()), this, SLOT(onConnectAccepted()));
     connect(d.connectPage, SIGNAL(rejected()), this, SLOT(onRejected()));
 
-    d.settingsPage = new SettingsPage(this);
-    connect(d.settingsPage, SIGNAL(accepted()), this, SLOT(onSettingsAccepted()));
-    connect(d.settingsPage, SIGNAL(rejected()), this, SLOT(onRejected()));
-
     d.chatPage = new ChatPage(this);
     setCurrentView(d.chatPage->currentView());
     connect(d.chatPage, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(updateTitle()));
@@ -73,6 +69,10 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
     connect(this, SIGNAL(connectionAdded(IrcConnection*)), d.chatPage, SLOT(initConnection(IrcConnection*)));
     connect(this, SIGNAL(connectionRemoved(IrcConnection*)), d.chatPage, SLOT(cleanupConnection(IrcConnection*)));
     connect(this, SIGNAL(connectionRemoved(IrcConnection*)), this, SLOT(cleanupConnection(IrcConnection*)));
+
+    d.settingsPage = new SettingsPage(this);
+    connect(d.settingsPage, SIGNAL(accepted()), this, SLOT(onSettingsAccepted()));
+    connect(d.settingsPage, SIGNAL(rejected()), this, SLOT(onRejected()));
 
     d.stack->addWidget(d.settingsPage);
     d.stack->addWidget(d.connectPage);
@@ -220,7 +220,6 @@ void AppWindow::updateTitle()
 
 void AppWindow::showSettings()
 {
-    d.settingsPage->setThemes(d.chatPage->themes());
     d.stack->setCurrentWidget(d.settingsPage);
 }
 
