@@ -32,10 +32,9 @@ SplitView::SplitView(QWidget* parent) : QSplitter(parent)
     d.unsplitAction = new QAction(tr("Unsplit"), this);
     connect(d.unsplitAction, SIGNAL(triggered()), this, SLOT(unsplit()));
 
-    BufferView* view = createBufferView(this);
-    connect(view, SIGNAL(bufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
+    d.current = createBufferView(this);
+    connect(d.current, SIGNAL(bufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
     connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(onFocusChanged(QWidget*,QWidget*)));
-    BufferView::setCurrent(view);
 
 #ifdef Q_OS_MAC
     QString next = tr("Alt+Tab");
@@ -58,15 +57,14 @@ SplitView::SplitView(QWidget* parent) : QSplitter(parent)
 
 IrcBuffer* SplitView::currentBuffer() const
 {
-    BufferView* view = BufferView::current();
-    if (view)
-        return view->buffer();
+    if (d.current)
+        return d.current->buffer();
     return 0;
 }
 
 BufferView* SplitView::currentView() const
 {
-    return BufferView::current();
+    return d.current;
 }
 
 QList<BufferView*> SplitView::views() const
@@ -112,9 +110,8 @@ void SplitView::reset()
 {
     qDeleteAll(d.views);
     d.views.clear();
-    BufferView* view = createBufferView(this);
-    BufferView::setCurrent(view);
-    emit viewAdded(view);
+    d.current = createBufferView(this);
+    emit viewAdded(d.current);
 }
 
 void SplitView::split(Qt::Orientation orientation)
@@ -248,11 +245,10 @@ void SplitView::onFocusChanged(QWidget*, QWidget* widget)
 {
     while (widget) {
         BufferView* view = qobject_cast<BufferView*>(widget);
-        BufferView* current = currentView();
-        if (view && current != view) {
-            if (current)
-                disconnect(current, SIGNAL(bufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
-            BufferView::setCurrent(view);
+        if (view && d.current != view) {
+            if (d.current)
+                disconnect(d.current, SIGNAL(bufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
+            d.current = view;
             if (view)
                 connect(view, SIGNAL(bufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
             emit currentViewChanged(view);
@@ -284,7 +280,7 @@ QVariantMap SplitView::saveSplittedViews(const QSplitter* splitter) const
             IrcBuffer* buffer = bv->buffer();
             IrcConnection* connection = buffer ? buffer->connection() : 0;
             buf.insert("buffer", buffer ? buffer->title() : QString());
-            buf.insert("current", bv == BufferView::current());
+            buf.insert("current", bv == d.current);
             buf.insert("uuid", connection ? connection->userData().toString() : QString());
             if (QSplitter* sp = bv->findChild<QSplitter*>())
                 buf.insert("state", sp->saveState());

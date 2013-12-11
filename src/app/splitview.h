@@ -75,6 +75,7 @@ private:
         QAction* splitHAction;
         QAction* unsplitAction;
         QList<BufferView*> views;
+        QPointer<BufferView> current;
     } d;
 };
 

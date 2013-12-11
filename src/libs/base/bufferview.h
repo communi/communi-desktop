@@ -11,7 +11,6 @@
 #define BUFFERVIEW_H
 
 #include <QSplitter>
-#include <QPointer>
 
 class TitleBar;
 class ListView;
@@ -28,12 +27,6 @@ class BufferView : public QWidget
 public:
     explicit BufferView(QWidget* parent = 0);
     ~BufferView();
-
-    static BufferView* current();
-    static void setCurrent(BufferView* current);
-
-    bool isCurrent() const;
-    void setCurrent(bool current);
 
     IrcBuffer* buffer() const;
 
@@ -63,7 +56,6 @@ private:
         TextInput* textInput;
         TextBrowser* textBrowser;
         QSplitter* splitter;
-        static QPointer<BufferView> current;
     } d;
 };
 
