@@ -79,7 +79,7 @@ QStringList ChatPage::themes() const
 
 void ChatPage::setTheme(const QString& theme)
 {
-    if (d.theme.name() != theme) {
+    if (!d.theme.isValid() || d.theme.name() != theme) {
         d.theme = ThemeLoader::instance()->theme(theme);
 
         QString css = d.theme.style();

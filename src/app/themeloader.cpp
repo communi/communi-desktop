@@ -51,7 +51,7 @@ QStringList ThemeLoader::themes() const
 
 ThemeInfo ThemeLoader::theme(const QString& name) const
 {
-    return d.infos.value(name);
+    return d.infos.value(name, d.infos.value("Cute"));
 }
 
 void ThemeLoader::load(QDir dir)
