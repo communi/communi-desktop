@@ -26,7 +26,7 @@ ThemeLoader::ThemeLoader(QObject* parent) : QObject(parent)
         load(dir);
 #elif defined(Q_OS_WIN)
     QDir dir(QApplication::applicationDirPath());
-    if (dir.cd("themes"))
+    if (dir.cd("themes") || dir.cdUp() && dir.cd("themes"))
         load(dir);
 #elif defined(Q_OS_UNIX)
     QDir sys("/usr/share/themes/communi");
@@ -35,6 +35,9 @@ ThemeLoader::ThemeLoader(QObject* parent) : QObject(parent)
     QDir home = QDir::home();
     if (home.cd(".local/share/themes/communi"))
         load(home);
+    QDir dev(QApplication::applicationDirPath());
+    if (dev.cdUp() && dev.cd("themes"))
+        load(dev);
 #endif
 }
 
@@ -63,8 +66,10 @@ void ThemeLoader::load(QDir dir)
             foreach (const QString& fn, files) {
                 ThemeInfo info;
                 if (info.load(dir.filePath(fn))) {
-                    d.themes.append(info.name());
-                    d.infos.insert(info.name(), info);
+                    if (!d.infos.contains(info.name())) {
+                        d.themes.append(info.name());
+                        d.infos.insert(info.name(), info);
+                    }
                 }
             }
             dir.cdUp();
