@@ -67,7 +67,9 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
     connect(d.settingsPage, SIGNAL(rejected()), this, SLOT(onRejected()));
 
     d.chatPage = new ChatPage(this);
+    setCurrentView(d.chatPage->currentView());
     connect(d.chatPage, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(updateTitle()));
+    connect(d.chatPage, SIGNAL(currentViewChanged(BufferView*)), this, SLOT(setCurrentView(BufferView*)));
     connect(this, SIGNAL(connectionAdded(IrcConnection*)), d.chatPage, SLOT(initConnection(IrcConnection*)));
     connect(this, SIGNAL(connectionRemoved(IrcConnection*)), d.chatPage, SLOT(cleanupConnection(IrcConnection*)));
     connect(this, SIGNAL(connectionRemoved(IrcConnection*)), this, SLOT(cleanupConnection(IrcConnection*)));

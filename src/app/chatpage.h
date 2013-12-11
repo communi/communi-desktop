@@ -36,6 +36,7 @@ public:
     QStringList themes() const;
     void setTheme(const QString& theme);
 
+    BufferView* currentView() const;
     IrcBuffer* currentBuffer() const;
 
     QByteArray saveState() const;
@@ -45,6 +46,7 @@ public slots:
     void closeBuffer(IrcBuffer* buffer = 0);
 
 signals:
+    void currentViewChanged(BufferView* view);
     void currentBufferChanged(IrcBuffer* buffer);
 
 private slots:

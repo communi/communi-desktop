@@ -43,6 +43,7 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 
     connect(d.splitView, SIGNAL(viewAdded(BufferView*)), this, SLOT(initView(BufferView*)));
     connect(d.splitView, SIGNAL(viewRemoved(BufferView*)), this, SLOT(cleanupView(BufferView*)));
+    connect(d.splitView, SIGNAL(currentViewChanged(BufferView*)), this, SIGNAL(currentViewChanged(BufferView*)));
 
     setStretchFactor(1, 1);
 }
@@ -60,6 +61,11 @@ void ChatPage::init()
 void ChatPage::cleanup()
 {
     PluginLoader::instance()->cleanupTree(d.treeWidget);
+}
+
+BufferView* ChatPage::currentView() const
+{
+    return d.splitView->currentView();
 }
 
 IrcBuffer* ChatPage::currentBuffer() const

@@ -11,7 +11,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QPointer>
 
+class BufferView;
 class IrcConnection;
 
 class MainWindow : public QMainWindow
@@ -22,18 +24,22 @@ public:
     MainWindow(QWidget* parent = 0);
     ~MainWindow();
 
+    BufferView* currentView() const;
     QList<IrcConnection*> connections() const;
 
 public slots:
+    void setCurrentView(BufferView* view);
     void addConnection(IrcConnection* connection);
     void removeConnection(IrcConnection* connection);
 
 signals:
+    void currentViewChanged(BufferView* view);
     void connectionAdded(IrcConnection* connection);
     void connectionRemoved(IrcConnection* connection);
 
 private:
     struct Private {
+        QPointer<BufferView> view;
         QList<IrcConnection*> connections;
     } d;
 };

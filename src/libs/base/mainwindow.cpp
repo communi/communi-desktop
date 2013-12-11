@@ -8,15 +8,30 @@
  */
 
 #include "mainwindow.h"
+#include "bufferview.h"
 #include <IrcConnection>
 #include <QUuid>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
+    d.view = 0;
 }
 
 MainWindow::~MainWindow()
 {
+}
+
+BufferView* MainWindow::currentView() const
+{
+    return d.view;
+}
+
+void MainWindow::setCurrentView(BufferView* view)
+{
+    if (d.view != view) {
+        d.view = view;
+        emit currentViewChanged(view);
+    }
 }
 
 QList<IrcConnection*> MainWindow::connections() const
