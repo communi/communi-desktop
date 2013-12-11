@@ -15,6 +15,7 @@
 #include "finderplugin.h"
 #include "browserfinder.h"
 #include "textbrowser.h"
+#include "mainwindow.h"
 #include "treewidget.h"
 #include "treefinder.h"
 #include "listfinder.h"
@@ -26,6 +27,8 @@
 
 FinderPlugin::FinderPlugin(QObject* parent) : QObject(parent)
 {
+    d.tree = 0;
+    d.window = 0;
     d.nextShortcut = 0;
     d.prevShortcut = 0;
 }
@@ -53,6 +56,11 @@ void FinderPlugin::initTree(TreeWidget* tree)
     d.prevShortcut = new QShortcut(QKeySequence::FindPrevious, d.tree);
 }
 
+void FinderPlugin::initWindow(MainWindow* window)
+{
+    d.window = window;
+}
+
 void FinderPlugin::searchTree()
 {
     cancelListSearch();
@@ -66,7 +74,7 @@ void FinderPlugin::searchTree()
 
 void FinderPlugin::searchList()
 {
-    BufferView* view = BufferView::current();
+    BufferView* view = d.window->currentView();
     if (view && view->listView()->isVisible()) {
         cancelTreeSearch();
         cancelBrowserSearch();
@@ -80,7 +88,7 @@ void FinderPlugin::searchList()
 
 void FinderPlugin::searchBrowser()
 {
-    BufferView* view = BufferView::current();
+    BufferView* view = d.window->currentView();
     if (view && view->isVisible()) {
         cancelListSearch();
         cancelTreeSearch();
@@ -108,14 +116,14 @@ void FinderPlugin::cancelTreeSearch()
     Finder* finder = d.tree->findChild<TreeFinder*>();
     if (finder)
         finder->animateHide();
-    BufferView* view = BufferView::current();
+    BufferView* view = d.window->currentView();
     if (view)
         view->textInput()->setFocus();
 }
 
 void FinderPlugin::cancelListSearch()
 {
-    BufferView* view = BufferView::current();
+    BufferView* view = d.window->currentView();
     if (view) {
         Finder* finder = view->listView()->findChild<ListFinder*>();
         if (finder)
@@ -126,7 +134,7 @@ void FinderPlugin::cancelListSearch()
 
 void FinderPlugin::cancelBrowserSearch()
 {
-    BufferView* view = BufferView::current();
+    BufferView* view = d.window->currentView();
     if (view) {
         Finder* finder = view->textBrowser()->findChild<BrowserFinder*>();
         if (finder)
