@@ -127,8 +127,7 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
     else
         d.stack->setCurrentWidget(d.chatPage);
 
-    if (settings.contains("state"))
-        d.chatPage->restoreState(settings.value("state").toByteArray());
+    d.chatPage->restoreState(settings.value("state").toByteArray());
 }
 
 AppWindow::~AppWindow()
