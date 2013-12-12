@@ -33,7 +33,6 @@ public:
     void cleanup();
 
     QString theme() const;
-    QStringList themes() const;
     void setTheme(const QString& theme);
 
     BufferView* currentView() const;
