@@ -35,6 +35,9 @@ public:
     QString theme() const;
     void setTheme(const QString& theme);
 
+    TreeWidget* treeWidget() const;
+    SplitView* splitView() const;
+
     BufferView* currentView() const;
     IrcBuffer* currentBuffer() const;
 

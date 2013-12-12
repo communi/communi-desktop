@@ -63,6 +63,16 @@ void ChatPage::cleanup()
     PluginLoader::instance()->cleanupTree(d.treeWidget);
 }
 
+TreeWidget* ChatPage::treeWidget() const
+{
+    return d.treeWidget;
+}
+
+SplitView* ChatPage::splitView() const
+{
+    return d.splitView;
+}
+
 BufferView* ChatPage::currentView() const
 {
     return d.splitView->currentView();

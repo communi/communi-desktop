@@ -8,14 +8,73 @@
  */
 
 #include "settingspage.h"
+#include "textdocument.h"
 #include "themeloader.h"
+#include "treewidget.h"
 #include "themeinfo.h"
+#include "splitview.h"
 #include "chatpage.h"
+#include <IrcBufferModel>
+#include <IrcConnection>
 #include <QPushButton>
+#include <IrcMessage>
 #include <QShortcut>
+#include <IrcBuffer>
 #include <QPainter>
 #include <QPixmap>
 #include <QBuffer>
+
+//"Nullam eget commodo diam, sit amet ornare leo."
+//"Quisque vitae ipsum nisi."
+//"Phasellus tristique augue a felis tincidunt, vel pretium odio ornare."
+//"Mauris vel leo est."
+//"Vivamus porttitor mauris eget bibendum consequat."
+//"Ut volutpat nibh in enim elementum, sed placerat erat gravida."
+//"Duis risus mauris, laoreet nec tempus in, varius sit amet est."
+//"Etiam augue purus, pharetra vel neque a, fringilla hendrerit orci."
+
+TextDocument* createTextDocument(IrcBuffer* buffer)
+{
+    TextDocument* doc = new TextDocument(buffer);
+    doc->receiveMessage(IrcMessage::fromParameters("communi", "PRIVMSG", QStringList() << buffer->title() << "foo", buffer->connection()));
+    return doc;
+}
+
+static IrcBufferModel* createBufferModel(QObject* parent)
+{
+    IrcConnection* connection = new IrcConnection(parent);
+    IrcBufferModel* model = new IrcBufferModel(connection);
+    IrcBuffer* buffer = model->add("Lorem Ipsum");
+    buffer->setSticky(true);
+    model->add("#donec");
+    model->add("#convallis");
+    model->add("#sagittis");
+    createTextDocument(model->add("#magna"));
+    model->add("#tincidunt");
+    model->add("#phasellus ");
+    model->add("#tellus");
+    model->add("#fermentum");
+    model->add("#pharetra");
+    model->add("#vehicula");
+    model->add("#aliquam");
+    model->add("#bibendum ");
+    model->add("#semper");
+    model->add("#dictum");
+    model->add("#rhoncus");
+    return model;
+}
+
+static ChatPage* createChatPage(QWidget* parent = 0)
+{
+    ChatPage* page = new ChatPage(parent);
+    IrcBufferModel* model = createBufferModel(page);
+    foreach (IrcBuffer* buffer, model->buffers())
+        page->treeWidget()->addBuffer(buffer);
+    IrcBuffer* buffer = model->find("#magna");
+    page->splitView()->setCurrentBuffer(buffer);
+    page->treeWidget()->setCurrentBuffer(buffer);
+    return page;
+}
 
 SettingsPage::SettingsPage(QWidget* parent) : QWidget(parent)
 {
@@ -30,8 +89,8 @@ SettingsPage::SettingsPage(QWidget* parent) : QWidget(parent)
     shortcut = new QShortcut(Qt::Key_Escape, this);
     connect(shortcut, SIGNAL(activated()), ui.buttonBox->button(QDialogButtonBox::Cancel), SLOT(click()));
 
-    ChatPage page;
-    page.resize(640, 400);
+    ChatPage* page = createChatPage();
+    page->resize(640, 400);
 
     foreach (const QString& name, ThemeLoader::instance()->themes()) {
         ThemeInfo theme = ThemeLoader::instance()->theme(name);
@@ -39,8 +98,8 @@ SettingsPage::SettingsPage(QWidget* parent) : QWidget(parent)
         QPixmap pixmap(640, 400);
         QPainter painter(&pixmap);
 
-        page.setTheme(theme.name());
-        page.render(&painter);
+        page->setTheme(theme.name());
+        page->render(&painter);
 
         QByteArray ba;
         QBuffer buffer(&ba);
@@ -62,6 +121,8 @@ SettingsPage::SettingsPage(QWidget* parent) : QWidget(parent)
                           "</tr></table>").arg(theme.name(), theme.version(), theme.author(), theme.description(), ba.toBase64()));
         ui.content->layout()->addWidget(label);
     }
+
+    delete page;
 }
 
 SettingsPage::~SettingsPage()
@@ -80,3 +141,4 @@ void SettingsPage::setThemes(const QStringList& themes)
     //ui.comboBox->addItems(themes);
 }
 */
+
