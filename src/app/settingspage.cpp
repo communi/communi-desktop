@@ -17,6 +17,7 @@
 #include <IrcBufferModel>
 #include <IrcConnection>
 #include <QPushButton>
+#include <IrcChannel>
 #include <IrcMessage>
 #include <QShortcut>
 #include <IrcBuffer>
@@ -40,27 +41,35 @@ TextDocument* createTextDocument(IrcBuffer* buffer)
     return doc;
 }
 
+IrcBuffer* createChannel(const QString& name, QObject* parent)
+{
+    IrcChannel* channel = new IrcChannel(parent);
+    channel->setPrefix("#");
+    channel->setName(name);
+    return channel;
+}
+
 static IrcBufferModel* createBufferModel(QObject* parent)
 {
     IrcConnection* connection = new IrcConnection(parent);
     IrcBufferModel* model = new IrcBufferModel(connection);
     IrcBuffer* buffer = model->add("Lorem Ipsum");
     buffer->setSticky(true);
-    model->add("#donec");
-    model->add("#convallis");
-    model->add("#sagittis");
-    createTextDocument(model->add("#magna"));
-    model->add("#tincidunt");
-    model->add("#phasellus ");
-    model->add("#tellus");
-    model->add("#fermentum");
-    model->add("#pharetra");
-    model->add("#vehicula");
-    model->add("#aliquam");
-    model->add("#bibendum ");
-    model->add("#semper");
-    model->add("#dictum");
-    model->add("#rhoncus");
+    model->add(createChannel("donec", model));
+    model->add(createChannel("convallis", model));
+    model->add(createChannel("sagittis", model));
+    model->add(createChannel("magna", model));
+    model->add(createChannel("tincidunt", model));
+    model->add(createChannel("phasellus ", model));
+    model->add(createChannel("tellus", model));
+    model->add(createChannel("fermentum", model));
+    model->add(createChannel("pharetra", model));
+    model->add(createChannel("vehicula", model));
+    model->add(createChannel("aliquam", model));
+    model->add(createChannel("bibendum", model));
+    model->add(createChannel("semper", model));
+    model->add(createChannel("dictum", model));
+    model->add(createChannel("rhoncus", model));
     return model;
 }
 
@@ -71,6 +80,7 @@ static ChatPage* createChatPage(QWidget* parent = 0)
     foreach (IrcBuffer* buffer, model->buffers())
         page->treeWidget()->addBuffer(buffer);
     IrcBuffer* buffer = model->find("#magna");
+    createTextDocument(buffer);
     page->splitView()->setCurrentBuffer(buffer);
     page->treeWidget()->setCurrentBuffer(buffer);
     return page;
