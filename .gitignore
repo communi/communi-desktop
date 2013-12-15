@@ -28,6 +28,7 @@ Thumbs.db
 *.plist
 .DS_Store
 .qmake.cache
+.qmake.stash
 .make.cache
 .tmp
 *.Debug
