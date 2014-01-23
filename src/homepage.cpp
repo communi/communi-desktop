@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2008-2013 The Communi Project
+* Copyright (C) 2008-2014 The Communi Project
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ HomePage::HomePage(QWidget* parent) : QWidget(parent)
     footer->setOpenExternalLinks(true);
     footer->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     footer->setStyleSheet("");
-    footer->setText("<small>Copyright (C) 2008-2013 The Communi Project</small>");
+    footer->setText("<small>Copyright (C) 2008-2014 The Communi Project</small>");
 
     QLineEdit lineEdit;
     lineEdit.setStyleSheet("QLineEdit { border: 1px solid transparent; }");
