@@ -49,11 +49,11 @@ MessageView::MessageView(ViewInfo::Type type, IrcConnection* connection, Message
     d.setupUi(this);
     d.viewType = type;
     d.sentId = 1;
-    #if QT_VERSION >= 0x040700
+#if QT_VERSION >= 0x040700
     d.awayReply.invalidate();
-    #else
+#else
     d.awayReply = QTime();
-    #endif
+#endif
     d.playback = false;
     d.parser = stackView->parser();
     d.firstNames = true;

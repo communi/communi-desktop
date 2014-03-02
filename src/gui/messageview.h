@@ -104,11 +104,11 @@ private:
         QString topic;
         int sentId;
         QString awayMessage;
-        #if QT_VERSION >= 0x040700
+#if QT_VERSION >= 0x040700
         QElapsedTimer awayReply;
-        #else
+#else
         QTime awayReply;
-        #endif
+#endif
         bool playback;
         int joined, parted;
         int connected, disconnected;
