@@ -43,6 +43,7 @@ public:
 
     MessageView* currentView() const;
     MessageView* viewAt(int index) const;
+    MessageView* bufferView(IrcBuffer* buffer) const;
 
 public slots:
     MessageView* addView(const QString& receiver);

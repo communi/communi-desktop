@@ -79,6 +79,13 @@ MessageView* MessageStackView::viewAt(int index) const
     return qobject_cast<MessageView*>(widget(index));
 }
 
+MessageView* MessageStackView::bufferView(IrcBuffer* buffer) const
+{
+    if (buffer)
+        return d.views.value(buffer->title());
+    return 0;
+}
+
 MessageView* MessageStackView::addView(const QString& receiver)
 {
     MessageView* view = d.views.value(receiver.toLower());
