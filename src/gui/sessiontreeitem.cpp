@@ -15,24 +15,23 @@
 #include "sessiontreeitem.h"
 #include "sessiontreewidget.h"
 #include "itemdelegate.h"
-#include "messageview.h"
 #include <IrcBuffer>
 
-SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidget* parent) : QTreeWidgetItem(parent)
+SessionTreeItem::SessionTreeItem(IrcBuffer* buffer, QTreeWidget* parent) : QTreeWidgetItem(parent)
 {
-    d.view = view;
+    d.buffer = buffer;
     d.highlighted = false;
     d.sortOrder = Manual;
-    setText(0, view->receiver());
+    setText(0, buffer->title());
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
 }
 
-SessionTreeItem::SessionTreeItem(MessageView* view, QTreeWidgetItem* parent) : QTreeWidgetItem(parent)
+SessionTreeItem::SessionTreeItem(IrcBuffer* buffer, QTreeWidgetItem* parent) : QTreeWidgetItem(parent)
 {
-    d.view = view;
+    d.buffer = buffer;
     d.highlighted = false;
     d.sortOrder = Manual;
-    setText(0, view->receiver());
+    setText(0, buffer->title());
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
 }
 
@@ -40,14 +39,14 @@ SessionTreeItem::~SessionTreeItem()
 {
 }
 
-IrcConnection* SessionTreeItem::connection() const
+IrcBuffer* SessionTreeItem::buffer() const
 {
-    return d.view->connection();
+    return d.buffer;
 }
 
-MessageView* SessionTreeItem::view() const
+IrcConnection* SessionTreeItem::connection() const
 {
-    return d.view;
+    return d.buffer->connection();
 }
 
 SessionTreeItem* SessionTreeItem::findChild(const QString& name) const
@@ -62,14 +61,14 @@ QVariant SessionTreeItem::data(int column, int role) const
 {
     if (role == Qt::ForegroundRole) {
         SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget());
-        if (!d.view->isActive())
+        if (!d.buffer->isActive())
             return tw->statusColor(SessionTreeWidget::Inactive);
         if (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty()))
             return tw->currentHighlightColor();
         return tw->statusColor(SessionTreeWidget::Active);
     } else if (role == ItemDelegate::BadgeColorRole) {
         SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget());
-        if (!isSelected() && d.view->isActive() && d.highlighted)
+        if (!isSelected() && d.buffer->isActive() && d.highlighted)
             return tw->currentBadgeColor();
         return tw->statusColor(SessionTreeWidget::Badge);
     } else if (role == ItemDelegate::HighlightRole) {
@@ -153,14 +152,14 @@ bool SessionTreeItem::operator<(const QTreeWidgetItem& other) const
     Q_ASSERT(parent() && other.parent());
     if (currentSortOrder() == Alphabetic) {
         const SessionTreeItem* otherItem = static_cast<const SessionTreeItem*>(&other);
-        const bool a = d.view->viewType() == ViewInfo::Channel;
-        const bool b = otherItem->d.view->viewType() == ViewInfo::Channel;
-        if (a != b)
-            return a;
-        const IrcBuffer* ab = d.view->buffer();
-        const IrcBuffer* bb = otherItem->view()->buffer();
+        const IrcBuffer* ab = d.buffer;
+        const IrcBuffer* bb = otherItem->buffer();
         if (!ab || !bb)
             return QTreeWidgetItem::operator<(other);
+        const bool ac = ab->isChannel();
+        const bool bc = bb->isChannel();
+        if (ac != bc)
+            return ac;
         return ab->name().localeAwareCompare(bb->name()) < 0;
     } else {
         // manual sorting via dnd

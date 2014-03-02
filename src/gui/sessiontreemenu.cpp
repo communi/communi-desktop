@@ -74,8 +74,8 @@ void SessionTreeMenu::updateActions()
     if (d.item) {
         const bool child = d.item->parent();
         const bool connected = d.item->connection()->isActive();
-        const bool active = d.item->view()->isActive();
-        const bool channel = d.item->view()->buffer()->isChannel();
+        const bool active = d.item->buffer()->isActive();
+        const bool channel = d.item->buffer()->isChannel();
         d.disconnectAction->setVisible(connected);
         d.reconnectAction->setVisible(!connected);
         d.editAction->setVisible(!connected && !child);

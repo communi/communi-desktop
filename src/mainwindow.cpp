@@ -353,7 +353,8 @@ void MainWindow::closeTreeItem(SessionTreeItem* item)
 {
     MessageStackView* stack = stackView->connectionWidget(item->connection());
     if (stack) {
-        int index = stack->indexOf(item->view());
+        MessageView* view = stack->bufferView(item->buffer());
+        int index = stack->indexOf(view);
         stack->closeView(index);
         if (index == 0) {
             stackView->removeConnection(stack->connection());

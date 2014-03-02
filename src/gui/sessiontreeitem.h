@@ -17,18 +17,18 @@
 
 #include <QTreeWidgetItem>
 
+class IrcBuffer;
 class IrcConnection;
-class MessageView;
 
 class SessionTreeItem : public QTreeWidgetItem
 {
 public:
-    SessionTreeItem(MessageView* view, QTreeWidget* parent);
-    SessionTreeItem(MessageView* view, QTreeWidgetItem* parent);
+    SessionTreeItem(IrcBuffer* buffer, QTreeWidget* parent);
+    SessionTreeItem(IrcBuffer* buffer, QTreeWidgetItem* parent);
     ~SessionTreeItem();
 
+    IrcBuffer* buffer() const;
     IrcConnection* connection() const;
-    MessageView* view() const;
     SessionTreeItem* findChild(const QString& name) const;
 
     QVariant data(int column, int role) const;
@@ -52,7 +52,7 @@ public:
 private:
     struct Private {
         bool highlighted;
-        MessageView* view;
+        IrcBuffer* buffer;
         SortOrder sortOrder;
         QStringList manualOrder;
         QSet<SessionTreeItem*> highlightedChildren;

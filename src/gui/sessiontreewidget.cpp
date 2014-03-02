@@ -25,6 +25,7 @@
 #include <QContextMenuEvent>
 #include <QHeaderView>
 #include <QScrollBar>
+#include <IrcBuffer>
 #include <QTimer>
 
 SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
@@ -197,10 +198,11 @@ ViewInfos SessionTreeWidget::viewInfos(IrcConnection* connection) const
     if (item) {
         for (int i = 0; i < item->childCount(); ++i) {
             SessionTreeItem* child = static_cast<SessionTreeItem*>(item->child(i));
+            IrcBuffer* buf = child->buffer();
             ViewInfo view;
-            view.type = child->view()->viewType();
-            view.name = child->view()->receiver();
-            view.active = child->view()->isActive();
+            view.type = buf->isSticky() ? ViewInfo::Server : buf->isChannel() ? ViewInfo::Channel : ViewInfo::Query;
+            view.name = buf->title();
+            view.active = buf->isActive();
             view.expanded = item->isExpanded();
             views += view;
         }
@@ -212,7 +214,7 @@ void SessionTreeWidget::addView(MessageView* view)
 {
     SessionTreeItem* item = 0;
     if (view->viewType() == ViewInfo::Server) {
-        item = new SessionTreeItem(view, this);
+        item = new SessionTreeItem(view->buffer(), this);
         IrcConnection* connection = view->connection();
         connect(connection, SIGNAL(displayNameChanged(QString)), this, SLOT(updateConnection()));
         d.connectionItems.insert(connection, item);
@@ -220,7 +222,7 @@ void SessionTreeWidget::addView(MessageView* view)
         item->sort(sortViews ? SessionTreeItem::Alphabetic : SessionTreeItem::Manual);
     } else {
         SessionTreeItem* parent = d.connectionItems.value(view->connection());
-        item = new SessionTreeItem(view, parent);
+        item = new SessionTreeItem(view->buffer(), parent);
         parent->sortChildren(0, Qt::AscendingOrder);
     }
 
