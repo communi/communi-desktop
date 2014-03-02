@@ -14,7 +14,6 @@
 
 #include "messagehandler.h"
 #include "messageview.h"
-#include "zncmanager.h"
 #include <qabstractsocket.h>
 #include <ircconnection.h>
 #include <qvariant.h>
@@ -23,10 +22,6 @@
 
 MessageHandler::MessageHandler(QObject* parent) : QObject(parent)
 {
-    d.znc = new ZncManager(this);
-    connect(d.znc, SIGNAL(playbackActiveChanged(bool)), this, SLOT(activatePlayback(bool)));
-    connect(d.znc, SIGNAL(playbackTargetChanged(QString)), this, SLOT(playbackView(QString)));
-
     d.defaultView = 0;
     d.currentView = 0;
 }
@@ -36,11 +31,6 @@ MessageHandler::~MessageHandler()
     d.defaultView = 0;
     d.currentView = 0;
     d.views.clear();
-}
-
-ZncManager* MessageHandler::znc() const
-{
-    return d.znc;
 }
 
 MessageView* MessageHandler::defaultView() const
@@ -159,20 +149,16 @@ void MessageHandler::handleNickMessage(IrcNickMessage* message)
 {
     QString oldNick = message->oldNick().toLower();
     QString newNick = message->newNick().toLower();
-    if (d.znc->isPlaybackActive()) {
-        sendMessage(message, d.znc->playbackTarget());
-    } else {
-        foreach (MessageView* view, d.views) {
-            if (view->viewType() == ViewInfo::Query) {
-                if (view->hasUser(oldNick) || !newNick.compare(view->receiver(), Qt::CaseInsensitive))
-                    view->receiveMessage(message);
-            }
-            if (!oldNick.compare(view->receiver(), Qt::CaseInsensitive)) {
-                emit viewToBeRenamed(view->receiver(), message->newNick());
-                if (!d.views.contains(newNick)) {
-                    MessageView* object = d.views.take(oldNick);
-                    d.views.insert(newNick, object);
-                }
+    foreach (MessageView* view, d.views) {
+        if (view->viewType() == ViewInfo::Query) {
+            if (view->hasUser(oldNick) || !newNick.compare(view->receiver(), Qt::CaseInsensitive))
+                view->receiveMessage(message);
+        }
+        if (!oldNick.compare(view->receiver(), Qt::CaseInsensitive)) {
+            emit viewToBeRenamed(view->receiver(), message->newNick());
+            if (!d.views.contains(newNick)) {
+                MessageView* object = d.views.take(oldNick);
+                d.views.insert(newNick, object);
             }
         }
     }
@@ -319,13 +305,9 @@ void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
 void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
 {
     QString nick = message->nick();
-    if (d.znc->isPlaybackActive()) {
-        sendMessage(message, d.znc->playbackTarget());
-    } else {
-        foreach (MessageView* view, d.views) {
-            if (view->viewType() == ViewInfo::Query && view->hasUser(nick))
-                view->receiveMessage(message);
-        }
+    foreach (MessageView* view, d.views) {
+        if (view->viewType() == ViewInfo::Query && view->hasUser(nick))
+            view->receiveMessage(message);
     }
 }
 
@@ -351,18 +333,4 @@ void MessageHandler::sendMessage(IrcMessage* message, const QString& receiver)
     if (!d.views.contains(lower))
         emit viewToBeAdded(receiver);
     sendMessage(message, d.views.value(lower));
-}
-
-void MessageHandler::activatePlayback(bool activate)
-{
-    MessageView* view = d.views.value(d.znc->playbackTarget().toLower());
-    if (view)
-        view->setPlaybackMode(activate);
-}
-
-void MessageHandler::playbackView(const QString& name)
-{
-    MessageView* view = d.views.value(name.toLower());
-    if (view)
-        view->setPlaybackMode(d.znc->isPlaybackActive());
 }

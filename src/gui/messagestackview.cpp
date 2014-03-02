@@ -32,8 +32,9 @@ MessageStackView::MessageStackView(IrcConnection* connection, QWidget* parent) :
     connect(d.bufferModel, SIGNAL(messageIgnored(IrcMessage*)), &d.handler, SLOT(handleMessage(IrcMessage*)));
     connect(d.bufferModel, SIGNAL(channelsChanged(QStringList)), &d.parser, SLOT(setChannels(QStringList)));
 
+    ZncManager* znc = new ZncManager(this);
+    znc->setModel(d.bufferModel);
     connection->installMessageFilter(qobject_cast<Connection*>(connection)); // TODO
-    d.handler.znc()->setModel(d.bufferModel);
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(activateView(int)));
 
@@ -89,7 +90,7 @@ MessageView* MessageStackView::bufferView(IrcBuffer* buffer) const
 MessageView* MessageStackView::addView(const QString& receiver)
 {
     MessageView* view = d.views.value(receiver.toLower());
-    bool channel = !receiver.isEmpty() && d.connection->network()->channelTypes().contains(receiver.at(0));
+    bool channel = d.connection->network()->isChannel(receiver);
     if (!view) {
         ViewInfo::Type type = ViewInfo::Server;
         if (!d.views.isEmpty())
@@ -190,7 +191,6 @@ void MessageStackView::sendMessage(const QString& receiver, const QString& messa
 void MessageStackView::applySettings()
 {
     SettingsModel* settings = Application::settings();
-    d.handler.znc()->setTimeStampFormat(settings->value("formatting.timeStamp").toString());
 
     QMap<QString,QString> aliases;
     QVariantMap values = settings->values("aliases.*");

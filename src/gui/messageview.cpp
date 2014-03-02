@@ -41,8 +41,6 @@
 #include <ircbuffer.h>
 #include <irc.h>
 
-Q_GLOBAL_STATIC(IrcTextFormat, irc_text_format)
-
 MessageView::MessageView(ViewInfo::Type type, IrcConnection* connection, MessageStackView* stackView) :
     QWidget(stackView)
 {
@@ -54,12 +52,9 @@ MessageView::MessageView(ViewInfo::Type type, IrcConnection* connection, Message
 #else
     d.awayReply = QTime();
 #endif
-    d.playback = false;
     d.parser = stackView->parser();
     d.firstNames = true;
 
-    d.joined = 0;
-    d.parted = 0;
     d.connected = 0;
     d.disconnected = 0;
 
@@ -94,28 +89,25 @@ MessageView::MessageView(ViewInfo::Type type, IrcConnection* connection, Message
         connect(d.connection, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
     }
 
-    static bool init = false;
-    if (!init) {
-        init = true;
-        IrcTextFormat* format = irc_text_format();
-        IrcPalette* palette = format->palette();
-        palette->setColorName(Irc::Gray, "#606060");
-        palette->setColorName(Irc::LightGray, "#808080");
+    d.formatter = new MessageFormatter(this);
+    IrcTextFormat* format = d.formatter->textFormat();
+    IrcPalette* palette = format->palette();
+    palette->setColorName(Irc::Gray, "#606060");
+    palette->setColorName(Irc::LightGray, "#808080");
 
-        // http://ethanschoonover.com/solarized
-        palette->setColorName(Irc::Blue, "#268bd2");
-        palette->setColorName(Irc::Green, "#859900");
-        palette->setColorName(Irc::Red, "#dc322f");
-        palette->setColorName(Irc::Brown, "#cb4b16");
-        palette->setColorName(Irc::Purple, "#6c71c4");
-        palette->setColorName(Irc::Orange, "#cb4b16");
-        palette->setColorName(Irc::Yellow, "#b58900");
-        palette->setColorName(Irc::LightGreen, "#859900");
-        palette->setColorName(Irc::Cyan, "#2aa198");
-        palette->setColorName(Irc::LightCyan, "#2aa198");
-        palette->setColorName(Irc::LightBlue, "#268bd2");
-        palette->setColorName(Irc::Pink, "#6c71c4");
-    }
+    // http://ethanschoonover.com/solarized
+    palette->setColorName(Irc::Blue, "#268bd2");
+    palette->setColorName(Irc::Green, "#859900");
+    palette->setColorName(Irc::Red, "#dc322f");
+    palette->setColorName(Irc::Brown, "#cb4b16");
+    palette->setColorName(Irc::Purple, "#6c71c4");
+    palette->setColorName(Irc::Orange, "#cb4b16");
+    palette->setColorName(Irc::Yellow, "#b58900");
+    palette->setColorName(Irc::LightGreen, "#859900");
+    palette->setColorName(Irc::Cyan, "#2aa198");
+    palette->setColorName(Irc::LightCyan, "#2aa198");
+    palette->setColorName(Irc::LightBlue, "#268bd2");
+    palette->setColorName(Irc::Pink, "#6c71c4");
 
     d.textBrowser->document()->setDefaultStyleSheet(
         QString(
@@ -218,20 +210,11 @@ void MessageView::setBuffer(IrcBuffer* buffer)
             d.lineEditor->completer()->setUserModel(activityModel);
         }
         d.buffer = buffer;
+        d.formatter->setBuffer(buffer);
         connect(buffer, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
         connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
         connect(buffer, SIGNAL(titleChanged(QString)), this, SLOT(onTitleChanged(QString)));
     }
-}
-
-bool MessageView::playbackMode() const
-{
-    return d.playback;
-}
-
-void MessageView::setPlaybackMode(bool enabled)
-{
-    d.playback = enabled;
 }
 
 QByteArray MessageView::saveSplitter() const
@@ -294,25 +277,22 @@ void MessageView::sendMessage(const QString& message)
             } else if (command == "QUERY") {
                 emit queried(params.value(0));
             } else if (command == "IGNORE") {
-                MessageFormatter::Options options;
-                options.timeStampFormat = d.timeStampFormat;
-                options.timeStamp = QDateTime::currentDateTime();
                 QString ignore  = params.value(0);
                 if (ignore.isEmpty()) {
                     const QStringList ignores = IgnoreManager::instance()->ignores();
                     if (!ignores.isEmpty()) {
                         foreach (const QString& ignore, ignores)
-                            d.textBrowser->append(MessageFormatter::formatLine("! " + ignore, options));
+                            d.textBrowser->append(d.formatter->formatLine("! " + ignore));
                     } else {
-                        d.textBrowser->append(MessageFormatter::formatLine("! no ignores", options));
+                        d.textBrowser->append(d.formatter->formatLine("! no ignores"));
                     }
                 } else {
                     QString mask = IgnoreManager::instance()->addIgnore(ignore);
-                    d.textBrowser->append(MessageFormatter::formatLine("! ignored: " + mask));
+                    d.textBrowser->append(d.formatter->formatLine("! ignored: " + mask));
                 }
             } else if (command == "UNIGNORE") {
                 QString mask = IgnoreManager::instance()->removeIgnore(params.value(0));
-                d.textBrowser->append(MessageFormatter::formatLine("! unignored: " + mask));
+                d.textBrowser->append(d.formatter->formatLine("! unignored: " + mask));
             }
             delete cmd;
         } else if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::CtcpAction || cmd->type() == IrcCommand::Notice) {
@@ -472,7 +452,7 @@ void MessageView::onConnectionStatusChanged()
 void MessageView::onSocketError()
 {
     QString msg = tr("[ERROR] %1").arg(d.connection->socket()->errorString());
-    d.textBrowser->append(MessageFormatter::formatLine(msg));
+    d.textBrowser->append(d.formatter->formatLine(msg));
 }
 
 void MessageView::applySettings()
@@ -505,17 +485,16 @@ void MessageView::applySettings()
         d.lineEditor->setButtonPixmap(LineEditor::Left, QPixmap(":/resources/buttons/tab-black.png"));
     }
 
-    d.showJoins = settings->value("messages.joins").toBool();
-    d.showParts = settings->value("messages.parts").toBool();
-    d.showQuits = settings->value("messages.quits").toBool();
-    d.stripNicks = settings->value("format.hideUserHosts").toBool();
-    d.timeStampFormat = settings->value("formatting.timeStamp").toString();
+    d.showEvents = settings->value("messages.events").toBool();
+    d.formatter->setDetailed(settings->value("formatting.detailed").toBool());
+    d.formatter->setStripNicks(settings->value("formatting.hideUserHosts").toBool());
+    d.formatter->setTimeStampFormat(settings->value("formatting.timeStamp").toString());
 }
 
 void MessageView::receiveMessage(IrcMessage* message)
 {
     bool ignore = false;
-    MessageFormatter::Options options;
+    bool highlight = false;
 
     switch (message->type()) {
         case IrcMessage::Private: {
@@ -527,45 +506,36 @@ void MessageView::receiveMessage(IrcMessage* message)
                     ignore = true;
             }
             if (!(message->flags() & IrcMessage::Own) && static_cast<IrcPrivateMessage*>(message)->content().contains(d.connection->nickName()))
-                options.highlight = true;
+                highlight = true;
             break;
         }
         case IrcMessage::Notice:
             if (!(message->flags() & IrcMessage::Own) && static_cast<IrcNoticeMessage*>(message)->content().contains(d.connection->nickName()))
-                options.highlight = true;
+                highlight = true;
             break;
         case IrcMessage::Topic:
             d.topic = static_cast<IrcTopicMessage*>(message)->topic();
-            d.topicLabel->setText(MessageFormatter::formatHtml(d.topic));
+            d.topicLabel->setText(d.formatter->formatContent(d.topic));
             if (d.topicLabel->text().isEmpty())
                 d.topicLabel->setText(tr("-"));
             break;
         case IrcMessage::Join:
-            if (!d.playback && message->flags() & IrcMessage::Own) {
-                ++d.joined;
+            if (message->flags() & IrcMessage::Own) {
                 d.firstNames = true;
                 int blocks = d.textBrowser->document()->blockCount();
                 if (blocks > 1)
                     d.textBrowser->addMarker(blocks);
             }
-            if (!d.showJoins)
+            if (!d.showEvents)
                 return;
             break;
         case IrcMessage::Quit:
-            if (!d.playback && message->flags() & IrcMessage::Own)
-                ++d.parted;
-            if (!d.showQuits)
+            if (!d.showEvents)
                 return;
             break;
         case IrcMessage::Part:
-            if (!d.playback && message->flags() & IrcMessage::Own)
-                ++d.parted;
-            if (!d.showParts)
+            if (!d.showEvents)
                 return;
-            break;
-        case IrcMessage::Kick:
-            if (!d.playback && !static_cast<IrcKickMessage*>(message)->user().compare(d.connection->nickName(), Qt::CaseInsensitive))
-                ++d.parted;
             break;
         case IrcMessage::Pong: {
             QString arg = static_cast<IrcPongMessage*>(message)->argument();
@@ -608,39 +578,28 @@ void MessageView::receiveMessage(IrcMessage* message)
             break;
     }
 
-    options.nickName = d.connection->nickName();
-    if (IrcUserModel* model = d.listView->userModel())
-        options.users = model->names();
-    options.stripNicks = d.stripNicks;
-    options.timeStampFormat = d.timeStampFormat;
-    options.textFormat = irc_text_format();
     if (d.viewType == ViewInfo::Channel) {
-        options.repeat = (d.joined > 1 && d.joined > d.parted);
         if (message->type() == IrcMessage::Names) {
             // - short version on first join
             // - ignore names on consecutive joins
             // - long version as reply to /names
             bool wasFirst = d.firstNames;
-            options.repeat = !d.firstNames;
             d.firstNames = false;
-            if (d.joined > 1 && wasFirst)
+            if (wasFirst)
                 return;
         }
-    } else if (d.viewType == ViewInfo::Server) {
-        options.repeat = (d.connected > 1);
     }
 
-    QString formatted = MessageFormatter::formatMessage(message, options);
+    QString formatted = d.formatter->formatMessage(message);
     if (formatted.length()) {
         if (!ignore && (!isVisible() || !isActiveWindow())) {
             IrcMessage::Type type = message->type();
-            if (options.highlight || ((type == IrcMessage::Notice || type == IrcMessage::Private) && d.viewType != ViewInfo::Channel))
+            if (highlight || ((type == IrcMessage::Notice || type == IrcMessage::Private) && d.viewType != ViewInfo::Channel))
                 emit highlighted(message);
             else if (type == IrcMessage::Notice || type == IrcMessage::Private) // TODO: || (!d.receivedCodes.contains(Irc::RPL_ENDOFMOTD) && d.viewType == ViewInfo::Server))
                 emit missed(message);
         }
-
-        d.textBrowser->append(formatted, options.highlight);
+        d.textBrowser->append(formatted, highlight);
     }
 }
 

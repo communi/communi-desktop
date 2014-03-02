@@ -26,6 +26,7 @@
 
 class SyntaxHighlighter;
 class MessageStackView;
+class MessageFormatter;
 class CommandParser;
 class IrcMessage;
 class IrcBuffer;
@@ -52,9 +53,6 @@ public:
 
     IrcBuffer* buffer() const;
     void setBuffer(IrcBuffer* buffer);
-
-    bool playbackMode() const;
-    void setPlaybackMode(bool enabled);
 
     QByteArray saveSplitter() const;
     void restoreSplitter(const QByteArray& state);
@@ -101,6 +99,7 @@ private:
         QString receiver;
         QPointer<IrcConnection> connection;
         SyntaxHighlighter* highlighter;
+        MessageFormatter* formatter;
         QString topic;
         int sentId;
         QString awayMessage;
@@ -109,13 +108,10 @@ private:
 #else
         QTime awayReply;
 #endif
-        bool playback;
-        int joined, parted;
         int connected, disconnected;
         CommandParser* parser;
         QPointer<IrcBuffer> buffer;
-        bool stripNicks, showJoins, showParts, showQuits;
-        QString timeStampFormat;
+        bool showEvents;
         bool firstNames;
     } d;
 };

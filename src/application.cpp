@@ -128,6 +128,7 @@ QVariantMap Application::defaultSettings()
     settings["ui.scrollback"] = 0;
     settings["ui.sortViews"] = false;
 
+    settings["formatting.detailed"] = true;
     settings["formatting.timeStamp"] = "[hh:mm:ss]";
     settings["formatting.hideUserHosts"] = false;
 
@@ -150,9 +151,10 @@ QVariantMap Application::defaultSettings()
     settings["shortcuts.resetViews"] = "Ctrl+R";
 
     // TODO:
-    settings["messages.joins"] = true;
-    settings["messages.parts"] = true;
-    settings["messages.quits"] = true;
+    settings["messages.events"] = true;
+//    settings["messages.joins"] = true;
+//    settings["messages.parts"] = true;
+//    settings["messages.quits"] = true;
 //    settings["messages.nicks"] = true;
 //    settings["messages.modes"] = true;
 //    settings["messages.kicks"] = true;

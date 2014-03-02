@@ -20,7 +20,6 @@
 #include <QPointer>
 #include <IrcMessage>
 
-class ZncManager;
 class MessageView;
 
 class MessageHandler : public QObject
@@ -30,8 +29,6 @@ class MessageHandler : public QObject
 public:
     explicit MessageHandler(QObject* parent = 0);
     virtual ~MessageHandler();
-
-    ZncManager* znc() const;
 
     MessageView* defaultView() const;
     void setDefaultView(MessageView* view);
@@ -69,13 +66,8 @@ protected:
     void sendMessage(IrcMessage* message, MessageView* view);
     void sendMessage(IrcMessage* message, const QString& receiver);
 
-private slots:
-    void activatePlayback(bool activate);
-    void playbackView(const QString& view);
-
 private:
     struct Private {
-        ZncManager* znc;
         MessageView* defaultView;
         MessageView* currentView;
         QHash<QString, MessageView*> views;
