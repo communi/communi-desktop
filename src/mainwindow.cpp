@@ -34,6 +34,7 @@
 #include "qtdocktile.h"
 #include <QCloseEvent>
 #include <QSettings>
+#include <IrcBuffer>
 #include <QToolBar>
 #include <QMenuBar>
 #include <QMenu>
@@ -178,14 +179,14 @@ void MainWindow::connectToImpl(const ConnectionInfo& info)
 
     MessageStackView* stack = stackView->connectionWidget(connection);
     connect(stack, SIGNAL(viewAdded(MessageView*)), this, SLOT(viewAdded(MessageView*)));
-    connect(stack, SIGNAL(viewRemoved(MessageView*)), treeWidget, SLOT(removeView(MessageView*)));
-    connect(stack, SIGNAL(viewRenamed(MessageView*)), treeWidget, SLOT(renameView(MessageView*)));
+    connect(stack, SIGNAL(viewRemoved(MessageView*)), this, SLOT(viewRemoved(MessageView*)));
+    connect(stack, SIGNAL(viewRenamed(MessageView*)), this, SLOT(viewRenamed(MessageView*)));
     connect(stack, SIGNAL(viewActivated(MessageView*)), this, SLOT(viewActivated(MessageView*)));
 
     if (MessageView* view = stack->viewAt(0)) {
-        treeWidget->addView(view);
+        treeWidget->addBuffer(view->buffer());
         if (!treeWidget->hasRestoredCurrent() && (connection->status() != IrcConnection::Closed || stackView->count() == 1))
-            treeWidget->setCurrentView(view);
+            treeWidget->setCurrentBuffer(view->buffer());
         treeWidget->parentWidget()->show();
     }
 
@@ -335,9 +336,19 @@ void MainWindow::viewAdded(MessageView* view)
     if (settings.contains("list"))
         view->restoreSplitter(settings.value("list").toByteArray());
 
-    treeWidget->addView(view);
+    treeWidget->addBuffer(view->buffer());
     if (settings.contains("tree"))
         treeWidget->restoreState(settings.value("tree").toByteArray());
+}
+
+void MainWindow::viewRemoved(MessageView* view)
+{
+    treeWidget->removeBuffer(view->buffer());
+}
+
+void MainWindow::viewRenamed(MessageView* view)
+{
+    treeWidget->renameBuffer(view->buffer());
 }
 
 void MainWindow::viewActivated(MessageView* view)
@@ -346,7 +357,7 @@ void MainWindow::viewActivated(MessageView* view)
     if (settings.contains("list"))
         view->restoreSplitter(settings.value("list").toByteArray());
 
-    treeWidget->setCurrentView(view);
+    treeWidget->setCurrentBuffer(view->buffer());
 }
 
 void MainWindow::closeTreeItem(SessionTreeItem* item)
@@ -366,17 +377,17 @@ void MainWindow::closeTreeItem(SessionTreeItem* item)
     }
 }
 
-void MainWindow::currentTreeItemChanged(IrcConnection* connection, const QString& view)
+void MainWindow::setCurrentBuffer(IrcBuffer* buffer)
 {
-    MessageStackView* stack = stackView->connectionWidget(connection);
+    MessageStackView* stack = stackView->connectionWidget(buffer->connection());
     if (stack) {
         stackView->setCurrentWidget(stack);
-        if (view.isEmpty())
+        if (buffer->isSticky())
             stack->setCurrentIndex(0);
         else
-            stack->openView(view);
+            stack->openView(buffer->title());
     }
-    setWindowFilePath(view);
+    setWindowFilePath(buffer->title());
     updateOverlay();
 }
 
@@ -467,7 +478,7 @@ void MainWindow::createTree()
 
     connect(treeWidget, SIGNAL(editConnection(IrcConnection*)), this, SLOT(editConnection(IrcConnection*)));
     connect(treeWidget, SIGNAL(closeItem(SessionTreeItem*)), this, SLOT(closeTreeItem(SessionTreeItem*)));
-    connect(treeWidget, SIGNAL(currentViewChanged(IrcConnection*, QString)), this, SLOT(currentTreeItemChanged(IrcConnection*, QString)));
+    connect(treeWidget, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(setCurrentBuffer(IrcBuffer*)));
 
     ToolBar* toolBar = new ToolBar(container);
     connect(toolBar, SIGNAL(aboutTriggered()), qApp, SLOT(aboutApplication()));

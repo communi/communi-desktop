@@ -21,8 +21,8 @@
 #include <QHash>
 #include "viewinfo.h"
 
+class IrcBuffer;
 class IrcConnection;
-class MessageView;
 class SessionTreeItem;
 
 class SessionTreeWidget : public QTreeWidget
@@ -45,17 +45,18 @@ public:
     QColor currentBadgeColor() const;
     QColor currentHighlightColor() const;
 
-    SessionTreeItem* viewItem(MessageView* view) const;
+    IrcBuffer* currentBuffer() const;
+    SessionTreeItem* bufferItem(IrcBuffer* buffer) const;
     SessionTreeItem* connectionItem(IrcConnection* connection) const;
 
     bool hasRestoredCurrent() const;
     ViewInfos viewInfos(IrcConnection* connection) const;
 
 public slots:
-    void addView(MessageView* view);
-    void removeView(MessageView* view);
-    void renameView(MessageView* view);
-    void setCurrentView(MessageView* view);
+    void addBuffer(IrcBuffer* buffer);
+    void removeBuffer(IrcBuffer* buffer);
+    void renameBuffer(IrcBuffer* buffer);
+    void setCurrentBuffer(IrcBuffer* buffer);
 
     void moveToNextItem();
     void moveToPrevItem();
@@ -79,7 +80,7 @@ public slots:
 signals:
     void editConnection(IrcConnection* connection);
     void closeItem(SessionTreeItem* item);
-    void currentViewChanged(IrcConnection* connection, const QString& view);
+    void currentBufferChanged(IrcBuffer* buffer);
     void searched(bool result);
 
 protected:
@@ -90,7 +91,7 @@ protected:
     void rowsAboutToBeRemoved(const QModelIndex & parent, int start, int end);
 
 private slots:
-    void updateView(MessageView* view = 0);
+    void updateBuffer(IrcBuffer* buffer = 0);
     void updateConnection(IrcConnection* connection = 0);
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
@@ -124,7 +125,7 @@ private:
         QHash<ItemStatus, QColor> colors;
         QSet<SessionTreeItem*> resetedItems;
         QSet<SessionTreeItem*> highlightedItems;
-        QHash<MessageView*, SessionTreeItem*> viewItems;
+        QHash<IrcBuffer*, SessionTreeItem*> bufferItems;
         QHash<IrcConnection*, SessionTreeItem*> connectionItems;
         mutable QTreeWidgetItem* dropParent;
     } d;
