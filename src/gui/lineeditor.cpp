@@ -13,7 +13,7 @@
 */
 
 #include "lineeditor.h"
-#include "completer.h"
+#include <IrcCompleter>
 #include <QStyleFactory>
 #include <QKeyEvent>
 #include <QShortcut>
@@ -24,9 +24,8 @@ LineEditor::LineEditor(QWidget* parent) : HistoryLineEdit(parent)
 {
     d.lag = -1;
 
-    d.completer = new Completer(this);
-    d.completer->setWidget(this);
-    d.completer->setLineEdit(this);
+    d.completer = new IrcCompleter(this);
+    connect(d.completer, SIGNAL(completed(QString,int)), this, SLOT(onCompleted(QString,int)));
 
     setAttribute(Qt::WA_MacShowFocusRect, false);
 
@@ -43,11 +42,11 @@ LineEditor::LineEditor(QWidget* parent) : HistoryLineEdit(parent)
     }
 
     QShortcut* shortcut = new QShortcut(Qt::Key_Tab, this);
-    connect(shortcut, SIGNAL(activated()), d.completer, SLOT(onTabPressed()));
+    connect(shortcut, SIGNAL(activated()), this, SLOT(tryComplete()));
 
     setButtonVisible(Left, true);
     setAutoHideButton(Left, true);
-    connect(this, SIGNAL(leftButtonClicked()), d.completer, SLOT(onTabPressed()));
+    connect(this, SIGNAL(leftButtonClicked()), this, SLOT(tryComplete()));
 
     setButtonVisible(Right, true);
     setAutoHideButton(Right, true);
@@ -57,7 +56,7 @@ LineEditor::LineEditor(QWidget* parent) : HistoryLineEdit(parent)
     connect(this, SIGNAL(textEdited(QString)), this, SIGNAL(typed(QString)));
 }
 
-Completer* LineEditor::completer() const
+IrcCompleter* LineEditor::completer() const
 {
     return d.completer;
 }
@@ -117,6 +116,17 @@ void LineEditor::paintEvent(QPaintEvent* event)
         getTextMargins(&l, &t, &r, &b);
         painter.drawText(rect().adjusted(l, t, -r, -b), Qt::AlignVCenter | Qt::AlignRight, tr("%1ms").arg(d.lag));
     }
+}
+
+void LineEditor::tryComplete()
+{
+    d.completer->complete(text(), cursorPosition());
+}
+
+void LineEditor::onCompleted(const QString& text, int cursor)
+{
+    setText(text);
+    setCursorPosition(cursor);
 }
 
 void LineEditor::onSend()

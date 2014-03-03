@@ -16,7 +16,7 @@
 #define LINEEDITOR_H
 
 #include "historylineedit.h"
-class Completer;
+class IrcCompleter;
 
 class LineEditor : public HistoryLineEdit
 {
@@ -26,7 +26,7 @@ class LineEditor : public HistoryLineEdit
 public:
     LineEditor(QWidget* parent = 0);
 
-    Completer* completer() const;
+    IrcCompleter* completer() const;
 
     int lag() const;
 
@@ -47,11 +47,13 @@ protected:
 
 private slots:
     void onSend();
+    void tryComplete();
+    void onCompleted(const QString& text, int cursor);
 
 private:
     struct Private {
         int lag;
-        Completer* completer;
+        IrcCompleter* completer;
     } d;
 };
 

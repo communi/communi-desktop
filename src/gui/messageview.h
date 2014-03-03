@@ -28,6 +28,7 @@ class SyntaxHighlighter;
 class MessageStackView;
 class MessageFormatter;
 class CommandParser;
+class IrcCompleter;
 class IrcMessage;
 class IrcBuffer;
 class Connection;
@@ -45,7 +46,7 @@ public:
     bool isActive() const;
     ViewInfo::Type viewType() const;
     IrcConnection* connection() const;
-    Completer* completer() const;
+    IrcCompleter* completer() const;
     QTextBrowser* textBrowser() const;
 
     QString receiver() const;
@@ -87,7 +88,6 @@ private slots:
     void onSplitterMoved();
     void onTitleChanged(const QString& title);
     void onAnchorClicked(const QUrl& link);
-    void completeCommand(const QString& command);
     void onTopicEdited(const QString& topic);
     void onConnectionStatusChanged();
     void onSocketError();

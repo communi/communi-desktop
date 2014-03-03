@@ -21,7 +21,6 @@
 #include "ignoremanager.h"
 #include "commandparser.h"
 #include "connection.h"
-#include "completer.h"
 #include <QAbstractTextDocumentLayout>
 #include <QDesktopServices>
 #include <QScrollBar>
@@ -33,6 +32,7 @@
 #include <QMenu>
 #include <QUrl>
 #include <irctextformat.h>
+#include <irccompleter.h>
 #include <ircusermodel.h>
 #include <ircpalette.h>
 #include <ircmessage.h>
@@ -124,8 +124,7 @@ MessageView::MessageView(ViewInfo::Type type, IrcConnection* connection, Message
 
     d.highlighter->setHighlightColor(QColor("#808080"));
 
-    d.lineEditor->completer()->setCommandModel(stackView->commandModel());
-    connect(d.lineEditor->completer(), SIGNAL(commandCompletion(QString)), this, SLOT(completeCommand(QString)));
+    d.lineEditor->completer()->setParser(d.parser);
 
     connect(d.lineEditor, SIGNAL(send(QString)), this, SLOT(sendMessage(QString)));
     connect(d.lineEditor, SIGNAL(typed(QString)), this, SLOT(showHelp(QString)));
@@ -172,7 +171,7 @@ IrcConnection* MessageView::connection() const
     return d.connection;
 }
 
-Completer* MessageView::completer() const
+IrcCompleter* MessageView::completer() const
 {
     return d.lineEditor->completer();
 }
@@ -203,14 +202,11 @@ IrcBuffer* MessageView::buffer() const
 void MessageView::setBuffer(IrcBuffer* buffer)
 {
     if (d.buffer != buffer) {
-        if (IrcChannel* channel = qobject_cast<IrcChannel*>(buffer)) {
+        if (IrcChannel* channel = qobject_cast<IrcChannel*>(buffer))
             d.listView->setChannel(channel);
-            IrcUserModel* activityModel = new IrcUserModel(channel);
-            activityModel->setSortMethod(Irc::SortByActivity);
-            d.lineEditor->completer()->setUserModel(activityModel);
-        }
         d.buffer = buffer;
         d.formatter->setBuffer(buffer);
+        d.lineEditor->completer()->setBuffer(buffer);
         connect(buffer, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
         connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
         connect(buffer, SIGNAL(titleChanged(QString)), this, SLOT(onTitleChanged(QString)));
@@ -430,12 +426,6 @@ void MessageView::onAnchorClicked(const QUrl& link)
         // avoid focus rectangle around the link
         d.lineEditor->setFocus();
     }
-}
-
-void MessageView::completeCommand(const QString& command)
-{
-    if (command == "TOPIC")
-        d.lineEditor->insert(d.topic);
 }
 
 void MessageView::onTopicEdited(const QString& topic)

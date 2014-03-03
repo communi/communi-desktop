@@ -17,7 +17,6 @@
 #include "application.h"
 #include "zncmanager.h"
 #include "connection.h"
-#include "completer.h"
 #include <ircbuffer.h>
 #include <irccommand.h>
 #include <irclagtimer.h>
@@ -110,9 +109,6 @@ void MessageStackView::restoreView(const ViewInfo& view)
 MessageView* MessageStackView::createView(ViewInfo::Type type, const QString& receiver)
 {
     MessageView* view = new MessageView(type, static_cast<Connection*>(d.connection), this); // TODO
-    const IrcNetwork* network = d.connection->network();
-    view->completer()->setChannelPrefixes(network->channelTypes().join(""));
-    view->completer()->setChannelModel(&d.viewModel);
     view->setReceiver(receiver);
     connect(view, SIGNAL(queried(QString)), this, SLOT(addView(QString)));
     connect(view, SIGNAL(queried(QString)), this, SLOT(openView(QString)));
