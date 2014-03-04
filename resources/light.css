@@ -4,13 +4,13 @@ UserListView {
     selection-background-color: palette(highlight);
 }
 
-SessionTreeWidget {
+TreeWidget {
     border: none;
     background: palette(alternate-base);
     selection-background-color: palette(highlight);
 }
 
-SessionTreeWidget::branch {
+TreeWidget::branch {
     border: none;
     background: palette(alternate-base);
 }

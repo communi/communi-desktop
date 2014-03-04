@@ -12,9 +12,9 @@
 * GNU General Public License for more details.
 */
 
-#include "sessiontreewidget.h"
-#include "sessiontreeitem.h"
-#include "sessiontreemenu.h"
+#include "treewidget.h"
+#include "treeitem.h"
+#include "treemenu.h"
 #include "styledscrollbar.h"
 #include "settingsmodel.h"
 #include "itemdelegate.h"
@@ -27,7 +27,7 @@
 #include <IrcBuffer>
 #include <QTimer>
 
-SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
+TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
     setAnimated(true);
     setColumnCount(2);
@@ -90,20 +90,20 @@ SessionTreeWidget::SessionTreeWidget(QWidget* parent) : QTreeWidget(parent)
     connect(Application::settings(), SIGNAL(changed()), this, SLOT(applySettings()));
 }
 
-QSize SessionTreeWidget::sizeHint() const
+QSize TreeWidget::sizeHint() const
 {
     return QSize(20 * fontMetrics().width('#'), QTreeWidget::sizeHint().height());
 }
 
-QByteArray SessionTreeWidget::saveState() const
+QByteArray TreeWidget::saveState() const
 {
     QByteArray state;
     QDataStream out(&state, QIODevice::WriteOnly);
 
     QVariantHash hash;
     for (int i = 0; i < topLevelItemCount(); ++i) {
-        SessionTreeItem* item = static_cast<SessionTreeItem*>(topLevelItem(i));
-        if (item->currentSortOrder() == SessionTreeItem::Manual)
+        TreeItem* item = static_cast<TreeItem*>(topLevelItem(i));
+        if (item->currentSortOrder() == TreeItem::Manual)
             item->resetManualSortOrder();
         hash.insert(item->text(0), item->manualSortOrder());
     }
@@ -120,14 +120,14 @@ QByteArray SessionTreeWidget::saveState() const
     return state;
 }
 
-void SessionTreeWidget::restoreState(const QByteArray& state)
+void TreeWidget::restoreState(const QByteArray& state)
 {
     QVariantHash hash;
     QDataStream in(state);
     in >> hash;
 
     for (int i = 0; i < topLevelItemCount(); ++i) {
-        SessionTreeItem* item = static_cast<SessionTreeItem*>(topLevelItem(i));
+        TreeItem* item = static_cast<TreeItem*>(topLevelItem(i));
         QStringList order = hash.value(item->text(0)).toStringList();
         if (order != item->manualSortOrder()) {
             item->setManualSortOrder(order);
@@ -151,67 +151,67 @@ void SessionTreeWidget::restoreState(const QByteArray& state)
     }
 }
 
-QColor SessionTreeWidget::statusColor(SessionTreeWidget::ItemStatus status) const
+QColor TreeWidget::statusColor(TreeWidget::ItemStatus status) const
 {
     return d.colors.value(status);
 }
 
-void SessionTreeWidget::setStatusColor(SessionTreeWidget::ItemStatus status, const QColor& color)
+void TreeWidget::setStatusColor(TreeWidget::ItemStatus status, const QColor& color)
 {
     d.colors[status] = color;
 }
 
-QColor SessionTreeWidget::currentBadgeColor() const
+QColor TreeWidget::currentBadgeColor() const
 {
     if (!d.highlightColor.isValid() || d.highlightColor != d.colors.value(Active))
         return d.colors.value(BadgeHighlight);
     return d.colors.value(Badge);
 }
 
-QColor SessionTreeWidget::currentHighlightColor() const
+QColor TreeWidget::currentHighlightColor() const
 {
     if (!d.highlightColor.isValid())
         return d.colors.value(Highlight);
     return d.highlightColor;
 }
 
-IrcBuffer* SessionTreeWidget::currentBuffer() const
+IrcBuffer* TreeWidget::currentBuffer() const
 {
-    SessionTreeItem* item = static_cast<SessionTreeItem*>(currentItem());
+    TreeItem* item = static_cast<TreeItem*>(currentItem());
     if (item)
         return item->buffer();
     return 0;
 }
 
-void SessionTreeWidget::setCurrentBuffer(IrcBuffer* buffer)
+void TreeWidget::setCurrentBuffer(IrcBuffer* buffer)
 {
-    SessionTreeItem* item = d.bufferItems.value(buffer);
+    TreeItem* item = d.bufferItems.value(buffer);
     if (item)
         setCurrentItem(item);
 }
 
-SessionTreeItem* SessionTreeWidget::bufferItem(IrcBuffer* buffer) const
+TreeItem* TreeWidget::bufferItem(IrcBuffer* buffer) const
 {
     return d.bufferItems.value(buffer);
 }
 
-SessionTreeItem* SessionTreeWidget::connectionItem(IrcConnection* connection) const
+TreeItem* TreeWidget::connectionItem(IrcConnection* connection) const
 {
     return d.connectionItems.value(connection);
 }
 
-bool SessionTreeWidget::hasRestoredCurrent() const
+bool TreeWidget::hasRestoredCurrent() const
 {
     return d.currentRestored;
 }
 
-ViewInfos SessionTreeWidget::viewInfos(IrcConnection* connection) const
+ViewInfos TreeWidget::viewInfos(IrcConnection* connection) const
 {
     ViewInfos views;
-    SessionTreeItem* item = d.connectionItems.value(connection);
+    TreeItem* item = d.connectionItems.value(connection);
     if (item) {
         for (int i = 0; i < item->childCount(); ++i) {
-            SessionTreeItem* child = static_cast<SessionTreeItem*>(item->child(i));
+            TreeItem* child = static_cast<TreeItem*>(item->child(i));
             IrcBuffer* buf = child->buffer();
             ViewInfo view;
             view.type = buf->isSticky() ? ViewInfo::Server : buf->isChannel() ? ViewInfo::Channel : ViewInfo::Query;
@@ -224,19 +224,19 @@ ViewInfos SessionTreeWidget::viewInfos(IrcConnection* connection) const
     return views;
 }
 
-void SessionTreeWidget::addBuffer(IrcBuffer* buffer)
+void TreeWidget::addBuffer(IrcBuffer* buffer)
 {
-    SessionTreeItem* item = 0;
+    TreeItem* item = 0;
     if (buffer->isSticky()) {
-        item = new SessionTreeItem(buffer, this);
+        item = new TreeItem(buffer, this);
         IrcConnection* connection = buffer->connection();
         connect(connection, SIGNAL(displayNameChanged(QString)), this, SLOT(updateConnection()));
         d.connectionItems.insert(connection, item);
         const bool sortViews = Application::settings()->value("ui.sortViews").toBool();
-        item->sort(sortViews ? SessionTreeItem::Alphabetic : SessionTreeItem::Manual);
+        item->sort(sortViews ? TreeItem::Alphabetic : TreeItem::Manual);
     } else {
-        SessionTreeItem* parent = d.connectionItems.value(buffer->connection());
-        item = new SessionTreeItem(buffer, parent);
+        TreeItem* parent = d.connectionItems.value(buffer->connection());
+        item = new TreeItem(buffer, parent);
         parent->sortChildren(0, Qt::AscendingOrder);
     }
 
@@ -246,21 +246,21 @@ void SessionTreeWidget::addBuffer(IrcBuffer* buffer)
     updateBuffer(buffer);
 }
 
-void SessionTreeWidget::removeBuffer(IrcBuffer* buffer)
+void TreeWidget::removeBuffer(IrcBuffer* buffer)
 {
     if (buffer->isSticky())
         d.connectionItems.remove(buffer->connection());
     delete d.bufferItems.take(buffer);
 }
 
-void SessionTreeWidget::renameBuffer(IrcBuffer* buffer)
+void TreeWidget::renameBuffer(IrcBuffer* buffer)
 {
-    SessionTreeItem* item = d.bufferItems.value(buffer);
+    TreeItem* item = d.bufferItems.value(buffer);
     if (item)
         item->setText(0, buffer->title());
 }
 
-void SessionTreeWidget::moveToNextItem()
+void TreeWidget::moveToNextItem()
 {
     QTreeWidgetItem* item = nextItem(currentItem());
     if (!item)
@@ -268,7 +268,7 @@ void SessionTreeWidget::moveToNextItem()
     setCurrentItem(item);
 }
 
-void SessionTreeWidget::moveToPrevItem()
+void TreeWidget::moveToPrevItem()
 {
     QTreeWidgetItem* item = previousItem(currentItem());
     if (!item)
@@ -276,7 +276,7 @@ void SessionTreeWidget::moveToPrevItem()
     setCurrentItem(item);
 }
 
-void SessionTreeWidget::moveToNextActiveItem()
+void TreeWidget::moveToNextActiveItem()
 {
     QTreeWidgetItem* item = findNextItem(currentItem(), 0, ItemDelegate::HighlightRole);
     if (!item)
@@ -285,7 +285,7 @@ void SessionTreeWidget::moveToNextActiveItem()
         setCurrentItem(item);
 }
 
-void SessionTreeWidget::moveToPrevActiveItem()
+void TreeWidget::moveToPrevActiveItem()
 {
     QTreeWidgetItem* item = findPrevItem(currentItem(), 0, ItemDelegate::HighlightRole);
     if (!item)
@@ -294,12 +294,12 @@ void SessionTreeWidget::moveToPrevActiveItem()
         setCurrentItem(item);
 }
 
-void SessionTreeWidget::moveToMostActiveItem()
+void TreeWidget::moveToMostActiveItem()
 {
-    SessionTreeItem* mostActive = 0;
+    TreeItem* mostActive = 0;
     QTreeWidgetItemIterator it(this, QTreeWidgetItemIterator::Unselected);
     while (*it) {
-        SessionTreeItem* item = static_cast<SessionTreeItem*>(*it);
+        TreeItem* item = static_cast<TreeItem*>(*it);
 
         if (item->isHighlighted()) {
             // we found a channel hilight or PM to us
@@ -318,7 +318,7 @@ void SessionTreeWidget::moveToMostActiveItem()
         setCurrentItem(mostActive);
 }
 
-void SessionTreeWidget::search(const QString& search)
+void TreeWidget::search(const QString& search)
 {
     if (!search.isEmpty()) {
         QList<QTreeWidgetItem*> items = findItems(search, Qt::MatchExactly | Qt::MatchWrap | Qt::MatchRecursive);
@@ -330,7 +330,7 @@ void SessionTreeWidget::search(const QString& search)
     }
 }
 
-void SessionTreeWidget::searchAgain(const QString& search)
+void TreeWidget::searchAgain(const QString& search)
 {
     QTreeWidgetItem* item = currentItem();
     if (item && !search.isEmpty()) {
@@ -350,18 +350,18 @@ void SessionTreeWidget::searchAgain(const QString& search)
     }
 }
 
-void SessionTreeWidget::blockItemReset()
+void TreeWidget::blockItemReset()
 {
     d.itemResetBlocked = true;
 }
 
-void SessionTreeWidget::unblockItemReset()
+void TreeWidget::unblockItemReset()
 {
     d.itemResetBlocked = false;
     delayedItemReset();
 }
 
-void SessionTreeWidget::expandCurrentConnection()
+void TreeWidget::expandCurrentConnection()
 {
     QTreeWidgetItem* item = currentItem();
     if (item && item->parent())
@@ -370,7 +370,7 @@ void SessionTreeWidget::expandCurrentConnection()
         expandItem(item);
 }
 
-void SessionTreeWidget::collapseCurrentConnection()
+void TreeWidget::collapseCurrentConnection()
 {
     QTreeWidgetItem* item = currentItem();
     if (item && item->parent())
@@ -381,7 +381,7 @@ void SessionTreeWidget::collapseCurrentConnection()
     }
 }
 
-void SessionTreeWidget::highlight(SessionTreeItem* item)
+void TreeWidget::highlight(TreeItem* item)
 {
     if (d.highlightedItems.isEmpty())
         SharedTimer::instance()->registerReceiver(this, "highlightTimeout");
@@ -389,14 +389,14 @@ void SessionTreeWidget::highlight(SessionTreeItem* item)
     item->setHighlighted(true);
 }
 
-void SessionTreeWidget::unhighlight(SessionTreeItem* item)
+void TreeWidget::unhighlight(TreeItem* item)
 {
     if (d.highlightedItems.remove(item) && d.highlightedItems.isEmpty())
         SharedTimer::instance()->unregisterReceiver(this, "highlightTimeout");
     item->setHighlighted(false);
 }
 
-void SessionTreeWidget::applySettings()
+void TreeWidget::applySettings()
 {
     SettingsModel* settings = Application::settings();
 
@@ -407,8 +407,8 @@ void SessionTreeWidget::applySettings()
     setDragDropMode(sortViews ? NoDragDrop : InternalMove);
 
     for (int i = 0; i < topLevelItemCount(); ++i) {
-        SessionTreeItem* item = static_cast<SessionTreeItem*>(topLevelItem(i));
-        item->sort(sortViews ? SessionTreeItem::Alphabetic : SessionTreeItem::Manual);
+        TreeItem* item = static_cast<TreeItem*>(topLevelItem(i));
+        item->sort(sortViews ? TreeItem::Alphabetic : TreeItem::Manual);
     }
 
     // TODO:
@@ -431,16 +431,16 @@ void SessionTreeWidget::applySettings()
     d.resetShortcut->setKey(QKeySequence(settings->value("shortcuts.resetViews").toString()));
 }
 
-void SessionTreeWidget::contextMenuEvent(QContextMenuEvent* event)
+void TreeWidget::contextMenuEvent(QContextMenuEvent* event)
 {
-    SessionTreeItem* item = static_cast<SessionTreeItem*>(itemAt(event->pos()));
+    TreeItem* item = static_cast<TreeItem*>(itemAt(event->pos()));
     if (item) {
-        SessionTreeMenu menu(this);
+        TreeMenu menu(this);
         menu.exec(item, event->globalPos());
     }
 }
 
-void SessionTreeWidget::dragMoveEvent(QDragMoveEvent* event)
+void TreeWidget::dragMoveEvent(QDragMoveEvent* event)
 {
     QTreeWidgetItem* item = itemAt(event->pos());
     if (item && !d.dropParent)
@@ -451,27 +451,27 @@ void SessionTreeWidget::dragMoveEvent(QDragMoveEvent* event)
         QTreeWidget::dragMoveEvent(event);
 }
 
-bool SessionTreeWidget::event(QEvent* event)
+bool TreeWidget::event(QEvent* event)
 {
     if (event->type() == QEvent::WindowActivate)
         delayedItemReset();
     return QTreeWidget::event(event);
 }
 
-QMimeData* SessionTreeWidget::mimeData(const QList<QTreeWidgetItem*> items) const
+QMimeData* TreeWidget::mimeData(const QList<QTreeWidgetItem*> items) const
 {
     QTreeWidgetItem* item = items.value(0);
     d.dropParent = item ? item->parent() : 0;
     return QTreeWidget::mimeData(items);
 }
 
-void SessionTreeWidget::rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end)
+void TreeWidget::rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end)
 {
     QTreeWidget::rowsAboutToBeRemoved(parent, start, end);
-    SessionTreeItem* item = static_cast<SessionTreeItem*>(itemFromIndex(parent));
+    TreeItem* item = static_cast<TreeItem*>(itemFromIndex(parent));
     if (item) {
         for (int i = start; i <= end; ++i) {
-            SessionTreeItem* child = static_cast<SessionTreeItem*>(item->child(i));
+            TreeItem* child = static_cast<TreeItem*>(item->child(i));
             if (child) {
                 item->d.highlightedChildren.remove(child);
                 d.resetedItems.remove(child);
@@ -481,11 +481,11 @@ void SessionTreeWidget::rowsAboutToBeRemoved(const QModelIndex& parent, int star
     }
 }
 
-void SessionTreeWidget::updateBuffer(IrcBuffer* buffer)
+void TreeWidget::updateBuffer(IrcBuffer* buffer)
 {
     if (!buffer)
         buffer = qobject_cast<IrcBuffer*>(sender());
-    SessionTreeItem* item = d.bufferItems.value(buffer);
+    TreeItem* item = d.bufferItems.value(buffer);
     if (item) {
         if (!item->parent())
             item->setText(0, item->connection()->displayName());
@@ -496,84 +496,84 @@ void SessionTreeWidget::updateBuffer(IrcBuffer* buffer)
     }
 }
 
-void SessionTreeWidget::updateConnection(IrcConnection* connection)
+void TreeWidget::updateConnection(IrcConnection* connection)
 {
     if (!connection)
         connection = qobject_cast<Connection*>(sender());
-    SessionTreeItem* item = d.connectionItems.value(connection);
+    TreeItem* item = d.connectionItems.value(connection);
     if (item)
         item->setText(0, connection->displayName());
 }
 
-void SessionTreeWidget::onItemExpanded(QTreeWidgetItem* item)
+void TreeWidget::onItemExpanded(QTreeWidgetItem* item)
 {
-    static_cast<SessionTreeItem*>(item)->emitDataChanged();
+    static_cast<TreeItem*>(item)->emitDataChanged();
 }
 
-void SessionTreeWidget::onItemCollapsed(QTreeWidgetItem* item)
+void TreeWidget::onItemCollapsed(QTreeWidgetItem* item)
 {
-    static_cast<SessionTreeItem*>(item)->emitDataChanged();
+    static_cast<TreeItem*>(item)->emitDataChanged();
 }
 
-void SessionTreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
+void TreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
     if (!d.itemResetBlocked) {
         if (previous)
-            resetItem(static_cast<SessionTreeItem*>(previous));
+            resetItem(static_cast<TreeItem*>(previous));
         delayedItemReset();
     }
-    SessionTreeItem* item = static_cast<SessionTreeItem*>(current);
+    TreeItem* item = static_cast<TreeItem*>(current);
     if (item)
         emit currentBufferChanged(item->buffer());
 }
 
-void SessionTreeWidget::resetAllItems()
+void TreeWidget::resetAllItems()
 {
     QTreeWidgetItemIterator it(this);
     while (*it) {
-        resetItem(static_cast<SessionTreeItem*>(*it));
+        resetItem(static_cast<TreeItem*>(*it));
         ++it;
     }
 }
 
-void SessionTreeWidget::delayedItemReset()
+void TreeWidget::delayedItemReset()
 {
-    SessionTreeItem* item = static_cast<SessionTreeItem*>(currentItem());
+    TreeItem* item = static_cast<TreeItem*>(currentItem());
     if (item) {
         d.resetedItems.insert(item);
         QTimer::singleShot(500, this, SLOT(delayedItemResetTimeout()));
     }
 }
 
-void SessionTreeWidget::delayedItemResetTimeout()
+void TreeWidget::delayedItemResetTimeout()
 {
     if (!d.resetedItems.isEmpty()) {
-        foreach (SessionTreeItem* item, d.resetedItems)
+        foreach (TreeItem* item, d.resetedItems)
             resetItem(item);
         d.resetedItems.clear();
     }
 }
 
-void SessionTreeWidget::highlightTimeout()
+void TreeWidget::highlightTimeout()
 {
     bool active = d.highlightColor == d.colors.value(Active);
     d.highlightColor = d.colors.value(active ? Highlight : Active);
 
-    foreach (SessionTreeItem* item, d.highlightedItems) {
+    foreach (TreeItem* item, d.highlightedItems) {
         item->emitDataChanged();
-        if (SessionTreeItem* p = static_cast<SessionTreeItem*>(item->parent()))
+        if (TreeItem* p = static_cast<TreeItem*>(item->parent()))
             if (!p->isExpanded())
                 p->emitDataChanged();
     }
 }
 
-void SessionTreeWidget::resetItem(SessionTreeItem* item)
+void TreeWidget::resetItem(TreeItem* item)
 {
     item->setBadge(0);
     unhighlight(item);
 }
 
-QTreeWidgetItem* SessionTreeWidget::lastItem() const
+QTreeWidgetItem* TreeWidget::lastItem() const
 {
     QTreeWidgetItem* item = topLevelItem(topLevelItemCount() - 1);
     if (item->childCount() > 0)
@@ -581,7 +581,7 @@ QTreeWidgetItem* SessionTreeWidget::lastItem() const
     return item;
 }
 
-QTreeWidgetItem* SessionTreeWidget::nextItem(QTreeWidgetItem* from) const
+QTreeWidgetItem* TreeWidget::nextItem(QTreeWidgetItem* from) const
 {
     if (!from)
         return 0;
@@ -593,7 +593,7 @@ QTreeWidgetItem* SessionTreeWidget::nextItem(QTreeWidgetItem* from) const
     return *it;
 }
 
-QTreeWidgetItem* SessionTreeWidget::previousItem(QTreeWidgetItem* from) const
+QTreeWidgetItem* TreeWidget::previousItem(QTreeWidgetItem* from) const
 {
     if (!from)
         return 0;
@@ -605,12 +605,12 @@ QTreeWidgetItem* SessionTreeWidget::previousItem(QTreeWidgetItem* from) const
     return *it;
 }
 
-QTreeWidgetItem* SessionTreeWidget::findNextItem(QTreeWidgetItem* from, int column, int role) const
+QTreeWidgetItem* TreeWidget::findNextItem(QTreeWidgetItem* from, int column, int role) const
 {
     if (from) {
         QTreeWidgetItemIterator it(from);
         while (*++it && *it != from) {
-            SessionTreeItem* item = static_cast<SessionTreeItem*>(*it);
+            TreeItem* item = static_cast<TreeItem*>(*it);
             if (item->data(column, role).toBool())
                 return item;
         }
@@ -618,12 +618,12 @@ QTreeWidgetItem* SessionTreeWidget::findNextItem(QTreeWidgetItem* from, int colu
     return 0;
 }
 
-QTreeWidgetItem* SessionTreeWidget::findPrevItem(QTreeWidgetItem* from, int column, int role) const
+QTreeWidgetItem* TreeWidget::findPrevItem(QTreeWidgetItem* from, int column, int role) const
 {
     if (from) {
         QTreeWidgetItemIterator it(from);
         while (*--it && *it != from) {
-            SessionTreeItem* item = static_cast<SessionTreeItem*>(*it);
+            TreeItem* item = static_cast<TreeItem*>(*it);
             if (item->data(column, role).toBool())
                 return item;
         }

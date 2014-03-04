@@ -19,14 +19,14 @@
 #include "connectionwizard.h"
 #include "sessionstackview.h"
 #include "soundnotification.h"
-#include "sessiontreewidget.h"
 #include "messagestackview.h"
-#include "sessiontreeitem.h"
 #include "connectioninfo.h"
 #include "addviewdialog.h"
 #include "systemnotifier.h"
 #include "searchpopup.h"
 #include "messageview.h"
+#include "treewidget.h"
+#include "treeitem.h"
 #include "homepage.h"
 #include "overlay.h"
 #include "toolbar.h"
@@ -303,7 +303,7 @@ void MainWindow::highlighted(IrcMessage* message)
 
     MessageView* view = qobject_cast<MessageView*>(sender());
     if (view) {
-        SessionTreeItem* item = treeWidget->connectionItem(view->connection());
+        TreeItem* item = treeWidget->connectionItem(view->connection());
         if (view->viewType() != ViewInfo::Server)
             item = item->findChild(view->receiver());
         if (item) {
@@ -318,7 +318,7 @@ void MainWindow::missed(IrcMessage* message)
     Q_UNUSED(message);
     MessageView* view = qobject_cast<MessageView*>(sender());
     if (view) {
-        SessionTreeItem* item = treeWidget->connectionItem(view->connection());
+        TreeItem* item = treeWidget->connectionItem(view->connection());
         if (view->viewType() != ViewInfo::Server)
             item = item->findChild(view->receiver());
         if (item)
@@ -360,7 +360,7 @@ void MainWindow::viewActivated(MessageView* view)
     treeWidget->setCurrentBuffer(view->buffer());
 }
 
-void MainWindow::closeTreeItem(SessionTreeItem* item)
+void MainWindow::closeTreeItem(TreeItem* item)
 {
     MessageStackView* stack = stackView->connectionWidget(item->connection());
     if (stack) {
@@ -473,11 +473,11 @@ void MainWindow::createTree()
     container->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
     container->setVisible(false);
 
-    treeWidget = new SessionTreeWidget(container);
+    treeWidget = new TreeWidget(container);
     treeWidget->setFocusPolicy(Qt::NoFocus);
 
     connect(treeWidget, SIGNAL(editConnection(IrcConnection*)), this, SLOT(editConnection(IrcConnection*)));
-    connect(treeWidget, SIGNAL(closeItem(SessionTreeItem*)), this, SLOT(closeTreeItem(SessionTreeItem*)));
+    connect(treeWidget, SIGNAL(closeItem(TreeItem*)), this, SLOT(closeTreeItem(TreeItem*)));
     connect(treeWidget, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(setCurrentBuffer(IrcBuffer*)));
 
     ToolBar* toolBar = new ToolBar(container);

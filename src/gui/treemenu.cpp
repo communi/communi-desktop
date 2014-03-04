@@ -12,15 +12,15 @@
 * GNU General Public License for more details.
 */
 
-#include "sessiontreemenu.h"
-#include "sessiontreewidget.h"
-#include "sessiontreeitem.h"
+#include "treemenu.h"
+#include "treewidget.h"
+#include "treeitem.h"
 #include "messageview.h"
 #include "connection.h"
 #include <IrcCommand>
 #include <IrcChannel>
 
-SessionTreeMenu::SessionTreeMenu(SessionTreeWidget* parent) : QMenu(parent)
+TreeMenu::TreeMenu(TreeWidget* parent) : QMenu(parent)
 {
     d.item = 0;
     d.disconnectAction = addAction(tr("Disconnect"));
@@ -34,42 +34,42 @@ SessionTreeMenu::SessionTreeMenu(SessionTreeWidget* parent) : QMenu(parent)
     d.closeAction = addAction(tr("Close"), this, SLOT(onCloseTriggered()), QKeySequence::Close);
 }
 
-void SessionTreeMenu::exec(SessionTreeItem* item, const QPoint& pos)
+void TreeMenu::exec(TreeItem* item, const QPoint& pos)
 {
     setup(item);
     updateActions();
     QMenu::exec(pos);
 }
 
-void SessionTreeMenu::onEditTriggered()
+void TreeMenu::onEditTriggered()
 {
     QMetaObject::invokeMethod(parent(), "editConnection", Q_ARG(IrcConnection*, d.item->connection()));
 }
 
-void SessionTreeMenu::onWhoisTriggered()
+void TreeMenu::onWhoisTriggered()
 {
     IrcCommand* command = IrcCommand::createWhois(d.item->text(0));
     d.item->connection()->sendCommand(command);
 }
 
-void SessionTreeMenu::onJoinTriggered()
+void TreeMenu::onJoinTriggered()
 {
     IrcCommand* command = IrcCommand::createJoin(d.item->text(0));
     d.item->connection()->sendCommand(command);
 }
 
-void SessionTreeMenu::onPartTriggered()
+void TreeMenu::onPartTriggered()
 {
     IrcCommand* command = IrcCommand::createPart(d.item->text(0));
     d.item->connection()->sendCommand(command);
 }
 
-void SessionTreeMenu::onCloseTriggered()
+void TreeMenu::onCloseTriggered()
 {
-    QMetaObject::invokeMethod(parent(), "closeItem", Q_ARG(SessionTreeItem*, d.item));
+    QMetaObject::invokeMethod(parent(), "closeItem", Q_ARG(TreeItem*, d.item));
 }
 
-void SessionTreeMenu::updateActions()
+void TreeMenu::updateActions()
 {
     if (d.item) {
         const bool child = d.item->parent();
@@ -94,7 +94,7 @@ void SessionTreeMenu::updateActions()
     d.closeAction->setVisible(d.item);
 }
 
-void SessionTreeMenu::setup(SessionTreeItem* item)
+void TreeMenu::setup(TreeItem* item)
 {
     if (d.item != item) {
         if (d.item && d.item->connection()) {

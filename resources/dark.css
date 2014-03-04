@@ -19,22 +19,22 @@ UserListView::item:hover:selected {
     background: #444444;
 }
 
-SessionTreeWidget {
+TreeWidget {
     border: none;
     color: #dedede;
     background: #222222;
 }
 
-SessionTreeWidget::item:hover {
+TreeWidget::item:hover {
     background: #222222;
 }
 
-SessionTreeWidget::item:selected {
+TreeWidget::item:selected {
     color: #dedede;
     background: #444444;
 }
 
-SessionTreeWidget::item:hover:selected {
+TreeWidget::item:hover:selected {
     background: #444444;
 }
 

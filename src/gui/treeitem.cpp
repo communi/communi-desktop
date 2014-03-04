@@ -12,12 +12,12 @@
 * GNU General Public License for more details.
 */
 
-#include "sessiontreeitem.h"
-#include "sessiontreewidget.h"
+#include "treeitem.h"
+#include "treewidget.h"
 #include "itemdelegate.h"
 #include <IrcBuffer>
 
-SessionTreeItem::SessionTreeItem(IrcBuffer* buffer, QTreeWidget* parent) : QTreeWidgetItem(parent)
+TreeItem::TreeItem(IrcBuffer* buffer, QTreeWidget* parent) : QTreeWidgetItem(parent)
 {
     d.buffer = buffer;
     d.highlighted = false;
@@ -26,7 +26,7 @@ SessionTreeItem::SessionTreeItem(IrcBuffer* buffer, QTreeWidget* parent) : QTree
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
 }
 
-SessionTreeItem::SessionTreeItem(IrcBuffer* buffer, QTreeWidgetItem* parent) : QTreeWidgetItem(parent)
+TreeItem::TreeItem(IrcBuffer* buffer, QTreeWidgetItem* parent) : QTreeWidgetItem(parent)
 {
     d.buffer = buffer;
     d.highlighted = false;
@@ -35,68 +35,68 @@ SessionTreeItem::SessionTreeItem(IrcBuffer* buffer, QTreeWidgetItem* parent) : Q
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
 }
 
-SessionTreeItem::~SessionTreeItem()
+TreeItem::~TreeItem()
 {
 }
 
-IrcBuffer* SessionTreeItem::buffer() const
+IrcBuffer* TreeItem::buffer() const
 {
     return d.buffer;
 }
 
-IrcConnection* SessionTreeItem::connection() const
+IrcConnection* TreeItem::connection() const
 {
     return d.buffer->connection();
 }
 
-SessionTreeItem* SessionTreeItem::findChild(const QString& name) const
+TreeItem* TreeItem::findChild(const QString& name) const
 {
     for (int i = 0; i < childCount(); ++i)
         if (child(i)->text(0).compare(name, Qt::CaseInsensitive) == 0)
-            return static_cast<SessionTreeItem*>(child(i));
+            return static_cast<TreeItem*>(child(i));
     return 0;
 }
 
-QVariant SessionTreeItem::data(int column, int role) const
+QVariant TreeItem::data(int column, int role) const
 {
     if (role == Qt::ForegroundRole) {
-        SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget());
+        TreeWidget* tw = static_cast<TreeWidget*>(treeWidget());
         if (!d.buffer->isActive())
-            return tw->statusColor(SessionTreeWidget::Inactive);
+            return tw->statusColor(TreeWidget::Inactive);
         if (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty()))
             return tw->currentHighlightColor();
-        return tw->statusColor(SessionTreeWidget::Active);
+        return tw->statusColor(TreeWidget::Active);
     } else if (role == ItemDelegate::BadgeColorRole) {
-        SessionTreeWidget* tw = static_cast<SessionTreeWidget*>(treeWidget());
+        TreeWidget* tw = static_cast<TreeWidget*>(treeWidget());
         if (!isSelected() && d.buffer->isActive() && d.highlighted)
             return tw->currentBadgeColor();
-        return tw->statusColor(SessionTreeWidget::Badge);
+        return tw->statusColor(TreeWidget::Badge);
     } else if (role == ItemDelegate::HighlightRole) {
         return d.highlighted;
     }
     return QTreeWidgetItem::data(column, role);
 }
 
-int SessionTreeItem::badge() const
+int TreeItem::badge() const
 {
     return data(1, ItemDelegate::BadgeRole).toInt();
 }
 
-void SessionTreeItem::setBadge(int badge)
+void TreeItem::setBadge(int badge)
 {
     setData(1, ItemDelegate::BadgeRole, badge);
 }
 
-bool SessionTreeItem::isHighlighted() const
+bool TreeItem::isHighlighted() const
 {
     return d.highlighted;
 }
 
-void SessionTreeItem::setHighlighted(bool highlighted)
+void TreeItem::setHighlighted(bool highlighted)
 {
     if (d.highlighted != highlighted) {
         d.highlighted = highlighted;
-        if (SessionTreeItem* p = static_cast<SessionTreeItem*>(parent())) {
+        if (TreeItem* p = static_cast<TreeItem*>(parent())) {
             if (highlighted)
                 p->d.highlightedChildren.insert(this);
             else
@@ -108,7 +108,7 @@ void SessionTreeItem::setHighlighted(bool highlighted)
     }
 }
 
-void SessionTreeItem::sort(SortOrder order)
+void TreeItem::sort(SortOrder order)
 {
     if (d.sortOrder != order) {
         if (d.sortOrder == Manual)
@@ -118,21 +118,21 @@ void SessionTreeItem::sort(SortOrder order)
     }
 }
 
-SessionTreeItem::SortOrder SessionTreeItem::currentSortOrder() const
+TreeItem::SortOrder TreeItem::currentSortOrder() const
 {
-    if (const SessionTreeItem* p = static_cast<const SessionTreeItem*>(parent()))
+    if (const TreeItem* p = static_cast<const TreeItem*>(parent()))
         return p->currentSortOrder();
     return d.sortOrder;
 }
 
-QStringList SessionTreeItem::manualSortOrder() const
+QStringList TreeItem::manualSortOrder() const
 {
-    if (const SessionTreeItem* p = static_cast<const SessionTreeItem*>(parent()))
+    if (const TreeItem* p = static_cast<const TreeItem*>(parent()))
         return p->manualSortOrder();
     return d.manualOrder;
 }
 
-void SessionTreeItem::setManualSortOrder(const QStringList& order)
+void TreeItem::setManualSortOrder(const QStringList& order)
 {
     if (d.manualOrder != order) {
         d.manualOrder = order;
@@ -140,18 +140,18 @@ void SessionTreeItem::setManualSortOrder(const QStringList& order)
     }
 }
 
-void SessionTreeItem::resetManualSortOrder()
+void TreeItem::resetManualSortOrder()
 {
     d.manualOrder.clear();
     for (int i = 0; i < childCount(); ++i)
         d.manualOrder += child(i)->text(0);
 }
 
-bool SessionTreeItem::operator<(const QTreeWidgetItem& other) const
+bool TreeItem::operator<(const QTreeWidgetItem& other) const
 {
     Q_ASSERT(parent() && other.parent());
     if (currentSortOrder() == Alphabetic) {
-        const SessionTreeItem* otherItem = static_cast<const SessionTreeItem*>(&other);
+        const TreeItem* otherItem = static_cast<const TreeItem*>(&other);
         const IrcBuffer* ab = d.buffer;
         const IrcBuffer* bb = otherItem->buffer();
         if (!ab || !bb)

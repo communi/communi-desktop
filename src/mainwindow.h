@@ -20,16 +20,16 @@
 #include "trayicon.h"
 
 class SessionStackView;
-class SessionTreeWidget;
 class SoundNotification;
-class SessionTreeItem;
 struct ConnectionInfo;
 class IrcConnection;
 class MessageView;
 class IrcMessage;
 class QtDockTile;
+class TreeWidget;
 class IrcBuffer;
 class QShortcut;
+class TreeItem;
 class HomePage;
 class Overlay;
 
@@ -64,7 +64,7 @@ private slots:
     void viewRemoved(MessageView* view);
     void viewRenamed(MessageView* view);
     void viewActivated(MessageView* view);
-    void closeTreeItem(SessionTreeItem* item);
+    void closeTreeItem(TreeItem* item);
     void setCurrentBuffer(IrcBuffer* buffer);
     void splitterChanged(const QByteArray& state);
     void updateOverlay();
@@ -77,7 +77,7 @@ private:
     void createTree();
     void createHome();
 
-    SessionTreeWidget* treeWidget;
+    TreeWidget* treeWidget;
     SessionStackView* stackView;
     TrayIcon* trayIcon;
     QAction* muteAction;

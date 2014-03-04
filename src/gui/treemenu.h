@@ -12,23 +12,23 @@
 * GNU General Public License for more details.
 */
 
-#ifndef SESSIONTREEMENU_H
-#define SESSIONTREEMENU_H
+#ifndef TREEMENU_H
+#define TREEMENU_H
 
 #include <QMenu>
 
-class SessionTreeItem;
-class SessionTreeWidget;
+class TreeItem;
+class TreeWidget;
 
-class SessionTreeMenu : public QMenu
+class TreeMenu : public QMenu
 {
     Q_OBJECT
 
 public:
-    SessionTreeMenu(SessionTreeWidget* parent);
+    TreeMenu(TreeWidget* parent);
 
 public slots:
-    void exec(SessionTreeItem* item, const QPoint& pos);
+    void exec(TreeItem* item, const QPoint& pos);
 
 private slots:
     void onEditTriggered();
@@ -39,9 +39,9 @@ private slots:
     void updateActions();
 
 private:
-    void setup(SessionTreeItem* item);
+    void setup(TreeItem* item);
 
-    struct SessionTreePrivate {
+    struct Private {
         QAction* disconnectAction;
         QAction* reconnectAction;
         QAction* editAction;
@@ -49,8 +49,8 @@ private:
         QAction* joinAction;
         QAction* partAction;
         QAction* closeAction;
-        SessionTreeItem* item;
+        TreeItem* item;
     } d;
 };
 
-#endif // SESSIONTREEMENU_H
+#endif // TREEMENU_H

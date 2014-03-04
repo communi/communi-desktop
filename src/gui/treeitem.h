@@ -12,24 +12,24 @@
 * GNU General Public License for more details.
 */
 
-#ifndef SESSIONTREEITEM_H
-#define SESSIONTREEITEM_H
+#ifndef TREEITEM_H
+#define TREEITEM_H
 
 #include <QTreeWidgetItem>
 
 class IrcBuffer;
 class IrcConnection;
 
-class SessionTreeItem : public QTreeWidgetItem
+class TreeItem : public QTreeWidgetItem
 {
 public:
-    SessionTreeItem(IrcBuffer* buffer, QTreeWidget* parent);
-    SessionTreeItem(IrcBuffer* buffer, QTreeWidgetItem* parent);
-    ~SessionTreeItem();
+    TreeItem(IrcBuffer* buffer, QTreeWidget* parent);
+    TreeItem(IrcBuffer* buffer, QTreeWidgetItem* parent);
+    ~TreeItem();
 
     IrcBuffer* buffer() const;
     IrcConnection* connection() const;
-    SessionTreeItem* findChild(const QString& name) const;
+    TreeItem* findChild(const QString& name) const;
 
     QVariant data(int column, int role) const;
 
@@ -55,9 +55,9 @@ private:
         IrcBuffer* buffer;
         SortOrder sortOrder;
         QStringList manualOrder;
-        QSet<SessionTreeItem*> highlightedChildren;
+        QSet<TreeItem*> highlightedChildren;
     } d;
-    friend class SessionTreeWidget;
+    friend class TreeWidget;
 };
 
-#endif // SESSIONTREEITEM_H
+#endif // TREEITEM_H

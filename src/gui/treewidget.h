@@ -12,8 +12,8 @@
 * GNU General Public License for more details.
 */
 
-#ifndef SESSIONTREEWIDGET_H
-#define SESSIONTREEWIDGET_H
+#ifndef TREEWIDGET_H
+#define TREEWIDGET_H
 
 #include <QTreeWidget>
 #include <QShortcut>
@@ -23,14 +23,14 @@
 
 class IrcBuffer;
 class IrcConnection;
-class SessionTreeItem;
+class TreeItem;
 
-class SessionTreeWidget : public QTreeWidget
+class TreeWidget : public QTreeWidget
 {
     Q_OBJECT
 
 public:
-    SessionTreeWidget(QWidget* parent = 0);
+    TreeWidget(QWidget* parent = 0);
 
     QSize sizeHint() const;
 
@@ -46,8 +46,8 @@ public:
     QColor currentHighlightColor() const;
 
     IrcBuffer* currentBuffer() const;
-    SessionTreeItem* bufferItem(IrcBuffer* buffer) const;
-    SessionTreeItem* connectionItem(IrcConnection* connection) const;
+    TreeItem* bufferItem(IrcBuffer* buffer) const;
+    TreeItem* connectionItem(IrcConnection* connection) const;
 
     bool hasRestoredCurrent() const;
     ViewInfos viewInfos(IrcConnection* connection) const;
@@ -74,12 +74,12 @@ public slots:
     void blockItemReset();
     void unblockItemReset();
 
-    void highlight(SessionTreeItem* item);
-    void unhighlight(SessionTreeItem* item);
+    void highlight(TreeItem* item);
+    void unhighlight(TreeItem* item);
 
 signals:
     void editConnection(IrcConnection* connection);
-    void closeItem(SessionTreeItem* item);
+    void closeItem(TreeItem* item);
     void currentBufferChanged(IrcBuffer* buffer);
     void searched(bool result);
 
@@ -103,7 +103,7 @@ private slots:
     void applySettings();
 
 private:
-    void resetItem(SessionTreeItem* item);
+    void resetItem(TreeItem* item);
     QTreeWidgetItem* lastItem() const;
     QTreeWidgetItem* nextItem(QTreeWidgetItem* from) const;
     QTreeWidgetItem* previousItem(QTreeWidgetItem* from) const;
@@ -123,13 +123,13 @@ private:
         QShortcut* mostActiveShortcut;
         QShortcut* resetShortcut;
         QHash<ItemStatus, QColor> colors;
-        QSet<SessionTreeItem*> resetedItems;
-        QSet<SessionTreeItem*> highlightedItems;
-        QHash<IrcBuffer*, SessionTreeItem*> bufferItems;
-        QHash<IrcConnection*, SessionTreeItem*> connectionItems;
+        QSet<TreeItem*> resetedItems;
+        QSet<TreeItem*> highlightedItems;
+        QHash<IrcBuffer*, TreeItem*> bufferItems;
+        QHash<IrcConnection*, TreeItem*> connectionItems;
         mutable QTreeWidgetItem* dropParent;
     } d;
-    friend class SessionTreeItem;
+    friend class TreeItem;
 };
 
-#endif // SESSIONTREEWIDGET_H
+#endif // TREEWIDGET_H
