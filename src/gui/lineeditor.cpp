@@ -26,6 +26,7 @@ LineEditor::LineEditor(QWidget* parent) : HistoryLineEdit(parent)
 
     d.completer = new IrcCompleter(this);
     connect(d.completer, SIGNAL(completed(QString,int)), this, SLOT(onCompleted(QString,int)));
+    connect(this, SIGNAL(textEdited(QString)), d.completer, SLOT(reset()));
 
     setAttribute(Qt::WA_MacShowFocusRect, false);
 
