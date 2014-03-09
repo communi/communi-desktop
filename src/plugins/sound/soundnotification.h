@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2008-2013 The Communi Project
+* Copyright (C) 2008-2014 The Communi Project
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
