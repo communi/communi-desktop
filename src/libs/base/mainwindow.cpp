@@ -41,8 +41,11 @@ QList<IrcConnection*> MainWindow::connections() const
 
 void MainWindow::addConnection(IrcConnection* connection)
 {
-    if (!connection->userData().isValid())
-        connection->setUserData(QUuid::createUuid().toString());
+    QVariantMap ud = connection->userData();
+    if (!ud.contains("uuid")) {
+        ud.insert("uuid", QUuid::createUuid());
+        connection->setUserData(ud);
+    }
 
     d.connections += connection;
     connect(connection, SIGNAL(destroyed(IrcConnection*)), this, SLOT(removeConnection(IrcConnection*)));

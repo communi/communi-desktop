@@ -208,7 +208,7 @@ void TitleBar::refresh()
     IrcChannel* channel = qobject_cast<IrcChannel*>(d.buffer);
     QString topic = channel ? channel->topic() : QString();
     if (!topic.isEmpty())
-        title = tr("%1: %2").arg(title, d.formatter->formatHtml(topic));
+        title = tr("%1: %2").arg(title, d.formatter->formatContent(topic));
     setText(title);
 }
 

@@ -170,7 +170,7 @@ void SplitView::initBuffer(IrcBuffer* buffer)
 {
     IrcConnection* connection = buffer->connection();
     if (connection) {
-        const QString uuid = connection->userData().toString();
+        const QString uuid = connection->userData().value("uuid").toString();
         if (!uuid.isEmpty()) {
             // TODO: optimize
             QList<BufferView*> views = findChildren<BufferView*>("__unrestored__");
@@ -281,7 +281,7 @@ QVariantMap SplitView::saveSplittedViews(const QSplitter* splitter) const
             IrcConnection* connection = buffer ? buffer->connection() : 0;
             buf.insert("buffer", buffer ? buffer->title() : QString());
             buf.insert("current", bv == d.current);
-            buf.insert("uuid", connection ? connection->userData().toString() : QString());
+            buf.insert("uuid", connection ? connection->userData().value("uuid").toString() : QString());
             if (QSplitter* sp = bv->findChild<QSplitter*>())
                 buf.insert("state", sp->saveState());
             buffers += buf;

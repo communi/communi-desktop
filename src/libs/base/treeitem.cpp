@@ -71,7 +71,7 @@ QVariant TreeItem::data(int column, int role) const
     if (role == TreeRole::Active)
         return d.buffer->isActive();
     if (column == 0 && role == Qt::DisplayRole && d.buffer)
-        return d.buffer->data(role);
+        return d.buffer->title();
     return QTreeWidgetItem::data(column, role);
 }
 
