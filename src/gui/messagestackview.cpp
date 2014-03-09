@@ -64,11 +64,6 @@ CommandParser* MessageStackView::parser() const
     return &const_cast<MessageStackView*>(this)->d.parser;
 }
 
-QStringListModel* MessageStackView::commandModel() const
-{
-    return &const_cast<MessageStackView*>(this)->d.commandModel;
-}
-
 MessageView* MessageStackView::currentView() const
 {
     return qobject_cast<MessageView*>(currentWidget());
@@ -192,13 +187,6 @@ void MessageStackView::applySettings()
         aliases[it.key().mid(8).toUpper()] = it.value().toString();
     }
     d.parser.setAliases(aliases);
-
-    QStringList commands;
-    foreach (const QString& command, d.parser.availableCommands()) {
-        foreach (const QString& trigger, d.parser.triggers())
-            commands += trigger + command;
-    }
-    d.commandModel.setStringList(commands);
 }
 
 void MessageStackView::activateView(int index)

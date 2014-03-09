@@ -17,7 +17,6 @@
 
 #include <QHash>
 #include <QStackedWidget>
-#include <QStringListModel>
 #include "messagehandler.h"
 #include "commandparser.h"
 #include "messageview.h"
@@ -39,7 +38,6 @@ public:
 
     IrcConnection* connection() const;
     CommandParser* parser() const;
-    QStringListModel* commandModel() const;
 
     MessageView* currentView() const;
     MessageView* viewAt(int index) const;
@@ -74,7 +72,6 @@ private:
         IrcLagTimer* lagTimer;
         MessageHandler handler;
         IrcBufferModel* bufferModel;
-        QStringListModel commandModel;
         QHash<QString, MessageView*> views;
     } d;
 };
