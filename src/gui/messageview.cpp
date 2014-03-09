@@ -91,6 +91,7 @@ MessageView::MessageView(ViewInfo::Type type, IrcConnection* connection, Message
 
     d.formatter = new MessageFormatter(this);
     IrcTextFormat* format = d.formatter->textFormat();
+    format->setSpanFormat(IrcTextFormat::SpanStyle);
     IrcPalette* palette = format->palette();
     palette->setColorName(Irc::Gray, "#606060");
     palette->setColorName(Irc::LightGray, "#808080");
