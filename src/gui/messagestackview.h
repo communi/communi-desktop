@@ -73,7 +73,6 @@ private:
         CommandParser parser;
         IrcLagTimer* lagTimer;
         MessageHandler handler;
-        QStringListModel viewModel;
         IrcBufferModel* bufferModel;
         QStringListModel commandModel;
         QHash<QString, MessageView*> views;

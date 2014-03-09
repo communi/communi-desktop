@@ -125,7 +125,6 @@ MessageView* MessageStackView::createView(ViewInfo::Type type, const QString& re
     buffer->setPersistent(true);
     view->setBuffer(buffer);
     addWidget(view);
-    d.viewModel.setStringList(d.viewModel.stringList() << receiver);
     emit viewAdded(view);
     return view;
 }
@@ -142,9 +141,6 @@ void MessageStackView::removeView(const QString& receiver)
     MessageView* view = d.views.take(receiver.toLower());
     if (view) {
         view->deleteLater();
-        QStringList views = d.viewModel.stringList();
-        if (views.removeOne(receiver))
-            d.viewModel.setStringList(views);
         emit viewRemoved(view);
         d.handler.removeView(view->receiver());
     }
