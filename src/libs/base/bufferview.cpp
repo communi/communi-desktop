@@ -58,13 +58,13 @@ BufferView::BufferView(ViewInfo::Type type, IrcConnection* connection, MessageSt
     d.connected = 0;
     d.disconnected = 0;
 
-    d.topicLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
-    d.helpLabel->setMinimumHeight(d.lineEditor->sizeHint().height());
+    d.topicLabel->setMinimumHeight(d.textInput->sizeHint().height());
+    d.helpLabel->setMinimumHeight(d.textInput->sizeHint().height());
 
     connect(d.splitter, SIGNAL(splitterMoved(int, int)), this, SLOT(onSplitterMoved()));
 
-    setFocusProxy(d.lineEditor);
-    d.textBrowser->setBuddy(d.lineEditor);
+    setFocusProxy(d.textInput);
+    d.textBrowser->setBuddy(d.textInput);
     d.textBrowser->viewport()->installEventFilter(this);
     connect(d.textBrowser, SIGNAL(anchorClicked(QUrl)), SLOT(onAnchorClicked(QUrl)));
 
@@ -125,15 +125,15 @@ BufferView::BufferView(ViewInfo::Type type, IrcConnection* connection, MessageSt
 
     d.highlighter->setHighlightColor(QColor("#808080"));
 
-    d.lineEditor->completer()->setParser(d.parser);
+    d.textInput->completer()->setParser(d.parser);
 
-    connect(d.lineEditor, SIGNAL(send(QString)), this, SLOT(sendMessage(QString)));
-    connect(d.lineEditor, SIGNAL(typed(QString)), this, SLOT(showHelp(QString)));
+    connect(d.textInput, SIGNAL(send(QString)), this, SLOT(sendMessage(QString)));
+    connect(d.textInput, SIGNAL(typed(QString)), this, SLOT(showHelp(QString)));
 
-    connect(d.lineEditor, SIGNAL(scrollToTop()), d.textBrowser, SLOT(scrollToTop()));
-    connect(d.lineEditor, SIGNAL(scrollToBottom()), d.textBrowser, SLOT(scrollToBottom()));
-    connect(d.lineEditor, SIGNAL(scrollToNextPage()), d.textBrowser, SLOT(scrollToNextPage()));
-    connect(d.lineEditor, SIGNAL(scrollToPreviousPage()), d.textBrowser, SLOT(scrollToPreviousPage()));
+    connect(d.textInput, SIGNAL(scrollToTop()), d.textBrowser, SLOT(scrollToTop()));
+    connect(d.textInput, SIGNAL(scrollToBottom()), d.textBrowser, SLOT(scrollToBottom()));
+    connect(d.textInput, SIGNAL(scrollToNextPage()), d.textBrowser, SLOT(scrollToNextPage()));
+    connect(d.textInput, SIGNAL(scrollToPreviousPage()), d.textBrowser, SLOT(scrollToPreviousPage()));
 
     d.helpLabel->hide();
     d.searchEditor->setTextEdit(d.textBrowser);
@@ -174,7 +174,7 @@ IrcConnection* BufferView::connection() const
 
 IrcCompleter* BufferView::completer() const
 {
-    return d.lineEditor->completer();
+    return d.textInput->completer();
 }
 
 QTextBrowser* BufferView::textBrowser() const
@@ -207,7 +207,7 @@ void BufferView::setBuffer(IrcBuffer* buffer)
             d.listView->setChannel(channel);
         d.buffer = buffer;
         d.formatter->setBuffer(buffer);
-        d.lineEditor->completer()->setBuffer(buffer);
+        d.textInput->completer()->setBuffer(buffer);
         connect(buffer, SIGNAL(activeChanged(bool)), this, SIGNAL(activeChanged()));
         connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
         connect(buffer, SIGNAL(titleChanged(QString)), this, SLOT(onTitleChanged(QString)));
@@ -425,7 +425,7 @@ void BufferView::onAnchorClicked(const QUrl& link)
     } else {
         QDesktopServices::openUrl(link);
         // avoid focus rectangle around the link
-        d.lineEditor->setFocus();
+        d.textInput->setFocus();
     }
 }
 
@@ -436,7 +436,7 @@ void BufferView::onTopicEdited(const QString& topic)
 
 void BufferView::onConnectionStatusChanged()
 {
-    d.lineEditor->setFocusPolicy(d.connection->isActive() ? Qt::StrongFocus : Qt::NoFocus);
+    d.textInput->setFocusPolicy(d.connection->isActive() ? Qt::StrongFocus : Qt::NoFocus);
     d.textBrowser->setFocusPolicy(d.connection->isActive() ? Qt::StrongFocus : Qt::NoFocus);
 }
 
@@ -462,8 +462,8 @@ void BufferView::applySettings()
         d.searchEditor->setButtonPixmap(SearchEditor::Left, QPixmap(":/resources/buttons/prev-white.png"));
         d.searchEditor->setButtonPixmap(SearchEditor::Right, QPixmap(":/resources/buttons/next-white.png"));
 
-        d.lineEditor->setButtonPixmap(LineEditor::Right, QPixmap(":/resources/buttons/return-white.png"));
-        d.lineEditor->setButtonPixmap(LineEditor::Left, QPixmap(":/resources/buttons/tab-white.png"));
+        d.textInput->setButtonPixmap(TextInput::Right, QPixmap(":/resources/buttons/return-white.png"));
+        d.textInput->setButtonPixmap(TextInput::Left, QPixmap(":/resources/buttons/tab-white.png"));
     } else {
         d.textBrowser->setShadowColor(Qt::gray);
         d.textBrowser->setMarkerColor(QColor("#000000"));
@@ -472,8 +472,8 @@ void BufferView::applySettings()
         d.searchEditor->setButtonPixmap(SearchEditor::Left, QPixmap(":/resources/prev-black.png"));
         d.searchEditor->setButtonPixmap(SearchEditor::Right, QPixmap(":/resources/next-black.png"));
 
-        d.lineEditor->setButtonPixmap(LineEditor::Right, QPixmap(":/resources/buttons/return-black.png"));
-        d.lineEditor->setButtonPixmap(LineEditor::Left, QPixmap(":/resources/buttons/tab-black.png"));
+        d.textInput->setButtonPixmap(TextInput::Right, QPixmap(":/resources/buttons/return-black.png"));
+        d.textInput->setButtonPixmap(TextInput::Left, QPixmap(":/resources/buttons/tab-black.png"));
     }
 
     d.showEvents = settings->value("messages.events").toBool();
@@ -603,5 +603,5 @@ bool BufferView::hasUser(const QString& user) const
 
 void BufferView::updateLag(qint64 lag)
 {
-    d.lineEditor->setLag(lag);
+    d.textInput->setLag(lag);
 }

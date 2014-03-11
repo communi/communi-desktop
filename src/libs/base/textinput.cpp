@@ -12,7 +12,7 @@
 * GNU General Public License for more details.
 */
 
-#include "lineeditor.h"
+#include "textinput.h"
 #include <IrcCompleter>
 #include <QStyleFactory>
 #include <QKeyEvent>
@@ -20,7 +20,7 @@
 #include <QPainter>
 #include <QStyle>
 
-LineEditor::LineEditor(QWidget* parent) : HistoryLineEdit(parent)
+TextInput::TextInput(QWidget* parent) : HistoryLineEdit(parent)
 {
     d.lag = -1;
 
@@ -57,17 +57,17 @@ LineEditor::LineEditor(QWidget* parent) : HistoryLineEdit(parent)
     connect(this, SIGNAL(textEdited(QString)), this, SIGNAL(typed(QString)));
 }
 
-IrcCompleter* LineEditor::completer() const
+IrcCompleter* TextInput::completer() const
 {
     return d.completer;
 }
 
-int LineEditor::lag() const
+int TextInput::lag() const
 {
     return d.lag;
 }
 
-void LineEditor::setLag(int lag)
+void TextInput::setLag(int lag)
 {
     if (d.lag != lag) {
         d.lag = lag;
@@ -75,7 +75,7 @@ void LineEditor::setLag(int lag)
     }
 }
 
-bool LineEditor::event(QEvent* event)
+bool TextInput::event(QEvent* event)
 {
     if (event->type() == QEvent::ShortcutOverride) {
         QKeyEvent* ke = static_cast<QKeyEvent*>(event);
@@ -100,7 +100,7 @@ bool LineEditor::event(QEvent* event)
     return HistoryLineEdit::event(event);
 }
 
-void LineEditor::paintEvent(QPaintEvent* event)
+void TextInput::paintEvent(QPaintEvent* event)
 {
     HistoryLineEdit::paintEvent(event);
 
@@ -119,18 +119,18 @@ void LineEditor::paintEvent(QPaintEvent* event)
     }
 }
 
-void LineEditor::tryComplete()
+void TextInput::tryComplete()
 {
     d.completer->complete(text(), cursorPosition());
 }
 
-void LineEditor::onCompleted(const QString& text, int cursor)
+void TextInput::onCompleted(const QString& text, int cursor)
 {
     setText(text);
     setCursorPosition(cursor);
 }
 
-void LineEditor::onSend()
+void TextInput::onSend()
 {
     bool ignore = true;
     const QStringList lines = text().split(QRegExp("[\\r\\n]"), QString::SkipEmptyParts);

@@ -122,7 +122,7 @@
     </widget>
    </item>
    <item>
-    <widget class="LineEditor" name="lineEditor"/>
+    <widget class="TextInput" name="textInput"/>
    </item>
   </layout>
  </widget>
@@ -139,9 +139,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>LineEditor</class>
+   <class>TextInput</class>
    <extends>QLineEdit</extends>
-   <header>lineeditor.h</header>
+   <header>textinput.h</header>
   </customwidget>
   <customwidget>
    <class>ListView</class>

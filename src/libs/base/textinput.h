@@ -12,19 +12,19 @@
 * GNU General Public License for more details.
 */
 
-#ifndef LINEEDITOR_H
-#define LINEEDITOR_H
+#ifndef TEXTINPUT_H
+#define TEXTINPUT_H
 
 #include "historylineedit.h"
 class IrcCompleter;
 
-class LineEditor : public HistoryLineEdit
+class TextInput : public HistoryLineEdit
 {
     Q_OBJECT
     Q_PROPERTY(int lag READ lag WRITE setLag)
 
 public:
-    LineEditor(QWidget* parent = 0);
+    TextInput(QWidget* parent = 0);
 
     IrcCompleter* completer() const;
 
@@ -57,4 +57,4 @@ private:
     } d;
 };
 
-#endif // LINEEDITOR_H
+#endif // TEXTINPUT_H
