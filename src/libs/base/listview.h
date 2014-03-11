@@ -12,8 +12,8 @@
 * GNU General Public License for more details.
 */
 
-#ifndef USERLISTVIEW_H
-#define USERLISTVIEW_H
+#ifndef LISTVIEW_H
+#define LISTVIEW_H
 
 #include <QListView>
 #include <QPointer>
@@ -24,13 +24,13 @@ class IrcMessage;
 class IrcCommand;
 class IrcUserModel;
 
-class UserListView : public QListView
+class ListView : public QListView
 {
     Q_OBJECT
 
 public:
-    UserListView(QWidget* parent = 0);
-    ~UserListView();
+    ListView(QWidget* parent = 0);
+    ~ListView();
 
     QSize sizeHint() const;
 
@@ -63,4 +63,4 @@ private:
     } d;
 };
 
-#endif // USERLISTVIEW_H
+#endif // LISTVIEW_H

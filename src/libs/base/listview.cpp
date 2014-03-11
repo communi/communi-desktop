@@ -12,7 +12,7 @@
 * GNU General Public License for more details.
 */
 
-#include "userlistview.h"
+#include "listview.h"
 #include "userlistmenu.h"
 #include "styledscrollbar.h"
 #include "itemdelegate.h"
@@ -25,7 +25,7 @@
 #include <QScrollBar>
 #include <QAction>
 
-UserListView::UserListView(QWidget* parent) : QListView(parent)
+ListView::ListView(QWidget* parent) : QListView(parent)
 {
     setItemDelegate(new ItemDelegate(this));
     connect(this, SIGNAL(doubleClicked(QModelIndex)), SLOT(onDoubleClicked(QModelIndex)));
@@ -34,31 +34,31 @@ UserListView::UserListView(QWidget* parent) : QListView(parent)
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
-UserListView::~UserListView()
+ListView::~ListView()
 {
 }
 
-QSize UserListView::sizeHint() const
+QSize ListView::sizeHint() const
 {
     return QSize(16 * fontMetrics().width('#') + verticalScrollBar()->sizeHint().width(), QListView::sizeHint().height());
 }
 
-IrcConnection* UserListView::connection() const
+IrcConnection* ListView::connection() const
 {
     return d.connection;
 }
 
-void UserListView::setConnection(IrcConnection* connection)
+void ListView::setConnection(IrcConnection* connection)
 {
     d.connection = connection;
 }
 
-IrcChannel* UserListView::channel() const
+IrcChannel* ListView::channel() const
 {
     return d.channel;
 }
 
-void UserListView::setChannel(IrcChannel* channel)
+void ListView::setChannel(IrcChannel* channel)
 {
     if (d.channel != channel) {
         d.channel = channel;
@@ -71,19 +71,19 @@ void UserListView::setChannel(IrcChannel* channel)
     }
 }
 
-IrcUserModel* UserListView::userModel() const
+IrcUserModel* ListView::userModel() const
 {
     return d.userModel;
 }
 
-bool UserListView::hasUser(const QString& user) const
+bool ListView::hasUser(const QString& user) const
 {
     if (d.userModel)
         return d.userModel->contains(user);
     return false;
 }
 
-void UserListView::contextMenuEvent(QContextMenuEvent* event)
+void ListView::contextMenuEvent(QContextMenuEvent* event)
 {
     QModelIndex index = indexAt(event->pos());
     if (index.isValid()) {
@@ -92,14 +92,14 @@ void UserListView::contextMenuEvent(QContextMenuEvent* event)
     }
 }
 
-void UserListView::mousePressEvent(QMouseEvent* event)
+void ListView::mousePressEvent(QMouseEvent* event)
 {
     QListView::mousePressEvent(event);
     if (!indexAt(event->pos()).isValid())
         selectionModel()->clear();
 }
 
-void UserListView::onDoubleClicked(const QModelIndex& index)
+void ListView::onDoubleClicked(const QModelIndex& index)
 {
     if (index.isValid())
         emit doubleClicked(index.data(Irc::NameRole).toString());

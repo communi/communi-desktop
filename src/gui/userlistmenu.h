@@ -17,14 +17,14 @@
 
 #include <QMenu>
 
-class UserListView;
+class ListView;
 
 class UserListMenu : public QMenu
 {
     Q_OBJECT
 
 public:
-    UserListMenu(UserListView* parent);
+    UserListMenu(ListView* parent);
 
 public slots:
     void exec(const QPoint& pos);
@@ -38,7 +38,7 @@ private slots:
 
 private:
     struct Private {
-        UserListView* view;
+        ListView* view;
     } d;
 };
 

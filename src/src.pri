@@ -53,3 +53,6 @@ include(shared/shared.pri)
 include(wizard/wizard.pri)
 include(3rdparty/qtdocktile/qtdocktile.pri)
 include(3rdparty/qtsystemnotifier/systemnotifier.pri)
+
+# TODO:
+include(libs/base/base.pri)

@@ -77,7 +77,7 @@
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="UserListView" name="listView">
+     <widget class="ListView" name="listView">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -144,9 +144,9 @@
    <header>lineeditor.h</header>
   </customwidget>
   <customwidget>
-   <class>UserListView</class>
+   <class>ListView</class>
    <extends>QListView</extends>
-   <header>userlistview.h</header>
+   <header>listview.h</header>
   </customwidget>
   <customwidget>
    <class>EditableLabel</class>

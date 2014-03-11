@@ -13,12 +13,12 @@
 */
 
 #include "userlistmenu.h"
-#include "userlistview.h"
+#include "listview.h"
 #include "connection.h"
 #include <IrcCommand>
 #include <IrcChannel>
 
-UserListMenu::UserListMenu(UserListView* view) : QMenu(view)
+UserListMenu::UserListMenu(ListView* view) : QMenu(view)
 {
     d.view = view;
 }
