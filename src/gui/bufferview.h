@@ -12,10 +12,10 @@
 * GNU General Public License for more details.
 */
 
-#ifndef MESSAGEVIEW_H
-#define MESSAGEVIEW_H
+#ifndef BUFFERVIEW_H
+#define BUFFERVIEW_H
 
-#include "ui_messageview.h"
+#include "ui_bufferview.h"
 #include "viewinfo.h"
 #include <QPointer>
 #if QT_VERSION >= 0x040700
@@ -33,15 +33,15 @@ class IrcMessage;
 class IrcBuffer;
 class Connection;
 
-class MessageView : public QWidget
+class BufferView : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(bool active READ isActive NOTIFY activeChanged)
     Q_PROPERTY(QString receiver READ receiver WRITE setReceiver NOTIFY receiverChanged)
 
 public:
-    MessageView(ViewInfo::Type type, IrcConnection* connection, MessageStackView* stack);
-    ~MessageView();
+    BufferView(ViewInfo::Type type, IrcConnection* connection, MessageStackView* stack);
+    ~BufferView();
 
     bool isActive() const;
     ViewInfo::Type viewType() const;
@@ -94,7 +94,7 @@ private slots:
     void applySettings();
 
 private:
-    struct Private : public Ui::MessageView {
+    struct Private : public Ui::BufferView {
         ViewInfo::Type viewType;
         QString receiver;
         QPointer<IrcConnection> connection;
@@ -116,4 +116,4 @@ private:
     } d;
 };
 
-#endif // MESSAGEVIEW_H
+#endif // BUFFERVIEW_H

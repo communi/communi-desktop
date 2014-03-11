@@ -14,7 +14,7 @@
 
 #include "sessionstackview.h"
 #include "messagestackview.h"
-#include "messageview.h"
+#include "bufferview.h"
 #include "connection.h"
 
 SessionStackView::SessionStackView(QWidget* parent) : QStackedWidget(parent)

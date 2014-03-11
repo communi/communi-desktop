@@ -12,7 +12,7 @@
 * GNU General Public License for more details.
 */
 
-#include "messageview.h"
+#include "bufferview.h"
 #include "application.h"
 #include "settingsmodel.h"
 #include "syntaxhighlighter.h"
@@ -41,7 +41,7 @@
 #include <ircbuffer.h>
 #include <irc.h>
 
-MessageView::MessageView(ViewInfo::Type type, IrcConnection* connection, MessageStackView* stackView) :
+BufferView::BufferView(ViewInfo::Type type, IrcConnection* connection, MessageStackView* stackView) :
     QWidget(stackView)
 {
     d.setupUi(this);
@@ -145,7 +145,7 @@ MessageView::MessageView(ViewInfo::Type type, IrcConnection* connection, Message
     connect(Application::settings(), SIGNAL(changed()), this, SLOT(applySettings()));
 }
 
-MessageView::~MessageView()
+BufferView::~BufferView()
 {
     if (d.buffer) {
         if (d.buffer->isChannel() && d.buffer->isActive())
@@ -155,39 +155,39 @@ MessageView::~MessageView()
     }
 }
 
-bool MessageView::isActive() const
+bool BufferView::isActive() const
 {
     if (d.buffer)
         return d.buffer->isActive();
     return d.connection && d.connection->isConnected();
 }
 
-ViewInfo::Type MessageView::viewType() const
+ViewInfo::Type BufferView::viewType() const
 {
     return d.viewType;
 }
 
-IrcConnection* MessageView::connection() const
+IrcConnection* BufferView::connection() const
 {
     return d.connection;
 }
 
-IrcCompleter* MessageView::completer() const
+IrcCompleter* BufferView::completer() const
 {
     return d.lineEditor->completer();
 }
 
-QTextBrowser* MessageView::textBrowser() const
+QTextBrowser* BufferView::textBrowser() const
 {
     return d.textBrowser;
 }
 
-QString MessageView::receiver() const
+QString BufferView::receiver() const
 {
     return d.receiver;
 }
 
-void MessageView::setReceiver(const QString& receiver)
+void BufferView::setReceiver(const QString& receiver)
 {
     if (d.receiver != receiver) {
         d.receiver = receiver;
@@ -195,12 +195,12 @@ void MessageView::setReceiver(const QString& receiver)
     }
 }
 
-IrcBuffer* MessageView::buffer() const
+IrcBuffer* BufferView::buffer() const
 {
     return d.buffer;
 }
 
-void MessageView::setBuffer(IrcBuffer* buffer)
+void BufferView::setBuffer(IrcBuffer* buffer)
 {
     if (d.buffer != buffer) {
         if (IrcChannel* channel = qobject_cast<IrcChannel*>(buffer))
@@ -214,19 +214,19 @@ void MessageView::setBuffer(IrcBuffer* buffer)
     }
 }
 
-QByteArray MessageView::saveSplitter() const
+QByteArray BufferView::saveSplitter() const
 {
     if (d.viewType != ViewInfo::Server)
         return d.splitter->saveState();
     return QByteArray();
 }
 
-void MessageView::restoreSplitter(const QByteArray& state)
+void BufferView::restoreSplitter(const QByteArray& state)
 {
     d.splitter->restoreState(state);
 }
 
-void MessageView::showHelp(const QString& text, bool error)
+void BufferView::showHelp(const QString& text, bool error)
 {
     QString syntax;
     if (text == "/") {
@@ -253,7 +253,7 @@ void MessageView::showHelp(const QString& text, bool error)
     d.helpLabel->setText(syntax);
 }
 
-void MessageView::sendMessage(const QString& message)
+void BufferView::sendMessage(const QString& message)
 {
     d.parser->setTarget(d.receiver);
     IrcCommand* cmd = d.parser->parseCommand(message);
@@ -314,13 +314,13 @@ void MessageView::sendMessage(const QString& message)
     }
 }
 
-void MessageView::hideEvent(QHideEvent* event)
+void BufferView::hideEvent(QHideEvent* event)
 {
     QWidget::hideEvent(event);
     onEscPressed();
 }
 
-bool MessageView::eventFilter(QObject* object, QEvent* event)
+bool BufferView::eventFilter(QObject* object, QEvent* event)
 {
     if (object == d.textBrowser->viewport() && event->type() == QEvent::ContextMenu) {
         QContextMenuEvent* menuEvent = static_cast<QContextMenuEvent*>(event);
@@ -385,7 +385,7 @@ bool MessageView::eventFilter(QObject* object, QEvent* event)
     return QWidget::eventFilter(object, event);
 }
 
-void MessageView::onConnected()
+void BufferView::onConnected()
 {
     ++d.connected;
 
@@ -394,31 +394,31 @@ void MessageView::onConnected()
         d.textBrowser->addMarker(blocks);
 }
 
-void MessageView::onDisconnected()
+void BufferView::onDisconnected()
 {
     ++d.disconnected;
 }
 
-void MessageView::onEscPressed()
+void BufferView::onEscPressed()
 {
     d.helpLabel->hide();
     d.searchEditor->hide();
     setFocus(Qt::OtherFocusReason);
 }
 
-void MessageView::onTitleChanged(const QString& title)
+void BufferView::onTitleChanged(const QString& title)
 {
     const QString old = d.receiver;
     setReceiver(title);
     emit renamed(old, title);
 }
 
-void MessageView::onSplitterMoved()
+void BufferView::onSplitterMoved()
 {
     emit splitterChanged(saveSplitter());
 }
 
-void MessageView::onAnchorClicked(const QUrl& link)
+void BufferView::onAnchorClicked(const QUrl& link)
 {
     if (link.scheme() == "nick") {
         emit queried(link.toString(QUrl::RemoveScheme));
@@ -429,24 +429,24 @@ void MessageView::onAnchorClicked(const QUrl& link)
     }
 }
 
-void MessageView::onTopicEdited(const QString& topic)
+void BufferView::onTopicEdited(const QString& topic)
 {
     d.connection->sendCommand(IrcCommand::createTopic(d.receiver, topic));
 }
 
-void MessageView::onConnectionStatusChanged()
+void BufferView::onConnectionStatusChanged()
 {
     d.lineEditor->setFocusPolicy(d.connection->isActive() ? Qt::StrongFocus : Qt::NoFocus);
     d.textBrowser->setFocusPolicy(d.connection->isActive() ? Qt::StrongFocus : Qt::NoFocus);
 }
 
-void MessageView::onSocketError()
+void BufferView::onSocketError()
 {
     QString msg = tr("[ERROR] %1").arg(d.connection->socket()->errorString());
     d.textBrowser->append(d.formatter->formatLine(msg));
 }
 
-void MessageView::applySettings()
+void BufferView::applySettings()
 {
     SettingsModel* settings = Application::settings();
     bool dark =  settings->value("ui.dark").toBool();
@@ -482,7 +482,7 @@ void MessageView::applySettings()
     d.formatter->setTimeStampFormat(settings->value("formatting.timeStamp").toString());
 }
 
-void MessageView::receiveMessage(IrcMessage* message)
+void BufferView::receiveMessage(IrcMessage* message)
 {
     bool ignore = false;
     bool highlight = false;
@@ -594,14 +594,14 @@ void MessageView::receiveMessage(IrcMessage* message)
     }
 }
 
-bool MessageView::hasUser(const QString& user) const
+bool BufferView::hasUser(const QString& user) const
 {
     return (!d.connection->nickName().compare(user, Qt::CaseInsensitive) && d.viewType != ViewInfo::Query) ||
            (d.viewType == ViewInfo::Query && !d.receiver.compare(user, Qt::CaseInsensitive)) ||
            (d.viewType == ViewInfo::Channel && d.listView->hasUser(user));
 }
 
-void MessageView::updateLag(qint64 lag)
+void BufferView::updateLag(qint64 lag)
 {
     d.lineEditor->setLag(lag);
 }

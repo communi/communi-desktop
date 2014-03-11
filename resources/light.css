@@ -46,7 +46,7 @@ QLabel#topicLabel > QTextEdit {
     selection-background-color: palette(highlight);
 }
 
-MessageView > QLineEdit {
+BufferView > QLineEdit {
     border: 1px solid transparent;
     border-top-color: palette(dark);
 }

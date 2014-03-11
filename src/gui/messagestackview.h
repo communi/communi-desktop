@@ -19,14 +19,14 @@
 #include <QStackedWidget>
 #include "messagehandler.h"
 #include "commandparser.h"
-#include "messageview.h"
+#include "bufferview.h"
 #include "viewinfo.h"
 
 class IrcBuffer;
 class IrcConnection;
 class IrcMessage;
 class IrcLagTimer;
-class MessageView;
+class BufferView;
 class IrcBufferModel;
 
 class MessageStackView : public QStackedWidget
@@ -39,12 +39,12 @@ public:
     IrcConnection* connection() const;
     CommandParser* parser() const;
 
-    MessageView* currentView() const;
-    MessageView* viewAt(int index) const;
-    MessageView* bufferView(IrcBuffer* buffer) const;
+    BufferView* currentView() const;
+    BufferView* viewAt(int index) const;
+    BufferView* bufferView(IrcBuffer* buffer) const;
 
 public slots:
-    MessageView* addView(const QString& receiver);
+    BufferView* addView(const QString& receiver);
     void restoreView(const ViewInfo& view);
     void openView(const QString& receiver);
     void removeView(const QString& receiver);
@@ -53,10 +53,10 @@ public slots:
     void sendMessage(const QString& receiver, const QString& message);
 
 signals:
-    void viewAdded(MessageView* view);
-    void viewRemoved(MessageView* view);
-    void viewRenamed(MessageView* view);
-    void viewActivated(MessageView* view);
+    void viewAdded(BufferView* view);
+    void viewRemoved(BufferView* view);
+    void viewRenamed(BufferView* view);
+    void viewActivated(BufferView* view);
 
 private slots:
     void applySettings();
@@ -64,7 +64,7 @@ private slots:
     void setBuffer(IrcBuffer* buffer);
 
 private:
-    MessageView* createView(ViewInfo::Type type, const QString& receiver);
+    BufferView* createView(ViewInfo::Type type, const QString& receiver);
 
     struct Private {
         IrcConnection* connection;
@@ -72,7 +72,7 @@ private:
         IrcLagTimer* lagTimer;
         MessageHandler handler;
         IrcBufferModel* bufferModel;
-        QHash<QString, MessageView*> views;
+        QHash<QString, BufferView*> views;
     } d;
 };
 

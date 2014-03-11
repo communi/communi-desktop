@@ -13,7 +13,7 @@
 */
 
 #include "messagehandler.h"
-#include "messageview.h"
+#include "bufferview.h"
 #include <qabstractsocket.h>
 #include <ircconnection.h>
 #include <qvariant.h>
@@ -33,27 +33,27 @@ MessageHandler::~MessageHandler()
     d.views.clear();
 }
 
-MessageView* MessageHandler::defaultView() const
+BufferView* MessageHandler::defaultView() const
 {
     return d.defaultView;
 }
 
-void MessageHandler::setDefaultView(MessageView* view)
+void MessageHandler::setDefaultView(BufferView* view)
 {
     d.defaultView = view;
 }
 
-MessageView* MessageHandler::currentView() const
+BufferView* MessageHandler::currentView() const
 {
     return d.currentView;
 }
 
-void MessageHandler::setCurrentView(MessageView* view)
+void MessageHandler::setCurrentView(BufferView* view)
 {
     d.currentView = view;
 }
 
-void MessageHandler::addView(const QString& name, MessageView* view)
+void MessageHandler::addView(const QString& name, BufferView* view)
 {
     d.views.insert(name.toLower(), view);
 }
@@ -149,7 +149,7 @@ void MessageHandler::handleNickMessage(IrcNickMessage* message)
 {
     QString oldNick = message->oldNick().toLower();
     QString newNick = message->newNick().toLower();
-    foreach (MessageView* view, d.views) {
+    foreach (BufferView* view, d.views) {
         if (view->viewType() == ViewInfo::Query) {
             if (view->hasUser(oldNick) || !newNick.compare(view->receiver(), Qt::CaseInsensitive))
                 view->receiveMessage(message);
@@ -157,7 +157,7 @@ void MessageHandler::handleNickMessage(IrcNickMessage* message)
         if (!oldNick.compare(view->receiver(), Qt::CaseInsensitive)) {
             emit viewToBeRenamed(view->receiver(), message->newNick());
             if (!d.views.contains(newNick)) {
-                MessageView* object = d.views.take(oldNick);
+                BufferView* object = d.views.take(oldNick);
                 d.views.insert(newNick, object);
             }
         }
@@ -183,11 +183,11 @@ void MessageHandler::handleNoticeMessage(IrcNoticeMessage* message)
 
     if (target == "$$*") {
         // global notice
-        foreach (MessageView* view, d.views)
+        foreach (BufferView* view, d.views)
             view->receiveMessage(message);
     } else if (!message->connection()->isConnected() || target.isEmpty() || target == "*")
         sendMessage(message, d.defaultView);
-    else if (MessageView* view = d.views.value(message->nick().toLower()))
+    else if (BufferView* view = d.views.value(message->nick().toLower()))
         sendMessage(message, view);
     else if (target == message->connection()->nickName() || target.contains("*"))
         sendMessage(message, d.currentView);
@@ -250,7 +250,7 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
         case Irc::RPL_NAMREPLY: {
             const int count = message->parameters().count();
             const QString channel = message->parameters().value(count - 2);
-            MessageView* view = d.views.value(channel.toLower());
+            BufferView* view = d.views.value(channel.toLower());
             if (view)
                 view->receiveMessage(message);
             else if (d.currentView)
@@ -271,7 +271,7 @@ void MessageHandler::handleNumericMessage(IrcNumericMessage* message)
 
 void MessageHandler::handlePartMessage(IrcPartMessage* message)
 {
-    MessageView* view = d.views.value(message->channel().toLower());
+    BufferView* view = d.views.value(message->channel().toLower());
     if (view)
         sendMessage(message, view);
 }
@@ -305,7 +305,7 @@ void MessageHandler::handlePrivateMessage(IrcPrivateMessage* message)
 void MessageHandler::handleQuitMessage(IrcQuitMessage* message)
 {
     QString nick = message->nick();
-    foreach (MessageView* view, d.views) {
+    foreach (BufferView* view, d.views) {
         if (view->viewType() == ViewInfo::Query && view->hasUser(nick))
             view->receiveMessage(message);
     }
@@ -321,7 +321,7 @@ void MessageHandler::handleUnknownMessage(IrcMessage* message)
     sendMessage(message, d.defaultView);
 }
 
-void MessageHandler::sendMessage(IrcMessage* message, MessageView* view)
+void MessageHandler::sendMessage(IrcMessage* message, BufferView* view)
 {
     if (view)
         view->receiveMessage(message);

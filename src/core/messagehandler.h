@@ -20,7 +20,7 @@
 #include <QPointer>
 #include <IrcMessage>
 
-class MessageView;
+class BufferView;
 
 class MessageHandler : public QObject
 {
@@ -30,13 +30,13 @@ public:
     explicit MessageHandler(QObject* parent = 0);
     virtual ~MessageHandler();
 
-    MessageView* defaultView() const;
-    void setDefaultView(MessageView* view);
+    BufferView* defaultView() const;
+    void setDefaultView(BufferView* view);
 
-    MessageView* currentView() const;
-    void setCurrentView(MessageView* view);
+    BufferView* currentView() const;
+    void setCurrentView(BufferView* view);
 
-    void addView(const QString& name, MessageView* view);
+    void addView(const QString& name, BufferView* view);
     void removeView(const QString& name);
 
 public slots:
@@ -63,14 +63,14 @@ protected:
     void handleTopicMessage(IrcTopicMessage* message);
     void handleUnknownMessage(IrcMessage* message);
 
-    void sendMessage(IrcMessage* message, MessageView* view);
+    void sendMessage(IrcMessage* message, BufferView* view);
     void sendMessage(IrcMessage* message, const QString& receiver);
 
 private:
     struct Private {
-        MessageView* defaultView;
-        MessageView* currentView;
-        QHash<QString, MessageView*> views;
+        BufferView* defaultView;
+        BufferView* currentView;
+        QHash<QString, BufferView*> views;
     } d;
 };
 

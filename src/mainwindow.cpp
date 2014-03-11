@@ -24,7 +24,7 @@
 #include "addviewdialog.h"
 #include "systemnotifier.h"
 #include "searchpopup.h"
-#include "messageview.h"
+#include "bufferview.h"
 #include "treewidget.h"
 #include "treeitem.h"
 #include "homepage.h"
@@ -178,12 +178,12 @@ void MainWindow::connectToImpl(const ConnectionInfo& info)
     updateOverlay();
 
     MessageStackView* stack = stackView->connectionWidget(connection);
-    connect(stack, SIGNAL(viewAdded(MessageView*)), this, SLOT(viewAdded(MessageView*)));
-    connect(stack, SIGNAL(viewRemoved(MessageView*)), this, SLOT(viewRemoved(MessageView*)));
-    connect(stack, SIGNAL(viewRenamed(MessageView*)), this, SLOT(viewRenamed(MessageView*)));
-    connect(stack, SIGNAL(viewActivated(MessageView*)), this, SLOT(viewActivated(MessageView*)));
+    connect(stack, SIGNAL(viewAdded(BufferView*)), this, SLOT(viewAdded(BufferView*)));
+    connect(stack, SIGNAL(viewRemoved(BufferView*)), this, SLOT(viewRemoved(BufferView*)));
+    connect(stack, SIGNAL(viewRenamed(BufferView*)), this, SLOT(viewRenamed(BufferView*)));
+    connect(stack, SIGNAL(viewActivated(BufferView*)), this, SLOT(viewActivated(BufferView*)));
 
-    if (MessageView* view = stack->viewAt(0)) {
+    if (BufferView* view = stack->viewAt(0)) {
         treeWidget->addBuffer(view->buffer());
         if (!treeWidget->hasRestoredCurrent() && (connection->status() != IrcConnection::Closed || stackView->count() == 1))
             treeWidget->setCurrentBuffer(view->buffer());
@@ -301,7 +301,7 @@ void MainWindow::highlighted(IrcMessage* message)
             sound->play();
     }
 
-    MessageView* view = qobject_cast<MessageView*>(sender());
+    BufferView* view = qobject_cast<BufferView*>(sender());
     if (view) {
         TreeItem* item = treeWidget->connectionItem(view->connection());
         if (view->viewType() != ViewInfo::Server)
@@ -316,7 +316,7 @@ void MainWindow::highlighted(IrcMessage* message)
 void MainWindow::missed(IrcMessage* message)
 {
     Q_UNUSED(message);
-    MessageView* view = qobject_cast<MessageView*>(sender());
+    BufferView* view = qobject_cast<BufferView*>(sender());
     if (view) {
         TreeItem* item = treeWidget->connectionItem(view->connection());
         if (view->viewType() != ViewInfo::Server)
@@ -326,7 +326,7 @@ void MainWindow::missed(IrcMessage* message)
     }
 }
 
-void MainWindow::viewAdded(MessageView* view)
+void MainWindow::viewAdded(BufferView* view)
 {
     connect(view, SIGNAL(splitterChanged(QByteArray)), this, SLOT(splitterChanged(QByteArray)));
     connect(view, SIGNAL(highlighted(IrcMessage*)), this, SLOT(highlighted(IrcMessage*)));
@@ -341,17 +341,17 @@ void MainWindow::viewAdded(MessageView* view)
         treeWidget->restoreState(settings.value("tree").toByteArray());
 }
 
-void MainWindow::viewRemoved(MessageView* view)
+void MainWindow::viewRemoved(BufferView* view)
 {
     treeWidget->removeBuffer(view->buffer());
 }
 
-void MainWindow::viewRenamed(MessageView* view)
+void MainWindow::viewRenamed(BufferView* view)
 {
     treeWidget->renameBuffer(view->buffer());
 }
 
-void MainWindow::viewActivated(MessageView* view)
+void MainWindow::viewActivated(BufferView* view)
 {
     QSettings settings;
     if (settings.contains("list"))
@@ -364,7 +364,7 @@ void MainWindow::closeTreeItem(TreeItem* item)
 {
     MessageStackView* stack = stackView->connectionWidget(item->connection());
     if (stack) {
-        MessageView* view = stack->bufferView(item->buffer());
+        BufferView* view = stack->bufferView(item->buffer());
         int index = stack->indexOf(view);
         stack->closeView(index);
         if (index == 0) {

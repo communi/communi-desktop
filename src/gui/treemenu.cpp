@@ -15,7 +15,7 @@
 #include "treemenu.h"
 #include "treewidget.h"
 #include "treeitem.h"
-#include "messageview.h"
+#include "bufferview.h"
 #include "connection.h"
 #include <IrcCommand>
 #include <IrcChannel>

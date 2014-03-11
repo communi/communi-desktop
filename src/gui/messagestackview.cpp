@@ -45,7 +45,7 @@ MessageStackView::MessageStackView(IrcConnection* connection, QWidget* parent) :
     d.parser.setTolerant(true);
     d.lagTimer = new IrcLagTimer(d.connection);
 
-    MessageView* view = addView(connection->host());
+    BufferView* view = addView(connection->host());
     d.handler.setDefaultView(view);
     d.handler.setCurrentView(view);
     setCurrentWidget(view);
@@ -64,26 +64,26 @@ CommandParser* MessageStackView::parser() const
     return &const_cast<MessageStackView*>(this)->d.parser;
 }
 
-MessageView* MessageStackView::currentView() const
+BufferView* MessageStackView::currentView() const
 {
-    return qobject_cast<MessageView*>(currentWidget());
+    return qobject_cast<BufferView*>(currentWidget());
 }
 
-MessageView* MessageStackView::viewAt(int index) const
+BufferView* MessageStackView::viewAt(int index) const
 {
-    return qobject_cast<MessageView*>(widget(index));
+    return qobject_cast<BufferView*>(widget(index));
 }
 
-MessageView* MessageStackView::bufferView(IrcBuffer* buffer) const
+BufferView* MessageStackView::bufferView(IrcBuffer* buffer) const
 {
     if (buffer)
         return d.views.value(buffer->title());
     return 0;
 }
 
-MessageView* MessageStackView::addView(const QString& receiver)
+BufferView* MessageStackView::addView(const QString& receiver)
 {
-    MessageView* view = d.views.value(receiver.toLower());
+    BufferView* view = d.views.value(receiver.toLower());
     bool channel = d.connection->network()->isChannel(receiver);
     if (!view) {
         ViewInfo::Type type = ViewInfo::Server;
@@ -101,9 +101,9 @@ void MessageStackView::restoreView(const ViewInfo& view)
     createView(static_cast<ViewInfo::Type>(view.type), view.name);
 }
 
-MessageView* MessageStackView::createView(ViewInfo::Type type, const QString& receiver)
+BufferView* MessageStackView::createView(ViewInfo::Type type, const QString& receiver)
 {
-    MessageView* view = new MessageView(type, static_cast<Connection*>(d.connection), this); // TODO
+    BufferView* view = new BufferView(type, static_cast<Connection*>(d.connection), this); // TODO
     view->setReceiver(receiver);
     connect(view, SIGNAL(queried(QString)), this, SLOT(addView(QString)));
     connect(view, SIGNAL(queried(QString)), this, SLOT(openView(QString)));
@@ -126,14 +126,14 @@ MessageView* MessageStackView::createView(ViewInfo::Type type, const QString& re
 
 void MessageStackView::openView(const QString& receiver)
 {
-    MessageView* view = d.views.value(receiver.toLower());
+    BufferView* view = d.views.value(receiver.toLower());
     if (view)
         setCurrentWidget(view);
 }
 
 void MessageStackView::removeView(const QString& receiver)
 {
-    MessageView* view = d.views.take(receiver.toLower());
+    BufferView* view = d.views.take(receiver.toLower());
     if (view) {
         view->deleteLater();
         emit viewRemoved(view);
@@ -143,7 +143,7 @@ void MessageStackView::removeView(const QString& receiver)
 
 void MessageStackView::closeView(int index)
 {
-    MessageView* view = viewAt(index);
+    BufferView* view = viewAt(index);
     if (view) {
         if (view->isActive()) {
             if (indexOf(view) == 0)
@@ -158,7 +158,7 @@ void MessageStackView::closeView(int index)
 void MessageStackView::renameView(const QString& from, const QString& to)
 {
     removeView(to);
-    MessageView* view = d.views.take(from.toLower());
+    BufferView* view = d.views.take(from.toLower());
     if (view) {
         view->setReceiver(to);
         d.views.insert(to.toLower(), view);
@@ -168,7 +168,7 @@ void MessageStackView::renameView(const QString& from, const QString& to)
 
 void MessageStackView::sendMessage(const QString& receiver, const QString& message)
 {
-    MessageView* view = addView(receiver);
+    BufferView* view = addView(receiver);
     if (view) {
         setCurrentWidget(view);
         view->sendMessage(message);
@@ -191,7 +191,7 @@ void MessageStackView::applySettings()
 
 void MessageStackView::activateView(int index)
 {
-    MessageView* view = viewAt(index);
+    BufferView* view = viewAt(index);
     if (view && isVisible()) {
         d.handler.setCurrentView(view);
         view->setFocus();
@@ -201,7 +201,7 @@ void MessageStackView::activateView(int index)
 
 void MessageStackView::setBuffer(IrcBuffer* buffer)
 {
-    MessageView* view = addView(buffer->title());
+    BufferView* view = addView(buffer->title());
     if (view) {
         view->setBuffer(buffer);
         buffer->setPersistent(true);

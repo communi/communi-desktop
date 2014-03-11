@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MessageView</class>
- <widget class="QWidget" name="MessageView">
+ <class>BufferView</class>
+ <widget class="QWidget" name="BufferView">
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
     <number>0</number>

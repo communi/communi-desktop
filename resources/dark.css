@@ -81,7 +81,7 @@ QLabel#topicLabel > QTextEdit {
     color: #dedede;
 }
 
-MessageView > QLineEdit {
+BufferView > QLineEdit {
     border: 1px solid transparent;
     border-top-color: palette(dark);
     background: #222222;
