@@ -19,21 +19,21 @@
 #include <QStringList>
 #include <IrcCommandFilter>
 #include "connectionplugin.h"
-#include "bufferviewplugin.h"
 #include "treewidgetplugin.h"
+#include "viewplugin.h"
 
 class IrcBuffer;
 class IrcConnection;
 
 class CommanderPlugin : public QObject, public IrcCommandFilter, public ConnectionPlugin,
-                        public BufferViewPlugin, public TreeWidgetPlugin
+                        public TreeWidgetPlugin, public ViewPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(IrcCommandFilter ConnectionPlugin BufferViewPlugin TreeWidgetPlugin)
+    Q_INTERFACES(IrcCommandFilter ConnectionPlugin TreeWidgetPlugin ViewPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "Communi.BufferViewPlugin")
     Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
     Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.ViewPlugin")
 #endif
 
 public:

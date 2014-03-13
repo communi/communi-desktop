@@ -17,17 +17,17 @@
 
 #include <QtPlugin>
 #include "connectionplugin.h"
-#include "bufferviewplugin.h"
+#include "viewplugin.h"
 
 class Overlay;
 
-class OverlayPlugin : public QObject, public ConnectionPlugin, public BufferViewPlugin
+class OverlayPlugin : public QObject, public ConnectionPlugin, public ViewPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(ConnectionPlugin BufferViewPlugin)
+    Q_INTERFACES(ConnectionPlugin ViewPlugin)
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.BufferViewPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.ViewPlugin")
 #endif
 
 public:

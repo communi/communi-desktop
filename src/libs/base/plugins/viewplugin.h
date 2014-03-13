@@ -12,21 +12,21 @@
 * GNU General Public License for more details.
 */
 
-#ifndef BUFFERVIEWPLUGIN_H
-#define BUFFERVIEWPLUGIN_H
+#ifndef VIEWPLUGIN_H
+#define VIEWPLUGIN_H
 
 #include <QtPlugin>
 
 class BufferView;
 
-class BufferViewPlugin
+class ViewPlugin
 {
 public:
-    virtual ~BufferViewPlugin() {}
+    virtual ~ViewPlugin() {}
     virtual void initView(BufferView*) {}
     virtual void cleanupView(BufferView*) {}
 };
 
-Q_DECLARE_INTERFACE(BufferViewPlugin, "Communi.BufferViewPlugin")
+Q_DECLARE_INTERFACE(ViewPlugin, "Communi.ViewPlugin")
 
-#endif // BUFFERVIEWPLUGIN_H
+#endif // VIEWPLUGIN_H

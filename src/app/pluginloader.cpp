@@ -12,10 +12,10 @@
 #include <QtPlugin>
 #include <QPluginLoader>
 #include "bufferplugin.h"
-#include "bufferviewplugin.h"
 #include "connectionplugin.h"
 #include "textdocumentplugin.h"
 #include "treewidgetplugin.h"
+#include "viewplugin.h"
 
 Q_IMPORT_PLUGIN(CommanderPlugin)
 Q_IMPORT_PLUGIN(DockPlugin)
@@ -85,7 +85,7 @@ void PluginLoader::cleanupConnection(IrcConnection* connection)
 void PluginLoader::initView(BufferView* view)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        BufferViewPlugin* plugin = qobject_cast<BufferViewPlugin*>(instance);
+        ViewPlugin* plugin = qobject_cast<ViewPlugin*>(instance);
         if (plugin)
             plugin->initView(view);
     }
@@ -94,7 +94,7 @@ void PluginLoader::initView(BufferView* view)
 void PluginLoader::cleanupView(BufferView* view)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        BufferViewPlugin* plugin = qobject_cast<BufferViewPlugin*>(instance);
+        ViewPlugin* plugin = qobject_cast<ViewPlugin*>(instance);
         if (plugin)
             plugin->cleanupView(view);
     }
