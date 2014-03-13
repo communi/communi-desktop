@@ -23,7 +23,7 @@ ZncPlugin::ZncPlugin(QObject* parent) : QObject(parent)
 {
 }
 
-void ZncPlugin::initConnection(IrcConnection* connection)
+void ZncPlugin::connectionAdded(IrcConnection* connection)
 {
     ZncManager* manager = new ZncManager(connection->findChild<IrcBufferModel*>()); // TODO
     connect(manager, SIGNAL(playbackBegin(IrcBuffer*)), this, SLOT(onPlaybackBegin(IrcBuffer*)));

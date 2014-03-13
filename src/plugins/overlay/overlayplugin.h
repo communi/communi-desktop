@@ -33,8 +33,8 @@ class OverlayPlugin : public QObject, public ConnectionPlugin, public ViewPlugin
 public:
     OverlayPlugin(QObject* parent = 0);
 
-    void initConnection(IrcConnection* connection);
-    void cleanupConnection(IrcConnection* connection);
+    void connectionAdded(IrcConnection* connection);
+    void connectionRemoved(IrcConnection* connection);
 
     void initView(BufferView* view);
     void cleanupView(BufferView* view);

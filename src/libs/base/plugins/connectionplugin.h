@@ -24,8 +24,9 @@ class ConnectionPlugin
 {
 public:
     virtual ~ConnectionPlugin() {}
-    virtual void initConnection(IrcConnection*) {}
-    virtual void cleanupConnection(IrcConnection*) {}
+
+    virtual void connectionAdded(IrcConnection*) {}
+    virtual void connectionRemoved(IrcConnection*) {}
 
     QList<IrcConnection*> connections() const;
     void addConnection(IrcConnection* connection);

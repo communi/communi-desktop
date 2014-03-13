@@ -61,21 +61,21 @@ void PluginLoader::bufferRemoved(IrcBuffer* buffer)
     }
 }
 
-void PluginLoader::initConnection(IrcConnection* connection)
+void PluginLoader::connectionAdded(IrcConnection* connection)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         ConnectionPlugin* plugin = qobject_cast<ConnectionPlugin*>(instance);
         if (plugin)
-            plugin->initConnection(connection);
+            plugin->connectionAdded(connection);
     }
 }
 
-void PluginLoader::cleanupConnection(IrcConnection* connection)
+void PluginLoader::connectionRemoved(IrcConnection* connection)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         ConnectionPlugin* plugin = qobject_cast<ConnectionPlugin*>(instance);
         if (plugin)
-            plugin->cleanupConnection(connection);
+            plugin->connectionRemoved(connection);
     }
 }
 

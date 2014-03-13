@@ -25,12 +25,12 @@ OverlayPlugin::OverlayPlugin(QObject* parent) : QObject(parent)
     initResource();
 }
 
-void OverlayPlugin::initConnection(IrcConnection* connection)
+void OverlayPlugin::connectionAdded(IrcConnection* connection)
 {
     connect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateOverlays()));
 }
 
-void OverlayPlugin::cleanupConnection(IrcConnection* connection)
+void OverlayPlugin::connectionRemoved(IrcConnection* connection)
 {
     disconnect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateOverlays()));
 }

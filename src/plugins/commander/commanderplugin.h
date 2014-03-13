@@ -40,8 +40,8 @@ public:
 
     void initView(BufferView* view);
     void bufferAdded(IrcBuffer* buffer);
-    void initConnection(IrcConnection* connection);
-    void cleanupConnection(IrcConnection* connection);
+    void connectionAdded(IrcConnection* connection);
+    void connectionRemoved(IrcConnection* connection);
 
     bool commandFilter(IrcCommand* command);
 

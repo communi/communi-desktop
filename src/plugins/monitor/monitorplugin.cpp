@@ -20,7 +20,7 @@ MonitorPlugin::MonitorPlugin(QObject* parent) : QObject(parent)
 {
 }
 
-void MonitorPlugin::initConnection(IrcConnection* connection)
+void MonitorPlugin::connectionAdded(IrcConnection* connection)
 {
     connect(SystemMonitor::instance(), SIGNAL(wake()), connection, SLOT(open()));
     connect(SystemMonitor::instance(), SIGNAL(online()), connection, SLOT(open()));
@@ -31,7 +31,7 @@ void MonitorPlugin::initConnection(IrcConnection* connection)
     connect(SystemMonitor::instance(), SIGNAL(offline()), connection, SLOT(close()));
 }
 
-void MonitorPlugin::cleanupConnection(IrcConnection* connection)
+void MonitorPlugin::connectionRemoved(IrcConnection* connection)
 {
     disconnect(SystemMonitor::instance(), SIGNAL(wake()), connection, SLOT(open()));
     disconnect(SystemMonitor::instance(), SIGNAL(online()), connection, SLOT(open()));

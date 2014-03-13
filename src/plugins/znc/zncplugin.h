@@ -33,7 +33,7 @@ class ZncPlugin : public QObject, public ConnectionPlugin
 public:
     ZncPlugin(QObject* parent = 0);
 
-    void initConnection(IrcConnection* connection);
+    void connectionAdded(IrcConnection* connection);
 
 private slots:
     void onPlaybackBegin(IrcBuffer* buffer);

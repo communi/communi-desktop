@@ -70,9 +70,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     setCurrentView(d.chatPage->currentView());
     connect(d.chatPage, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(updateTitle()));
     connect(d.chatPage, SIGNAL(currentViewChanged(BufferView*)), this, SLOT(setCurrentView(BufferView*)));
-    connect(this, SIGNAL(connectionAdded(IrcConnection*)), d.chatPage, SLOT(initConnection(IrcConnection*)));
-    connect(this, SIGNAL(connectionRemoved(IrcConnection*)), d.chatPage, SLOT(cleanupConnection(IrcConnection*)));
-    connect(this, SIGNAL(connectionRemoved(IrcConnection*)), this, SLOT(cleanupConnection(IrcConnection*)));
+    connect(this, SIGNAL(connectionAdded(IrcConnection*)), d.chatPage, SLOT(addConnection(IrcConnection*)));
+    connect(this, SIGNAL(connectionRemoved(IrcConnection*)), d.chatPage, SLOT(removeConnection(IrcConnection*)));
+    connect(this, SIGNAL(connectionRemoved(IrcConnection*)), this, SLOT(removeConnection(IrcConnection*)));
 
     d.settingsPage = new SettingsPage(this);
     connect(d.settingsPage, SIGNAL(accepted()), this, SLOT(onSettingsAccepted()));
@@ -185,6 +185,8 @@ void MainWindow::removeConnection(IrcConnection* connection)
 {
     if (d.connections.removeOne(connection))
         emit connectionRemoved(connection);
+    if (d.connections.isEmpty())
+        doConnect();
 }
 
 QSize MainWindow::sizeHint() const
@@ -285,13 +287,6 @@ void MainWindow::editConnection(IrcConnection* connection)
     d.stack->setCurrentWidget(d.connectPage);
     d.editedConnection = connection;
     doConnect();
-}
-
-void MainWindow::cleanupConnection(IrcConnection* connection)
-{
-    Q_UNUSED(connection);
-    if (connections().isEmpty())
-        doConnect();
 }
 
 void MainWindow::restoreConnection(IrcConnection* connection)

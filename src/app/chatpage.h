@@ -52,8 +52,8 @@ signals:
     void currentBufferChanged(IrcBuffer* buffer);
 
 private slots:
-    void initConnection(IrcConnection* connection);
-    void cleanupConnection(IrcConnection* connection);
+    void addConnection(IrcConnection* connection);
+    void removeConnection(IrcConnection* connection);
     void initView(BufferView* view);
     void cleanupView(BufferView* view);
     void addBuffer(IrcBuffer* buffer);

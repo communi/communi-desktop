@@ -60,7 +60,6 @@ private slots:
     void updateTitle();
     void showSettings();
     void editConnection(IrcConnection* connection);
-    void cleanupConnection(IrcConnection* connection);
     void restoreConnection(IrcConnection* connection = 0);
     void delayedRestoreConnection();
 

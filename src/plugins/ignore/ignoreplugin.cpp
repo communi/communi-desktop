@@ -44,12 +44,12 @@ IgnorePlugin::IgnorePlugin(QObject* parent) : QObject(parent)
 //    }
 }
 
-void IgnorePlugin::initConnection(IrcConnection* connection)
+void IgnorePlugin::connectionAdded(IrcConnection* connection)
 {
     IgnoreManager::instance()->addConnection(connection);
 }
 
-void IgnorePlugin::cleanupConnection(IrcConnection* connection)
+void IgnorePlugin::connectionRemoved(IrcConnection* connection)
 {
     IgnoreManager::instance()->removeConnection(connection);
 }

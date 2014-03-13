@@ -63,14 +63,14 @@ void TrayPlugin::cleanupDocument(TextDocument* document)
         disconnect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
 }
 
-void TrayPlugin::initConnection(IrcConnection* connection)
+void TrayPlugin::connectionAdded(IrcConnection* connection)
 {
     connect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateIcon()));
     d.connections.insert(connection);
     updateIcon();
 }
 
-void TrayPlugin::cleanupConnection(IrcConnection* connection)
+void TrayPlugin::connectionRemoved(IrcConnection* connection)
 {
     disconnect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateIcon()));
     d.connections.remove(connection);

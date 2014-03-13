@@ -44,12 +44,12 @@ void CommanderPlugin::bufferAdded(IrcBuffer* buffer)
     }
 }
 
-void CommanderPlugin::initConnection(IrcConnection* connection)
+void CommanderPlugin::connectionAdded(IrcConnection* connection)
 {
     connection->installCommandFilter(this);
 }
 
-void CommanderPlugin::cleanupConnection(IrcConnection* connection)
+void CommanderPlugin::connectionRemoved(IrcConnection* connection)
 {
     connection->removeCommandFilter(this);
 }

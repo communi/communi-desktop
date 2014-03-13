@@ -23,7 +23,7 @@ VerifierPlugin::VerifierPlugin(QObject* parent) : QObject(parent)
 {
 }
 
-void VerifierPlugin::initConnection(IrcConnection* connection)
+void VerifierPlugin::connectionAdded(IrcConnection* connection)
 {
     CommandVerifier* verifier = new CommandVerifier(connection);
     connect(verifier, SIGNAL(verified(int)), this, SLOT(onCommandVerified(int)));

@@ -41,8 +41,8 @@ public slots:
     void bufferAdded(IrcBuffer* buffer);
     void bufferRemoved(IrcBuffer* buffer);
 
-    void initConnection(IrcConnection* connection);
-    void cleanupConnection(IrcConnection* connection);
+    void connectionAdded(IrcConnection* connection);
+    void connectionRemoved(IrcConnection* connection);
 
     void initView(BufferView* view);
     void cleanupView(BufferView* view);

@@ -139,7 +139,7 @@ void ChatPage::restoreState(const QByteArray& data)
         setTheme("Cute");
 }
 
-void ChatPage::initConnection(IrcConnection* connection)
+void ChatPage::addConnection(IrcConnection* connection)
 {
     IrcBufferModel* bufferModel = new IrcBufferModel(connection);
     bufferModel->setSortMethod(Irc::SortByTitle);
@@ -160,10 +160,10 @@ void ChatPage::initConnection(IrcConnection* connection)
     if (!connection->isActive() && connection->isEnabled())
         connection->open();
 
-    PluginLoader::instance()->initConnection(connection);
+    PluginLoader::instance()->connectionAdded(connection);
 }
 
-void ChatPage::cleanupConnection(IrcConnection* connection)
+void ChatPage::removeConnection(IrcConnection* connection)
 {
     IrcBufferModel* bufferModel = connection->findChild<IrcBufferModel*>();
     disconnect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(addBuffer(IrcBuffer*)));
@@ -174,7 +174,7 @@ void ChatPage::cleanupConnection(IrcConnection* connection)
     }
     connection->deleteLater();
 
-    PluginLoader::instance()->cleanupConnection(connection);
+    PluginLoader::instance()->connectionRemoved(connection);
 }
 
 void ChatPage::closeBuffer(IrcBuffer* buffer)

@@ -43,8 +43,8 @@ public:
     void initDocument(TextDocument* document);
     void cleanupDocument(TextDocument* document);
 
-    void initConnection(IrcConnection* connection);
-    void cleanupConnection(IrcConnection* connection);
+    void connectionAdded(IrcConnection* connection);
+    void connectionRemoved(IrcConnection* connection);
 
     void windowActivated();
 

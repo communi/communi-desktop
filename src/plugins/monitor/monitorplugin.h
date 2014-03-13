@@ -30,8 +30,8 @@ class MonitorPlugin : public QObject, public ConnectionPlugin
 public:
     MonitorPlugin(QObject* parent = 0);
 
-    void initConnection(IrcConnection* connection);
-    void cleanupConnection(IrcConnection* connection);
+    void connectionAdded(IrcConnection* connection);
+    void connectionRemoved(IrcConnection* connection);
 };
 
 #endif // MONITORPLUGIN_H

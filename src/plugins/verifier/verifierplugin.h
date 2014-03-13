@@ -37,7 +37,7 @@ class VerifierPlugin : public QObject, public ConnectionPlugin, public DocumentP
 public:
     VerifierPlugin(QObject* parent = 0);
 
-    void initConnection(IrcConnection* connection);
+    void connectionAdded(IrcConnection* connection);
     void initDocument(TextDocument* document);
 
 private slots:
