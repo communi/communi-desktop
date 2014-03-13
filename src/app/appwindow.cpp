@@ -11,6 +11,7 @@
 #include "pluginloader.h"
 #include "settingspage.h"
 #include "connectpage.h"
+#include "bufferview.h"
 #include "chatpage.h"
 #include <IrcBufferModel>
 #include <IrcConnection>
@@ -22,11 +23,13 @@
 #include <QSettings>
 #include <QMenuBar>
 #include <QTimer>
+#include <QUuid>
 #include <QMenu>
 #include <QDir>
 
-AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
+AppWindow::AppWindow(QWidget* parent) : QMainWindow(parent)
 {
+    d.view = 0;
     d.editedConnection = 0;
 
     // TODO
@@ -144,6 +147,43 @@ AppWindow::~AppWindow()
         states += state;
     }
     settings.setValue("connections", states);
+}
+
+BufferView* AppWindow::currentView() const
+{
+    return d.view;
+}
+
+void AppWindow::setCurrentView(BufferView* view)
+{
+    if (d.view != view) {
+        d.view = view;
+        emit currentViewChanged(view);
+    }
+}
+
+QList<IrcConnection*> AppWindow::connections() const
+{
+    return d.connections;
+}
+
+void AppWindow::addConnection(IrcConnection* connection)
+{
+    QVariantMap ud = connection->userData();
+    if (!ud.contains("uuid")) {
+        ud.insert("uuid", QUuid::createUuid());
+        connection->setUserData(ud);
+    }
+
+    d.connections += connection;
+    connect(connection, SIGNAL(destroyed(IrcConnection*)), this, SLOT(removeConnection(IrcConnection*)));
+    emit connectionAdded(connection);
+}
+
+void AppWindow::removeConnection(IrcConnection* connection)
+{
+    if (d.connections.removeOne(connection))
+        emit connectionRemoved(connection);
 }
 
 QSize AppWindow::sizeHint() const

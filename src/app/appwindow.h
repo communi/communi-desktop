@@ -10,19 +10,21 @@
 #ifndef APPWINDOW_H
 #define APPWINDOW_H
 
-#include "mainwindow.h"
 #include <QIcon>
 #include <QQueue>
+#include <QPointer>
+#include <QMainWindow>
 #include <QStackedWidget>
 
 class ChatPage;
 class IrcBuffer;
 class IrcMessage;
+class BufferView;
 class ConnectPage;
 class SettingsPage;
 class IrcConnection;
 
-class AppWindow : public MainWindow
+class AppWindow : public QMainWindow
 {
     Q_OBJECT
 
@@ -30,9 +32,21 @@ public:
     AppWindow(QWidget* parent = 0);
     ~AppWindow();
 
-    QSize sizeHint() const;
+    BufferView* currentView() const;
+    QList<IrcConnection*> connections() const;
+
+public slots:
+    void setCurrentView(BufferView* view);
+    void addConnection(IrcConnection* connection);
+    void removeConnection(IrcConnection* connection);
+
+signals:
+    void currentViewChanged(BufferView* view);
+    void connectionAdded(IrcConnection* connection);
+    void connectionRemoved(IrcConnection* connection);
 
 protected:
+    QSize sizeHint() const;
     void closeEvent(QCloseEvent* event);
 
 private slots:
@@ -54,8 +68,10 @@ private:
         ChatPage* chatPage;
         QStackedWidget* stack;
         ConnectPage* connectPage;
+        QPointer<BufferView> view;
         SettingsPage* settingsPage;
         IrcConnection* editedConnection;
+        QList<IrcConnection*> connections;
         QQueue<IrcConnection*> restoredConnections;
     } d;
 };
