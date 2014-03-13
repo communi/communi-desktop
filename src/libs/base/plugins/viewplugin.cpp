@@ -12,24 +12,23 @@
 * GNU General Public License for more details.
 */
 
-#ifndef VIEWPLUGIN_H
-#define VIEWPLUGIN_H
+#include "viewplugin.h"
+#include "bufferview.h"
+#include <QApplication>
 
-#include <QtPlugin>
-
-class BufferView;
-
-class ViewPlugin
+BufferView* ViewPlugin::currentView() const
 {
-public:
-    virtual ~ViewPlugin() {}
-    virtual void initView(BufferView*) {}
-    virtual void cleanupView(BufferView*) {}
+    // TODO: beautify
+    QWidget* window = QApplication::topLevelWidgets().value(0);
+    if (window)
+        return window->property("currentView").value<BufferView*>();
+    return 0;
+}
 
-    BufferView* currentView() const;
-    void setCurrentView(BufferView* view);
-};
-
-Q_DECLARE_INTERFACE(ViewPlugin, "Communi.ViewPlugin")
-
-#endif // VIEWPLUGIN_H
+void ViewPlugin::setCurrentView(BufferView* view)
+{
+    // TODO: beautify
+    QWidget* window = QApplication::topLevelWidgets().value(0);
+    if (window)
+        window->setProperty("currentView", QVariant::fromValue(view));
+}

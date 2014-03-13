@@ -10,12 +10,6 @@ DESTDIR = $$BUILD_ROOT/lib
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
-HEADERS += $$PWD/plugins/bufferplugin.h
-HEADERS += $$PWD/plugins/connectionplugin.h
-HEADERS += $$PWD/plugins/textdocumentplugin.h
-HEADERS += $$PWD/plugins/treewidgetplugin.h
-HEADERS += $$PWD/plugins/viewplugin.h
-
 HEADERS += $$PWD/bufferview.h
 HEADERS += $$PWD/listview.h
 HEADERS += $$PWD/textbrowser.h
@@ -41,3 +35,4 @@ SOURCES += $$PWD/treewidget.cpp
     error(A Git submodule is missing. Run \'git submodule update --init\' in $${SOURCE_ROOT}.)
 }
 include(shared/shared.pri)
+include(plugins/plugins.pri)
