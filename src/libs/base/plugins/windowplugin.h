@@ -18,7 +18,7 @@
 #include <QtPlugin>
 #include <QWidget>
 
-class WindowPlugin : public QObject
+class WindowPlugin
 {
 public:
     virtual ~WindowPlugin() {}
@@ -29,13 +29,6 @@ public:
     bool isActiveWindow() const;
     virtual void windowActivated() {}
     virtual void windowDeactivated() {}
-
-protected:
-    bool eventFilter(QObject* object, QEvent* event);
-
-private:
-    friend class PluginLoader;
-    void filterWindow(QWidget* window);
 };
 
 Q_DECLARE_INTERFACE(WindowPlugin, "Communi.WindowPlugin")

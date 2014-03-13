@@ -27,22 +27,3 @@ bool WindowPlugin::isActiveWindow() const
     QWidget* window = QApplication::topLevelWidgets().value(0);
     return window && window->isActiveWindow();
 }
-
-bool WindowPlugin::eventFilter(QObject* object, QEvent* event)
-{
-    if (event->type() == QEvent::ActivationChange) {
-        QWidget* window = qobject_cast<QWidget*>(object);
-        if (window) {
-            if (window->isActiveWindow())
-                windowActivated();
-            else
-                windowDeactivated();
-        }
-    }
-    return false;
-}
-
-void WindowPlugin::filterWindow(QWidget* window)
-{
-    window->installEventFilter(this);
-}

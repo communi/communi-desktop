@@ -10,6 +10,7 @@
 #include "mainwindow.h"
 #include "pluginloader.h"
 #include "settingspage.h"
+#include "windowplugin.h"
 #include "connectpage.h"
 #include "bufferview.h"
 #include "chatpage.h"
@@ -189,6 +190,19 @@ void MainWindow::removeConnection(IrcConnection* connection)
 QSize MainWindow::sizeHint() const
 {
     return QSize(800, 600);
+}
+
+bool MainWindow::event(QEvent* event)
+{
+    if (event->type() == QEvent::ActivationChange) {
+        foreach (WindowPlugin* plugin, PluginLoader::instance()->pluginInstances<WindowPlugin*>()) {
+            if (isActiveWindow())
+                plugin->windowActivated();
+            else
+                plugin->windowDeactivated();
+        }
+    }
+    return QMainWindow::event(event);
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
