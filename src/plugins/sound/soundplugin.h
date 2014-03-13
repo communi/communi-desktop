@@ -17,28 +17,27 @@
 
 #include <QObject>
 #include <QtPlugin>
-#include "bufferplugin.h"
+#include "documentplugin.h"
 
-class IrcBuffer;
 class IrcMessage;
 class SoundNotification;
 
-class SoundPlugin : public QObject, public BufferPlugin
+class SoundPlugin : public QObject, public DocumentPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(BufferPlugin)
+    Q_INTERFACES(DocumentPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "Communi.BufferPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.DocumentPlugin")
 #endif
 
 public:
     SoundPlugin(QObject* parent = 0);
 
-    void initBuffer(IrcBuffer* buffer);
-    void cleanupBuffer(IrcBuffer* buffer);
+    void initDocument(TextDocument* document);
+    void cleanupDocument(TextDocument* document);
 
 private slots:
-    void onMessageReceived(IrcMessage* message);
+    void onMessageHighlighted(IrcMessage* message);
 
 private:
     struct Private {

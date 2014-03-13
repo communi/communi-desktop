@@ -13,11 +13,10 @@
 */
 
 #include "soundplugin.h"
+#include "textdocument.h"
 #include "soundnotification.h"
 #include <QDesktopServices>
-#include <IrcConnection>
 #include <QApplication>
-#include <IrcMessage>
 #include <IrcBuffer>
 #include <QWidget>
 #include <QFile>
@@ -43,29 +42,28 @@ SoundPlugin::SoundPlugin(QObject* parent) : QObject(parent)
     }
 }
 
-void SoundPlugin::initBuffer(IrcBuffer* buffer)
+void SoundPlugin::initDocument(TextDocument* document)
 {
-    connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
+    if (!document->isClone())
+        connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
 }
 
-void SoundPlugin::cleanupBuffer(IrcBuffer* buffer)
+void SoundPlugin::cleanupDocument(TextDocument* document)
 {
-    disconnect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
+    if (!document->isClone())
+        disconnect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
 }
 
-void SoundPlugin::onMessageReceived(IrcMessage* message)
+void SoundPlugin::onMessageHighlighted(IrcMessage* message)
 {
+    Q_UNUSED(message);
     if (d.sound) {
-        IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
+        TextDocument* document = qobject_cast<TextDocument*>(sender());
         QWidget* window = QApplication::topLevelWidgets().value(0);
-        if ((window && !window->isActiveWindow()) || buffer != currentBuffer()) {
-            if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
-                if (message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive)) {
-                    d.sound->play();
-                    if (window && !window->isActiveWindow())
-                        QApplication::alert(window);
-                }
-            }
+        if ((window && !window->isActiveWindow()) || document != currentDocument()) {
+            d.sound->play();
+            if (window && !window->isActiveWindow())
+                QApplication::alert(window);
         }
     }
 }
