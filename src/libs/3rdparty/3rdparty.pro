@@ -39,4 +39,4 @@ win32 {
     SOURCES += $$PWD/qtdocktile/qtdocktile_win.cpp
 }
 
-include(../../config.pri)
+include(../../communi.pri)

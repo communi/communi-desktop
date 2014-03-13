@@ -9,5 +9,5 @@ mac: LIBS += -framework AppKit
 win32: LIBS += -lole32
 unix:!mac: QT += dbus
 
-LIBNAME = 3rdparty
-include(../lib.pri)
+include(../../communi.pri)
+communiAddLib(3rdparty)

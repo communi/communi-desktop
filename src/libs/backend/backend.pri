@@ -7,5 +7,5 @@ INCDIR = $$PWD/libcommuni/include
 DEPENDPATH += $$INCDIR/IrcCore $$INCDIR/IrcModel $$INCDIR/IrcUtil
 INCLUDEPATH += $$INCDIR/IrcCore $$INCDIR/IrcModel $$INCDIR/IrcUtil
 
-LIBNAME = backend
-include(../lib.pri)
+include(../../communi.pri)
+communiAddLib(backend)

@@ -39,7 +39,7 @@ SOURCES += $$PWD/treedelegate.cpp
 SOURCES += $$PWD/treeitem.cpp
 SOURCES += $$PWD/treewidget.cpp
 
-include(../../config.pri)
+include(../../communi.pri)
 include(../backend/backend.pri)
 
 !exists(shared/shared.pri) {

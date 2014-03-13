@@ -16,7 +16,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000
 }
 
-include(../config.pri)
+include(../communi.pri)
 include(api/api.pri)
 include(../libs/base/base.pri)
 include(../libs/backend/backend.pri)

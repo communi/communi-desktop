@@ -51,7 +51,7 @@ SOURCES += $$PWD/themeinfo.cpp
 SOURCES += $$PWD/themeloader.cpp
 
 include(plugins.pri)
-include(../config.pri)
+include(../communi.pri)
 include(../plugins/api/api.pri)
 include(../libs/base/base.pri)
 include(../libs/backend/backend.pri)
