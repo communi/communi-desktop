@@ -23,8 +23,9 @@ class ViewPlugin
 {
 public:
     virtual ~ViewPlugin() {}
-    virtual void initView(BufferView*) {}
-    virtual void cleanupView(BufferView*) {}
+
+    virtual void viewAdded(BufferView*) {}
+    virtual void viewRemoved(BufferView*) {}
 
     BufferView* currentView() const;
     void setCurrentView(BufferView* view);

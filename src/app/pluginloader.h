@@ -44,8 +44,8 @@ public slots:
     void connectionAdded(IrcConnection* connection);
     void connectionRemoved(IrcConnection* connection);
 
-    void initView(BufferView* view);
-    void cleanupView(BufferView* view);
+    void viewAdded(BufferView* view);
+    void viewRemoved(BufferView* view);
 
     void documentAdded(TextDocument* doc);
     void documentRemoved(TextDocument* doc);

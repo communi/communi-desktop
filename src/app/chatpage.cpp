@@ -42,8 +42,8 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
     connect(d.treeWidget, SIGNAL(currentBufferChanged(IrcBuffer*)), d.splitView, SLOT(setCurrentBuffer(IrcBuffer*)));
     connect(d.splitView, SIGNAL(currentBufferChanged(IrcBuffer*)), d.treeWidget, SLOT(setCurrentBuffer(IrcBuffer*)));
 
-    connect(d.splitView, SIGNAL(viewAdded(BufferView*)), this, SLOT(initView(BufferView*)));
-    connect(d.splitView, SIGNAL(viewRemoved(BufferView*)), this, SLOT(cleanupView(BufferView*)));
+    connect(d.splitView, SIGNAL(viewAdded(BufferView*)), this, SLOT(addView(BufferView*)));
+    connect(d.splitView, SIGNAL(viewRemoved(BufferView*)), this, SLOT(removeView(BufferView*)));
     connect(d.splitView, SIGNAL(currentViewChanged(BufferView*)), this, SIGNAL(currentViewChanged(BufferView*)));
 
     setStretchFactor(1, 1);
@@ -55,7 +55,7 @@ ChatPage::~ChatPage()
 
 void ChatPage::init()
 {
-    initView(d.splitView->currentView());
+    addView(d.splitView->currentView());
     new Finder(this);
 }
 
@@ -217,7 +217,7 @@ void ChatPage::removeBuffer(IrcBuffer* buffer)
     PluginLoader::instance()->bufferRemoved(buffer);
 }
 
-void ChatPage::initView(BufferView* view)
+void ChatPage::addView(BufferView* view)
 {
     TitleBar* bar = view->titleBar();
     QTextDocument* doc = bar->findChild<QTextDocument*>();
@@ -228,12 +228,12 @@ void ChatPage::initView(BufferView* view)
     connect(view, SIGNAL(bufferClosed(IrcBuffer*)), this, SLOT(closeBuffer(IrcBuffer*)));
     connect(view, SIGNAL(cloned(TextDocument*)), this, SLOT(addDocument(TextDocument*)));
 
-    PluginLoader::instance()->initView(view);
+    PluginLoader::instance()->viewAdded(view);
 }
 
-void ChatPage::cleanupView(BufferView* view)
+void ChatPage::removeView(BufferView* view)
 {
-    PluginLoader::instance()->cleanupView(view);
+    PluginLoader::instance()->viewRemoved(view);
 }
 
 void ChatPage::addDocument(TextDocument* document)

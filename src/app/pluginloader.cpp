@@ -79,21 +79,21 @@ void PluginLoader::connectionRemoved(IrcConnection* connection)
     }
 }
 
-void PluginLoader::initView(BufferView* view)
+void PluginLoader::viewAdded(BufferView* view)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         ViewPlugin* plugin = qobject_cast<ViewPlugin*>(instance);
         if (plugin)
-            plugin->initView(view);
+            plugin->viewAdded(view);
     }
 }
 
-void PluginLoader::cleanupView(BufferView* view)
+void PluginLoader::viewRemoved(BufferView* view)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         ViewPlugin* plugin = qobject_cast<ViewPlugin*>(instance);
         if (plugin)
-            plugin->cleanupView(view);
+            plugin->viewRemoved(view);
     }
 }
 

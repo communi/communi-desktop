@@ -27,7 +27,7 @@ CommanderPlugin::CommanderPlugin(QObject* parent) : QObject(parent)
 {
 }
 
-void CommanderPlugin::initView(BufferView* view)
+void CommanderPlugin::viewAdded(BufferView* view)
 {
     IrcCommandParser* parser = view->textInput()->parser();
     parser->addCommand(IrcCommand::Custom, "CLEAR");

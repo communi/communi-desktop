@@ -54,8 +54,8 @@ signals:
 private slots:
     void addConnection(IrcConnection* connection);
     void removeConnection(IrcConnection* connection);
-    void initView(BufferView* view);
-    void cleanupView(BufferView* view);
+    void addView(BufferView* view);
+    void removeView(BufferView* view);
     void addBuffer(IrcBuffer* buffer);
     void removeBuffer(IrcBuffer* buffer);
     void addDocument(TextDocument* document);

@@ -38,7 +38,7 @@ class CommanderPlugin : public QObject, public IrcCommandFilter, public BufferPl
 public:
     CommanderPlugin(QObject* parent = 0);
 
-    void initView(BufferView* view);
+    void viewAdded(BufferView* view);
     void bufferAdded(IrcBuffer* buffer);
     void connectionAdded(IrcConnection* connection);
     void connectionRemoved(IrcConnection* connection);

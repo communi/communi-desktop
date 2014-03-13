@@ -35,7 +35,7 @@ void OverlayPlugin::connectionRemoved(IrcConnection* connection)
     disconnect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateOverlays()));
 }
 
-void OverlayPlugin::initView(BufferView* view)
+void OverlayPlugin::viewAdded(BufferView* view)
 {
     Overlay* overlay = new Overlay(view);
     connect(overlay, SIGNAL(refresh()), this, SLOT(reconnect()));
@@ -44,7 +44,7 @@ void OverlayPlugin::initView(BufferView* view)
     connect(view, SIGNAL(bufferChanged(IrcBuffer*)), this, SLOT(updateOverlays()));
 }
 
-void OverlayPlugin::cleanupView(BufferView* view)
+void OverlayPlugin::viewRemoved(BufferView* view)
 {
     d.overlays.removeOne(view->findChild<Overlay*>());
     disconnect(view, SIGNAL(bufferChanged(IrcBuffer*)), this, SLOT(updateOverlays()));

@@ -36,8 +36,8 @@ public:
     void connectionAdded(IrcConnection* connection);
     void connectionRemoved(IrcConnection* connection);
 
-    void initView(BufferView* view);
-    void cleanupView(BufferView* view);
+    void viewAdded(BufferView* view);
+    void viewRemoved(BufferView* view);
 
 private slots:
     void reconnect();
