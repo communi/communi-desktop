@@ -3,16 +3,10 @@
 ######################################################################
 
 TEMPLATE = lib
-CONFIG += static
 TARGET = base
-
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets
-    DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000
-}
+CONFIG += static communi_config communi_backend
 
 DESTDIR = $$BUILD_ROOT/lib
-
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
@@ -38,8 +32,6 @@ SOURCES += $$PWD/titlebar.cpp
 SOURCES += $$PWD/treedelegate.cpp
 SOURCES += $$PWD/treeitem.cpp
 SOURCES += $$PWD/treewidget.cpp
-
-CONFIG += backend
 
 !exists(shared/shared.pri) {
     error(A Git submodule is missing. Run \'git submodule update --init\' in $${SOURCE_ROOT}.)

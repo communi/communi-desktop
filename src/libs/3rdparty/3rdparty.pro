@@ -3,17 +3,12 @@
 ######################################################################
 
 TEMPLATE = lib
-CONFIG += static
 TARGET = 3rdparty
+CONFIG += static communi_config
 
 DESTDIR = $$BUILD_ROOT/lib
 DEPENDPATH += $$PWD $$PWD/qtdocktile
 INCLUDEPATH += $$PWD $$PWD/qtdocktile
-
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets
-    DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000
-}
 
 HEADERS += $$PWD/simplecrypt.h
 SOURCES += $$PWD/simplecrypt.cpp
@@ -38,5 +33,3 @@ win32 {
     HEADERS += $$PWD/qtdocktile/winutils.h
     SOURCES += $$PWD/qtdocktile/qtdocktile_win.cpp
 }
-
-include(../../communi.pri)

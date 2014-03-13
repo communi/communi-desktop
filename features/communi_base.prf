@@ -7,5 +7,5 @@ BASEDIR = $$SOURCE_ROOT/src/libs/base
 DEPENDPATH += $$BASEDIR $$BASEDIR/shared
 INCLUDEPATH += $$BASEDIR $$BASEDIR/shared
 
-include($$SOURCE_ROOT/src/communi.pri)
+include(communi_config.prf)
 communiAddLib(base)

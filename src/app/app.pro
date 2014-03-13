@@ -5,16 +5,15 @@
 TEMPLATE = app
 win32|mac:TARGET = Communi
 else:TARGET = communi
+CONFIG += communi_config communi_3rdparty communi_backend communi_base
+
 DESTDIR = ../../bin
-QT += network
 
 mac:LIBS += -framework SystemConfiguration
 else:win32:LIBS += -lole32
 else:unix:QT += dbus
 
 greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets
-    DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000
     qtHaveModule(multimedia):QT += multimedia
 } else {
     lessThan(QT_MAJOR_VERSION, 4) | lessThan(QT_MINOR_VERSION, 7) {
@@ -51,9 +50,6 @@ SOURCES += $$PWD/themeinfo.cpp
 SOURCES += $$PWD/themeloader.cpp
 
 include(plugins.pri)
-include(../communi.pri)
 include(../plugins/api/api.pri)
 include(../../resources/resources.pri)
 include(../../themes/themes.pri)
-
-CONFIG += 3rdparty backend base

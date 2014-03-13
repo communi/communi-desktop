@@ -11,5 +11,5 @@ mac: LIBS += -framework AppKit
 win32: LIBS += -lole32
 unix:!mac: QT += dbus
 
-include($$SOURCE_ROOT/src/communi.pri)
+include(communi_config.prf)
 communiAddLib(3rdparty)
