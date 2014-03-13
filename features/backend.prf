@@ -1,0 +1,13 @@
+######################################################################
+# Communi
+######################################################################
+
+BASEDIR = $$SOURCE_ROOT/src/libs/backend/libcommuni/include
+
+DEPENDPATH += $$BASEDIR/IrcCore $$BASEDIR/IrcModel $$BASEDIR/IrcUtil
+INCLUDEPATH += $$BASEDIR/IrcCore $$BASEDIR/IrcModel $$BASEDIR/IrcUtil
+
+DEFINES += IRC_STATIC
+
+include($$SOURCE_ROOT/src/communi.pri)
+communiAddLib(backend)

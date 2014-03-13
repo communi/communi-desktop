@@ -2,8 +2,10 @@
 # Communi
 ######################################################################
 
-DEPENDPATH += $$PWD $$PWD/shared
-INCLUDEPATH += $$PWD $$PWD/shared
+BASEDIR = $$SOURCE_ROOT/src/libs/base
 
-include(../../communi.pri)
+DEPENDPATH += $$BASEDIR $$BASEDIR/shared
+INCLUDEPATH += $$BASEDIR $$BASEDIR/shared
+
+include($$SOURCE_ROOT/src/communi.pri)
 communiAddLib(base)

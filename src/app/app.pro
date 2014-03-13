@@ -53,8 +53,7 @@ SOURCES += $$PWD/themeloader.cpp
 include(plugins.pri)
 include(../communi.pri)
 include(../plugins/api/api.pri)
-include(../libs/base/base.pri)
-include(../libs/backend/backend.pri)
-include(../libs/3rdparty/3rdparty.pri)
 include(../../resources/resources.pri)
 include(../../themes/themes.pri)
+
+CONFIG += 3rdparty backend base

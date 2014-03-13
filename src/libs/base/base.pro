@@ -39,8 +39,7 @@ SOURCES += $$PWD/treedelegate.cpp
 SOURCES += $$PWD/treeitem.cpp
 SOURCES += $$PWD/treewidget.cpp
 
-include(../../communi.pri)
-include(../backend/backend.pri)
+CONFIG += backend
 
 !exists(shared/shared.pri) {
     error(A Git submodule is missing. Run \'git submodule update --init\' in $${SOURCE_ROOT}.)

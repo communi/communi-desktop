@@ -2,12 +2,14 @@
 # Communi
 ######################################################################
 
-DEPENDPATH += $$PWD $$PWD/qtdocktile
-INCLUDEPATH += $$PWD $$PWD/qtdocktile
+BASEDIR = $$SOURCE_ROOT/src/libs/3rdparty
+
+DEPENDPATH += $$BASEDIR $$BASEDIR/qtdocktile
+INCLUDEPATH += $$BASEDIR $$BASEDIR/qtdocktile
 
 mac: LIBS += -framework AppKit
 win32: LIBS += -lole32
 unix:!mac: QT += dbus
 
-include(../../communi.pri)
+include($$SOURCE_ROOT/src/communi.pri)
 communiAddLib(3rdparty)
