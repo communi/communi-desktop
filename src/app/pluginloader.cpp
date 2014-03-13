@@ -13,7 +13,7 @@
 #include <QPluginLoader>
 #include "bufferplugin.h"
 #include "connectionplugin.h"
-#include "textdocumentplugin.h"
+#include "documentplugin.h"
 #include "treewidgetplugin.h"
 #include "viewplugin.h"
 
@@ -103,7 +103,7 @@ void PluginLoader::cleanupView(BufferView* view)
 void PluginLoader::initDocument(TextDocument* doc)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        TextDocumentPlugin* plugin = qobject_cast<TextDocumentPlugin*>(instance);
+        DocumentPlugin* plugin = qobject_cast<DocumentPlugin*>(instance);
         if (plugin)
             plugin->initDocument(doc);
     }
@@ -112,7 +112,7 @@ void PluginLoader::initDocument(TextDocument* doc)
 void PluginLoader::cleanupDocument(TextDocument* doc)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        TextDocumentPlugin* plugin = qobject_cast<TextDocumentPlugin*>(instance);
+        DocumentPlugin* plugin = qobject_cast<DocumentPlugin*>(instance);
         if (plugin)
             plugin->cleanupDocument(doc);
     }

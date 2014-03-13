@@ -12,21 +12,21 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TEXTDOCUMENTPLUGIN_H
-#define TEXTDOCUMENTPLUGIN_H
+#ifndef DOCUMENTPLUGIN_H
+#define DOCUMENTPLUGIN_H
 
 #include <QtPlugin>
 
 class TextDocument;
 
-class TextDocumentPlugin
+class DocumentPlugin
 {
 public:
-    virtual ~TextDocumentPlugin() {}
+    virtual ~DocumentPlugin() {}
     virtual void initDocument(TextDocument*) {}
     virtual void cleanupDocument(TextDocument*) {}
 };
 
-Q_DECLARE_INTERFACE(TextDocumentPlugin, "Communi.TextDocumentPlugin")
+Q_DECLARE_INTERFACE(DocumentPlugin, "Communi.DocumentPlugin")
 
-#endif // TEXTDOCUMENTPLUGIN_H
+#endif // DOCUMENTPLUGIN_H

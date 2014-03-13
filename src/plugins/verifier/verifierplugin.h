@@ -19,19 +19,19 @@
 #include <QtPlugin>
 #include <QMultiHash>
 #include "connectionplugin.h"
-#include "textdocumentplugin.h"
+#include "documentplugin.h"
 
 class IrcCommand;
 class IrcMessage;
 class CommandVerifier;
 
-class VerifierPlugin : public QObject, public ConnectionPlugin, public TextDocumentPlugin
+class VerifierPlugin : public QObject, public ConnectionPlugin, public DocumentPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(ConnectionPlugin TextDocumentPlugin)
+    Q_INTERFACES(ConnectionPlugin DocumentPlugin)
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.TextDocumentPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.DocumentPlugin")
 #endif
 
 public:
