@@ -16,9 +16,6 @@ else:unix:QT += dbus
 greaterThan(QT_MAJOR_VERSION, 4) {
     qtHaveModule(multimedia):QT += multimedia
 } else {
-    lessThan(QT_MAJOR_VERSION, 4) | lessThan(QT_MINOR_VERSION, 7) {
-        error(Communi requires Qt 4.7 or newer but Qt $$[QT_VERSION] was detected.)
-    }
     CONFIG(phonon, phonon|no_phonon):QT += phonon
 }
 
