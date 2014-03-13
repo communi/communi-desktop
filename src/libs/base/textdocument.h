@@ -60,6 +60,7 @@ public slots:
 
 signals:
     void messageReceived(IrcMessage* message);
+    void messageHighlighted(IrcMessage* message);
 
 protected:
     void updateBlock(int number);
