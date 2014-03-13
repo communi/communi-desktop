@@ -38,6 +38,9 @@ public slots:
     void initDocument(TextDocument* doc);
     void cleanupDocument(TextDocument* doc);
 
+    void initWindow(QWidget* window);
+    void cleanupWindow(QWidget* window);
+
 private:
     PluginLoader(QObject* parent = 0);
 };

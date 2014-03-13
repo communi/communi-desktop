@@ -15,6 +15,7 @@
 #include "connectionplugin.h"
 #include "documentplugin.h"
 #include "viewplugin.h"
+#include "windowplugin.h"
 
 Q_IMPORT_PLUGIN(AlertPlugin)
 Q_IMPORT_PLUGIN(CommanderPlugin)
@@ -112,5 +113,25 @@ void PluginLoader::cleanupDocument(TextDocument* doc)
         DocumentPlugin* plugin = qobject_cast<DocumentPlugin*>(instance);
         if (plugin)
             plugin->cleanupDocument(doc);
+    }
+}
+
+void PluginLoader::initWindow(QWidget* window)
+{
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        WindowPlugin* plugin = qobject_cast<WindowPlugin*>(instance);
+        if (plugin) {
+            plugin->filterWindow(window);
+            plugin->initWindow(window);
+        }
+    }
+}
+
+void PluginLoader::cleanupWindow(QWidget* window)
+{
+    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+        WindowPlugin* plugin = qobject_cast<WindowPlugin*>(instance);
+        if (plugin)
+            plugin->cleanupWindow(window);
     }
 }
