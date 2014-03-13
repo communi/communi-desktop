@@ -10,7 +10,6 @@
 #include "pluginloader.h"
 
 #include <QtPlugin>
-#include <QPluginLoader>
 #include "bufferplugin.h"
 #include "connectionplugin.h"
 #include "documentplugin.h"
@@ -120,10 +119,8 @@ void PluginLoader::initWindow(QWidget* window)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         WindowPlugin* plugin = qobject_cast<WindowPlugin*>(instance);
-        if (plugin) {
-            plugin->filterWindow(window);
+        if (plugin)
             plugin->initWindow(window);
-        }
     }
 }
 

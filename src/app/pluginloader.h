@@ -10,7 +10,7 @@
 #ifndef PLUGINLOADER_H
 #define PLUGINLOADER_H
 
-#include <QObject>
+#include <QPluginLoader>
 
 class IrcBuffer;
 class TreeWidget;
@@ -24,6 +24,18 @@ class PluginLoader : public QObject
 
 public:
     static PluginLoader* instance();
+
+    template<typename T>
+    QList<T> pluginInstances() const
+    {
+        QList<T> instances;
+        foreach (QObject* instance, QPluginLoader::staticInstances()) {
+            T plugin = qobject_cast<T>(instance);
+            if (plugin)
+                instances += plugin;
+        }
+        return instances;
+    }
 
 public slots:
     void initBuffer(IrcBuffer* buffer);
