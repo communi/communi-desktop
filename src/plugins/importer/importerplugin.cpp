@@ -25,7 +25,7 @@ ImporterPlugin::ImporterPlugin(QObject* parent) : QObject(parent)
 }
 
 /*
-void ImporterPlugin::initWindow(MainWindow* window)
+void ImporterPlugin::windowCreated(QWidget* window)
 {
     QSettings settings;
     if (!settings.value("imported", false).toBool()) {

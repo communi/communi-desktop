@@ -50,8 +50,8 @@ public slots:
     void documentAdded(TextDocument* doc);
     void documentRemoved(TextDocument* doc);
 
-    void initWindow(QWidget* window);
-    void cleanupWindow(QWidget* window);
+    void windowCreated(QWidget* window);
+    void windowDestroyed(QWidget* window);
 
 private:
     PluginLoader(QObject* parent = 0);

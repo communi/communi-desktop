@@ -115,20 +115,20 @@ void PluginLoader::documentRemoved(TextDocument* doc)
     }
 }
 
-void PluginLoader::initWindow(QWidget* window)
+void PluginLoader::windowCreated(QWidget* window)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         WindowPlugin* plugin = qobject_cast<WindowPlugin*>(instance);
         if (plugin)
-            plugin->initWindow(window);
+            plugin->windowCreated(window);
     }
 }
 
-void PluginLoader::cleanupWindow(QWidget* window)
+void PluginLoader::windowDestroyed(QWidget* window)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         WindowPlugin* plugin = qobject_cast<WindowPlugin*>(instance);
         if (plugin)
-            plugin->cleanupWindow(window);
+            plugin->windowDestroyed(window);
     }
 }

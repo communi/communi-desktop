@@ -29,7 +29,7 @@ class ImporterPlugin : public QObject, public ConnectionPlugin
 public:
     ImporterPlugin(QObject* parent = 0);
 
-    //TODO: void initWindow(MainWindow* window);
+    //TODO: void windowCreated(QWidget* window);
 };
 
 #endif // IMPORTERPLUGIN_H

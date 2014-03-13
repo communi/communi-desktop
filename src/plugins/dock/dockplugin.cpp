@@ -24,7 +24,7 @@ DockPlugin::DockPlugin(QObject* parent) : QObject(parent)
     d.dock = 0;
 }
 
-void DockPlugin::initWindow(QWidget* window)
+void DockPlugin::windowCreated(QWidget* window)
 {
     if (QtDockTile::isAvailable())
         d.dock = new QtDockTile(window);

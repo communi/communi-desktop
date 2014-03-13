@@ -35,7 +35,7 @@ class DockPlugin : public QObject, public DocumentPlugin, public WindowPlugin
 public:
     DockPlugin(QObject* parent = 0);
 
-    void initWindow(QWidget* window);
+    void windowCreated(QWidget* window);
 
     void documentAdded(TextDocument* document);
     void documentRemoved(TextDocument* document);

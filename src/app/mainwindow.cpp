@@ -130,10 +130,14 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
         d.stack->setCurrentWidget(d.chatPage);
 
     d.chatPage->restoreState(settings.value("state").toByteArray());
+
+    PluginLoader::instance()->windowCreated(this);
 }
 
 MainWindow::~MainWindow()
 {
+    PluginLoader::instance()->windowDestroyed(this);
+
     QSettings settings;
     settings.setValue("geometry", saveGeometry());
     settings.setValue("state", d.chatPage->saveState());

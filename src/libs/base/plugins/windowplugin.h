@@ -22,8 +22,9 @@ class WindowPlugin
 {
 public:
     virtual ~WindowPlugin() {}
-    virtual void initWindow(QWidget*) {}
-    virtual void cleanupWindow(QWidget*) {}
+
+    virtual void windowCreated(QWidget*) {}
+    virtual void windowDestroyed(QWidget*) {}
 
     QWidget* window() const;
     bool isActiveWindow() const;
