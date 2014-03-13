@@ -16,13 +16,13 @@
 #include "documentplugin.h"
 #include "viewplugin.h"
 
+Q_IMPORT_PLUGIN(AlertPlugin)
 Q_IMPORT_PLUGIN(CommanderPlugin)
 Q_IMPORT_PLUGIN(DockPlugin)
 Q_IMPORT_PLUGIN(IgnorePlugin)
 Q_IMPORT_PLUGIN(ImporterPlugin)
 Q_IMPORT_PLUGIN(MonitorPlugin)
 Q_IMPORT_PLUGIN(OverlayPlugin)
-Q_IMPORT_PLUGIN(SoundPlugin)
 Q_IMPORT_PLUGIN(TrayPlugin)
 Q_IMPORT_PLUGIN(VerifierPlugin)
 Q_IMPORT_PLUGIN(ZncPlugin)

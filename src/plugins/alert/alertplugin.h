@@ -12,17 +12,17 @@
 * GNU General Public License for more details.
 */
 
-#ifndef SOUNDPLUGIN_H
-#define SOUNDPLUGIN_H
+#ifndef ALERTPLUGIN_H
+#define ALERTPLUGIN_H
 
 #include <QObject>
 #include <QtPlugin>
 #include "documentplugin.h"
 
+class Alert;
 class IrcMessage;
-class SoundNotification;
 
-class SoundPlugin : public QObject, public DocumentPlugin
+class AlertPlugin : public QObject, public DocumentPlugin
 {
     Q_OBJECT
     Q_INTERFACES(DocumentPlugin)
@@ -31,7 +31,7 @@ class SoundPlugin : public QObject, public DocumentPlugin
 #endif
 
 public:
-    SoundPlugin(QObject* parent = 0);
+    AlertPlugin(QObject* parent = 0);
 
     void initDocument(TextDocument* document);
     void cleanupDocument(TextDocument* document);
@@ -41,8 +41,8 @@ private slots:
 
 private:
     struct Private {
-        SoundNotification* sound;
+        Alert* alert;
     } d;
 };
 
-#endif // SOUNDPLUGIN_H
+#endif // ALERTPLUGIN_H

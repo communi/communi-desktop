@@ -25,53 +25,40 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "soundnotification.h"
+#ifndef ALERT_H
+#define ALERT_H
+
+#include <QObject>
 
 #if defined(QT_MULTIMEDIA_LIB)
-#include <QMediaPlayer>
+class QMediaPlayer;
 #elif defined(QT_PHONON_LIB)
-#include <MediaObject>
+namespace Phonon { class MediaObject; }
 #endif
 
-SoundNotification::SoundNotification(QObject* parent) : QObject(parent)
+class Alert : public QObject
 {
+    Q_OBJECT
+    Q_PROPERTY(QString filePath READ filePath WRITE setFilePath)
+
+public:
+    explicit Alert(QObject* parent = 0);
+
+    static bool isAvailable();
+
+    QString filePath() const;
+    void setFilePath(const QString& filePath);
+
+public slots:
+    void play();
+
+private:
 #if defined(QT_MULTIMEDIA_LIB)
-    player = new QMediaPlayer(this);
+    QMediaPlayer* player;
 #elif defined(QT_PHONON_LIB)
-    player = Phonon::createPlayer(Phonon::MusicCategory);
-    player->setParent(this);
+    Phonon::MediaObject* player;
 #endif
-}
+    QString fp;
+};
 
-bool SoundNotification::isAvailable()
-{
-#if defined(QT_MULTIMEDIA_LIB) || defined(QT_PHONON_LIB)
-    return true;
-#else
-    return false;
-#endif
-}
-
-QString SoundNotification::filePath() const
-{
-    return fp;
-}
-
-void SoundNotification::setFilePath(const QString& filePath)
-{
-    if (fp != filePath) {
-        fp = filePath;
-#if defined(QT_MULTIMEDIA_LIB)
-        player->setMedia(QUrl::fromLocalFile(fp));
-#elif defined(QT_PHONON_LIB)
-        player->setCurrentSource(Phonon::MediaSource(fp));
-#endif
-    }
-}
-
-void SoundNotification::play()
-{
-#if defined(QT_MULTIMEDIA_LIB) || defined(QT_PHONON_LIB)
-        player->play();
-#endif
-}
+#endif // ALERT_H

@@ -11,10 +11,10 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     CONFIG(phonon, phonon|no_phonon):QT += phonon
 }
 
-RESOURCES += sound.qrc
+RESOURCES += alert.qrc
 
-HEADERS += $$PWD/soundnotification.h
-HEADERS += $$PWD/soundplugin.h
+HEADERS += $$PWD/alert.h
+HEADERS += $$PWD/alertplugin.h
 
-SOURCES += $$PWD/soundnotification.cpp
-SOURCES += $$PWD/soundplugin.cpp
+SOURCES += $$PWD/alert.cpp
+SOURCES += $$PWD/alertplugin.cpp

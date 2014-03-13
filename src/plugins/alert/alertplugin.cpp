@@ -12,9 +12,9 @@
 * GNU General Public License for more details.
 */
 
-#include "soundplugin.h"
+#include "alert.h"
+#include "alertplugin.h"
 #include "textdocument.h"
-#include "soundnotification.h"
 #include <QDesktopServices>
 #include <QApplication>
 #include <IrcBuffer>
@@ -22,46 +22,46 @@
 #include <QFile>
 #include <QDir>
 
-inline void initResource() { Q_INIT_RESOURCE(sound); }
+inline void initResource() { Q_INIT_RESOURCE(alert); }
 
-SoundPlugin::SoundPlugin(QObject* parent) : QObject(parent)
+AlertPlugin::AlertPlugin(QObject* parent) : QObject(parent)
 {
-    d.sound = 0;
-    if (SoundNotification::isAvailable()) {
-        d.sound = new SoundNotification(this);
+    d.alert = 0;
+    if (Alert::isAvailable()) {
+        d.alert = new Alert(this);
 
         QDir dataDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
         if (dataDir.exists() || dataDir.mkpath(".")) {
-            QString filePath = dataDir.filePath("sound.mp3");
+            QString filePath = dataDir.filePath("alert.mp3");
             if (!QFile::exists(filePath)) {
                 initResource();
-                QFile::copy(":/sound.mp3", filePath);
+                QFile::copy(":/alert.mp3", filePath);
             }
-            d.sound->setFilePath(filePath);
+            d.alert->setFilePath(filePath);
         }
     }
 }
 
-void SoundPlugin::initDocument(TextDocument* document)
+void AlertPlugin::initDocument(TextDocument* document)
 {
     if (!document->isClone())
         connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
 }
 
-void SoundPlugin::cleanupDocument(TextDocument* document)
+void AlertPlugin::cleanupDocument(TextDocument* document)
 {
     if (!document->isClone())
         disconnect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
 }
 
-void SoundPlugin::onMessageHighlighted(IrcMessage* message)
+void AlertPlugin::onMessageHighlighted(IrcMessage* message)
 {
     Q_UNUSED(message);
-    if (d.sound) {
+    if (d.alert) {
         TextDocument* document = qobject_cast<TextDocument*>(sender());
         QWidget* window = QApplication::topLevelWidgets().value(0);
         if ((window && !window->isActiveWindow()) || document != currentDocument()) {
-            d.sound->play();
+            d.alert->play();
             if (window && !window->isActiveWindow())
                 QApplication::alert(window);
         }
@@ -69,5 +69,5 @@ void SoundPlugin::onMessageHighlighted(IrcMessage* message)
 }
 
 #if QT_VERSION < 0x050000
-Q_EXPORT_STATIC_PLUGIN(SoundPlugin)
+Q_EXPORT_STATIC_PLUGIN(AlertPlugin)
 #endif
