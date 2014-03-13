@@ -43,16 +43,12 @@ exists(backend/src/src.pri) {
     error(3rdparty/qtsystemnotifier submodule is missing. Run \'git submodule update --init\' in $${_PRO_FILE_PWD_}.)
 }
 
-!exists(3rdparty/qtdocktile/qtdocktile.pri) {
-    error(3rdparty/qtdocktile submodule is missing. Run \'git submodule update --init\' in $${_PRO_FILE_PWD_}.)
-}
-
 include(gui/gui.pri)
 include(core/core.pri)
 include(shared/shared.pri)
 include(wizard/wizard.pri)
-include(3rdparty/qtdocktile/qtdocktile.pri)
 include(3rdparty/qtsystemnotifier/systemnotifier.pri)
 
 # TODO:
 include(libs/base/base.pri)
+include(libs/3rdparty/3rdparty.pri)
