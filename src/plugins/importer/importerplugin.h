@@ -17,19 +17,21 @@
 
 #include <QtPlugin>
 #include "connectionplugin.h"
+#include "windowplugin.h"
 
-class ImporterPlugin : public QObject, public ConnectionPlugin
+class ImporterPlugin : public QObject, public ConnectionPlugin, public WindowPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(ConnectionPlugin)
+    Q_INTERFACES(ConnectionPlugin WindowPlugin)
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
 #endif
 
 public:
     ImporterPlugin(QObject* parent = 0);
 
-    //TODO: void windowCreated(QWidget* window);
+    void windowCreated(QWidget* window);
 };
 
 #endif // IMPORTERPLUGIN_H

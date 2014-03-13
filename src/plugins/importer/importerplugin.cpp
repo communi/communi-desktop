@@ -24,18 +24,16 @@ ImporterPlugin::ImporterPlugin(QObject* parent) : QObject(parent)
     qRegisterMetaTypeStreamOperators<ConnectionInfos>("ConnectionInfos");
 }
 
-/*
 void ImporterPlugin::windowCreated(QWidget* window)
 {
     QSettings settings;
     if (!settings.value("imported", false).toBool()) {
         ConnectionInfos infos = settings.value("connections").value<ConnectionInfos>();
         foreach (const ConnectionInfo& info, infos)
-            window->addConnection(info.toConnection(window));
+            addConnection(info.toConnection(window));
         settings.setValue("imported", true);
     }
 }
-*/
 
 #if QT_VERSION < 0x050000
 Q_EXPORT_STATIC_PLUGIN(ImporterPlugin)
