@@ -10,13 +10,11 @@ HEADERS += $$PWD/messagestackview.h
 HEADERS += $$PWD/searcheditor.h
 HEADERS += $$PWD/sessionstackview.h
 HEADERS += $$PWD/treemenu.h
-HEADERS += $$PWD/userlistmenu.h
 
 SOURCES += $$PWD/messagestackview.cpp
 SOURCES += $$PWD/searcheditor.cpp
 SOURCES += $$PWD/sessionstackview.cpp
 SOURCES += $$PWD/treemenu.cpp
-SOURCES += $$PWD/userlistmenu.cpp
 
 include(util/util.pri)
 include(settings/settings.pri)
