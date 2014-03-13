@@ -7,4 +7,4 @@ SOURCES += $$PWD/dockplugin.cpp
 
 include(../plugin.pri)
 
-CONFIG += 3rdparty
+CONFIG += communi_3rdparty
