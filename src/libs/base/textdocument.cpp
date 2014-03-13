@@ -40,6 +40,14 @@ public:
 
 class TextFrame : public QFrame
 {
+public:
+    TextFrame(QWidget* parent = 0) : QFrame(parent)
+    {
+        setVisible(false);
+        setAttribute(Qt::WA_TranslucentBackground);
+        setAttribute(Qt::WA_NoSystemBackground);
+    }
+
     void paintEvent(QPaintEvent*)
     {
         QStyleOption option;
@@ -49,8 +57,19 @@ class TextFrame : public QFrame
     }
 };
 
-class TextHighlight : public TextFrame { Q_OBJECT };
-class TextLowlight : public TextFrame { Q_OBJECT };
+class TextHighlight : public TextFrame
+{
+    Q_OBJECT
+public:
+    TextHighlight(QWidget* parent = 0) : TextFrame(parent) { }
+};
+
+class TextLowlight : public TextFrame
+{
+    Q_OBJECT
+public:
+    TextLowlight(QWidget* parent = 0) : TextFrame(parent) { }
+};
 
 TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
 {
@@ -229,22 +248,12 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
     const QAbstractTextDocumentLayout* layout = documentLayout();
 
     static QPointer<TextLowlight> lowlightFrame = 0;
-    if (!lowlightFrame) {
-        lowlightFrame = new TextLowlight;
-        lowlightFrame->setParent(static_cast<QWidget*>(painter->device()));
-        lowlightFrame->setAttribute(Qt::WA_TranslucentBackground);
-        lowlightFrame->setAttribute(Qt::WA_NoSystemBackground);
-        lowlightFrame->setVisible(false);
-    }
+    if (!lowlightFrame)
+        lowlightFrame = new TextLowlight(static_cast<QWidget*>(painter->device()));
 
     static QPointer<TextHighlight> highlightFrame = 0;
-    if (!highlightFrame) {
-        highlightFrame = new TextHighlight;
-        highlightFrame->setParent(static_cast<QWidget*>(painter->device()));
-        highlightFrame->setAttribute(Qt::WA_TranslucentBackground);
-        highlightFrame->setAttribute(Qt::WA_NoSystemBackground);
-        highlightFrame->setVisible(false);
-    }
+    if (!highlightFrame)
+        highlightFrame = new TextHighlight(static_cast<QWidget*>(painter->device()));
 
     d.drawUb = d.ub > 1;
     if (!d.lowlights.isEmpty()) {
