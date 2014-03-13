@@ -40,8 +40,8 @@ class TrayPlugin : public QObject, public ConnectionPlugin, public DocumentPlugi
 public:
     TrayPlugin(QObject* parent = 0);
 
-    void initDocument(TextDocument* document);
-    void cleanupDocument(TextDocument* document);
+    void documentAdded(TextDocument* document);
+    void documentRemoved(TextDocument* document);
 
     void connectionAdded(IrcConnection* connection);
     void connectionRemoved(IrcConnection* connection);

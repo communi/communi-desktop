@@ -51,13 +51,13 @@ TrayPlugin::TrayPlugin(QObject* parent) : QObject(parent)
     }
 }
 
-void TrayPlugin::initDocument(TextDocument* document)
+void TrayPlugin::documentAdded(TextDocument* document)
 {
     if (!document->isClone())
         connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
 }
 
-void TrayPlugin::cleanupDocument(TextDocument* document)
+void TrayPlugin::documentRemoved(TextDocument* document)
 {
     if (!document->isClone())
         disconnect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));

@@ -30,13 +30,13 @@ void DockPlugin::initWindow(QWidget* window)
         d.dock = new QtDockTile(window);
 }
 
-void DockPlugin::initDocument(TextDocument* document)
+void DockPlugin::documentAdded(TextDocument* document)
 {
     if (d.dock && !document->isClone())
         connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
 }
 
-void DockPlugin::cleanupDocument(TextDocument* document)
+void DockPlugin::documentRemoved(TextDocument* document)
 {
     if (d.dock && !document->isClone())
         disconnect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));

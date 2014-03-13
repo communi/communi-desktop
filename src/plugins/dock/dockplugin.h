@@ -37,8 +37,8 @@ public:
 
     void initWindow(QWidget* window);
 
-    void initDocument(TextDocument* document);
-    void cleanupDocument(TextDocument* document);
+    void documentAdded(TextDocument* document);
+    void documentRemoved(TextDocument* document);
 
     void windowActivated();
 

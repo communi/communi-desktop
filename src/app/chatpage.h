@@ -58,7 +58,7 @@ private slots:
     void cleanupView(BufferView* view);
     void addBuffer(IrcBuffer* buffer);
     void removeBuffer(IrcBuffer* buffer);
-    void initDocument(TextDocument* document);
+    void addDocument(TextDocument* document);
     void onSocketError();
 
 private:

@@ -97,21 +97,21 @@ void PluginLoader::cleanupView(BufferView* view)
     }
 }
 
-void PluginLoader::initDocument(TextDocument* doc)
+void PluginLoader::documentAdded(TextDocument* doc)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         DocumentPlugin* plugin = qobject_cast<DocumentPlugin*>(instance);
         if (plugin)
-            plugin->initDocument(doc);
+            plugin->documentAdded(doc);
     }
 }
 
-void PluginLoader::cleanupDocument(TextDocument* doc)
+void PluginLoader::documentRemoved(TextDocument* doc)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         DocumentPlugin* plugin = qobject_cast<DocumentPlugin*>(instance);
         if (plugin)
-            plugin->cleanupDocument(doc);
+            plugin->documentRemoved(doc);
     }
 }
 

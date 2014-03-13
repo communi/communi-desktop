@@ -33,8 +33,8 @@ class AlertPlugin : public QObject, public DocumentPlugin
 public:
     AlertPlugin(QObject* parent = 0);
 
-    void initDocument(TextDocument* document);
-    void cleanupDocument(TextDocument* document);
+    void documentAdded(TextDocument* document);
+    void documentRemoved(TextDocument* document);
 
 private slots:
     void onMessageHighlighted(IrcMessage* message);

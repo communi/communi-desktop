@@ -38,7 +38,7 @@ public:
     VerifierPlugin(QObject* parent = 0);
 
     void connectionAdded(IrcConnection* connection);
-    void initDocument(TextDocument* document);
+    void documentAdded(TextDocument* document);
 
 private slots:
     void onCommandVerified(int id);

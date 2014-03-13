@@ -197,7 +197,7 @@ void ChatPage::addBuffer(IrcBuffer* buffer)
     d.splitView->addBuffer(buffer);
 
     PluginLoader::instance()->bufferAdded(buffer);
-    initDocument(doc);
+    addDocument(doc);
 
     connect(buffer, SIGNAL(destroyed(IrcBuffer*)), this, SLOT(removeBuffer(IrcBuffer*)));
 }
@@ -206,7 +206,7 @@ void ChatPage::removeBuffer(IrcBuffer* buffer)
 {
     QList<TextDocument*> documents = buffer->findChildren<TextDocument*>();
     foreach (TextDocument* doc, documents)
-        PluginLoader::instance()->cleanupDocument(doc);
+        PluginLoader::instance()->documentRemoved(doc);
 
     d.treeWidget->removeBuffer(buffer);
     d.splitView->removeBuffer(buffer);
@@ -226,7 +226,7 @@ void ChatPage::initView(BufferView* view)
 
     view->textInput()->setParser(createParser(view));
     connect(view, SIGNAL(bufferClosed(IrcBuffer*)), this, SLOT(closeBuffer(IrcBuffer*)));
-    connect(view, SIGNAL(cloned(TextDocument*)), this, SLOT(initDocument(TextDocument*)));
+    connect(view, SIGNAL(cloned(TextDocument*)), this, SLOT(addDocument(TextDocument*)));
 
     PluginLoader::instance()->initView(view);
 }
@@ -236,10 +236,10 @@ void ChatPage::cleanupView(BufferView* view)
     PluginLoader::instance()->cleanupView(view);
 }
 
-void ChatPage::initDocument(TextDocument* document)
+void ChatPage::addDocument(TextDocument* document)
 {
     document->setStyleSheet(d.theme.style());
-    PluginLoader::instance()->initDocument(document);
+    PluginLoader::instance()->documentAdded(document);
 }
 
 void ChatPage::onSocketError()

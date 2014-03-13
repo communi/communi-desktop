@@ -23,8 +23,9 @@ class DocumentPlugin
 {
 public:
     virtual ~DocumentPlugin() {}
-    virtual void initDocument(TextDocument*) {}
-    virtual void cleanupDocument(TextDocument*) {}
+
+    virtual void documentAdded(TextDocument*) {}
+    virtual void documentRemoved(TextDocument*) {}
 
     TextDocument* currentDocument() const;
 };

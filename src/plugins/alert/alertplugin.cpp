@@ -42,13 +42,13 @@ AlertPlugin::AlertPlugin(QObject* parent) : QObject(parent)
     }
 }
 
-void AlertPlugin::initDocument(TextDocument* document)
+void AlertPlugin::documentAdded(TextDocument* document)
 {
     if (!document->isClone())
         connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
 }
 
-void AlertPlugin::cleanupDocument(TextDocument* document)
+void AlertPlugin::documentRemoved(TextDocument* document)
 {
     if (!document->isClone())
         disconnect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));

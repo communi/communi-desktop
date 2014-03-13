@@ -47,8 +47,8 @@ public slots:
     void initView(BufferView* view);
     void cleanupView(BufferView* view);
 
-    void initDocument(TextDocument* doc);
-    void cleanupDocument(TextDocument* doc);
+    void documentAdded(TextDocument* doc);
+    void documentRemoved(TextDocument* doc);
 
     void initWindow(QWidget* window);
     void cleanupWindow(QWidget* window);

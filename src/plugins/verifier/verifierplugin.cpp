@@ -30,7 +30,7 @@ void VerifierPlugin::connectionAdded(IrcConnection* connection)
     d.verifiers.insert(connection, verifier);
 }
 
-void VerifierPlugin::initDocument(TextDocument* document)
+void VerifierPlugin::documentAdded(TextDocument* document)
 {
     new SyntaxHighlighter(document);
     connect(document, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
