@@ -1,21 +1,21 @@
-UserListView {
+ListView {
     border: none;
     background: #222222;
 }
 
-UserListView::item {
+ListView::item {
     color: #dedede;
 }
 
-UserListView::item:hover {
+ListView::item:hover {
     background: #222222;
 }
 
-UserListView::item:selected {
+ListView::item:selected {
     background: #444444;
 }
 
-UserListView::item:hover:selected {
+ListView::item:hover:selected {
     background: #444444;
 }
 
