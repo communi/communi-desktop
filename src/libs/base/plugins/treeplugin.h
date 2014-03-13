@@ -12,21 +12,21 @@
 * GNU General Public License for more details.
 */
 
-#ifndef TREEWIDGETPLUGIN_H
-#define TREEWIDGETPLUGIN_H
+#ifndef TREEPLUGIN_H
+#define TREEPLUGIN_H
 
 #include <QtPlugin>
 
 class TreeWidget;
 
-class TreeWidgetPlugin
+class TreePlugin
 {
 public:
-    virtual ~TreeWidgetPlugin() {}
+    virtual ~TreePlugin() {}
     virtual void initTree(TreeWidget*) {}
     virtual void cleanupTree(TreeWidget*) {}
 };
 
-Q_DECLARE_INTERFACE(TreeWidgetPlugin, "Communi.TreeWidgetPlugin")
+Q_DECLARE_INTERFACE(TreePlugin, "Communi.TreePlugin")
 
-#endif // TREEWIDGETPLUGIN_H
+#endif // TREEPLUGIN_H

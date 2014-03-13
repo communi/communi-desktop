@@ -17,18 +17,18 @@
 
 #include <QObject>
 #include <QtPlugin>
-#include "treewidgetplugin.h"
+#include "treeplugin.h"
 
 class IrcBuffer;
 class IrcMessage;
 class SoundNotification;
 
-class SoundPlugin : public QObject, public TreeWidgetPlugin
+class SoundPlugin : public QObject, public TreePlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreeWidgetPlugin)
+    Q_INTERFACES(TreePlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.TreePlugin")
 #endif
 
 public:

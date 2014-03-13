@@ -20,15 +20,15 @@
 #include <QPointer>
 #include <QtPlugin>
 #include "connectionplugin.h"
-#include "treewidgetplugin.h"
+#include "treeplugin.h"
 
 class TreeItem;
 class IrcConnection;
 
-class TriconPlugin : public QObject, public ConnectionPlugin, public TreeWidgetPlugin
+class TriconPlugin : public QObject, public ConnectionPlugin, public TreePlugin
 {
     Q_OBJECT
-    Q_INTERFACES(ConnectionPlugin TreeWidgetPlugin)
+    Q_INTERFACES(ConnectionPlugin TreePlugin)
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
     Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
