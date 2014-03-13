@@ -20,4 +20,3 @@ SOURCES += $$PWD/userlistmenu.cpp
 
 include(util/util.pri)
 include(settings/settings.pri)
-include(3rdparty/3rdparty.pri)

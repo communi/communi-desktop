@@ -22,7 +22,7 @@
 #include "messagestackview.h"
 #include "connectioninfo.h"
 #include "addviewdialog.h"
-#include "systemnotifier.h"
+//#include "systemnotifier.h"
 #include "searchpopup.h"
 #include "bufferview.h"
 #include "treewidget.h"
@@ -166,13 +166,13 @@ void MainWindow::connectToImpl(const ConnectionInfo& info)
             stackView->setCurrentIndex(index);
     }
 
-    connect(SystemNotifier::instance(), SIGNAL(wake()), connection, SLOT(open()));
-    connect(SystemNotifier::instance(), SIGNAL(online()), connection, SLOT(open()));
+//    connect(SystemNotifier::instance(), SIGNAL(wake()), connection, SLOT(open()));
+//    connect(SystemNotifier::instance(), SIGNAL(online()), connection, SLOT(open()));
 
-    connect(SystemNotifier::instance(), SIGNAL(sleep()), connection, SLOT(quit()));
-    connect(SystemNotifier::instance(), SIGNAL(sleep()), connection, SLOT(close()));
+//    connect(SystemNotifier::instance(), SIGNAL(sleep()), connection, SLOT(quit()));
+//    connect(SystemNotifier::instance(), SIGNAL(sleep()), connection, SLOT(close()));
 
-    connect(SystemNotifier::instance(), SIGNAL(offline()), connection, SLOT(close()));
+//    connect(SystemNotifier::instance(), SIGNAL(offline()), connection, SLOT(close()));
 
     connect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateOverlay()));
     updateOverlay();

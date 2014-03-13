@@ -29,8 +29,8 @@ SOURCES += $$PWD/soundnotification.cpp
 SOURCES += $$PWD/toolbar.cpp
 SOURCES += $$PWD/trayicon.cpp
 
-exists(backend/src/src.pri) {
-    include(backend/src/src.pri)
+exists(libs/backend/src/src.pri) {
+    include(libs/backend/src/src.pri)
 } else:load(communi-config, true) {
     # bool load(feature, ignore_error)
     CONFIG += communi
@@ -39,16 +39,16 @@ exists(backend/src/src.pri) {
     error(Cannot detect libcommuni. Either install it or run \'git submodule update --init\' in $${_PRO_FILE_PWD_}.)
 }
 
-!exists(3rdparty/qtsystemnotifier/systemnotifier.pri) {
-    error(3rdparty/qtsystemnotifier submodule is missing. Run \'git submodule update --init\' in $${_PRO_FILE_PWD_}.)
-}
+#!exists(3rdparty/qtsystemnotifier/systemnotifier.pri) {
+#    error(3rdparty/qtsystemnotifier submodule is missing. Run \'git submodule update --init\' in $${_PRO_FILE_PWD_}.)
+#}
 
 include(gui/gui.pri)
 include(core/core.pri)
-include(shared/shared.pri)
 include(wizard/wizard.pri)
-include(3rdparty/qtsystemnotifier/systemnotifier.pri)
+#include(3rdparty/qtsystemnotifier/systemnotifier.pri)
 
 # TODO:
 include(libs/base/base.pri)
+include(libs/shared/shared.pri)
 include(libs/3rdparty/3rdparty.pri)
