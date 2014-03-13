@@ -55,14 +55,12 @@ ChatPage::~ChatPage()
 
 void ChatPage::init()
 {
-    PluginLoader::instance()->initTree(d.treeWidget);
     initView(d.splitView->currentView());
     new Finder(this);
 }
 
 void ChatPage::cleanup()
 {
-    PluginLoader::instance()->cleanupTree(d.treeWidget);
 }
 
 TreeWidget* ChatPage::treeWidget() const

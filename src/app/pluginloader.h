@@ -38,9 +38,6 @@ public slots:
     void initDocument(TextDocument* doc);
     void cleanupDocument(TextDocument* doc);
 
-    void initTree(TreeWidget* tree);
-    void cleanupTree(TreeWidget* tree);
-
 private:
     PluginLoader(QObject* parent = 0);
 };

@@ -14,7 +14,6 @@
 #include "bufferplugin.h"
 #include "connectionplugin.h"
 #include "documentplugin.h"
-#include "treeplugin.h"
 #include "viewplugin.h"
 
 Q_IMPORT_PLUGIN(CommanderPlugin)
@@ -113,23 +112,5 @@ void PluginLoader::cleanupDocument(TextDocument* doc)
         DocumentPlugin* plugin = qobject_cast<DocumentPlugin*>(instance);
         if (plugin)
             plugin->cleanupDocument(doc);
-    }
-}
-
-void PluginLoader::initTree(TreeWidget* tree)
-{
-    foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        TreePlugin* plugin = qobject_cast<TreePlugin*>(instance);
-        if (plugin)
-            plugin->initTree(tree);
-    }
-}
-
-void PluginLoader::cleanupTree(TreeWidget* tree)
-{
-    foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        TreePlugin* plugin = qobject_cast<TreePlugin*>(instance);
-        if (plugin)
-            plugin->cleanupTree(tree);
     }
 }
