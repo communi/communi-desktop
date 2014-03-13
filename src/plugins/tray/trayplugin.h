@@ -21,17 +21,15 @@
 #include <QtPlugin>
 #include <QSystemTrayIcon>
 #include "connectionplugin.h"
-#include "mainwindowplugin.h"
 
 class IrcMessage;
 
-class TrayPlugin : public QObject, public ConnectionPlugin, public MainWindowPlugin
+class TrayPlugin : public QObject, public ConnectionPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(ConnectionPlugin MainWindowPlugin)
+    Q_INTERFACES(ConnectionPlugin)
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.MainWindowPlugin")
 #endif
 
 public:
@@ -39,8 +37,6 @@ public:
 
     void initConnection(IrcConnection* connection);
     void cleanupConnection(IrcConnection* connection);
-
-    void initWindow(MainWindow* window);
 
     bool eventFilter(QObject* object, QEvent* event);
 

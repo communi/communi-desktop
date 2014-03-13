@@ -16,7 +16,6 @@
 #include "connectionplugin.h"
 #include "textdocumentplugin.h"
 #include "treewidgetplugin.h"
-#include "mainwindowplugin.h"
 
 Q_IMPORT_PLUGIN(CommanderPlugin)
 Q_IMPORT_PLUGIN(DockPlugin)
@@ -45,24 +44,6 @@ PluginLoader* PluginLoader::instance()
 {
     static PluginLoader loader;
     return &loader;
-}
-
-void PluginLoader::initWindow(MainWindow* window)
-{
-    foreach (QObject* instance, pluginInstances()) {
-        MainWindowPlugin* plugin = qobject_cast<MainWindowPlugin*>(instance);
-        if (plugin)
-            plugin->initWindow(window);
-    }
-}
-
-void PluginLoader::cleanupWindow(MainWindow* window)
-{
-    foreach (QObject* instance, pluginInstances()) {
-        MainWindowPlugin* plugin = qobject_cast<MainWindowPlugin*>(instance);
-        if (plugin)
-            plugin->cleanupWindow(window);
-    }
 }
 
 void PluginLoader::initBuffer(IrcBuffer* buffer)

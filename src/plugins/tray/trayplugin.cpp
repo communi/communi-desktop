@@ -14,10 +14,10 @@
 
 #include "trayplugin.h"
 #include "sharedtimer.h"
-#include "mainwindow.h"
 #include <IrcConnection>
 #include <IrcMessage>
 #include <IrcBuffer>
+#include <QWidget>
 #include <QEvent>
 
 inline void initResource() { Q_INIT_RESOURCE(tray); }
@@ -46,6 +46,7 @@ void TrayPlugin::cleanupConnection(IrcConnection* connection)
     updateIcon();
 }
 
+/*
 void TrayPlugin::initWindow(MainWindow* window)
 {
     d.window = window;
@@ -72,6 +73,7 @@ void TrayPlugin::initWindow(MainWindow* window)
                 this, SLOT(onActivated(QSystemTrayIcon::ActivationReason)));
     }
 }
+*/
 
 void TrayPlugin::updateIcon()
 {

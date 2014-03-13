@@ -14,8 +14,8 @@
 
 #include "dockplugin.h"
 #include "qtdocktile.h"
-#include "mainwindow.h"
 #include <IrcConnection>
+#include <QWidget>
 #include <QEvent>
 
 DockPlugin::DockPlugin(QObject* parent) : QObject(parent)
@@ -24,14 +24,15 @@ DockPlugin::DockPlugin(QObject* parent) : QObject(parent)
     d.window = 0;
 }
 
+/* TODO:
 void DockPlugin::initWindow(MainWindow* window)
 {
-    d.window = window;
     window->installEventFilter(this);
 
     if (QtDockTile::isAvailable())
         d.dock = new QtDockTile(window);
 }
+*/
 
 void DockPlugin::initConnection(IrcConnection* connection)
 {

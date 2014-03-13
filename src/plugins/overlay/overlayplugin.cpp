@@ -13,7 +13,6 @@
 */
 
 #include "overlayplugin.h"
-#include "mainwindow.h"
 #include "bufferview.h"
 #include "overlay.h"
 #include <IrcConnection>
@@ -23,7 +22,6 @@ inline void initResource() { Q_INIT_RESOURCE(overlay); }
 
 OverlayPlugin::OverlayPlugin(QObject* parent) : QObject(parent)
 {
-    d.window = 0;
     initResource();
 }
 
@@ -50,11 +48,6 @@ void OverlayPlugin::cleanupView(BufferView* view)
 {
     d.overlays.removeOne(view->findChild<Overlay*>());
     disconnect(view, SIGNAL(bufferChanged(IrcBuffer*)), this, SLOT(updateOverlays()));
-}
-
-void OverlayPlugin::initWindow(MainWindow* window)
-{
-    d.window = window;
 }
 
 void OverlayPlugin::reconnect()
@@ -88,7 +81,7 @@ void OverlayPlugin::updateOverlays()
                     overlay->setRefresh(!connection->isActive());
                     overlay->setVisible(!connection->isConnected());
                     // TODO: overlay->setDark(Application::settings()->value("ui.dark").toBool());
-                    if (!connection->isConnected() && d.window->currentView())
+                    if (!connection->isConnected() /*&& d.window->currentView()*/)
                         overlay->setFocus();
                 }
             }

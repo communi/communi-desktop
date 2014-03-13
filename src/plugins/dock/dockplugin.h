@@ -18,18 +18,16 @@
 #include <QObject>
 #include <QtPlugin>
 #include "connectionplugin.h"
-#include "mainwindowplugin.h"
 
 class QtDockTile;
 class IrcMessage;
 
-class DockPlugin : public QObject, public ConnectionPlugin, public MainWindowPlugin
+class DockPlugin : public QObject, public ConnectionPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(ConnectionPlugin MainWindowPlugin)
+    Q_INTERFACES(ConnectionPlugin)
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.MainWindowPlugin")
 #endif
 
 public:
@@ -37,8 +35,6 @@ public:
 
     void initConnection(IrcConnection* connection);
     void cleanupConnection(IrcConnection* connection);
-
-    void initWindow(MainWindow* window);
 
     bool eventFilter(QObject* object, QEvent* event);
 

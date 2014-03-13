@@ -18,18 +18,16 @@
 #include <QtPlugin>
 #include "connectionplugin.h"
 #include "bufferviewplugin.h"
-#include "mainwindowplugin.h"
 
 class Overlay;
 
-class OverlayPlugin : public QObject, public ConnectionPlugin, public BufferViewPlugin, public MainWindowPlugin
+class OverlayPlugin : public QObject, public ConnectionPlugin, public BufferViewPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(ConnectionPlugin BufferViewPlugin MainWindowPlugin)
+    Q_INTERFACES(ConnectionPlugin BufferViewPlugin)
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
     Q_PLUGIN_METADATA(IID "Communi.BufferViewPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.MainWindowPlugin")
 #endif
 
 public:
@@ -41,15 +39,12 @@ public:
     void initView(BufferView* view);
     void cleanupView(BufferView* view);
 
-    void initWindow(MainWindow* window);
-
 private slots:
     void reconnect();
     void updateOverlays();
 
 private:
     struct Private {
-        MainWindow* window;
         QList<Overlay*> overlays;
     } d;
 };

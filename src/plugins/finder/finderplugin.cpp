@@ -15,7 +15,6 @@
 #include "finderplugin.h"
 #include "browserfinder.h"
 #include "textbrowser.h"
-#include "mainwindow.h"
 #include "treewidget.h"
 #include "treefinder.h"
 #include "listfinder.h"
@@ -28,7 +27,6 @@
 FinderPlugin::FinderPlugin(QObject* parent) : QObject(parent)
 {
     d.tree = 0;
-    d.window = 0;
     d.nextShortcut = 0;
     d.prevShortcut = 0;
 }
@@ -56,11 +54,6 @@ void FinderPlugin::initTree(TreeWidget* tree)
     d.prevShortcut = new QShortcut(QKeySequence::FindPrevious, d.tree);
 }
 
-void FinderPlugin::initWindow(MainWindow* window)
-{
-    d.window = window;
-}
-
 void FinderPlugin::searchTree()
 {
     cancelListSearch();
@@ -74,30 +67,30 @@ void FinderPlugin::searchTree()
 
 void FinderPlugin::searchList()
 {
-    BufferView* view = d.window->currentView();
-    if (view && view->listView()->isVisible()) {
-        cancelTreeSearch();
-        cancelBrowserSearch();
-        Finder* finder = view->listView()->findChild<ListFinder*>();
-        if (!finder)
-            startSearch(new ListFinder(view->listView()));
-        else if (!finder->isAncestorOf(qApp->focusWidget()))
-            finder->reFind();
-    }
+//    BufferView* view = d.window->currentView();
+//    if (view && view->listView()->isVisible()) {
+//        cancelTreeSearch();
+//        cancelBrowserSearch();
+//        Finder* finder = view->listView()->findChild<ListFinder*>();
+//        if (!finder)
+//            startSearch(new ListFinder(view->listView()));
+//        else if (!finder->isAncestorOf(qApp->focusWidget()))
+//            finder->reFind();
+//    }
 }
 
 void FinderPlugin::searchBrowser()
 {
-    BufferView* view = d.window->currentView();
-    if (view && view->isVisible()) {
-        cancelListSearch();
-        cancelTreeSearch();
-        Finder* finder = view->textBrowser()->findChild<BrowserFinder*>();
-        if (!finder)
-            startSearch(new BrowserFinder(view->textBrowser()));
-        else if (!finder->isAncestorOf(qApp->focusWidget()))
-            finder->reFind();
-    }
+//    BufferView* view = d.window->currentView();
+//    if (view && view->isVisible()) {
+//        cancelListSearch();
+//        cancelTreeSearch();
+//        Finder* finder = view->textBrowser()->findChild<BrowserFinder*>();
+//        if (!finder)
+//            startSearch(new BrowserFinder(view->textBrowser()));
+//        else if (!finder->isAncestorOf(qApp->focusWidget()))
+//            finder->reFind();
+//    }
 }
 
 void FinderPlugin::startSearch(Finder* finder)
@@ -113,34 +106,34 @@ void FinderPlugin::startSearch(Finder* finder)
 
 void FinderPlugin::cancelTreeSearch()
 {
-    Finder* finder = d.tree->findChild<TreeFinder*>();
-    if (finder)
-        finder->animateHide();
-    BufferView* view = d.window->currentView();
-    if (view)
-        view->textInput()->setFocus();
+//    Finder* finder = d.tree->findChild<TreeFinder*>();
+//    if (finder)
+//        finder->animateHide();
+//    BufferView* view = d.window->currentView();
+//    if (view)
+//        view->textInput()->setFocus();
 }
 
 void FinderPlugin::cancelListSearch()
 {
-    BufferView* view = d.window->currentView();
-    if (view) {
-        Finder* finder = view->listView()->findChild<ListFinder*>();
-        if (finder)
-            finder->animateHide();
-        view->textInput()->setFocus();
-    }
+//    BufferView* view = d.window->currentView();
+//    if (view) {
+//        Finder* finder = view->listView()->findChild<ListFinder*>();
+//        if (finder)
+//            finder->animateHide();
+//        view->textInput()->setFocus();
+//    }
 }
 
 void FinderPlugin::cancelBrowserSearch()
 {
-    BufferView* view = d.window->currentView();
-    if (view) {
-        Finder* finder = view->textBrowser()->findChild<BrowserFinder*>();
-        if (finder)
-            finder->animateHide();
-        view->textInput()->setFocus();
-    }
+//    BufferView* view = d.window->currentView();
+//    if (view) {
+//        Finder* finder = view->textBrowser()->findChild<BrowserFinder*>();
+//        if (finder)
+//            finder->animateHide();
+//        view->textInput()->setFocus();
+//    }
 }
 
 void FinderPlugin::finderDestroyed(Finder* input)

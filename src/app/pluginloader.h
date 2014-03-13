@@ -13,7 +13,6 @@
 #include <QObject>
 
 class IrcBuffer;
-class MainWindow;
 class TreeWidget;
 class BufferView;
 class TextDocument;
@@ -27,9 +26,6 @@ public:
     static PluginLoader* instance();
 
 public slots:
-    void initWindow(MainWindow* window);
-    void cleanupWindow(MainWindow* window);
-
     void initBuffer(IrcBuffer* buffer);
     void cleanupBuffer(IrcBuffer* buffer);
 

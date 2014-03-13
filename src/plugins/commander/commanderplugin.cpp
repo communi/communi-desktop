@@ -13,7 +13,6 @@
 */
 
 #include "commanderplugin.h"
-#include "mainwindow.h"
 #include "treewidget.h"
 #include "bufferview.h"
 #include "textinput.h"
@@ -29,7 +28,6 @@
 CommanderPlugin::CommanderPlugin(QObject* parent) : QObject(parent)
 {
     d.tree = 0;
-    d.window = 0;
 }
 
 void CommanderPlugin::initView(BufferView* view)
@@ -45,11 +43,6 @@ void CommanderPlugin::initTree(TreeWidget* tree)
 {
     d.tree = tree;
     connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
-}
-
-void CommanderPlugin::initWindow(MainWindow* window)
-{
-    d.window = window;
 }
 
 void CommanderPlugin::initConnection(IrcConnection* connection)
@@ -71,7 +64,7 @@ bool CommanderPlugin::commandFilter(IrcCommand* command)
         const QString cmd = command->parameters().value(0);
         const QStringList params = command->parameters().mid(1);
         if (cmd == "CLEAR") {
-            d.window->currentView()->textBrowser()->clear();
+            // TODO: d.window->currentView()->textBrowser()->clear();
             return true;
         } else if (cmd == "CLOSE") {
             IrcBuffer* buffer = d.tree->currentBuffer();

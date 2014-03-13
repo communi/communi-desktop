@@ -16,20 +16,20 @@
 #define IMPORTERPLUGIN_H
 
 #include <QtPlugin>
-#include "mainwindowplugin.h"
+#include "connectionplugin.h"
 
-class ImporterPlugin : public QObject, public MainWindowPlugin
+class ImporterPlugin : public QObject, public ConnectionPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(MainWindowPlugin)
+    Q_INTERFACES(ConnectionPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "Communi.MainWindowPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
 #endif
 
 public:
     ImporterPlugin(QObject* parent = 0);
 
-    void initWindow(MainWindow* window);
+    //TODO: void initWindow(MainWindow* window);
 };
 
 #endif // IMPORTERPLUGIN_H

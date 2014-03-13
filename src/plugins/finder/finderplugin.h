@@ -20,24 +20,21 @@
 #include <QtPlugin>
 #include <QShortcut>
 #include "treewidgetplugin.h"
-#include "mainwindowplugin.h"
 
 class Finder;
 
-class FinderPlugin : public QObject, public TreeWidgetPlugin, public MainWindowPlugin
+class FinderPlugin : public QObject, public TreeWidgetPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreeWidgetPlugin MainWindowPlugin)
+    Q_INTERFACES(TreeWidgetPlugin)
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.TreeWidgetPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.MainWindowPlugin")
 #endif
 
 public:
     explicit FinderPlugin(QObject* parent = 0);
 
     void initTree(TreeWidget* tree);
-    void initWindow(MainWindow* window);
 
 private slots:
     void searchTree();
@@ -52,7 +49,6 @@ private slots:
 private:
     struct Private {
         TreeWidget* tree;
-        MainWindow* window;
         QSet<Finder*> finders;
         QShortcut* nextShortcut;
         QShortcut* prevShortcut;

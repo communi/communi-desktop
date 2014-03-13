@@ -14,7 +14,6 @@
 
 #include "importerplugin.h"
 #include "connectioninfo.h"
-#include "mainwindow.h"
 #include <QApplication>
 #include <QSettings>
 #include <QDebug>
@@ -25,6 +24,7 @@ ImporterPlugin::ImporterPlugin(QObject* parent) : QObject(parent)
     qRegisterMetaTypeStreamOperators<ConnectionInfos>("ConnectionInfos");
 }
 
+/*
 void ImporterPlugin::initWindow(MainWindow* window)
 {
     QSettings settings;
@@ -35,6 +35,7 @@ void ImporterPlugin::initWindow(MainWindow* window)
         settings.setValue("imported", true);
     }
 }
+*/
 
 #if QT_VERSION < 0x050000
 Q_EXPORT_STATIC_PLUGIN(ImporterPlugin)

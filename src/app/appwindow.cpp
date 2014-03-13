@@ -108,8 +108,6 @@ AppWindow::AppWindow(QWidget* parent) : MainWindow(parent)
     if (settings.contains("geometry"))
         restoreGeometry(settings.value("geometry").toByteArray());
 
-    PluginLoader::instance()->initWindow(this);
-
     foreach (const QVariant& v, settings.value("connections").toList()) {
         QVariantMap state = v.toMap();
         IrcConnection* connection = new IrcConnection(this);
@@ -146,8 +144,6 @@ AppWindow::~AppWindow()
         states += state;
     }
     settings.setValue("connections", states);
-
-    PluginLoader::instance()->cleanupWindow(this);
 }
 
 QSize AppWindow::sizeHint() const
