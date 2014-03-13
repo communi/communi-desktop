@@ -14,6 +14,8 @@
 
 #include "dockplugin.h"
 #include "qtdocktile.h"
+#include "bufferview.h"
+#include "textdocument.h"
 #include <IrcConnection>
 #include <QWidget>
 #include <QEvent>
@@ -24,45 +26,38 @@ DockPlugin::DockPlugin(QObject* parent) : QObject(parent)
     d.window = 0;
 }
 
-/* TODO:
-void DockPlugin::initWindow(MainWindow* window)
+void DockPlugin::initView(BufferView* view)
 {
-    window->installEventFilter(this);
-
-    if (QtDockTile::isAvailable())
-        d.dock = new QtDockTile(window);
-}
-*/
-
-void DockPlugin::initConnection(IrcConnection* connection)
-{
-    if (d.dock)
-        connect(connection, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
-}
-
-void DockPlugin::cleanupConnection(IrcConnection* connection)
-{
-    if (d.dock)
-        disconnect(connection, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
-}
-
-void DockPlugin::onMessageReceived(IrcMessage* message)
-{
-    if (d.dock && !d.window->isActiveWindow()) {
-        if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
-            if (message->property("private").toBool() ||
-                message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive)) {
-                d.dock->setBadge(d.dock->badge() + 1);
-            }
-        }
+    if (!d.window && QtDockTile::isAvailable()) {
+        d.window = view->window();
+        d.window->installEventFilter(this);
+        d.dock = new QtDockTile(d.window);
     }
+}
+
+void DockPlugin::initDocument(TextDocument* document)
+{
+    if (d.dock && !document->isClone())
+        connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
+}
+
+void DockPlugin::cleanupDocument(TextDocument* document)
+{
+    if (d.dock && !document->isClone())
+        disconnect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
+}
+
+void DockPlugin::onMessageHighlighted(IrcMessage* message)
+{
+    if (d.dock && !d.window->isActiveWindow())
+        d.dock->setBadge(d.dock->badge() + 1);
 }
 
 bool DockPlugin::eventFilter(QObject* object, QEvent* event)
 {
     Q_UNUSED(object);
     if (event->type() == QEvent::ActivationChange) {
-        if (d.dock && d.window->isActiveWindow())
+        if (d.window->isActiveWindow())
             d.dock->setBadge(0);
     }
     return false;
