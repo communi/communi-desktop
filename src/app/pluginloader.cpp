@@ -10,6 +10,7 @@
 #include "pluginloader.h"
 
 #include <QtPlugin>
+#include "bufferview.h"
 #include "bufferplugin.h"
 #include "connectionplugin.h"
 #include "documentplugin.h"
@@ -35,6 +36,7 @@ static QObjectList pluginInstances()
 
 PluginLoader::PluginLoader(QObject* parent) : QObject(parent)
 {
+    qRegisterMetaType<BufferView*>();
 }
 
 PluginLoader* PluginLoader::instance()

@@ -65,4 +65,6 @@ private:
     } d;
 };
 
+Q_DECLARE_METATYPE(BufferView*)
+
 #endif // BUFFERVIEW_H
