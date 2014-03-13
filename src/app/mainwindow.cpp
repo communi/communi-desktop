@@ -7,7 +7,7 @@
  * completely or partially.
  */
 
-#include "appwindow.h"
+#include "mainwindow.h"
 #include "pluginloader.h"
 #include "settingspage.h"
 #include "connectpage.h"
@@ -27,7 +27,7 @@
 #include <QMenu>
 #include <QDir>
 
-AppWindow::AppWindow(QWidget* parent) : QMainWindow(parent)
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
     d.view = 0;
     d.editedConnection = 0;
@@ -131,7 +131,7 @@ AppWindow::AppWindow(QWidget* parent) : QMainWindow(parent)
     d.chatPage->restoreState(settings.value("state").toByteArray());
 }
 
-AppWindow::~AppWindow()
+MainWindow::~MainWindow()
 {
     QSettings settings;
     settings.setValue("geometry", saveGeometry());
@@ -149,12 +149,12 @@ AppWindow::~AppWindow()
     settings.setValue("connections", states);
 }
 
-BufferView* AppWindow::currentView() const
+BufferView* MainWindow::currentView() const
 {
     return d.view;
 }
 
-void AppWindow::setCurrentView(BufferView* view)
+void MainWindow::setCurrentView(BufferView* view)
 {
     if (d.view != view) {
         d.view = view;
@@ -162,12 +162,12 @@ void AppWindow::setCurrentView(BufferView* view)
     }
 }
 
-QList<IrcConnection*> AppWindow::connections() const
+QList<IrcConnection*> MainWindow::connections() const
 {
     return d.connections;
 }
 
-void AppWindow::addConnection(IrcConnection* connection)
+void MainWindow::addConnection(IrcConnection* connection)
 {
     QVariantMap ud = connection->userData();
     if (!ud.contains("uuid")) {
@@ -180,18 +180,18 @@ void AppWindow::addConnection(IrcConnection* connection)
     emit connectionAdded(connection);
 }
 
-void AppWindow::removeConnection(IrcConnection* connection)
+void MainWindow::removeConnection(IrcConnection* connection)
 {
     if (d.connections.removeOne(connection))
         emit connectionRemoved(connection);
 }
 
-QSize AppWindow::sizeHint() const
+QSize MainWindow::sizeHint() const
 {
     return QSize(800, 600);
 }
 
-void AppWindow::closeEvent(QCloseEvent* event)
+void MainWindow::closeEvent(QCloseEvent* event)
 {
     if (isVisible()) {
         d.chatPage->cleanup();
@@ -207,13 +207,13 @@ void AppWindow::closeEvent(QCloseEvent* event)
     }
 }
 
-void AppWindow::doConnect()
+void MainWindow::doConnect()
 {
     d.connectPage->buttonBox()->button(QDialogButtonBox::Cancel)->setEnabled(!connections().isEmpty());
     d.stack->setCurrentWidget(d.connectPage);
 }
 
-void AppWindow::onConnectAccepted()
+void MainWindow::onConnectAccepted()
 {
     IrcConnection* connection = d.editedConnection;
     if (!connection)
@@ -232,19 +232,19 @@ void AppWindow::onConnectAccepted()
     d.stack->setCurrentWidget(d.chatPage);
 }
 
-void AppWindow::onSettingsAccepted()
+void MainWindow::onSettingsAccepted()
 {
     d.chatPage->setTheme(d.settingsPage->theme());
     d.stack->setCurrentWidget(d.chatPage);
 }
 
-void AppWindow::onRejected()
+void MainWindow::onRejected()
 {
     d.editedConnection = 0;
     d.stack->setCurrentWidget(d.chatPage);
 }
 
-void AppWindow::updateTitle()
+void MainWindow::updateTitle()
 {
     IrcBuffer* buffer = d.chatPage->currentBuffer();
     if (!buffer || d.stack->currentWidget() == d.connectPage)
@@ -253,12 +253,12 @@ void AppWindow::updateTitle()
         setWindowTitle(tr("%1 - %2").arg(buffer->title(), QCoreApplication::applicationName()));
 }
 
-void AppWindow::showSettings()
+void MainWindow::showSettings()
 {
     d.stack->setCurrentWidget(d.settingsPage);
 }
 
-void AppWindow::editConnection(IrcConnection* connection)
+void MainWindow::editConnection(IrcConnection* connection)
 {
     d.connectPage->setHost(connection->host());
     d.connectPage->setPort(connection->port());
@@ -273,14 +273,14 @@ void AppWindow::editConnection(IrcConnection* connection)
     doConnect();
 }
 
-void AppWindow::cleanupConnection(IrcConnection* connection)
+void MainWindow::cleanupConnection(IrcConnection* connection)
 {
     Q_UNUSED(connection);
     if (connections().isEmpty())
         doConnect();
 }
 
-void AppWindow::restoreConnection(IrcConnection* connection)
+void MainWindow::restoreConnection(IrcConnection* connection)
 {
     if (!connection && !d.restoredConnections.isEmpty())
         connection = d.restoredConnections.dequeue();
@@ -295,7 +295,7 @@ void AppWindow::restoreConnection(IrcConnection* connection)
     }
 }
 
-void AppWindow::delayedRestoreConnection()
+void MainWindow::delayedRestoreConnection()
 {
     IrcConnection* connection = qobject_cast<IrcConnection*>(sender());
     if (connection) {

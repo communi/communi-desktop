@@ -7,8 +7,8 @@
  * completely or partially.
  */
 
-#ifndef APPWINDOW_H
-#define APPWINDOW_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
 #include <QIcon>
 #include <QQueue>
@@ -24,13 +24,13 @@ class ConnectPage;
 class SettingsPage;
 class IrcConnection;
 
-class AppWindow : public QMainWindow
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    AppWindow(QWidget* parent = 0);
-    ~AppWindow();
+    MainWindow(QWidget* parent = 0);
+    ~MainWindow();
 
     BufferView* currentView() const;
     QList<IrcConnection*> connections() const;
@@ -76,4 +76,4 @@ private:
     } d;
 };
 
-#endif // APPWINDOW_H
+#endif // MAINWINDOW_H

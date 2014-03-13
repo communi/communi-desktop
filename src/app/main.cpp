@@ -12,7 +12,7 @@
 * GNU General Public License for more details.
 */
 
-#include "appwindow.h"
+#include "mainwindow.h"
 #include <QApplication>
 #include <QNetworkProxy>
 #include <QSettings>
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
     app.setOrganizationName("Communi");
     app.setApplicationVersion(Irc::version());
     app.setOrganizationDomain("communi.github.com");
-    app.setProperty("description", AppWindow::tr("%1 %2 - http://%3").arg(app.applicationName())
+    app.setProperty("description", MainWindow::tr("%1 %2 - http://%3").arg(app.applicationName())
                                                                      .arg(app.applicationVersion())
                                                                      .arg(app.organizationDomain()));
 
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
         proxy = QUrl(qgetenv("http_proxy"));
     setApplicationProxy(proxy);
 
-    AppWindow window;
+    MainWindow window;
     window.show();
     return app.exec();
 }
