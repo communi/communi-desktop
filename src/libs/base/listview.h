@@ -16,50 +16,46 @@
 #define LISTVIEW_H
 
 #include <QListView>
-#include <QPointer>
 
 class IrcChannel;
-class IrcConnection;
-class IrcMessage;
-class IrcCommand;
 class IrcUserModel;
 
 class ListView : public QListView
 {
     Q_OBJECT
+    Q_PROPERTY(IrcChannel* channel READ channel WRITE setChannel NOTIFY channelChanged)
 
 public:
-    ListView(QWidget* parent = 0);
-    ~ListView();
-
-    QSize sizeHint() const;
-
-    IrcConnection* connection() const;
-    void setConnection(IrcConnection* connection);
+    explicit ListView(QWidget* parent = 0);
 
     IrcChannel* channel() const;
+
+public slots:
     void setChannel(IrcChannel* channel);
 
-    IrcUserModel* userModel() const;
-    bool hasUser(const QString& user) const;
-
 signals:
+    void channelChanged(IrcChannel* channel);
     void queried(const QString& user);
-    void doubleClicked(const QString& user);
-    void commandRequested(IrcCommand* command);
 
+public:
+    QSize sizeHint() const; // TODO: protected
 protected:
     void contextMenuEvent(QContextMenuEvent* event);
-    void mousePressEvent(QMouseEvent* event);
 
 private slots:
     void onDoubleClicked(const QModelIndex& index);
 
+    void onWhoisTriggered();
+    void onQueryTriggered();
+    void onModeTriggered();
+    void onKickTriggered();
+    void onBanTriggered();
+
 private:
+    QMenu* createContextMenu(const QModelIndex& index);
+
     struct Private {
-        QPointer<IrcChannel> channel;
-        QPointer<IrcConnection> connection;
-        QPointer<IrcUserModel> userModel;
+        IrcUserModel* model;
     } d;
 };
 

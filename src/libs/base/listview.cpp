@@ -13,94 +13,145 @@
 */
 
 #include "listview.h"
-#include "userlistmenu.h"
-#include "styledscrollbar.h"
-#include "treedelegate.h"
-#include <IrcChannel>
-#include <IrcConnection>
-#include <IrcUserModel>
-#include <QSortFilterProxyModel>
-#include <QItemSelectionModel>
+#include "treedelegate.h" // TODO: cleanup
 #include <QContextMenuEvent>
+#include <IrcUserModel>
+#include <QFontMetrics>
 #include <QScrollBar>
+#include <IrcCommand>
+#include <IrcChannel>
 #include <QAction>
+#include <QMenu>
+#include <Irc>
 
 ListView::ListView(QWidget* parent) : QListView(parent)
 {
-    setItemDelegate(new TreeDelegate(this));
-    connect(this, SIGNAL(doubleClicked(QModelIndex)), SLOT(onDoubleClicked(QModelIndex)));
+    setItemDelegate(new TreeDelegate(this)); // TODO: cleanup
 
-    setVerticalScrollBar(new StyledScrollBar(this));
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-}
+    setFocusPolicy(Qt::NoFocus);
 
-ListView::~ListView()
-{
-}
+    d.model = new IrcUserModel(this);
+    d.model->setSortMethod(Irc::SortByTitle);
+    setModel(d.model);
 
-QSize ListView::sizeHint() const
-{
-    return QSize(16 * fontMetrics().width('#') + verticalScrollBar()->sizeHint().width(), QListView::sizeHint().height());
-}
-
-IrcConnection* ListView::connection() const
-{
-    return d.connection;
-}
-
-void ListView::setConnection(IrcConnection* connection)
-{
-    d.connection = connection;
+    connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onDoubleClicked(QModelIndex)));
 }
 
 IrcChannel* ListView::channel() const
 {
-    return d.channel;
+    return d.model->channel();
 }
 
 void ListView::setChannel(IrcChannel* channel)
 {
-    if (d.channel != channel) {
-        d.channel = channel;
-        if (!d.userModel) {
-            d.userModel = new IrcUserModel(channel);
-            d.userModel->setSortMethod(Irc::SortByTitle);
-            setModel(d.userModel);
-        }
-        d.userModel->setChannel(channel);
+    if (d.model->channel() != channel) {
+        d.model->setChannel(channel);
+        emit channelChanged(channel);
     }
 }
 
-IrcUserModel* ListView::userModel() const
+QSize ListView::sizeHint() const
 {
-    return d.userModel;
-}
-
-bool ListView::hasUser(const QString& user) const
-{
-    if (d.userModel)
-        return d.userModel->contains(user);
-    return false;
+    const int w = 16 * fontMetrics().width('#') + verticalScrollBar()->sizeHint().width();
+    return QSize(w, QListView::sizeHint().height());
 }
 
 void ListView::contextMenuEvent(QContextMenuEvent* event)
 {
     QModelIndex index = indexAt(event->pos());
     if (index.isValid()) {
-        UserListMenu menu(this);
-        menu.exec(event->globalPos());
+        QMenu* menu = createContextMenu(index);
+        menu->exec(event->globalPos());
+        delete menu;
     }
-}
-
-void ListView::mousePressEvent(QMouseEvent* event)
-{
-    QListView::mousePressEvent(event);
-    if (!indexAt(event->pos()).isValid())
-        selectionModel()->clear();
+    event->accept();
 }
 
 void ListView::onDoubleClicked(const QModelIndex& index)
 {
     if (index.isValid())
-        emit doubleClicked(index.data(Irc::NameRole).toString());
+        emit queried(index.data(Irc::NameRole).toString());
+}
+
+void ListView::onWhoisTriggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action) {
+        IrcCommand* command = IrcCommand::createWhois(action->data().toString());
+        channel()->sendCommand(command);
+    }
+}
+
+void ListView::onQueryTriggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action)
+        emit queried(action->data().toString());
+}
+
+void ListView::onModeTriggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action) {
+        QStringList params = action->data().toStringList();
+        IrcCommand* command = IrcCommand::createMode(channel()->title(), params.at(1), params.at(0));
+        channel()->sendCommand(command);
+    }
+}
+
+void ListView::onKickTriggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action) {
+        IrcCommand* command = IrcCommand::createKick(channel()->title(), action->data().toString());
+        channel()->sendCommand(command);
+    }
+}
+
+void ListView::onBanTriggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action) {
+        IrcCommand* command = IrcCommand::createMode(channel()->title(), "+b", action->data().toString() + "!*@*");
+        channel()->sendCommand(command);
+    }
+}
+
+QMenu* ListView::createContextMenu(const QModelIndex& index)
+{
+    const QString name = index.data(Irc::NameRole).toString();
+    const QString prefix = index.data(Irc::PrefixRole).toString();
+
+    QMenu* menu = new QMenu(this);
+
+    QAction* whoisAction = menu->addAction(tr("Whois"), this, SLOT(onWhoisTriggered()));
+    QAction* queryAction = menu->addAction(tr("Query"), this, SLOT(onQueryTriggered()));
+    menu->addSeparator();
+    QAction* opAction = menu->addAction(tr("Op"), this, SLOT(onModeTriggered()));
+    QAction* voiceAction = menu->addAction(tr("Voice"), this, SLOT(onModeTriggered()));
+    menu->addSeparator();
+    QAction* kickAction = menu->addAction(tr("Kick"), this, SLOT(onKickTriggered()));
+    QAction* banAction = menu->addAction(tr("Ban"), this, SLOT(onBanTriggered()));
+
+    whoisAction->setData(name);
+    queryAction->setData(name);
+    kickAction->setData(name);
+    banAction->setData(name);
+
+    if (prefix.contains("@")) {
+        opAction->setText(tr("Deop"));
+        opAction->setData(QStringList() << name << "-o");
+    } else {
+        opAction->setText(tr("Op"));
+        opAction->setData(QStringList() << name << "+o");
+    }
+
+    if (prefix.contains("+")) {
+        voiceAction->setText(tr("Devoice"));
+        voiceAction->setData(QStringList() << name << "-v");
+    } else {
+        voiceAction->setText(tr("Voice"));
+        voiceAction->setData(QStringList() << name << "+v");
+    }
+    return menu;
 }

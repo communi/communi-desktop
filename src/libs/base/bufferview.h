@@ -27,6 +27,7 @@
 class SyntaxHighlighter;
 class MessageStackView;
 class MessageFormatter;
+class IrcConnection;
 class CommandParser;
 class IrcCompleter;
 class IrcMessage;

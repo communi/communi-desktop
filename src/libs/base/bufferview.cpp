@@ -79,10 +79,7 @@ BufferView::BufferView(ViewInfo::Type type, IrcConnection* connection, MessageSt
     d.topicLabel->setVisible(type == ViewInfo::Channel);
     d.listView->setVisible(type == ViewInfo::Channel);
     if (type == ViewInfo::Channel) {
-        d.listView->setConnection(connection);
         connect(d.listView, SIGNAL(queried(QString)), this, SIGNAL(queried(QString)));
-        connect(d.listView, SIGNAL(doubleClicked(QString)), this, SIGNAL(queried(QString)));
-        connect(d.listView, SIGNAL(commandRequested(IrcCommand*)), d.connection, SLOT(sendCommand(IrcCommand*)));
         connect(d.topicLabel, SIGNAL(edited(QString)), this, SLOT(onTopicEdited(QString)));
     } else if (type == ViewInfo::Server) {
         connect(d.connection, SIGNAL(connected()), this, SLOT(onConnected()));
@@ -586,7 +583,7 @@ bool BufferView::hasUser(const QString& user) const
 {
     return (!d.connection->nickName().compare(user, Qt::CaseInsensitive) && d.viewType != ViewInfo::Query) ||
            (d.viewType == ViewInfo::Query && !d.receiver.compare(user, Qt::CaseInsensitive)) ||
-           (d.viewType == ViewInfo::Channel && d.listView->hasUser(user));
+           (d.viewType == ViewInfo::Channel /*&& d.listView->hasUser(user)*/);
 }
 
 void BufferView::updateLag(qint64 lag)

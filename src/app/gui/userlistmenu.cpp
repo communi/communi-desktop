@@ -67,7 +67,7 @@ void UserListMenu::onWhoisTriggered()
         foreach (const QModelIndex& index, selection) {
             const QString name = index.data(Irc::NameRole).toString();
             IrcCommand* command = IrcCommand::createWhois(name);
-            d.view->connection()->sendCommand(command);
+            d.view->channel()->sendCommand(command);
         }
     }
 }
@@ -92,7 +92,7 @@ void UserListMenu::onModeTriggered()
         foreach (const QModelIndex& index, selection) {
             const QString name = index.data(Irc::NameRole).toString();
             IrcCommand* command = IrcCommand::createMode(d.view->channel()->title(), action->data().toString(), name);
-            d.view->connection()->sendCommand(command);
+            d.view->channel()->sendCommand(command);
         }
     }
 }
@@ -105,7 +105,7 @@ void UserListMenu::onKickTriggered()
         foreach (const QModelIndex& index, selection) {
             const QString name = index.data(Irc::NameRole).toString();
             IrcCommand* command = IrcCommand::createKick(d.view->channel()->title(), name);
-            d.view->connection()->sendCommand(command);
+            d.view->channel()->sendCommand(command);
         }
     }
 }
@@ -118,7 +118,7 @@ void UserListMenu::onBanTriggered()
         foreach (const QModelIndex& index, selection) {
             const QString name = index.data(Irc::NameRole).toString();
             IrcCommand* command = IrcCommand::createMode(d.view->channel()->title(), "+b", name + "!*@*");
-            d.view->connection()->sendCommand(command);
+            d.view->channel()->sendCommand(command);
         }
     }
 }
