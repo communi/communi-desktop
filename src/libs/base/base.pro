@@ -10,6 +10,13 @@ DESTDIR = $$BUILD_ROOT/lib
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
+HEADERS += $$PWD/plugins/bufferplugin.h
+HEADERS += $$PWD/plugins/bufferviewplugin.h
+HEADERS += $$PWD/plugins/connectionplugin.h
+HEADERS += $$PWD/plugins/mainwindowplugin.h
+HEADERS += $$PWD/plugins/textdocumentplugin.h
+HEADERS += $$PWD/plugins/treewidgetplugin.h
+
 HEADERS += $$PWD/bufferview.h
 HEADERS += $$PWD/listview.h
 HEADERS += $$PWD/mainwindow.h
