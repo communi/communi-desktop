@@ -15,7 +15,7 @@
 #include "listview.h"
 #include "userlistmenu.h"
 #include "styledscrollbar.h"
-#include "itemdelegate.h"
+#include "treedelegate.h"
 #include <IrcChannel>
 #include <IrcConnection>
 #include <IrcUserModel>
@@ -27,7 +27,7 @@
 
 ListView::ListView(QWidget* parent) : QListView(parent)
 {
-    setItemDelegate(new ItemDelegate(this));
+    setItemDelegate(new TreeDelegate(this));
     connect(this, SIGNAL(doubleClicked(QModelIndex)), SLOT(onDoubleClicked(QModelIndex)));
 
     setVerticalScrollBar(new StyledScrollBar(this));

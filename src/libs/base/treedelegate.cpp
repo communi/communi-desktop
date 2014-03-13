@@ -12,7 +12,7 @@
 * GNU General Public License for more details.
 */
 
-#include "itemdelegate.h"
+#include "treedelegate.h"
 #include "treerole.h"
 #include <QStyleOptionViewItem>
 #include <QApplication>
@@ -20,32 +20,32 @@
 #include <QPalette>
 #include <QPainter>
 
-ItemDelegate::ItemDelegate(QObject* parent) : QStyledItemDelegate(parent)
+TreeDelegate::TreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
 {
     d.rootIsDecorated = false;
 }
 
-bool ItemDelegate::isDark() const
+bool TreeDelegate::isDark() const
 {
     return d.dark;
 }
 
-void ItemDelegate::setDark(bool dark)
+void TreeDelegate::setDark(bool dark)
 {
     d.dark = dark;
 }
 
-bool ItemDelegate::rootIsDecorated() const
+bool TreeDelegate::rootIsDecorated() const
 {
     return d.rootIsDecorated;
 }
 
-void ItemDelegate::setRootIsDecorated(bool decorated)
+void TreeDelegate::setRootIsDecorated(bool decorated)
 {
     d.rootIsDecorated = decorated;
 }
 
-QSize ItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+QSize TreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     QSize size = QStyledItemDelegate::sizeHint(option, index);
     static int height = 0;
@@ -58,7 +58,7 @@ QSize ItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelInd
     return size;
 }
 
-void ItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     if (d.rootIsDecorated && !index.parent().isValid()) {
         const bool selected = option.state & QStyle::State_Selected;

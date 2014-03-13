@@ -18,7 +18,7 @@
 #include "treemenu.h"
 #include "styledscrollbar.h"
 #include "settingsmodel.h"
-#include "itemdelegate.h"
+#include "treedelegate.h"
 #include "application.h"
 #include "sharedtimer.h"
 #include "connection.h"
@@ -48,7 +48,7 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     setVerticalScrollBar(new StyledScrollBar(this));
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    ItemDelegate* delegate = new ItemDelegate(this);
+    TreeDelegate* delegate = new TreeDelegate(this);
     delegate->setRootIsDecorated(true);
     setItemDelegate(delegate);
 
@@ -420,7 +420,7 @@ void TreeWidget::applySettings()
     d.colors[Badge] = dark ? QColor("#444444") : palette().color(QPalette::AlternateBase).darker(125);
     d.colors[BadgeHighlight] = dark ? QColor("#ff4040").darker(125) : QColor("#ff4040").lighter(125);
 
-    static_cast<ItemDelegate*>(itemDelegate())->setDark(dark);
+    static_cast<TreeDelegate*>(itemDelegate())->setDark(dark);
 
     d.nextShortcut->setKey(QKeySequence(settings->value("shortcuts.nextView").toString()));
     d.prevShortcut->setKey(QKeySequence(settings->value("shortcuts.previousView").toString()));

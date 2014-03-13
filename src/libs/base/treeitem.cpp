@@ -15,7 +15,6 @@
 #include "treeitem.h"
 #include "treerole.h"
 #include "treewidget.h"
-#include "itemdelegate.h"
 #include <IrcBuffer>
 
 TreeItem::TreeItem(IrcBuffer* buffer, QTreeWidget* parent) : QTreeWidgetItem(parent)

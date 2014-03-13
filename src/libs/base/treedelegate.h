@@ -12,19 +12,19 @@
 * GNU General Public License for more details.
 */
 
-#ifndef ITEMDELEGATE_H
-#define ITEMDELEGATE_H
+#ifndef TREEDELEGATE_H
+#define TREEDELEGATE_H
 
 #include <QStyledItemDelegate>
 
-class ItemDelegate : public QStyledItemDelegate
+class TreeDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
     Q_PROPERTY(bool dark READ isDark WRITE setDark)
     Q_PROPERTY(bool rootIsDecorated READ rootIsDecorated WRITE setRootIsDecorated)
 
 public:
-    explicit ItemDelegate(QObject* parent = 0);
+    explicit TreeDelegate(QObject* parent = 0);
 
     bool isDark() const;
     void setDark(bool dark);
@@ -42,4 +42,4 @@ private:
     } d;
 };
 
-#endif // ITEMDELEGATE_H
+#endif // TREEDELEGATE_H
