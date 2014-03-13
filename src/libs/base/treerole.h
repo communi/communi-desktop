@@ -17,6 +17,12 @@
 
 #include <Qt>
 
-enum TreeRole { BadgeRole = Qt::UserRole, BadgeColorRole, HighlightRole };
+namespace TreeRole {
+    enum {
+        BadgeRole = Qt::UserRole,
+        BadgeColorRole,
+        HighlightRole
+    };
+}
 
 #endif // TREEROLE_H

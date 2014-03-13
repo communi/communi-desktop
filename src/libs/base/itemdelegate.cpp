@@ -106,7 +106,7 @@ void ItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 
             painter->save();
             painter->setPen(Qt::NoPen);
-            painter->setBrush(qvariant_cast<QBrush>(index.data(BadgeColorRole)));
+            painter->setBrush(qvariant_cast<QBrush>(index.data(TreeRole::BadgeColorRole)));
             painter->setRenderHint(QPainter::Antialiasing);
             painter->drawRoundedRect(rect, 40, 80, Qt::RelativeSize);
 
