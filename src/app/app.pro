@@ -48,7 +48,21 @@ SOURCES += $$PWD/splitview.cpp
 SOURCES += $$PWD/themeinfo.cpp
 SOURCES += $$PWD/themeloader.cpp
 
-include(plugins.pri)
+STATIC_PLUGINS += commander
+STATIC_PLUGINS += dock
+STATIC_PLUGINS += ignore
+STATIC_PLUGINS += importer
+STATIC_PLUGINS += monitor
+STATIC_PLUGINS += overlay
+STATIC_PLUGINS += sound
+STATIC_PLUGINS += tray
+STATIC_PLUGINS += verifier
+STATIC_PLUGINS += znc
+
+for(PLUGIN, STATIC_PLUGINS) {
+    communiAddStaticPlugin(PLUGIN)
+}
+
 include(finder/finder.pri)
 include(../../resources/resources.pri)
 include(../../themes/themes.pri)

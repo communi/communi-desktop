@@ -32,8 +32,18 @@ defineTest(communiAddLib) {
     LIBNAME = $$1
     isEmpty(LIBNAME):error(LIBNAME must be set)
     LIBS *= -L$$BUILD_ROOT/lib
-    LIBS += -l$$LIBNAME
-    PRE_TARGETDEPS += $$BUILD_ROOT/lib/$${QMAKE_PREFIX_STATICLIB}$${LIBNAME}.$${QMAKE_EXTENSION_STATICLIB}
+    LIBS *= -l$$LIBNAME
+    PRE_TARGETDEPS *= $$BUILD_ROOT/lib/$${QMAKE_PREFIX_STATICLIB}$${LIBNAME}.$${QMAKE_EXTENSION_STATICLIB}
+    export(LIBS)
+    export(PRE_TARGETDEPS)
+}
+
+defineTest(communiAddStaticPlugin) {
+    PLUGINNAME = $$1
+    isEmpty(PLUGINNAME):error(PLUGINNAME must be set)
+    LIBS *= -L$$BUILD_ROOT/plugins
+    LIBS *= -l$$PLUGINNAME
+    PRE_TARGETDEPS *= $$BUILD_ROOT/plugins/$${QMAKE_PREFIX_STATICLIB}$${PLUGINNAME}plugin.$${QMAKE_EXTENSION_STATICLIB}
     export(LIBS)
     export(PRE_TARGETDEPS)
 }
