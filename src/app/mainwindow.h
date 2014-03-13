@@ -28,6 +28,7 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
     Q_PROPERTY(BufferView* currentView READ currentView WRITE setCurrentView)
+    Q_PROPERTY(QList<IrcConnection*> connections READ connections)
 
 public:
     MainWindow(QWidget* parent = 0);
