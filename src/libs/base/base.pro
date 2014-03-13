@@ -4,7 +4,7 @@
 
 TEMPLATE = lib
 TARGET = base
-CONFIG += static communi_config communi_backend
+CONFIG += static communi_backend
 
 DESTDIR = $$BUILD_ROOT/lib
 DEPENDPATH += $$PWD

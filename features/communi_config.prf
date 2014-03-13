@@ -16,13 +16,5 @@ CONFIG(debug, debug|release) {
     UI_DIR = release
 }
 
-QT += network
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets
-    DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000
-} else {
-    lessThan(QT_MAJOR_VERSION, 4) | lessThan(QT_MINOR_VERSION, 7) {
-        error(Communi requires Qt 4.7 or newer but Qt $$[QT_VERSION] was detected.)
-    }
-}
-
+QT += network widgets
+DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000

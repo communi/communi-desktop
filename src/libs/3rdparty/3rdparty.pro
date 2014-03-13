@@ -4,7 +4,7 @@
 
 TEMPLATE = lib
 TARGET = 3rdparty
-CONFIG += static communi_config
+CONFIG += static
 
 DESTDIR = $$BUILD_ROOT/lib
 DEPENDPATH += $$PWD $$PWD/qtdocktile

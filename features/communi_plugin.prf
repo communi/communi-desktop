@@ -5,7 +5,6 @@
 TARGET = $$basename(_PRO_FILE_PWD_)plugin
 CONFIG += plugin
 
-include(communi_config.prf)
 include(communi_3rdparty.prf)
 include(communi_backend.prf)
 include(communi_base.prf)

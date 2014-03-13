@@ -4,7 +4,7 @@
 
 TEMPLATE = lib
 TARGET = backend
-CONFIG += static communi_config
+CONFIG += static
 
 DESTDIR = $$BUILD_ROOT/lib
 DEFINES += IRC_STATIC
