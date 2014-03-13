@@ -21,6 +21,7 @@
 
 class IrcBuffer;
 class TreeWidget;
+class IrcLagTimer;
 class IrcConnection;
 
 class TreeItem : public QObject, public QTreeWidgetItem
@@ -51,13 +52,17 @@ signals:
     void destroyed(TreeItem* item);
 
 private slots:
+    void updateIcon();
+    void onStatusChanged();
     void onBufferDestroyed();
 
 private:
     void init(IrcBuffer* buffer);
 
     struct Private {
+        QMovie* movie;
         IrcBuffer* buffer;
+        IrcLagTimer* timer;
     } d;
 };
 

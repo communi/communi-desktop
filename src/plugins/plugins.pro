@@ -11,6 +11,5 @@ SUBDIRS += monitor
 SUBDIRS += overlay
 SUBDIRS += sound
 SUBDIRS += tray
-SUBDIRS += tricon
 SUBDIRS += verifier
 SUBDIRS += znc

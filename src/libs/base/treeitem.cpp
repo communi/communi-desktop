@@ -15,16 +15,34 @@
 #include "treeitem.h"
 #include "treerole.h"
 #include "treewidget.h"
+#include <IrcConnection>
+#include <IrcLagTimer>
 #include <IrcBuffer>
+#include <QPainter>
+#include <QPixmap>
+#include <QMovie>
+#include <qmath.h>
 
 TreeItem::TreeItem(IrcBuffer* buffer, TreeItem* parent) : QObject(buffer), QTreeWidgetItem(parent)
 {
+    d.movie = 0;
+    d.timer = 0;
     init(buffer);
 }
 
 TreeItem::TreeItem(IrcBuffer* buffer, TreeWidget* parent) : QObject(buffer), QTreeWidgetItem(parent)
 {
     init(buffer);
+
+    d.movie = new QMovie(this);
+    d.movie->setFileName(":/ajax-loader.gif");
+    connect(d.movie, SIGNAL(frameChanged(int)), this, SLOT(updateIcon()));
+
+    d.timer = new IrcLagTimer(this);
+    d.timer->setConnection(buffer->connection());
+    connect(d.timer, SIGNAL(lagChanged(qint64)), this, SLOT(updateIcon()));
+    connect(buffer->connection(), SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(onStatusChanged()));
+    updateIcon();
 }
 
 void TreeItem::init(IrcBuffer* buffer)
@@ -83,6 +101,41 @@ bool TreeItem::operator<(const QTreeWidgetItem& other) const
 void TreeItem::refresh()
 {
     emitDataChanged();
+}
+
+void TreeItem::updateIcon()
+{
+    qint64 lag = d.timer->lag();
+    setToolTip(0, lag > 0 ? tr("%1ms").arg(lag) : QString());
+    if (connection()->isActive() && !connection()->isConnected()) {
+        setIcon(0, d.movie->currentPixmap());
+    } else {
+        QPixmap pixmap(16, 16);
+        pixmap.fill(Qt::transparent);
+        QPainter painter(&pixmap);
+        painter.setPen(QPalette().color(QPalette::Mid));
+        QColor color(Qt::transparent);
+        if (lag > 0) {
+            qreal f = qMin(100.0, qSqrt(lag)) / 100;
+            color = QColor::fromHsl(120 - f * 120, 96, 152); // TODO
+        }
+        painter.setBrush(color);
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.drawEllipse(4, 5, 8, 8);
+        setIcon(0, pixmap);
+    }
+}
+
+void TreeItem::onStatusChanged()
+{
+    if (connection()->isActive() && !connection()->isConnected()) {
+        if (d.movie->state() == QMovie::NotRunning)
+            d.movie->start();
+    } else {
+        if (d.movie->state() == QMovie::Running)
+            d.movie->stop();
+    }
+    updateIcon();
 }
 
 void TreeItem::onBufferDestroyed()

@@ -31,5 +31,8 @@
   <file>images/white/left.png</file>
   <file>images/white/right.png</file>
   <file>images/white/up.png</file>
+
+  <!-- todo: themable -->
+  <file>ajax-loader.gif</file>
 </qresource>
 </RCC>
