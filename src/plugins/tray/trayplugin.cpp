@@ -13,7 +13,9 @@
 */
 
 #include "trayplugin.h"
+#include "bufferview.h"
 #include "sharedtimer.h"
+#include "textdocument.h"
 #include <IrcConnection>
 #include <IrcMessage>
 #include <IrcBuffer>
@@ -30,30 +32,10 @@ TrayPlugin::TrayPlugin(QObject* parent) : QObject(parent)
     d.blink = false;
 }
 
-void TrayPlugin::initConnection(IrcConnection* connection)
+void TrayPlugin::initView(BufferView* view)
 {
-    connect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateIcon()));
-    connect(connection, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
-    d.connections.insert(connection);
-    updateIcon();
-}
-
-void TrayPlugin::cleanupConnection(IrcConnection* connection)
-{
-    disconnect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateIcon()));
-    disconnect(connection, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
-    d.connections.remove(connection);
-    updateIcon();
-}
-
-/*
-void TrayPlugin::initWindow(MainWindow* window)
-{
-    d.window = window;
-    window->installEventFilter(this);
-
-    if (QSystemTrayIcon::isSystemTrayAvailable()) {
-        d.tray = new QSystemTrayIcon(window);
+    if (!d.window && QSystemTrayIcon::isSystemTrayAvailable()) {
+        d.tray = new QSystemTrayIcon(this);
 
         initResource();
 
@@ -71,9 +53,37 @@ void TrayPlugin::initWindow(MainWindow* window)
 
         connect(d.tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
                 this, SLOT(onActivated(QSystemTrayIcon::ActivationReason)));
+
+        d.window = view->window();
+        d.window->installEventFilter(this);
     }
 }
-*/
+
+void TrayPlugin::initDocument(TextDocument* document)
+{
+    if (!document->isClone())
+        connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
+}
+
+void TrayPlugin::cleanupDocument(TextDocument* document)
+{
+    if (!document->isClone())
+        disconnect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
+}
+
+void TrayPlugin::initConnection(IrcConnection* connection)
+{
+    connect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateIcon()));
+    d.connections.insert(connection);
+    updateIcon();
+}
+
+void TrayPlugin::cleanupConnection(IrcConnection* connection)
+{
+    disconnect(connection, SIGNAL(statusChanged(IrcConnection::Status)), this, SLOT(updateIcon()));
+    d.connections.remove(connection);
+    updateIcon();
+}
 
 void TrayPlugin::updateIcon()
 {
@@ -90,18 +100,14 @@ void TrayPlugin::updateIcon()
     }
 }
 
-void TrayPlugin::onMessageReceived(IrcMessage* message)
+void TrayPlugin::onMessageHighlighted(IrcMessage* message)
 {
-    if (d.tray && !d.alert && !d.window->isActiveWindow()) {
-        if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
-            if (message->property("private").toBool() ||
-                message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive)) {
-                SharedTimer::instance()->registerReceiver(this, "updateIcon");
-                d.alert = true;
-                d.blink = true;
-                updateIcon();
-            }
-        }
+    Q_UNUSED(message);
+    if (d.tray && !d.alert && d.window && !d.window->isActiveWindow()) {
+        SharedTimer::instance()->registerReceiver(this, "updateIcon");
+        d.alert = true;
+        d.blink = true;
+        updateIcon();
     }
 }
 
