@@ -9,5 +9,5 @@ INCLUDEPATH += $$BASEDIR/IrcCore $$BASEDIR/IrcModel $$BASEDIR/IrcUtil
 
 DEFINES += IRC_STATIC
 
-include(communi_config.prf)
+include(communi_functions.prf)
 communiAddLib(backend)

@@ -5,7 +5,7 @@
 TEMPLATE = app
 win32|mac:TARGET = Communi
 else:TARGET = communi
-CONFIG += communi_config communi_3rdparty communi_backend communi_base
+CONFIG += communi_config communi_3rdparty communi_backend communi_base communi_plugins
 
 DESTDIR = ../../bin
 DEPENDPATH += $$PWD
@@ -47,21 +47,6 @@ SOURCES += $$PWD/settingspage.cpp
 SOURCES += $$PWD/splitview.cpp
 SOURCES += $$PWD/themeinfo.cpp
 SOURCES += $$PWD/themeloader.cpp
-
-STATIC_PLUGINS += commander
-STATIC_PLUGINS += dock
-STATIC_PLUGINS += ignore
-STATIC_PLUGINS += importer
-STATIC_PLUGINS += monitor
-STATIC_PLUGINS += overlay
-STATIC_PLUGINS += sound
-STATIC_PLUGINS += tray
-STATIC_PLUGINS += verifier
-STATIC_PLUGINS += znc
-
-for(PLUGIN, STATIC_PLUGINS) {
-    communiAddStaticPlugin(PLUGIN)
-}
 
 include(finder/finder.pri)
 include(../../resources/resources.pri)

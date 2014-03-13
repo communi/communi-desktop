@@ -1,0 +1,15 @@
+######################################################################
+# Communi
+######################################################################
+
+include(communi_functions.prf)
+communiAddPlugin(commander)
+communiAddPlugin(dock)
+communiAddPlugin(ignore)
+communiAddPlugin(importer)
+communiAddPlugin(monitor)
+communiAddPlugin(overlay)
+communiAddPlugin(sound)
+communiAddPlugin(tray)
+communiAddPlugin(verifier)
+communiAddPlugin(znc)
