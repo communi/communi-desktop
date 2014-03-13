@@ -45,14 +45,6 @@ TextInput::TextInput(QWidget* parent) : HistoryLineEdit(parent)
     QShortcut* shortcut = new QShortcut(Qt::Key_Tab, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(tryComplete()));
 
-    setButtonVisible(Left, true);
-    setAutoHideButton(Left, true);
-    connect(this, SIGNAL(leftButtonClicked()), this, SLOT(tryComplete()));
-
-    setButtonVisible(Right, true);
-    setAutoHideButton(Right, true);
-    connect(this, SIGNAL(rightButtonClicked()), this, SLOT(onSend()));
-
     connect(this, SIGNAL(returnPressed()), this, SLOT(onSend()));
     connect(this, SIGNAL(textEdited(QString)), this, SIGNAL(typed(QString)));
 }

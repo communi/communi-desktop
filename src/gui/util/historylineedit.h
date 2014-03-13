@@ -15,9 +15,9 @@
 #ifndef HISTORYLINEEDIT_H
 #define HISTORYLINEEDIT_H
 
-#include "fancylineedit.h"
+#include <QLineEdit>
 
-class HistoryLineEdit : public Utils::FancyLineEdit
+class HistoryLineEdit : public QLineEdit
 {
     Q_OBJECT
 

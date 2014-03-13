@@ -458,22 +458,10 @@ void BufferView::applySettings()
         d.textBrowser->setShadowColor(Qt::black);
         d.textBrowser->setMarkerColor(QColor("#ffffff"));
         d.textBrowser->setHighlightColor(QColor("#ff4040").darker(465));
-
-        d.searchEditor->setButtonPixmap(SearchEditor::Left, QPixmap(":/resources/buttons/prev-white.png"));
-        d.searchEditor->setButtonPixmap(SearchEditor::Right, QPixmap(":/resources/buttons/next-white.png"));
-
-        d.textInput->setButtonPixmap(TextInput::Right, QPixmap(":/resources/buttons/return-white.png"));
-        d.textInput->setButtonPixmap(TextInput::Left, QPixmap(":/resources/buttons/tab-white.png"));
     } else {
         d.textBrowser->setShadowColor(Qt::gray);
         d.textBrowser->setMarkerColor(QColor("#000000"));
         d.textBrowser->setHighlightColor(QColor("#ff4040").lighter(165));
-
-        d.searchEditor->setButtonPixmap(SearchEditor::Left, QPixmap(":/resources/prev-black.png"));
-        d.searchEditor->setButtonPixmap(SearchEditor::Right, QPixmap(":/resources/next-black.png"));
-
-        d.textInput->setButtonPixmap(TextInput::Right, QPixmap(":/resources/buttons/return-black.png"));
-        d.textInput->setButtonPixmap(TextInput::Left, QPixmap(":/resources/buttons/tab-black.png"));
     }
 
     d.showEvents = settings->value("messages.events").toBool();

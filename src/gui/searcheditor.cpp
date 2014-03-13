@@ -30,14 +30,6 @@ SearchEditor::SearchEditor(QWidget* parent) : HistoryLineEdit(parent)
     shortcut = new QShortcut(QKeySequence::FindPrevious, parent);
     connect(shortcut, SIGNAL(activated()), this, SLOT(findPrevious()));
 
-    setButtonVisible(Left, true);
-    setAutoHideButton(Left, true);
-    connect(this, SIGNAL(leftButtonClicked()), this, SLOT(findPrevious()));
-
-    setButtonVisible(Right, true);
-    setAutoHideButton(Right, true);
-    connect(this, SIGNAL(rightButtonClicked()), this, SLOT(findNext()));
-
     connect(this, SIGNAL(returnPressed()), this, SLOT(findNext()));
     connect(this, SIGNAL(textEdited(QString)), this, SLOT(find(QString)));
 

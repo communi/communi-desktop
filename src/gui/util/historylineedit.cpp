@@ -16,7 +16,7 @@
 #include <QKeyEvent>
 
 HistoryLineEdit::HistoryLineEdit(QWidget* parent)
-    : FancyLineEdit(parent), index(0)
+    : QLineEdit(parent), index(0)
 {
 }
 
@@ -42,7 +42,7 @@ void HistoryLineEdit::cursorWordBackward(bool mark)
 // so here's the workaround
 void HistoryLineEdit::insert(const QString& text)
 {
-    QString tmp = FancyLineEdit::text();
+    QString tmp = QLineEdit::text();
     int pos = cursorPosition();
     int len = selectedText().length();
     tmp.replace(pos, len, text);
@@ -96,5 +96,5 @@ void HistoryLineEdit::keyPressEvent(QKeyEvent* event)
         default:
             break;
     }
-    FancyLineEdit::keyPressEvent(event);
+    QLineEdit::keyPressEvent(event);
 }
