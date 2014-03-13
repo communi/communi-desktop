@@ -22,32 +22,31 @@
 #include <QSystemTrayIcon>
 #include "connectionplugin.h"
 #include "documentplugin.h"
-#include "viewplugin.h"
+#include "windowplugin.h"
 
 class IrcBuffer;
 class IrcMessage;
 
-class TrayPlugin : public QObject, public ConnectionPlugin, public DocumentPlugin, public ViewPlugin
+class TrayPlugin : public QObject, public ConnectionPlugin, public DocumentPlugin, public WindowPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(ConnectionPlugin DocumentPlugin ViewPlugin)
+    Q_INTERFACES(ConnectionPlugin DocumentPlugin WindowPlugin)
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
     Q_PLUGIN_METADATA(IID "Communi.DocumentPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.ViewPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
 #endif
 
 public:
     TrayPlugin(QObject* parent = 0);
 
-    void initView(BufferView* view);
     void initDocument(TextDocument* document);
     void cleanupDocument(TextDocument* document);
 
     void initConnection(IrcConnection* connection);
     void cleanupConnection(IrcConnection* connection);
 
-    bool eventFilter(QObject* object, QEvent* event);
+    void windowActivated();
 
 private slots:
     void updateIcon();
@@ -58,7 +57,6 @@ private:
     struct Private {
         bool alert;
         bool blink;
-        QWidget* window;
         QIcon alertIcon;
         QIcon onlineIcon;
         QIcon offlineIcon;

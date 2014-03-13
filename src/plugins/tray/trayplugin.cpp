@@ -13,7 +13,6 @@
 */
 
 #include "trayplugin.h"
-#include "bufferview.h"
 #include "sharedtimer.h"
 #include "textdocument.h"
 #include <IrcConnection>
@@ -27,14 +26,10 @@ inline void initResource() { Q_INIT_RESOURCE(tray); }
 TrayPlugin::TrayPlugin(QObject* parent) : QObject(parent)
 {
     d.tray = 0;
-    d.window = 0;
     d.alert = false;
     d.blink = false;
-}
 
-void TrayPlugin::initView(BufferView* view)
-{
-    if (!d.window && QSystemTrayIcon::isSystemTrayAvailable()) {
+    if (QSystemTrayIcon::isSystemTrayAvailable()) {
         d.tray = new QSystemTrayIcon(this);
 
         initResource();
@@ -53,9 +48,6 @@ void TrayPlugin::initView(BufferView* view)
 
         connect(d.tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
                 this, SLOT(onActivated(QSystemTrayIcon::ActivationReason)));
-
-        d.window = view->window();
-        d.window->installEventFilter(this);
     }
 }
 
@@ -103,7 +95,7 @@ void TrayPlugin::updateIcon()
 void TrayPlugin::onMessageHighlighted(IrcMessage* message)
 {
     Q_UNUSED(message);
-    if (d.tray && !d.alert && d.window && !d.window->isActiveWindow()) {
+    if (d.tray && !d.alert && !isActiveWindow()) {
         SharedTimer::instance()->registerReceiver(this, "updateIcon");
         d.alert = true;
         d.blink = true;
@@ -113,31 +105,28 @@ void TrayPlugin::onMessageHighlighted(IrcMessage* message)
 
 void TrayPlugin::onActivated(QSystemTrayIcon::ActivationReason reason)
 {
+    QWidget* wnd = window();
     switch (reason) {
         case QSystemTrayIcon::DoubleClick:
-            d.window->setVisible(!d.window->isVisible());
+            wnd->setVisible(!wnd->isVisible());
             break;
         case QSystemTrayIcon::Trigger:
-            d.window->raise();
-            d.window->activateWindow();
+            wnd->raise();
+            wnd->activateWindow();
             break;
         default:
             break;
     }
 }
 
-bool TrayPlugin::eventFilter(QObject* object, QEvent* event)
+void TrayPlugin::windowActivated()
 {
-    Q_UNUSED(object);
-    if (event->type() == QEvent::ActivationChange) {
-        if (d.tray && d.alert && d.window->isActiveWindow()) {
-            SharedTimer::instance()->unregisterReceiver(this, "updateIcon");
-            d.alert = false;
-            d.blink = false;
-            updateIcon();
-        }
+    if (d.tray && d.alert) {
+        SharedTimer::instance()->unregisterReceiver(this, "updateIcon");
+        d.alert = false;
+        d.blink = false;
+        updateIcon();
     }
-    return false;
 }
 
 #if QT_VERSION < 0x050000
