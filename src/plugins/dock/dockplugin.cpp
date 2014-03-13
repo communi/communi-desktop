@@ -14,7 +14,6 @@
 
 #include "dockplugin.h"
 #include "qtdocktile.h"
-#include "bufferview.h"
 #include "textdocument.h"
 #include <IrcConnection>
 #include <QWidget>
@@ -23,16 +22,12 @@
 DockPlugin::DockPlugin(QObject* parent) : QObject(parent)
 {
     d.dock = 0;
-    d.window = 0;
 }
 
-void DockPlugin::initView(BufferView* view)
+void DockPlugin::initWindow(QWidget* window)
 {
-    if (!d.window && QtDockTile::isAvailable()) {
-        d.window = view->window();
-        d.window->installEventFilter(this);
-        d.dock = new QtDockTile(d.window);
-    }
+    if (QtDockTile::isAvailable())
+        d.dock = new QtDockTile(window);
 }
 
 void DockPlugin::initDocument(TextDocument* document)
@@ -49,18 +44,13 @@ void DockPlugin::cleanupDocument(TextDocument* document)
 
 void DockPlugin::onMessageHighlighted(IrcMessage* message)
 {
-    if (d.dock && !d.window->isActiveWindow())
+    if (d.dock && !isActiveWindow())
         d.dock->setBadge(d.dock->badge() + 1);
 }
 
-bool DockPlugin::eventFilter(QObject* object, QEvent* event)
+void DockPlugin::windowActivated()
 {
-    Q_UNUSED(object);
-    if (event->type() == QEvent::ActivationChange) {
-        if (d.window->isActiveWindow())
-            d.dock->setBadge(0);
-    }
-    return false;
+    d.dock->setBadge(0);
 }
 
 #if QT_VERSION < 0x050000
