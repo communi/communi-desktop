@@ -13,10 +13,8 @@
 */
 
 #include "commanderplugin.h"
-#include "treewidget.h"
 #include "bufferview.h"
 #include "textinput.h"
-#include "listview.h"
 #include "textbrowser.h"
 #include <QCoreApplication>
 #include <IrcCommandParser>
@@ -27,7 +25,6 @@
 
 CommanderPlugin::CommanderPlugin(QObject* parent) : QObject(parent)
 {
-    d.tree = 0;
 }
 
 void CommanderPlugin::initView(BufferView* view)
@@ -39,10 +36,12 @@ void CommanderPlugin::initView(BufferView* view)
     parser->addCommand(IrcCommand::Custom, "QUERY <user> (<message...>)");
 }
 
-void CommanderPlugin::initTree(TreeWidget* tree)
+void CommanderPlugin::initBuffer(IrcBuffer* buffer)
 {
-    d.tree = tree;
-    connect(tree, SIGNAL(bufferAdded(IrcBuffer*)), this, SLOT(onBufferAdded(IrcBuffer*)));
+    if (buffer->isChannel() && d.chans.contains(buffer->title())) {
+        d.chans.removeAll(buffer->title());
+        setCurrentBuffer(buffer);
+    }
 }
 
 void CommanderPlugin::initConnection(IrcConnection* connection)
@@ -67,7 +66,7 @@ bool CommanderPlugin::commandFilter(IrcCommand* command)
             // TODO: d.window->currentView()->textBrowser()->clear();
             return true;
         } else if (cmd == "CLOSE") {
-            IrcBuffer* buffer = d.tree->currentBuffer();
+            IrcBuffer* buffer = currentBuffer();
             IrcChannel* channel = buffer->toChannel();
             if (channel)
                 channel->part(qApp->property("description").toString());
@@ -77,19 +76,19 @@ bool CommanderPlugin::commandFilter(IrcCommand* command)
             const QString target = params.value(0);
             const QString message = QStringList(params.mid(1)).join(" ");
             if (!message.isEmpty()) {
-                IrcBuffer* buffer = d.tree->currentBuffer()->model()->add(target);
+                IrcBuffer* buffer = currentBuffer()->model()->add(target);
                 IrcCommand* command = IrcCommand::createMessage(target, message);
                 if (buffer->sendCommand(command)) {
                     IrcConnection* connection = buffer->connection();
                     buffer->receiveMessage(command->toMessage(connection->nickName(), connection));
                 }
-                d.tree->setCurrentBuffer(buffer);
+                setCurrentBuffer(buffer);
                 return true;
             }
         } else if (cmd == "QUERY") {
             const QString target = params.value(0);
             const QString message = QStringList(params.mid(1)).join(" ");
-            IrcBuffer* buffer = d.tree->currentBuffer()->model()->add(target);
+            IrcBuffer* buffer = currentBuffer()->model()->add(target);
             if (!message.isEmpty()) {
                 IrcCommand* command = IrcCommand::createMessage(target, message);
                 if (buffer->sendCommand(command)) {
@@ -97,19 +96,11 @@ bool CommanderPlugin::commandFilter(IrcCommand* command)
                     buffer->receiveMessage(command->toMessage(connection->nickName(), connection));
                 }
             }
-            d.tree->setCurrentBuffer(buffer);
+            setCurrentBuffer(buffer);
             return true;
         }
     }
     return false;
-}
-
-void CommanderPlugin::onBufferAdded(IrcBuffer* buffer)
-{
-    if (buffer->isChannel() && d.chans.contains(buffer->title())) {
-        d.chans.removeAll(buffer->title());
-        d.tree->setCurrentBuffer(buffer);
-    }
 }
 
 #if QT_VERSION < 0x050000

@@ -19,20 +19,19 @@
 #include <QStringList>
 #include <IrcCommandFilter>
 #include "connectionplugin.h"
-#include "treeplugin.h"
+#include "bufferplugin.h"
 #include "viewplugin.h"
 
 class IrcBuffer;
 class IrcConnection;
 
-class CommanderPlugin : public QObject, public IrcCommandFilter, public ConnectionPlugin,
-                        public TreePlugin, public ViewPlugin
+class CommanderPlugin : public QObject, public IrcCommandFilter, public BufferPlugin, public ConnectionPlugin, public ViewPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(IrcCommandFilter ConnectionPlugin TreePlugin ViewPlugin)
+    Q_INTERFACES(IrcCommandFilter BufferPlugin ConnectionPlugin ViewPlugin)
 #if QT_VERSION >= 0x050000
+    Q_PLUGIN_METADATA(IID "Communi.BufferPlugin")
     Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.TreePlugin")
     Q_PLUGIN_METADATA(IID "Communi.ViewPlugin")
 #endif
 
@@ -40,18 +39,14 @@ public:
     CommanderPlugin(QObject* parent = 0);
 
     void initView(BufferView* view);
-    void initTree(TreeWidget* tree);
+    void initBuffer(IrcBuffer* buffer);
     void initConnection(IrcConnection* connection);
     void cleanupConnection(IrcConnection* connection);
 
     bool commandFilter(IrcCommand* command);
 
-private slots:
-    void onBufferAdded(IrcBuffer* buffer);
-
 private:
     struct Private {
-        TreeWidget* tree;
         QStringList chans;
     } d;
 };
