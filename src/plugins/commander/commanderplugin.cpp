@@ -36,7 +36,7 @@ void CommanderPlugin::initView(BufferView* view)
     parser->addCommand(IrcCommand::Custom, "QUERY <user> (<message...>)");
 }
 
-void CommanderPlugin::initBuffer(IrcBuffer* buffer)
+void CommanderPlugin::bufferAdded(IrcBuffer* buffer)
 {
     if (buffer->isChannel() && d.chans.contains(buffer->title())) {
         d.chans.removeAll(buffer->title());

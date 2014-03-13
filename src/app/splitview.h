@@ -40,8 +40,8 @@ public slots:
     void split(BufferView* view, Qt::Orientation orientation = Qt::Vertical);
     QSplitter* wrap(BufferView* view, Qt::Orientation orientation = Qt::Vertical);
 
-    void initBuffer(IrcBuffer* buffer);
-    void cleanupBuffer(IrcBuffer* buffer);
+    void addBuffer(IrcBuffer* buffer);
+    void removeBuffer(IrcBuffer* buffer);
 
 signals:
     void viewAdded(BufferView* view);

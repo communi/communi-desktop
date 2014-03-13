@@ -23,8 +23,9 @@ class BufferPlugin
 {
 public:
     virtual ~BufferPlugin() {}
-    virtual void initBuffer(IrcBuffer*) {}
-    virtual void cleanupBuffer(IrcBuffer*) {}
+
+    virtual void bufferAdded(IrcBuffer*) {}
+    virtual void bufferRemoved(IrcBuffer*) {}
 
     IrcBuffer* currentBuffer() const;
     void setCurrentBuffer(IrcBuffer* buffer);

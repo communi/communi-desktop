@@ -43,21 +43,21 @@ PluginLoader* PluginLoader::instance()
     return &loader;
 }
 
-void PluginLoader::initBuffer(IrcBuffer* buffer)
+void PluginLoader::bufferAdded(IrcBuffer* buffer)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         BufferPlugin* plugin = qobject_cast<BufferPlugin*>(instance);
         if (plugin)
-            plugin->initBuffer(buffer);
+            plugin->bufferAdded(buffer);
     }
 }
 
-void PluginLoader::cleanupBuffer(IrcBuffer* buffer)
+void PluginLoader::bufferRemoved(IrcBuffer* buffer)
 {
     foreach (QObject* instance, QPluginLoader::staticInstances()) {
         BufferPlugin* plugin = qobject_cast<BufferPlugin*>(instance);
         if (plugin)
-            plugin->cleanupBuffer(buffer);
+            plugin->bufferRemoved(buffer);
     }
 }
 

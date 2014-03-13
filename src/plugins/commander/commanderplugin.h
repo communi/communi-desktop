@@ -39,7 +39,7 @@ public:
     CommanderPlugin(QObject* parent = 0);
 
     void initView(BufferView* view);
-    void initBuffer(IrcBuffer* buffer);
+    void bufferAdded(IrcBuffer* buffer);
     void initConnection(IrcConnection* connection);
     void cleanupConnection(IrcConnection* connection);
 

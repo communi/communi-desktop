@@ -166,7 +166,7 @@ QSplitter* SplitView::wrap(BufferView* view, Qt::Orientation orientation)
     return 0;
 }
 
-void SplitView::initBuffer(IrcBuffer* buffer)
+void SplitView::addBuffer(IrcBuffer* buffer)
 {
     IrcConnection* connection = buffer->connection();
     if (connection) {
@@ -187,7 +187,7 @@ void SplitView::initBuffer(IrcBuffer* buffer)
     }
 }
 
-void SplitView::cleanupBuffer(IrcBuffer* buffer)
+void SplitView::removeBuffer(IrcBuffer* buffer)
 {
     foreach (BufferView* view, d.views) {
         if (view->buffer() == buffer)

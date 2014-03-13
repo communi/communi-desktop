@@ -56,8 +56,8 @@ private slots:
     void cleanupConnection(IrcConnection* connection);
     void initView(BufferView* view);
     void cleanupView(BufferView* view);
-    void initBuffer(IrcBuffer* buffer);
-    void cleanupBuffer(IrcBuffer* buffer);
+    void addBuffer(IrcBuffer* buffer);
+    void removeBuffer(IrcBuffer* buffer);
     void initDocument(TextDocument* document);
     void onSocketError();
 

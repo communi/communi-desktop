@@ -150,10 +150,10 @@ void ChatPage::initConnection(IrcConnection* connection)
     // TODO: more fine-grained delivery (WHOIS replies etc. to the current buffer)
     connect(bufferModel, SIGNAL(messageIgnored(IrcMessage*)), serverBuffer, SLOT(receiveMessage(IrcMessage*)));
 
-    connect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(initBuffer(IrcBuffer*)));
+    connect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(addBuffer(IrcBuffer*)));
     connect(connection, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onSocketError()));
 
-    initBuffer(serverBuffer);
+    addBuffer(serverBuffer);
     if (!d.treeWidget->currentBuffer())
         d.treeWidget->setCurrentBuffer(serverBuffer);
 
@@ -166,7 +166,7 @@ void ChatPage::initConnection(IrcConnection* connection)
 void ChatPage::cleanupConnection(IrcConnection* connection)
 {
     IrcBufferModel* bufferModel = connection->findChild<IrcBufferModel*>();
-    disconnect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(initBuffer(IrcBuffer*)));
+    disconnect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(addBuffer(IrcBuffer*)));
 
     if (connection->isActive()) {
         connection->quit(qApp->property("description").toString());
@@ -188,33 +188,33 @@ void ChatPage::closeBuffer(IrcBuffer* buffer)
     buffer->deleteLater();
 }
 
-void ChatPage::initBuffer(IrcBuffer* buffer)
+void ChatPage::addBuffer(IrcBuffer* buffer)
 {
     TextDocument* doc = new TextDocument(buffer);
     buffer->setPersistent(true);
 
     d.treeWidget->addBuffer(buffer);
-    d.splitView->initBuffer(buffer);
+    d.splitView->addBuffer(buffer);
 
-    PluginLoader::instance()->initBuffer(buffer);
+    PluginLoader::instance()->bufferAdded(buffer);
     initDocument(doc);
 
-    connect(buffer, SIGNAL(destroyed(IrcBuffer*)), this, SLOT(cleanupBuffer(IrcBuffer*)));
+    connect(buffer, SIGNAL(destroyed(IrcBuffer*)), this, SLOT(removeBuffer(IrcBuffer*)));
 }
 
-void ChatPage::cleanupBuffer(IrcBuffer* buffer)
+void ChatPage::removeBuffer(IrcBuffer* buffer)
 {
     QList<TextDocument*> documents = buffer->findChildren<TextDocument*>();
     foreach (TextDocument* doc, documents)
         PluginLoader::instance()->cleanupDocument(doc);
 
     d.treeWidget->removeBuffer(buffer);
-    d.splitView->cleanupBuffer(buffer);
+    d.splitView->removeBuffer(buffer);
 
     if (buffer->isSticky())
         buffer->connection()->deleteLater();
 
-    PluginLoader::instance()->cleanupBuffer(buffer);
+    PluginLoader::instance()->bufferRemoved(buffer);
 }
 
 void ChatPage::initView(BufferView* view)

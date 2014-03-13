@@ -38,8 +38,8 @@ public:
     }
 
 public slots:
-    void initBuffer(IrcBuffer* buffer);
-    void cleanupBuffer(IrcBuffer* buffer);
+    void bufferAdded(IrcBuffer* buffer);
+    void bufferRemoved(IrcBuffer* buffer);
 
     void initConnection(IrcConnection* connection);
     void cleanupConnection(IrcConnection* connection);
