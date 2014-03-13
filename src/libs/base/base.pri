@@ -13,6 +13,7 @@ HEADERS += $$PWD/listview.h
 HEADERS += $$PWD/textbrowser.h
 HEADERS += $$PWD/textinput.h
 HEADERS += $$PWD/treeitem.h
+HEADERS += $$PWD/treerole.h
 HEADERS += $$PWD/treewidget.h
 
 SOURCES += $$PWD/bufferview.cpp

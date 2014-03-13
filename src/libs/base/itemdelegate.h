@@ -32,8 +32,6 @@ public:
     bool rootIsDecorated() const;
     void setRootIsDecorated(bool decorated);
 
-    enum { BadgeRole = Qt::UserRole, BadgeColorRole, HighlightRole };
-
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 

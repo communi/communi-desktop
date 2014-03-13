@@ -13,6 +13,7 @@
 */
 
 #include "treeitem.h"
+#include "treerole.h"
 #include "treewidget.h"
 #include "itemdelegate.h"
 #include <IrcBuffer>
@@ -66,12 +67,12 @@ QVariant TreeItem::data(int column, int role) const
         if (d.highlighted || (!isExpanded() && !d.highlightedChildren.isEmpty()))
             return tw->currentHighlightColor();
         return tw->statusColor(TreeWidget::Active);
-    } else if (role == ItemDelegate::BadgeColorRole) {
+    } else if (role == TreeRole::BadgeColorRole) {
         TreeWidget* tw = static_cast<TreeWidget*>(treeWidget());
         if (!isSelected() && d.buffer->isActive() && d.highlighted)
             return tw->currentBadgeColor();
         return tw->statusColor(TreeWidget::Badge);
-    } else if (role == ItemDelegate::HighlightRole) {
+    } else if (role == TreeRole::HighlightRole) {
         return d.highlighted;
     }
     return QTreeWidgetItem::data(column, role);
@@ -79,12 +80,12 @@ QVariant TreeItem::data(int column, int role) const
 
 int TreeItem::badge() const
 {
-    return data(1, ItemDelegate::BadgeRole).toInt();
+    return data(1, TreeRole::BadgeRole).toInt();
 }
 
 void TreeItem::setBadge(int badge)
 {
-    setData(1, ItemDelegate::BadgeRole, badge);
+    setData(1, TreeRole::BadgeRole, badge);
 }
 
 bool TreeItem::isHighlighted() const

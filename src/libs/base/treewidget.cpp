@@ -14,6 +14,7 @@
 
 #include "treewidget.h"
 #include "treeitem.h"
+#include "treerole.h"
 #include "treemenu.h"
 #include "styledscrollbar.h"
 #include "settingsmodel.h"
@@ -278,18 +279,18 @@ void TreeWidget::moveToPrevItem()
 
 void TreeWidget::moveToNextActiveItem()
 {
-    QTreeWidgetItem* item = findNextItem(currentItem(), 0, ItemDelegate::HighlightRole);
+    QTreeWidgetItem* item = findNextItem(currentItem(), 0, TreeRole::HighlightRole);
     if (!item)
-        item = findNextItem(currentItem(), 1, ItemDelegate::BadgeRole);
+        item = findNextItem(currentItem(), 1, TreeRole::BadgeRole);
     if (item)
         setCurrentItem(item);
 }
 
 void TreeWidget::moveToPrevActiveItem()
 {
-    QTreeWidgetItem* item = findPrevItem(currentItem(), 0, ItemDelegate::HighlightRole);
+    QTreeWidgetItem* item = findPrevItem(currentItem(), 0, TreeRole::HighlightRole);
     if (!item)
-        item = findPrevItem(currentItem(), 1, ItemDelegate::BadgeRole);
+        item = findPrevItem(currentItem(), 1, TreeRole::BadgeRole);
     if (item)
         setCurrentItem(item);
 }
