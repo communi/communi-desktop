@@ -17,34 +17,31 @@
 
 #include <QObject>
 #include <QtPlugin>
-#include "treeplugin.h"
+#include "bufferplugin.h"
 
 class IrcBuffer;
 class IrcMessage;
 class SoundNotification;
 
-class SoundPlugin : public QObject, public TreePlugin
+class SoundPlugin : public QObject, public BufferPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(TreePlugin)
+    Q_INTERFACES(BufferPlugin)
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "Communi.TreePlugin")
+    Q_PLUGIN_METADATA(IID "Communi.BufferPlugin")
 #endif
 
 public:
     SoundPlugin(QObject* parent = 0);
 
-    void initTree(TreeWidget* tree);
-    void cleanupTree(TreeWidget* tree);
+    void initBuffer(IrcBuffer* buffer);
+    void cleanupBuffer(IrcBuffer* buffer);
 
 private slots:
-    void onBufferAdded(IrcBuffer* buffer);
-    void onBufferRemoved(IrcBuffer* buffer);
     void onMessageReceived(IrcMessage* message);
 
 private:
     struct Private {
-        TreeWidget* tree;
         SoundNotification* sound;
     } d;
 };
