@@ -12,21 +12,21 @@
 * GNU General Public License for more details.
 */
 
-#ifndef FINDER_H
-#define FINDER_H
+#ifndef ABSTRACTFINDER_H
+#define ABSTRACTFINDER_H
 
 #include <QLineEdit>
 #include <QToolButton>
 
-class Finder : public QWidget
+class AbstractFinder : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(bool error READ hasError)
     Q_PROPERTY(int offset READ offset WRITE setOffset)
 
 public:
-    explicit Finder(QWidget* parent);
-    ~Finder();
+    explicit AbstractFinder(QWidget* parent);
+    ~AbstractFinder();
 
     int offset() const;
     void setOffset(int offset);
@@ -47,7 +47,7 @@ public slots:
 
 signals:
     void returnPressed();
-    void destroyed(Finder* input);
+    void destroyed(AbstractFinder* input);
 
 protected slots:
     virtual void find(const QString& text, bool forward = false, bool backward = false, bool typed = true) = 0;
@@ -65,4 +65,4 @@ private:
     } d;
 };
 
-#endif // FINDER_H
+#endif // ABSTRACTFINDER_H

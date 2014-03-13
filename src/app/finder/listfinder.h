@@ -15,11 +15,11 @@
 #ifndef LISTFINDER_H
 #define LISTFINDER_H
 
-#include "finder.h"
+#include "abstractfinder.h"
 
 class ListView;
 
-class ListFinder : public Finder
+class ListFinder : public AbstractFinder
 {
     Q_OBJECT
 

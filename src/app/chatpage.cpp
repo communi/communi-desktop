@@ -17,6 +17,7 @@
 #include "textinput.h"
 #include "splitview.h"
 #include "titlebar.h"
+#include "finder.h"
 #include "mainwindow.h"
 #include <QCoreApplication>
 #include <IrcCommandParser>
@@ -56,6 +57,7 @@ void ChatPage::init()
 {
     PluginLoader::instance()->initTree(d.treeWidget);
     initView(d.splitView->currentView());
+    new Finder(this);
 }
 
 void ChatPage::cleanup()

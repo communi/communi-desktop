@@ -8,6 +8,8 @@ else:TARGET = communi
 CONFIG += communi_config communi_3rdparty communi_backend communi_base
 
 DESTDIR = ../../bin
+DEPENDPATH += $$PWD
+INCLUDEPATH += $$PWD
 
 mac:LIBS += -framework SystemConfiguration
 else:win32:LIBS += -lole32
@@ -47,5 +49,6 @@ SOURCES += $$PWD/themeinfo.cpp
 SOURCES += $$PWD/themeloader.cpp
 
 include(plugins.pri)
+include(finder/finder.pri)
 include(../../resources/resources.pri)
 include(../../themes/themes.pri)

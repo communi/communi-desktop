@@ -12,20 +12,20 @@
 * GNU General Public License for more details.
 */
 
-#ifndef BROWSERFINDER_H
-#define BROWSERFINDER_H
+#ifndef TREEFINDER_H
+#define TREEFINDER_H
 
-#include "finder.h"
+#include "abstractfinder.h"
+#include <QTreeWidgetItem>
 
-class TextBrowser;
+class TreeWidget;
 
-class BrowserFinder : public Finder
+class TreeFinder : public AbstractFinder
 {
     Q_OBJECT
 
 public:
-    explicit BrowserFinder(TextBrowser* browser);
-    ~BrowserFinder();
+    explicit TreeFinder(TreeWidget* tree);
 
     void setVisible(bool visible);
 
@@ -34,9 +34,11 @@ protected slots:
     void relocate();
 
 private:
+    QTreeWidgetItem* lastItem() const;
+
     struct Private {
-        TextBrowser* textBrowser;
+        TreeWidget* tree;
     } d;
 };
 
-#endif // BROWSERFINDER_H
+#endif // TREEFINDER_H

@@ -12,29 +12,22 @@
 * GNU General Public License for more details.
 */
 
-#ifndef FINDERPLUGIN_H
-#define FINDERPLUGIN_H
+#ifndef FINDER_H
+#define FINDER_H
 
 #include <QSet>
 #include <QObject>
-#include <QtPlugin>
 #include <QShortcut>
-#include "treeplugin.h"
 
-class Finder;
+class ChatPage;
+class AbstractFinder;
 
-class FinderPlugin : public QObject, public TreePlugin
+class Finder : public QObject
 {
     Q_OBJECT
-    Q_INTERFACES(TreePlugin)
-#if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "Communi.TreePlugin")
-#endif
 
 public:
-    explicit FinderPlugin(QObject* parent = 0);
-
-    void initTree(TreeWidget* tree);
+    explicit Finder(ChatPage* page);
 
 private slots:
     void searchTree();
@@ -43,17 +36,17 @@ private slots:
     void cancelTreeSearch();
     void cancelListSearch();
     void cancelBrowserSearch();
-    void startSearch(Finder* input);
-    void finderDestroyed(Finder* input);
+    void startSearch(AbstractFinder* input);
+    void finderDestroyed(AbstractFinder* input);
 
 private:
     struct Private {
-        TreeWidget* tree;
-        QSet<Finder*> finders;
+        ChatPage* page;
+        QSet<AbstractFinder*> finders;
         QShortcut* nextShortcut;
         QShortcut* prevShortcut;
         QShortcut* cancelShortcut;
     } d;
 };
 
-#endif // FINDERPLUGIN_H
+#endif // FINDER_H

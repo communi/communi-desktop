@@ -16,7 +16,7 @@
 #include "textbrowser.h"
 #include "textdocument.h"
 
-BrowserFinder::BrowserFinder(TextBrowser* browser) : Finder(browser)
+BrowserFinder::BrowserFinder(TextBrowser* browser) : AbstractFinder(browser)
 {
     d.textBrowser = browser;
     connect(browser, SIGNAL(documentChanged(TextDocument*)), this, SLOT(deleteLater()));
@@ -29,7 +29,7 @@ BrowserFinder::~BrowserFinder()
 
 void BrowserFinder::setVisible(bool visible)
 {
-    Finder::setVisible(visible);
+    AbstractFinder::setVisible(visible);
     if (!visible && d.textBrowser) {
         QTextCursor cursor = d.textBrowser->textCursor();
         if (cursor.hasSelection()) {

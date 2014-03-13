@@ -5,7 +5,6 @@
 TEMPLATE = subdirs
 SUBDIRS += commander
 SUBDIRS += dock
-SUBDIRS += finder
 SUBDIRS += ignore
 SUBDIRS += importer
 SUBDIRS += monitor

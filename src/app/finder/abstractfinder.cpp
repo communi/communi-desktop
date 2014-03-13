@@ -12,7 +12,7 @@
 * GNU General Public License for more details.
 */
 
-#include "finder.h"
+#include "abstractfinder.h"
 #include <QPropertyAnimation>
 #include <QStylePainter>
 #include <QStyleOption>
@@ -21,7 +21,7 @@
 #include <QKeyEvent>
 #include <QEvent>
 
-Finder::Finder(QWidget* parent) : QWidget(parent)
+AbstractFinder::AbstractFinder(QWidget* parent) : QWidget(parent)
 {
     d.offset = -1;
     d.error = false;
@@ -53,28 +53,28 @@ Finder::Finder(QWidget* parent) : QWidget(parent)
     connect(d.lineEdit, SIGNAL(textEdited(QString)), this, SLOT(find(QString)));
 }
 
-Finder::~Finder()
+AbstractFinder::~AbstractFinder()
 {
     emit destroyed(this);
 }
 
-int Finder::offset() const
+int AbstractFinder::offset() const
 {
     return d.offset;
 }
 
-void Finder::setOffset(int offset)
+void AbstractFinder::setOffset(int offset)
 {
     d.offset = offset;
     relocate();
 }
 
-bool Finder::hasError() const
+bool AbstractFinder::hasError() const
 {
     return d.error;
 }
 
-void Finder::setError(bool error)
+void AbstractFinder::setError(bool error)
 {
     if (d.error != error) {
         d.error = error;
@@ -86,7 +86,7 @@ void Finder::setError(bool error)
     }
 }
 
-bool Finder::eventFilter(QObject* object, QEvent* event)
+bool AbstractFinder::eventFilter(QObject* object, QEvent* event)
 {
     Q_UNUSED(object);
     if (event->type() == QEvent::Resize)
@@ -94,17 +94,17 @@ bool Finder::eventFilter(QObject* object, QEvent* event)
     return false;
 }
 
-void Finder::findNext()
+void AbstractFinder::findNext()
 {
     find(d.lineEdit->text(), true, false, false);
 }
 
-void Finder::findPrevious()
+void AbstractFinder::findPrevious()
 {
     find(d.lineEdit->text(), false, true, false);
 }
 
-void Finder::doFind()
+void AbstractFinder::doFind()
 {
     setFixedHeight(d.lineEdit->sizeHint().height() + 1);
     setOffset(-sizeHint().height());
@@ -113,13 +113,13 @@ void Finder::doFind()
     reFind();
 }
 
-void Finder::reFind()
+void AbstractFinder::reFind()
 {
     d.lineEdit->setFocus(Qt::ShortcutFocusReason);
     d.lineEdit->selectAll();
 }
 
-void Finder::animateShow()
+void AbstractFinder::animateShow()
 {
     QPropertyAnimation *animation = new QPropertyAnimation(this, "offset");
     animation->setDuration(50);
@@ -128,7 +128,7 @@ void Finder::animateShow()
     setVisible(true);
 }
 
-void Finder::animateHide()
+void AbstractFinder::animateHide()
 {
     QPropertyAnimation *animation = new QPropertyAnimation(this, "offset");
     animation->setDuration(50);

@@ -15,7 +15,7 @@
 #include "treefinder.h"
 #include "treewidget.h"
 
-TreeFinder::TreeFinder(TreeWidget* tree) : Finder(tree)
+TreeFinder::TreeFinder(TreeWidget* tree) : AbstractFinder(tree)
 {
     d.tree = tree;
     if (tree)
@@ -25,7 +25,7 @@ TreeFinder::TreeFinder(TreeWidget* tree) : Finder(tree)
 
 void TreeFinder::setVisible(bool visible)
 {
-    Finder::setVisible(visible);
+    AbstractFinder::setVisible(visible);
     if (!visible && d.tree)
         d.tree->blockItemReset(false);
 }
