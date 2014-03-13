@@ -83,6 +83,11 @@ TextBrowser* BufferView::textBrowser() const
     return d.textBrowser;
 }
 
+TextDocument* BufferView::textDocument() const
+{
+    return d.textBrowser->document();
+}
+
 void BufferView::setBuffer(IrcBuffer* buffer)
 {
     if (d.buffer != buffer) {

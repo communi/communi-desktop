@@ -39,6 +39,7 @@ public:
     ListView* listView() const;
     TextInput* textInput() const;
     TextBrowser* textBrowser() const;
+    TextDocument* textDocument() const;
 
 public slots:
     void setBuffer(IrcBuffer* buffer);
