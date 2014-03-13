@@ -2,6 +2,9 @@
 # Communi
 ######################################################################
 
+TEMPLATE = lib
+CONFIG += static communi_plugin
+
 HEADERS += $$PWD/browserfinder.h
 HEADERS += $$PWD/finder.h
 HEADERS += $$PWD/finderplugin.h
@@ -13,5 +16,3 @@ SOURCES += $$PWD/finder.cpp
 SOURCES += $$PWD/finderplugin.cpp
 SOURCES += $$PWD/listfinder.cpp
 SOURCES += $$PWD/treefinder.cpp
-
-include(../plugin.pri)

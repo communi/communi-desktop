@@ -2,6 +2,9 @@
 # Communi
 ######################################################################
 
+TEMPLATE = lib
+CONFIG += static communi_plugin
+
 greaterThan(QT_MAJOR_VERSION, 4) {
     qtHaveModule(multimedia):QT += multimedia
 } else {
@@ -15,5 +18,3 @@ HEADERS += $$PWD/soundplugin.h
 
 SOURCES += $$PWD/soundnotification.cpp
 SOURCES += $$PWD/soundplugin.cpp
-
-include(../plugin.pri)

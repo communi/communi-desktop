@@ -2,12 +2,16 @@
 # Communi
 ######################################################################
 
-TEMPLATE = lib
 TARGET = $$basename(_PRO_FILE_PWD_)plugin
-CONFIG += plugin static communi_config communi_backend communi_base
+CONFIG += plugin
+
+include(communi_config.prf)
+include(communi_3rdparty.prf)
+include(communi_backend.prf)
+include(communi_base.prf)
 
 DESTDIR = $$BUILD_ROOT/plugins
 DEPENDPATH += $$_PRO_FILE_PWD_
 INCLUDEPATH += $$_PRO_FILE_PWD_
 
-include(api/api.pri)
+include($$SOURCE_ROOT/src/plugins/api/api.pri)

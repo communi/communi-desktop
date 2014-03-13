@@ -2,9 +2,8 @@
 # Communi
 ######################################################################
 
+TEMPLATE = lib
+CONFIG += static communi_plugin
+
 HEADERS += $$PWD/dockplugin.h
 SOURCES += $$PWD/dockplugin.cpp
-
-include(../plugin.pri)
-
-CONFIG += communi_3rdparty

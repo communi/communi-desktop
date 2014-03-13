@@ -2,6 +2,9 @@
 # Communi
 ######################################################################
 
+TEMPLATE = lib
+CONFIG += static communi_plugin
+
 HEADERS += $$PWD/monitorplugin.h
 HEADERS += $$PWD/systemmonitor.h
 
@@ -24,5 +27,3 @@ mac {
 } else {
     error(unsupported platform)
 }
-
-include(../plugin.pri)
