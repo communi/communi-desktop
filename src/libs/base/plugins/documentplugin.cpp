@@ -12,23 +12,18 @@
 * GNU General Public License for more details.
 */
 
-#ifndef DOCUMENTPLUGIN_H
-#define DOCUMENTPLUGIN_H
+#include "documentplugin.h"
+#include "bufferview.h"
+#include <QApplication>
 
-#include <QtPlugin>
-
-class TextDocument;
-
-class DocumentPlugin
+TextDocument* DocumentPlugin::currentDocument() const
 {
-public:
-    virtual ~DocumentPlugin() {}
-    virtual void initDocument(TextDocument*) {}
-    virtual void cleanupDocument(TextDocument*) {}
-
-    TextDocument* currentDocument() const;
-};
-
-Q_DECLARE_INTERFACE(DocumentPlugin, "Communi.DocumentPlugin")
-
-#endif // DOCUMENTPLUGIN_H
+    // TODO: beautify
+    QWidget* window = QApplication::topLevelWidgets().value(0);
+    if (window) {
+        BufferView* view = window->property("currentView").value<BufferView*>();
+        if (view)
+            return view->textDocument();
+    }
+    return 0;
+}
