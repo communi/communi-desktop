@@ -9,6 +9,6 @@ include(communi_3rdparty.prf)
 include(communi_backend.prf)
 include(communi_base.prf)
 
-DESTDIR = $$BUILD_ROOT/plugins
+DESTDIR = $$BUILD_TREE/plugins
 DEPENDPATH += $$_PRO_FILE_PWD_
 INCLUDEPATH += $$_PRO_FILE_PWD_

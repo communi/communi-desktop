@@ -2,7 +2,7 @@
 # Communi
 ######################################################################
 
-BASEDIR = $$SOURCE_ROOT/src/libs/backend/libcommuni/include
+BASEDIR = $$SOURCE_TREE/src/libs/backend/libcommuni/include
 
 DEPENDPATH += $$BASEDIR/IrcCore $$BASEDIR/IrcModel $$BASEDIR/IrcUtil
 INCLUDEPATH += $$BASEDIR/IrcCore $$BASEDIR/IrcModel $$BASEDIR/IrcUtil

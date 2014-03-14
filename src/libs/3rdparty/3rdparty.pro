@@ -6,7 +6,7 @@ TEMPLATE = lib
 TARGET = 3rdparty
 CONFIG += static
 
-DESTDIR = $$BUILD_ROOT/lib
+DESTDIR = $$BUILD_TREE/lib
 DEPENDPATH += $$PWD $$PWD/qtdocktile
 INCLUDEPATH += $$PWD $$PWD/qtdocktile
 

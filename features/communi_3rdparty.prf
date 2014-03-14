@@ -2,7 +2,7 @@
 # Communi
 ######################################################################
 
-BASEDIR = $$SOURCE_ROOT/src/libs/3rdparty
+BASEDIR = $$SOURCE_TREE/src/libs/3rdparty
 
 DEPENDPATH += $$BASEDIR $$BASEDIR/qtdocktile
 INCLUDEPATH += $$BASEDIR $$BASEDIR/qtdocktile

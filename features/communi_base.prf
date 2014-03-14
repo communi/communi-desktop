@@ -2,7 +2,7 @@
 # Communi
 ######################################################################
 
-BASEDIR = $$SOURCE_ROOT/src/libs/base
+BASEDIR = $$SOURCE_TREE/src/libs/base
 
 DEPENDPATH += $$BASEDIR $$BASEDIR/shared $$BASEDIR/plugins
 INCLUDEPATH += $$BASEDIR $$BASEDIR/shared $$BASEDIR/plugins
