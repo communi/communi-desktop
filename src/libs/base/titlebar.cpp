@@ -51,14 +51,25 @@ TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
 
     d.closeButton = new QToolButton(this);
     d.closeButton->setObjectName("close");
+    d.closeButton->setMenu(new QMenu(d.closeButton));
+    d.closeButton->setPopupMode(QToolButton::InstantPopup);
     d.closeButton->adjustSize();
-    connect(d.closeButton, SIGNAL(clicked()), parent, SLOT(closeBuffer()));
 
-    d.menuButton = new QToolButton(this);
-    d.menuButton->setObjectName("menu");
-    d.menuButton->setMenu(new QMenu(d.menuButton));
-    d.menuButton->setPopupMode(QToolButton::InstantPopup);
-    d.menuButton->adjustSize();
+    d.splitButton = new QToolButton(this);
+    d.splitButton->setObjectName("split");
+    d.splitButton->setMenu(new QMenu(d.splitButton));
+    d.splitButton->setPopupMode(QToolButton::InstantPopup);
+    d.splitButton->adjustSize();
+}
+
+QToolButton* TitleBar::splitButton() const
+{
+    return d.splitButton;
+}
+
+QToolButton* TitleBar::closeButton() const
+{
+    return d.closeButton;
 }
 
 QSize TitleBar::minimumSizeHint() const
@@ -126,15 +137,6 @@ void TitleBar::setTopic(const QString& topic)
     }
 }
 
-bool TitleBar::event(QEvent* event)
-{
-    if (event->type() == QEvent::ActionAdded)
-        d.menuButton->menu()->addAction(static_cast<QActionEvent*>(event)->action());
-    else if (event->type() == QEvent::ActionRemoved)
-        d.menuButton->menu()->removeAction(static_cast<QActionEvent*>(event)->action());
-    return QLabel::event(event);
-}
-
 bool TitleBar::eventFilter(QObject* object, QEvent* event)
 {
     Q_UNUSED(object);
@@ -185,7 +187,7 @@ void TitleBar::resizeEvent(QResizeEvent* event)
     r.moveTopRight(rect().topRight());
     d.closeButton->setGeometry(r);
     r.moveRight(r.left() - 1);
-    d.menuButton->setGeometry(r);
+    d.splitButton->setGeometry(r);
 
     QStyleOptionHeader option;
     option.initFrom(this);

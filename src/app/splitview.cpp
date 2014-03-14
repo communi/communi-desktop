@@ -29,6 +29,9 @@ SplitView::SplitView(QWidget* parent) : QSplitter(parent)
     d.splitHAction = new QAction(tr("Split side by side"), this);
     connect(d.splitHAction, SIGNAL(triggered()), this, SLOT(splitHorizontal()));
 
+    d.closeAction = new QAction(tr("Close"), this);
+    connect(d.closeAction, SIGNAL(triggered()), this, SLOT(closeView()));
+
     d.unsplitAction = new QAction(tr("Unsplit"), this);
     connect(d.unsplitAction, SIGNAL(triggered()), this, SLOT(unsplit()));
 
@@ -200,9 +203,12 @@ BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
     BufferView* view = new BufferView(splitter);
     connect(view, SIGNAL(destroyed(BufferView*)), this, SLOT(onViewRemoved(BufferView*)));
     connect(view->textBrowser(), SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
-    view->titleBar()->addAction(d.splitVAction);
-    view->titleBar()->addAction(d.splitHAction);
-    view->titleBar()->addAction(d.unsplitAction);
+    QMenu* splitMenu = view->titleBar()->splitButton()->menu();
+    splitMenu->addAction(d.splitVAction);
+    splitMenu->addAction(d.splitHAction);
+    QMenu* closeMenu = view->titleBar()->closeButton()->menu();
+    closeMenu->addAction(d.closeAction);
+    closeMenu->addAction(d.unsplitAction);
     d.views += view;
     splitter->insertWidget(index, view);
     splitter->setCollapsible(splitter->indexOf(view), false);
@@ -341,7 +347,7 @@ void SplitView::restoreSplittedViews(QSplitter* splitter, const QVariantMap& sta
 
 void SplitView::updateActions()
 {
-    d.unsplitAction->setEnabled(d.views.count() > 1);
+    d.unsplitAction->setVisible(d.views.count() > 1);
 }
 
 void SplitView::splitVertical()
@@ -352,6 +358,13 @@ void SplitView::splitVertical()
 void SplitView::splitHorizontal()
 {
     split(Qt::Horizontal);
+}
+
+void SplitView::closeView()
+{
+    BufferView* view = currentView();
+    if (view)
+        view->closeBuffer();
 }
 
 void SplitView::unsplit()
@@ -383,6 +396,7 @@ void SplitView::showContextMenu(const QPoint& pos)
             menu->addAction(d.splitVAction);
             menu->addAction(d.splitHAction);
             menu->addAction(d.unsplitAction);
+            menu->addAction(d.closeAction);
 
             QAction* separator = 0;
 

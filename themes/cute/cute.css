@@ -114,7 +114,7 @@ TitleBar > QToolButton {
     border-right-color: transparent;
 }
 
-TitleBar > QToolButton#menu {
+TitleBar > QToolButton#split {
     image: url(black:down.png);
 }
 
