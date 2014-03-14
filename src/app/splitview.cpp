@@ -23,15 +23,6 @@
 
 SplitView::SplitView(QWidget* parent) : QSplitter(parent)
 {
-    d.splitVAction = new QAction(tr("Split"), this);
-    connect(d.splitVAction, SIGNAL(triggered()), this, SLOT(splitVertical()));
-
-    d.splitHAction = new QAction(tr("Split side by side"), this);
-    connect(d.splitHAction, SIGNAL(triggered()), this, SLOT(splitHorizontal()));
-
-    d.closeAction = new QAction(tr("Close"), this);
-    connect(d.closeAction, SIGNAL(triggered()), this, SLOT(closeView()));
-
     d.unsplitAction = new QAction(tr("Unsplit"), this);
     connect(d.unsplitAction, SIGNAL(triggered()), this, SLOT(unsplit()));
 
@@ -203,11 +194,24 @@ BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
     BufferView* view = new BufferView(splitter);
     connect(view, SIGNAL(destroyed(BufferView*)), this, SLOT(onViewRemoved(BufferView*)));
     connect(view->textBrowser(), SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
-    QMenu* menu = view->titleBar()->menu();
-    menu->addAction(d.splitVAction);
-    menu->addAction(d.splitHAction);
-    menu->addAction(d.unsplitAction);
-    menu->addAction(d.closeAction);
+
+    // TODO: because of theme preview
+    if (window()->inherits("QMainWindow")) {
+        QMenu* menu = view->titleBar()->menu();
+        menu->addAction(tr("Connect..."), window(), SLOT(doConnect()), QKeySequence::New);
+        menu->addAction(tr("Join channel"), this, SLOT(joinChannel()))->setData(QVariant::fromValue(view));
+        menu->addAction(tr("Open query"), this, SLOT(openQuery()))->setData(QVariant::fromValue(view));
+        menu->addAction(tr("Close"), this, SLOT(closeView()), QKeySequence::Close);
+        menu->addSeparator();
+        menu->addAction(tr("Split"), this, SLOT(splitVertical()));
+        menu->addAction(tr("Split side by side"), this, SLOT(splitHorizontal()));
+        menu->addAction(d.unsplitAction);
+        menu->addSeparator();
+        menu->addAction(tr("Settings"), window(), SLOT(showSettings()), QKeySequence::Preferences);
+        menu->addSeparator();
+        menu->addAction(tr("Quit"), window(), SLOT(close()), QKeySequence::Quit);
+    }
+
     d.views += view;
     splitter->insertWidget(index, view);
     splitter->setCollapsible(splitter->indexOf(view), false);
@@ -346,7 +350,7 @@ void SplitView::restoreSplittedViews(QSplitter* splitter, const QVariantMap& sta
 
 void SplitView::updateActions()
 {
-    d.unsplitAction->setVisible(d.views.count() > 1);
+    d.unsplitAction->setEnabled(d.views.count() > 1);
 }
 
 void SplitView::splitVertical()
@@ -359,6 +363,13 @@ void SplitView::splitHorizontal()
     split(Qt::Horizontal);
 }
 
+void SplitView::unsplit()
+{
+    BufferView* view = currentView();
+    if (view)
+        view->deleteLater();
+}
+
 void SplitView::closeView()
 {
     BufferView* view = currentView();
@@ -366,11 +377,30 @@ void SplitView::closeView()
         view->closeBuffer();
 }
 
-void SplitView::unsplit()
+void SplitView::joinChannel()
 {
-    BufferView* view = currentView();
-    if (view)
-        view->deleteLater();
+    // TODO: uh oh
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action) {
+        BufferView* view = action->data().value<BufferView*>();
+        if (view) {
+            view->textInput()->setText("/JOIN #");
+            view->textInput()->setFocus();
+        }
+    }
+}
+
+void SplitView::openQuery()
+{
+    // TODO: uh oh
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action) {
+        BufferView* view = action->data().value<BufferView*>();
+        if (view) {
+            view->textInput()->setText("/QUERY ");
+            view->textInput()->setFocus();
+        }
+    }
 }
 
 void SplitView::showContextMenu(const QPoint& pos)
@@ -392,10 +422,9 @@ void SplitView::showContextMenu(const QPoint& pos)
 
         if (!anchor.startsWith("nick:")) {
             menu->addSeparator();
-            menu->addAction(d.splitVAction);
-            menu->addAction(d.splitHAction);
+            menu->addAction(tr("Split"), this, SLOT(splitVertical()));
+            menu->addAction(tr("Split side by side"), this, SLOT(splitHorizontal()));
             menu->addAction(d.unsplitAction);
-            menu->addAction(d.closeAction);
 
             QAction* separator = 0;
 

@@ -62,8 +62,11 @@ private slots:
     void updateActions();
     void splitVertical();
     void splitHorizontal();
-    void closeView();
     void unsplit();
+
+    void closeView();
+    void joinChannel();
+    void openQuery();
 
     void showContextMenu(const QPoint& pos);
 
@@ -72,9 +75,6 @@ private:
     void restoreSplittedViews(QSplitter* splitter, const QVariantMap& state);
 
     struct Private {
-        QAction* splitVAction;
-        QAction* splitHAction;
-        QAction* closeAction;
         QAction* unsplitAction;
         QList<BufferView*> views;
         QPointer<BufferView> current;
