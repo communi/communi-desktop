@@ -47,13 +47,13 @@ TitleBar > QTextEdit {
 }
 
 TextLowlight {
-    border: 1px solid #ddd;
+    border: 1px solid #ccc;
     background-color: #f6f6f6;
 }
 
 TextHighlight {
-    border: 1px solid palette(midlight);
-    background-color: rgba(255,64,64,64);
+    border: 1px solid #ccc;
+    background-color: rgba(224,32,32,48);
 }
 
 TextShadow {
