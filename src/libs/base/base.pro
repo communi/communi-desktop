@@ -24,8 +24,5 @@ SOURCES += $$PWD/textdocument.cpp
 SOURCES += $$PWD/textinput.cpp
 SOURCES += $$PWD/titlebar.cpp
 
-!exists(shared/shared.pri) {
-    error(A Git submodule is missing. Run \'git submodule update --init\' in $${SOURCE_TREE}.)
-}
 include(shared/shared.pri)
 include(plugins/plugins.pri)
