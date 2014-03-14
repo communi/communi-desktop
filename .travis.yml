@@ -1,0 +1,19 @@
+language: cpp
+compiler:
+  - gcc
+  - clang
+before_install:
+  - git submodule update --init --recursive
+script:
+  - qmake -v
+  - qmake
+  - make
+notifications:
+  email: false
+  irc:
+    channels:
+      - "irc.freenode.org#communi"
+    template:
+      - "%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} - %{build_url}"
+    use_notice: true
+    skip_join: true
