@@ -207,7 +207,7 @@ BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
         menu->addAction(tr("Split side by side"), this, SLOT(splitHorizontal()));
         menu->addAction(d.unsplitAction);
         menu->addSeparator();
-        menu->addAction(tr("Settings"), window(), SLOT(showSettings()), QKeySequence::Preferences);
+        menu->addAction(tr("Settings..."), window(), SLOT(showSettings()), QKeySequence::Preferences);
         menu->addSeparator();
         menu->addAction(tr("Quit"), window(), SLOT(close()), QKeySequence::Quit);
     }
