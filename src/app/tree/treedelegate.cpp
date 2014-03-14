@@ -26,12 +26,12 @@
 #include <QStyle>
 #include <QColor>
 
-class TreeHeader : public QWidget
+class TreeHeader : public QFrame
 {
     Q_OBJECT
 
 public:
-    TreeHeader(QWidget* parent = 0) : QWidget(parent)
+    TreeHeader(QWidget* parent = 0) : QFrame(parent)
     {
         d.state = QStyle::State_None;
         setAttribute(Qt::WA_TranslucentBackground);
@@ -75,12 +75,12 @@ private:
     } d;
 };
 
-class TreeBadge : public QWidget
+class TreeBadge : public QFrame
 {
     Q_OBJECT
 
 public:
-    TreeBadge(QWidget* parent = 0) : QWidget(parent)
+    TreeBadge(QWidget* parent = 0) : QFrame(parent)
     {
         d.num = 0;
         d.hilite = false;
