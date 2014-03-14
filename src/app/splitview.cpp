@@ -203,12 +203,11 @@ BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
     BufferView* view = new BufferView(splitter);
     connect(view, SIGNAL(destroyed(BufferView*)), this, SLOT(onViewRemoved(BufferView*)));
     connect(view->textBrowser(), SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
-    QMenu* splitMenu = view->titleBar()->splitButton()->menu();
-    splitMenu->addAction(d.splitVAction);
-    splitMenu->addAction(d.splitHAction);
-    QMenu* closeMenu = view->titleBar()->closeButton()->menu();
-    closeMenu->addAction(d.closeAction);
-    closeMenu->addAction(d.unsplitAction);
+    QMenu* menu = view->titleBar()->menu();
+    menu->addAction(d.splitVAction);
+    menu->addAction(d.splitHAction);
+    menu->addAction(d.unsplitAction);
+    menu->addAction(d.closeAction);
     d.views += view;
     splitter->insertWidget(index, view);
     splitter->setCollapsible(splitter->indexOf(view), false);

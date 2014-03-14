@@ -114,12 +114,8 @@ TitleBar > QToolButton {
     border-right-color: transparent;
 }
 
-TitleBar > QToolButton#split {
+TitleBar > QToolButton#menu {
     image: url(black:down.png);
-}
-
-TitleBar > QToolButton#close {
-    image: url(black:close.png);
 }
 
 Overlay {

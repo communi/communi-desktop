@@ -159,12 +159,8 @@ TitleBar > QToolButton {
     border-right-color: transparent;
 }
 
-TitleBar > QToolButton#split {
+TitleBar > QToolButton#menu {
     image: url(white:down.png)
-}
-
-TitleBar > QToolButton#close {
-    image: url(white:close.png)
 }
 
 Finder > QToolButton {

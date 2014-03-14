@@ -49,27 +49,16 @@ TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
     d.editor->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     d.editor->installEventFilter(this);
 
-    d.closeButton = new QToolButton(this);
-    d.closeButton->setObjectName("close");
-    d.closeButton->setMenu(new QMenu(d.closeButton));
-    d.closeButton->setPopupMode(QToolButton::InstantPopup);
-    d.closeButton->adjustSize();
-
-    d.splitButton = new QToolButton(this);
-    d.splitButton->setObjectName("split");
-    d.splitButton->setMenu(new QMenu(d.splitButton));
-    d.splitButton->setPopupMode(QToolButton::InstantPopup);
-    d.splitButton->adjustSize();
+    d.menuButton = new QToolButton(this);
+    d.menuButton->setObjectName("menu");
+    d.menuButton->setMenu(new QMenu(d.menuButton));
+    d.menuButton->setPopupMode(QToolButton::InstantPopup);
+    d.menuButton->adjustSize();
 }
 
-QToolButton* TitleBar::splitButton() const
+QMenu* TitleBar::menu() const
 {
-    return d.splitButton;
-}
-
-QToolButton* TitleBar::closeButton() const
-{
-    return d.closeButton;
+    return d.menuButton->menu();
 }
 
 QSize TitleBar::minimumSizeHint() const
@@ -137,6 +126,15 @@ void TitleBar::setTopic(const QString& topic)
     }
 }
 
+bool TitleBar::event(QEvent* event)
+{
+    if (event->type() == QEvent::ActionAdded)
+        d.menuButton->menu()->addAction(static_cast<QActionEvent*>(event)->action());
+    else if (event->type() == QEvent::ActionRemoved)
+        d.menuButton->menu()->removeAction(static_cast<QActionEvent*>(event)->action());
+    return QLabel::event(event);
+}
+
 bool TitleBar::eventFilter(QObject* object, QEvent* event)
 {
     Q_UNUSED(object);
@@ -183,11 +181,9 @@ void TitleBar::paintEvent(QPaintEvent* event)
 
 void TitleBar::resizeEvent(QResizeEvent* event)
 {
-    QRect r = d.closeButton->rect();
+    QRect r = d.menuButton->rect();
     r.moveTopRight(rect().topRight());
-    d.closeButton->setGeometry(r);
-    r.moveRight(r.left() - 1);
-    d.splitButton->setGeometry(r);
+    d.menuButton->setGeometry(r);
 
     QStyleOptionHeader option;
     option.initFrom(this);

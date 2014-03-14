@@ -32,8 +32,7 @@ public:
     IrcBuffer* buffer() const;
     QString topic() const;
 
-    QToolButton* splitButton() const;
-    QToolButton* closeButton() const;
+    QMenu* menu() const;
 
     QSize minimumSizeHint() const;
     int heightForWidth(int width) const;
@@ -46,6 +45,7 @@ signals:
     void bufferChanged(IrcBuffer* buffer);
 
 protected:
+    bool event(QEvent* event);
     bool eventFilter(QObject* object, QEvent* event);
     void mouseDoubleClickEvent(QMouseEvent* event);
     void paintEvent(QPaintEvent* event);
@@ -60,8 +60,7 @@ private:
     struct Private {
         IrcBuffer* buffer;
         QTextEdit* editor;
-        QToolButton* splitButton;
-        QToolButton* closeButton;
+        QToolButton* menuButton;
         MessageFormatter* formatter;
     } d;
 };
