@@ -26,6 +26,23 @@
 #include <QStyle>
 #include <QMenu>
 
+class TitleMenu : public QMenu
+{
+public:
+    TitleMenu(QWidget* parent) : QMenu(parent) { }
+
+protected:
+    void moveEvent(QMoveEvent*)
+    {
+        // TODO: looks scary - any better ideas?
+        if (QWidget* parent = parentWidget()) {
+            QRect rect = geometry();
+            rect.moveTopRight(parent->mapToGlobal(parent->rect().bottomRight()));
+            setGeometry(rect);
+        }
+    }
+};
+
 TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
 {
     d.buffer = 0;
@@ -51,7 +68,7 @@ TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
 
     d.menuButton = new QToolButton(this);
     d.menuButton->setObjectName("menu");
-    d.menuButton->setMenu(new QMenu(d.menuButton));
+    d.menuButton->setMenu(new TitleMenu(d.menuButton));
     d.menuButton->setPopupMode(QToolButton::InstantPopup);
     d.menuButton->adjustSize();
 }
