@@ -29,7 +29,6 @@ Thumbs.db
 .DS_Store
 .qmake.cache
 .qmake.stash
-.qmake.conf
 .make.cache
 .tmp
 *.Debug
