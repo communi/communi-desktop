@@ -31,7 +31,21 @@ class TreeHeader : public QWidget
     Q_OBJECT
 
 public:
-    TreeHeader(QWidget* parent = 0) : QWidget(parent) { d.state = QStyle::State_None; }
+    TreeHeader(QWidget* parent = 0) : QWidget(parent)
+    {
+        d.state = QStyle::State_None;
+        setAttribute(Qt::WA_TranslucentBackground);
+        setAttribute(Qt::WA_NoSystemBackground);
+        setVisible(false);
+    }
+
+    static TreeHeader* instance(QWidget* parent = 0)
+    {
+        static QPointer<TreeHeader> header;
+        if (!header)
+            header = new TreeHeader(parent);
+        return header;
+    }
 
     void setText(const QString& text) { d.text = text; }
     void setIcon(const QIcon& icon) { d.icon = icon; }
@@ -66,7 +80,22 @@ class TreeBadge : public QWidget
     Q_OBJECT
 
 public:
-    TreeBadge(QWidget* parent = 0) : QWidget(parent) { d.num = 0; d.hilite = false; }
+    TreeBadge(QWidget* parent = 0) : QWidget(parent)
+    {
+        d.num = 0;
+        d.hilite = false;
+        setAttribute(Qt::WA_TranslucentBackground);
+        setAttribute(Qt::WA_NoSystemBackground);
+        setVisible(false);
+    }
+
+    static TreeBadge* instance(QWidget* parent = 0)
+    {
+        static QPointer<TreeBadge> badge;
+        if (!badge)
+            badge = new TreeBadge(parent);
+        return badge;
+    }
 
     void setNum(int num) { d.num = num; }
     void setHighlighted(int hilite) { d.hilite = hilite; }
@@ -125,15 +154,7 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         const_cast<QStyleOptionViewItem&>(option).state |= QStyle::State_Off;
 
     if (!index.parent().isValid()) {
-        static QPointer<TreeHeader> header;
-        if (!header) {
-            header = new TreeHeader;
-            const QStyleOptionViewItemV4* v4 = qstyleoption_cast<const QStyleOptionViewItemV4*>(&option);
-            if (v4)
-                header->setParent(const_cast<QWidget*>(v4->widget));
-            header->setVisible(false);
-        }
-
+        TreeHeader* header = TreeHeader::instance(const_cast<QWidget*>(option.widget));
         header->setText(index.data(Qt::DisplayRole).toString());
         header->setIcon(index.data(Qt::DecorationRole).value<QIcon>());
         header->setState(option.state);
@@ -142,21 +163,11 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         header->render(painter);
         painter->translate(-option.rect.topLeft());
     } else {
-        static QPointer<TreeBadge> badge;
-        if (!badge) {
-            badge = new TreeBadge;
-            const QStyleOptionViewItemV4* v4 = qstyleoption_cast<const QStyleOptionViewItemV4*>(&option);
-            if (v4)
-                badge->setParent(const_cast<QWidget*>(v4->widget));
-            badge->setAttribute(Qt::WA_TranslucentBackground);
-            badge->setAttribute(Qt::WA_NoSystemBackground);
-            badge->setVisible(false);
-        }
-
         QStyledItemDelegate::paint(painter, option, index);
 
         int num = index.data(TreeRole::Badge).toInt();
         if (num > 0) {
+            TreeBadge* badge = TreeBadge::instance(const_cast<QWidget*>(option.widget));
             badge->setNum(num);
             badge->setHighlighted(hilite);
 
@@ -171,11 +182,8 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 void TreeDelegate::initStyleOption(QStyleOptionViewItem* option, const QModelIndex& index) const
 {
     QStyledItemDelegate::initStyleOption(option, index);
-    if (index.parent().isValid()) {
-        QStyleOptionViewItemV4* v4 = qstyleoption_cast<QStyleOptionViewItemV4*>(option);
-        if (v4)
-            v4->backgroundBrush = Qt::transparent;
-    }
+    if (index.parent().isValid())
+        option->backgroundBrush = Qt::transparent;
 }
 
 #include "treedelegate.moc"
