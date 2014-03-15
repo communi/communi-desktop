@@ -8,7 +8,7 @@
      <item>
       <widget class="QLabel" name="iconLabel">
        <property name="pixmap">
-        <pixmap resource="../../../resources/communi.qrc">:/icons/64x64/communi.png</pixmap>
+        <pixmap resource="../../resources/communi.qrc">:/icons/64x64/communi.png</pixmap>
        </property>
       </widget>
      </item>
@@ -77,6 +77,23 @@
         <property name="fieldGrowthPolicy">
          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
         </property>
+        <item row="0" column="0">
+         <widget class="QLabel" name="displayNameLabel">
+          <property name="text">
+           <string>&amp;Name:</string>
+          </property>
+          <property name="buddy">
+           <cstring>displayNameField</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="displayNameField">
+          <property name="placeholderText">
+           <string>Freenode</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="0">
          <widget class="QLabel" name="hostLabel">
           <property name="text">
@@ -199,28 +216,22 @@
          </widget>
         </item>
         <item row="6" column="1">
-         <widget class="QLineEdit" name="passwordField">
-          <property name="echoMode">
-           <enum>QLineEdit::Password</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="displayNameLabel">
-          <property name="text">
-           <string>&amp;Name:</string>
-          </property>
-          <property name="buddy">
-           <cstring>displayNameField</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="displayNameField">
-          <property name="placeholderText">
-           <string>Freenode</string>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QLineEdit" name="passwordField">
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="saslBox">
+            <property name="text">
+             <string>S&amp;ASL</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </item>
@@ -291,7 +302,7 @@
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
-  <include location="../../../resources/communi.qrc"/>
+  <include location="../../resources/communi.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -32,6 +32,9 @@ public:
     bool isSecure() const;
     void setSecure(bool secure);
 
+    QString saslMechanism() const;
+    void setSaslMechanism(const QString& mechanism);
+
     QString nickName() const;
     void setNickName(const QString& name);
 

@@ -10,6 +10,7 @@
 #include "connectpage.h"
 #include "simplecrypt.h"
 #include <QRegExpValidator>
+#include <IrcConnection>
 #include <QStringList>
 #include <QPushButton>
 #include <QCompleter>
@@ -122,6 +123,16 @@ bool ConnectPage::isSecure() const
 void ConnectPage::setSecure(bool secure)
 {
     ui.secureField->setChecked(secure);
+}
+
+QString ConnectPage::saslMechanism() const
+{
+    return ui.saslBox->isChecked() ? IrcConnection::supportedSaslMechanisms().first() : QString();
+}
+
+void ConnectPage::setSaslMechanism(const QString& mechanism)
+{
+    ui.saslBox->setChecked(!mechanism.isEmpty());
 }
 
 QString ConnectPage::nickName() const

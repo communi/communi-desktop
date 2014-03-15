@@ -246,6 +246,7 @@ void MainWindow::onConnectAccepted()
     connection->setUserName(d.connectPage->userName());
     connection->setDisplayName(d.connectPage->displayName());
     connection->setPassword(d.connectPage->password());
+    connection->setSaslMechanism(d.connectPage->saslMechanism());
     if (!d.editedConnection)
         addConnection(connection);
     d.editedConnection = 0;
