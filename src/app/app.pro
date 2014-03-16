@@ -35,8 +35,6 @@ HEADERS += $$PWD/mainwindow.h
 HEADERS += $$PWD/pluginloader.h
 HEADERS += $$PWD/settingspage.h
 HEADERS += $$PWD/splitview.h
-HEADERS += $$PWD/themeinfo.h
-HEADERS += $$PWD/themeloader.h
 
 SOURCES += $$PWD/chatpage.cpp
 SOURCES += $$PWD/connectpage.cpp
@@ -45,10 +43,9 @@ SOURCES += $$PWD/mainwindow.cpp
 SOURCES += $$PWD/pluginloader.cpp
 SOURCES += $$PWD/settingspage.cpp
 SOURCES += $$PWD/splitview.cpp
-SOURCES += $$PWD/themeinfo.cpp
-SOURCES += $$PWD/themeloader.cpp
 
 include(finder/finder.pri)
+include(theme/theme.pri)
 include(tree/tree.pri)
 include(../../resources/resources.pri)
 include(../../themes/themes.pri)
