@@ -45,7 +45,9 @@ public:
     void restoreState(const QByteArray& state);
 
 public slots:
+    void addBuffer(IrcBuffer* buffer);
     void closeBuffer(IrcBuffer* buffer = 0);
+    void removeBuffer(IrcBuffer* buffer);
 
 signals:
     void currentViewChanged(BufferView* view);
@@ -56,8 +58,6 @@ private slots:
     void removeConnection(IrcConnection* connection);
     void addView(BufferView* view);
     void removeView(BufferView* view);
-    void addBuffer(IrcBuffer* buffer);
-    void removeBuffer(IrcBuffer* buffer);
     void addDocument(TextDocument* document);
     void onSocketError();
 

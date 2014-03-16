@@ -9,8 +9,10 @@
 
 #include "settingspage.h"
 #include "textdocument.h"
+#include "textbrowser.h"
 #include "themeloader.h"
 #include "treewidget.h"
+#include "bufferview.h"
 #include "themeinfo.h"
 #include "splitview.h"
 #include "chatpage.h"
@@ -25,25 +27,41 @@
 #include <QPixmap>
 #include <QBuffer>
 
-//"Nullam eget commodo diam, sit amet ornare leo."
-//"Quisque vitae ipsum nisi."
-//"Phasellus tristique augue a felis tincidunt, vel pretium odio ornare."
-//"Mauris vel leo est."
-//"Vivamus porttitor mauris eget bibendum consequat."
-//"Ut volutpat nibh in enim elementum, sed placerat erat gravida."
-//"Duis risus mauris, laoreet nec tempus in, varius sit amet est."
-//"Etiam augue purus, pharetra vel neque a, fringilla hendrerit orci."
-
-TextDocument* createTextDocument(IrcBuffer* buffer)
+class Channel : public IrcChannel
 {
-    TextDocument* doc = new TextDocument(buffer);
-    doc->receiveMessage(IrcMessage::fromParameters("communi", "PRIVMSG", QStringList() << buffer->title() << "foo", buffer->connection()));
-    return doc;
+public:
+    Channel(QObject* parent = 0) : IrcChannel(parent) { }
+    bool isActive() const { return true; }
+};
+
+class Server : public IrcBuffer
+{
+public:
+    Server(QObject* parent = 0) : IrcBuffer(parent) { }
+    bool isActive() const { return true; }
+};
+
+static void receiveMessages(TextDocument* doc)
+{
+    QString title = doc->buffer()->title();
+    IrcConnection* connection = doc->buffer()->connection();
+    doc->receiveMessage(IrcMessage::fromParameters("Lorem", "JOIN", QStringList() << title, connection));
+    doc->receiveMessage(IrcMessage::fromParameters("Morbi", "PRIVMSG", QStringList() << title << "nullam eget commodo diam. sit amet ornare leo.", connection));
+    doc->receiveMessage(IrcMessage::fromParameters("nulla", "PRIVMSG", QStringList() << title << "...", connection));
+    doc->receiveMessage(IrcMessage::fromParameters("Ipsum", "JOIN", QStringList() << title, connection));
+    doc->receiveMessage(IrcMessage::fromParameters("rhoncus", "PRIVMSG", QStringList() << title << "vivamus!", connection));
+    doc->receiveMessage(IrcMessage::fromParameters("Etiam", "PRIVMSG", QStringList() << title << "Ut volutpat nibh nec enim elementum, sed placerat erat gravida.", connection));
+    doc->receiveMessage(IrcMessage::fromParameters("Ipsum", "QUIT", QStringList() << "Nulla facilisi.", connection));
+    doc->receiveMessage(IrcMessage::fromParameters("Ipsum", "JOIN", QStringList() << title, connection));
+    doc->receiveMessage(IrcMessage::fromParameters("nunc", "PRIVMSG", QStringList() << title << ":)", connection));
+    doc->receiveMessage(IrcMessage::fromParameters("gravida", "PRIVMSG", QStringList() << title << "etiam augue purus, pharetra vel neque a, fringilla hendrerit orci", connection));
+    doc->receiveMessage(IrcMessage::fromParameters("Proin", "PRIVMSG", QStringList() << title << "enim ante?", connection));
+    doc->receiveMessage(IrcMessage::fromParameters("Cras", "PRIVMSG", QStringList() << title << "quisque vel lacus eu odio pretium adipiscing...", connection));
 }
 
-IrcBuffer* createChannel(const QString& name, QObject* parent)
+static IrcBuffer* createChannel(const QString& name, QObject* parent)
 {
-    IrcChannel* channel = new IrcChannel(parent);
+    IrcChannel* channel = new Channel(parent);
     channel->setPrefix("#");
     channel->setName(name);
     return channel;
@@ -52,9 +70,12 @@ IrcBuffer* createChannel(const QString& name, QObject* parent)
 static IrcBufferModel* createBufferModel(QObject* parent)
 {
     IrcConnection* connection = new IrcConnection(parent);
+    connection->setNickName("communi");
     IrcBufferModel* model = new IrcBufferModel(connection);
-    IrcBuffer* buffer = model->add("Lorem Ipsum");
-    buffer->setSticky(true);
+    IrcBuffer* server = new Server(model);
+    server->setName("Lorem Ipsum");
+    server->setSticky(true);
+    model->add(server);
     model->add(createChannel("donec", model));
     model->add(createChannel("convallis", model));
     model->add(createChannel("sagittis", model));
@@ -80,9 +101,12 @@ static ChatPage* createChatPage(QWidget* parent = 0)
     foreach (IrcBuffer* buffer, model->buffers())
         page->treeWidget()->addBuffer(buffer);
     IrcBuffer* buffer = model->find("#magna");
-    createTextDocument(buffer);
+    page->addBuffer(buffer);
     page->splitView()->setCurrentBuffer(buffer);
     page->treeWidget()->setCurrentBuffer(buffer);
+    page->treeWidget()->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    page->currentView()->textBrowser()->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    receiveMessages(page->currentView()->textDocument());
     return page;
 }
 
