@@ -100,15 +100,6 @@ void ChatPage::setTheme(const QString& theme)
 
         QString css = d.theme.style();
         window()->setStyleSheet(css);
-
-        QTreeWidgetItemIterator it(d.treeWidget);
-        while (*it) {
-            TreeItem* item = static_cast<TreeItem*>(*it);
-            QList<TextDocument*> documents = item->buffer()->findChildren<TextDocument*>();
-            foreach (TextDocument* doc, documents)
-                doc->setStyleSheet(css);
-            it++;
-        }
     }
 }
 
