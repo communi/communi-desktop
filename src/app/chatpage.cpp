@@ -19,6 +19,7 @@
 #include "titlebar.h"
 #include "finder.h"
 #include "mainwindow.h"
+#include "messageformatter.h"
 #include <QCoreApplication>
 #include <IrcCommandParser>
 #include <IrcBufferModel>
@@ -31,6 +32,10 @@
 
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 {
+    d.showEvents = true;
+    d.showDetails = true;
+    d.timestampFormat = "[hh:mm:ss]";
+
     d.splitView = new SplitView(this);
     d.treeWidget = new TreeWidget(this);
     addWidget(d.treeWidget);
@@ -107,13 +112,83 @@ void ChatPage::setTheme(const QString& theme)
     }
 }
 
+QFont ChatPage::messageFont() const
+{
+    return d.messageFont;
+}
+
+void ChatPage::setMessageFont(const QFont& font)
+{
+    d.messageFont = font;
+}
+
+QString ChatPage::timeStampFormat() const
+{
+    return d.timestampFormat;
+}
+
+void ChatPage::setTimeStampFormat(const QString& format)
+{
+    d.timestampFormat = format;
+}
+
+bool ChatPage::showEvents() const
+{
+    return d.showEvents;
+}
+
+void ChatPage::setShowEvents(bool show)
+{
+    d.showEvents = show;
+}
+
+bool ChatPage::showDetails() const
+{
+    return d.showDetails;
+}
+
+void ChatPage::setShowDetails(bool show)
+{
+    d.showDetails = show;
+}
+
+QByteArray ChatPage::saveSettings() const
+{
+    QVariantMap settings;
+    settings.insert("theme", d.theme.name());
+    settings.insert("showEvents", d.showEvents);
+    settings.insert("showDetails", d.showDetails);
+    settings.insert("fontFamily", d.messageFont.family());
+    settings.insert("fontSize", d.messageFont.pixelSize());
+
+    QByteArray data;
+    QDataStream out(&data, QIODevice::WriteOnly);
+    out << settings;
+    return data;
+}
+
+void ChatPage::restoreSettings(const QByteArray& data)
+{
+    QVariantMap settings;
+    QDataStream in(data);
+    in >> settings;
+
+    setTheme(settings.value("theme", "Cute").toString());
+    setShowEvents(settings.value("showEvents", true).toBool());
+    setShowDetails(settings.value("showDetails", true).toBool());
+
+    QFont font;
+    font.setFamily(settings.value("fontFamily", font.family()).toString());
+    font.setPixelSize(settings.value("fontSize", font.pixelSize()).toInt());
+    setMessageFont(font);
+}
+
 QByteArray ChatPage::saveState() const
 {
     QVariantMap state;
     state.insert("splitter", QSplitter::saveState());
     state.insert("views", d.splitView->saveState());
     state.insert("tree", d.treeWidget->saveState());
-    state.insert("theme", d.theme.name());
 
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -133,10 +208,6 @@ void ChatPage::restoreState(const QByteArray& data)
         QSplitter::restoreState(state.value("splitter").toByteArray());
     if (state.contains("views"))
         d.splitView->restoreState(state.value("views").toByteArray());
-    if (state.contains("theme"))
-        setTheme(state.value("theme").toString());
-    else
-        setTheme("Cute");
 }
 
 void ChatPage::addConnection(IrcConnection* connection)
@@ -197,7 +268,9 @@ void ChatPage::addBuffer(IrcBuffer* buffer)
     d.splitView->addBuffer(buffer);
 
     PluginLoader::instance()->bufferAdded(buffer);
-    addDocument(doc);
+
+    setupDocument(doc);
+    PluginLoader::instance()->documentAdded(doc);
 
     connect(buffer, SIGNAL(destroyed(IrcBuffer*)), this, SLOT(removeBuffer(IrcBuffer*)));
 }
@@ -217,6 +290,15 @@ void ChatPage::removeBuffer(IrcBuffer* buffer)
     PluginLoader::instance()->bufferRemoved(buffer);
 }
 
+void ChatPage::setupDocument(TextDocument* document)
+{
+    document->setStyleSheet(d.theme.style());
+    document->setDefaultFont(d.messageFont);
+    document->formatter()->setDetailed(d.showDetails);
+    document->formatter()->setStripNicks(!d.showDetails);
+    document->formatter()->setTimeStampFormat(d.timestampFormat);
+}
+
 void ChatPage::addView(BufferView* view)
 {
     TitleBar* bar = view->titleBar();
@@ -226,7 +308,8 @@ void ChatPage::addView(BufferView* view)
 
     view->textInput()->setParser(createParser(view));
     connect(view, SIGNAL(bufferClosed(IrcBuffer*)), this, SLOT(closeBuffer(IrcBuffer*)));
-    connect(view, SIGNAL(cloned(TextDocument*)), this, SLOT(addDocument(TextDocument*)));
+    connect(view, SIGNAL(cloned(TextDocument*)), this, SLOT(setupDocument(TextDocument*)));
+    connect(view, SIGNAL(cloned(TextDocument*)), PluginLoader::instance(), SLOT(documentAdded(TextDocument*)));
 
     PluginLoader::instance()->viewAdded(view);
 }
@@ -234,12 +317,6 @@ void ChatPage::addView(BufferView* view)
 void ChatPage::removeView(BufferView* view)
 {
     PluginLoader::instance()->viewRemoved(view);
-}
-
-void ChatPage::addDocument(TextDocument* document)
-{
-    document->setStyleSheet(d.theme.style());
-    PluginLoader::instance()->documentAdded(document);
 }
 
 void ChatPage::onSocketError()

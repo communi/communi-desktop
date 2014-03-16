@@ -11,6 +11,7 @@
 #include "pluginloader.h"
 #include "settingspage.h"
 #include "windowplugin.h"
+#include "textdocument.h"
 #include "connectpage.h"
 #include "bufferview.h"
 #include "chatpage.h"
@@ -101,6 +102,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     if (settings.contains("geometry"))
         restoreGeometry(settings.value("geometry").toByteArray());
 
+    d.chatPage->restoreSettings(settings.value("settings").toByteArray());
+
     foreach (const QVariant& v, settings.value("connections").toList()) {
         QVariantMap state = v.toMap();
         IrcConnection* connection = new IrcConnection(this);
@@ -129,6 +132,7 @@ MainWindow::~MainWindow()
 
     QSettings settings;
     settings.setValue("geometry", saveGeometry());
+    settings.setValue("settings", d.chatPage->saveSettings());
     settings.setValue("state", d.chatPage->saveState());
 
     QVariantList states;
@@ -291,6 +295,21 @@ void MainWindow::onSettingsAccepted()
     SettingsPage* page = qobject_cast<SettingsPage*>(sender());
     if (page) {
         d.chatPage->setTheme(page->theme());
+        d.chatPage->setMessageFont(page->messageFont());
+        d.chatPage->setShowDetails(page->showDetails());
+        d.chatPage->setShowEvents(page->showEvents());
+        d.chatPage->setTimeStampFormat(page->timeStampFormat());
+
+        foreach (IrcConnection* connection, d.connections) {
+            IrcBufferModel* model = connection->findChild<IrcBufferModel*>(); // TODO
+            if (model) {
+                foreach (IrcBuffer* buffer, model->buffers()) {
+                    TextDocument* doc = buffer->findChild<TextDocument*>(); // TODO
+                    if (doc)
+                        d.chatPage->setupDocument(doc);
+                }
+            }
+        }
         pop();
     }
 }
@@ -316,6 +335,11 @@ void MainWindow::showSettings()
 
     SettingsPage* page = new SettingsPage(d.stack);
     page->setTheme(d.chatPage->theme());
+    page->setMessageFont(d.chatPage->messageFont());
+    page->setShowDetails(d.chatPage->showDetails());
+    page->setShowEvents(d.chatPage->showEvents());
+    page->setTimeStampFormat(d.chatPage->timeStampFormat());
+
     connect(page, SIGNAL(accepted()), this, SLOT(onSettingsAccepted()));
     connect(page, SIGNAL(rejected()), this, SLOT(pop()));
     push(page);

@@ -35,19 +35,35 @@ public:
     QString theme() const;
     void setTheme(const QString& theme);
 
+    QFont messageFont() const;
+    void setMessageFont(const QFont& font);
+
+    QString timeStampFormat() const;
+    void setTimeStampFormat(const QString& format);
+
+    bool showEvents() const;
+    void setShowEvents(bool show);
+
+    bool showDetails() const;
+    void setShowDetails(bool show);
+
     TreeWidget* treeWidget() const;
     SplitView* splitView() const;
 
     BufferView* currentView() const;
     IrcBuffer* currentBuffer() const;
 
+    QByteArray saveSettings() const;
+    void restoreSettings(const QByteArray& data);
+
     QByteArray saveState() const;
-    void restoreState(const QByteArray& state);
+    void restoreState(const QByteArray& data);
 
 public slots:
     void addBuffer(IrcBuffer* buffer);
     void closeBuffer(IrcBuffer* buffer = 0);
     void removeBuffer(IrcBuffer* buffer);
+    void setupDocument(TextDocument* document);
 
 signals:
     void currentViewChanged(BufferView* view);
@@ -58,13 +74,16 @@ private slots:
     void removeConnection(IrcConnection* connection);
     void addView(BufferView* view);
     void removeView(BufferView* view);
-    void addDocument(TextDocument* document);
     void onSocketError();
 
 private:
     static IrcCommandParser* createParser(QObject* parent);
 
     struct Private {
+        bool showEvents;
+        bool showDetails;
+        QFont messageFont;
+        QString timestampFormat;
         ThemeInfo theme;
         SplitView* splitView;
         TreeWidget* treeWidget;
