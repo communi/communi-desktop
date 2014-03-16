@@ -35,6 +35,7 @@
 TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
     d.block = false;
+    d.blink = false;
     d.source = 0;
     d.sortingBlocked = false;
 
