@@ -22,6 +22,7 @@
 #include <QApplication>
 #include <QHeaderView>
 #include <QMouseEvent>
+#include <QScrollBar>
 #include <IrcMessage>
 #include <IrcCommand>
 #include <IrcChannel>
@@ -317,7 +318,8 @@ void TreeWidget::collapseCurrentConnection()
 
 QSize TreeWidget::sizeHint() const
 {
-    return QSize(20 * fontMetrics().width('#'), QTreeWidget::sizeHint().height());
+    const int w = 12 * fontMetrics().width('#') + verticalScrollBar()->sizeHint().width();
+    return QSize(w, QTreeWidget::sizeHint().height());
 }
 
 void TreeWidget::contextMenuEvent(QContextMenuEvent* event)
