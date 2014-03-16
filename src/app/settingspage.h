@@ -11,6 +11,9 @@
 #define SETTINGSPAGE_H
 
 #include "ui_settingspage.h"
+#include "themeinfo.h"
+
+class ThemeWidget;
 
 class SettingsPage : public QWidget
 {
@@ -22,12 +25,20 @@ public:
 
     QString theme() const;
 
+public slots:
+    void setTheme(const QString& theme);
+
 signals:
     void accepted();
     void rejected();
 
+private slots:
+    void select(const ThemeInfo& theme);
+
 private:
     struct Private : public Ui::SettingsPage {
+        QString theme;
+        QList<ThemeWidget*> widgets;
     } ui;
 };
 

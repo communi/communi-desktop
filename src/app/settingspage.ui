@@ -51,7 +51,7 @@
      <widget class="QWidget" name="content">
       <layout class="QVBoxLayout" name="contentLayout">
        <property name="spacing">
-        <number>12</number>
+        <number>24</number>
        </property>
       </layout>
      </widget>

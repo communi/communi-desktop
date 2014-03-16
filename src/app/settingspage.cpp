@@ -10,7 +10,6 @@
 #include "settingspage.h"
 #include "themewidget.h"
 #include "themeloader.h"
-#include "themeinfo.h"
 #include <QPushButton>
 #include <QShortcut>
 
@@ -30,7 +29,9 @@ SettingsPage::SettingsPage(QWidget* parent) : QWidget(parent)
     foreach (const QString& name, ThemeLoader::instance()->themes()) {
         ThemeInfo theme = ThemeLoader::instance()->theme(name);
         ThemeWidget* widget = new ThemeWidget(theme, ui.content);
+        connect(widget, SIGNAL(selected(ThemeInfo)), this, SLOT(select(ThemeInfo)));
         ui.contentLayout->addWidget(widget);
+        ui.widgets += widget;
     }
 }
 
@@ -40,14 +41,17 @@ SettingsPage::~SettingsPage()
 
 QString SettingsPage::theme() const
 {
-    //return ui.comboBox->currentText();
-    return "Cute";
+    return ui.theme;
 }
-/*
-void SettingsPage::setThemes(const QStringList& themes)
-{
-    //ui.comboBox->clear();
-    //ui.comboBox->addItems(themes);
-}
-*/
 
+void SettingsPage::setTheme(const QString& theme)
+{
+    select(ThemeLoader::instance()->theme(theme));
+}
+
+void SettingsPage::select(const ThemeInfo& theme)
+{
+    ui.theme = theme.name();
+    foreach (ThemeWidget* widget, ui.widgets)
+        widget->setSelected(widget->theme().name() == theme.name());
+}

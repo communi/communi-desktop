@@ -8,7 +8,6 @@
  */
 
 #include "themewidget.h"
-#include "themeinfo.h"
 #include "textdocument.h"
 #include "textbrowser.h"
 #include "treewidget.h"
@@ -17,6 +16,7 @@
 #include "chatpage.h"
 #include <IrcBufferModel>
 #include <IrcConnection>
+#include <QApplication>
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include <IrcChannel>
@@ -24,8 +24,10 @@
 #include <IrcBuffer>
 #include <QPainter>
 #include <QPixmap>
+#include <QStyle>
 #include <QLabel>
 #include <QTimer>
+#include <QEvent>
 
 class Channel : public IrcChannel
 {
@@ -116,6 +118,9 @@ static ChatPage* createChatPage(const QString& theme, QWidget* parent = 0)
 
 ThemeWidget::ThemeWidget(const ThemeInfo& theme, QWidget* parent) : QGroupBox(parent)
 {
+    d.theme = theme;
+    d.selected = false;
+
     setTitle(theme.name());
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -126,6 +131,7 @@ ThemeWidget::ThemeWidget(const ThemeInfo& theme, QWidget* parent) : QGroupBox(pa
     d.preview = new QLabel(this);
     d.preview->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     d.preview->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    d.preview->installEventFilter(this);
 
     d.grid = new QGridLayout(this);
     d.grid->addWidget(new QLabel(tr("<b>Version</b>: %1").arg(theme.version()), this), 0, 0);
@@ -143,16 +149,40 @@ ThemeWidget::~ThemeWidget()
     delete d.page;
 }
 
-void ThemeWidget::resizeEvent(QResizeEvent* event)
+ThemeInfo ThemeWidget::theme() const
 {
-    QGroupBox::resizeEvent(event);
-    updatePreview();
+    return d.theme;
+}
+
+bool ThemeWidget::isSelected() const
+{
+    return d.selected;
+}
+
+void ThemeWidget::setSelected(bool value)
+{
+    if (d.selected != value) {
+        d.selected = value;
+        updatePreview();
+        if (value)
+            emit selected(d.theme);
+    }
+}
+
+bool ThemeWidget::eventFilter(QObject* object, QEvent* event)
+{
+    if (event->type() == QEvent::Resize)
+        updatePreview();
+    else if (event->type() == QEvent::MouseButtonPress)
+        setSelected(true);
+    return QGroupBox::eventFilter(object, event);
 }
 
 void ThemeWidget::updatePreview()
 {
     QPixmap pixmap(d.page->size());
-    QPainter target(&pixmap);
-    d.page->render(&target);
-    d.preview->setPixmap(pixmap.scaled(d.preview->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    QPainter painter(&pixmap);
+    d.page->render(&painter);
+    d.preview->setPixmap(pixmap.scaled(contentsRect().size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    update();
 }

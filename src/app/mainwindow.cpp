@@ -296,6 +296,7 @@ void MainWindow::updateTitle()
 void MainWindow::showSettings()
 {
     SettingsPage* page = new SettingsPage(d.stack);
+    page->setTheme(d.chatPage->theme());
     connect(page, SIGNAL(accepted()), this, SLOT(onSettingsAccepted()));
     connect(page, SIGNAL(rejected()), this, SLOT(pop()));
     push(page);

@@ -13,6 +13,7 @@
 #include <QLabel>
 #include <QGroupBox>
 #include <QGridLayout>
+#include "themeinfo.h"
 
 class ChatPage;
 class ThemeInfo;
@@ -25,14 +26,25 @@ public:
     ThemeWidget(const ThemeInfo& theme, QWidget* parent = 0);
     ~ThemeWidget();
 
+    ThemeInfo theme() const;
+    bool isSelected() const;
+
+public slots:
+    void setSelected(bool selected);
+
+signals:
+    void selected(const ThemeInfo& theme);
+
 protected:
-    void resizeEvent(QResizeEvent* event);
+    bool eventFilter(QObject* object, QEvent* event);
 
 private slots:
     void updatePreview();
 
 private:
     struct Private {
+        bool selected;
+        ThemeInfo theme;
         ChatPage* page;
         QLabel* preview;
         QGridLayout* grid;
