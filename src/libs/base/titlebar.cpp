@@ -74,6 +74,8 @@ TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
     d.menuButton->setMenu(new TitleMenu(d.menuButton));
     d.menuButton->setPopupMode(QToolButton::InstantPopup);
     d.menuButton->adjustSize();
+
+    relayout();
 }
 
 QMenu* TitleBar::menu() const
@@ -201,6 +203,12 @@ void TitleBar::paintEvent(QPaintEvent* event)
 
 void TitleBar::resizeEvent(QResizeEvent* event)
 {
+    relayout();
+    QLabel::resizeEvent(event);
+}
+
+void TitleBar::relayout()
+{
     QRect r = d.menuButton->rect();
     r.moveTopRight(rect().topRight());
     d.menuButton->setGeometry(r);
@@ -210,8 +218,6 @@ void TitleBar::resizeEvent(QResizeEvent* event)
     option.rect.setRight(r.left() - 1);
     QRect ser = style()->subElementRect(QStyle::SE_HeaderLabel, &option, this);
     setContentsMargins(ser.x(), ser.y(), width() - ser.x() - ser.width(), height() - ser.y() - ser.height());
-
-    QLabel::resizeEvent(event);
 }
 
 void TitleBar::cleanup()

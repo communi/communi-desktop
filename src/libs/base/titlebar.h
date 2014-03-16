@@ -52,6 +52,7 @@ protected:
     void resizeEvent(QResizeEvent* event);
 
 private slots:
+    void relayout();
     void cleanup();
     void refresh();
     void edit();
