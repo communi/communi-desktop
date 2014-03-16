@@ -241,8 +241,11 @@
          </item>
          <item row="1" column="1">
           <widget class="QCheckBox" name="eventsBox">
+           <property name="toolTip">
+            <string>Show joins, parts and quits</string>
+           </property>
            <property name="text">
-            <string>Show events (joins, parts and quits)</string>
+            <string>Show events</string>
            </property>
            <property name="checked">
             <bool>true</bool>
@@ -251,8 +254,11 @@
          </item>
          <item row="2" column="1">
           <widget class="QCheckBox" name="detailsBox">
+           <property name="toolTip">
+            <string>Show user hosts, quit messages etc.</string>
+           </property>
            <property name="text">
-            <string>Show details (user hosts, quit messages etc.)</string>
+            <string>Show details</string>
            </property>
            <property name="checked">
             <bool>true</bool>
