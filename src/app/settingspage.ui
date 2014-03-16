@@ -4,7 +4,7 @@
  <widget class="QWidget" name="SettingsPage">
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="titleLayout">
      <item>
       <widget class="QLabel" name="iconLabel">
        <property name="pixmap">
@@ -49,7 +49,11 @@
       <bool>true</bool>
      </property>
      <widget class="QWidget" name="content">
-      <layout class="QVBoxLayout" name="verticalLayout_2"/>
+      <layout class="QVBoxLayout" name="contentLayout">
+       <property name="spacing">
+        <number>12</number>
+       </property>
+      </layout>
      </widget>
     </widget>
    </item>

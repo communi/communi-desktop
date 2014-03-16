@@ -30,7 +30,7 @@ SettingsPage::SettingsPage(QWidget* parent) : QWidget(parent)
     foreach (const QString& name, ThemeLoader::instance()->themes()) {
         ThemeInfo theme = ThemeLoader::instance()->theme(name);
         ThemeWidget* widget = new ThemeWidget(theme, ui.content);
-        ui.content->layout()->addWidget(widget);
+        ui.contentLayout->addWidget(widget);
     }
 }
 

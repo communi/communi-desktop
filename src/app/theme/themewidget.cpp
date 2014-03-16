@@ -8,6 +8,7 @@
  */
 
 #include "themewidget.h"
+#include "themeinfo.h"
 #include "textdocument.h"
 #include "textbrowser.h"
 #include "treewidget.h"
@@ -16,12 +17,15 @@
 #include "chatpage.h"
 #include <IrcBufferModel>
 #include <IrcConnection>
+#include <QGridLayout>
+#include <QVBoxLayout>
 #include <IrcChannel>
 #include <IrcMessage>
 #include <IrcBuffer>
 #include <QPainter>
 #include <QPixmap>
-#include <QBuffer>
+#include <QLabel>
+#include <QTimer>
 
 class Channel : public IrcChannel
 {
@@ -93,9 +97,10 @@ static IrcBufferModel* createBufferModel(QObject* parent)
     return model;
 }
 
-static ChatPage* createChatPage(QWidget* parent = 0)
+static ChatPage* createChatPage(const QString& theme, QWidget* parent = 0)
 {
     ChatPage* page = new ChatPage(parent);
+    page->setTheme(theme);
     IrcBufferModel* model = createBufferModel(page);
     foreach (IrcBuffer* buffer, model->buffers())
         page->treeWidget()->addBuffer(buffer);
@@ -109,37 +114,45 @@ static ChatPage* createChatPage(QWidget* parent = 0)
     return page;
 }
 
-ThemeWidget::ThemeWidget(const ThemeInfo& theme, QWidget* parent) : QLabel(parent)
+ThemeWidget::ThemeWidget(const ThemeInfo& theme, QWidget* parent) : QGroupBox(parent)
 {
-    d.theme = theme;
+    setTitle(theme.name());
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    ChatPage* page = createChatPage();
-    page->resize(640, 400);
+    d.page = createChatPage(theme.name());
+    d.page->setVisible(false);
+    d.page->resize(640, 400);
 
-    QPixmap pixmap(640, 400);
-    QPainter painter(&pixmap);
+    d.preview = new QLabel(this);
+    d.preview->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    d.preview->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 
-    page->setTheme(theme.name());
-    page->render(&painter);
+    d.grid = new QGridLayout(this);
+    d.grid->addWidget(new QLabel(tr("<b>Version</b>: %1").arg(theme.version()), this), 0, 0);
+    d.grid->addWidget(new QLabel(tr("<b>Author</b>: %1").arg(theme.author()), this), 1, 0);
+    d.grid->addWidget(new QLabel(theme.description(), this), 2, 0);
+    d.grid->addWidget(d.preview, 0, 1, 4, 1);
+    d.grid->setColumnStretch(1, 1);
+    d.grid->setRowStretch(3, 1);
 
-    QByteArray ba;
-    QBuffer buffer(&ba);
-    buffer.open(QIODevice::WriteOnly);
-    pixmap.scaled(320, 200).save(&buffer, "PNG");
-
-    setTextFormat(Qt::RichText);
-    setText(tr("<table><tr>"
-               "<td>"
-               "<img src='data:image/png;base64,%5'/>"
-               "</td>"
-               "<td>"
-               "<h1>%1</h1>"
-               "<p><b>Version</b>: %2</p>"
-               "<p><b>Author</b>: %3</p>"
-               "<p>%4</p>"
-               "</td>"
-               "</tr></table>").arg(theme.name(), theme.version(), theme.author(), theme.description(), ba.toBase64()));
-
-    delete page;
+    QTimer::singleShot(0, this, SLOT(updatePreview()));
 }
 
+ThemeWidget::~ThemeWidget()
+{
+    delete d.page;
+}
+
+void ThemeWidget::resizeEvent(QResizeEvent* event)
+{
+    QGroupBox::resizeEvent(event);
+    updatePreview();
+}
+
+void ThemeWidget::updatePreview()
+{
+    QPixmap pixmap(640, 400);
+    QPainter target(&pixmap);
+    d.page->render(&target);
+    d.preview->setPixmap(pixmap.scaled(d.preview->size(), Qt::KeepAspectRatio));
+}

@@ -11,18 +11,31 @@
 #define THEMEWIDGET_H
 
 #include <QLabel>
-#include "themeinfo.h"
+#include <QGroupBox>
+#include <QGridLayout>
 
-class ThemeWidget : public QLabel
+class ChatPage;
+class ThemeInfo;
+
+class ThemeWidget : public QGroupBox
 {
     Q_OBJECT
 
 public:
     ThemeWidget(const ThemeInfo& theme, QWidget* parent = 0);
+    ~ThemeWidget();
+
+protected:
+    void resizeEvent(QResizeEvent* event);
+
+private slots:
+    void updatePreview();
 
 private:
     struct Private {
-        ThemeInfo theme;
+        ChatPage* page;
+        QLabel* preview;
+        QGridLayout* grid;
     } d;
 };
 
