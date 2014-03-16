@@ -151,8 +151,8 @@ void ThemeWidget::resizeEvent(QResizeEvent* event)
 
 void ThemeWidget::updatePreview()
 {
-    QPixmap pixmap(640, 400);
+    QPixmap pixmap(d.page->size());
     QPainter target(&pixmap);
     d.page->render(&target);
-    d.preview->setPixmap(pixmap.scaled(d.preview->size(), Qt::KeepAspectRatio));
+    d.preview->setPixmap(pixmap.scaled(d.preview->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
