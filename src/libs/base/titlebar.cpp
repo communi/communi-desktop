@@ -38,6 +38,9 @@ protected:
         if (QWidget* parent = parentWidget()) {
             QRect rect = geometry();
             rect.moveTopRight(parent->mapToGlobal(parent->rect().bottomRight()));
+#ifdef Q_OS_MAC
+            rect.translate(0, -2); // TODO
+#endif
             setGeometry(rect);
         }
     }
