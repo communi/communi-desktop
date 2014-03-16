@@ -18,16 +18,18 @@
 #include <QObject>
 #include <QtPlugin>
 #include "documentplugin.h"
+#include "windowplugin.h"
 
 class Alert;
 class IrcMessage;
 
-class AlertPlugin : public QObject, public DocumentPlugin
+class AlertPlugin : public QObject, public DocumentPlugin, public WindowPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(DocumentPlugin)
+    Q_INTERFACES(DocumentPlugin WindowPlugin)
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.DocumentPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
 #endif
 
 public:

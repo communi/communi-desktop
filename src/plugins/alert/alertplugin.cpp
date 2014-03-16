@@ -59,11 +59,10 @@ void AlertPlugin::onMessageHighlighted(IrcMessage* message)
     Q_UNUSED(message);
     if (d.alert) {
         TextDocument* document = qobject_cast<TextDocument*>(sender());
-        QWidget* window = QApplication::topLevelWidgets().value(0);
-        if ((window && !window->isActiveWindow()) || document != currentDocument()) {
+        if (!isActiveWindow() || document != currentDocument()) {
             d.alert->play();
-            if (window && !window->isActiveWindow())
-                QApplication::alert(window);
+            if (!isActiveWindow())
+                QApplication::alert(window());
         }
     }
 }
