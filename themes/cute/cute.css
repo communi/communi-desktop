@@ -139,40 +139,40 @@ QToolButton#reconnectButton:pressed {
     background-image: url(:/TODO/reconnect-pressed.png);
 }
 
-Finder > QToolButton {
+AbstractFinder > QToolButton {
     min-width: 20px;
     max-width: 20px;
     min-height: 20px;
     max-height: 20px;
 }
 
-Finder > QLineEdit {
+AbstractFinder > QLineEdit {
     border: 1px solid palette(mid);
     border-bottom-color: transparent;
 }
 
-Finder[error="true"] > QLineEdit {
+AbstractFinder[error="true"] > QLineEdit {
     background-color: #ff8080;
 }
 
-Finder > QToolButton {
+AbstractFinder > QToolButton {
     border-left-color: transparent;
 }
 
-Finder > QToolButton#prev {
+AbstractFinder > QToolButton#prev {
     image: url(black:up.png);
 }
 
-Finder[error="true"] > QToolButton#prev {
+AbstractFinder[error="true"] > QToolButton#prev {
     image: url(gray:up.png);
     background-color: palette(dark);
 }
 
-Finder > QToolButton#next {
+AbstractFinder > QToolButton#next {
     image: url(black:down.png);
 }
 
-Finder[error="true"] > QToolButton#next {
+AbstractFinder[error="true"] > QToolButton#next {
     image: url(gray:down.png);
     background-color: palette(dark);
 }

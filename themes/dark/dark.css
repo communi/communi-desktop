@@ -165,14 +165,14 @@ TitleBar > QToolButton#menu {
     image: url(white:down.png)
 }
 
-Finder > QToolButton {
+AbstractFinder > QToolButton {
     min-width: 20px;
     max-width: 20px;
     min-height: 20px;
     max-height: 20px;
 }
 
-Finder > QLineEdit {
+AbstractFinder > QLineEdit {
     color: #dedede;
     background: #222222;
     selection-color: #dedede;
@@ -181,15 +181,15 @@ Finder > QLineEdit {
     border-bottom-color: transparent;
 }
 
-Finder > QToolButton {
+AbstractFinder > QToolButton {
     border-left-color: transparent;
 }
 
-Finder > QToolButton#prev {
+AbstractFinder > QToolButton#prev {
     image: url(white:up.png)
 }
 
-Finder > QToolButton#next {
+AbstractFinder > QToolButton#next {
     image: url(white:down.png)
 }
 
