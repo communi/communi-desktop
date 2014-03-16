@@ -38,6 +38,7 @@ public:
     bool isClone() const;
 
     IrcBuffer* buffer() const;
+    MessageFormatter* formatter() const;
 
     int totalCount() const;
 

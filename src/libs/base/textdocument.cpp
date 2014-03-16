@@ -139,6 +139,11 @@ IrcBuffer* TextDocument::buffer() const
     return d.buffer;
 }
 
+MessageFormatter* TextDocument::formatter() const
+{
+    return d.formatter;
+}
+
 int TextDocument::totalCount() const
 {
     int count = d.lines.count();
