@@ -57,7 +57,7 @@ private slots:
     void onDisplayNameFieldChanged();
     void onHostFieldChanged();
     void onPortFieldChanged(int port);
-    void onSecureFieldToggled(bool secure);
+    void onSecureBoxToggled(bool secure);
     void restoreSettings();
     void saveSettings();
     void updateUi();

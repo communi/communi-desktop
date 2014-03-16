@@ -4,15 +4,15 @@
  <widget class="QWidget" name="ConnectPage">
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
       <widget class="QLabel" name="iconLabel">
        <property name="pixmap">
         <pixmap resource="../../resources/communi.qrc">:/icons/64x64/communi.png</pixmap>
        </property>
       </widget>
      </item>
-     <item>
+     <item row="0" column="1">
       <widget class="QLabel" name="titleLabel">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
@@ -28,40 +28,71 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="sloganLabel">
+       <property name="text">
+        <string>&lt;small&gt;Communi is a simple and light-weight cross-platform IRC client.&lt;/small&gt;</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
-    <widget class="QLabel" name="sloganLabel">
-     <property name="text">
-      <string>&lt;small&gt;Communi is a simple and light-weight cross-platform IRC client.&lt;/small&gt;</string>
+    <widget class="QWidget" name="container" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QWidget" name="widget" native="true">
      <layout class="QGridLayout" name="gridLayout">
+      <property name="topMargin">
+       <number>40</number>
+      </property>
+      <property name="bottomMargin">
+       <number>40</number>
+      </property>
+      <property name="verticalSpacing">
+       <number>40</number>
+      </property>
       <item row="0" column="1">
-       <spacer name="verticalSpacer_2">
+       <spacer name="topSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>40</height>
+          <height>20</height>
          </size>
         </property>
        </spacer>
       </item>
+      <item row="1" column="0">
+       <widget class="QWidget" name="leftSpacer" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="1">
        <widget class="QGroupBox" name="connectionBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+          <horstretch>2</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="title">
          <string>Connection</string>
         </property>
-        <layout class="QFormLayout" name="formLayout">
+        <layout class="QFormLayout" name="connectionLayout">
          <property name="fieldGrowthPolicy">
           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
          </property>
@@ -113,7 +144,7 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout">
+          <layout class="QHBoxLayout" name="portLayout">
            <item>
             <widget class="QSpinBox" name="portField">
              <property name="sizePolicy">
@@ -134,7 +165,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="secureField">
+            <widget class="QCheckBox" name="secureBox">
              <property name="text">
               <string>&amp;Secure</string>
              </property>
@@ -145,44 +176,22 @@
         </layout>
        </widget>
       </item>
-      <item row="2" column="0">
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+      <item row="1" column="2">
+       <widget class="QWidget" name="rightSpacer" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Preferred</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>100</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
+       </widget>
       </item>
-      <item row="2" column="2">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Preferred</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>100</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="3" column="1">
-       <widget class="QGroupBox" name="groupBox">
+      <item row="2" column="1">
+       <widget class="QGroupBox" name="identityBox">
         <property name="title">
          <string>Identity</string>
         </property>
-        <layout class="QFormLayout" name="formLayout_2">
+        <layout class="QFormLayout" name="identityLayout">
          <property name="fieldGrowthPolicy">
           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
          </property>
@@ -248,7 +257,7 @@
           </widget>
          </item>
          <item row="3" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <layout class="QHBoxLayout" name="passwordLayout">
            <item>
             <widget class="QLineEdit" name="passwordField">
              <property name="echoMode">
@@ -268,15 +277,15 @@
         </layout>
        </widget>
       </item>
-      <item row="4" column="1">
-       <spacer name="verticalSpacer">
+      <item row="3" column="1">
+       <spacer name="bottomSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>40</height>
+          <height>20</height>
          </size>
         </property>
        </spacer>
@@ -304,14 +313,14 @@
   </layout>
   <zorder>sloganLabel</zorder>
   <zorder>buttonBox</zorder>
-  <zorder>widget</zorder>
+  <zorder>container</zorder>
   <zorder>copyrightLabel</zorder>
  </widget>
  <tabstops>
   <tabstop>displayNameField</tabstop>
   <tabstop>hostField</tabstop>
   <tabstop>portField</tabstop>
-  <tabstop>secureField</tabstop>
+  <tabstop>secureBox</tabstop>
   <tabstop>nickNameField</tabstop>
   <tabstop>realNameField</tabstop>
   <tabstop>userNameField</tabstop>

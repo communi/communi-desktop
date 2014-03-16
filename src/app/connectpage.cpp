@@ -52,7 +52,7 @@ ConnectPage::ConnectPage(QWidget* parent) : QWidget(parent)
     connect(ui.displayNameField, SIGNAL(textChanged(QString)), this, SLOT(onDisplayNameFieldChanged()));
     connect(ui.hostField, SIGNAL(textChanged(QString)), this, SLOT(onHostFieldChanged()));
     connect(ui.portField, SIGNAL(valueChanged(int)), this, SLOT(onPortFieldChanged(int)));
-    connect(ui.secureField, SIGNAL(toggled(bool)), this, SLOT(onSecureFieldToggled(bool)));
+    connect(ui.secureBox, SIGNAL(toggled(bool)), this, SLOT(onSecureBoxToggled(bool)));
 
     connect(ui.displayNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
     connect(ui.hostField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
@@ -61,7 +61,18 @@ ConnectPage::ConnectPage(QWidget* parent) : QWidget(parent)
     connect(ui.userNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
     connect(ui.passwordField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
     connect(ui.portField, SIGNAL(valueChanged(int)), this, SLOT(updateUi()));
-    connect(ui.secureField, SIGNAL(toggled(bool)), this, SLOT(updateUi()));
+    connect(ui.secureBox, SIGNAL(toggled(bool)), this, SLOT(updateUi()));
+
+    int labelWidth = 0;
+    QList<QLabel*> labels;
+    labels << ui.displayNameLabel << ui.hostLabel << ui.portLabel;
+    labels << ui.nickNameLabel << ui.realNameLabel << ui.userNameLabel << ui.passwordLabel;
+    foreach (QLabel* label, labels)
+        labelWidth = qMax(labelWidth, label->sizeHint().width());
+    foreach (QLabel* label, labels)
+        label->setMinimumWidth(labelWidth);
+
+    ui.secureBox->setEnabled(IrcConnection::isSecureSupported());
 
     QShortcut* shortcut = new QShortcut(Qt::Key_Return, this);
     connect(shortcut, SIGNAL(activated()), ui.buttonBox->button(QDialogButtonBox::Ok), SLOT(click()));
@@ -117,12 +128,12 @@ void ConnectPage::setPort(int port)
 
 bool ConnectPage::isSecure() const
 {
-    return ui.secureField->isChecked();
+    return ui.secureBox->isChecked();
 }
 
 void ConnectPage::setSecure(bool secure)
 {
-    ui.secureField->setChecked(secure);
+    ui.secureBox->setChecked(secure);
 }
 
 QString ConnectPage::saslMechanism() const
@@ -228,10 +239,10 @@ void ConnectPage::onHostFieldChanged()
 void ConnectPage::onPortFieldChanged(int port)
 {
     if (port == SSL_PORTS[0] || port == SSL_PORTS[1] || port == SSL_PORTS[2])
-        ui.secureField->setChecked(true);
+        ui.secureBox->setChecked(true);
 }
 
-void ConnectPage::onSecureFieldToggled(bool secure)
+void ConnectPage::onSecureBoxToggled(bool secure)
 {
     if (secure) {
         const int port = ui.portField->value();
@@ -256,7 +267,7 @@ void ConnectPage::restoreSettings()
     ui.displayNameField->setText(credentials.value("displayName").toString());
     ui.hostField->setText(credentials.value("host").toString());
     ui.portField->setValue(credentials.value("port", NORMAL_PORTS[0]).toInt());
-    ui.secureField->setChecked(credentials.value("secure", false).toBool());
+    ui.secureBox->setChecked(credentials.value("secure", false).toBool());
     ui.nickNameField->setText(credentials.value("nickName").toString());
     ui.realNameField->setText(credentials.value("realName").toString());
     ui.userNameField->setText(credentials.value("userName").toString());
@@ -276,7 +287,7 @@ void ConnectPage::saveSettings()
     const QString displayName = ui.displayNameField->text();
     const QString host = ui.hostField->text();
     const int port = ui.portField->value();
-    const bool secure = ui.secureField->isChecked();
+    const bool secure = ui.secureBox->isChecked();
     const QString nickName = ui.nickNameField->text();
     const QString realName = ui.realNameField->text();
     const QString userName = ui.userNameField->text();
@@ -366,7 +377,7 @@ void ConnectPage::updateUi()
     button->setEnabled(!ui.displayNameField->text().isEmpty() ||
                        !ui.hostField->text().isEmpty() ||
                         ui.portField->value() != NORMAL_PORTS[0] ||
-                        ui.secureField->isChecked() ||
+                        ui.secureBox->isChecked() ||
                        !ui.nickNameField->text().isEmpty() ||
                        !ui.realNameField->text().isEmpty() ||
                        !ui.userNameField->text().isEmpty() ||
@@ -378,7 +389,7 @@ void ConnectPage::reset()
     ui.displayNameField->clear();
     ui.hostField->clear();
     ui.portField->setValue(NORMAL_PORTS[0]);
-    ui.secureField->setChecked(false);
+    ui.secureBox->setChecked(false);
     ui.nickNameField->clear();
     ui.realNameField->clear();
     ui.userNameField->clear();
