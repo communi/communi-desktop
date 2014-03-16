@@ -11,6 +11,7 @@
 #define CHATPAGE_H
 
 #include <QSplitter>
+#include <IrcCommandFilter>
 #include "themeinfo.h"
 
 class IrcBuffer;
@@ -21,9 +22,10 @@ class TextDocument;
 class IrcConnection;
 class IrcCommandParser;
 
-class ChatPage : public QSplitter
+class ChatPage : public QSplitter, public IrcCommandFilter
 {
     Q_OBJECT
+    Q_INTERFACES(IrcCommandFilter)
 
 public:
     ChatPage(QWidget* parent = 0);
@@ -69,6 +71,9 @@ signals:
     void currentViewChanged(BufferView* view);
     void currentBufferChanged(IrcBuffer* buffer);
 
+protected:
+    bool commandFilter(IrcCommand* command);
+
 private slots:
     void addConnection(IrcConnection* connection);
     void removeConnection(IrcConnection* connection);
@@ -85,6 +90,7 @@ private:
         QFont messageFont;
         QString timestampFormat;
         ThemeInfo theme;
+        QStringList chans;
         SplitView* splitView;
         TreeWidget* treeWidget;
     } d;

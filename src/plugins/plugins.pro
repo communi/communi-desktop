@@ -4,7 +4,6 @@
 
 TEMPLATE = subdirs
 SUBDIRS += alert
-SUBDIRS += commander
 SUBDIRS += dock
 SUBDIRS += ignore
 SUBDIRS += importer

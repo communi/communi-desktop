@@ -18,7 +18,6 @@
 #include "windowplugin.h"
 
 Q_IMPORT_PLUGIN(AlertPlugin)
-Q_IMPORT_PLUGIN(CommanderPlugin)
 Q_IMPORT_PLUGIN(DockPlugin)
 Q_IMPORT_PLUGIN(IgnorePlugin)
 Q_IMPORT_PLUGIN(ImporterPlugin)

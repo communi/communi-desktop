@@ -4,7 +4,6 @@
 
 include(communi_functions.prf)
 communiAddPlugin(alert)
-communiAddPlugin(commander)
 communiAddPlugin(dock)
 communiAddPlugin(ignore)
 communiAddPlugin(importer)

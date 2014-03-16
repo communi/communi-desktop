@@ -210,6 +210,55 @@ void ChatPage::restoreState(const QByteArray& data)
         d.splitView->restoreState(state.value("views").toByteArray());
 }
 
+bool ChatPage::commandFilter(IrcCommand* command)
+{
+    if (command->type() == IrcCommand::Join) {
+        if (command->property("TextInput").toBool())
+            d.chans += command->toString().split(" ", QString::SkipEmptyParts).value(1);
+    } else if (command->type() == IrcCommand::Custom) {
+        const QString cmd = command->parameters().value(0);
+        const QStringList params = command->parameters().mid(1);
+        if (cmd == "CLEAR") {
+            d.splitView->currentView()->textDocument()->clear();
+            return true;
+        } else if (cmd == "CLOSE") {
+            IrcBuffer* buffer = currentBuffer();
+            IrcChannel* channel = buffer->toChannel();
+            if (channel)
+                channel->part(qApp->property("description").toString());
+            buffer->deleteLater();
+            return true;
+        } else if (cmd == "MSG") {
+            const QString target = params.value(0);
+            const QString message = QStringList(params.mid(1)).join(" ");
+            if (!message.isEmpty()) {
+                IrcBuffer* buffer = currentBuffer()->model()->add(target);
+                IrcCommand* command = IrcCommand::createMessage(target, message);
+                if (buffer->sendCommand(command)) {
+                    IrcConnection* connection = buffer->connection();
+                    buffer->receiveMessage(command->toMessage(connection->nickName(), connection));
+                }
+                d.splitView->setCurrentBuffer(buffer);
+                return true;
+            }
+        } else if (cmd == "QUERY") {
+            const QString target = params.value(0);
+            const QString message = QStringList(params.mid(1)).join(" ");
+            IrcBuffer* buffer = currentBuffer()->model()->add(target);
+            if (!message.isEmpty()) {
+                IrcCommand* command = IrcCommand::createMessage(target, message);
+                if (buffer->sendCommand(command)) {
+                    IrcConnection* connection = buffer->connection();
+                    buffer->receiveMessage(command->toMessage(connection->nickName(), connection));
+                }
+            }
+            d.splitView->setCurrentBuffer(buffer);
+            return true;
+        }
+    }
+    return false;
+}
+
 void ChatPage::addConnection(IrcConnection* connection)
 {
     IrcBufferModel* bufferModel = new IrcBufferModel(connection);
@@ -228,6 +277,7 @@ void ChatPage::addConnection(IrcConnection* connection)
     if (!d.treeWidget->currentBuffer())
         d.treeWidget->setCurrentBuffer(serverBuffer);
 
+    connection->installCommandFilter(this);
     if (!connection->isActive() && connection->isEnabled())
         connection->open();
 
@@ -273,6 +323,11 @@ void ChatPage::addBuffer(IrcBuffer* buffer)
     PluginLoader::instance()->documentAdded(doc);
 
     connect(buffer, SIGNAL(destroyed(IrcBuffer*)), this, SLOT(removeBuffer(IrcBuffer*)));
+
+    if (buffer->isChannel() && d.chans.contains(buffer->title())) {
+        d.chans.removeAll(buffer->title());
+        d.splitView->setCurrentBuffer(buffer);
+    }
 }
 
 void ChatPage::removeBuffer(IrcBuffer* buffer)
@@ -376,6 +431,11 @@ IrcCommandParser* ChatPage::createParser(QObject *parent)
     parser->addCommand(IrcCommand::Who, "WHO <user>");
     parser->addCommand(IrcCommand::Whois, "WHOIS <user>");
     parser->addCommand(IrcCommand::Whowas, "WHOWAS <user>");
+
+    parser->addCommand(IrcCommand::Custom, "CLEAR");
+    parser->addCommand(IrcCommand::Custom, "CLOSE");
+    parser->addCommand(IrcCommand::Custom, "MSG <user/channel> <message...>");
+    parser->addCommand(IrcCommand::Custom, "QUERY <user> (<message...>)");
 
     return parser;
 }
