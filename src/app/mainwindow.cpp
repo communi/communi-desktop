@@ -191,8 +191,11 @@ void MainWindow::push(QWidget* page)
 void MainWindow::pop()
 {
     QWidget* page = d.stack->currentWidget();
-    d.stack->setCurrentIndex(d.stack->currentIndex() - 1);
-    page->deleteLater();
+    if (!qobject_cast<ChatPage*>(page)) {
+        d.stack->removeWidget(page);
+        d.stack->setCurrentIndex(d.stack->count() - 1);
+        page->deleteLater();
+    }
 }
 
 QSize MainWindow::sizeHint() const
@@ -231,6 +234,14 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::doConnect()
 {
+    for (int i = 0; i < d.stack->count(); ++i) {
+        ConnectPage* page = qobject_cast<ConnectPage*>(d.stack->widget(i));
+        if (page) {
+            d.stack->setCurrentWidget(page);
+            return;
+        }
+    }
+
     ConnectPage* page = new ConnectPage(this);
     page->buttonBox()->button(QDialogButtonBox::Cancel)->setEnabled(!connections().isEmpty());
     connect(page, SIGNAL(accepted()), this, SLOT(onConnectAccepted()));
@@ -295,6 +306,14 @@ void MainWindow::updateTitle()
 
 void MainWindow::showSettings()
 {
+    for (int i = 0; i < d.stack->count(); ++i) {
+        SettingsPage* page = qobject_cast<SettingsPage*>(d.stack->widget(i));
+        if (page) {
+            d.stack->setCurrentWidget(page);
+            return;
+        }
+    }
+
     SettingsPage* page = new SettingsPage(d.stack);
     page->setTheme(d.chatPage->theme());
     connect(page, SIGNAL(accepted()), this, SLOT(onSettingsAccepted()));
