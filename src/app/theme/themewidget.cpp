@@ -8,7 +8,6 @@
  */
 
 #include "themewidget.h"
-#include "textdocument.h"
 #include "textbrowser.h"
 #include "treewidget.h"
 #include "bufferview.h"
@@ -16,18 +15,12 @@
 #include "chatpage.h"
 #include <IrcBufferModel>
 #include <IrcConnection>
-#include <QApplication>
-#include <QGridLayout>
-#include <QVBoxLayout>
 #include <IrcChannel>
 #include <IrcMessage>
 #include <IrcBuffer>
 #include <QPainter>
 #include <QPixmap>
-#include <QStyle>
-#include <QLabel>
 #include <QTimer>
-#include <QEvent>
 
 class Channel : public IrcChannel
 {
@@ -99,10 +92,9 @@ static IrcBufferModel* createBufferModel(QObject* parent)
     return model;
 }
 
-static ChatPage* createChatPage(const QString& theme, QWidget* parent = 0)
+static ChatPage* createChatPage(QWidget* parent = 0)
 {
     ChatPage* page = new ChatPage(parent);
-    page->setTheme(theme);
     IrcBufferModel* model = createBufferModel(page);
     foreach (IrcBuffer* buffer, model->buffers())
         page->treeWidget()->addBuffer(buffer);
@@ -116,30 +108,11 @@ static ChatPage* createChatPage(const QString& theme, QWidget* parent = 0)
     return page;
 }
 
-ThemeWidget::ThemeWidget(const ThemeInfo& theme, QWidget* parent) : QGroupBox(parent)
+ThemeWidget::ThemeWidget(QWidget* parent) : QLabel(parent)
 {
-    d.theme = theme;
-    d.selected = false;
-
-    setTitle(theme.name());
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    d.page = createChatPage(theme.name());
+    d.page = createChatPage();
     d.page->setVisible(false);
     d.page->resize(640, 400);
-
-    d.preview = new QLabel(this);
-    d.preview->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    d.preview->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    d.preview->installEventFilter(this);
-
-    d.grid = new QGridLayout(this);
-    d.grid->addWidget(new QLabel(tr("<b>Version</b>: %1").arg(theme.version()), this), 0, 0);
-    d.grid->addWidget(new QLabel(tr("<b>Author</b>: %1").arg(theme.author()), this), 1, 0);
-    d.grid->addWidget(new QLabel(theme.description(), this), 2, 0);
-    d.grid->addWidget(d.preview, 0, 1, 4, 1);
-    d.grid->setColumnStretch(1, 1);
-    d.grid->setRowStretch(3, 1);
 
     QTimer::singleShot(0, this, SLOT(updatePreview()));
 }
@@ -149,33 +122,23 @@ ThemeWidget::~ThemeWidget()
     delete d.page;
 }
 
-ThemeInfo ThemeWidget::theme() const
+QString ThemeWidget::theme() const
 {
-    return d.theme;
+    return d.page->theme();
 }
 
-bool ThemeWidget::isSelected() const
+void ThemeWidget::setTheme(const QString& theme)
 {
-    return d.selected;
-}
-
-void ThemeWidget::setSelected(bool value)
-{
-    if (d.selected != value) {
-        d.selected = value;
+    if (theme != d.page->theme()) {
+        d.page->setTheme(theme);
         updatePreview();
-        if (value)
-            emit selected(d.theme);
     }
 }
 
-bool ThemeWidget::eventFilter(QObject* object, QEvent* event)
+void ThemeWidget::resizeEvent(QResizeEvent* event)
 {
-    if (event->type() == QEvent::Resize)
-        updatePreview();
-    else if (event->type() == QEvent::MouseButtonPress)
-        setSelected(true);
-    return QGroupBox::eventFilter(object, event);
+    QLabel::resizeEvent(event);
+    updatePreview();
 }
 
 void ThemeWidget::updatePreview()
@@ -183,6 +146,5 @@ void ThemeWidget::updatePreview()
     QPixmap pixmap(d.page->size());
     QPainter painter(&pixmap);
     d.page->render(&painter);
-    d.preview->setPixmap(pixmap.scaled(contentsRect().size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    update();
+    setPixmap(pixmap.scaled(contentsRect().size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }

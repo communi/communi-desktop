@@ -8,8 +8,8 @@
  */
 
 #include "settingspage.h"
-#include "themewidget.h"
 #include "themeloader.h"
+#include "themewidget.h"
 #include <QPushButton>
 #include <QShortcut>
 
@@ -28,11 +28,9 @@ SettingsPage::SettingsPage(QWidget* parent) : QWidget(parent)
 
     foreach (const QString& name, ThemeLoader::instance()->themes()) {
         ThemeInfo theme = ThemeLoader::instance()->theme(name);
-        ThemeWidget* widget = new ThemeWidget(theme, ui.content);
-        connect(widget, SIGNAL(selected(ThemeInfo)), this, SLOT(select(ThemeInfo)));
-        ui.contentLayout->addWidget(widget);
-        ui.widgets += widget;
+        ui.themeCombo->addItem(theme.name());
     }
+    connect(ui.themeCombo, SIGNAL(currentTextChanged(QString)), this, SLOT(setTheme(QString)));
 }
 
 SettingsPage::~SettingsPage()
@@ -41,17 +39,15 @@ SettingsPage::~SettingsPage()
 
 QString SettingsPage::theme() const
 {
-    return ui.theme;
+    return ui.previewLabel->theme();
 }
 
-void SettingsPage::setTheme(const QString& theme)
+void SettingsPage::setTheme(const QString& name)
 {
-    select(ThemeLoader::instance()->theme(theme));
-}
-
-void SettingsPage::select(const ThemeInfo& theme)
-{
-    ui.theme = theme.name();
-    foreach (ThemeWidget* widget, ui.widgets)
-        widget->setSelected(widget->theme().name() == theme.name());
+    ThemeInfo theme = ThemeLoader::instance()->theme(name);
+    ui.previewLabel->setTheme(theme.name());
+    ui.authorField->setText(theme.author());
+    ui.versionField->setText(theme.version());
+    ui.descriptionField->setText(theme.description());
+    ui.themeCombo->setCurrentIndex(ui.themeCombo->findText(theme.name()));
 }

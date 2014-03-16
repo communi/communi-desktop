@@ -11,43 +11,31 @@
 #define THEMEWIDGET_H
 
 #include <QLabel>
-#include <QGroupBox>
-#include <QGridLayout>
-#include "themeinfo.h"
 
 class ChatPage;
-class ThemeInfo;
 
-class ThemeWidget : public QGroupBox
+class ThemeWidget : public QLabel
 {
     Q_OBJECT
 
 public:
-    ThemeWidget(const ThemeInfo& theme, QWidget* parent = 0);
+    ThemeWidget(QWidget* parent = 0);
     ~ThemeWidget();
 
-    ThemeInfo theme() const;
-    bool isSelected() const;
+    QString theme() const;
 
 public slots:
-    void setSelected(bool selected);
-
-signals:
-    void selected(const ThemeInfo& theme);
+    void setTheme(const QString& theme);
 
 protected:
-    bool eventFilter(QObject* object, QEvent* event);
+    void resizeEvent(QResizeEvent* event);
 
 private slots:
     void updatePreview();
 
 private:
     struct Private {
-        bool selected;
-        ThemeInfo theme;
         ChatPage* page;
-        QLabel* preview;
-        QGridLayout* grid;
     } d;
 };
 

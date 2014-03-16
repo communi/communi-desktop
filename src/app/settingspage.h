@@ -32,13 +32,8 @@ signals:
     void accepted();
     void rejected();
 
-private slots:
-    void select(const ThemeInfo& theme);
-
 private:
     struct Private : public Ui::SettingsPage {
-        QString theme;
-        QList<ThemeWidget*> widgets;
     } ui;
 };
 
