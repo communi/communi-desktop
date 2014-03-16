@@ -41,22 +41,25 @@ public:
     bool isActive() const { return true; }
 };
 
-static void receiveMessages(TextDocument* doc)
+static void receiveMessages(IrcBufferModel* model, IrcBuffer* buffer)
 {
-    QString title = doc->buffer()->title();
-    IrcConnection* connection = doc->buffer()->connection();
-    doc->receiveMessage(IrcMessage::fromParameters("Lorem", "JOIN", QStringList() << title, connection));
-    doc->receiveMessage(IrcMessage::fromParameters("Morbi", "PRIVMSG", QStringList() << title << "nullam eget commodo diam. sit amet ornare leo.", connection));
-    doc->receiveMessage(IrcMessage::fromParameters("nulla", "PRIVMSG", QStringList() << title << "...", connection));
-    doc->receiveMessage(IrcMessage::fromParameters("Ipsum", "JOIN", QStringList() << title, connection));
-    doc->receiveMessage(IrcMessage::fromParameters("rhoncus", "PRIVMSG", QStringList() << title << "vivamus!", connection));
-    doc->receiveMessage(IrcMessage::fromParameters("Etiam", "PRIVMSG", QStringList() << title << "Ut volutpat nibh nec enim elementum, sed placerat erat gravida.", connection));
-    doc->receiveMessage(IrcMessage::fromParameters("Ipsum", "QUIT", QStringList() << "Nulla facilisi.", connection));
-    doc->receiveMessage(IrcMessage::fromParameters("Ipsum", "JOIN", QStringList() << title, connection));
-    doc->receiveMessage(IrcMessage::fromParameters("nunc", "PRIVMSG", QStringList() << title << ":)", connection));
-    doc->receiveMessage(IrcMessage::fromParameters("gravida", "PRIVMSG", QStringList() << title << "etiam augue purus, pharetra vel neque a, fringilla hendrerit orci", connection));
-    doc->receiveMessage(IrcMessage::fromParameters("Proin", "PRIVMSG", QStringList() << title << "enim ante?", connection));
-    doc->receiveMessage(IrcMessage::fromParameters("Cras", "PRIVMSG", QStringList() << title << "quisque vel lacus eu odio pretium adipiscing...", connection));
+    QString title = buffer->title();
+    IrcConnection* connection = buffer->connection();
+    model->receiveMessage(IrcMessage::fromParameters("Lorem", "JOIN", QStringList() << title, connection));
+    IrcNamesMessage* names = new IrcNamesMessage(connection);
+    names->setParameters(QStringList() << title << "Lorem" << "Morbi" << "nulla" << "rhoncus" << "Etiam" << "nunc" << "gravida" << "Proin" << "Cras");
+    model->receiveMessage(names);
+    model->receiveMessage(IrcMessage::fromParameters("Morbi", "PRIVMSG", QStringList() << title << "nullam eget commodo diam. sit amet ornare leo.", connection));
+    model->receiveMessage(IrcMessage::fromParameters("nulla", "PRIVMSG", QStringList() << title << "...", connection));
+    model->receiveMessage(IrcMessage::fromParameters("Ipsum", "JOIN", QStringList() << title, connection));
+    model->receiveMessage(IrcMessage::fromParameters("rhoncus", "PRIVMSG", QStringList() << title << "vivamus!", connection));
+    model->receiveMessage(IrcMessage::fromParameters("Etiam", "PRIVMSG", QStringList() << title << "Ut volutpat nibh nec enim elementum, sed placerat erat gravida.", connection));
+    model->receiveMessage(IrcMessage::fromParameters("Ipsum", "QUIT", QStringList() << "Nulla facilisi.", connection));
+    model->receiveMessage(IrcMessage::fromParameters("Ipsum", "JOIN", QStringList() << title, connection));
+    model->receiveMessage(IrcMessage::fromParameters("nunc", "PRIVMSG", QStringList() << title << ":)", connection));
+    model->receiveMessage(IrcMessage::fromParameters("gravida", "PRIVMSG", QStringList() << title << "etiam augue purus, pharetra vel neque a, fringilla hendrerit orci", connection));
+    model->receiveMessage(IrcMessage::fromParameters("Proin", "PRIVMSG", QStringList() << title << "enim ante?", connection));
+    model->receiveMessage(IrcMessage::fromParameters("Cras", "PRIVMSG", QStringList() << title << "quisque vel lacus eu odio pretium adipiscing...", connection));
 }
 
 static IrcBuffer* createChannel(const QString& name, QObject* parent)
@@ -106,7 +109,7 @@ static ChatPage* createChatPage(QWidget* parent = 0)
     page->treeWidget()->setCurrentBuffer(buffer);
     page->treeWidget()->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     page->currentView()->textBrowser()->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    receiveMessages(page->currentView()->textDocument());
+    receiveMessages(model, buffer);
     return page;
 }
 
