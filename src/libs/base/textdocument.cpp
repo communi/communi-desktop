@@ -84,7 +84,6 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
     d.visible = false;
 
     d.formatter = new MessageFormatter(this);
-    d.formatter->textFormat()->setSpanFormat(IrcTextFormat::SpanStyle);
     d.formatter->setBuffer(buffer);
 
     setUndoRedoEnabled(false);

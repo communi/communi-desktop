@@ -5,6 +5,11 @@ a { color: #4040ff; }
 .action { color: #8b388b; }
 .event { color: #808080; }
 
+.bold { font-weight: bold; }
+.italic { font-style: italic; }
+.underline { text-decoration: underline; }
+.line-through { text-decoration: line-through; }
+
 .gray { color: #606060; }
 .lightgray { color: #808080; }
 
