@@ -19,6 +19,7 @@
 #include "titlebar.h"
 #include "finder.h"
 #include "mainwindow.h"
+#include "messagehandler.h"
 #include "messageformatter.h"
 #include <QCoreApplication>
 #include <IrcCommandParser>
@@ -263,6 +264,11 @@ void ChatPage::addConnection(IrcConnection* connection)
 
     connect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(addBuffer(IrcBuffer*)));
     connect(connection, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onSocketError()));
+
+    MessageHandler* handler = new MessageHandler(bufferModel);
+    handler->setDefaultBuffer(serverBuffer);
+    handler->setCurrentBuffer(serverBuffer);
+    connect(d.splitView, SIGNAL(currentBufferChanged(IrcBuffer*)), handler, SLOT(setCurrentBuffer(IrcBuffer*)));
 
     addBuffer(serverBuffer);
     if (!d.treeWidget->currentBuffer())
