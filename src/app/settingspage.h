@@ -25,8 +25,18 @@ public:
 
     QString theme() const;
 
+    QFont messageFont() const;
+    QString timeStampFormat() const;
+
+    bool showEvents() const;
+    bool showDetails() const;
+
 public slots:
     void setTheme(const QString& theme);
+    void setMessageFont(const QFont& font);
+    void setTimeStampFormat(const QString& format);
+    void setShowEvents(bool show);
+    void setShowDetails(bool show);
 
 signals:
     void accepted();

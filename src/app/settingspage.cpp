@@ -51,3 +51,47 @@ void SettingsPage::setTheme(const QString& name)
     ui.descriptionField->setText(theme.description());
     ui.themeCombo->setCurrentIndex(ui.themeCombo->findText(theme.name()));
 }
+
+QFont SettingsPage::messageFont() const
+{
+    QFont font;
+    font.setFamily(ui.fontFamilyBox->currentFont().family());
+    font.setPixelSize(ui.fontSizeBox->value());
+    return font;
+}
+
+void SettingsPage::setMessageFont(const QFont& font)
+{
+    ui.fontFamilyBox->setCurrentFont(font);
+    ui.fontSizeBox->setValue(font.pixelSize());
+}
+
+QString SettingsPage::timeStampFormat() const
+{
+    return ui.timestampField->text();
+}
+
+void SettingsPage::setTimeStampFormat(const QString& format)
+{
+    ui.timestampField->setText(format);
+}
+
+bool SettingsPage::showEvents() const
+{
+    return ui.eventsBox->isChecked();
+}
+
+void SettingsPage::setShowEvents(bool show)
+{
+    ui.eventsBox->setChecked(show);
+}
+
+bool SettingsPage::showDetails() const
+{
+    return ui.detailsBox->isChecked();
+}
+
+void SettingsPage::setShowDetails(bool show)
+{
+    ui.detailsBox->setChecked(show);
+}
