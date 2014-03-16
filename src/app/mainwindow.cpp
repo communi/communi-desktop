@@ -31,7 +31,6 @@
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
     d.view = 0;
-    d.editedConnection = 0;
 
     // TODO
     QDir::addSearchPath("black", ":/images/black");
@@ -62,10 +61,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 
     setCentralWidget(d.stack);
 
-    d.connectPage = new ConnectPage(this);
-    connect(d.connectPage, SIGNAL(accepted()), this, SLOT(onConnectAccepted()));
-    connect(d.connectPage, SIGNAL(rejected()), this, SLOT(onRejected()));
-
     d.chatPage = new ChatPage(this);
     setCurrentView(d.chatPage->currentView());
     connect(d.chatPage, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(updateTitle()));
@@ -74,12 +69,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     connect(this, SIGNAL(connectionRemoved(IrcConnection*)), d.chatPage, SLOT(removeConnection(IrcConnection*)));
     connect(this, SIGNAL(connectionRemoved(IrcConnection*)), this, SLOT(removeConnection(IrcConnection*)));
 
-    d.settingsPage = new SettingsPage(this);
-    connect(d.settingsPage, SIGNAL(accepted()), this, SLOT(onSettingsAccepted()));
-    connect(d.settingsPage, SIGNAL(rejected()), this, SLOT(onRejected()));
-
-    d.stack->addWidget(d.settingsPage);
-    d.stack->addWidget(d.connectPage);
     d.stack->addWidget(d.chatPage);
 
     QShortcut* shortcut = new QShortcut(QKeySequence::Quit, this);
@@ -193,6 +182,19 @@ void MainWindow::removeConnection(IrcConnection* connection)
         doConnect();
 }
 
+void MainWindow::push(QWidget* page)
+{
+    d.stack->addWidget(page);
+    d.stack->setCurrentWidget(page);
+}
+
+void MainWindow::pop()
+{
+    QWidget* page = d.stack->currentWidget();
+    d.stack->setCurrentIndex(d.stack->currentIndex() - 1);
+    page->deleteLater();
+}
+
 QSize MainWindow::sizeHint() const
 {
     return QSize(800, 600);
@@ -229,46 +231,63 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::doConnect()
 {
-    d.connectPage->buttonBox()->button(QDialogButtonBox::Cancel)->setEnabled(!connections().isEmpty());
-    d.stack->setCurrentWidget(d.connectPage);
+    ConnectPage* page = new ConnectPage(this);
+    page->buttonBox()->button(QDialogButtonBox::Cancel)->setEnabled(!connections().isEmpty());
+    connect(page, SIGNAL(accepted()), this, SLOT(onConnectAccepted()));
+    connect(page, SIGNAL(rejected()), this, SLOT(pop()));
+    push(page);
+}
+
+void MainWindow::onEditAccepted()
+{
+    ConnectPage* page = qobject_cast<ConnectPage*>(sender());
+    if (page) {
+        IrcConnection* connection = page->connection();
+        connection->setHost(page->host());
+        connection->setPort(page->port());
+        connection->setSecure(page->isSecure());
+        connection->setNickName(page->nickName());
+        connection->setRealName(page->realName());
+        connection->setUserName(page->userName());
+        connection->setDisplayName(page->displayName());
+        connection->setPassword(page->password());
+        connection->setSaslMechanism(page->saslMechanism());
+        pop();
+    }
 }
 
 void MainWindow::onConnectAccepted()
 {
-    IrcConnection* connection = d.editedConnection;
-    if (!connection)
-        connection = new IrcConnection(this);
-    connection->setHost(d.connectPage->host());
-    connection->setPort(d.connectPage->port());
-    connection->setSecure(d.connectPage->isSecure());
-    connection->setNickName(d.connectPage->nickName());
-    connection->setRealName(d.connectPage->realName());
-    connection->setUserName(d.connectPage->userName());
-    connection->setDisplayName(d.connectPage->displayName());
-    connection->setPassword(d.connectPage->password());
-    connection->setSaslMechanism(d.connectPage->saslMechanism());
-    if (!d.editedConnection)
+    ConnectPage* page = qobject_cast<ConnectPage*>(sender());
+    if (page) {
+        IrcConnection* connection = new IrcConnection(this);
+        connection->setHost(page->host());
+        connection->setPort(page->port());
+        connection->setSecure(page->isSecure());
+        connection->setNickName(page->nickName());
+        connection->setRealName(page->realName());
+        connection->setUserName(page->userName());
+        connection->setDisplayName(page->displayName());
+        connection->setPassword(page->password());
+        connection->setSaslMechanism(page->saslMechanism());
         addConnection(connection);
-    d.editedConnection = 0;
-    d.stack->setCurrentWidget(d.chatPage);
+        pop();
+    }
 }
 
 void MainWindow::onSettingsAccepted()
 {
-    d.chatPage->setTheme(d.settingsPage->theme());
-    d.stack->setCurrentWidget(d.chatPage);
-}
-
-void MainWindow::onRejected()
-{
-    d.editedConnection = 0;
-    d.stack->setCurrentWidget(d.chatPage);
+    SettingsPage* page = qobject_cast<SettingsPage*>(sender());
+    if (page) {
+        d.chatPage->setTheme(page->theme());
+        pop();
+    }
 }
 
 void MainWindow::updateTitle()
 {
     IrcBuffer* buffer = d.chatPage->currentBuffer();
-    if (!buffer || d.stack->currentWidget() == d.connectPage)
+    if (!buffer || d.stack->currentWidget() != d.chatPage)
         setWindowTitle(QCoreApplication::applicationName());
     else
         setWindowTitle(tr("%1 - %2").arg(buffer->title(), QCoreApplication::applicationName()));
@@ -276,22 +295,26 @@ void MainWindow::updateTitle()
 
 void MainWindow::showSettings()
 {
-    d.stack->setCurrentWidget(d.settingsPage);
+    SettingsPage* page = new SettingsPage(d.stack);
+    connect(page, SIGNAL(accepted()), this, SLOT(onSettingsAccepted()));
+    connect(page, SIGNAL(rejected()), this, SLOT(pop()));
+    push(page);
 }
 
 void MainWindow::editConnection(IrcConnection* connection)
 {
-    d.connectPage->setHost(connection->host());
-    d.connectPage->setPort(connection->port());
-    d.connectPage->setSecure(connection->isSecure());
-    d.connectPage->setNickName(connection->nickName());
-    d.connectPage->setRealName(connection->realName());
-    d.connectPage->setUserName(connection->userName());
-    d.connectPage->setDisplayName(connection->displayName());
-    d.connectPage->setPassword(connection->password());
-    d.stack->setCurrentWidget(d.connectPage);
-    d.editedConnection = connection;
-    doConnect();
+    ConnectPage* page = new ConnectPage(connection, this);
+    connect(page, SIGNAL(accepted()), this, SLOT(onEditAccepted()));
+    connect(page, SIGNAL(rejected()), this, SLOT(pop()));
+    page->setHost(connection->host());
+    page->setPort(connection->port());
+    page->setSecure(connection->isSecure());
+    page->setNickName(connection->nickName());
+    page->setRealName(connection->realName());
+    page->setUserName(connection->userName());
+    page->setDisplayName(connection->displayName());
+    page->setPassword(connection->password());
+    push(page);
 }
 
 void MainWindow::restoreConnection(IrcConnection* connection)

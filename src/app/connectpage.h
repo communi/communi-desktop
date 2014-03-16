@@ -12,12 +12,15 @@
 
 #include "ui_connectpage.h"
 
+class IrcConnection;
+
 class ConnectPage : public QWidget
 {
     Q_OBJECT
 
 public:
     ConnectPage(QWidget* parent = 0);
+    ConnectPage(IrcConnection* connection, QWidget* parent = 0);
     ~ConnectPage();
 
     QString displayName() const;
@@ -47,6 +50,7 @@ public:
     QString password() const;
     void setPassword(const QString& password);
 
+    IrcConnection* connection() const;
     QDialogButtonBox* buttonBox() const;
 
 signals:
@@ -66,7 +70,10 @@ private slots:
 private:
     QVariant defaultValue(const QString& key, const QString& field, const QVariant& defaultValue = QVariant()) const;
 
+    void init(IrcConnection* connection = 0);
+
     struct Private : public Ui::ConnectPage {
+        IrcConnection* connection;
         QCompleter* displayNameCompleter;
         QCompleter* hostCompleter;
         QCompleter* nickNameCompleter;

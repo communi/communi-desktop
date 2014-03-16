@@ -20,8 +20,6 @@ class ChatPage;
 class IrcBuffer;
 class IrcMessage;
 class BufferView;
-class ConnectPage;
-class SettingsPage;
 class IrcConnection;
 
 class MainWindow : public QMainWindow
@@ -47,6 +45,10 @@ signals:
     void connectionAdded(IrcConnection* connection);
     void connectionRemoved(IrcConnection* connection);
 
+protected slots:
+    void push(QWidget* page);
+    void pop();
+
 protected:
     QSize sizeHint() const;
     bool event(QEvent* event);
@@ -54,9 +56,9 @@ protected:
 
 private slots:
     void doConnect();
+    void onEditAccepted();
     void onConnectAccepted();
     void onSettingsAccepted();
-    void onRejected();
     void updateTitle();
     void showSettings();
     void editConnection(IrcConnection* connection);
@@ -69,10 +71,7 @@ private:
         QIcon alertIcon;
         ChatPage* chatPage;
         QStackedWidget* stack;
-        ConnectPage* connectPage;
         QPointer<BufferView> view;
-        SettingsPage* settingsPage;
-        IrcConnection* editedConnection;
         QList<IrcConnection*> connections;
         QQueue<IrcConnection*> restoredConnections;
     } d;

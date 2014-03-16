@@ -24,67 +24,12 @@ static const int NORMAL_PORTS[] = { 6667, 6666, 6665 };
 
 ConnectPage::ConnectPage(QWidget* parent) : QWidget(parent)
 {
-    ui.setupUi(this);
+    init();
+}
 
-    ui.displayNameCompleter = 0;
-    ui.hostCompleter = 0;
-    ui.nickNameCompleter = 0;
-    ui.realNameCompleter = 0;
-    ui.userNameCompleter = 0;
-
-    QRegExpValidator* validator = new QRegExpValidator(this);
-    validator->setRegExp(QRegExp("\\S*"));
-    ui.hostField->setValidator(validator);
-    ui.nickNameField->setValidator(validator);
-    ui.userNameField->setValidator(validator);
-
-    qsrand(QTime::currentTime().msec());
-    ui.nickNameField->setPlaceholderText(ui.nickNameField->placeholderText().arg(qrand() % 9999));
-    ui.realNameField->setPlaceholderText(ui.realNameField->placeholderText().arg(IRC_VERSION_STR));
-
-    connect(ui.buttonBox, SIGNAL(accepted()), ui.displayNameField, SLOT(setFocus()));
-    connect(ui.buttonBox, SIGNAL(rejected()), ui.displayNameField, SLOT(setFocus()));
-
-    connect(ui.buttonBox, SIGNAL(accepted()), this, SIGNAL(accepted()));
-    connect(ui.buttonBox, SIGNAL(rejected()), this, SIGNAL(rejected()));
-    connect(ui.buttonBox->button(QDialogButtonBox::Reset), SIGNAL(clicked()), this, SLOT(reset()));
-
-    connect(ui.displayNameField, SIGNAL(textChanged(QString)), this, SLOT(onDisplayNameFieldChanged()));
-    connect(ui.hostField, SIGNAL(textChanged(QString)), this, SLOT(onHostFieldChanged()));
-    connect(ui.portField, SIGNAL(valueChanged(int)), this, SLOT(onPortFieldChanged(int)));
-    connect(ui.secureBox, SIGNAL(toggled(bool)), this, SLOT(onSecureBoxToggled(bool)));
-
-    connect(ui.displayNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
-    connect(ui.hostField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
-    connect(ui.nickNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
-    connect(ui.realNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
-    connect(ui.userNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
-    connect(ui.passwordField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
-    connect(ui.portField, SIGNAL(valueChanged(int)), this, SLOT(updateUi()));
-    connect(ui.secureBox, SIGNAL(toggled(bool)), this, SLOT(updateUi()));
-
-    int labelWidth = 0;
-    QList<QLabel*> labels;
-    labels << ui.displayNameLabel << ui.hostLabel << ui.portLabel;
-    labels << ui.nickNameLabel << ui.realNameLabel << ui.userNameLabel << ui.passwordLabel;
-    foreach (QLabel* label, labels)
-        labelWidth = qMax(labelWidth, label->sizeHint().width());
-    foreach (QLabel* label, labels)
-        label->setMinimumWidth(labelWidth);
-
-    ui.secureBox->setEnabled(IrcConnection::isSecureSupported());
-
-    QShortcut* shortcut = new QShortcut(Qt::Key_Return, this);
-    connect(shortcut, SIGNAL(activated()), ui.buttonBox->button(QDialogButtonBox::Ok), SLOT(click()));
-
-    shortcut = new QShortcut(Qt::Key_Escape, this);
-    connect(shortcut, SIGNAL(activated()), ui.buttonBox->button(QDialogButtonBox::Cancel), SLOT(click()));
-
-    connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(saveSettings()));
-    connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(reset()));
-    connect(ui.buttonBox, SIGNAL(rejected()), this, SLOT(saveSettings()));
-    restoreSettings();
-    updateUi();
+ConnectPage::ConnectPage(IrcConnection* connection, QWidget* parent) : QWidget(parent)
+{
+    init(connection);
 }
 
 ConnectPage::~ConnectPage()
@@ -184,6 +129,11 @@ QString ConnectPage::password() const
 void ConnectPage::setPassword(const QString& password)
 {
     ui.passwordField->setText(password);
+}
+
+IrcConnection* ConnectPage::connection() const
+{
+    return ui.connection;
 }
 
 QDialogButtonBox* ConnectPage::buttonBox() const
@@ -403,4 +353,70 @@ QVariant ConnectPage::defaultValue(const QString& key, const QString& field, con
     QVariantMap credentials = settings.value("credentials").toMap();
     QMap<QString, QVariant> values = credentials.value(key).toMap();
     return values.value(field, defaultValue);
+}
+
+void ConnectPage::init(IrcConnection *connection)
+{
+    ui.setupUi(this);
+
+    ui.connection = connection;
+    ui.displayNameCompleter = 0;
+    ui.hostCompleter = 0;
+    ui.nickNameCompleter = 0;
+    ui.realNameCompleter = 0;
+    ui.userNameCompleter = 0;
+
+    QRegExpValidator* validator = new QRegExpValidator(this);
+    validator->setRegExp(QRegExp("\\S*"));
+    ui.hostField->setValidator(validator);
+    ui.nickNameField->setValidator(validator);
+    ui.userNameField->setValidator(validator);
+
+    qsrand(QTime::currentTime().msec());
+    ui.nickNameField->setPlaceholderText(ui.nickNameField->placeholderText().arg(qrand() % 9999));
+    ui.realNameField->setPlaceholderText(ui.realNameField->placeholderText().arg(IRC_VERSION_STR));
+
+    connect(ui.buttonBox, SIGNAL(accepted()), ui.displayNameField, SLOT(setFocus()));
+    connect(ui.buttonBox, SIGNAL(rejected()), ui.displayNameField, SLOT(setFocus()));
+
+    connect(ui.buttonBox, SIGNAL(accepted()), this, SIGNAL(accepted()));
+    connect(ui.buttonBox, SIGNAL(rejected()), this, SIGNAL(rejected()));
+    connect(ui.buttonBox->button(QDialogButtonBox::Reset), SIGNAL(clicked()), this, SLOT(reset()));
+
+    connect(ui.displayNameField, SIGNAL(textChanged(QString)), this, SLOT(onDisplayNameFieldChanged()));
+    connect(ui.hostField, SIGNAL(textChanged(QString)), this, SLOT(onHostFieldChanged()));
+    connect(ui.portField, SIGNAL(valueChanged(int)), this, SLOT(onPortFieldChanged(int)));
+    connect(ui.secureBox, SIGNAL(toggled(bool)), this, SLOT(onSecureBoxToggled(bool)));
+
+    connect(ui.displayNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
+    connect(ui.hostField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
+    connect(ui.nickNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
+    connect(ui.realNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
+    connect(ui.userNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
+    connect(ui.passwordField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
+    connect(ui.portField, SIGNAL(valueChanged(int)), this, SLOT(updateUi()));
+    connect(ui.secureBox, SIGNAL(toggled(bool)), this, SLOT(updateUi()));
+
+    int labelWidth = 0;
+    QList<QLabel*> labels;
+    labels << ui.displayNameLabel << ui.hostLabel << ui.portLabel;
+    labels << ui.nickNameLabel << ui.realNameLabel << ui.userNameLabel << ui.passwordLabel;
+    foreach (QLabel* label, labels)
+        labelWidth = qMax(labelWidth, label->sizeHint().width());
+    foreach (QLabel* label, labels)
+        label->setMinimumWidth(labelWidth);
+
+    ui.secureBox->setEnabled(IrcConnection::isSecureSupported());
+
+    QShortcut* shortcut = new QShortcut(Qt::Key_Return, this);
+    connect(shortcut, SIGNAL(activated()), ui.buttonBox->button(QDialogButtonBox::Ok), SLOT(click()));
+
+    shortcut = new QShortcut(Qt::Key_Escape, this);
+    connect(shortcut, SIGNAL(activated()), ui.buttonBox->button(QDialogButtonBox::Cancel), SLOT(click()));
+
+    connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(saveSettings()));
+    connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(reset()));
+    connect(ui.buttonBox, SIGNAL(rejected()), this, SLOT(saveSettings()));
+    restoreSettings();
+    updateUi();
 }
