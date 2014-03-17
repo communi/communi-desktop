@@ -44,6 +44,7 @@ public:
 
 public slots:
     void clear();
+    void resetZoom();
     void scrollToTop();
     void scrollToBottom();
     void scrollToNextPage();

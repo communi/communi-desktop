@@ -199,6 +199,11 @@ void TextBrowser::clear()
         doc->reset();
 }
 
+void TextBrowser::resetZoom()
+{
+    setFont(QFont());
+}
+
 void TextBrowser::scrollToTop()
 {
     verticalScrollBar()->triggerAction(QScrollBar::SliderToMinimum);
