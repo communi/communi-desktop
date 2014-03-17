@@ -65,10 +65,6 @@ void ChatPage::init()
     new Finder(this);
 }
 
-void ChatPage::cleanup()
-{
-}
-
 TreeWidget* ChatPage::treeWidget() const
 {
     return d.treeWidget;

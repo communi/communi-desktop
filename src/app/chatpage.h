@@ -32,7 +32,6 @@ public:
     ~ChatPage();
 
     void init();
-    void cleanup();
 
     QString theme() const;
     void setTheme(const QString& theme);
