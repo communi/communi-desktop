@@ -68,6 +68,7 @@ private slots:
     void joinChannel();
     void openQuery();
 
+    void prepareViewMenu(BufferView* view);
     void showContextMenu(const QPoint& pos);
 
 private:

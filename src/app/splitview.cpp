@@ -196,21 +196,8 @@ BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
     connect(view->textBrowser(), SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
 
     // TODO: because of theme preview
-    if (window()->inherits("QMainWindow")) {
-        QMenu* menu = view->titleBar()->menu();
-        menu->addAction(tr("Connect..."), window(), SLOT(doConnect()), QKeySequence::New);
-        menu->addAction(tr("Join channel"), this, SLOT(joinChannel()))->setData(QVariant::fromValue(view));
-        menu->addAction(tr("Open query"), this, SLOT(openQuery()))->setData(QVariant::fromValue(view));
-        menu->addAction(tr("Close"), this, SLOT(closeView()), QKeySequence::Close);
-        menu->addSeparator();
-        menu->addAction(tr("Split"), this, SLOT(splitVertical()));
-        menu->addAction(tr("Split side by side"), this, SLOT(splitHorizontal()));
-        menu->addAction(d.unsplitAction);
-        menu->addSeparator();
-        menu->addAction(tr("Settings..."), window(), SLOT(showSettings()), QKeySequence::Preferences);
-        menu->addSeparator();
-        menu->addAction(tr("Quit"), window(), SLOT(close()), QKeySequence::Quit);
-    }
+    if (window()->inherits("QMainWindow"))
+        prepareViewMenu(view);
 
     d.views += view;
     splitter->insertWidget(index, view);
@@ -401,6 +388,23 @@ void SplitView::openQuery()
             view->textInput()->setFocus();
         }
     }
+}
+
+void SplitView::prepareViewMenu(BufferView* view)
+{
+    QMenu* menu = view->titleBar()->menu();
+    menu->addAction(tr("Connect..."), window(), SLOT(doConnect()), QKeySequence::New)->setShortcutContext(Qt::WidgetShortcut);
+    menu->addAction(tr("Join channel"), this, SLOT(joinChannel()))->setData(QVariant::fromValue(view));
+    menu->addAction(tr("Open query"), this, SLOT(openQuery()))->setData(QVariant::fromValue(view));
+    menu->addAction(tr("Close"), this, SLOT(closeView()), QKeySequence::Close)->setShortcutContext(Qt::WidgetShortcut);
+    menu->addSeparator();
+    menu->addAction(tr("Split"), this, SLOT(splitVertical()));
+    menu->addAction(tr("Split side by side"), this, SLOT(splitHorizontal()));
+    menu->addAction(d.unsplitAction);
+    menu->addSeparator();
+    menu->addAction(tr("Settings..."), window(), SLOT(showSettings()), QKeySequence::Preferences)->setShortcutContext(Qt::WidgetShortcut);
+    menu->addSeparator();
+    menu->addAction(tr("Quit"), window(), SLOT(close()), QKeySequence::Quit)->setShortcutContext(Qt::WidgetShortcut);
 }
 
 void SplitView::showContextMenu(const QPoint& pos)

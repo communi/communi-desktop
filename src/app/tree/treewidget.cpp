@@ -710,8 +710,8 @@ QMenu* TreeWidget::createContextMenu(TreeItem* item)
     }
 
     menu->addSeparator();
-    QAction* closeAction = menu->addAction(tr("Close"), this, SLOT(onCloseTriggered()));
-    closeAction->setShortcut(QKeySequence::Close);
+    QAction* closeAction = menu->addAction(tr("Close"), this, SLOT(onCloseTriggered()), QKeySequence::Close);
+    closeAction->setShortcutContext(Qt::WidgetShortcut);
     closeAction->setData(QVariant::fromValue(item));
 
     return menu;
