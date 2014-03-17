@@ -14,6 +14,7 @@
 
 #include "treewidget.h"
 #include "treedelegate.h"
+#include "textdocument.h"
 #include "sharedtimer.h"
 #include "treeitem.h"
 #include "treerole.h"
@@ -379,9 +380,17 @@ void TreeWidget::delayedResetBadge(QTreeWidgetItem* item)
 void TreeWidget::onMessageReceived(IrcMessage* message)
 {
     if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
-        TreeItem* item = bufferItem(qobject_cast<IrcBuffer*>(sender()));
-        if (item) {
-            if (item != currentItem()) {
+        IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
+        TreeItem* item = bufferItem(buffer);
+        if (buffer && item != currentItem()) {
+            bool visible = false;
+            foreach (TextDocument* doc, buffer->findChildren<TextDocument*>()) {
+                if (doc->isVisible()) {
+                    visible = true;
+                    break;
+                }
+            }
+            if (!visible) {
                 if (message->nick() != QLatin1String("***") || message->ident() != QLatin1String("znc"))
                     item->setData(1, TreeRole::Badge, item->data(1, TreeRole::Badge).toInt() + 1);
                 if (message->property("private").toBool() ||
