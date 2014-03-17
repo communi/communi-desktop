@@ -23,6 +23,7 @@
 #include <QVBoxLayout>
 #include <IrcChannel>
 #include <IrcBuffer>
+#include <QShortcut>
 
 BufferView::BufferView(QWidget* parent) : QWidget(parent)
 {
@@ -36,6 +37,18 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
 
     d.splitter = new QSplitter(this);
     d.splitter->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+
+    QShortcut* zoomIn = new QShortcut(QKeySequence::ZoomIn, this);
+    zoomIn->setContext(Qt::WidgetWithChildrenShortcut);
+    connect(zoomIn, SIGNAL(activated()), d.textBrowser, SLOT(zoomIn()));
+
+    QShortcut* zoomOut = new QShortcut(QKeySequence::ZoomOut, this);
+    zoomOut->setContext(Qt::WidgetWithChildrenShortcut);
+    connect(zoomOut, SIGNAL(activated()), d.textBrowser, SLOT(zoomOut()));
+
+    QShortcut* resetZoom = new QShortcut(QKeySequence("Ctrl+0"), this);
+    resetZoom->setContext(Qt::WidgetWithChildrenShortcut);
+    connect(resetZoom, SIGNAL(activated()), d.textBrowser, SLOT(resetZoom()));
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setSpacing(0);
