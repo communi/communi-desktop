@@ -113,7 +113,7 @@ void TreeItem::updateIcon()
         QPixmap pixmap(16, 16);
         pixmap.fill(Qt::transparent);
         QPainter painter(&pixmap);
-        painter.setPen(QPalette().color(QPalette::Mid));
+        painter.setPen(QPen(QPalette().color(QPalette::Mid), 0.5));
         QColor color(Qt::transparent);
         if (lag > 0) {
             qreal f = qMin(100.0, qSqrt(lag)) / 100;
@@ -121,7 +121,11 @@ void TreeItem::updateIcon()
         }
         painter.setBrush(color);
         painter.setRenderHint(QPainter::Antialiasing);
+#ifdef Q_OS_WIN
+        painter.drawEllipse(4, 3, 8, 8);
+#else
         painter.drawEllipse(4, 5, 8, 8);
+#endif
         setIcon(0, pixmap);
     }
 }
