@@ -23,6 +23,7 @@
 #include <QPalette>
 #include <QPainter>
 #include <QPointer>
+#include <QLabel>
 #include <QStyle>
 #include <QColor>
 
@@ -75,15 +76,16 @@ private:
     } d;
 };
 
-class TreeBadge : public QFrame
+class TreeBadge : public QLabel
 {
     Q_OBJECT
 
 public:
-    TreeBadge(QWidget* parent = 0) : QFrame(parent)
+    TreeBadge(QWidget* parent = 0) : QLabel(parent)
     {
         d.num = 0;
         d.hilite = false;
+        setAlignment(Qt::AlignCenter);
         setAttribute(Qt::WA_TranslucentBackground);
         setAttribute(Qt::WA_NoSystemBackground);
         setVisible(false);
@@ -97,25 +99,58 @@ public:
         return badge;
     }
 
-    void setNum(int num) { d.num = num; }
     void setHighlighted(int hilite) { d.hilite = hilite; }
 
-protected:
-    void paintEvent(QPaintEvent*)
+    void setNum(int num)
     {
-        QStyleOption option;
-        option.init(this);
-        if (d.hilite)
-            option.state |= QStyle::State_On;
-        QStylePainter painter(this);
-        painter.drawPrimitive(QStyle::PE_Widget, option);
-
+        d.num = num;
         QString txt;
         if (d.num > 999)
             txt = QLatin1String("...");
         else
-            txt = option.fontMetrics.elidedText(QString::number(d.num), Qt::ElideRight, option.rect.width());
-        painter.drawText(option.rect, Qt::AlignCenter, txt);
+            txt = fontMetrics().elidedText(QString::number(d.num), Qt::ElideRight, width());
+        setText(txt);
+    }
+
+protected:
+    void paintEvent(QPaintEvent*)
+    {
+        QPainter painter(this);
+        drawBackground(&painter);
+        QRect cr = contentsRect();
+        cr.adjust(margin(), margin(), -margin(), -margin());
+        style()->drawItemText(&painter, cr, alignment(), palette(), isEnabled(), text(), foregroundRole());
+    }
+
+    void drawBackground(QPainter* painter)
+    {
+        QStyleOptionFrame frame;
+        frame.init(this);
+        int frameShape  = frameStyle() & QFrame::Shape_Mask;
+        int frameShadow = frameStyle() & QFrame::Shadow_Mask;
+        frame.frameShape = Shape(int(frame.frameShape) | frameShape);
+        frame.rect = frameRect();
+        switch (frameShape) {
+            case QFrame::Box:
+            case QFrame::HLine:
+            case QFrame::VLine:
+            case QFrame::StyledPanel:
+            case QFrame::Panel:
+                frame.lineWidth = lineWidth();
+                frame.midLineWidth = midLineWidth();
+                break;
+            default:
+                frame.lineWidth = frameWidth();
+                break;
+        }
+        if (frameShadow == Sunken)
+            frame.state |= QStyle::State_Sunken;
+        else if (frameShadow == Raised)
+            frame.state |= QStyle::State_Raised;
+        if (d.hilite)
+            frame.state |= QStyle::State_On;
+        style()->drawPrimitive(QStyle::PE_Widget, &frame, painter, this);
+        style()->drawControl(QStyle::CE_ShapedFrame, &frame, painter, this);
     }
 
 private:

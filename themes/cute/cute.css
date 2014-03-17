@@ -72,7 +72,8 @@ TreeBadge {
     margin: 3px;
     font-size: 9px;
     border-radius: 5px;
-    background: palette(mid);
+    border: 0.5px solid #cccccc;
+    background: #bbbbbb;
 }
 
 TreeBadge:on {
