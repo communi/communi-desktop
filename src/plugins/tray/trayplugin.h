@@ -31,11 +31,9 @@ class TrayPlugin : public QObject, public ConnectionPlugin, public DocumentPlugi
 {
     Q_OBJECT
     Q_INTERFACES(ConnectionPlugin DocumentPlugin WindowPlugin)
-#if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
     Q_PLUGIN_METADATA(IID "Communi.DocumentPlugin")
     Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
-#endif
 
 public:
     TrayPlugin(QObject* parent = 0);

@@ -53,7 +53,3 @@ void IgnorePlugin::connectionRemoved(IrcConnection* connection)
 {
     IgnoreManager::instance()->removeConnection(connection);
 }
-
-#if QT_VERSION < 0x050000
-Q_EXPORT_STATIC_PLUGIN(IgnorePlugin)
-#endif

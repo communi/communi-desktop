@@ -128,7 +128,3 @@ void TrayPlugin::windowActivated()
         updateIcon();
     }
 }
-
-#if QT_VERSION < 0x050000
-Q_EXPORT_STATIC_PLUGIN(TrayPlugin)
-#endif

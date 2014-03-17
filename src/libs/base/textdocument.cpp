@@ -401,11 +401,9 @@ void TextDocument::appendLine(QTextCursor& cursor, const QString& line)
         }
     }
 
-#if QT_VERSION >= 0x040800
     QTextBlockFormat format = cursor.blockFormat();
     format.setLineHeight(120, QTextBlockFormat::ProportionalHeight);
     cursor.setBlockFormat(format);
-#endif // QT_VERSION
 
     cursor.insertHtml(line);
 

@@ -17,22 +17,12 @@
 
 #include <qt_windows.h>
 #include <qabstracteventdispatcher.h>
-
-#if QT_VERSION >= 0x050000
 #include <qabstractnativeeventfilter.h>
-#endif // QT_VERSION
 
-class SystemMonitorPrivate
-#if QT_VERSION >= 0x050000
-                            : public QAbstractNativeEventFilter
-#endif
+class SystemMonitorPrivate : public QAbstractNativeEventFilter
 {
 public:
-#if QT_VERSION >= 0x050000
     bool nativeEventFilter(const QByteArray&, void* message, long*)
-#else
-    static bool nativeEventFilter(void* message)
-#endif
     {
         MSG* msg = static_cast<MSG*>(message);
         if (msg && msg->message == WM_POWERBROADCAST) {
@@ -49,20 +39,14 @@ public:
         }
         return false;
     }
-#if QT_VERSION < 0x050000
-    QAbstractEventDispatcher::EventFilter prev;
-#endif
+
     NetworkMonitor network;
 };
 
 void SystemMonitor::initialize()
 {
     d = new SystemMonitorPrivate;
-#if QT_VERSION >= 0x050000
     QAbstractEventDispatcher::instance()->installNativeEventFilter(d);
-#else
-    d->prev = QAbstractEventDispatcher::instance()->setEventFilter(SystemMonitorPrivate::nativeEventFilter);
-#endif // QT_VERSION
 
     connect(&d->network, SIGNAL(online()), this, SIGNAL(online()));
     connect(&d->network, SIGNAL(offline()), this, SIGNAL(offline()));
@@ -71,10 +55,6 @@ void SystemMonitor::initialize()
 void SystemMonitor::uninitialize()
 {
     if (QAbstractEventDispatcher::instance())
-#if QT_VERSION >= 0x050000
         QAbstractEventDispatcher::instance()->removeNativeEventFilter(d);
-#else
-        QAbstractEventDispatcher::instance()->setEventFilter(d->prev);
-#endif // QT_VERSION
     delete d;
 }

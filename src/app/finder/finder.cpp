@@ -137,7 +137,3 @@ void Finder::finderDestroyed(AbstractFinder* input)
     d.finders.remove(input);
     d.cancelShortcut->setEnabled(!d.finders.isEmpty());
 }
-
-#if QT_VERSION < 0x050000
-Q_EXPORT_STATIC_PLUGIN(Finder)
-#endif

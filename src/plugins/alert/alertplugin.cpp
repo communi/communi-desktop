@@ -66,7 +66,3 @@ void AlertPlugin::onMessageHighlighted(IrcMessage* message)
         }
     }
 }
-
-#if QT_VERSION < 0x050000
-Q_EXPORT_STATIC_PLUGIN(AlertPlugin)
-#endif

@@ -29,10 +29,8 @@ class VerifierPlugin : public QObject, public ConnectionPlugin, public DocumentP
 {
     Q_OBJECT
     Q_INTERFACES(ConnectionPlugin DocumentPlugin)
-#if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
     Q_PLUGIN_METADATA(IID "Communi.DocumentPlugin")
-#endif
 
 public:
     VerifierPlugin(QObject* parent = 0);

@@ -52,7 +52,3 @@ void DockPlugin::windowActivated()
 {
     d.dock->setBadge(0);
 }
-
-#if QT_VERSION < 0x050000
-Q_EXPORT_STATIC_PLUGIN(DockPlugin)
-#endif

@@ -43,7 +43,3 @@ void ZncPlugin::onPlaybackEnd(IrcBuffer* buffer)
     foreach (TextDocument* doc, documents)
         doc->endLowlight();
 }
-
-#if QT_VERSION < 0x050000
-Q_EXPORT_STATIC_PLUGIN(ZncPlugin)
-#endif

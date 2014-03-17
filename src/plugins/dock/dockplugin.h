@@ -27,10 +27,8 @@ class DockPlugin : public QObject, public DocumentPlugin, public WindowPlugin
 {
     Q_OBJECT
     Q_INTERFACES(DocumentPlugin WindowPlugin)
-#if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "Communi.DocumentPlugin")
     Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
-#endif
 
 public:
     DockPlugin(QObject* parent = 0);

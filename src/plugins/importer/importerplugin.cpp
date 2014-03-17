@@ -34,7 +34,3 @@ void ImporterPlugin::windowCreated(QWidget* window)
         settings.setValue("imported", true);
     }
 }
-
-#if QT_VERSION < 0x050000
-Q_EXPORT_STATIC_PLUGIN(ImporterPlugin)
-#endif
