@@ -391,8 +391,7 @@ void TreeWidget::onMessageReceived(IrcMessage* message)
                 }
             }
             if (!visible) {
-                if (message->nick() != QLatin1String("***") || message->ident() != QLatin1String("znc"))
-                    item->setData(1, TreeRole::Badge, item->data(1, TreeRole::Badge).toInt() + 1);
+                item->setData(1, TreeRole::Badge, item->data(1, TreeRole::Badge).toInt() + 1);
                 if (message->property("private").toBool() ||
                         message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive)) {
                     highlightItem(item);
