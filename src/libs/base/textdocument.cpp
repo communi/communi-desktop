@@ -296,7 +296,7 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
         if (block.isValid()) {
             QRect br = layout->blockBoundingRect(block).toAlignedRect();
             if (bounds.intersects(br)) {
-                br.adjust(-margin - 1, 0, margin + 1, 0);
+                br.adjust(-margin - 1, -margin / 2, margin + 1, margin / 2 + 1);
                 painter->translate(br.topLeft());
                 highlightFrame->setGeometry(br);
                 highlightFrame->render(painter);
@@ -402,7 +402,7 @@ void TextDocument::appendLine(QTextCursor& cursor, const QString& line)
     }
 
     QTextBlockFormat format = cursor.blockFormat();
-    format.setLineHeight(120, QTextBlockFormat::ProportionalHeight);
+    format.setLineHeight(150, QTextBlockFormat::ProportionalHeight);
     cursor.setBlockFormat(format);
 
     cursor.insertHtml(line);
