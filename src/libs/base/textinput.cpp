@@ -252,7 +252,7 @@ QByteArray TextInput::saveState() const
 {
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
-    out << d.index << d.hint << d.current << d.history;
+    out << d.index << d.current << d.history;
     out << text() << cursorPosition() << selectionStart() << selectedText().length();
     return data;
 }
@@ -260,7 +260,7 @@ QByteArray TextInput::saveState() const
 void TextInput::restoreState(const QByteArray& state)
 {
     QDataStream in(state);
-    in >> d.index >> d.hint >> d.current >> d.history;
+    in >> d.index >> d.current >> d.history;
     QString txt;
     int pos, start, len;
     in >> txt >> pos >> start >> len;
