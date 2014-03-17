@@ -125,22 +125,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 MainWindow::~MainWindow()
 {
     PluginLoader::instance()->windowDestroyed(this);
-
-    QSettings settings;
-    settings.setValue("geometry", saveGeometry());
-    settings.setValue("settings", d.chatPage->saveSettings());
-    settings.setValue("state", d.chatPage->saveState());
-
-    QVariantList states;
-    foreach (IrcConnection* connection, connections()) {
-        QVariantMap state;
-        state.insert("connection", connection->saveState());
-        IrcBufferModel* model = connection->findChild<IrcBufferModel*>();
-        if (model)
-            state.insert("model", model->saveState());
-        states += state;
-    }
-    settings.setValue("connections", states);
 }
 
 BufferView* MainWindow::currentView() const
@@ -219,7 +203,22 @@ bool MainWindow::event(QEvent* event)
 void MainWindow::closeEvent(QCloseEvent* event)
 {
     if (isVisible()) {
-        d.chatPage->cleanup();
+        QSettings settings;
+        settings.setValue("geometry", saveGeometry());
+        settings.setValue("settings", d.chatPage->saveSettings());
+        settings.setValue("state", d.chatPage->saveState());
+
+        QVariantList states;
+        foreach (IrcConnection* connection, connections()) {
+            QVariantMap state;
+            state.insert("connection", connection->saveState());
+            IrcBufferModel* model = connection->findChild<IrcBufferModel*>();
+            if (model)
+                state.insert("model", model->saveState());
+            states += state;
+        }
+        settings.setValue("connections", states);
+
         foreach (IrcConnection* connection, connections()) {
             connection->quit(qApp->property("description").toString());
             connection->close();
