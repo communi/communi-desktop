@@ -452,9 +452,9 @@ void SplitView::showContextMenu(const QPoint& pos)
         QAction* action = menu->exec(browser->viewport()->mapToGlobal(pos));
 
         QSplitter* restoreSplitter = 0;
-        if (action == restoreUsers)
+        if (restoreUsers && action == restoreUsers)
             restoreSplitter = qobject_cast<QSplitter*>(browser->parentWidget());
-        else if (action == restoreViews)
+        else if (restoreViews && action == restoreViews)
             restoreSplitter = window()->findChild<QSplitter*>();
         if (restoreSplitter)
             restoreSplitter->setSizes(QList<int>() << restoreSplitter->widget(0)->sizeHint().width() << restoreSplitter->widget(1)->sizeHint().width());
