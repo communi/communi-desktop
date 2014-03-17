@@ -14,12 +14,13 @@
 
 #include "viewplugin.h"
 #include "bufferview.h"
-#include <QApplication>
+#include <QVariant>
+
+extern QWidget* findCommuniMainWindow();
 
 BufferView* ViewPlugin::currentView() const
 {
-    // TODO: beautify
-    QWidget* window = QApplication::topLevelWidgets().value(0);
+    QWidget* window = findCommuniMainWindow();
     if (window)
         return window->property("currentView").value<BufferView*>();
     return 0;
@@ -27,8 +28,7 @@ BufferView* ViewPlugin::currentView() const
 
 void ViewPlugin::setCurrentView(BufferView* view)
 {
-    // TODO: beautify
-    QWidget* window = QApplication::topLevelWidgets().value(0);
+    QWidget* window = findCommuniMainWindow();
     if (window)
         window->setProperty("currentView", QVariant::fromValue(view));
 }

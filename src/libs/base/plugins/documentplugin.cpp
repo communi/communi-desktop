@@ -14,12 +14,13 @@
 
 #include "documentplugin.h"
 #include "bufferview.h"
-#include <QApplication>
+#include <QVariant>
+
+extern QWidget* findCommuniMainWindow();
 
 TextDocument* DocumentPlugin::currentDocument() const
 {
-    // TODO: beautify
-    QWidget* window = QApplication::topLevelWidgets().value(0);
+    QWidget* window = findCommuniMainWindow();
     if (window) {
         BufferView* view = window->property("currentView").value<BufferView*>();
         if (view)

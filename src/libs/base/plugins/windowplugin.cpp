@@ -14,16 +14,29 @@
 
 #include "windowplugin.h"
 #include <QApplication>
+#include <QPointer>
+
+QWidget* findCommuniMainWindow()
+{
+    static QPointer<QWidget> window;
+    if (!window) {
+        foreach (QWidget* widget, QApplication::topLevelWidgets()) {
+            if (widget->inherits("QMainWindow")) {
+                window = widget;
+                break;
+            }
+        }
+    }
+    return window;
+}
 
 QWidget* WindowPlugin::window() const
 {
-    // TODO: beautify
-    return QApplication::topLevelWidgets().value(0);
+    return findCommuniMainWindow();
 }
 
 bool WindowPlugin::isActiveWindow() const
 {
-    // TODO: beautify
-    QWidget* window = QApplication::topLevelWidgets().value(0);
+    QWidget* window = findCommuniMainWindow();
     return window && window->isActiveWindow();
 }

@@ -14,13 +14,14 @@
 
 #include "connectionplugin.h"
 #include <IrcConnection>
-#include <QApplication>
+#include <QVariant>
 #include <QWidget>
+
+extern QWidget* findCommuniMainWindow();
 
 QList<IrcConnection*> ConnectionPlugin::connections() const
 {
-    // TODO: beautify
-    QWidget* window = QApplication::topLevelWidgets().value(0);
+    QWidget* window = findCommuniMainWindow();
     if (window)
         return window->property("connections").value<QList<IrcConnection*> >();
     return QList<IrcConnection*>();
@@ -28,16 +29,14 @@ QList<IrcConnection*> ConnectionPlugin::connections() const
 
 void ConnectionPlugin::addConnection(IrcConnection* connection)
 {
-    // TODO: beautify
-    QWidget* window = QApplication::topLevelWidgets().value(0);
+    QWidget* window = findCommuniMainWindow();
     if (window)
         QMetaObject::invokeMethod(window, "addConnection", Q_ARG(IrcConnection*, connection));
 }
 
 void ConnectionPlugin::removeConnection(IrcConnection* connection)
 {
-    // TODO: beautify
-    QWidget* window = QApplication::topLevelWidgets().value(0);
+    QWidget* window = findCommuniMainWindow();
     if (window)
         QMetaObject::invokeMethod(window, "removeConnection", Q_ARG(IrcConnection*, connection));
 }
