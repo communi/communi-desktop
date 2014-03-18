@@ -409,6 +409,7 @@ void SplitView::prepareViewMenu(BufferView* view)
     menu->addAction(d.unsplitAction);
     menu->addSeparator();
     menu->addAction(tr("Settings..."), window(), SLOT(showSettings()), QKeySequence::Preferences)->setShortcutContext(Qt::WidgetShortcut);
+    menu->addAction(tr("Help..."), window(), SLOT(showHelp()), QKeySequence::HelpContents)->setShortcutContext(Qt::WidgetShortcut);
     menu->addSeparator();
     menu->addAction(tr("Quit"), window(), SLOT(close()), QKeySequence::Quit)->setShortcutContext(Qt::WidgetShortcut);
 }

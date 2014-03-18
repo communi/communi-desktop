@@ -14,6 +14,7 @@
 #include "textdocument.h"
 #include "connectpage.h"
 #include "bufferview.h"
+#include "helppopup.h"
 #include "chatpage.h"
 #include <IrcBufferModel>
 #include <IrcConnection>
@@ -330,6 +331,12 @@ void MainWindow::showSettings()
     connect(page, SIGNAL(accepted()), this, SLOT(onSettingsAccepted()));
     connect(page, SIGNAL(rejected()), this, SLOT(pop()));
     push(page);
+}
+
+void MainWindow::showHelp()
+{
+    HelpPopup* help = new HelpPopup(this);
+    help->popup();
 }
 
 void MainWindow::editConnection(IrcConnection* connection)

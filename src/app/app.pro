@@ -31,6 +31,7 @@ FORMS += $$PWD/settingspage.ui
 
 HEADERS += $$PWD/chatpage.h
 HEADERS += $$PWD/connectpage.h
+HEADERS += $$PWD/helppopup.h
 HEADERS += $$PWD/mainwindow.h
 HEADERS += $$PWD/pluginloader.h
 HEADERS += $$PWD/settingspage.h
@@ -38,6 +39,7 @@ HEADERS += $$PWD/splitview.h
 
 SOURCES += $$PWD/chatpage.cpp
 SOURCES += $$PWD/connectpage.cpp
+SOURCES += $$PWD/helppopup.cpp
 SOURCES += $$PWD/main.cpp
 SOURCES += $$PWD/mainwindow.cpp
 SOURCES += $$PWD/pluginloader.cpp

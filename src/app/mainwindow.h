@@ -61,6 +61,7 @@ private slots:
     void onSettingsAccepted();
     void updateTitle();
     void showSettings();
+    void showHelp();
     void editConnection(IrcConnection* connection);
     void restoreConnection(IrcConnection* connection = 0);
     void delayedRestoreConnection();
