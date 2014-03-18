@@ -77,6 +77,7 @@ void TextBrowser::setDocument(TextDocument* document)
         }
         if (document) {
             document->setVisible(true);
+            document->setDefaultFont(font());
             connect(document->documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(keepAtBottom()));
             if (d.dirty == 0 && !document->isEmpty()) {
                 setUpdatesEnabled(false);

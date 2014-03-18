@@ -280,6 +280,7 @@ QVariantMap SplitView::saveSplittedViews(const QSplitter* splitter) const
             buf.insert("uuid", connection ? connection->userData().value("uuid").toString() : QString());
             if (QSplitter* sp = bv->findChild<QSplitter*>())
                 buf.insert("state", sp->saveState());
+            buf.insert("fontSize", bv->textBrowser()->font().pointSize());
             buffers += buf;
         }
     }
@@ -322,6 +323,11 @@ void SplitView::restoreSplittedViews(QSplitter* splitter, const QVariantMap& sta
             if (buf.contains("state")) {
                 if (QSplitter* sp = bv->findChild<QSplitter*>())
                     sp->restoreState(buf.value("state").toByteArray());
+            }
+            if (buf.contains("fontSize")) {
+                QFont font;
+                font.setPointSize(buf.value("fontSize").toInt());
+                bv->textBrowser()->setFont(font);
             }
             if (buf.value("current", false).toBool())
                 setCurrentView(bv);
