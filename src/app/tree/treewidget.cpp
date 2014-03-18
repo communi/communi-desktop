@@ -319,7 +319,7 @@ void TreeWidget::collapseCurrentConnection()
 
 QSize TreeWidget::sizeHint() const
 {
-    const int w = 12 * fontMetrics().width('#') + verticalScrollBar()->sizeHint().width();
+    const int w = 16 * fontMetrics().width('#') + verticalScrollBar()->sizeHint().width();
     return QSize(w, QTreeWidget::sizeHint().height());
 }
 
