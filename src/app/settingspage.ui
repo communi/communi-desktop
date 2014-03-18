@@ -206,47 +206,16 @@
          </property>
          <layout class="QFormLayout" name="settingsLayout">
           <property name="fieldGrowthPolicy">
-           <enum>QFormLayout::ExpandingFieldsGrow</enum>
+           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
           </property>
           <item row="0" column="0">
-           <widget class="QLabel" name="fontLabel">
-            <property name="text">
-             <string>Font:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <layout class="QHBoxLayout" name="fontLayout">
-            <item>
-             <widget class="QFontComboBox" name="fontFamilyBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>5</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="fontSizeBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>1</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="0">
            <widget class="QLabel" name="messagesLabel">
             <property name="text">
              <string>Messages:</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
+          <item row="0" column="1">
            <widget class="QCheckBox" name="eventsBox">
             <property name="toolTip">
              <string>Show joins, parts and quits</string>
@@ -259,7 +228,7 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
+          <item row="1" column="1">
            <widget class="QCheckBox" name="detailsBox">
             <property name="toolTip">
              <string>Show user hosts, quit messages etc.</string>
@@ -272,14 +241,14 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="2" column="0">
            <widget class="QLabel" name="timestampLabel">
             <property name="text">
              <string>Timestamp:</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
+          <item row="2" column="1">
            <widget class="QLineEdit" name="timestampField">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">

@@ -100,16 +100,6 @@ void ChatPage::setTheme(const QString& theme)
     }
 }
 
-QFont ChatPage::messageFont() const
-{
-    return d.messageFont;
-}
-
-void ChatPage::setMessageFont(const QFont& font)
-{
-    d.messageFont = font;
-}
-
 QString ChatPage::timeStampFormat() const
 {
     return d.timestampFormat;
@@ -146,8 +136,6 @@ QByteArray ChatPage::saveSettings() const
     settings.insert("theme", d.theme.name());
     settings.insert("showEvents", d.showEvents);
     settings.insert("showDetails", d.showDetails);
-    settings.insert("fontFamily", d.messageFont.family());
-    settings.insert("fontSize", d.messageFont.pixelSize());
 
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -164,11 +152,6 @@ void ChatPage::restoreSettings(const QByteArray& data)
     setTheme(settings.value("theme", "Cute").toString());
     setShowEvents(settings.value("showEvents", true).toBool());
     setShowDetails(settings.value("showDetails", true).toBool());
-
-    QFont font;
-    font.setFamily(settings.value("fontFamily", font.family()).toString());
-    font.setPixelSize(settings.value("fontSize", font.pixelSize()).toInt());
-    setMessageFont(font);
 }
 
 QByteArray ChatPage::saveState() const
@@ -339,7 +322,6 @@ void ChatPage::removeBuffer(IrcBuffer* buffer)
 void ChatPage::setupDocument(TextDocument* document)
 {
     document->setStyleSheet(d.theme.style());
-    document->setDefaultFont(d.messageFont);
     document->formatter()->setDetailed(d.showDetails);
     document->formatter()->setStripNicks(!d.showDetails);
     document->formatter()->setTimeStampFormat(d.timestampFormat);

@@ -36,9 +36,6 @@ public:
     QString theme() const;
     void setTheme(const QString& theme);
 
-    QFont messageFont() const;
-    void setMessageFont(const QFont& font);
-
     QString timeStampFormat() const;
     void setTimeStampFormat(const QString& format);
 
@@ -86,7 +83,6 @@ private:
     struct Private {
         bool showEvents;
         bool showDetails;
-        QFont messageFont;
         QString timestampFormat;
         ThemeInfo theme;
         QStringList chans;

@@ -52,20 +52,6 @@ void SettingsPage::setTheme(const QString& name)
     ui.themeCombo->setCurrentIndex(ui.themeCombo->findText(theme.name()));
 }
 
-QFont SettingsPage::messageFont() const
-{
-    QFont font;
-    font.setFamily(ui.fontFamilyBox->currentFont().family());
-    font.setPixelSize(ui.fontSizeBox->value());
-    return font;
-}
-
-void SettingsPage::setMessageFont(const QFont& font)
-{
-    ui.fontFamilyBox->setCurrentFont(font);
-    ui.fontSizeBox->setValue(font.pixelSize());
-}
-
 QString SettingsPage::timeStampFormat() const
 {
     return ui.timestampField->text();

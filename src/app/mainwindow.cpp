@@ -290,7 +290,6 @@ void MainWindow::onSettingsAccepted()
     SettingsPage* page = qobject_cast<SettingsPage*>(sender());
     if (page) {
         d.chatPage->setTheme(page->theme());
-        d.chatPage->setMessageFont(page->messageFont());
         d.chatPage->setShowDetails(page->showDetails());
         d.chatPage->setShowEvents(page->showEvents());
         d.chatPage->setTimeStampFormat(page->timeStampFormat());
@@ -330,7 +329,6 @@ void MainWindow::showSettings()
 
     SettingsPage* page = new SettingsPage(d.stack);
     page->setTheme(d.chatPage->theme());
-    page->setMessageFont(d.chatPage->messageFont());
     page->setShowDetails(d.chatPage->showDetails());
     page->setShowEvents(d.chatPage->showEvents());
     page->setTimeStampFormat(d.chatPage->timeStampFormat());
