@@ -45,11 +45,9 @@ HelpPopup::~HelpPopup()
 void HelpPopup::popup()
 {
 #ifdef Q_OS_MAC
-    QString control(tr("Cmd+%1"));
-    QString navigate(tr("Cmd+Alt+%1"));
-    QString nextActive(tr("Shift+Cmd+Alt+%1"));
+    QString navigate(tr("Ctrl+Alt+%1"));
+    QString nextActive(tr("Shift+Ctrl+Alt+%1"));
 #else
-    QString control(tr("Ctrl+%1"));
     QString navigate(tr("Alt+%1"));
     QString nextActive(tr("Shift+Alt+%1"));
 #endif
@@ -59,21 +57,20 @@ void HelpPopup::popup()
     html += tr("<tr><td><table>");
     html += tr("<tr><th align='left' colspan='2'><h3>Shortcuts</h3></th></tr>");
     html += tr("<tr/>");
-    html += tr("<tr><th align='left'>Connect:</th><td><pre>%1</pre></td></tr>").arg(QKeySequence(QKeySequence::New).toString());
-    html += tr("<tr><th align='left'>Settings:</th><td><pre>%1</pre></td></tr>").arg(QKeySequence(QKeySequence::Preferences).toString());
-    html += tr("<tr><th align='left'>Close:</th><td><pre>%1</pre></td></tr>").arg(QKeySequence(QKeySequence::Close).toString());
+    html += tr("<tr><th align='left'>Next view:</th><td>&nbsp;</td><td><pre>%1</pre></td></tr>").arg(QKeySequence(navigate.arg(tr("Down"))).toString(QKeySequence::NativeText));
+    html += tr("<tr><th align='left'>Previous view:</th><td>&nbsp;</td><td><pre>%1</pre></td></tr>").arg(QKeySequence(navigate.arg(tr("Up"))).toString(QKeySequence::NativeText));
     html += tr("<tr/>");
-    html += tr("<tr><th align='left'>Next view:</th><td><pre>%1</pre></td></tr>").arg(navigate.arg(tr("Down")));
-    html += tr("<tr><th align='left'>Previous view:</th><td><pre>%1</pre></td></tr>").arg(navigate.arg(tr("Up")));
-    html += tr("<tr><th align='left'>Next active view:</th><td><pre>%1</pre></td></tr>").arg(nextActive.arg(tr("Down")));
-    html += tr("<tr><th align='left'>Previous active view:</th><td><pre>%1</pre></td></tr>").arg(navigate.arg(tr("Up")));
-    html += tr("<tr><th align='left'>Most live view:</th><td><pre>%1</pre></td></tr>").arg(control.arg("L"));
-    html += tr("<tr><th align='left'>Expand view:</th><td><pre>%1</pre></td></tr>").arg(navigate.arg(tr("Right")));
-    html += tr("<tr><th align='left'>Collapse view:</th><td><pre>%1</pre></td></tr>").arg(navigate.arg(tr("Left")));
+    html += tr("<tr><th align='left'>Next active view:</th><td>&nbsp;</td><td><pre>%1</pre></td></tr>").arg(QKeySequence(nextActive.arg(tr("Down"))).toString(QKeySequence::NativeText));
+    html += tr("<tr><th align='left'>Previous active view:</th><td>&nbsp;</td><td><pre>%1</pre></td></tr>").arg(QKeySequence(nextActive.arg(tr("Up"))).toString(QKeySequence::NativeText));
     html += tr("<tr/>");
-    html += tr("<tr><th align='left'>Find:</th><td><pre>%1</pre></td></tr>").arg(control.arg("F"));
-    html += tr("<tr><th align='left'>Search views:</th><td><pre>%1</pre></td></tr>").arg(control.arg("S"));
-    html += tr("<tr><th align='left'>Search users:</th><td><pre>%1</pre></td></tr>").arg(control.arg("U"));
+    html += tr("<tr><th align='left'>Most live view:</th><td>&nbsp;</td><td><pre>%1</pre></td></tr>").arg(QKeySequence("Ctrl+L").toString(QKeySequence::NativeText));
+    html += tr("<tr/>");
+    html += tr("<tr><th align='left'>Expand view:</th><td>&nbsp;</td><td><pre>%1</pre></td></tr>").arg(QKeySequence(navigate.arg(tr("Right"))).toString(QKeySequence::NativeText));
+    html += tr("<tr><th align='left'>Collapse view:</th><td>&nbsp;</td><td><pre>%1</pre></td></tr>").arg(QKeySequence(navigate.arg(tr("Left"))).toString(QKeySequence::NativeText));
+    html += tr("<tr/>");
+    html += tr("<tr><th align='left'>Find:</th><td>&nbsp;</td><td><pre>%1</pre></td></tr>").arg(QKeySequence("Ctrl+F").toString(QKeySequence::NativeText));
+    html += tr("<tr><th align='left'>Search views:</th><td>&nbsp;</td><td><pre>%1</pre></td></tr>").arg(QKeySequence("Ctrl+S").toString(QKeySequence::NativeText));
+    html += tr("<tr><th align='left'>Search users:</th><td>&nbsp;</td><td><pre>%1</pre></td></tr>").arg(QKeySequence("Ctrl+U").toString(QKeySequence::NativeText));
     html += tr("</table></td>");
 
     // TODO:
