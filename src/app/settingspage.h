@@ -11,9 +11,6 @@
 #define SETTINGSPAGE_H
 
 #include "ui_settingspage.h"
-#include "themeinfo.h"
-
-class ThemeWidget;
 
 class SettingsPage : public QWidget
 {
@@ -25,16 +22,8 @@ public:
 
     QString theme() const;
 
-    QString timeStampFormat() const;
-
-    bool showEvents() const;
-    bool showDetails() const;
-
 public slots:
     void setTheme(const QString& theme);
-    void setTimeStampFormat(const QString& format);
-    void setShowEvents(bool show);
-    void setShowDetails(bool show);
 
 signals:
     void accepted();

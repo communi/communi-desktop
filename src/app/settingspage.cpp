@@ -10,6 +10,7 @@
 #include "settingspage.h"
 #include "themeloader.h"
 #include "themewidget.h"
+#include "themeinfo.h"
 #include <QPushButton>
 #include <QShortcut>
 
@@ -50,34 +51,4 @@ void SettingsPage::setTheme(const QString& name)
     ui.versionField->setText(theme.version());
     ui.descriptionField->setText(theme.description());
     ui.themeCombo->setCurrentIndex(ui.themeCombo->findText(theme.name()));
-}
-
-QString SettingsPage::timeStampFormat() const
-{
-    return ui.timestampField->text();
-}
-
-void SettingsPage::setTimeStampFormat(const QString& format)
-{
-    ui.timestampField->setText(format);
-}
-
-bool SettingsPage::showEvents() const
-{
-    return ui.eventsBox->isChecked();
-}
-
-void SettingsPage::setShowEvents(bool show)
-{
-    ui.eventsBox->setChecked(show);
-}
-
-bool SettingsPage::showDetails() const
-{
-    return ui.detailsBox->isChecked();
-}
-
-void SettingsPage::setShowDetails(bool show)
-{
-    ui.detailsBox->setChecked(show);
 }

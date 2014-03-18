@@ -36,15 +36,6 @@ public:
     QString theme() const;
     void setTheme(const QString& theme);
 
-    QString timeStampFormat() const;
-    void setTimeStampFormat(const QString& format);
-
-    bool showEvents() const;
-    void setShowEvents(bool show);
-
-    bool showDetails() const;
-    void setShowDetails(bool show);
-
     TreeWidget* treeWidget() const;
     SplitView* splitView() const;
 
@@ -81,9 +72,6 @@ private:
     static IrcCommandParser* createParser(QObject* parent);
 
     struct Private {
-        bool showEvents;
-        bool showDetails;
-        QString timestampFormat;
         ThemeInfo theme;
         QStringList chans;
         SplitView* splitView;

@@ -75,7 +75,7 @@
          </property>
         </spacer>
        </item>
-       <item row="3" column="1">
+       <item row="2" column="1">
         <spacer name="bottomSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -91,7 +91,7 @@
          </property>
         </spacer>
        </item>
-       <item row="2" column="0">
+       <item row="1" column="0">
         <widget class="QWidget" name="leftSpacer" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -101,7 +101,17 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="1" column="2">
+        <widget class="QWidget" name="rightSpacer" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
         <widget class="QGroupBox" name="themeBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -185,81 +195,6 @@
              </widget>
             </item>
            </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QWidget" name="rightSpacer" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-           <horstretch>1</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QGroupBox" name="settingsBox">
-         <property name="title">
-          <string>Settings</string>
-         </property>
-         <layout class="QFormLayout" name="settingsLayout">
-          <property name="fieldGrowthPolicy">
-           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-          </property>
-          <item row="0" column="0">
-           <widget class="QLabel" name="messagesLabel">
-            <property name="text">
-             <string>Messages:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QCheckBox" name="eventsBox">
-            <property name="toolTip">
-             <string>Show joins, parts and quits</string>
-            </property>
-            <property name="text">
-             <string>Show events</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QCheckBox" name="detailsBox">
-            <property name="toolTip">
-             <string>Show user hosts, quit messages etc.</string>
-            </property>
-            <property name="text">
-             <string>Show details</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="timestampLabel">
-            <property name="text">
-             <string>Timestamp:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLineEdit" name="timestampField">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>[hh:mm:ss]</string>
-            </property>
-           </widget>
           </item>
          </layout>
         </widget>

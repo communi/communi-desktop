@@ -290,9 +290,6 @@ void MainWindow::onSettingsAccepted()
     SettingsPage* page = qobject_cast<SettingsPage*>(sender());
     if (page) {
         d.chatPage->setTheme(page->theme());
-        d.chatPage->setShowDetails(page->showDetails());
-        d.chatPage->setShowEvents(page->showEvents());
-        d.chatPage->setTimeStampFormat(page->timeStampFormat());
 
         foreach (IrcConnection* connection, d.connections) {
             IrcBufferModel* model = connection->findChild<IrcBufferModel*>(); // TODO
@@ -329,9 +326,6 @@ void MainWindow::showSettings()
 
     SettingsPage* page = new SettingsPage(d.stack);
     page->setTheme(d.chatPage->theme());
-    page->setShowDetails(d.chatPage->showDetails());
-    page->setShowEvents(d.chatPage->showEvents());
-    page->setTimeStampFormat(d.chatPage->timeStampFormat());
 
     connect(page, SIGNAL(accepted()), this, SLOT(onSettingsAccepted()));
     connect(page, SIGNAL(rejected()), this, SLOT(pop()));

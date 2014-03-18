@@ -33,10 +33,6 @@
 
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 {
-    d.showEvents = true;
-    d.showDetails = true;
-    d.timestampFormat = "[hh:mm:ss]";
-
     d.splitView = new SplitView(this);
     d.treeWidget = new TreeWidget(this);
     addWidget(d.treeWidget);
@@ -100,42 +96,10 @@ void ChatPage::setTheme(const QString& theme)
     }
 }
 
-QString ChatPage::timeStampFormat() const
-{
-    return d.timestampFormat;
-}
-
-void ChatPage::setTimeStampFormat(const QString& format)
-{
-    d.timestampFormat = format;
-}
-
-bool ChatPage::showEvents() const
-{
-    return d.showEvents;
-}
-
-void ChatPage::setShowEvents(bool show)
-{
-    d.showEvents = show;
-}
-
-bool ChatPage::showDetails() const
-{
-    return d.showDetails;
-}
-
-void ChatPage::setShowDetails(bool show)
-{
-    d.showDetails = show;
-}
-
 QByteArray ChatPage::saveSettings() const
 {
     QVariantMap settings;
     settings.insert("theme", d.theme.name());
-    settings.insert("showEvents", d.showEvents);
-    settings.insert("showDetails", d.showDetails);
 
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -150,8 +114,6 @@ void ChatPage::restoreSettings(const QByteArray& data)
     in >> settings;
 
     setTheme(settings.value("theme", "Cute").toString());
-    setShowEvents(settings.value("showEvents", true).toBool());
-    setShowDetails(settings.value("showDetails", true).toBool());
 }
 
 QByteArray ChatPage::saveState() const
@@ -322,9 +284,9 @@ void ChatPage::removeBuffer(IrcBuffer* buffer)
 void ChatPage::setupDocument(TextDocument* document)
 {
     document->setStyleSheet(d.theme.style());
-    document->formatter()->setDetailed(d.showDetails);
-    document->formatter()->setStripNicks(!d.showDetails);
-    document->formatter()->setTimeStampFormat(d.timestampFormat);
+//    document->formatter()->setDetailed(d.showDetails);
+//    document->formatter()->setStripNicks(!d.showDetails);
+//    document->formatter()->setTimeStampFormat(d.timestampFormat);
 }
 
 void ChatPage::addView(BufferView* view)
