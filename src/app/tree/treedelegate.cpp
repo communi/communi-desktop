@@ -42,9 +42,13 @@ public:
 
     static TreeHeader* instance(QWidget* parent = 0)
     {
-        static QPointer<TreeHeader> header;
-        if (!header)
-            header = new TreeHeader(parent);
+        static QHash<QWidget*, TreeHeader*> headers;
+        QWidget* window = parent ? parent->window() : 0;
+        TreeHeader* header = headers.value(window);
+        if (!header) {
+            header = new TreeHeader(window);
+            headers.insert(window, header);
+        }
         return header;
     }
 
@@ -93,9 +97,13 @@ public:
 
     static TreeBadge* instance(QWidget* parent = 0)
     {
-        static QPointer<TreeBadge> badge;
-        if (!badge)
-            badge = new TreeBadge(parent);
+        static QHash<QWidget*, TreeBadge*> badges;
+        QWidget* window = parent ? parent->window() : 0;
+        TreeBadge* badge = badges.value(window);
+        if (!badge) {
+            badge = new TreeBadge(window);
+            badges.insert(window, badge);
+        }
         return badge;
     }
 
