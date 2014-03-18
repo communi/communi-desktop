@@ -3,17 +3,12 @@ compiler:
   - gcc
   - clang
 before_install:
+  - sudo add-apt-repository --yes ppa:ubuntu-sdk-team/ppa
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq qt5-qmake qtbase5-dev
   - git submodule update --init --recursive
+cache: apt
 script:
-  - qmake -v
-  - qmake
+  - qmake -qt=qt5 -v
+  - qmake -qt=qt5
   - make
-notifications:
-  email: false
-  irc:
-    channels:
-      - "irc.freenode.org#communi"
-    template:
-      - "%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} - %{build_url}"
-    use_notice: true
-    skip_join: true
