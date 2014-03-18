@@ -132,6 +132,7 @@ void TextInput::paintEvent(QPaintEvent* event)
         QRect r = style()->subElementRect(QStyle::SE_LineEditContents, &option, this);
         int left, top, right, bottom;
         getTextMargins(&left, &top, &right, &bottom);
+        left += qMax(0, -fontMetrics().minLeftBearing());
         r.adjust(left, top, -right, -bottom);
         r.adjust(hMargin, vMargin, -hMargin, -vMargin);
 
