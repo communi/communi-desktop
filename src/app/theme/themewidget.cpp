@@ -112,7 +112,7 @@ ThemeWidget::ThemeWidget(QWidget* parent) : QLabel(parent)
 {
     d.page = createChatPage();
     d.page->setVisible(false);
-    d.page->resize(640, 400);
+    d.page->resize(960, 600);
 
     QTimer::singleShot(0, this, SLOT(updatePreview()));
 }
