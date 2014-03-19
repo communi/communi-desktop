@@ -35,6 +35,9 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     d.textBrowser = new TextBrowser(this);
     d.textBrowser->setBuddy(d.textInput);
 
+    d.textBrowser->setFocusPolicy(Qt::ClickFocus);
+    d.textBrowser->viewport()->setAttribute(Qt::WA_AcceptTouchEvents, false);
+
     d.splitter = new QSplitter(this);
     d.splitter->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
