@@ -20,6 +20,7 @@
 #include <QShortcut>
 
 class ChatPage;
+class BufferView;
 class AbstractFinder;
 
 class Finder : public QObject
@@ -29,13 +30,17 @@ class Finder : public QObject
 public:
     explicit Finder(ChatPage* page);
 
-private slots:
+public slots:
     void searchTree();
-    void searchList();
-    void searchBrowser();
     void cancelTreeSearch();
-    void cancelListSearch();
-    void cancelBrowserSearch();
+
+    void searchList(BufferView* view = 0);
+    void cancelListSearch(BufferView* view = 0);
+
+    void searchBrowser(BufferView* view = 0);
+    void cancelBrowserSearch(BufferView* view = 0);
+
+private slots:
     void startSearch(AbstractFinder* input);
     void finderDestroyed(AbstractFinder* input);
 

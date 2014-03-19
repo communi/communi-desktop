@@ -61,9 +61,10 @@ void Finder::searchTree()
         finder->reFind();
 }
 
-void Finder::searchList()
+void Finder::searchList(BufferView* view)
 {
-    BufferView* view = d.page->currentView();
+    if (!view)
+        view = d.page->currentView();
     if (view && view->listView()->isVisible()) {
         cancelTreeSearch();
         cancelBrowserSearch();
@@ -75,9 +76,10 @@ void Finder::searchList()
     }
 }
 
-void Finder::searchBrowser()
+void Finder::searchBrowser(BufferView* view)
 {
-    BufferView* view = d.page->currentView();
+    if (!view)
+        view = d.page->currentView();
     if (view && view->isVisible()) {
         cancelListSearch();
         cancelTreeSearch();
@@ -110,25 +112,31 @@ void Finder::cancelTreeSearch()
         view->textInput()->setFocus();
 }
 
-void Finder::cancelListSearch()
+void Finder::cancelListSearch(BufferView* view)
 {
-    BufferView* view = d.page->currentView();
+    bool restoreFocus = !view;
+    if (!view)
+        view = d.page->currentView();
     if (view) {
         AbstractFinder* finder = view->listView()->findChild<ListFinder*>();
         if (finder)
             finder->animateHide();
-        view->textInput()->setFocus();
+        if (restoreFocus)
+            view->textInput()->setFocus();
     }
 }
 
-void Finder::cancelBrowserSearch()
+void Finder::cancelBrowserSearch(BufferView* view)
 {
-    BufferView* view = d.page->currentView();
+    bool restoreFocus = !view;
+    if (!view)
+        view = d.page->currentView();
     if (view) {
         AbstractFinder* finder = view->textBrowser()->findChild<BrowserFinder*>();
         if (finder)
             finder->animateHide();
-        view->textInput()->setFocus();
+        if (restoreFocus)
+            view->textInput()->setFocus();
     }
 }
 

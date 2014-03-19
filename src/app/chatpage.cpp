@@ -33,6 +33,7 @@
 
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 {
+    d.finder = new Finder(this);
     d.splitView = new SplitView(this);
     d.treeWidget = new TreeWidget(this);
     addWidget(d.treeWidget);
@@ -46,7 +47,7 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 
     connect(d.splitView, SIGNAL(viewAdded(BufferView*)), this, SLOT(addView(BufferView*)));
     connect(d.splitView, SIGNAL(viewRemoved(BufferView*)), this, SLOT(removeView(BufferView*)));
-    connect(d.splitView, SIGNAL(currentViewChanged(BufferView*)), this, SIGNAL(currentViewChanged(BufferView*)));
+    connect(d.splitView, SIGNAL(currentViewChanged(BufferView*,BufferView*)), this, SLOT(onCurrentViewChanged(BufferView*,BufferView*)));
 
     setStretchFactor(1, 1);
 }
@@ -58,7 +59,6 @@ ChatPage::~ChatPage()
 void ChatPage::init()
 {
     addView(d.splitView->currentView());
-    new Finder(this);
 }
 
 TreeWidget* ChatPage::treeWidget() const
@@ -307,6 +307,13 @@ void ChatPage::addView(BufferView* view)
 void ChatPage::removeView(BufferView* view)
 {
     PluginLoader::instance()->viewRemoved(view);
+}
+
+void ChatPage::onCurrentViewChanged(BufferView* current, BufferView* previous)
+{
+    d.finder->cancelListSearch(previous);
+    d.finder->cancelBrowserSearch(previous);
+    emit currentViewChanged(current);
 }
 
 void ChatPage::onSocketError()

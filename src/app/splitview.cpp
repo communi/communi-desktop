@@ -242,12 +242,13 @@ void SplitView::onFocusChanged(QWidget*, QWidget* widget)
     while (widget) {
         BufferView* view = qobject_cast<BufferView*>(widget);
         if (view && d.current != view) {
-            if (d.current)
-                disconnect(d.current, SIGNAL(bufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
+            BufferView* previous = d.current;
+            if (previous)
+                disconnect(previous, SIGNAL(bufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
             d.current = view;
             if (view)
                 connect(view, SIGNAL(bufferChanged(IrcBuffer*)), this, SIGNAL(currentBufferChanged(IrcBuffer*)));
-            emit currentViewChanged(view);
+            emit currentViewChanged(view, previous);
             emit currentBufferChanged(view->buffer());
             break;
         }

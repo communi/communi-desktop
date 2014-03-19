@@ -46,8 +46,8 @@ public slots:
 signals:
     void viewAdded(BufferView* view);
     void viewRemoved(BufferView* view);
-    void currentViewChanged(BufferView* view);
     void currentBufferChanged(IrcBuffer* buffer);
+    void currentViewChanged(BufferView* current, BufferView* previous = 0);
 
 protected:
     BufferView* createBufferView(QSplitter* splitter, int index = -1);

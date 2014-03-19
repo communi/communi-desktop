@@ -14,6 +14,7 @@
 #include <IrcCommandFilter>
 #include "themeinfo.h"
 
+class Finder;
 class IrcBuffer;
 class SplitView;
 class TreeWidget;
@@ -66,12 +67,14 @@ private slots:
     void removeConnection(IrcConnection* connection);
     void addView(BufferView* view);
     void removeView(BufferView* view);
+    void onCurrentViewChanged(BufferView* current, BufferView* previous);
     void onSocketError();
 
 private:
     static IrcCommandParser* createParser(QObject* parent);
 
     struct Private {
+        Finder* finder;
         ThemeInfo theme;
         QStringList chans;
         SplitView* splitView;
