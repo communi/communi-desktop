@@ -114,6 +114,10 @@ TreeBadge:on {
     background: #283ecc;
 }
 
+TreeHeader {
+    min-height: 20px;
+}
+
 TreeHeader::section:on {
     color: #324aff;
 }
@@ -155,8 +159,8 @@ QToolButton::menu-indicator {
 TitleBar > QToolButton {
     min-width: 20px;
     max-width: 20px;
-    min-height: 18px;
-    max-height: 18px;
+    min-height: 20px;
+    max-height: 20px;
     border-top-color: transparent;
     border-right-color: transparent;
 }

@@ -180,6 +180,11 @@ QSize TreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelInd
         QTreeView tree;
         QStyleOptionHeader opt;
         QSize ss = qApp->style()->sizeFromContents(QStyle::CT_HeaderSection, &opt, QSize(), tree.header());
+        TreeHeader* header = TreeHeader::instance(const_cast<QWidget*>(option.widget));
+        if (header->minimumSize().isValid())
+            ss = ss.expandedTo(header->minimumSize());
+        if (header->maximumSize().isValid())
+            ss = ss.boundedTo(header->maximumSize());
         if (ss.isValid())
             return ss;
     }
