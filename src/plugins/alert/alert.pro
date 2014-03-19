@@ -4,12 +4,7 @@
 
 TEMPLATE = lib
 CONFIG += static communi_plugin
-
-greaterThan(QT_MAJOR_VERSION, 4) {
-    qtHaveModule(multimedia):QT += multimedia
-} else {
-    CONFIG(phonon, phonon|no_phonon):QT += phonon
-}
+qtHaveModule(multimedia):QT += multimedia
 
 RESOURCES += alert.qrc
 

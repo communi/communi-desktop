@@ -30,11 +30,7 @@
 
 #include <QObject>
 
-#if defined(QT_MULTIMEDIA_LIB)
-class QMediaPlayer;
-#elif defined(QT_PHONON_LIB)
-namespace Phonon { class MediaObject; }
-#endif
+QT_FORWARD_DECLARE_CLASS(QMediaPlayer)
 
 class Alert : public QObject
 {
@@ -53,12 +49,8 @@ public slots:
     void play();
 
 private:
-#if defined(QT_MULTIMEDIA_LIB)
-    QMediaPlayer* player;
-#elif defined(QT_PHONON_LIB)
-    Phonon::MediaObject* player;
-#endif
     QString fp;
+    QMediaPlayer* player;
 };
 
 #endif // ALERT_H

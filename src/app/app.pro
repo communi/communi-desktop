@@ -14,12 +14,7 @@ INCLUDEPATH += $$PWD
 mac:LIBS += -framework SystemConfiguration
 else:win32:LIBS += -lole32
 else:unix:QT += dbus
-
-greaterThan(QT_MAJOR_VERSION, 4) {
-    qtHaveModule(multimedia):QT += multimedia
-} else {
-    CONFIG(phonon, phonon|no_phonon):QT += phonon
-}
+qtHaveModule(multimedia):QT += multimedia
 
 win32:target.path = $$[QT_INSTALL_BINS]
 else:mac:target.path = /Applications

@@ -27,25 +27,20 @@
 
 #include "alert.h"
 
-#if defined(QT_MULTIMEDIA_LIB)
+#ifdef QT_MULTIMEDIA_LIB
 #include <QMediaPlayer>
-#elif defined(QT_PHONON_LIB)
-#include <MediaObject>
 #endif
 
-Alert::Alert(QObject* parent) : QObject(parent)
+Alert::Alert(QObject* parent) : QObject(parent), player(0)
 {
-#if defined(QT_MULTIMEDIA_LIB)
+#ifdef QT_MULTIMEDIA_LIB
     player = new QMediaPlayer(this);
-#elif defined(QT_PHONON_LIB)
-    player = Phonon::createPlayer(Phonon::MusicCategory);
-    player->setParent(this);
 #endif
 }
 
 bool Alert::isAvailable()
 {
-#if defined(QT_MULTIMEDIA_LIB) || defined(QT_PHONON_LIB)
+#ifdef QT_MULTIMEDIA_LIB
     return true;
 #else
     return false;
@@ -63,15 +58,13 @@ void Alert::setFilePath(const QString& filePath)
         fp = filePath;
 #if defined(QT_MULTIMEDIA_LIB)
         player->setMedia(QUrl::fromLocalFile(fp));
-#elif defined(QT_PHONON_LIB)
-        player->setCurrentSource(Phonon::MediaSource(fp));
 #endif
     }
 }
 
 void Alert::play()
 {
-#if defined(QT_MULTIMEDIA_LIB) || defined(QT_PHONON_LIB)
-        player->play();
+#ifdef QT_MULTIMEDIA_LIB
+    player->play();
 #endif
 }
