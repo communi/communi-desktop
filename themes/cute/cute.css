@@ -118,18 +118,24 @@ TitleBar {
     min-height: 20px;
 }
 
-TitleBar > QToolButton {
+QToolButton#menu {
     min-width: 20px;
     max-width: 20px;
     min-height: 20px;
     max-height: 20px;
+    border-color: transparent;
     background-color: transparent;
-    border-top-color: transparent;
-    border-right-color: transparent;
+    image: url(gray:menu.png);
 }
 
-TitleBar > QToolButton#menu {
-    image: url(black:menu.png);
+QToolButton#menu:hover {
+    border-left-color: palette(mid);
+    border-bottom-color: palette(mid);
+}
+
+QToolButton#menu:pressed {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 palette(dark), stop: 1 palette(light));
 }
 
 Overlay {
