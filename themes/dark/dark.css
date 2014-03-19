@@ -162,7 +162,7 @@ TitleBar > QToolButton {
 }
 
 TitleBar > QToolButton#menu {
-    image: url(white:down.png)
+    image: url(white:menu.png)
 }
 
 AbstractFinder > QToolButton {

@@ -121,7 +121,7 @@ TitleBar > QToolButton {
 }
 
 TitleBar > QToolButton#menu {
-    image: url(black:down.png);
+    image: url(black:menu.png);
 }
 
 Overlay {
