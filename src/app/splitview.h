@@ -13,6 +13,7 @@
 #include <QSplitter>
 #include <QPointer>
 #include <QVariant>
+#include <QMenu>
 
 class IrcBuffer;
 class BufferView;
@@ -68,17 +69,21 @@ private slots:
     void joinChannel();
     void openQuery();
 
-    void prepareViewMenu(BufferView* view);
     void showContextMenu(const QPoint& pos);
 
 private:
+    BufferView* targetView() const;
+    void addViewActions(QMenu* menu, BufferView* view);
+    void addSplitActions(QMenu* menu, BufferView* view);
+    void addGlobalActions(QMenu* menu);
+
     QVariantMap saveSplittedViews(const QSplitter* splitter) const;
     void restoreSplittedViews(QSplitter* splitter, const QVariantMap& state);
 
     struct Private {
-        QAction* unsplitAction;
         QList<BufferView*> views;
         QPointer<BufferView> current;
+        QList<QPointer<QAction> > unsplitters;
     } d;
 };
 
