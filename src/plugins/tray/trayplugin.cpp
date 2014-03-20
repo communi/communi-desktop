@@ -96,6 +96,7 @@ void TrayPlugin::onMessageHighlighted(IrcMessage* message)
 {
     Q_UNUSED(message);
     if (d.tray && !d.alert && !isActiveWindow()) {
+        d.tray->showMessage(tr("Communi"), message->property("content").toString());
         SharedTimer::instance()->registerReceiver(this, "updateIcon");
         d.alert = true;
         d.blink = true;
