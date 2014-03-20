@@ -227,6 +227,9 @@ void TextBrowser::scrollToPreviousPage()
 
 void TextBrowser::paintEvent(QPaintEvent* event)
 {
+    // TODO: make sure the shadow is always on top (of transient scrollbars)
+    d.shadow->raise();
+
     const int hoffset = horizontalScrollBar()->value();
     const int voffset = verticalScrollBar()->value();
     const QRect bounds = rect().translated(hoffset, voffset);
