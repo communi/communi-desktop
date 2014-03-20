@@ -29,17 +29,17 @@ class CommandVerifier : public QObject, public IrcMessageFilter, public IrcComma
 public:
     CommandVerifier(IrcConnection* connection);
 
-    int currentId() const;
+    quint64 identify(IrcMessage* message) const;
 
     bool messageFilter(IrcMessage* message);
     bool commandFilter(IrcCommand* command);
 
 signals:
-    void verified(int id);
+    void verified(quint64 id);
 
 private:
     struct Private {
-        static int id;
+        static quint64 id;
         IrcConnection* connection;
         QMap<quint64, IrcCommand*> commands;
     } d;

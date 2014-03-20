@@ -17,7 +17,7 @@
 #include <IrcCommand>
 #include <IrcMessage>
 
-int CommandVerifier::Private::id = 1;
+quint64 CommandVerifier::Private::id = 1;
 
 CommandVerifier::CommandVerifier(IrcConnection* connection) : QObject(connection)
 {
@@ -26,9 +26,17 @@ CommandVerifier::CommandVerifier(IrcConnection* connection) : QObject(connection
     connection->installCommandFilter(this);
 }
 
-int CommandVerifier::currentId() const
+quint64 CommandVerifier::identify(IrcMessage* message) const
 {
-    return d.id;
+    if (message->type() == IrcMessage::Private) {
+        QMapIterator<quint64, IrcCommand*> it(d.commands);
+        while (it.hasNext()) {
+            IrcMessage* cmd = it.next().value()->toMessage(message->prefix(), message->connection());
+            if (cmd->toData() == QString::fromUtf8(message->toData()))
+                return it.key();
+        }
+    }
+    return 0;
 }
 
 bool CommandVerifier::messageFilter(IrcMessage* message)
@@ -37,7 +45,7 @@ bool CommandVerifier::messageFilter(IrcMessage* message)
         QString arg = static_cast<IrcPongMessage*>(message)->argument();
         if (arg.startsWith("communi/")) {
             bool ok = false;
-            quint64 id = arg.mid(8).toInt(&ok);
+            quint64 id = arg.mid(8).toLongLong(&ok);
             if (ok) {
                 IrcCommand* command = d.commands.take(id);
                 if (command) {
