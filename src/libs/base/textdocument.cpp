@@ -349,10 +349,10 @@ void TextDocument::receiveMessage(IrcMessage* message)
     if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
         if (!(message->flags() & IrcMessage::Own)) {
             const bool contains = message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive);
-            if (contains) {
+            if (contains)
                 addHighlight(totalCount() - 1);
+            if (contains || (!isVisible() && message->property("private").toBool()))
                 emit messageHighlighted(message);
-            }
         }
     }
 }

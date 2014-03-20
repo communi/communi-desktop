@@ -57,12 +57,11 @@ void AlertPlugin::documentRemoved(TextDocument* document)
 void AlertPlugin::onMessageHighlighted(IrcMessage* message)
 {
     Q_UNUSED(message);
-    if (d.alert) {
-        TextDocument* document = qobject_cast<TextDocument*>(sender());
-        if (!isActiveWindow() || document != currentDocument()) {
+    TextDocument* document = qobject_cast<TextDocument*>(sender());
+    if (!isActiveWindow() || document != currentDocument()) {
+        if (d.alert)
             d.alert->play();
-            if (!isActiveWindow())
-                QApplication::alert(window());
-        }
+        if (!isActiveWindow())
+            QApplication::alert(window());
     }
 }
