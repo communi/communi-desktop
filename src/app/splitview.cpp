@@ -196,6 +196,8 @@ BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
         QMenu* menu = view->titleBar()->menu();
         addViewActions(menu, view);
         menu->addSeparator();
+        addZoomActions(menu, view);
+        menu->addSeparator();
         addSplitActions(menu, view);
         menu->addSeparator();
         addGlobalActions(menu);
@@ -377,6 +379,27 @@ void SplitView::unsplit()
         view->deleteLater();
 }
 
+void SplitView::zoomIn()
+{
+    BufferView* view = targetView();
+    if (view)
+        view->textBrowser()->zoomIn();
+}
+
+void SplitView::zoomOut()
+{
+    BufferView* view = targetView();
+    if (view)
+        view->textBrowser()->zoomOut();
+}
+
+void SplitView::resetZoom()
+{
+    BufferView* view = targetView();
+    if (view)
+        view->textBrowser()->resetZoom();
+}
+
 void SplitView::closeView()
 {
     BufferView* view = targetView();
@@ -444,6 +467,21 @@ void SplitView::addSplitActions(QMenu* menu, BufferView* view)
     updateActions();
 }
 
+void SplitView::addZoomActions(QMenu* menu, BufferView* view)
+{
+    QAction* zoomInAction = menu->addAction(tr("Zoom in"), this, SLOT(zoomIn()), QKeySequence::ZoomIn);
+    zoomInAction->setShortcutContext(Qt::WidgetShortcut);
+    zoomInAction->setData(QVariant::fromValue(view));
+
+    QAction* zoomOutAction = menu->addAction(tr("Zoom out"), this, SLOT(zoomOut()), QKeySequence::ZoomOut);
+    zoomOutAction->setShortcutContext(Qt::WidgetShortcut);
+    zoomOutAction->setData(QVariant::fromValue(view));
+
+    QAction* resetZoomAction = menu->addAction(tr("Reset zoom"), this, SLOT(resetZoom()), QKeySequence(tr("Ctrl+0")));
+    resetZoomAction->setShortcutContext(Qt::WidgetShortcut);
+    resetZoomAction->setData(QVariant::fromValue(view));
+}
+
 void SplitView::addGlobalActions(QMenu* menu)
 {
     QAction* settingsAction = menu->addAction(tr("Settings"), window(), SLOT(showSettings()), QKeySequence::Preferences);
@@ -479,6 +517,8 @@ void SplitView::showContextMenu(const QPoint& pos)
         if (splitter && !anchor.startsWith("nick:")) {
             BufferView* view = qobject_cast<BufferView*>(splitter->parentWidget());
             if (view) {
+                menu->addSeparator();
+                addZoomActions(menu, view);
                 menu->addSeparator();
                 addSplitActions(menu, view);
             }

@@ -65,6 +65,9 @@ private slots:
     void splitHorizontal();
     void unsplit();
 
+    void zoomIn();
+    void zoomOut();
+    void resetZoom();
     void closeView();
     void joinChannel();
     void openQuery();
@@ -75,6 +78,7 @@ private:
     BufferView* targetView() const;
     void addViewActions(QMenu* menu, BufferView* view);
     void addSplitActions(QMenu* menu, BufferView* view);
+    void addZoomActions(QMenu* menu, BufferView* view);
     void addGlobalActions(QMenu* menu);
 
     QVariantMap saveSplittedViews(const QSplitter* splitter) const;
