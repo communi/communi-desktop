@@ -82,7 +82,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     shortcut = new QShortcut(QKeySequence::Preferences, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(showSettings()));
 
-    shortcut = new QShortcut(QKeySequence::Close, this);
+    shortcut = new QShortcut(QKeySequence::Close, d.chatPage);
     connect(shortcut, SIGNAL(activated()), d.chatPage, SLOT(closeBuffer()));
 
 #ifdef Q_OS_MAC
@@ -169,6 +169,8 @@ void MainWindow::removeConnection(IrcConnection* connection)
 
 void MainWindow::push(QWidget* page)
 {
+    if (d.stack->currentWidget())
+        d.stack->currentWidget()->setEnabled(false);
     d.stack->addWidget(page);
     d.stack->setCurrentWidget(page);
 }
@@ -179,6 +181,8 @@ void MainWindow::pop()
     if (!qobject_cast<ChatPage*>(page)) {
         d.stack->removeWidget(page);
         d.stack->setCurrentIndex(d.stack->count() - 1);
+        if (d.stack->currentWidget())
+            d.stack->currentWidget()->setEnabled(true);
         page->deleteLater();
     }
 }
