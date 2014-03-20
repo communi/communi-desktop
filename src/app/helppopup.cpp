@@ -56,7 +56,7 @@ void HelpPopup::popup()
     QString active(tr("Shift+Alt+%1"));
 #endif
 
-    const QString header("<tr><th align='left' colspan='2'><h3>%1</h3></th></tr>");
+    const QString header("<tr><th align='left' colspan='3'><h3>%1</h3></th></tr>");
     const QString row("<tr><th align='left'>%1</th><td>&nbsp;</td><td><pre>%2</pre></td></tr>");
 
     QString shortcuts;
@@ -85,17 +85,24 @@ void HelpPopup::popup()
     commands += "<table>";
     commands += header.arg(tr("Commands"));
     commands += "<tr/>";
+    commands += row.arg("AWAY", "(&lt;reason&gt;)");
     commands += row.arg("CLEAR", "");
-    commands += row.arg("JOIN", "JOIN &lt;channel&gt; (&lt;key&gt;)");
-    commands += row.arg("ME", "&lt;message...&gt;");
-    commands += row.arg("MSG", "&lt;user/channel> &lt;message...&gt;");
+    commands += row.arg("CLOSE", "");
+    commands += row.arg("INVITE", "&lt;user&gt; (&lt;channel&gt;)");
+    commands += row.arg("JOIN", "&lt;channel&gt; (&lt;key&gt;)");
+    commands += row.arg("KICK", "(&lt;channel&gt;) &lt;user&gt; (&lt;reason&gt;)");
+    commands += row.arg("ME", "&lt;message&gt;");
+    commands += row.arg("MODE", "(&lt;channel/user&gt;) (&lt;mode&gt;) (&lt;arg&gt;)");
+    commands += row.arg("MSG", "&lt;user/channel> &lt;message&gt;");
     commands += row.arg("NICK", "&lt;nick&gt;");
-    commands += row.arg("NOTICE", "&lt;channel/user&gt; &lt;message...&gt;");
-    commands += row.arg("PART", "(&lt;channel&gt;) (&lt;message...&gt;)");
+    commands += row.arg("NOTICE", "&lt;channel/user&gt; &lt;message&gt;");
+    commands += row.arg("PART", "(&lt;channel&gt;) (&lt;message&gt;)");
     commands += row.arg("QUERY", "&lt;user&gt;");
-    commands += row.arg("TOPIC", "(&lt;channel&gt;) (&lt;topic...&gt;)");
+    commands += row.arg("QUOTE", "&lt;command&gt; (&lt;parameters&gt;)");
+    commands += row.arg("TOPIC", "(&lt;channel&gt;) (&lt;topic&gt;)");
+    commands += row.arg("WHOIS", "&lt;user&gt;");
 
-    QString table("<table><td>%1</td><td>&nbsp;</td><td>%2</td></table>");
+    QString table("<table><td>%1</td><td width='25'></td><td>%2</td></table>");
     setText(table.arg(shortcuts, commands));
 
     adjustSize();
