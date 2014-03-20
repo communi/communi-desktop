@@ -26,6 +26,7 @@
 #include <QCoreApplication>
 #include <IrcCommandParser>
 #include <IrcBufferModel>
+#include <QStyleFactory>
 #include <IrcConnection>
 #include <QStringList>
 #include <QProxyStyle>
@@ -53,7 +54,7 @@ public:
     }
 
 private:
-    ProxyStyle() : QProxyStyle("fusion") { }
+    ProxyStyle() : QProxyStyle(QStyleFactory::create("fusion")) { }
 };
 
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
