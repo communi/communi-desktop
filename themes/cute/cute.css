@@ -102,7 +102,7 @@ QSplitter::handle {
 QToolButton {
     border: 1px solid palette(mid);
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 palette(light), stop: 1 palette(dark));
+                                      stop: 0 palette(light), stop: 1 palette(button));
 }
 
 QToolButton:pressed {
@@ -180,7 +180,7 @@ AbstractFinder > QToolButton#prev {
 
 AbstractFinder[error="true"] > QToolButton#prev {
     image: url(gray:up.png);
-    background-color: palette(dark);
+    background-color: palette(button);
 }
 
 AbstractFinder > QToolButton#next {
@@ -189,5 +189,5 @@ AbstractFinder > QToolButton#next {
 
 AbstractFinder[error="true"] > QToolButton#next {
     image: url(gray:down.png);
-    background-color: palette(dark);
+    background-color: palette(button);
 }
