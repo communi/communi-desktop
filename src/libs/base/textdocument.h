@@ -60,6 +60,7 @@ public slots:
     void receiveMessage(IrcMessage* message);
 
 signals:
+    void messageMissed(IrcMessage* message);
     void messageReceived(IrcMessage* message);
     void messageHighlighted(IrcMessage* message);
 
