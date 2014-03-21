@@ -35,6 +35,7 @@ TextInput::TextInput(QWidget* parent) : QLineEdit(parent)
     connect(this, SIGNAL(bufferChanged(IrcBuffer*)), d.completer, SLOT(setBuffer(IrcBuffer*)));
     connect(this, SIGNAL(parserChanged(IrcCommandParser*)), d.completer, SLOT(setParser(IrcCommandParser*)));
     connect(d.completer, SIGNAL(completed(QString,int)), this, SLOT(doComplete(QString,int)));
+    connect(this, SIGNAL(textEdited(QString)), d.completer, SLOT(reset()));
 
     connect(this, SIGNAL(returnPressed()), this, SLOT(sendInput()));
     connect(this, SIGNAL(textChanged(QString)), this, SLOT(updateHint(QString)));
