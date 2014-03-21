@@ -16,6 +16,7 @@
 #include <QMainWindow>
 #include <QStackedWidget>
 
+class Dock;
 class ChatPage;
 class IrcBuffer;
 class IrcMessage;
@@ -41,6 +42,7 @@ public slots:
     void removeConnection(IrcConnection* connection);
 
 signals:
+    void activated();
     void currentViewChanged(BufferView* view);
     void connectionAdded(IrcConnection* connection);
     void connectionRemoved(IrcConnection* connection);
@@ -68,6 +70,7 @@ private slots:
 
 private:
     struct Private {
+        Dock* dock;
         QIcon normalIcon;
         QIcon alertIcon;
         ChatPage* chatPage;

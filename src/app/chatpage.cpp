@@ -319,6 +319,11 @@ void ChatPage::setupDocument(TextDocument* document)
 //    document->formatter()->setDetailed(d.showDetails);
 //    document->formatter()->setStripNicks(!d.showDetails);
 //    document->formatter()->setTimeStampFormat(d.timestampFormat);
+
+    if (!document->isClone()) {
+        connect(document, SIGNAL(messageMissed(IrcMessage*)), this, SIGNAL(messageMissed(IrcMessage*)));
+        connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SIGNAL(messageHighlighted(IrcMessage*)));
+    }
 }
 
 void ChatPage::addView(BufferView* view)

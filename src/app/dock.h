@@ -12,42 +12,50 @@
 * GNU General Public License for more details.
 */
 
-#ifndef DOCKPLUGIN_H
-#define DOCKPLUGIN_H
+#ifndef DOCK_H
+#define DOCK_H
 
 #include <QObject>
-#include <QtPlugin>
-#include "documentplugin.h"
-#include "windowplugin.h"
+#include <QSystemTrayIcon>
 
+class Alert;
+class MainWindow;
 class QtDockTile;
 class IrcMessage;
+class IrcConnection;
 
-class DockPlugin : public QObject, public DocumentPlugin, public WindowPlugin
+class Dock : public QObject
 {
     Q_OBJECT
-    Q_INTERFACES(DocumentPlugin WindowPlugin)
-    Q_PLUGIN_METADATA(IID "Communi.DocumentPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
 
 public:
-    DockPlugin(QObject* parent = 0);
+    explicit Dock(MainWindow* window);
 
-    void windowCreated(QWidget* window);
-
-    void documentAdded(TextDocument* document);
-    void documentRemoved(TextDocument* document);
-
-    void windowActivated();
+public slots:
+    void alert(IrcMessage* message);
 
 private slots:
+    void onConnectionAdded(IrcConnection* connection);
+    void onConnectionRemoved(IrcConnection* connection);
+
     void updateBadge();
-    void resetBadge();
+    void updateTray();
+
+    void onWindowActivated();
+    void onTrayActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:
     struct Private {
+        bool blink;
+        bool blinking;
+        QIcon alertIcon;
+        QIcon onlineIcon;
+        QIcon offlineIcon;
+        MainWindow* window;
+        QSystemTrayIcon* tray;
         QtDockTile* dock;
+        Alert* alert;
     } d;
 };
 
-#endif // DOCKPLUGIN_H
+#endif // DOCK_H

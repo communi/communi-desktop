@@ -3,11 +3,8 @@
 ######################################################################
 
 include(communi_functions.prf)
-communiAddPlugin(alert)
-communiAddPlugin(dock)
 communiAddPlugin(ignore)
 communiAddPlugin(importer)
 communiAddPlugin(monitor)
-communiAddPlugin(tray)
 communiAddPlugin(verifier)
 communiAddPlugin(znc)

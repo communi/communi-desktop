@@ -16,6 +16,7 @@
 #include "bufferview.h"
 #include "helppopup.h"
 #include "chatpage.h"
+#include "dock.h"
 #include <IrcBufferModel>
 #include <IrcConnection>
 #include <QApplication>
@@ -84,6 +85,10 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 
     shortcut = new QShortcut(QKeySequence::Close, d.chatPage);
     connect(shortcut, SIGNAL(activated()), d.chatPage, SLOT(closeBuffer()));
+
+    d.dock = new Dock(this);
+    connect(d.chatPage, SIGNAL(messageMissed(IrcMessage*)), d.dock, SLOT(alert(IrcMessage*)));
+    connect(d.chatPage, SIGNAL(messageHighlighted(IrcMessage*)), d.dock, SLOT(alert(IrcMessage*)));
 
 #ifdef Q_OS_MAC
     QMenu* menu = new QMenu(this);
@@ -195,6 +200,8 @@ QSize MainWindow::sizeHint() const
 bool MainWindow::event(QEvent* event)
 {
     if (event->type() == QEvent::ActivationChange) {
+        if (isActiveWindow())
+            emit activated();
         foreach (WindowPlugin* plugin, PluginLoader::instance()->pluginInstances<WindowPlugin*>()) {
             if (isActiveWindow())
                 plugin->windowActivated();

@@ -59,6 +59,9 @@ signals:
     void currentViewChanged(BufferView* view);
     void currentBufferChanged(IrcBuffer* buffer);
 
+    void messageMissed(IrcMessage* message);
+    void messageHighlighted(IrcMessage* message);
+
 protected:
     bool commandFilter(IrcCommand* command);
 
