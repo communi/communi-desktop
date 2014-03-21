@@ -4,7 +4,6 @@
 
 include(communi_functions.prf)
 communiAddPlugin(ignore)
-communiAddPlugin(importer)
 communiAddPlugin(monitor)
 communiAddPlugin(verifier)
 communiAddPlugin(znc)
