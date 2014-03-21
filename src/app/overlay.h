@@ -15,42 +15,37 @@
 #ifndef OVERLAY_H
 #define OVERLAY_H
 
-#include <QLabel>
-#include <QPointer>
-#include <QToolButton>
+#include <QFrame>
+#include <QShortcut>
 
-class Overlay : public QLabel
+class IrcBuffer;
+class BufferView;
+class OverlayButton;
+
+class Overlay : public QFrame
 {
     Q_OBJECT
-    Q_PROPERTY(bool busy READ isBusy WRITE setBusy)
-    Q_PROPERTY(bool dark READ isDark WRITE setDark)
-    Q_PROPERTY(bool refresh READ hasRefresh WRITE setRefresh)
 
 public:
-    explicit Overlay(QWidget* parent);
+    explicit Overlay(BufferView* parent);
 
-    bool isBusy() const;
-    void setBusy(bool busy);
-
-    bool isDark() const;
-    void setDark(bool dark);
-
-    bool hasRefresh() const;
-    void setRefresh(bool enabled);
-
-signals:
-    void refresh();
+    BufferView* view() const;
 
 protected:
     bool eventFilter(QObject* object, QEvent* event);
 
 private slots:
+    void refresh();
     void relayout();
+    void reconnect();
+    void init(IrcBuffer* buffer);
 
 private:
     struct Private {
-        bool dark;
-        QToolButton* button;
+        BufferView* view;
+        IrcBuffer* buffer;
+        QShortcut* shortcut;
+        OverlayButton* button;
     } d;
 };
 

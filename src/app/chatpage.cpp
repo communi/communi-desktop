@@ -19,6 +19,7 @@
 #include "splitview.h"
 #include "listview.h"
 #include "titlebar.h"
+#include "overlay.h"
 #include "finder.h"
 #include "mainwindow.h"
 #include "messagehandler.h"
@@ -338,6 +339,8 @@ void ChatPage::addView(BufferView* view)
     connect(view, SIGNAL(bufferClosed(IrcBuffer*)), this, SLOT(closeBuffer(IrcBuffer*)));
     connect(view, SIGNAL(cloned(TextDocument*)), this, SLOT(setupDocument(TextDocument*)));
     connect(view, SIGNAL(cloned(TextDocument*)), PluginLoader::instance(), SLOT(documentAdded(TextDocument*)));
+
+    new Overlay(view);
 
     PluginLoader::instance()->viewAdded(view);
 }

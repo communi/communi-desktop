@@ -142,16 +142,20 @@ Overlay {
     background: rgba(228, 228, 228, 40%)
 }
 
-QToolButton#reconnectButton {
+OverlayButton {
     border: none;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-color: transparent;
-    background-image: url(:/TODO/reconnect.png);
+    background: transparent;
+    min-width: 48px;
+    max-width: 48px;
+    min-height: 48px;
+    max-height: 48px;
+    image: url(gray:refresh.png);
 }
 
-QToolButton#reconnectButton:pressed {
-    background-image: url(:/TODO/reconnect-pressed.png);
+OverlayButton:pressed {
+    border: none;
+    background: transparent;
+    image: url(black:refresh.png);
 }
 
 AbstractFinder > QToolButton {
