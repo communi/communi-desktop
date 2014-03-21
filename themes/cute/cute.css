@@ -44,7 +44,7 @@ TreeWidget, ListView {
 }
 
 TreeWidget::item, ListView::item {
-    height: 20px;
+    min-height: 20px;
 }
 
 TitleBar > QTextEdit {
