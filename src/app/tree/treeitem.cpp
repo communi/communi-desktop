@@ -35,7 +35,7 @@ TreeItem::TreeItem(IrcBuffer* buffer, TreeWidget* parent) : QObject(buffer), QTr
     init(buffer);
 
     d.movie = new QMovie(this);
-    d.movie->setFileName(":/ajax-loader.gif");
+    d.movie->setFileName(":/images/ajax-loader.gif");
     connect(d.movie, SIGNAL(frameChanged(int)), this, SLOT(updateIcon()));
 
     d.timer = new IrcLagTimer(this);

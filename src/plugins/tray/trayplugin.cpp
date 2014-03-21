@@ -22,8 +22,6 @@
 #include <QWidget>
 #include <QEvent>
 
-inline void initResource() { Q_INIT_RESOURCE(tray); }
-
 TrayPlugin::TrayPlugin(QObject* parent) : QObject(parent)
 {
     d.tray = 0;
@@ -33,16 +31,14 @@ TrayPlugin::TrayPlugin(QObject* parent) : QObject(parent)
     if (QSystemTrayIcon::isSystemTrayAvailable()) {
         d.tray = new QSystemTrayIcon(this);
 
-        initResource();
+        d.alertIcon.addFile(":/images/tray/alert-16.png");
+        d.alertIcon.addFile(":/images/tray/alert-32.png");
 
-        d.alertIcon.addFile(":/icons/alert-16.png");
-        d.alertIcon.addFile(":/icons/alert-32.png");
+        d.onlineIcon.addFile(":/images/tray/online-16.png");
+        d.onlineIcon.addFile(":/images/tray/online-32.png");
 
-        d.onlineIcon.addFile(":/icons/online-16.png");
-        d.onlineIcon.addFile(":/icons/online-32.png");
-
-        d.offlineIcon.addFile(":/icons/offline-16.png");
-        d.offlineIcon.addFile(":/icons/offline-32.png");
+        d.offlineIcon.addFile(":/images/tray/offline-16.png");
+        d.offlineIcon.addFile(":/images/tray/offline-32.png");
 
         d.tray->setIcon(d.offlineIcon);
         d.tray->setVisible(true);
