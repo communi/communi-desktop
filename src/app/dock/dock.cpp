@@ -90,7 +90,7 @@ void Dock::alert(IrcMessage* message)
             QString content = message->property("content").toString();
             if (!content.isEmpty())
                 d.tray->showMessage(tr("Communi"), message->nick() + ": " + IrcTextFormat().toPlainText(content));
-            SharedTimer::instance()->registerReceiver(this, "updateIcon");
+            SharedTimer::instance()->registerReceiver(this, "updateTray");
             d.blinking = true;
             d.blink = true;
             updateTray();
@@ -135,7 +135,7 @@ void Dock::updateTray()
 void Dock::onWindowActivated()
 {
     if (d.tray && d.blinking) {
-        SharedTimer::instance()->unregisterReceiver(this, "updateIcon");
+        SharedTimer::instance()->unregisterReceiver(this, "updateTray");
         d.blinking = false;
         d.blink = false;
         updateTray();
