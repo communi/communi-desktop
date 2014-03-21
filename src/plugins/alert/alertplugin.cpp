@@ -44,24 +44,25 @@ AlertPlugin::AlertPlugin(QObject* parent) : QObject(parent)
 
 void AlertPlugin::documentAdded(TextDocument* document)
 {
-    if (!document->isClone())
-        connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
+    if (!document->isClone()) {
+        connect(document, SIGNAL(messageMissed(IrcMessage*)), this, SLOT(alert()));
+        connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(alert()));
+    }
 }
 
 void AlertPlugin::documentRemoved(TextDocument* document)
 {
-    if (!document->isClone())
-        disconnect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
+    if (!document->isClone()) {
+        disconnect(document, SIGNAL(messageMissed(IrcMessage*)), this, SLOT(alert()));
+        disconnect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(alert()));
+    }
 }
 
-void AlertPlugin::onMessageHighlighted(IrcMessage* message)
+void AlertPlugin::alert()
 {
-    Q_UNUSED(message);
-    TextDocument* document = qobject_cast<TextDocument*>(sender());
-    if (!isActiveWindow() || document != currentDocument()) {
+    if (!isActiveWindow()) {
         if (d.alert)
             d.alert->play();
-        if (!isActiveWindow())
-            QApplication::alert(window());
+        QApplication::alert(window());
     }
 }

@@ -37,7 +37,7 @@ public:
     void documentRemoved(TextDocument* document);
 
 private slots:
-    void onMessageHighlighted(IrcMessage* message);
+    void alert();
 
 private:
     struct Private {

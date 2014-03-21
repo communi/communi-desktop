@@ -54,14 +54,18 @@ TrayPlugin::TrayPlugin(QObject* parent) : QObject(parent)
 
 void TrayPlugin::documentAdded(TextDocument* document)
 {
-    if (!document->isClone())
-        connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
+    if (!document->isClone()) {
+        connect(document, SIGNAL(messageMissed(IrcMessage*)), this, SLOT(alert(IrcMessage*)));
+        connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(alert(IrcMessage*)));
+    }
 }
 
 void TrayPlugin::documentRemoved(TextDocument* document)
 {
-    if (!document->isClone())
-        disconnect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
+    if (!document->isClone()) {
+        disconnect(document, SIGNAL(messageMissed(IrcMessage*)), this, SLOT(alert(IrcMessage*)));
+        disconnect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(alert(IrcMessage*)));
+    }
 }
 
 void TrayPlugin::connectionAdded(IrcConnection* connection)
@@ -93,13 +97,12 @@ void TrayPlugin::updateIcon()
     }
 }
 
-void TrayPlugin::onMessageHighlighted(IrcMessage* message)
+void TrayPlugin::alert(IrcMessage* message)
 {
-    Q_UNUSED(message);
     if (d.tray && !d.alert && !isActiveWindow()) {
         QString content = message->property("content").toString();
         if (!content.isEmpty())
-            d.tray->showMessage(tr("Communi"), IrcTextFormat().toPlainText(content));
+            d.tray->showMessage(tr("Communi"), message->nick() + ": " + IrcTextFormat().toPlainText(content));
         SharedTimer::instance()->registerReceiver(this, "updateIcon");
         d.alert = true;
         d.blink = true;

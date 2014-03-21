@@ -48,7 +48,7 @@ public:
 
 private slots:
     void updateIcon();
-    void onMessageHighlighted(IrcMessage* message);
+    void alert(IrcMessage* message);
     void onActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:

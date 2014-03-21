@@ -41,7 +41,8 @@ public:
     void windowActivated();
 
 private slots:
-    void onMessageHighlighted(IrcMessage* message);
+    void updateBadge();
+    void resetBadge();
 
 private:
     struct Private {

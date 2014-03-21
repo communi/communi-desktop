@@ -32,23 +32,33 @@ void DockPlugin::windowCreated(QWidget* window)
 
 void DockPlugin::documentAdded(TextDocument* document)
 {
-    if (d.dock && !document->isClone())
-        connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
+    if (d.dock && !document->isClone()) {
+        connect(document, SIGNAL(messageMissed(IrcMessage*)), this, SLOT(updateBadge()));
+        connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(updateBadge()));
+    }
 }
 
 void DockPlugin::documentRemoved(TextDocument* document)
 {
-    if (d.dock && !document->isClone())
-        disconnect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onMessageHighlighted(IrcMessage*)));
+    if (d.dock && !document->isClone()) {
+        disconnect(document, SIGNAL(messageMissed(IrcMessage*)), this, SLOT(updateBadge()));
+        disconnect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(updateBadge()));
+    }
 }
 
-void DockPlugin::onMessageHighlighted(IrcMessage* message)
+void DockPlugin::windowActivated()
+{
+    resetBadge();
+}
+
+void DockPlugin::updateBadge()
 {
     if (d.dock && !isActiveWindow())
         d.dock->setBadge(d.dock->badge() + 1);
 }
 
-void DockPlugin::windowActivated()
+void DockPlugin::resetBadge()
 {
-    d.dock->setBadge(0);
+    if (d.dock)
+        d.dock->setBadge(0);
 }
