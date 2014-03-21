@@ -16,7 +16,6 @@
 #include "documentplugin.h"
 #include "viewplugin.h"
 
-Q_IMPORT_PLUGIN(IgnorePlugin)
 Q_IMPORT_PLUGIN(MonitorPlugin)
 Q_IMPORT_PLUGIN(VerifierPlugin)
 Q_IMPORT_PLUGIN(ZncPlugin)

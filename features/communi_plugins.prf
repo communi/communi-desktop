@@ -3,7 +3,6 @@
 ######################################################################
 
 include(communi_functions.prf)
-communiAddPlugin(ignore)
 communiAddPlugin(monitor)
 communiAddPlugin(verifier)
 communiAddPlugin(znc)
