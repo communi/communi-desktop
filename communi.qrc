@@ -38,12 +38,20 @@
   <file>images/white/right.png</file>
   <file>images/white/up.png</file>
 
+  <file>images/tray/bubble-16.png</file>
+  <file>images/tray/bubble-32.png</file>
+  <file>images/tray/bubble-64.png</file>
+
   <file>images/tray/alert-16.png</file>
   <file>images/tray/alert-32.png</file>
   <file>images/tray/offline-16.png</file>
   <file>images/tray/offline-32.png</file>
   <file>images/tray/online-16.png</file>
   <file>images/tray/online-32.png</file>
+
+  <file>images/tray/osx-alert.png</file>
+  <file>images/tray/osx-online.png</file>
+  <file>images/tray/osx-offline.png</file>
 
   <!-- todo: themable -->
   <file>images/ajax-loader.gif</file>

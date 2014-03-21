@@ -43,6 +43,11 @@ Dock::Dock(MainWindow* window) : QObject(window)
     if (QSystemTrayIcon::isSystemTrayAvailable()) {
         d.tray = new QSystemTrayIcon(this);
 
+#ifdef Q_OS_MAC
+        d.alertIcon.addFile(":/images/tray/osx-alert.png");
+        d.onlineIcon.addFile(":/images/tray/osx-online.png");
+        d.offlineIcon.addFile(":/images/tray/osx-offline.png");
+#else
         d.alertIcon.addFile(":/images/tray/alert-16.png");
         d.alertIcon.addFile(":/images/tray/alert-32.png");
 
@@ -51,6 +56,7 @@ Dock::Dock(MainWindow* window) : QObject(window)
 
         d.offlineIcon.addFile(":/images/tray/offline-16.png");
         d.offlineIcon.addFile(":/images/tray/offline-32.png");
+#endif
 
         d.tray->setIcon(d.offlineIcon);
         d.tray->setVisible(true);
