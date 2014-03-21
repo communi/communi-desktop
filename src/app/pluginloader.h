@@ -25,18 +25,6 @@ class PluginLoader : public QObject
 public:
     static PluginLoader* instance();
 
-    template<typename T>
-    QList<T> pluginInstances() const
-    {
-        QList<T> instances;
-        foreach (QObject* instance, QPluginLoader::staticInstances()) {
-            T plugin = qobject_cast<T>(instance);
-            if (plugin)
-                instances += plugin;
-        }
-        return instances;
-    }
-
 public slots:
     void bufferAdded(IrcBuffer* buffer);
     void bufferRemoved(IrcBuffer* buffer);
