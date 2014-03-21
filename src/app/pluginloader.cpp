@@ -15,7 +15,6 @@
 #include "connectionplugin.h"
 #include "documentplugin.h"
 #include "viewplugin.h"
-#include "windowplugin.h"
 
 Q_IMPORT_PLUGIN(IgnorePlugin)
 Q_IMPORT_PLUGIN(MonitorPlugin)
@@ -108,23 +107,5 @@ void PluginLoader::documentRemoved(TextDocument* doc)
         DocumentPlugin* plugin = qobject_cast<DocumentPlugin*>(instance);
         if (plugin)
             plugin->documentRemoved(doc);
-    }
-}
-
-void PluginLoader::windowCreated(QWidget* window)
-{
-    foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        WindowPlugin* plugin = qobject_cast<WindowPlugin*>(instance);
-        if (plugin)
-            plugin->windowCreated(window);
-    }
-}
-
-void PluginLoader::windowDestroyed(QWidget* window)
-{
-    foreach (QObject* instance, QPluginLoader::staticInstances()) {
-        WindowPlugin* plugin = qobject_cast<WindowPlugin*>(instance);
-        if (plugin)
-            plugin->windowDestroyed(window);
     }
 }

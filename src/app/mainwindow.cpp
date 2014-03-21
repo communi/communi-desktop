@@ -8,9 +8,7 @@
  */
 
 #include "mainwindow.h"
-#include "pluginloader.h"
 #include "settingspage.h"
-#include "windowplugin.h"
 #include "textdocument.h"
 #include "connectpage.h"
 #include "bufferview.h"
@@ -124,13 +122,10 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
         d.stack->setCurrentWidget(d.chatPage);
 
     d.chatPage->restoreState(settings.value("state").toByteArray());
-
-    PluginLoader::instance()->windowCreated(this);
 }
 
 MainWindow::~MainWindow()
 {
-    PluginLoader::instance()->windowDestroyed(this);
 }
 
 BufferView* MainWindow::currentView() const
@@ -202,12 +197,6 @@ bool MainWindow::event(QEvent* event)
     if (event->type() == QEvent::ActivationChange) {
         if (isActiveWindow())
             emit activated();
-        foreach (WindowPlugin* plugin, PluginLoader::instance()->pluginInstances<WindowPlugin*>()) {
-            if (isActiveWindow())
-                plugin->windowActivated();
-            else
-                plugin->windowDeactivated();
-        }
     }
     return QMainWindow::event(event);
 }

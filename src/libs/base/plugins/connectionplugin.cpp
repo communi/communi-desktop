@@ -14,10 +14,24 @@
 
 #include "connectionplugin.h"
 #include <IrcConnection>
+#include <QApplication>
 #include <QVariant>
 #include <QWidget>
 
-extern QWidget* findCommuniMainWindow();
+// TODO:
+static QWidget* findCommuniMainWindow()
+{
+    static QPointer<QWidget> window;
+    if (!window) {
+        foreach (QWidget* widget, QApplication::topLevelWidgets()) {
+            if (widget->inherits("QMainWindow")) {
+                window = widget;
+                break;
+            }
+        }
+    }
+    return window;
+}
 
 QList<IrcConnection*> ConnectionPlugin::connections() const
 {

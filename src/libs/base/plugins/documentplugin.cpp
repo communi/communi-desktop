@@ -14,9 +14,23 @@
 
 #include "documentplugin.h"
 #include "bufferview.h"
+#include <QApplication>
 #include <QVariant>
 
-extern QWidget* findCommuniMainWindow();
+// TODO:
+static QWidget* findCommuniMainWindow()
+{
+    static QPointer<QWidget> window;
+    if (!window) {
+        foreach (QWidget* widget, QApplication::topLevelWidgets()) {
+            if (widget->inherits("QMainWindow")) {
+                window = widget;
+                break;
+            }
+        }
+    }
+    return window;
+}
 
 TextDocument* DocumentPlugin::currentDocument() const
 {

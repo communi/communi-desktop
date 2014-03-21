@@ -50,9 +50,6 @@ public slots:
     void documentAdded(TextDocument* doc);
     void documentRemoved(TextDocument* doc);
 
-    void windowCreated(QWidget* window);
-    void windowDestroyed(QWidget* window);
-
 private:
     PluginLoader(QObject* parent = 0);
 };
