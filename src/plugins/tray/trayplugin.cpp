@@ -16,6 +16,7 @@
 #include "sharedtimer.h"
 #include "textdocument.h"
 #include <IrcConnection>
+#include <IrcTextFormat>
 #include <IrcMessage>
 #include <IrcBuffer>
 #include <QWidget>
@@ -96,7 +97,9 @@ void TrayPlugin::onMessageHighlighted(IrcMessage* message)
 {
     Q_UNUSED(message);
     if (d.tray && !d.alert && !isActiveWindow()) {
-        d.tray->showMessage(tr("Communi"), message->property("content").toString());
+        QString content = message->property("content").toString();
+        if (!content.isEmpty())
+            d.tray->showMessage(tr("Communi"), IrcTextFormat().toPlainText(content));
         SharedTimer::instance()->registerReceiver(this, "updateIcon");
         d.alert = true;
         d.blink = true;
