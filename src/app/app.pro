@@ -21,7 +21,6 @@ else:mac:target.path = /Applications
 else:target.path = /usr/bin
 INSTALLS += target
 
-RESOURCES += app.qrc
 RESOURCES += ../../communi.qrc
 win32:RC_FILE = ../../communi.rc
 mac:ICON = ../../images/communi.icns
@@ -46,10 +45,8 @@ OTHER_FILES += ../../communi.desktop
 FORMS += $$PWD/connectpage.ui
 FORMS += $$PWD/settingspage.ui
 
-HEADERS += $$PWD/alert.h
 HEADERS += $$PWD/chatpage.h
 HEADERS += $$PWD/connectpage.h
-HEADERS += $$PWD/dock.h
 HEADERS += $$PWD/helppopup.h
 HEADERS += $$PWD/mainwindow.h
 HEADERS += $$PWD/pluginloader.h
@@ -57,10 +54,8 @@ HEADERS += $$PWD/settingspage.h
 HEADERS += $$PWD/splitview.h
 HEADERS += $$PWD/overlay.h
 
-SOURCES += $$PWD/alert.cpp
 SOURCES += $$PWD/chatpage.cpp
 SOURCES += $$PWD/connectpage.cpp
-SOURCES += $$PWD/dock.cpp
 SOURCES += $$PWD/helppopup.cpp
 SOURCES += $$PWD/main.cpp
 SOURCES += $$PWD/mainwindow.cpp
@@ -69,6 +64,7 @@ SOURCES += $$PWD/settingspage.cpp
 SOURCES += $$PWD/splitview.cpp
 SOURCES += $$PWD/overlay.cpp
 
+include(dock/dock.pri)
 include(finder/finder.pri)
 include(theme/theme.pri)
 include(tree/tree.pri)
