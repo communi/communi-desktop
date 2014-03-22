@@ -223,12 +223,15 @@ bool ChatPage::commandFilter(IrcCommand* command)
             }
             d.splitView->setCurrentBuffer(buffer);
             return true;
-        } else if (cmd == "TIMESTAMP") {
-            const QString format = params.value(0);
-            if (d.timestamp != format) {
-                d.timestamp = format;
-                foreach (TextDocument* doc, d.documents)
-                    doc->setTimeStampFormat(format);
+        } else if (cmd == "SET") {
+            const QString key = params.value(0);
+            const QString value = params.value(1);
+            if (!key.compare("timestamp", Qt::CaseInsensitive)) {
+                if (d.timestamp != value) {
+                    d.timestamp = value;
+                    foreach (TextDocument* doc, d.documents)
+                        doc->setTimeStampFormat(value);
+                }
             }
             return true;
         }
@@ -440,7 +443,7 @@ IrcCommandParser* ChatPage::createParser(QObject *parent)
     parser->addCommand(IrcCommand::Custom, "CLOSE");
     parser->addCommand(IrcCommand::Custom, "MSG <user/channel> <message...>");
     parser->addCommand(IrcCommand::Custom, "QUERY <user> (<message...>)");
-    parser->addCommand(IrcCommand::Custom, "TIMESTAMP (<format>)");
+    parser->addCommand(IrcCommand::Custom, "SET <key> (<value>)");
 
     return parser;
 }
