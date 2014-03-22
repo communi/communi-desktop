@@ -57,7 +57,7 @@ void VerifierPlugin::onCommandVerified(quint64 id)
 
 void VerifierPlugin::onMessageReceived(IrcMessage* message)
 {
-    if (message->flags() & IrcMessage::Own) {
+    if (message->isOwn()) {
         TextDocument* doc = qobject_cast<TextDocument*>(sender());
         CommandVerifier* verifier = d.verifiers.value(message->connection());
         if (doc && verifier) {
