@@ -16,6 +16,7 @@
 #define DOCK_H
 
 #include <QObject>
+#include <QAction>
 #include <QSystemTrayIcon>
 
 class Alert;
@@ -42,6 +43,7 @@ private slots:
     void updateTray();
 
     void onWindowActivated();
+    void onMuteToggled(bool mute);
     void onTrayActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:
@@ -54,6 +56,7 @@ private:
         MainWindow* window;
         QSystemTrayIcon* tray;
         QtDockTile* dock;
+        QAction* mute;
         Alert* alert;
     } d;
 };

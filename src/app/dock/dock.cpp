@@ -22,12 +22,15 @@
 #include <IrcConnection>
 #include <QApplication>
 #include <IrcMessage>
+#include <QSettings>
+#include <QMenu>
 #include <QFile>
 #include <QDir>
 
 Dock::Dock(MainWindow* window) : QObject(window)
 {
     d.tray = 0;
+    d.mute = 0;
     d.alert = 0;
     d.blink = false;
     d.blinking = false;
@@ -58,6 +61,15 @@ Dock::Dock(MainWindow* window) : QObject(window)
         d.offlineIcon.addFile(":/images/tray/offline-32.png");
 #endif
 
+        QMenu* menu = new QMenu(window);
+        d.tray->setContextMenu(menu);
+        d.mute = menu->addAction(tr("Mute"));
+        d.mute->setCheckable(true);
+
+        QSettings settings;
+        d.mute->setChecked(settings.value("mute", false).toBool());
+        connect(d.mute, SIGNAL(toggled(bool)), this, SLOT(onMuteToggled(bool)));
+
         d.tray->setIcon(d.offlineIcon);
         d.tray->setVisible(true);
 
@@ -84,7 +96,7 @@ void Dock::alert(IrcMessage* message)
 {
     if (!d.window->isActiveWindow()) {
         QApplication::alert(d.window);
-        if (d.alert)
+        if (d.alert && (!d.mute || !d.mute->isChecked()))
             d.alert->play();
         if (d.tray && !d.blinking) {
             QString content = message->property("content").toString();
@@ -142,6 +154,12 @@ void Dock::onWindowActivated()
     }
     if (d.dock)
         d.dock->setBadge(0);
+}
+
+void Dock::onMuteToggled(bool mute)
+{
+    QSettings settings;
+    settings.setValue("mute", mute);
 }
 
 void Dock::onTrayActivated(QSystemTrayIcon::ActivationReason reason)
