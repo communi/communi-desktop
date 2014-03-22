@@ -36,6 +36,9 @@ public:
     BufferView* currentView() const;
     QList<IrcConnection*> connections() const;
 
+    void saveState();
+    void restoreState();
+
 public slots:
     void setCurrentView(BufferView* view);
     void addConnection(IrcConnection* connection);

@@ -98,6 +98,37 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     menu->addAction(action);
 #endif // Q_OS_MAC
 
+    restoreState();
+
+    if (d.connections.isEmpty())
+        doConnect();
+}
+
+MainWindow::~MainWindow()
+{
+}
+
+void MainWindow::saveState()
+{
+    QSettings settings;
+    settings.setValue("geometry", saveGeometry());
+    settings.setValue("settings", d.chatPage->saveSettings());
+    settings.setValue("state", d.chatPage->saveState());
+
+    QVariantList states;
+    foreach (IrcConnection* connection, d.connections) {
+        QVariantMap state;
+        state.insert("connection", connection->saveState());
+        IrcBufferModel* model = connection->findChild<IrcBufferModel*>();
+        if (model)
+            state.insert("model", model->saveState());
+        states += state;
+    }
+    settings.setValue("connections", states);
+}
+
+void MainWindow::restoreState()
+{
     QSettings settings;
     if (settings.contains("geometry"))
         restoreGeometry(settings.value("geometry").toByteArray());
@@ -115,14 +146,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
         }
     }
 
-    if (d.connections.isEmpty())
-        doConnect();
-
     d.chatPage->restoreState(settings.value("state").toByteArray());
-}
-
-MainWindow::~MainWindow()
-{
 }
 
 BufferView* MainWindow::currentView() const
@@ -201,21 +225,7 @@ bool MainWindow::event(QEvent* event)
 void MainWindow::closeEvent(QCloseEvent* event)
 {
     if (isVisible()) {
-        QSettings settings;
-        settings.setValue("geometry", saveGeometry());
-        settings.setValue("settings", d.chatPage->saveSettings());
-        settings.setValue("state", d.chatPage->saveState());
-
-        QVariantList states;
-        foreach (IrcConnection* connection, d.connections) {
-            QVariantMap state;
-            state.insert("connection", connection->saveState());
-            IrcBufferModel* model = connection->findChild<IrcBufferModel*>();
-            if (model)
-                state.insert("model", model->saveState());
-            states += state;
-        }
-        settings.setValue("connections", states);
+        saveState();
 
         foreach (IrcConnection* connection, d.connections) {
             connection->quit(qApp->property("description").toString());
