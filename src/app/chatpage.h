@@ -33,8 +33,6 @@ public:
     ChatPage(QWidget* parent = 0);
     ~ChatPage();
 
-    void init();
-
     QString theme() const;
     void setTheme(const QString& theme);
 

@@ -82,15 +82,12 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
     connect(d.splitView, SIGNAL(currentViewChanged(BufferView*,BufferView*)), this, SLOT(onCurrentViewChanged(BufferView*,BufferView*)));
 
     setStretchFactor(1, 1);
+
+    addView(d.splitView->currentView());
 }
 
 ChatPage::~ChatPage()
 {
-}
-
-void ChatPage::init()
-{
-    addView(d.splitView->currentView());
 }
 
 TreeWidget* ChatPage::treeWidget() const

@@ -115,7 +115,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
         }
     }
 
-    d.chatPage->init();
     if (connections().isEmpty())
         doConnect();
     else
