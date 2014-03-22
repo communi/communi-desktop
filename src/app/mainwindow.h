@@ -13,7 +13,6 @@
 #include <QIcon>
 #include <QQueue>
 #include <QPointer>
-#include <QMainWindow>
 #include <QStackedWidget>
 
 class Dock;
@@ -23,7 +22,7 @@ class IrcMessage;
 class BufferView;
 class IrcConnection;
 
-class MainWindow : public QMainWindow
+class MainWindow : public QStackedWidget
 {
     Q_OBJECT
     Q_PROPERTY(BufferView* currentView READ currentView WRITE setCurrentView)
@@ -77,7 +76,6 @@ private:
         QIcon normalIcon;
         QIcon alertIcon;
         ChatPage* chatPage;
-        QStackedWidget* stack;
         QPointer<BufferView> view;
         QList<IrcConnection*> connections;
         QQueue<IrcConnection*> restoredConnections;

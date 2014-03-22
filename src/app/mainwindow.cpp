@@ -29,7 +29,7 @@
 #include <QMenu>
 #include <QDir>
 
-MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
+MainWindow::MainWindow(QWidget* parent) : QStackedWidget(parent)
 {
     d.view = 0;
 
@@ -57,10 +57,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     qApp->setWindowIcon(d.normalIcon);
 #endif // Q_OS_MAC
 
-    d.stack = new QStackedWidget(this);
-    connect(d.stack, SIGNAL(currentChanged(int)), this, SLOT(updateTitle()));
-
-    setCentralWidget(d.stack);
+    connect(this, SIGNAL(currentChanged(int)), this, SLOT(updateTitle()));
 
     d.chatPage = new ChatPage(this);
     setCurrentView(d.chatPage->currentView());
@@ -70,7 +67,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     connect(this, SIGNAL(connectionRemoved(IrcConnection*)), d.chatPage, SLOT(removeConnection(IrcConnection*)));
     connect(this, SIGNAL(connectionRemoved(IrcConnection*)), this, SLOT(removeConnection(IrcConnection*)));
 
-    d.stack->addWidget(d.chatPage);
+    addWidget(d.chatPage);
 
     QShortcut* shortcut = new QShortcut(QKeySequence::Quit, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(close()));
@@ -89,8 +86,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     connect(d.chatPage, SIGNAL(messageHighlighted(IrcMessage*)), d.dock, SLOT(alert(IrcMessage*)));
 
 #ifdef Q_OS_MAC
+    QMenuBar* menuBar = new QMenuBar(this);
     QMenu* menu = new QMenu(this);
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 
     QAction* action = new QAction(tr("Preferences"), this);
     action->setMenuRole(QAction::PreferencesRole);
@@ -106,6 +104,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 
 MainWindow::~MainWindow()
 {
+    // TODO: prevent crash on close
+    disconnect(this, SIGNAL(currentChanged(int)), this, SLOT(updateTitle()));
+    delete d.chatPage;
 }
 
 void MainWindow::saveState()
@@ -190,20 +191,20 @@ void MainWindow::removeConnection(IrcConnection* connection)
 
 void MainWindow::push(QWidget* page)
 {
-    if (d.stack->currentWidget())
-        d.stack->currentWidget()->setEnabled(false);
-    d.stack->addWidget(page);
-    d.stack->setCurrentWidget(page);
+    if (currentWidget())
+        currentWidget()->setEnabled(false);
+    addWidget(page);
+    setCurrentWidget(page);
 }
 
 void MainWindow::pop()
 {
-    QWidget* page = d.stack->currentWidget();
+    QWidget* page = currentWidget();
     if (!qobject_cast<ChatPage*>(page)) {
-        d.stack->removeWidget(page);
-        d.stack->setCurrentIndex(d.stack->count() - 1);
-        if (d.stack->currentWidget())
-            d.stack->currentWidget()->setEnabled(true);
+        removeWidget(page);
+        setCurrentIndex(count() - 1);
+        if (currentWidget())
+            currentWidget()->setEnabled(true);
         page->deleteLater();
     }
 }
@@ -219,7 +220,7 @@ bool MainWindow::event(QEvent* event)
         if (isActiveWindow())
             emit activated();
     }
-    return QMainWindow::event(event);
+    return QWidget::event(event);
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
@@ -241,10 +242,10 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::doConnect()
 {
-    for (int i = 0; i < d.stack->count(); ++i) {
-        ConnectPage* page = qobject_cast<ConnectPage*>(d.stack->widget(i));
+    for (int i = 0; i < count(); ++i) {
+        ConnectPage* page = qobject_cast<ConnectPage*>(widget(i));
         if (page) {
-            d.stack->setCurrentWidget(page);
+            setCurrentWidget(page);
             return;
         }
     }
@@ -305,7 +306,7 @@ void MainWindow::onSettingsAccepted()
 void MainWindow::updateTitle()
 {
     IrcBuffer* buffer = d.chatPage->currentBuffer();
-    if (!buffer || d.stack->currentWidget() != d.chatPage)
+    if (!buffer || currentWidget() != d.chatPage)
         setWindowTitle(QCoreApplication::applicationName());
     else
         setWindowTitle(tr("%1 - %2").arg(buffer->title(), QCoreApplication::applicationName()));
@@ -313,15 +314,15 @@ void MainWindow::updateTitle()
 
 void MainWindow::showSettings()
 {
-    for (int i = 0; i < d.stack->count(); ++i) {
-        SettingsPage* page = qobject_cast<SettingsPage*>(d.stack->widget(i));
+    for (int i = 0; i < count(); ++i) {
+        SettingsPage* page = qobject_cast<SettingsPage*>(widget(i));
         if (page) {
-            d.stack->setCurrentWidget(page);
+            setCurrentWidget(page);
             return;
         }
     }
 
-    SettingsPage* page = new SettingsPage(d.stack);
+    SettingsPage* page = new SettingsPage(this);
     page->setTheme(d.chatPage->theme());
 
     connect(page, SIGNAL(accepted()), this, SLOT(onSettingsAccepted()));
