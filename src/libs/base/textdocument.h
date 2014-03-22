@@ -18,10 +18,12 @@
 #include <QTextDocument>
 #include <QStringList>
 #include <QMetaType>
+#include <QDateTime>
 #include <QMap>
 
 class IrcBuffer;
 class IrcMessage;
+class TextBlockData;
 class MessageFormatter;
 
 class TextDocument : public QTextDocument
@@ -30,6 +32,9 @@ class TextDocument : public QTextDocument
 
 public:
     explicit TextDocument(IrcBuffer* buffer);
+
+    QString timeStampFormat() const;
+    void setTimeStampFormat(const QString& format);
 
     QString styleSheet() const;
     void setStyleSheet(const QString& css);
@@ -56,7 +61,7 @@ public:
 
 public slots:
     void reset();
-    void append(const QString& text);
+    void append(const QString& message, const QDateTime& timestamp = QDateTime());
     void receiveMessage(IrcMessage* message);
 
 signals:
@@ -73,7 +78,7 @@ private slots:
 
 private:
     void rebuild();
-    void appendLine(QTextCursor& cursor, const QString& line);
+    void appendLine(QTextCursor& cursor, TextBlockData* line);
 
     struct Private {
         int ub;
@@ -84,9 +89,10 @@ private:
         int lowlight;
         bool visible;
         IrcBuffer* buffer;
-        QStringList lines;
         QList<int> highlights;
+        QString timeStampFormat;
         QMap<int, int> lowlights;
+        QList<TextBlockData*> lines;
         MessageFormatter* formatter;
     } d;
 };
