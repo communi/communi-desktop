@@ -18,6 +18,9 @@
 #include <IrcBufferModel>
 #include <IrcConnection>
 #include <IrcCompleter>
+#include <QMessageBox>
+#include <QSettings>
+#include <QCheckBox>
 #include <IrcBuffer>
 #include <QKeyEvent>
 #include <QPainter>
@@ -214,6 +217,28 @@ void TextInput::sendInput()
     if (!c || !p)
         return;
 
+    const QStringList lines = text().split(QRegExp("[\\r\\n]"), QString::SkipEmptyParts);
+#if QT_VERSION >= 0x050200
+    if (lines.count() > 2) {
+        QSettings settings;
+        bool warn = settings.value("warn", true).toBool();
+        if (warn) {
+            QMessageBox msgBox;
+            msgBox.setText(tr("The input contains more than two lines."));
+            msgBox.setInformativeText(tr("IRC is not a suitable medium for pasting multiple lines of text. Consider using a pastebin site instead.\n\n"
+                                         "Do you still want to proceed and send %1 lines of text?\n").arg(lines.count()));
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.setDefaultButton(QMessageBox::No);
+            QCheckBox* checkBox = new QCheckBox(tr("Do not show again"), &msgBox);
+            msgBox.setCheckBox(checkBox);
+            int res = msgBox.exec();
+            settings.setValue("warn", !checkBox->isChecked());
+            if (res != QMessageBox::Yes)
+                return;
+        }
+    }
+#endif
+
     if (!text().isEmpty()) {
         d.current.clear();
         d.history.append(text());
@@ -221,7 +246,6 @@ void TextInput::sendInput()
     }
 
     bool error = false;
-    const QStringList lines = text().split(QRegExp("[\\r\\n]"), QString::SkipEmptyParts);
     foreach (const QString& line, lines) {
         if (!line.trimmed().isEmpty()) {
             IrcCommand* cmd = p->parse(line);
