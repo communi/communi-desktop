@@ -122,6 +122,8 @@ void ChatPage::setTheme(const QString& theme)
 {
     if (!d.theme.isValid() || d.theme.name() != theme) {
         d.theme = ThemeLoader::instance()->theme(theme);
+        foreach (TextDocument* doc, d.documents)
+            setupDocument(doc);
 
         QString css = d.theme.style();
         window()->setStyleSheet(css);

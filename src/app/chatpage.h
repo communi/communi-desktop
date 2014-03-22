@@ -54,7 +54,6 @@ public slots:
     void addBuffer(IrcBuffer* buffer);
     void closeBuffer(IrcBuffer* buffer = 0);
     void removeBuffer(IrcBuffer* buffer);
-    void setupDocument(TextDocument* document);
 
 signals:
     void currentViewChanged(BufferView* view);
@@ -71,6 +70,7 @@ private slots:
     void removeConnection(IrcConnection* connection);
     void addView(BufferView* view);
     void removeView(BufferView* view);
+    void setupDocument(TextDocument* document);
     void onCurrentViewChanged(BufferView* current, BufferView* previous);
     void onSocketError();
 

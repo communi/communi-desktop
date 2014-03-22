@@ -291,17 +291,6 @@ void MainWindow::onSettingsAccepted()
     SettingsPage* page = qobject_cast<SettingsPage*>(sender());
     if (page) {
         d.chatPage->setTheme(page->theme());
-
-        foreach (IrcConnection* connection, d.connections) {
-            IrcBufferModel* model = connection->findChild<IrcBufferModel*>(); // TODO
-            if (model) {
-                foreach (IrcBuffer* buffer, model->buffers()) {
-                    TextDocument* doc = buffer->findChild<TextDocument*>(); // TODO
-                    if (doc)
-                        d.chatPage->setupDocument(doc);
-                }
-            }
-        }
         pop();
     }
 }
