@@ -10,6 +10,7 @@
 #ifndef CHATPAGE_H
 #define CHATPAGE_H
 
+#include <QSet>
 #include <QSplitter>
 #include <IrcCommandFilter>
 #include "themeinfo.h"
@@ -79,9 +80,11 @@ private:
     struct Private {
         Finder* finder;
         ThemeInfo theme;
+        QString timestamp;
         QStringList chans;
         SplitView* splitView;
         TreeWidget* treeWidget;
+        QSet<TextDocument*> documents;
     } d;
 };
 

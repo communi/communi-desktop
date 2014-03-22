@@ -132,6 +132,7 @@ QByteArray ChatPage::saveSettings() const
 {
     QVariantMap settings;
     settings.insert("theme", d.theme.name());
+    settings.insert("timestamp", d.timestamp);
 
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -145,6 +146,7 @@ void ChatPage::restoreSettings(const QByteArray& data)
     QDataStream in(data);
     in >> settings;
 
+    d.timestamp = settings.value("timestamp", "[hh:mm:ss]").toString();
     setTheme(settings.value("theme", "Cute").toString());
 }
 
@@ -218,6 +220,14 @@ bool ChatPage::commandFilter(IrcCommand* command)
                 }
             }
             d.splitView->setCurrentBuffer(buffer);
+            return true;
+        } else if (cmd == "TIMESTAMP") {
+            const QString format = params.value(0);
+            if (d.timestamp != format) {
+                d.timestamp = format;
+                foreach (TextDocument* doc, d.documents)
+                    doc->setTimeStampFormat(format);
+            }
             return true;
         }
     }
@@ -301,8 +311,10 @@ void ChatPage::addBuffer(IrcBuffer* buffer)
 void ChatPage::removeBuffer(IrcBuffer* buffer)
 {
     QList<TextDocument*> documents = buffer->findChildren<TextDocument*>();
-    foreach (TextDocument* doc, documents)
+    foreach (TextDocument* doc, documents) {
+        d.documents.remove(doc);
         PluginLoader::instance()->documentRemoved(doc);
+    }
 
     d.treeWidget->removeBuffer(buffer);
     d.splitView->removeBuffer(buffer);
@@ -315,10 +327,12 @@ void ChatPage::removeBuffer(IrcBuffer* buffer)
 
 void ChatPage::setupDocument(TextDocument* document)
 {
+    d.documents.insert(document);
+
+    document->setTimeStampFormat(d.timestamp);
     document->setStyleSheet(d.theme.style());
 //    document->formatter()->setDetailed(d.showDetails);
 //    document->formatter()->setStripNicks(!d.showDetails);
-//    document->formatter()->setTimeStampFormat(d.timestampFormat);
 
     if (!document->isClone()) {
         connect(document, SIGNAL(messageMissed(IrcMessage*)), this, SIGNAL(messageMissed(IrcMessage*)));
@@ -424,6 +438,7 @@ IrcCommandParser* ChatPage::createParser(QObject *parent)
     parser->addCommand(IrcCommand::Custom, "CLOSE");
     parser->addCommand(IrcCommand::Custom, "MSG <user/channel> <message...>");
     parser->addCommand(IrcCommand::Custom, "QUERY <user> (<message...>)");
+    parser->addCommand(IrcCommand::Custom, "TIMESTAMP (<format>)");
 
     return parser;
 }
