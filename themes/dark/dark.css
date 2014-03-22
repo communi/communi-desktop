@@ -126,11 +126,6 @@ TreeWidget::item:on {
     color: #324aff
 }
 
-TitleBar {
-    color: #dedede;
-    min-height: 20px;
-}
-
 TitleBar > QTextEdit {
     border-bottom: 1px solid #444444;
 }
@@ -156,17 +151,49 @@ QToolButton::menu-indicator {
     image: none;
 }
 
-TitleBar > QToolButton {
+TitleBar {
+    color: #dedede;
+    min-height: 20px;
+}
+
+QToolButton#menu {
     min-width: 20px;
     max-width: 20px;
     min-height: 20px;
     max-height: 20px;
-    border-top-color: transparent;
-    border-right-color: transparent;
+    border-color: transparent;
+    background-color: transparent;
+    image: url(white:menu.png);
 }
 
-TitleBar > QToolButton#menu {
-    image: url(white:menu.png)
+QToolButton#menu:hover {
+    border-left-color: #444444;
+    border-bottom-color: #444444;
+}
+
+QToolButton#menu:pressed {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #222222, stop: 1 #444444);
+}
+
+Overlay {
+    background: rgba(96,96,96,40%)
+}
+
+OverlayButton {
+    border: none;
+    background: transparent;
+    min-width: 48px;
+    max-width: 48px;
+    min-height: 48px;
+    max-height: 48px;
+    image: url(white:refresh.png);
+}
+
+OverlayButton:pressed {
+    border: none;
+    background: transparent;
+    image: url(gray:refresh.png);
 }
 
 AbstractFinder > QToolButton {
@@ -185,6 +212,10 @@ AbstractFinder > QLineEdit {
     border-bottom-color: transparent;
 }
 
+AbstractFinder[error="true"] > QLineEdit {
+    background-color: #bb4444;
+}
+
 AbstractFinder > QToolButton {
     border-left-color: transparent;
 }
@@ -193,8 +224,18 @@ AbstractFinder > QToolButton#prev {
     image: url(white:up.png)
 }
 
+AbstractFinder[error="true"] > QToolButton#prev {
+    image: url(gray:up.png);
+    background-color: #222222;
+}
+
 AbstractFinder > QToolButton#next {
     image: url(white:down.png)
+}
+
+AbstractFinder[error="true"] > QToolButton#next {
+    image: url(gray:down.png);
+    background-color: #222222;
 }
 
 QScrollBar {
