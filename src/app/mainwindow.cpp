@@ -115,10 +115,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
         }
     }
 
-    if (connections().isEmpty())
+    if (d.connections.isEmpty())
         doConnect();
-    else
-        d.stack->setCurrentWidget(d.chatPage);
 
     d.chatPage->restoreState(settings.value("state").toByteArray());
 }
@@ -209,7 +207,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
         settings.setValue("state", d.chatPage->saveState());
 
         QVariantList states;
-        foreach (IrcConnection* connection, connections()) {
+        foreach (IrcConnection* connection, d.connections) {
             QVariantMap state;
             state.insert("connection", connection->saveState());
             IrcBufferModel* model = connection->findChild<IrcBufferModel*>();
@@ -219,7 +217,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
         }
         settings.setValue("connections", states);
 
-        foreach (IrcConnection* connection, connections()) {
+        foreach (IrcConnection* connection, d.connections) {
             connection->quit(qApp->property("description").toString());
             connection->close();
         }
@@ -242,7 +240,7 @@ void MainWindow::doConnect()
     }
 
     ConnectPage* page = new ConnectPage(this);
-    page->buttonBox()->button(QDialogButtonBox::Cancel)->setEnabled(!connections().isEmpty());
+    page->buttonBox()->button(QDialogButtonBox::Cancel)->setEnabled(!d.connections.isEmpty());
     connect(page, SIGNAL(accepted()), this, SLOT(onConnectAccepted()));
     connect(page, SIGNAL(rejected()), this, SLOT(pop()));
     push(page);
