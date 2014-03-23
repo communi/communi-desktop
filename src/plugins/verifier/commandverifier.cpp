@@ -17,7 +17,7 @@
 #include <IrcCommand>
 #include <IrcMessage>
 
-quint64 CommandVerifier::Private::id = 1;
+int CommandVerifier::Private::id = 1;
 
 CommandVerifier::CommandVerifier(IrcConnection* connection) : QObject(connection)
 {
@@ -26,10 +26,10 @@ CommandVerifier::CommandVerifier(IrcConnection* connection) : QObject(connection
     connection->installCommandFilter(this);
 }
 
-quint64 CommandVerifier::identify(IrcMessage* message) const
+int CommandVerifier::identify(IrcMessage* message) const
 {
     if (message->type() == IrcMessage::Private) {
-        QMapIterator<quint64, IrcCommand*> it(d.commands);
+        QMapIterator<int, IrcCommand*> it(d.commands);
         while (it.hasNext()) {
             IrcMessage* cmd = it.next().value()->toMessage(message->prefix(), message->connection());
             if (cmd->toData() == QString::fromUtf8(message->toData()))
@@ -45,7 +45,7 @@ bool CommandVerifier::messageFilter(IrcMessage* message)
         QString arg = static_cast<IrcPongMessage*>(message)->argument();
         if (arg.startsWith("communi/")) {
             bool ok = false;
-            quint64 id = arg.mid(8).toLongLong(&ok);
+            int id = arg.mid(8).toInt(&ok);
             if (ok) {
                 IrcCommand* command = d.commands.take(id);
                 if (command) {
@@ -63,7 +63,8 @@ bool CommandVerifier::commandFilter(IrcCommand* command)
 {
     if (command->type() == IrcCommand::Message) {
         command->setParent(this); // take ownership
-        d.commands.insert(++d.id, command);
+        d.id = qMax(1, d.id + 1); // overflow -> 1
+        d.commands.insert(d.id, command);
         d.connection->sendCommand(command);
         d.connection->sendData("PING communi/" + QByteArray::number(d.id));
         return true;

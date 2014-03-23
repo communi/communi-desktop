@@ -26,7 +26,7 @@ VerifierPlugin::VerifierPlugin(QObject* parent) : QObject(parent)
 void VerifierPlugin::connectionAdded(IrcConnection* connection)
 {
     CommandVerifier* verifier = new CommandVerifier(connection);
-    connect(verifier, SIGNAL(verified(quint64)), this, SLOT(onCommandVerified(quint64)));
+    connect(verifier, SIGNAL(verified(int)), this, SLOT(onCommandVerified(int)));
     d.verifiers.insert(connection, verifier);
 }
 
@@ -36,7 +36,7 @@ void VerifierPlugin::documentAdded(TextDocument* document)
     connect(document, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
 }
 
-void VerifierPlugin::onCommandVerified(quint64 id)
+void VerifierPlugin::onCommandVerified(int id)
 {
     foreach (QTextDocument* doc, d.documents.values(id)) {
         SyntaxHighlighter* highlighter = doc->findChild<SyntaxHighlighter*>();
@@ -61,7 +61,7 @@ void VerifierPlugin::onMessageReceived(IrcMessage* message)
         TextDocument* doc = qobject_cast<TextDocument*>(sender());
         CommandVerifier* verifier = d.verifiers.value(message->connection());
         if (doc && verifier) {
-            quint64 id = verifier->identify(message);
+            int id = verifier->identify(message);
             if (id > 1) {
                 SyntaxHighlighter* highlighter = doc->findChild<SyntaxHighlighter*>();
                 if (highlighter) {

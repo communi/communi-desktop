@@ -39,7 +39,7 @@ public:
     void documentAdded(TextDocument* document);
 
 private slots:
-    void onCommandVerified(quint64 id);
+    void onCommandVerified(int id);
     void onMessageReceived(IrcMessage* message);
 
 private:

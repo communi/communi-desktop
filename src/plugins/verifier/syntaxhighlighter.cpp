@@ -21,6 +21,7 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument* document) : QSyntaxHighlight
 
 void SyntaxHighlighter::highlightBlock(const QString& text)
 {
+    Q_UNUSED(text);
     if (currentBlockState() > 0) {
         // gray-out everything except links
         QTextBlock block = currentBlock();
