@@ -24,6 +24,7 @@ INSTALLS += target
 RESOURCES += ../../communi.qrc
 win32:RC_FILE = ../../communi.rc
 mac:ICON = ../../images/communi.icns
+mac:QMAKE_INFO_PLIST = ../../communi.plist
 
 unix:!mac {
     ICONS_SIZES = 16 24 32 48 64 128
