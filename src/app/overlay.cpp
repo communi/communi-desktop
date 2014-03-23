@@ -49,8 +49,8 @@ public:
                 if (!d.animation) {
                     d.animation = new QPropertyAnimation(this, "rotation");
                     d.animation->setDuration(750);
-                    d.animation->setStartValue(360);
-                    d.animation->setEndValue(0);
+                    d.animation->setStartValue(0);
+                    d.animation->setEndValue(360);
                     d.animation->setLoopCount(-1);
                 }
                 d.animation->start(QAbstractAnimation::DeleteWhenStopped);
