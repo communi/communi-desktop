@@ -131,6 +131,17 @@ TextDocument* TextDocument::clone()
     QTextCursor(doc).insertFragment(QTextDocumentFragment(this));
     doc->rootFrame()->setFrameFormat(rootFrame()->frameFormat());
 
+    QTextBlock source = begin();
+    while (source.isValid()) {
+        QTextBlock target = doc->findBlockByNumber(source.blockNumber());
+        if (target.isValid()) {
+            TextBlockData* data = static_cast<TextBlockData*>(source.userData());
+            if (data)
+                target.setUserData(new TextBlockData(*data));
+        }
+        source = source.next();
+    }
+
     // TODO:
     doc->d.ub = d.ub;
     doc->d.css = d.css;
@@ -379,8 +390,7 @@ void TextDocument::receiveMessage(IrcMessage* message)
 
 void TextDocument::rebuild()
 {
-    if (d.visible)
-        flushLines();
+    flushLines();
     QTextBlock block = begin();
     while (block.isValid()) {
         TextBlockData* data = static_cast<TextBlockData*>(block.userData());
@@ -389,8 +399,7 @@ void TextDocument::rebuild()
         block = block.next();
     }
     clear();
-    if (d.visible)
-        flushLines();
+    flushLines();
 }
 
 void TextDocument::appendLine(QTextCursor& cursor, TextBlockData* line)
