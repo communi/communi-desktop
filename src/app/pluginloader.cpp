@@ -39,7 +39,7 @@ PluginLoader* PluginLoader::instance()
 
 void PluginLoader::bufferAdded(IrcBuffer* buffer)
 {
-    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+    foreach (QObject* instance, pluginInstances()) {
         BufferPlugin* plugin = qobject_cast<BufferPlugin*>(instance);
         if (plugin)
             plugin->bufferAdded(buffer);
@@ -48,7 +48,7 @@ void PluginLoader::bufferAdded(IrcBuffer* buffer)
 
 void PluginLoader::bufferRemoved(IrcBuffer* buffer)
 {
-    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+    foreach (QObject* instance, pluginInstances()) {
         BufferPlugin* plugin = qobject_cast<BufferPlugin*>(instance);
         if (plugin)
             plugin->bufferRemoved(buffer);
@@ -57,7 +57,7 @@ void PluginLoader::bufferRemoved(IrcBuffer* buffer)
 
 void PluginLoader::connectionAdded(IrcConnection* connection)
 {
-    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+    foreach (QObject* instance, pluginInstances()) {
         ConnectionPlugin* plugin = qobject_cast<ConnectionPlugin*>(instance);
         if (plugin)
             plugin->connectionAdded(connection);
@@ -66,7 +66,7 @@ void PluginLoader::connectionAdded(IrcConnection* connection)
 
 void PluginLoader::connectionRemoved(IrcConnection* connection)
 {
-    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+    foreach (QObject* instance, pluginInstances()) {
         ConnectionPlugin* plugin = qobject_cast<ConnectionPlugin*>(instance);
         if (plugin)
             plugin->connectionRemoved(connection);
@@ -75,7 +75,7 @@ void PluginLoader::connectionRemoved(IrcConnection* connection)
 
 void PluginLoader::viewAdded(BufferView* view)
 {
-    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+    foreach (QObject* instance, pluginInstances()) {
         ViewPlugin* plugin = qobject_cast<ViewPlugin*>(instance);
         if (plugin)
             plugin->viewAdded(view);
@@ -84,7 +84,7 @@ void PluginLoader::viewAdded(BufferView* view)
 
 void PluginLoader::viewRemoved(BufferView* view)
 {
-    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+    foreach (QObject* instance, pluginInstances()) {
         ViewPlugin* plugin = qobject_cast<ViewPlugin*>(instance);
         if (plugin)
             plugin->viewRemoved(view);
@@ -93,7 +93,7 @@ void PluginLoader::viewRemoved(BufferView* view)
 
 void PluginLoader::documentAdded(TextDocument* doc)
 {
-    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+    foreach (QObject* instance, pluginInstances()) {
         DocumentPlugin* plugin = qobject_cast<DocumentPlugin*>(instance);
         if (plugin)
             plugin->documentAdded(doc);
@@ -102,7 +102,7 @@ void PluginLoader::documentAdded(TextDocument* doc)
 
 void PluginLoader::documentRemoved(TextDocument* doc)
 {
-    foreach (QObject* instance, QPluginLoader::staticInstances()) {
+    foreach (QObject* instance, pluginInstances()) {
         DocumentPlugin* plugin = qobject_cast<DocumentPlugin*>(instance);
         if (plugin)
             plugin->documentRemoved(doc);
