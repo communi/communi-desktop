@@ -70,11 +70,14 @@ void TextBrowser::setDocument(TextDocument* document)
 {
     TextDocument* doc = qobject_cast<TextDocument*>(QTextBrowser::document());
     if (doc != document) {
-        if (doc)
+        if (doc) {
             doc->setVisible(false);
+            disconnect(doc->documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(keepAtBottom()));
+        }
         if (document) {
             document->setVisible(true);
             document->setDefaultFont(font());
+            connect(document->documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(keepAtBottom()));
         }
         setUpdatesEnabled(false);
         QTextBrowser::setDocument(document);
