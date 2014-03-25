@@ -58,7 +58,6 @@ protected:
     void keyPressEvent(QKeyEvent* event);
     void paintEvent(QPaintEvent* event);
     void resizeEvent(QResizeEvent* event);
-    void timerEvent(QTimerEvent* event);
     void wheelEvent(QWheelEvent* event);
 
 private slots:
@@ -70,7 +69,6 @@ private slots:
 
 private:
     struct Private {
-        int dirty;
         QWidget* bud;
         TextShadow* shadow;
     } d;

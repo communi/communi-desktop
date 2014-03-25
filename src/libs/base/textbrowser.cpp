@@ -32,7 +32,6 @@ class TextShadow : public QFrame { Q_OBJECT };
 TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent)
 {
     d.bud = 0;
-    d.dirty = 0;
     d.shadow = new TextShadow;
     d.shadow->setParent(this);
 
@@ -71,21 +70,17 @@ void TextBrowser::setDocument(TextDocument* document)
 {
     TextDocument* doc = qobject_cast<TextDocument*>(QTextBrowser::document());
     if (doc != document) {
-        if (doc) {
+        if (doc)
             doc->setVisible(false);
-            disconnect(doc->documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(keepAtBottom()));
-        }
         if (document) {
             document->setVisible(true);
             document->setDefaultFont(font());
-            connect(document->documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(keepAtBottom()));
-            if (d.dirty == 0 && !document->isEmpty()) {
-                setUpdatesEnabled(false);
-                d.dirty = startTimer(32);
-            }
-            QMetaObject::invokeMethod(this, "scrollToBottom", Qt::QueuedConnection);
         }
+        setUpdatesEnabled(false);
         QTextBrowser::setDocument(document);
+        scrollToBottom();
+        setUpdatesEnabled(true);
+        repaint();
         emit documentChanged(document);
     }
 }
@@ -136,15 +131,6 @@ void TextBrowser::resizeEvent(QResizeEvent* event)
 
     // http://www.qtsoftware.com/developer/task-tracker/index_html?method=entry&id=240940
     QMetaObject::invokeMethod(this, "scrollToBottom", Qt::QueuedConnection);
-}
-
-void TextBrowser::timerEvent(QTimerEvent* event)
-{
-    if (event->timerId() == d.dirty) {
-        setUpdatesEnabled(true);
-        killTimer(d.dirty);
-        d.dirty = 0;
-    }
 }
 
 bool TextBrowser::isAtTop() const
