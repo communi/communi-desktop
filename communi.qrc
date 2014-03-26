@@ -1,18 +1,8 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-  <file>images/16x16/communi.png</file>
-  <file>images/24x24/communi.png</file>
-  <file>images/32x32/communi.png</file>
-  <file>images/48x48/communi.png</file>
-  <file>images/64x64/communi.png</file>
-  <file>images/128x128/communi.png</file>
-
-  <file>images/16x16/communi-alert.png</file>
-  <file>images/24x24/communi-alert.png</file>
-  <file>images/32x32/communi-alert.png</file>
-  <file>images/48x48/communi-alert.png</file>
-  <file>images/64x64/communi-alert.png</file>
-  <file>images/128x128/communi-alert.png</file>
+  <file>images/communi-s.png</file>
+  <file>images/communi-m.png</file>
+  <file>images/communi-l.png</file>
 
   <file>images/black/close.png</file>
   <file>images/black/menu.png</file>

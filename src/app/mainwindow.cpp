@@ -38,19 +38,14 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     QDir::addSearchPath("gray", ":/images/gray");
     QDir::addSearchPath("white", ":/images/white");
 
-    d.normalIcon.addFile(":/images/16x16/communi.png");
-    d.normalIcon.addFile(":/images/24x24/communi.png");
-    d.normalIcon.addFile(":/images/32x32/communi.png");
-    d.normalIcon.addFile(":/images/48x48/communi.png");
-    d.normalIcon.addFile(":/images/64x64/communi.png");
-    d.normalIcon.addFile(":/images/128x128/communi.png");
+    d.normalIcon.addFile(":/images/communi-s.png");
+    d.normalIcon.addFile(":/images/communi-m.png");
+    d.normalIcon.addFile(":/images/communi-l.png");
 
-    d.alertIcon.addFile(":/images/16x16/communi-alert.png");
-    d.alertIcon.addFile(":/images/24x24/communi-alert.png");
-    d.alertIcon.addFile(":/images/32x32/communi-alert.png");
-    d.alertIcon.addFile(":/images/48x48/communi-alert.png");
-    d.alertIcon.addFile(":/images/64x64/communi-alert.png");
-    d.alertIcon.addFile(":/images/128x128/communi-alert.png");
+    // TODO
+    d.alertIcon.addFile(":/images/communi-s.png");
+    d.alertIcon.addFile(":/images/communi-m.png");
+    d.alertIcon.addFile(":/images/communi-l.png");
 
 #ifndef Q_OS_MAC
     setWindowIcon(d.normalIcon);

@@ -27,17 +27,15 @@ mac:ICON = ../../images/communi.icns
 mac:QMAKE_INFO_PLIST = ../../communi.plist
 
 unix:!mac {
-    ICONS_SIZES = 16 24 32 48 64 128
-    for(size, ICONS_SIZES) {
-        eval(icon$${size}.files = ../../images/$${size}x$${size}/communi.png)
-        eval(icon$${size}.path = /usr/share/icons/hicolor/$${size}x$${size}/apps)
-        INSTALLS += icon$${size}
-    }
-    icon.path = /usr/share/pixmaps
-    icon.files = ../../images/128x128/communi.png
+    icon-s.files = ../../images/communi-s.png
+    icon-s.path = /usr/share/icons/hicolor/64x64/apps/communi.png
+    icon-m.files = ../../images/communi-m.png
+    icon-m.path = /usr/share/icons/hicolor/256x256/apps/communi.png
+    icon-l.files = ../../images/communi-l.png
+    icon-l.path = /usr/share/icons/hicolor/512x512/apps/communi.png
     desktop.path = /usr/share/applications
     desktop.files = ../../communi.desktop
-    INSTALLS += icon desktop
+    INSTALLS += icon-s icon-m icon-l desktop
 }
 
 OTHER_FILES += ../../communi.rc
