@@ -33,16 +33,17 @@
   <file>images/white/right.png</file>
   <file>images/white/up.png</file>
 
-  <file>images/tray/alert-16.png</file>
-  <file>images/tray/alert-32.png</file>
-  <file>images/tray/offline-16.png</file>
-  <file>images/tray/offline-32.png</file>
-  <file>images/tray/online-16.png</file>
-  <file>images/tray/online-32.png</file>
+  <file>images/tray/black/black.png</file>
+  <file>images/tray/black/blue.png</file>
+  <file>images/tray/black/gray.png</file>
+  <file>images/tray/black/transparent.png</file>
+  <file>images/tray/black/white.png</file>
 
-  <file>images/tray/osx-alert.png</file>
-  <file>images/tray/osx-online.png</file>
-  <file>images/tray/osx-offline.png</file>
+  <file>images/tray/white/black.png</file>
+  <file>images/tray/white/blue.png</file>
+  <file>images/tray/white/gray.png</file>
+  <file>images/tray/white/transparent.png</file>
+  <file>images/tray/white/white.png</file>
 
   <!-- todo: themable -->
   <file>images/ajax-loader.gif</file>

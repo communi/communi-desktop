@@ -47,18 +47,13 @@ Dock::Dock(MainWindow* window) : QObject(window)
         d.tray = new QSystemTrayIcon(this);
 
 #ifdef Q_OS_MAC
-        d.alertIcon.addFile(":/images/tray/osx-alert.png");
-        d.onlineIcon.addFile(":/images/tray/osx-online.png");
-        d.offlineIcon.addFile(":/images/tray/osx-offline.png");
+        d.alertIcon.addFile(":/images/tray/black/blue.png");
+        d.onlineIcon.addFile(":/images/tray/black/black.png");
+        d.offlineIcon.addFile(":/images/tray/black/transparent.png");
 #else
-        d.alertIcon.addFile(":/images/tray/alert-16.png");
-        d.alertIcon.addFile(":/images/tray/alert-32.png");
-
-        d.onlineIcon.addFile(":/images/tray/online-16.png");
-        d.onlineIcon.addFile(":/images/tray/online-32.png");
-
-        d.offlineIcon.addFile(":/images/tray/offline-16.png");
-        d.offlineIcon.addFile(":/images/tray/offline-32.png");
+        d.alertIcon.addFile(":/images/tray/white/transparent.png");
+        d.onlineIcon.addFile(":/images/tray/white/blue.png");
+        d.offlineIcon.addFile(":/images/tray/white/gray.png");
 #endif
 
         QMenu* menu = new QMenu(window);
