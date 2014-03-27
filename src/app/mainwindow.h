@@ -10,7 +10,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QIcon>
 #include <QQueue>
 #include <QPointer>
 #include <QMainWindow>
@@ -74,8 +73,6 @@ private slots:
 private:
     struct Private {
         Dock* dock;
-        QIcon normalIcon;
-        QIcon alertIcon;
         ChatPage* chatPage;
         QStackedWidget* stack;
         QPointer<BufferView> view;

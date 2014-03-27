@@ -1,8 +1,13 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-  <file>images/communi-s.png</file>
-  <file>images/communi-m.png</file>
-  <file>images/communi-l.png</file>
+  <file alias="communi-16.png">images/icons/16x16/apps/communi.png</file>
+  <file alias="communi-24.png">images/icons/24x24/apps/communi.png</file>
+  <file alias="communi-32.png">images/icons/32x32/apps/communi.png</file>
+  <file alias="communi-48.png">images/icons/48x48/apps/communi.png</file>
+  <file alias="communi-64.png">images/icons/64x64/apps/communi.png</file>
+  <file alias="communi-128.png">images/icons/128x128/apps/communi.png</file>
+  <file alias="communi-256.png">images/icons/256x256/apps/communi.png</file>
+  <file alias="communi-512.png">images/icons/512x512/apps/communi.png</file>
 
   <file>images/black/close.png</file>
   <file>images/black/menu.png</file>

@@ -38,18 +38,18 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     QDir::addSearchPath("gray", ":/images/gray");
     QDir::addSearchPath("white", ":/images/white");
 
-    d.normalIcon.addFile(":/images/communi-s.png");
-    d.normalIcon.addFile(":/images/communi-m.png");
-    d.normalIcon.addFile(":/images/communi-l.png");
-
-    // TODO
-    d.alertIcon.addFile(":/images/communi-s.png");
-    d.alertIcon.addFile(":/images/communi-m.png");
-    d.alertIcon.addFile(":/images/communi-l.png");
-
 #ifndef Q_OS_MAC
-    setWindowIcon(d.normalIcon);
-    qApp->setWindowIcon(d.normalIcon);
+    QIcon icon;
+    icon.addFile(":/communi-16.png");
+    icon.addFile(":/communi-24.png");
+    icon.addFile(":/communi-32.png");
+    icon.addFile(":/communi-48.png");
+    icon.addFile(":/communi-64.png");
+    icon.addFile(":/communi-128.png");
+    icon.addFile(":/communi-256.png");
+    icon.addFile(":/communi-512.png");
+    setWindowIcon(icon);
+    qApp->setWindowIcon(icon);
 #endif // Q_OS_MAC
 
     d.stack = new QStackedWidget(this);
