@@ -194,9 +194,6 @@ QSize TreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelInd
 void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     bool hilite = index.data(TreeRole::Highlight).toBool();
-    if (hilite)
-        const_cast<QStyleOptionViewItem&>(option).state |= QStyle::State_On;
-
     bool active = index.data(TreeRole::Active).toBool();
     if (!hilite && !active)
         const_cast<QStyleOptionViewItem&>(option).state |= QStyle::State_Off;
@@ -211,6 +208,9 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         header->render(painter);
         painter->translate(-option.rect.topLeft());
     } else {
+        if (hilite)
+            const_cast<QStyleOptionViewItem&>(option).state |= QStyle::State_On;
+
         QStyledItemDelegate::paint(painter, option, index);
 
         int num = index.data(TreeRole::Badge).toInt();
