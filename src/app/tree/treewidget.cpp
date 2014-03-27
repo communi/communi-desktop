@@ -256,18 +256,14 @@ void TreeWidget::moveToPrevItem()
 
 void TreeWidget::moveToNextActiveItem()
 {
-    QTreeWidgetItem* item = findNextItem(currentItem(), 0, TreeRole::Highlight);
-    if (!item)
-        item = findNextItem(currentItem(), 1, TreeRole::Badge);
+    QTreeWidgetItem* item = findNextItem(currentItem(), 1, TreeRole::Badge);
     if (item)
         setCurrentItem(item);
 }
 
 void TreeWidget::moveToPrevActiveItem()
 {
-    QTreeWidgetItem* item = findPrevItem(currentItem(), 0, TreeRole::Highlight);
-    if (!item)
-        item = findPrevItem(currentItem(), 1, TreeRole::Badge);
+    QTreeWidgetItem* item = findPrevItem(currentItem(), 1, TreeRole::Badge);
     if (item)
         setCurrentItem(item);
 }
