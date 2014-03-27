@@ -3,6 +3,7 @@
 ######################################################################
 
 TEMPLATE = lib
+COMMUNI += core
 CONFIG += static communi_plugin
 
 HEADERS += $$PWD/monitorplugin.h

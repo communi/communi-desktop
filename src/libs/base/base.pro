@@ -4,7 +4,8 @@
 
 TEMPLATE = lib
 TARGET = base
-CONFIG += static communi_backend
+CONFIG += static communi
+COMMUNI += core model util
 
 DESTDIR = $$BUILD_TREE/lib
 DEPENDPATH += $$PWD

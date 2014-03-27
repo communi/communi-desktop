@@ -5,7 +5,10 @@
 TEMPLATE = app
 win32|mac:TARGET = Communi
 else:TARGET = communi
-CONFIG += communi_3rdparty communi_backend communi_base communi_plugins
+
+CONFIG += communi
+COMMUNI += core model util
+CONFIG += communi_3rdparty communi_base communi_plugins
 
 DESTDIR = ../../bin
 DEPENDPATH += $$PWD
