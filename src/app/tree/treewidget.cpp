@@ -275,7 +275,7 @@ void TreeWidget::moveToMostActiveItem()
     while (*it) {
         QTreeWidgetItem* item = *it;
 
-        if (item->data(0, TreeRole::Highlight).toBool()) {
+        if (d.highlightedItems.contains(item)) {
             // we found a channel hilight or PM to us
             setCurrentItem(item);
             return;
