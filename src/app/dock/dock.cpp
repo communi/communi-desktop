@@ -52,7 +52,7 @@ Dock::Dock(MainWindow* window) : QObject(window)
         d.onlineIcon.addFile(":/images/tray/black/black.png");
         d.offlineIcon.addFile(":/images/tray/black/transparent.png");
 #else
-        d.alertIcon.addFile(":/images/tray/white/transparent.png");
+        d.alertIcon.addFile(":/images/tray/white/black.png");
         d.onlineIcon.addFile(":/images/tray/white/blue.png");
         d.offlineIcon.addFile(":/images/tray/white/gray.png");
 #endif
