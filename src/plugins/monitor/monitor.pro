@@ -5,7 +5,6 @@
 TEMPLATE = lib
 COMMUNI += core
 CONFIG += communi_plugin
-win:CONFIG += static
 
 HEADERS += $$PWD/monitorplugin.h
 HEADERS += $$PWD/systemmonitor.h

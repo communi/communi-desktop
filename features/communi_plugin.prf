@@ -11,3 +11,6 @@ include(communi_base.prf)
 DESTDIR = $$BUILD_TREE/plugins
 DEPENDPATH += $$_PRO_FILE_PWD_
 INCLUDEPATH += $$_PRO_FILE_PWD_
+
+target.path = $$[QT_INSTALL_PLUGINS]/communi
+INSTALLS += target

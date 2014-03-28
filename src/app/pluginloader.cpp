@@ -19,12 +19,6 @@
 #include "documentplugin.h"
 #include "viewplugin.h"
 
-#ifdef Q_OS_WIN
-Q_IMPORT_PLUGIN(MonitorPlugin)
-Q_IMPORT_PLUGIN(VerifierPlugin)
-Q_IMPORT_PLUGIN(ZncPlugin)
-#endif
-
 static QObjectList loadPlugins(const QStringList& paths)
 {
     QObjectList instances;
