@@ -79,7 +79,7 @@ HRESULT STDMETHODCALLTYPE NetworkMonitor::ConnectivityChanged(NLM_CONNECTIVITY c
     if (connectivity == NLM_CONNECTIVITY_DISCONNECTED)
         emit offline();
     else if (connectivity & NLM_CONNECTIVITY_IPV4_INTERNET ||
-             connectivity & NLM_CONNECTIVITY_IPV4_INTERNET)
+             connectivity & NLM_CONNECTIVITY_IPV6_INTERNET)
         emit online();
     return S_OK;
 }
