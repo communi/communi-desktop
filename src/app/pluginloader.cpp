@@ -19,34 +19,41 @@
 #include "documentplugin.h"
 #include "viewplugin.h"
 
-#ifndef Q_OS_MAC
-Q_IMPORT_PLUGIN(MonitorPlugin)
-Q_IMPORT_PLUGIN(VerifierPlugin)
-Q_IMPORT_PLUGIN(ZncPlugin)
-#endif
-
-static QObjectList pluginInstances()
+static QObjectList loadPlugins(const QStringList& paths)
 {
-    static QObjectList instances;
-    if (instances.isEmpty()) {
-        instances += QPluginLoader::staticInstances();
-        // TODO: Q_OS_WIN & Q_OS_LINUX
-#if defined(Q_OS_MAC)
-        QDir dir(QApplication::applicationFilePath());
-        if (dir.cd("../../PlugIns")) {
+    QObjectList instances;
+    foreach (const QString& path, paths) {
+        QDir dir(path);
+        if (dir.cd("communi")) {
             foreach (const QFileInfo& file, dir.entryInfoList()) {
                 QPluginLoader loader(file.absoluteFilePath());
                 if (loader.load())
                     instances += loader.instance();
             }
         }
-#elif defined(Q_OS_WIN)
-        // TODO
-#elif defined(Q_OS_UNIX)
-        // TODO
-#endif
     }
     return instances;
+}
+
+static QObjectList pluginInstances()
+{
+    static QObjectList instances = loadPlugins(QApplication::libraryPaths());
+    return instances;
+}
+
+QStringList PluginLoader::paths()
+{
+    QStringList lst;
+#if defined(Q_OS_MAC)
+    QDir dir(QApplication::applicationFilePath());
+    if (dir.cd("../../PlugIns"))
+        lst += dir.absolutePath();
+#elif defined(Q_OS_WIN)
+    // TODO
+#elif defined(Q_OS_UNIX)
+    // TODO
+#endif
+    return lst;
 }
 
 PluginLoader::PluginLoader(QObject* parent) : QObject(parent)

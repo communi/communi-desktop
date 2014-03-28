@@ -5,7 +5,6 @@
 TEMPLATE = lib
 COMMUNI += core
 CONFIG += communi_plugin
-!mac:CONFIG += static
 
 HEADERS += $$PWD/monitorplugin.h
 HEADERS += $$PWD/systemmonitor.h
