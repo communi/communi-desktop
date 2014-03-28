@@ -3,8 +3,8 @@
 ######################################################################
 
 TEMPLATE = lib
-COMMUNI += core model
-CONFIG += static communi_plugin
+COMMUNI += core model util
+CONFIG += communi_plugin
 
 HEADERS += $$PWD/commandverifier.h
 HEADERS += $$PWD/syntaxhighlighter.h

@@ -9,6 +9,9 @@
 
 #include "pluginloader.h"
 
+#include <QDir>
+#include <QApplication>
+
 #include <QtPlugin>
 #include "bufferview.h"
 #include "bufferplugin.h"
@@ -16,14 +19,34 @@
 #include "documentplugin.h"
 #include "viewplugin.h"
 
+#ifndef Q_OS_MAC
 Q_IMPORT_PLUGIN(MonitorPlugin)
 Q_IMPORT_PLUGIN(VerifierPlugin)
 Q_IMPORT_PLUGIN(ZncPlugin)
+#endif
 
 static QObjectList pluginInstances()
 {
-    // TODO: dynamic plugins
-    return QPluginLoader::staticInstances();
+    static QObjectList instances;
+    if (instances.isEmpty()) {
+        instances += QPluginLoader::staticInstances();
+        // TODO: Q_OS_WIN & Q_OS_LINUX
+#if defined(Q_OS_MAC)
+        QDir dir(QApplication::applicationFilePath());
+        if (dir.cd("../../PlugIns")) {
+            foreach (const QFileInfo& file, dir.entryInfoList()) {
+                QPluginLoader loader(file.absoluteFilePath());
+                if (loader.load())
+                    instances += loader.instance();
+            }
+        }
+#elif defined(Q_OS_WIN)
+        // TODO
+#elif defined(Q_OS_UNIX)
+        // TODO
+#endif
+    }
+    return instances;
 }
 
 PluginLoader::PluginLoader(QObject* parent) : QObject(parent)
