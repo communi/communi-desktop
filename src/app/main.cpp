@@ -13,6 +13,7 @@
 */
 
 #include "mainwindow.h"
+#include "pluginloader.h"
 #include <QApplication>
 #include <QNetworkProxy>
 #include <QSettings>
@@ -45,6 +46,9 @@ int main(int argc, char* argv[])
     app.setProperty("description", MainWindow::tr("%1 %2 - http://%3").arg(app.applicationName())
                                                                      .arg(app.applicationVersion())
                                                                      .arg(app.organizationDomain()));
+
+    foreach (const QString& path, PluginLoader::paths())
+        app.addLibraryPath(path);
 
     QStringList args = app.arguments();
     if (args.contains("-reset"))

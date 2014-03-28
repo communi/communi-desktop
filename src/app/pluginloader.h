@@ -25,6 +25,8 @@ class PluginLoader : public QObject
 public:
     static PluginLoader* instance();
 
+    static QStringList paths();
+
 public slots:
     void bufferAdded(IrcBuffer* buffer);
     void bufferRemoved(IrcBuffer* buffer);

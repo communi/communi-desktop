@@ -5,7 +5,7 @@
 TEMPLATE = lib
 COMMUNI += core model util
 CONFIG += communi_plugin
-!mac:CONFIG += static
+win:CONFIG += static
 
 HEADERS += $$PWD/commandverifier.h
 HEADERS += $$PWD/syntaxhighlighter.h

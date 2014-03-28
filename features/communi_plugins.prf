@@ -6,9 +6,16 @@ mac {
     plugins.files += $$BUILD_TREE/plugins/libmonitorplugin.$$QMAKE_EXTENSION_SHLIB
     plugins.files += $$BUILD_TREE/plugins/libverifierplugin.$$QMAKE_EXTENSION_SHLIB
     plugins.files += $$BUILD_TREE/plugins/libzncplugin.$$QMAKE_EXTENSION_SHLIB
-    plugins.path = Contents/PlugIns
+    plugins.path = Contents/PlugIns/communi
     QMAKE_BUNDLE_DATA += plugins
-} else {
+} else:unix {
+    plugins.files += $$BUILD_TREE/plugins/libmonitorplugin.so
+    plugins.files += $$BUILD_TREE/plugins/libverifierplugin.so
+    plugins.files += $$BUILD_TREE/plugins/libzncplugin.so
+    plugins.path = $$[QT_INSTALL_PLUGINS]/communi
+    plugins.CONFIG += no_check_exist
+    INSTALLS += plugins
+} else:win {
     include(communi_functions.prf)
     communiAddPlugin(monitor)
     communiAddPlugin(verifier)
