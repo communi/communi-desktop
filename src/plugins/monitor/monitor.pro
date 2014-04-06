@@ -18,10 +18,12 @@ mac {
     OBJECTIVE_SOURCES += $$PWD/systemmonitor_mac.mm
     LIBS += -framework SystemConfiguration
 } else:win32 {
+    DEFINES += _WIN32_WINNT=0x0600
+    HEADERS += $$PWD/win/netlistmgr_util.h
     HEADERS += $$PWD/win/networkmonitor.h
     SOURCES += $$PWD/win/networkmonitor.cpp
     SOURCES += $$PWD/systemmonitor_win.cpp
-    LIBS += -lole32
+    LIBS += -lole32 -luuid
 } else:unix {
     QT += dbus
     SOURCES += $$PWD/systemmonitor_dbus.cpp

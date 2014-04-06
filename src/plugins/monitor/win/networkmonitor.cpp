@@ -16,7 +16,7 @@
 #include <QtDebug>
 
 NetworkMonitor::NetworkMonitor()
-    : cookie(0), cp(NULL), manager(NULL), container(NULL)
+    : cookie(0), cp(NULL), manager(NULL), container(NULL), refcount(0)
 {
     HRESULT hr = CoInitialize(NULL);
     if (SUCCEEDED(hr)) {
@@ -55,12 +55,12 @@ NetworkMonitor::~NetworkMonitor()
 
 ULONG STDMETHODCALLTYPE NetworkMonitor::AddRef()
 {
-    return -1;
+    return ++refcount;
 }
 
 ULONG STDMETHODCALLTYPE NetworkMonitor::Release()
 {
-    return -1;
+    return --refcount;
 }
 
 HRESULT STDMETHODCALLTYPE NetworkMonitor::QueryInterface(REFIID riid, void** obj)
@@ -71,6 +71,7 @@ HRESULT STDMETHODCALLTYPE NetworkMonitor::QueryInterface(REFIID riid, void** obj
         *obj = (INetworkListManagerEvents*)this;
     else
         return E_NOINTERFACE;
+    AddRef();
     return S_OK;
 }
 

@@ -16,7 +16,7 @@
 #define NETWORKMONITOR_H
 
 #include <QObject>
-#include <netlistmgr.h>
+#include "netlistmgr_util.h"
 
 class NetworkMonitor : public QObject, public INetworkListManagerEvents
 {
@@ -41,6 +41,7 @@ private:
     IConnectionPoint *cp;
     INetworkListManager* manager;
     IConnectionPointContainer* container;
+    quint32 refcount;
 };
 
 #endif // NETWORKMONITOR_H
