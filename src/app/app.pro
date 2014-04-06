@@ -8,14 +8,14 @@ else:TARGET = communi
 
 CONFIG += communi
 COMMUNI += core model util
-CONFIG += communi_3rdparty communi_base communi_plugins
+CONFIG += communi_base communi_plugins
 
 DESTDIR = ../../bin
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
 
-mac:LIBS += -framework SystemConfiguration
-else:win32:LIBS += -lole32
+mac:LIBS += -framework AppKit -framework SystemConfiguration
+else:win32:LIBS += -lole32 -luuid
 else:unix:QT += dbus
 qtHaveModule(multimedia):QT += multimedia
 
@@ -62,6 +62,7 @@ SOURCES += $$PWD/settingspage.cpp
 SOURCES += $$PWD/splitview.cpp
 SOURCES += $$PWD/overlay.cpp
 
+include(3rdparty/3rdparty.pri)
 include(dock/dock.pri)
 include(finder/finder.pri)
 include(theme/theme.pri)
