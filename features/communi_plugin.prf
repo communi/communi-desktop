@@ -5,7 +5,6 @@
 TARGET = $$basename(_PRO_FILE_PWD_)plugin
 CONFIG += plugin communi
 
-include(communi_3rdparty.prf)
 include(communi_base.prf)
 
 DESTDIR = $$BUILD_TREE/plugins
