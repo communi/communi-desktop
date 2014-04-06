@@ -3,6 +3,6 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS += monitor
+!win32-g++:SUBDIRS += monitor
 SUBDIRS += verifier
 SUBDIRS += znc
