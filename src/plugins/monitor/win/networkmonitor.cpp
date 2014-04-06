@@ -37,6 +37,8 @@ NetworkMonitor::NetworkMonitor()
     }
     if (FAILED(hr))
         qWarning() << "NetworkMonitor: COM failure:" << GetLastError();
+    else
+        qDebug() << "NetworkMonitor: up and running!";
 }
 
 NetworkMonitor::~NetworkMonitor()
