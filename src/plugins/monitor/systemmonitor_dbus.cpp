@@ -19,15 +19,20 @@ class SystemMonitorPrivate : public QObject
 {
     Q_OBJECT
 
+public:
+    SystemMonitorPrivate(SystemMonitor* monitor) : monitor(monitor)
+    {
+    }
+
 private slots:
     void sleeping()
     {
-        QMetaObject::invokeMethod(SystemMonitor::instance(), "sleep");
+        QMetaObject::invokeMethod(monitor, "sleep");
     }
 
     void resuming()
     {
-        QMetaObject::invokeMethod(SystemMonitor::instance(), "wake");
+        QMetaObject::invokeMethod(monitor, "wake");
     }
 
     void networkStateChanged(uint state)
@@ -36,15 +41,18 @@ private slots:
         static const uint NM_STATE_CONNECTED_GLOBAL = 70;
 
         if (state == NM_STATE_DISCONNECTED)
-            QMetaObject::invokeMethod(SystemMonitor::instance(), "offline");
+            QMetaObject::invokeMethod(monitor, "offline");
         else if (state == NM_STATE_CONNECTED_GLOBAL)
-            QMetaObject::invokeMethod(SystemMonitor::instance(), "online");
+            QMetaObject::invokeMethod(monitor, "online");
     }
+
+private:
+    SystemMonitor* monitor;
 };
 
 void SystemMonitor::initialize()
 {
-    d = new SystemMonitorPrivate;
+    d = new SystemMonitorPrivate(this);
 
     QDBusConnection bus = QDBusConnection::systemBus();
     bus.connect("org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager",
