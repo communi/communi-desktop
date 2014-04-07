@@ -17,6 +17,10 @@
 #include <Cocoa/Cocoa.h>
 
 @interface CocoaSystemMonitor : NSObject
+{
+    SystemMonitor* monitor;
+}
+@property (assign) SystemMonitor* monitor;
 @end
 
 class SystemMonitorPrivate
@@ -27,6 +31,7 @@ public:
 };
 
 @implementation CocoaSystemMonitor
+@synthesize monitor;
 - (id)init
 {
     self = [super init];
@@ -48,13 +53,13 @@ public:
 - (void) receiveSleepNote: (NSNotification*) note
 {
     Q_UNUSED(note);
-    QMetaObject::invokeMethod(SystemMonitor::instance(), "sleep");
+    QMetaObject::invokeMethod(monitor, "sleep");
 }
 
 - (void) receiveWakeNote: (NSNotification*) note
 {
     Q_UNUSED(note);
-    QMetaObject::invokeMethod(SystemMonitor::instance(), "wake");
+    QMetaObject::invokeMethod(monitor, "wake");
 }
 
 - (void) receiveNetworkNote: (NSNotification* )note
@@ -62,7 +67,7 @@ public:
     Reachability* reachability = [note object];
     NSParameterAssert([reachability isKindOfClass: [Reachability class]]);
     BOOL offline = [reachability connectionRequired];
-    QMetaObject::invokeMethod(SystemMonitor::instance(), offline ? "offline" : "online");
+    QMetaObject::invokeMethod(monitor, offline ? "offline" : "online");
 }
 @end
 
@@ -70,6 +75,7 @@ void SystemMonitor::initialize()
 {
     d = new SystemMonitorPrivate;
     d->notifier = [[CocoaSystemMonitor alloc] init];
+    [d->notifier setMonitor: this];
     d->reachability = [[Reachability reachabilityForInternetConnection] retain];
     [d->reachability startNotifier];
 }
