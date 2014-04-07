@@ -22,16 +22,20 @@
 class SystemMonitorPrivate : public QAbstractNativeEventFilter
 {
 public:
+    SystemMonitorPrivate(SystemMonitor* monitor) : monitor(monitor)
+    {
+    }
+
     bool nativeEventFilter(const QByteArray&, void* message, long*)
     {
         MSG* msg = static_cast<MSG*>(message);
         if (msg && msg->message == WM_POWERBROADCAST) {
             switch (msg->wParam) {
             case PBT_APMSUSPEND:
-                QMetaObject::invokeMethod(SystemMonitor::instance(), "sleep");
+                QMetaObject::invokeMethod(monitor, "sleep");
                 break;
             case PBT_APMRESUMESUSPEND:
-                QMetaObject::invokeMethod(SystemMonitor::instance(), "wake");
+                QMetaObject::invokeMethod(monitor, "wake");
                 break;
             default:
                 break;
@@ -40,12 +44,13 @@ public:
         return false;
     }
 
+    SystemMonitor* monitor;
     NetworkMonitor network;
 };
 
 void SystemMonitor::initialize()
 {
-    d = new SystemMonitorPrivate;
+    d = new SystemMonitorPrivate(this);
     QAbstractEventDispatcher::instance()->installNativeEventFilter(d);
 
     connect(&d->network, SIGNAL(online()), this, SIGNAL(online()));

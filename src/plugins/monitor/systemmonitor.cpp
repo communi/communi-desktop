@@ -14,12 +14,6 @@
 
 #include "systemmonitor.h"
 
-SystemMonitor* SystemMonitor::instance()
-{
-    static SystemMonitor notifier;
-    return &notifier;
-}
-
 SystemMonitor::SystemMonitor(QObject* parent) : QObject(parent)
 {
     initialize();

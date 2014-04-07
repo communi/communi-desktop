@@ -24,7 +24,8 @@ class SystemMonitor : public QObject
     Q_OBJECT
 
 public:
-    static SystemMonitor* instance();
+    SystemMonitor(QObject* parent = 0);
+    ~SystemMonitor();
 
 signals:
     void wake();
@@ -33,9 +34,6 @@ signals:
     void offline();
 
 protected:
-    SystemMonitor(QObject* parent = 0);
-    ~SystemMonitor();
-
     void initialize();
     void uninitialize();
 

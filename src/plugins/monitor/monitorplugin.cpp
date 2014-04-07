@@ -22,22 +22,13 @@ MonitorPlugin::MonitorPlugin(QObject* parent) : QObject(parent)
 
 void MonitorPlugin::connectionAdded(IrcConnection* connection)
 {
-    connect(SystemMonitor::instance(), SIGNAL(wake()), connection, SLOT(open()));
-    connect(SystemMonitor::instance(), SIGNAL(online()), connection, SLOT(open()));
+    SystemMonitor* monitor = new SystemMonitor(connection);
 
-    connect(SystemMonitor::instance(), SIGNAL(sleep()), connection, SLOT(quit()));
-    connect(SystemMonitor::instance(), SIGNAL(sleep()), connection, SLOT(close()));
+    connect(monitor, SIGNAL(wake()), connection, SLOT(open()));
+    connect(monitor, SIGNAL(online()), connection, SLOT(open()));
 
-    connect(SystemMonitor::instance(), SIGNAL(offline()), connection, SLOT(close()));
-}
+    connect(monitor, SIGNAL(sleep()), connection, SLOT(quit()));
+    connect(monitor, SIGNAL(sleep()), connection, SLOT(close()));
 
-void MonitorPlugin::connectionRemoved(IrcConnection* connection)
-{
-    disconnect(SystemMonitor::instance(), SIGNAL(wake()), connection, SLOT(open()));
-    disconnect(SystemMonitor::instance(), SIGNAL(online()), connection, SLOT(open()));
-
-    disconnect(SystemMonitor::instance(), SIGNAL(sleep()), connection, SLOT(quit()));
-    disconnect(SystemMonitor::instance(), SIGNAL(sleep()), connection, SLOT(close()));
-
-    disconnect(SystemMonitor::instance(), SIGNAL(offline()), connection, SLOT(close()));
+    connect(monitor, SIGNAL(offline()), connection, SLOT(close()));
 }

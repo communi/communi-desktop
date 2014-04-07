@@ -29,7 +29,6 @@ public:
     MonitorPlugin(QObject* parent = 0);
 
     void connectionAdded(IrcConnection* connection);
-    void connectionRemoved(IrcConnection* connection);
 };
 
 #endif // MONITORPLUGIN_H
