@@ -62,6 +62,7 @@ protected:
 
 private slots:
     void keepAtBottom();
+    void moveShadow(int offset);
     void onAnchorClicked(const QUrl& url);
 
     void onWhoisTriggered();

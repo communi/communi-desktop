@@ -56,10 +56,13 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setSpacing(0);
     layout->setMargin(0);
-    layout->addWidget(d.titleBar);
     layout->addWidget(d.splitter);
     layout->addWidget(d.textInput);
     layout->setStretchFactor(d.splitter, 1);
+
+    connect(d.titleBar, SIGNAL(offsetChanged(int)), d.textBrowser, SLOT(moveShadow(int)));
+    layout->setContentsMargins(0, d.titleBar->minimumSizeHint().height(), 0, 0);
+    d.titleBar->raise();
 
     d.splitter->addWidget(d.textBrowser);
     d.splitter->addWidget(d.listView);
@@ -142,6 +145,12 @@ void BufferView::closeBuffer()
 {
     if (d.buffer)
         emit bufferClosed(d.buffer);
+}
+
+void BufferView::resizeEvent(QResizeEvent* event)
+{
+    QWidget::resizeEvent(event);
+    d.titleBar->resize(width(), d.titleBar->minimumSizeHint().height());
 }
 
 void BufferView::query(const QString& user)

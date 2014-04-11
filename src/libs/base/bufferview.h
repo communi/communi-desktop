@@ -51,6 +51,9 @@ signals:
     void bufferClosed(IrcBuffer* buffer);
     void cloned(TextDocument* doc);
 
+protected:
+    void resizeEvent(QResizeEvent* event);
+
 private slots:
     void query(const QString& user);
 

@@ -255,6 +255,11 @@ void TextBrowser::keepAtBottom()
         QMetaObject::invokeMethod(this, "scrollToBottom", Qt::QueuedConnection);
 }
 
+void TextBrowser::moveShadow(int offset)
+{
+    d.shadow->move(0, offset);
+}
+
 void TextBrowser::onAnchorClicked(const QUrl& url)
 {
     if (url.scheme() == "nick")

@@ -25,6 +25,7 @@ class MessageFormatter;
 class TitleBar : public QLabel
 {
     Q_OBJECT
+    Q_PROPERTY(int offset READ offset WRITE setOffset NOTIFY offsetChanged)
 
 public:
     explicit TitleBar(QWidget* parent = 0);
@@ -37,11 +38,18 @@ public:
     QSize minimumSizeHint() const;
     int heightForWidth(int width) const;
 
+    int offset() const;
+
 public slots:
     void setBuffer(IrcBuffer* buffer);
     void setTopic(const QString& topic);
 
+    void expand();
+    void collapse();
+    void setOffset(int offset);
+
 signals:
+    void offsetChanged(int offset);
     void bufferChanged(IrcBuffer* buffer);
 
 protected:
@@ -58,6 +66,8 @@ private slots:
     void edit();
 
 private:
+    int topMargin() const;
+
     struct Private {
         IrcBuffer* buffer;
         QTextEdit* editor;

@@ -15,6 +15,7 @@
 #include "titlebar.h"
 #include "messageformatter.h"
 #include <QStyleOptionHeader>
+#include <QPropertyAnimation>
 #include <QStylePainter>
 #include <IrcTextFormat>
 #include <QApplication>
@@ -55,6 +56,8 @@ TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
     setWordWrap(true);
     setOpenExternalLinks(true);
     setTextFormat(Qt::RichText);
+    setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    setContentsMargins(0, topMargin(), 0, 0);
 
 #ifdef Q_OS_MAC
     QFont font;
@@ -94,6 +97,34 @@ QSize TitleBar::minimumSizeHint() const
 int TitleBar::heightForWidth(int width) const
 {
     return qMax(minimumSizeHint().height(), QLabel::heightForWidth(width));
+}
+
+int TitleBar::offset() const
+{
+    return height() - minimumSizeHint().height();
+}
+
+void TitleBar::setOffset(int offset)
+{
+    resize(width(), minimumSizeHint().height() + offset);
+}
+
+void TitleBar::expand()
+{
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "offset");
+    animation->setDuration(50);
+    animation->setStartValue(offset());
+    animation->setEndValue(QLabel::heightForWidth(width()) - minimumSizeHint().height());
+    animation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void TitleBar::collapse()
+{
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "offset");
+    animation->setDuration(50);
+    animation->setStartValue(offset());
+    animation->setEndValue(0);
+    animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 IrcBuffer* TitleBar::buffer() const
@@ -150,10 +181,22 @@ void TitleBar::setTopic(const QString& topic)
 
 bool TitleBar::event(QEvent* event)
 {
-    if (event->type() == QEvent::ActionAdded)
+    switch (event->type()) {
+    case QEvent::Enter:
+        expand();
+        break;
+    case QEvent::Leave:
+        collapse();
+        break;
+    case QEvent::ActionAdded:
         d.menuButton->menu()->addAction(static_cast<QActionEvent*>(event)->action());
-    else if (event->type() == QEvent::ActionRemoved)
+        break;
+    case QEvent::ActionRemoved:
         d.menuButton->menu()->removeAction(static_cast<QActionEvent*>(event)->action());
+        break;
+    default:
+        break;
+    }
     return QLabel::event(event);
 }
 
@@ -205,6 +248,7 @@ void TitleBar::resizeEvent(QResizeEvent* event)
 {
     relayout();
     QLabel::resizeEvent(event);
+    emit offsetChanged(offset());
 }
 
 void TitleBar::relayout()
@@ -217,7 +261,7 @@ void TitleBar::relayout()
     option.initFrom(this);
     option.rect.setRight(r.left() - 1);
     QRect ser = style()->subElementRect(QStyle::SE_HeaderLabel, &option, this);
-    setContentsMargins(ser.x(), ser.y(), width() - ser.x() - ser.width(), height() - ser.y() - ser.height());
+    setContentsMargins(ser.x(), topMargin() + ser.y(), width() - ser.x() - ser.width(), height() - ser.y() - ser.height());
 }
 
 void TitleBar::cleanup()
@@ -254,4 +298,9 @@ void TitleBar::edit()
         d.editor->setFocus();
         d.editor->show();
     }
+}
+
+int TitleBar::topMargin() const
+{
+    return fontMetrics().boundingRect(0, 0, width(), minimumSizeHint().height(), Qt::AlignCenter, "...").top() + 1;
 }
