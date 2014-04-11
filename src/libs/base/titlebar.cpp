@@ -188,12 +188,6 @@ bool TitleBar::event(QEvent* event)
     case QEvent::Leave:
         collapse();
         break;
-    case QEvent::ActionAdded:
-        d.menuButton->menu()->addAction(static_cast<QActionEvent*>(event)->action());
-        break;
-    case QEvent::ActionRemoved:
-        d.menuButton->menu()->removeAction(static_cast<QActionEvent*>(event)->action());
-        break;
     default:
         break;
     }
