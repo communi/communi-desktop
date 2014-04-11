@@ -15,6 +15,7 @@
 #ifndef TREEWIDGET_H
 #define TREEWIDGET_H
 
+#include <QTime>
 #include <QHash>
 #include <QQueue>
 #include <QPointer>
@@ -122,8 +123,10 @@ private:
         bool blink;
         QVariantMap sorting;
         bool sortingBlocked;
-        QTreeWidgetItem* source;
+        QTime pressedTime;
+        QPoint pressedPoint;
         QStringList parentOrder;
+        QTreeWidgetItem* pressedItem;
         QHashStringList childrenOrders;
         QList<IrcConnection*> connections;
         QQueue<QPointer<TreeItem> > resetBadges;

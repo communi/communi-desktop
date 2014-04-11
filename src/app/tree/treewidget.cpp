@@ -38,7 +38,7 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
     d.block = false;
     d.blink = false;
-    d.source = 0;
+    d.pressedItem = 0;
     d.sortingBlocked = false;
 
     qRegisterMetaType<TreeItem*>();
@@ -331,18 +331,27 @@ void TreeWidget::contextMenuEvent(QContextMenuEvent* event)
 
 void TreeWidget::mousePressEvent(QMouseEvent* event)
 {
-    d.source = itemAt(event->pos());
+    d.pressedTime.start();
+    d.pressedPoint = event->pos();
     QTreeWidget::mousePressEvent(event);
 }
 
 void TreeWidget::mouseMoveEvent(QMouseEvent* event)
 {
-    QTreeWidgetItem* target = itemAt(event->pos());
-    if (target && d.source != target) {
-        QTreeWidgetItem* parent = target->parent();
-        if (parent == d.source->parent()) {
-            setSortingBlocked(true);
-            swapItems(d.source, target);
+    if (!d.pressedItem) {
+        int time = d.pressedTime.elapsed();
+        int distance = QPoint(event->pos() - d.pressedPoint).manhattanLength();
+        if (time >= QApplication::startDragTime() && distance >= QApplication::startDragDistance())
+            d.pressedItem = itemAt(event->pos());
+    }
+    if (d.pressedItem) {
+        QTreeWidgetItem* target = itemAt(event->pos());
+        if (target && d.pressedItem != target) {
+            QTreeWidgetItem* parent = target->parent();
+            if (parent == d.pressedItem->parent()) {
+                setSortingBlocked(true);
+                swapItems(d.pressedItem, target);
+            }
         }
     }
     QTreeWidget::mouseMoveEvent(event);
@@ -350,12 +359,12 @@ void TreeWidget::mouseMoveEvent(QMouseEvent* event)
 
 void TreeWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-    if (d.source && isSortingBlocked()) {
+    if (d.pressedItem && isSortingBlocked()) {
         initSortOrder();
         saveSortOrder();
     }
     setSortingBlocked(false);
-    d.source = 0;
+    d.pressedItem = 0;
     QTreeWidget::mouseReleaseEvent(event);
 }
 
