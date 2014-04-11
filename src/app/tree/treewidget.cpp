@@ -553,9 +553,6 @@ void TreeWidget::updateHighlight(QTreeWidgetItem* item)
         const bool hilite = d.blink && d.highlightedItems.contains(item);
         item->setData(0, TreeRole::Highlight, hilite);
         item->setData(1, TreeRole::Highlight, hilite);
-        TreeItem* pi = ti->parentItem();
-        if (pi)
-            pi->setData(0, TreeRole::Highlight, hilite && !pi->isExpanded());
     }
 }
 
