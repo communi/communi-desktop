@@ -296,5 +296,9 @@ void TitleBar::edit()
 
 int TitleBar::topMargin() const
 {
+#ifdef Q_OS_MAC
     return fontMetrics().boundingRect(0, 0, width(), minimumSizeHint().height(), Qt::AlignCenter, "...").top() + 1;
+#else
+    return 0;
+#endif
 }
