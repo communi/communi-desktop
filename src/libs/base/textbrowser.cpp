@@ -79,11 +79,10 @@ void TextBrowser::setDocument(TextDocument* document)
             document->setDefaultFont(font());
             connect(document->documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(keepAtBottom()));
         }
-        setUpdatesEnabled(false);
+        connect(this, SIGNAL(textChanged()), this, SLOT(moveCursorToBottom()));
         QTextBrowser::setDocument(document);
+        disconnect(this, SIGNAL(textChanged()), this, SLOT(moveCursorToBottom()));
         scrollToBottom();
-        setUpdatesEnabled(true);
-        repaint();
         emit documentChanged(document);
     }
 }
@@ -253,6 +252,13 @@ void TextBrowser::keepAtBottom()
 {
     if (isAtBottom())
         QMetaObject::invokeMethod(this, "scrollToBottom", Qt::QueuedConnection);
+}
+
+void TextBrowser::moveCursorToBottom()
+{
+    QTextCursor cursor = textCursor();
+    cursor.movePosition(QTextCursor::End);
+    setTextCursor(cursor);
 }
 
 void TextBrowser::moveShadow(int offset)
