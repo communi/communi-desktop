@@ -337,8 +337,8 @@ void ChatPage::setupDocument(TextDocument* document)
 //    document->formatter()->setStripNicks(!d.showDetails);
 
     if (!document->isClone()) {
-        connect(document, SIGNAL(messageMissed(IrcMessage*)), this, SIGNAL(messageMissed(IrcMessage*)));
         connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SIGNAL(messageHighlighted(IrcMessage*)));
+        connect(document, SIGNAL(privateMessageReceived(IrcMessage*)), this, SIGNAL(privateMessageReceived(IrcMessage*)));
     }
 }
 

@@ -381,8 +381,8 @@ void TextDocument::receiveMessage(IrcMessage* message)
             if (contains) {
                 addHighlight(totalCount() - 1);
                 emit messageHighlighted(message);
-            } else if (!d.visible && message->property("private").toBool()) {
-                emit messageMissed(message);
+            } else if (message->property("private").toBool()) {
+                emit privateMessageReceived(message);
             }
         }
     }

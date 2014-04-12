@@ -80,8 +80,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     connect(shortcut, SIGNAL(activated()), d.chatPage, SLOT(closeBuffer()));
 
     d.dock = new Dock(this);
-    connect(d.chatPage, SIGNAL(messageMissed(IrcMessage*)), d.dock, SLOT(alert(IrcMessage*)));
     connect(d.chatPage, SIGNAL(messageHighlighted(IrcMessage*)), d.dock, SLOT(alert(IrcMessage*)));
+    connect(d.chatPage, SIGNAL(privateMessageReceived(IrcMessage*)), d.dock, SLOT(alert(IrcMessage*)));
 
 #ifdef Q_OS_MAC
     QMenu* menu = new QMenu(this);
