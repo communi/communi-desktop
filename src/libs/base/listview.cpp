@@ -26,6 +26,7 @@
 ListView::ListView(QWidget* parent) : QListView(parent)
 {
     setFocusPolicy(Qt::NoFocus);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     d.model = new IrcUserModel(this);
     d.model->setSortMethod(Irc::SortByTitle);
