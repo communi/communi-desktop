@@ -203,7 +203,7 @@ void TextDocument::beginLowlight()
 
 void TextDocument::endLowlight()
 {
-    d.lowlights.insert(d.lowlight, totalCount());
+    d.lowlights.insert(d.lowlight, totalCount() - 1);
     d.lowlight = -1;
 }
 
@@ -295,7 +295,9 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
         QMap<int, int>::const_iterator it;
         for (it = d.lowlights.begin(); it != d.lowlights.end(); ++it) {
             const QTextBlock from = findBlockByNumber(it.key());
-            const QTextBlock to = findBlockByNumber(it.value());
+            QTextBlock to = findBlockByNumber(it.value());
+            if (!to.isValid())
+                to = lastBlock();
             if (from.isValid() && to.isValid()) {
                 const QRect fr = layout->blockBoundingRect(from).toAlignedRect();
                 const QRect tr = layout->blockBoundingRect(to).toAlignedRect();
@@ -308,7 +310,7 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
                     }
                     if (atBottom)
                         br.setBottom(bounds.bottom() + 1);
-                    br.adjust(-margin - 1, 0, margin + 1, 0);
+                    br.adjust(-margin - 1, 0, margin + 1, 2);
                     painter->translate(br.topLeft());
                     lowlightFrame->setGeometry(br);
                     lowlightFrame->render(painter);
