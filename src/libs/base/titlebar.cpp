@@ -158,6 +158,7 @@ void TitleBar::setBuffer(IrcBuffer* buffer)
             }
             connect(d.buffer, SIGNAL(titleChanged(QString)), this, SLOT(refresh()));
         }
+        collapse();
         refresh();
     }
 }
