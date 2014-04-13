@@ -27,20 +27,28 @@ void ZncPlugin::connectionAdded(IrcConnection* connection)
 {
     ZncManager* manager = new ZncManager(connection);
     manager->setModel(connection->findChild<IrcBufferModel*>());
-    // TODO: connect(manager, SIGNAL(playbackBegin(IrcBuffer*)), this, SLOT(onPlaybackBegin(IrcBuffer*)));
-    // TODO: connect(manager, SIGNAL(playbackEnd(IrcBuffer*)), this, SLOT(onPlaybackEnd(IrcBuffer*)));
+    connect(manager, SIGNAL(playbackBegin(IrcBuffer*)), this, SLOT(onPlaybackBegin(IrcBuffer*)));
+    connect(manager, SIGNAL(playbackEnd(IrcBuffer*)), this, SLOT(onPlaybackEnd(IrcBuffer*)));
+}
+
+void ZncPlugin::documentAdded(TextDocument* document)
+{
+    d.documents.insert(document->buffer(), document);
+}
+
+void ZncPlugin::documentRemoved(TextDocument* document)
+{
+    d.documents.remove(document->buffer(), document);
 }
 
 void ZncPlugin::onPlaybackBegin(IrcBuffer* buffer)
 {
-    QList<TextDocument*> documents = buffer->findChildren<TextDocument*>();
-    foreach (TextDocument* doc, documents)
+    foreach (TextDocument* doc, d.documents.values(buffer))
         doc->beginLowlight();
 }
 
 void ZncPlugin::onPlaybackEnd(IrcBuffer* buffer)
 {
-    QList<TextDocument*> documents = buffer->findChildren<TextDocument*>();
-    foreach (TextDocument* doc, documents)
+    foreach (TextDocument* doc, d.documents.values(buffer))
         doc->endLowlight();
 }
