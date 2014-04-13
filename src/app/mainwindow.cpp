@@ -132,7 +132,7 @@ void MainWindow::restoreState()
 
     foreach (const QVariant& v, settings.value("connections").toList()) {
         QVariantMap state = v.toMap();
-        IrcConnection* connection = new IrcConnection(this);
+        IrcConnection* connection = new IrcConnection(d.chatPage);
         connection->restoreState(state.value("connection").toByteArray());
         addConnection(connection);
         if (state.contains("model") && connection->isEnabled()) {
@@ -273,7 +273,7 @@ void MainWindow::onConnectAccepted()
 {
     ConnectPage* page = qobject_cast<ConnectPage*>(sender());
     if (page) {
-        IrcConnection* connection = new IrcConnection(this);
+        IrcConnection* connection = new IrcConnection(d.chatPage);
         connection->setHost(page->host());
         connection->setPort(page->port());
         connection->setSecure(page->isSecure());

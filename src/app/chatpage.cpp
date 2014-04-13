@@ -174,6 +174,16 @@ void ChatPage::restoreState(const QByteArray& data)
         QSplitter::restoreState(state.value("splitter").toByteArray());
     if (state.contains("views"))
         d.splitView->restoreState(state.value("views").toByteArray());
+
+    // restore server buffers
+    QList<IrcConnection*> connections = findChildren<IrcConnection*>();
+    foreach (IrcConnection* connection, connections) {
+        IrcBufferModel* model = connection->findChild<IrcBufferModel*>();
+        if (model) {
+            foreach (IrcBuffer* buffer, model->buffers())
+                d.splitView->addBuffer(buffer);
+        }
+    }
 }
 
 bool ChatPage::commandFilter(IrcCommand* command)
