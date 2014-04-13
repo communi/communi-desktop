@@ -264,8 +264,11 @@ void TextDocument::drawForeground(QPainter* painter, const QRect& bounds)
         QTextBlock block = findBlockByNumber(d.ub);
         if (block.isValid()) {
             QRect br = documentLayout()->blockBoundingRect(block).toAlignedRect();
-            if (bounds.intersects(br))
-                painter->drawLine(br.topLeft(), br.topRight());
+            if (bounds.intersects(br)) {
+                QLine line(br.topLeft(), br.topRight());
+                line.translate(0, -2);
+                painter->drawLine(line);
+            }
         }
         painter->setPen(oldPen);
         painter->setBrush(oldBrush);
