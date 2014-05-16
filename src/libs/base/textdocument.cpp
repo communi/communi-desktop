@@ -418,11 +418,13 @@ void TextDocument::appendLine(QTextCursor& cursor, TextBlockData* line)
             const int diff = max - count + 1;
             if (d.ub > 0)
                 d.ub -= diff;
-            QList<int>::iterator i;
-            for (i = d.highlights.begin(); i != d.highlights.end(); ++i) {
-                *i -= diff;
-                if (*i < 0)
-                    i = d.highlights.erase(i);
+            QList<int>::iterator it = d.highlights.begin();
+            while (it != d.highlights.end()) {
+                *it -= diff;
+                if (*it < 0)
+                    it = d.highlights.erase(it);
+                else
+                    ++it;
             }
             QMap<int, int> ll;
             QMap<int, int>::const_iterator j;
