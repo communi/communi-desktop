@@ -281,6 +281,7 @@ void TextBrowser::onAnchorClicked(const QUrl& url)
     else
         QDesktopServices::openUrl(url);
     clearFocus();
+    d.bud->setFocus();
 }
 
 void TextBrowser::onWhoisTriggered()
