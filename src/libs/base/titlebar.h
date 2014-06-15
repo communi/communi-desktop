@@ -39,6 +39,7 @@ public:
     int heightForWidth(int width) const;
 
     int offset() const;
+    int baseOffset() const;
 
 public slots:
     void setBuffer(IrcBuffer* buffer);
@@ -69,6 +70,7 @@ private:
     int topMargin() const;
 
     struct Private {
+        int baseOffset;
         IrcBuffer* buffer;
         QTextEdit* editor;
         QToolButton* menuButton;

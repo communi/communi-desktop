@@ -50,6 +50,7 @@ protected:
 TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
 {
     d.buffer = 0;
+    d.baseOffset = -1;
     d.editor = new QTextEdit(this);
     d.formatter = new MessageFormatter(this);
 
@@ -57,7 +58,6 @@ TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
     setOpenExternalLinks(true);
     setTextFormat(Qt::RichText);
     setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    setContentsMargins(0, topMargin(), 0, 0);
 
 #ifdef Q_OS_MAC
     QFont font;
@@ -78,6 +78,7 @@ TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
     d.menuButton->setPopupMode(QToolButton::InstantPopup);
     d.menuButton->adjustSize();
 
+    adjustSize();
     relayout();
 }
 
@@ -99,9 +100,14 @@ int TitleBar::heightForWidth(int width) const
     return qMax(minimumSizeHint().height(), QLabel::heightForWidth(width));
 }
 
+int TitleBar::baseOffset() const
+{
+    return d.baseOffset;
+}
+
 int TitleBar::offset() const
 {
-    return height() - minimumSizeHint().height();
+    return height() - minimumSizeHint().height() - d.baseOffset;
 }
 
 void TitleBar::setOffset(int offset)
@@ -241,6 +247,9 @@ void TitleBar::paintEvent(QPaintEvent* event)
 
 void TitleBar::resizeEvent(QResizeEvent* event)
 {
+    if (d.baseOffset == -1)
+        d.baseOffset = QLabel::heightForWidth(-1) - minimumSizeHint().height();
+
     relayout();
     QLabel::resizeEvent(event);
     emit offsetChanged(offset());

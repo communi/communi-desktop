@@ -61,7 +61,6 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     layout->setStretchFactor(d.splitter, 1);
 
     connect(d.titleBar, SIGNAL(offsetChanged(int)), d.textBrowser, SLOT(moveShadow(int)));
-    layout->setContentsMargins(0, d.titleBar->minimumSizeHint().height(), 0, 0);
     d.titleBar->raise();
 
     d.splitter->addWidget(d.textBrowser);
@@ -150,7 +149,9 @@ void BufferView::closeBuffer()
 void BufferView::resizeEvent(QResizeEvent* event)
 {
     QWidget::resizeEvent(event);
-    d.titleBar->resize(width(), d.titleBar->minimumSizeHint().height());
+    int tbh = d.titleBar->minimumSizeHint().height();
+    d.titleBar->resize(width(), tbh);
+    layout()->setContentsMargins(0, tbh + d.titleBar->baseOffset(), 0, 0);
 }
 
 void BufferView::query(const QString& user)
