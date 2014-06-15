@@ -411,10 +411,15 @@ void TextDocument::appendLine(QTextCursor& cursor, TextBlockData* line)
 {
     const int count = blockCount();
     cursor.movePosition(QTextCursor::End);
+
     if (!isEmpty()) {
         const int max = maximumBlockCount();
+        const QRectF br = documentLayout()->blockBoundingRect(findBlockByNumber(0));
         cursor.insertBlock();
+
         if (count >= max) {
+            emit lineRemoved(qRound(br.bottom()));
+
             const int diff = max - count + 1;
             if (d.ub > 0)
                 d.ub -= diff;
@@ -445,7 +450,7 @@ void TextDocument::appendLine(QTextCursor& cursor, TextBlockData* line)
     block.setUserData(line);
 
     QTextBlockFormat format = cursor.blockFormat();
-    format.setLineHeight(130, QTextBlockFormat::ProportionalHeight);
+    format.setLineHeight(125, QTextBlockFormat::ProportionalHeight);
     cursor.setBlockFormat(format);
 
     if (d.ub == -1 && !d.visible)

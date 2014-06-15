@@ -73,11 +73,13 @@ void TextBrowser::setDocument(TextDocument* document)
         if (doc) {
             doc->setVisible(false);
             disconnect(doc->documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(keepAtBottom()));
+            disconnect(doc, SIGNAL(lineRemoved(int)), this, SLOT(keepPosition(int)));
         }
         if (document) {
             document->setVisible(true);
             document->setDefaultFont(font());
             connect(document->documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(keepAtBottom()));
+            connect(document, SIGNAL(lineRemoved(int)), this, SLOT(keepPosition(int)));
         }
         connect(this, SIGNAL(textChanged()), this, SLOT(moveCursorToBottom()));
         QTextBrowser::setDocument(document);
@@ -252,6 +254,12 @@ void TextBrowser::keepAtBottom()
 {
     if (isAtBottom())
         QMetaObject::invokeMethod(this, "scrollToBottom", Qt::QueuedConnection);
+}
+
+void TextBrowser::keepPosition(int delta)
+{
+    if (!isAtBottom())
+        verticalScrollBar()->setValue(verticalScrollBar()->value() - delta);
 }
 
 void TextBrowser::moveCursorToBottom()

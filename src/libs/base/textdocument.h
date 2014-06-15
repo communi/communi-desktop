@@ -65,6 +65,7 @@ public slots:
     void receiveMessage(IrcMessage* message);
 
 signals:
+    void lineRemoved(int height);
     void messageReceived(IrcMessage* message);
     void messageHighlighted(IrcMessage* message);
     void privateMessageReceived(IrcMessage* message);
