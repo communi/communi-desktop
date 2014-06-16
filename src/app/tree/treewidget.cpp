@@ -528,7 +528,7 @@ void TreeWidget::swapItems(QTreeWidgetItem* source, QTreeWidgetItem* target)
 
 void TreeWidget::highlightItem(QTreeWidgetItem* item)
 {
-    if (item && !d.highlightedItems.contains(item)) {
+    if (item && item->parent() && !d.highlightedItems.contains(item)) {
         if (d.highlightedItems.isEmpty())
             SharedTimer::instance()->registerReceiver(this, "blinkItems");
         d.highlightedItems.insert(item);
@@ -538,7 +538,7 @@ void TreeWidget::highlightItem(QTreeWidgetItem* item)
 
 void TreeWidget::unhighlightItem(QTreeWidgetItem* item)
 {
-    if (item && d.highlightedItems.contains(item)) {
+    if (item && item->parent() && d.highlightedItems.contains(item)) {
         d.highlightedItems.remove(item);
         if (d.highlightedItems.isEmpty())
             SharedTimer::instance()->unregisterReceiver(this, "blinkItems");
