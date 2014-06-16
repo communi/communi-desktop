@@ -35,8 +35,13 @@ Dock::Dock(MainWindow* window) : QObject(window)
     d.blink = false;
     d.blinking = false;
     d.window = window;
+    d.active = false;
 
     connect(window, SIGNAL(activated()), this, SLOT(onWindowActivated()));
+    connect(window, SIGNAL(screenLocked()), this, SLOT(activateAlert()));
+    connect(window, SIGNAL(screenUnlocked()), this, SLOT(deactivateAlert()));
+    connect(window, SIGNAL(screenSaverStarted()), this, SLOT(activateAlert()));
+    connect(window, SIGNAL(screenSaverStopped()), this, SLOT(deactivateAlert()));
     connect(window, SIGNAL(connectionAdded(IrcConnection*)), this, SLOT(onConnectionAdded(IrcConnection*)));
     connect(window, SIGNAL(connectionRemoved(IrcConnection*)), this, SLOT(onConnectionRemoved(IrcConnection*)));
 
@@ -91,7 +96,7 @@ Dock::Dock(MainWindow* window) : QObject(window)
 
 void Dock::alert(IrcMessage* message)
 {
-    if (!d.window->isActiveWindow()) {
+    if (!d.window->isActiveWindow() || d.active) {
         QApplication::alert(d.window);
         if (d.alert && (!d.mute || !d.mute->isChecked()))
             d.alert->play();
@@ -139,6 +144,16 @@ void Dock::updateTray()
         d.tray->setIcon(d.blinking && d.blink ? d.alertIcon : online ? d.onlineIcon : d.offlineIcon);
         d.blink = !d.blink;
     }
+}
+
+void Dock::activateAlert()
+{
+    d.active = true;
+}
+
+void Dock::deactivateAlert()
+{
+    d.active = false;
 }
 
 void Dock::onWindowActivated()

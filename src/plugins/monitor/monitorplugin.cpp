@@ -14,10 +14,23 @@
 
 #include "monitorplugin.h"
 #include "systemmonitor.h"
+#include "bufferview.h"
 #include <IrcConnection>
 
 MonitorPlugin::MonitorPlugin(QObject* parent) : QObject(parent)
 {
+}
+
+void MonitorPlugin::viewAdded(BufferView* view)
+{
+    if (!window) {
+        window = view->window();
+        SystemMonitor* monitor = new SystemMonitor(window);
+        connect(monitor, SIGNAL(screenLocked()), window, SIGNAL(screenLocked()));
+        connect(monitor, SIGNAL(screenUnlocked()), window, SIGNAL(screenUnlocked()));
+        connect(monitor, SIGNAL(screenSaverStarted()), window, SIGNAL(screenSaverStarted()));
+        connect(monitor, SIGNAL(screenSaverStopped()), window, SIGNAL(screenSaverStopped()));
+    }
 }
 
 void MonitorPlugin::connectionAdded(IrcConnection* connection)

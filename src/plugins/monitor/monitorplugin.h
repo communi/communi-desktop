@@ -17,18 +17,25 @@
 
 #include <QObject>
 #include <QtPlugin>
+#include <QPointer>
+#include "viewplugin.h"
 #include "connectionplugin.h"
 
-class MonitorPlugin : public QObject, public ConnectionPlugin
+class MonitorPlugin : public QObject, public ViewPlugin, public ConnectionPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(ConnectionPlugin)
+    Q_INTERFACES(ViewPlugin ConnectionPlugin)
+    Q_PLUGIN_METADATA(IID "Communi.ViewPlugin")
     Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
 
 public:
     MonitorPlugin(QObject* parent = 0);
 
+    void viewAdded(BufferView*);
     void connectionAdded(IrcConnection* connection);
+
+private:
+    QPointer<QWidget> window;
 };
 
 #endif // MONITORPLUGIN_H

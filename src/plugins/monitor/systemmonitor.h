@@ -32,6 +32,10 @@ signals:
     void sleep();
     void online();
     void offline();
+    void screenLocked();
+    void screenUnlocked();
+    void screenSaverStarted();
+    void screenSaverStopped();
 
 protected:
     void initialize();

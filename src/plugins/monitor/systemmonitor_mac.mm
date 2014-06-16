@@ -46,6 +46,18 @@ public:
         [[NSNotificationCenter defaultCenter] addObserver: self
             selector: @selector(receiveNetworkNote:)
             name: kReachabilityChangedNotification object: nil];
+        [[NSDistributedNotificationCenter defaultCenter] addObserver: self
+            selector: @selector(receiveScreenLockNote:)
+            name: @"com.apple.screenIsLocked" object: nil];
+        [[NSDistributedNotificationCenter defaultCenter] addObserver: self
+            selector: @selector(receiveScreenUnlockNote:)
+            name: @"com.apple.screenIsUnlocked" object: nil];
+        [[NSDistributedNotificationCenter defaultCenter] addObserver: self
+            selector: @selector(receiveScreenSaverStartNote:)
+            name: @"com.apple.screensaver.didstart" object: nil];
+        [[NSDistributedNotificationCenter defaultCenter] addObserver: self
+            selector: @selector(receiveScreenSaverStopNote:)
+            name: @"com.apple.screensaver.didstop" object: nil];
     }
     return self;
 }
@@ -62,12 +74,36 @@ public:
     QMetaObject::invokeMethod(monitor, "wake");
 }
 
-- (void) receiveNetworkNote: (NSNotification* )note
+- (void) receiveNetworkNote: (NSNotification*) note
 {
     Reachability* reachability = [note object];
     NSParameterAssert([reachability isKindOfClass: [Reachability class]]);
     BOOL offline = [reachability connectionRequired];
     QMetaObject::invokeMethod(monitor, offline ? "offline" : "online");
+}
+
+- (void) receiveScreenLockNote: (NSNotification*) note
+{
+    Q_UNUSED(note);
+    QMetaObject::invokeMethod(monitor, "screenLocked");
+}
+
+- (void) receiveScreenUnlockNote: (NSNotification*) note
+{
+    Q_UNUSED(note);
+    QMetaObject::invokeMethod(monitor, "screenUnlocked");
+}
+
+- (void) receiveScreenSaverStartNote: (NSNotification*) note
+{
+    Q_UNUSED(note);
+    QMetaObject::invokeMethod(monitor, "screenSaverStarted");
+}
+
+- (void) receiveScreenSaverStopNote: (NSNotification*) note
+{
+    Q_UNUSED(note);
+    QMetaObject::invokeMethod(monitor, "screenSaverStopped");
 }
 @end
 

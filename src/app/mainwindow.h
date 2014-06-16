@@ -45,6 +45,11 @@ public slots:
 
 signals:
     void activated();
+    void screenLocked();
+    void screenUnlocked();
+    void screenSaverStarted();
+    void screenSaverStopped();
+
     void currentViewChanged(BufferView* view);
     void connectionAdded(IrcConnection* connection);
     void connectionRemoved(IrcConnection* connection);

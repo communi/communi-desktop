@@ -42,6 +42,9 @@ private slots:
     void updateBadge();
     void updateTray();
 
+    void activateAlert();
+    void deactivateAlert();
+
     void onWindowActivated();
     void onMuteToggled(bool mute);
     void onTrayActivated(QSystemTrayIcon::ActivationReason reason);
@@ -58,6 +61,7 @@ private:
         QtDockTile* dock;
         QAction* mute;
         Alert* alert;
+        bool active;
     } d;
 };
 
