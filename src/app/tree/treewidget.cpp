@@ -684,6 +684,9 @@ void TreeWidget::restoreSortOrder()
 QMenu* TreeWidget::createContextMenu(TreeItem* item)
 {
     QMenu* menu = new QMenu(this);
+    menu->addAction(item->text(0))->setEnabled(false);
+    menu->addSeparator();
+
     connect(item, SIGNAL(destroyed(TreeItem*)), menu, SLOT(deleteLater()));
 
     const bool child = item->parentItem();
@@ -691,21 +694,16 @@ QMenu* TreeWidget::createContextMenu(TreeItem* item)
     const bool active = item->buffer()->isActive();
     const bool channel = item->buffer()->isChannel();
 
-    if (connected) {
-        QAction* disconnectAction = menu->addAction(tr("Disconnect"));
-        connect(disconnectAction, SIGNAL(triggered()), item->connection(), SLOT(setDisabled()));
-        connect(disconnectAction, SIGNAL(triggered()), item->connection(), SLOT(quit()));
-    } else {
-        QAction* reconnectAction = menu->addAction(tr("Reconnect"));
-        connect(reconnectAction, SIGNAL(triggered()), item->connection(), SLOT(setEnabled()));
-        connect(reconnectAction, SIGNAL(triggered()), item->connection(), SLOT(open()));
-    }
-    menu->addSeparator();
-
     if (!child) {
-        QAction* editAction = menu->addAction(tr("Edit"), this, SLOT(onEditTriggered()));
-        editAction->setData(QVariant::fromValue(item));
-        editAction->setEnabled(!connected);
+        if (connected) {
+            QAction* disconnectAction = menu->addAction(tr("Disconnect"));
+            connect(disconnectAction, SIGNAL(triggered()), item->connection(), SLOT(setDisabled()));
+            connect(disconnectAction, SIGNAL(triggered()), item->connection(), SLOT(quit()));
+        } else {
+            QAction* reconnectAction = menu->addAction(tr("Reconnect"));
+            connect(reconnectAction, SIGNAL(triggered()), item->connection(), SLOT(setEnabled()));
+            connect(reconnectAction, SIGNAL(triggered()), item->connection(), SLOT(open()));
+        }
     }
 
     if (connected && child) {
@@ -719,10 +717,16 @@ QMenu* TreeWidget::createContextMenu(TreeItem* item)
         action->setData(QVariant::fromValue(item));
     }
 
-    menu->addSeparator();
     QAction* closeAction = menu->addAction(tr("Close"), this, SLOT(onCloseTriggered()), QKeySequence::Close);
     closeAction->setShortcutContext(Qt::WidgetShortcut);
     closeAction->setData(QVariant::fromValue(item));
+
+    if (!child) {
+        menu->addSeparator();
+        QAction* editAction = menu->addAction(tr("Edit"), this, SLOT(onEditTriggered()));
+        editAction->setData(QVariant::fromValue(item));
+        editAction->setEnabled(!connected);
+    }
 
     return menu;
 }
