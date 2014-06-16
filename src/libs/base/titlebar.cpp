@@ -248,7 +248,7 @@ void TitleBar::paintEvent(QPaintEvent* event)
 void TitleBar::resizeEvent(QResizeEvent* event)
 {
     if (d.baseOffset == -1)
-        d.baseOffset = QLabel::heightForWidth(-1) - minimumSizeHint().height();
+        d.baseOffset = qMax(0, QLabel::heightForWidth(-1) - minimumSizeHint().height());
 
     relayout();
     QLabel::resizeEvent(event);
