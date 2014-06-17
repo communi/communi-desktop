@@ -13,6 +13,7 @@
 */
 
 #include "systemmonitor.h"
+#include "win/screenmonitor.h"
 #include "win/networkmonitor.h"
 
 #include <qt_windows.h>
@@ -46,6 +47,7 @@ public:
 
     SystemMonitor* monitor;
     NetworkMonitor network;
+    ScreenMonitor screen;
 };
 
 void SystemMonitor::initialize()
@@ -55,6 +57,11 @@ void SystemMonitor::initialize()
 
     connect(&d->network, SIGNAL(online()), this, SIGNAL(online()));
     connect(&d->network, SIGNAL(offline()), this, SIGNAL(offline()));
+
+    connect(&d->screen, SIGNAL(screenLocked()), this, SIGNAL(screenLocked()));
+    connect(&d->screen, SIGNAL(screenUnlocked()), this, SIGNAL(screenUnlocked()));
+    connect(&d->screen, SIGNAL(screenSaverStarted()), this, SIGNAL(screenSaverStarted()));
+    connect(&d->screen, SIGNAL(screenSaverStopped()), this, SIGNAL(screenSaverStopped()));
 }
 
 void SystemMonitor::uninitialize()

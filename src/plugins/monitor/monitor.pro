@@ -21,7 +21,9 @@ mac {
     DEFINES += _WIN32_WINNT=0x0600
     HEADERS += $$PWD/win/netlistmgr_util.h
     HEADERS += $$PWD/win/networkmonitor.h
+    HEADERS += $$PWD/win/screenmonitor.h
     SOURCES += $$PWD/win/networkmonitor.cpp
+    SOURCES += $$PWD/win/screenmonitor.cpp
     SOURCES += $$PWD/systemmonitor_win.cpp
     LIBS += -lole32 -luuid
 } else:unix {
