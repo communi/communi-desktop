@@ -135,6 +135,8 @@ void Finder::cancelBrowserSearch(BufferView* view)
         AbstractFinder* finder = view->textBrowser()->findChild<BrowserFinder*>();
         if (finder)
             finder->animateHide();
+        view->textBrowser()->moveCursorToBottom();
+        view->textBrowser()->scrollToBottom();
         if (restoreFocus)
             view->textInput()->setFocus();
     }

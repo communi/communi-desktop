@@ -49,6 +49,7 @@ public slots:
     void scrollToBottom();
     void scrollToNextPage();
     void scrollToPreviousPage();
+    void moveCursorToBottom();
 
 signals:
     void queried(const QString& user);
@@ -63,7 +64,6 @@ protected:
 private slots:
     void keepAtBottom();
     void keepPosition(int delta);
-    void moveCursorToBottom();
     void moveShadow(int offset);
     void onAnchorClicked(const QUrl& url);
 
