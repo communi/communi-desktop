@@ -58,6 +58,16 @@ AbstractFinder::~AbstractFinder()
     emit destroyed(this);
 }
 
+QString AbstractFinder::text() const
+{
+    return d.lineEdit->text();
+}
+
+void AbstractFinder::setText(const QString& text)
+{
+    d.lineEdit->setText(text);
+}
+
 int AbstractFinder::offset() const
 {
     return d.offset;

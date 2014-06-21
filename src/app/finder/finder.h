@@ -41,12 +41,15 @@ public slots:
     void cancelBrowserSearch(BufferView* view = 0);
 
 private slots:
-    void startSearch(AbstractFinder* input);
+    void startSearch(AbstractFinder* input, const QString& text);
     void finderDestroyed(AbstractFinder* input);
 
 private:
     struct Private {
         ChatPage* page;
+        QString treeSearch;
+        QString listSearch;
+        QString browserSearch;
         QSet<AbstractFinder*> finders;
         QShortcut* nextShortcut;
         QShortcut* prevShortcut;

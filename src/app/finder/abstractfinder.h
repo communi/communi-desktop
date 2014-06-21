@@ -23,10 +23,14 @@ class AbstractFinder : public QWidget
     Q_OBJECT
     Q_PROPERTY(bool error READ hasError)
     Q_PROPERTY(int offset READ offset WRITE setOffset)
+    Q_PROPERTY(QString text READ text WRITE setText)
 
 public:
     explicit AbstractFinder(QWidget* parent);
     ~AbstractFinder();
+
+    QString text() const;
+    void setText(const QString& text);
 
     int offset() const;
     void setOffset(int offset);

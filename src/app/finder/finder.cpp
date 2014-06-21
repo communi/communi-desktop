@@ -56,7 +56,7 @@ void Finder::searchTree()
     cancelBrowserSearch();
     AbstractFinder* finder = d.page->treeWidget()->findChild<TreeFinder*>();
     if (!finder)
-        startSearch(new TreeFinder(d.page->treeWidget()));
+        startSearch(new TreeFinder(d.page->treeWidget()), d.treeSearch);
     else if (!finder->isAncestorOf(qApp->focusWidget()))
         finder->reFind();
 }
@@ -70,7 +70,7 @@ void Finder::searchList(BufferView* view)
         cancelBrowserSearch();
         AbstractFinder* finder = view->listView()->findChild<ListFinder*>();
         if (!finder)
-            startSearch(new ListFinder(view->listView()));
+            startSearch(new ListFinder(view->listView()), d.listSearch);
         else if (!finder->isAncestorOf(qApp->focusWidget()))
             finder->reFind();
     }
@@ -85,13 +85,13 @@ void Finder::searchBrowser(BufferView* view)
         cancelTreeSearch();
         AbstractFinder* finder = view->textBrowser()->findChild<BrowserFinder*>();
         if (!finder)
-            startSearch(new BrowserFinder(view->textBrowser()));
+            startSearch(new BrowserFinder(view->textBrowser()), d.browserSearch);
         else if (!finder->isAncestorOf(qApp->focusWidget()))
             finder->reFind();
     }
 }
 
-void Finder::startSearch(AbstractFinder* finder)
+void Finder::startSearch(AbstractFinder* finder, const QString& text)
 {
     connect(finder, SIGNAL(destroyed(AbstractFinder*)), this, SLOT(finderDestroyed(AbstractFinder*)));
     d.cancelShortcut->setEnabled(true);
@@ -99,14 +99,18 @@ void Finder::startSearch(AbstractFinder* finder)
 
     connect(d.nextShortcut, SIGNAL(activated()), finder, SLOT(findNext()));
     connect(d.prevShortcut, SIGNAL(activated()), finder, SLOT(findPrevious()));
+
+    finder->setText(text);
     finder->doFind();
 }
 
 void Finder::cancelTreeSearch()
 {
     AbstractFinder* finder = d.page->treeWidget()->findChild<TreeFinder*>();
-    if (finder)
+    if (finder) {
+        d.treeSearch = finder->text();
         finder->animateHide();
+    }
     BufferView* view = d.page->currentView();
     if (view)
         view->textInput()->setFocus();
@@ -119,8 +123,10 @@ void Finder::cancelListSearch(BufferView* view)
         view = d.page->currentView();
     if (view) {
         AbstractFinder* finder = view->listView()->findChild<ListFinder*>();
-        if (finder)
+        if (finder) {
+            d.listSearch = finder->text();
             finder->animateHide();
+        }
         if (restoreFocus)
             view->textInput()->setFocus();
     }
@@ -133,8 +139,10 @@ void Finder::cancelBrowserSearch(BufferView* view)
         view = d.page->currentView();
     if (view) {
         AbstractFinder* finder = view->textBrowser()->findChild<BrowserFinder*>();
-        if (finder)
+        if (finder) {
+            d.browserSearch = finder->text();
             finder->animateHide();
+        }
         view->textBrowser()->moveCursorToBottom();
         view->textBrowser()->scrollToBottom();
         if (restoreFocus)
