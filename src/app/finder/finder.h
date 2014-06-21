@@ -17,6 +17,7 @@
 
 #include <QSet>
 #include <QObject>
+#include <QPointer>
 #include <QShortcut>
 
 class ChatPage;
@@ -41,10 +42,15 @@ public slots:
     void cancelBrowserSearch(BufferView* view = 0);
 
 private slots:
+    void findAgain();
+    void findNext();
+    void findPrevious();
     void startSearch(AbstractFinder* input, const QString& text);
     void finderDestroyed(AbstractFinder* input);
 
 private:
+    enum SearchMode { NoSearch, TreeSearch, ListSearch, BrowserSearch };
+
     struct Private {
         ChatPage* page;
         QString treeSearch;
@@ -54,6 +60,8 @@ private:
         QShortcut* nextShortcut;
         QShortcut* prevShortcut;
         QShortcut* cancelShortcut;
+        SearchMode lastSearch;
+        QPointer<AbstractFinder> currentFinder;
     } d;
 };
 

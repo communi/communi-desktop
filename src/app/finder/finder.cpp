@@ -30,6 +30,7 @@ Finder::Finder(ChatPage* page) : QObject(page)
     d.page = page;
     d.nextShortcut = 0;
     d.prevShortcut = 0;
+    d.lastSearch = NoSearch;
 
     QShortcut* shortcut = new QShortcut(QKeySequence::Find, page);
     connect(shortcut, SIGNAL(activated()), this, SLOT(searchBrowser()));
@@ -48,12 +49,15 @@ Finder::Finder(ChatPage* page) : QObject(page)
 
     d.nextShortcut = new QShortcut(QKeySequence::FindNext, page);
     d.prevShortcut = new QShortcut(QKeySequence::FindPrevious, page);
+    connect(d.nextShortcut, SIGNAL(activated()), this, SLOT(findNext()));
+    connect(d.prevShortcut, SIGNAL(activated()), this, SLOT(findPrevious()));
 }
 
 void Finder::searchTree()
 {
     cancelListSearch();
     cancelBrowserSearch();
+    d.lastSearch = TreeSearch;
     AbstractFinder* finder = d.page->treeWidget()->findChild<TreeFinder*>();
     if (!finder)
         startSearch(new TreeFinder(d.page->treeWidget()), d.treeSearch);
@@ -68,6 +72,7 @@ void Finder::searchList(BufferView* view)
     if (view && view->listView()->isVisible()) {
         cancelTreeSearch();
         cancelBrowserSearch();
+        d.lastSearch = ListSearch;
         AbstractFinder* finder = view->listView()->findChild<ListFinder*>();
         if (!finder)
             startSearch(new ListFinder(view->listView()), d.listSearch);
@@ -83,6 +88,7 @@ void Finder::searchBrowser(BufferView* view)
     if (view && view->isVisible()) {
         cancelListSearch();
         cancelTreeSearch();
+        d.lastSearch = BrowserSearch;
         AbstractFinder* finder = view->textBrowser()->findChild<BrowserFinder*>();
         if (!finder)
             startSearch(new BrowserFinder(view->textBrowser()), d.browserSearch);
@@ -91,14 +97,46 @@ void Finder::searchBrowser(BufferView* view)
     }
 }
 
+void Finder::findAgain()
+{
+    switch (d.lastSearch) {
+    case TreeSearch:
+        searchTree();
+        break;
+    case ListSearch:
+        searchList();
+        break;
+    case BrowserSearch:
+        searchBrowser();
+        break;
+    case NoSearch:
+    default:
+        break;
+    }
+}
+
+void Finder::findNext()
+{
+    if (!d.currentFinder)
+        findAgain();
+    if (d.currentFinder)
+        d.currentFinder->findNext();
+}
+
+void Finder::findPrevious()
+{
+    if (!d.currentFinder)
+        findAgain();
+    if (d.currentFinder)
+        d.currentFinder->findPrevious();
+}
+
 void Finder::startSearch(AbstractFinder* finder, const QString& text)
 {
     connect(finder, SIGNAL(destroyed(AbstractFinder*)), this, SLOT(finderDestroyed(AbstractFinder*)));
     d.cancelShortcut->setEnabled(true);
     d.finders.insert(finder);
-
-    connect(d.nextShortcut, SIGNAL(activated()), finder, SLOT(findNext()));
-    connect(d.prevShortcut, SIGNAL(activated()), finder, SLOT(findPrevious()));
+    d.currentFinder = finder;
 
     finder->setText(text);
     finder->doFind();
