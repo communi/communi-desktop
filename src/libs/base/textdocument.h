@@ -82,10 +82,9 @@ private:
     void appendLine(QTextCursor& cursor, TextBlockData* line);
 
     struct Private {
-        int ub;
+        int uc;
         int dirty;
         bool clone;
-        bool drawUb;
         QString css;
         int lowlight;
         bool visible;

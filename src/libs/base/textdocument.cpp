@@ -76,11 +76,10 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
 {
     qRegisterMetaType<TextDocument*>();
 
-    d.ub = -1;
+    d.uc = 0;
     d.dirty = -1;
     d.lowlight = -1;
     d.clone = false;
-    d.drawUb = false;
     d.buffer = buffer;
     d.visible = false;
 
@@ -143,7 +142,7 @@ TextDocument* TextDocument::clone()
     }
 
     // TODO:
-    doc->d.ub = d.ub;
+    doc->d.uc = d.uc;
     doc->d.css = d.css;
     doc->d.lowlight = d.lowlight;
     doc->d.buffer = d.buffer;
@@ -189,7 +188,7 @@ void TextDocument::setVisible(bool visible)
             if (d.dirty > 0)
                 flushLines();
         } else {
-            d.ub = -1;
+            d.uc = 0;
         }
         d.visible = visible;
     }
@@ -227,7 +226,7 @@ void TextDocument::removeHighlight(int block)
 
 void TextDocument::reset()
 {
-    d.ub = -1;
+    d.uc = 0;
     d.lowlight = -1;
     d.lowlights.clear();
     d.highlights.clear();
@@ -256,12 +255,13 @@ void TextDocument::append(const QString& message, const QDateTime& timestamp)
 
 void TextDocument::drawForeground(QPainter* painter, const QRect& bounds)
 {
-    if (d.drawUb) {
+    const int num = blockCount() - d.uc;
+    if (num > 0) {
         const QPen oldPen = painter->pen();
         const QBrush oldBrush = painter->brush();
         painter->setBrush(Qt::NoBrush);
         painter->setPen(QPen(QPalette().color(QPalette::Mid), 1, Qt::DashLine));
-        QTextBlock block = findBlockByNumber(d.ub);
+        QTextBlock block = findBlockByNumber(num);
         if (block.isValid()) {
             QRect br = documentLayout()->blockBoundingRect(block).toAlignedRect();
             if (bounds.intersects(br)) {
@@ -291,7 +291,6 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
     if (!highlightFrame)
         highlightFrame = new TextHighlight(static_cast<QWidget*>(painter->device()));
 
-    d.drawUb = d.ub > 1;
     if (!d.lowlights.isEmpty()) {
         const QAbstractTextDocumentLayout* layout = documentLayout();
         const int margin = qCeil(documentMargin());
@@ -318,8 +317,6 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
                     lowlightFrame->setGeometry(br);
                     lowlightFrame->render(painter);
                     painter->translate(-br.topLeft());
-                    if (d.drawUb && d.ub - 1 >= it.key() && (it.value() == -1 || d.ub - 1 <= it.value()))
-                        d.drawUb = false;
                 }
             }
         }
@@ -409,10 +406,10 @@ void TextDocument::rebuild()
 
 void TextDocument::appendLine(QTextCursor& cursor, TextBlockData* line)
 {
-    const int count = blockCount();
     cursor.movePosition(QTextCursor::End);
 
     if (!isEmpty()) {
+        const int count = blockCount();
         const int max = maximumBlockCount();
         const QRectF br = documentLayout()->blockBoundingRect(findBlockByNumber(0));
         cursor.insertBlock();
@@ -421,8 +418,6 @@ void TextDocument::appendLine(QTextCursor& cursor, TextBlockData* line)
             emit lineRemoved(qRound(br.bottom()));
 
             const int diff = max - count + 1;
-            if (d.ub > 0)
-                d.ub -= diff;
             QList<int>::iterator it = d.highlights.begin();
             while (it != d.highlights.end()) {
                 *it -= diff;
@@ -453,8 +448,7 @@ void TextDocument::appendLine(QTextCursor& cursor, TextBlockData* line)
     format.setLineHeight(125, QTextBlockFormat::ProportionalHeight);
     cursor.setBlockFormat(format);
 
-    if (d.ub == -1 && !d.visible)
-        d.ub = count;
+    ++d.uc;
 }
 
 #include "textdocument.moc"
