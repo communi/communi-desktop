@@ -76,6 +76,7 @@ Dock::Dock(MainWindow* window) : QObject(window)
 
         connect(d.tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
                 this, SLOT(onTrayActivated(QSystemTrayIcon::ActivationReason)));
+        connect(d.tray, SIGNAL(messageClicked()), this, SLOT(onTrayMessageClicked()));
 
         updateTray();
     }
@@ -187,4 +188,11 @@ void Dock::onTrayActivated(QSystemTrayIcon::ActivationReason reason)
         default:
             break;
     }
+}
+
+void Dock::onTrayMessageClicked()
+{
+    d.window->show();
+    d.window->raise();
+    d.window->activateWindow();
 }

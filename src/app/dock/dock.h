@@ -48,6 +48,7 @@ private slots:
     void onWindowActivated();
     void onMuteToggled(bool mute);
     void onTrayActivated(QSystemTrayIcon::ActivationReason reason);
+    void onTrayMessageClicked();
 
 private:
     struct Private {
