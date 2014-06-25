@@ -51,6 +51,9 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     setFocusPolicy(Qt::NoFocus);
     setFrameStyle(QFrame::NoFrame);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+#ifdef Q_OS_MAC
+    setVerticalScrollMode(ScrollPerPixel);
+#endif
 
     setItemDelegate(new TreeDelegate(this));
 
