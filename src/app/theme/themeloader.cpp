@@ -21,7 +21,7 @@ ThemeLoader::ThemeLoader(QObject* parent) : QObject(parent)
     d.infos.insert(info.name(), info);
 
 #if defined(Q_OS_MAC)
-    QDir dir = QDir::current();
+    QDir dir(QApplication::applicationDirPath());
     if (dir.dirName() == "MacOS" && dir.cd("../Resources/themes"))
         load(dir);
 #elif defined(Q_OS_WIN)
