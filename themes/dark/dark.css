@@ -1,8 +1,8 @@
-a { color: #5078ff; }
+a { color: #005fff; }
 .timestamp { color: #808080; font-size: small }
 
-.notice { color: #a54242; }
-.action { color: #8b388b; }
+.notice { color: #b23e3e; }
+.action { color: #b232b2; }
 .event { color: #808080; }
 
 .bold { font-weight: bold; }
@@ -29,48 +29,45 @@ a { color: #5078ff; }
 
 TextBrowser, TextInput {
     border: none;
-    color: #dedede;
-    selection-color: #dedede;
-    selection-background-color: #444444;
+    color: #eeeeec;
+    background: #333333;
+    selection-color: #eeeeec;
+    selection-background-color: #3465a4;
 }
 
 SplitView {
-    background: #000000;
-}
-
-TextBrowser {
-    background: #000000;
+    background: #24282a;
 }
 
 TextInput {
-    background: #222222;
-    border-top: 1px solid #444444;
+    background: #363939;
+    border-top: 1px solid #24282a;
 }
 
 TreeWidget, ListView {
     border: none;
-    background: #222222;
-    selection-background-color: palette(highlight);
+    background: #363939;
+    selection-background-color: #3465a4;
 }
 
 TreeWidget::item {
-    color: #dedede;
+    color: #eeeeec;
     height: 20px;
 }
 
 ListView::item {
-    color: #dedede;
+    color: #eeeeec;
     height: 20px;
 }
 
 TreeWidget::item:selected, TreeWidget::item:selected:hover {
-    color: #dedede;
-    background-color: #444444;
+    color: #eeeeec;
+    background-color: #3465a4;
 }
 
 ListView::item:selected, ListView::item:selected:hover {
-    color: #dedede;
-    background-color: #444444;
+    color: #eeeeec;
+    background-color: #3465a4;
 }
 
 TreeWidget::item:!selected:hover, ListView::item:!selected:hover {
@@ -79,20 +76,20 @@ TreeWidget::item:!selected:hover, ListView::item:!selected:hover {
 
 TreeHeader::section, TitleBar::section {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 #444444, stop: 1 #222222);
-    color: #dedede;
+                                      stop: 0 #414848, stop: 1 #343535);
+    color: #eeeeec;
     padding-left: 4px;
-    border-bottom: 1px solid #444444;
+    border-bottom: 1px solid #24282a;
 }
 
 TextLowlight {
-    border: 1px solid #444444;
+    border: 1px solid #24282a;
     background-color: #222222;
 }
 
 TextHighlight {
-    border: 1px solid #444444;
-    background-color: rgba(64,64,255,64);
+    border: 1px solid #3465a4;
+    background-color: rgba(52,101,164,52);
 }
 
 TextShadow {
@@ -102,16 +99,16 @@ TextShadow {
 }
 
 TreeBadge {
-    color: #dedede;
+    color: #eeeeec;
     margin: 3px;
     font-size: 9px;
     border-radius: 5px;
-    background: #444444;
+    background: #414848;
 }
 
 TreeBadge:on {
-    color: #ffffff;
-    background: #283ecc;
+    color: #eeeeec;
+    background: #3465a4;
 }
 
 TreeHeader {
@@ -119,32 +116,32 @@ TreeHeader {
 }
 
 TreeHeader::section:on {
-    color: #324aff;
+    color: #3465a4;
 }
 
 TreeWidget::item:on {
-    color: #324aff
+    color: #3e83db;
 }
 
 TitleBar > QTextEdit {
-    border-bottom: 1px solid #444444;
+    border-bottom: 1px solid #24282a;
 }
 
 QSplitter::handle {
     width: 1px;
     height: 1px;
-    background: #444444;
+    background: #24282a;
 }
 
 QToolButton {
-    border: 1px solid #444444;
+    border: 1px solid #24282a;
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 #444444, stop: 1 #222222);
+                                      stop: 0 #414848, stop: 1 #343535);
 }
 
 QToolButton:pressed {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 #222222, stop: 1 #444444);
+                                      stop: 0 #343535, stop: 1 #414848);
 }
 
 QToolButton::menu-indicator {
@@ -152,8 +149,17 @@ QToolButton::menu-indicator {
 }
 
 TitleBar {
-    color: #dedede;
+    color: #eeeeec;
     min-height: 20px;
+}
+
+TitleBar > QTextEdit {
+    color: #eeeeec;
+    background: #363939;
+    selection-color: #eeeeec;
+    selection-background-color: #3465a4;
+    border: 1px solid #24282a;
+    border-bottom-color: transparent;
 }
 
 QToolButton#menu {
@@ -167,13 +173,13 @@ QToolButton#menu {
 }
 
 QToolButton#menu:hover {
-    border-left-color: #444444;
-    border-bottom-color: #444444;
+    border-left-color: #24282a;
+    border-bottom-color: #24282a;
 }
 
 QToolButton#menu:pressed {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 #222222, stop: 1 #444444);
+                                      stop: 0 #343535, stop: 1 #414848);
 }
 
 Overlay {
@@ -204,11 +210,11 @@ AbstractFinder > QToolButton {
 }
 
 AbstractFinder > QLineEdit {
-    color: #dedede;
-    background: #222222;
-    selection-color: #dedede;
-    selection-background-color: #444444;
-    border: 1px solid #444444;
+    color: #eeeeec;
+    background: #363939;
+    selection-color: #eeeeec;
+    selection-background-color: #3465a4;
+    border: 1px solid #24282a;
     border-bottom-color: transparent;
 }
 
@@ -226,7 +232,7 @@ AbstractFinder > QToolButton#prev {
 
 AbstractFinder[error="true"] > QToolButton#prev {
     image: url(gray:up.png);
-    background-color: #222222;
+    background-color: #363939;
 }
 
 AbstractFinder > QToolButton#next {
@@ -235,29 +241,5 @@ AbstractFinder > QToolButton#next {
 
 AbstractFinder[error="true"] > QToolButton#next {
     image: url(gray:down.png);
-    background-color: #222222;
-}
-
-QScrollBar {
-    border: 1px solid transparent;
-    border-left-color: #444444;
-    background: #222222;
-    width: 14px;
-}
-
-QScrollBar::handle {
-    background: #444444;
-    border-radius: 4px;
-    margin: 1px 1px 1px 2px;
-    min-height: 24px;
-}
-
-QScrollBar::handle:pressed {
-    background: #666666;
-}
-
-QScrollBar::add-line, QScrollBar::sub-line, QScrollBar::up-arrow, QScrollBar::down-arrow, QScrollBar::add-page, QScrollBar::sub-page {
-    width: 0;
-    height: 0;
-    background: none;
+    background-color: #363939;
 }
