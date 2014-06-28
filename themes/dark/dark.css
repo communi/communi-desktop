@@ -98,6 +98,16 @@ TextShadow {
                                       stop: 0 #222222, stop: 1 transparent);
 }
 
+BusyIndicator {
+    border: none;
+    background: transparent;
+    min-width: 16px;
+    max-width: 16px;
+    min-height: 16px;
+    max-height: 16px;
+    background-image: url(white:busy.png);
+}
+
 TreeBadge {
     color: #eeeeec;
     margin: 3px;

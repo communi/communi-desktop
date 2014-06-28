@@ -18,6 +18,7 @@
 #include <QObject>
 #include <QMetaType>
 #include <QTreeWidgetItem>
+#include <QVariantAnimation>
 
 class IrcBuffer;
 class TreeWidget;
@@ -60,9 +61,9 @@ private:
     void init(IrcBuffer* buffer);
 
     struct Private {
-        QMovie* movie;
         IrcBuffer* buffer;
         IrcLagTimer* timer;
+        QVariantAnimation* anim;
     } d;
 };
 

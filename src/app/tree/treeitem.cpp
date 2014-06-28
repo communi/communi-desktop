@@ -20,12 +20,34 @@
 #include <IrcBuffer>
 #include <QPainter>
 #include <QPixmap>
-#include <QMovie>
 #include <qmath.h>
+
+class BusyIndicator : public QFrame
+{
+    Q_OBJECT
+
+public:
+    BusyIndicator(QWidget* parent = 0) : QFrame(parent)
+    {
+        setVisible(false);
+    }
+
+    static BusyIndicator* instance(QWidget* parent = 0)
+    {
+        static QHash<QWidget*, BusyIndicator*> indicators;
+        QWidget* window = parent ? parent->window() : 0;
+        BusyIndicator* indicator = indicators.value(window);
+        if (!indicator) {
+            indicator = new BusyIndicator(window);
+            indicators.insert(window, indicator);
+        }
+        return indicator;
+    }
+};
 
 TreeItem::TreeItem(IrcBuffer* buffer, TreeItem* parent) : QObject(buffer), QTreeWidgetItem(parent)
 {
-    d.movie = 0;
+    d.anim = 0;
     d.timer = 0;
     init(buffer);
 }
@@ -34,9 +56,12 @@ TreeItem::TreeItem(IrcBuffer* buffer, TreeWidget* parent) : QObject(buffer), QTr
 {
     init(buffer);
 
-    d.movie = new QMovie(this);
-    d.movie->setFileName(":/images/ajax-loader.gif");
-    connect(d.movie, SIGNAL(frameChanged(int)), this, SLOT(updateIcon()));
+    d.anim = new QVariantAnimation(this);
+    d.anim->setDuration(750);
+    d.anim->setStartValue(0);
+    d.anim->setEndValue(360);
+    d.anim->setLoopCount(-1);
+    connect(d.anim, SIGNAL(valueChanged(QVariant)), this, SLOT(updateIcon()));
 
     d.timer = new IrcLagTimer(this);
     d.timer->setConnection(buffer->connection());
@@ -107,12 +132,18 @@ void TreeItem::updateIcon()
 {
     qint64 lag = d.timer->lag();
     setToolTip(0, lag > 0 ? tr("%1ms").arg(lag) : QString());
+
+    QPixmap pixmap(16, 16);
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+
     if (connection()->isActive() && !connection()->isConnected()) {
-        setIcon(0, d.movie->currentPixmap());
+        painter.setRenderHint(QPainter::SmoothPixmapTransform);
+        painter.translate(8, 8);
+        painter.rotate(d.anim->currentValue().toInt());
+        BusyIndicator* indicator = BusyIndicator::instance(treeWidget());
+        indicator->render(&painter, QPoint(-8, -8));
     } else {
-        QPixmap pixmap(16, 16);
-        pixmap.fill(Qt::transparent);
-        QPainter painter(&pixmap);
         painter.setPen(QPen(QPalette().color(QPalette::Mid), 0.5));
         QColor color(Qt::transparent);
         if (lag > 0) {
@@ -126,18 +157,19 @@ void TreeItem::updateIcon()
 #else
         painter.drawEllipse(4, 5, 8, 8);
 #endif
-        setIcon(0, pixmap);
     }
+
+    setIcon(0, pixmap);
 }
 
 void TreeItem::onStatusChanged()
 {
     if (connection()->isActive() && !connection()->isConnected()) {
-        if (d.movie->state() == QMovie::NotRunning)
-            d.movie->start();
+        if (d.anim->state() == QAbstractAnimation::Stopped)
+            d.anim->start();
     } else {
-        if (d.movie->state() == QMovie::Running)
-            d.movie->stop();
+        if (d.anim->state() == QAbstractAnimation::Running)
+            d.anim->stop();
     }
     updateIcon();
 }
@@ -146,3 +178,5 @@ void TreeItem::onBufferDestroyed()
 {
     d.buffer = 0;
 }
+
+#include "treeitem.moc"
