@@ -131,7 +131,7 @@ void TitleBar::expand()
     QPropertyAnimation *animation = new QPropertyAnimation(this, "offset");
     animation->setDuration(50);
     animation->setStartValue(offset());
-    animation->setEndValue(QLabel::heightForWidth(width()) - minimumSizeHint().height());
+    animation->setEndValue(qMax(0, QLabel::heightForWidth(width()) - minimumSizeHint().height()));
     animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
