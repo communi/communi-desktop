@@ -78,7 +78,7 @@ TreeHeader::section, TitleBar::section {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                       stop: 0 #414848, stop: 1 #343535);
     color: #eeeeec;
-    padding-left: 4px;
+    border: 4px solid transparent;
     border-bottom: 1px solid #24282a;
 }
 
