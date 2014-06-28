@@ -201,10 +201,12 @@ bool TitleBar::event(QEvent* event)
 {
     switch (event->type()) {
     case QEvent::Enter:
-        expand();
+        if (!d.editor->isVisible())
+            expand();
         break;
     case QEvent::Leave:
-        collapse();
+        if (!d.editor->isVisible())
+            collapse();
         break;
     default:
         break;
@@ -216,6 +218,10 @@ bool TitleBar::eventFilter(QObject* object, QEvent* event)
 {
     Q_UNUSED(object);
     switch (event->type()) {
+    case QEvent::Hide:
+        if (!underMouse())
+            collapse();
+        break;
     case QEvent::FocusOut:
         d.editor->hide();
         break;
