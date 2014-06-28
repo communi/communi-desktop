@@ -121,9 +121,9 @@ void ChatPage::setTheme(const QString& theme)
         d.theme = ThemeLoader::instance()->theme(theme);
         foreach (TextDocument* doc, d.documents)
             setupDocument(doc);
-
-        QString css = d.theme.style();
-        window()->setStyleSheet(css);
+        foreach (BufferView* view, d.splitView->views())
+            view->titleBar()->setStyleSheet(d.theme.style());
+        window()->setStyleSheet(d.theme.style());
     }
 }
 
@@ -355,9 +355,7 @@ void ChatPage::setupDocument(TextDocument* document)
 void ChatPage::addView(BufferView* view)
 {
     TitleBar* bar = view->titleBar();
-    QTextDocument* doc = bar->findChild<QTextDocument*>();
-    if (doc)
-        doc->setDefaultStyleSheet(d.theme.style());
+    bar->setStyleSheet(d.theme.style());
 
 #if QT_VERSION >= 0x050300 && !defined(Q_OS_MAC)
     view->textBrowser()->horizontalScrollBar()->setStyle(ProxyStyle::instance());

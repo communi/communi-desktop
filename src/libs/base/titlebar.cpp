@@ -115,6 +115,17 @@ void TitleBar::setOffset(int offset)
     resize(width(), minimumSizeHint().height() + offset);
 }
 
+QString TitleBar::styleSheet() const
+{
+    return d.css;
+}
+
+void TitleBar::setStyleSheet(const QString& css)
+{
+    d.css = css;
+    refresh();
+}
+
 void TitleBar::expand()
 {
     QPropertyAnimation *animation = new QPropertyAnimation(this, "offset");
@@ -276,12 +287,15 @@ void TitleBar::cleanup()
 
 void TitleBar::refresh()
 {
+    clear();
     QString title = d.buffer ? d.buffer->title() : QString();
     IrcChannel* channel = qobject_cast<IrcChannel*>(d.buffer);
     QString topic = channel ? channel->topic() : QString();
     if (!topic.isEmpty())
         title = tr("%1: %2").arg(title, d.formatter->formatContent(topic));
     setText(title);
+    foreach (QTextDocument* doc, findChildren<QTextDocument*>())
+        doc->setDefaultStyleSheet(d.css);
 }
 
 void TitleBar::edit()

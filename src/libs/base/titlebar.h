@@ -41,6 +41,9 @@ public:
     int offset() const;
     int baseOffset() const;
 
+    QString styleSheet() const;
+    void setStyleSheet(const QString& css);
+
 public slots:
     void setBuffer(IrcBuffer* buffer);
     void setTopic(const QString& topic);
@@ -70,6 +73,7 @@ private:
     int topMargin() const;
 
     struct Private {
+        QString css;
         int baseOffset;
         IrcBuffer* buffer;
         QTextEdit* editor;
