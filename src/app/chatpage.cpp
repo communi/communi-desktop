@@ -23,7 +23,6 @@
 #include "finder.h"
 #include "mainwindow.h"
 #include "messagehandler.h"
-#include "messageformatter.h"
 #include <QCoreApplication>
 #include <IrcCommandParser>
 #include <IrcBufferModel>
@@ -343,8 +342,6 @@ void ChatPage::setupDocument(TextDocument* document)
 
     document->setTimeStampFormat(d.timestamp);
     document->setStyleSheet(d.theme.style());
-//    document->formatter()->setDetailed(d.showDetails);
-//    document->formatter()->setStripNicks(!d.showDetails);
 
     if (!document->isClone()) {
         connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SIGNAL(messageHighlighted(IrcMessage*)));
