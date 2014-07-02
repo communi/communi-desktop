@@ -192,6 +192,21 @@ QToolButton#menu:pressed {
                                       stop: 0 #343535, stop: 1 #414848);
 }
 
+QMenu {
+    color: #eeeeec;
+    background: #555753;
+}
+
+QMenu::item:selected {
+    background: #3465a4;
+}
+
+QMenu::separator {
+    height: 1px;
+    margin: 4px;
+    background: #5d5e5b;
+}
+
 Overlay {
     background: rgba(96,96,96,40%)
 }
