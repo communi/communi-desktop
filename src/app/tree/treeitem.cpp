@@ -139,7 +139,11 @@ void TreeItem::updateIcon()
 
     if (connection()->isActive() && !connection()->isConnected()) {
         painter.setRenderHint(QPainter::SmoothPixmapTransform);
+#if defined(Q_OS_WIN) || defined(Q_OS_MAC)
         painter.translate(8, 8);
+#else
+        painter.translate(8, 10);
+#endif
         painter.rotate(d.anim->currentValue().toInt());
         BusyIndicator* indicator = BusyIndicator::instance(treeWidget());
         indicator->render(&painter, QPoint(-8, -8));
@@ -152,10 +156,12 @@ void TreeItem::updateIcon()
         }
         painter.setBrush(color);
         painter.setRenderHint(QPainter::Antialiasing);
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN)
         painter.drawEllipse(4, 3, 8, 8);
-#else
+#elif defined(Q_OS_MAC)
         painter.drawEllipse(4, 5, 8, 8);
+#else
+        painter.drawEllipse(4, 6, 8, 8);
 #endif
     }
 
