@@ -37,6 +37,7 @@ class TextBlockData : public QTextBlockUserData
 public:
     QString message;
     QDateTime timestamp;
+    IrcMessage::Type type;
 };
 
 class TextFrame : public QFrame
@@ -229,12 +230,13 @@ void TextDocument::reset()
     d.highlights.clear();
 }
 
-void TextDocument::append(const QString& message, const QDateTime& timestamp)
+void TextDocument::append(const QString& message, const QDateTime& timestamp, IrcMessage::Type type)
 {
     if (!message.isEmpty()) {
         TextBlockData* data = new TextBlockData;
         data->timestamp = timestamp;
         data->message = message;
+        data->type = type;
         if (d.dirty == 0 || d.visible) {
             QTextCursor cursor(this);
             cursor.beginEditBlock();
@@ -357,7 +359,7 @@ void TextDocument::flushLines()
 
 void TextDocument::receiveMessage(IrcMessage* message)
 {
-    append(d.formatter->formatMessage(message), message->timeStamp());
+    append(d.formatter->formatMessage(message), message->timeStamp(), message->type());
     emit messageReceived(message);
 
     if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {

@@ -17,12 +17,12 @@
 
 #include <QTextDocument>
 #include <QStringList>
+#include <IrcMessage>
 #include <QMetaType>
 #include <QDateTime>
 #include <QMap>
 
 class IrcBuffer;
-class IrcMessage;
 class TextBlockData;
 class MessageFormatter;
 
@@ -58,7 +58,7 @@ public slots:
     void lowlight(int block = -1);
     void addHighlight(int block = -1);
     void removeHighlight(int block);
-    void append(const QString& message, const QDateTime& timestamp = QDateTime());
+    void append(const QString& message, const QDateTime& timestamp = QDateTime(), IrcMessage::Type = IrcMessage::Unknown);
     void receiveMessage(IrcMessage* message);
 
 signals:
