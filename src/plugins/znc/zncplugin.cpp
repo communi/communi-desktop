@@ -42,14 +42,14 @@ void ZncPlugin::documentRemoved(TextDocument* document)
     d.documents.remove(document->buffer(), document);
 }
 
-void ZncPlugin::onPlaybackBegin(IrcBuffer* buffer)
-{
-    foreach (TextDocument* doc, d.documents.values(buffer))
-        doc->beginLowlight();
-}
+//void ZncPlugin::onPlaybackBegin(IrcBuffer* buffer)
+//{
+//    foreach (TextDocument* doc, d.documents.values(buffer))
+//        doc->beginLowlight();
+//}
 
-void ZncPlugin::onPlaybackEnd(IrcBuffer* buffer)
-{
-    foreach (TextDocument* doc, d.documents.values(buffer))
-        doc->endLowlight();
-}
+//void ZncPlugin::onPlaybackEnd(IrcBuffer* buffer)
+//{
+//    foreach (TextDocument* doc, d.documents.values(buffer))
+//        doc->endLowlight();
+//}

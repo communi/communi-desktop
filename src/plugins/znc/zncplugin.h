@@ -38,9 +38,9 @@ public:
     void documentAdded(TextDocument* document);
     void documentRemoved(TextDocument* document);
 
-private slots:
-    void onPlaybackBegin(IrcBuffer* buffer);
-    void onPlaybackEnd(IrcBuffer* buffer);
+//private slots:
+//    void onPlaybackBegin(IrcBuffer* buffer);
+//    void onPlaybackEnd(IrcBuffer* buffer);
 
 private:
     struct Private {
