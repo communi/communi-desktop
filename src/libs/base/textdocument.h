@@ -50,17 +50,14 @@ public:
     bool isVisible() const;
     void setVisible(bool visible);
 
-    void beginLowlight();
-    void endLowlight();
-
-    void addHighlight(int block = -1);
-    void removeHighlight(int block);
-
     void drawBackground(QPainter* painter, const QRect& bounds);
     void drawForeground(QPainter* painter, const QRect& bounds);
 
 public slots:
     void reset();
+    void lowlight(int block = -1);
+    void addHighlight(int block = -1);
+    void removeHighlight(int block);
     void append(const QString& message, const QDateTime& timestamp = QDateTime());
     void receiveMessage(IrcMessage* message);
 
@@ -91,7 +88,6 @@ private:
         IrcBuffer* buffer;
         QList<int> highlights;
         QString timeStampFormat;
-        QMap<int, int> lowlights;
         QList<TextBlockData*> lines;
         MessageFormatter* formatter;
     } d;

@@ -90,6 +90,7 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
     setUndoRedoEnabled(false);
     setMaximumBlockCount(1000);
 
+    connect(buffer->connection(), SIGNAL(disconnected()), this, SLOT(lowlight()));
     connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(receiveMessage(IrcMessage*)));
 }
 
@@ -147,7 +148,6 @@ TextDocument* TextDocument::clone()
     doc->d.lowlight = d.lowlight;
     doc->d.buffer = d.buffer;
     doc->d.highlights = d.highlights;
-    doc->d.lowlights = d.lowlights;
     doc->d.clone = true;
 
     return doc;
@@ -194,16 +194,14 @@ void TextDocument::setVisible(bool visible)
     }
 }
 
-void TextDocument::beginLowlight()
+void TextDocument::lowlight(int block)
 {
-    d.lowlight = totalCount();
-    d.lowlights.insert(d.lowlight, -1);
-}
-
-void TextDocument::endLowlight()
-{
-    d.lowlights.insert(d.lowlight, totalCount() - 1);
-    d.lowlight = -1;
+    if (block == -1)
+        block = totalCount() - 1;
+    if (d.lowlight != block) {
+        d.lowlight = block;
+        updateBlock(block);
+    }
 }
 
 void TextDocument::addHighlight(int block)
@@ -228,7 +226,6 @@ void TextDocument::reset()
 {
     d.uc = 0;
     d.lowlight = -1;
-    d.lowlights.clear();
     d.highlights.clear();
 }
 
@@ -277,7 +274,7 @@ void TextDocument::drawForeground(QPainter* painter, const QRect& bounds)
 
 void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
 {
-    if (d.highlights.isEmpty() && d.lowlights.isEmpty())
+    if (d.highlights.isEmpty() && d.lowlight == -1)
         return;
 
     const int margin = qCeil(documentMargin());
@@ -291,33 +288,19 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
     if (!highlightFrame)
         highlightFrame = new TextHighlight(static_cast<QWidget*>(painter->device()));
 
-    if (!d.lowlights.isEmpty()) {
+    if (d.lowlight != -1) {
         const QAbstractTextDocumentLayout* layout = documentLayout();
         const int margin = qCeil(documentMargin());
-        QMap<int, int>::const_iterator it;
-        for (it = d.lowlights.begin(); it != d.lowlights.end(); ++it) {
-            const QTextBlock from = findBlockByNumber(it.key());
-            QTextBlock to = findBlockByNumber(it.value());
-            if (!to.isValid())
-                to = lastBlock();
-            if (from.isValid() && to.isValid()) {
-                const QRect fr = layout->blockBoundingRect(from).toAlignedRect();
-                const QRect tr = layout->blockBoundingRect(to).toAlignedRect();
-                QRect br = fr.united(tr);
-                if (bounds.intersects(br)) {
-                    bool atBottom = false;
-                    if (to == lastBlock()) {
-                        if (qAbs(bounds.bottom() - br.bottom()) < qMin(fr.height(), tr.height()))
-                            atBottom = true;
-                    }
-                    if (atBottom)
-                        br.setBottom(bounds.bottom() + 1);
-                    br.adjust(-margin - 1, 0, margin + 1, 2);
-                    painter->translate(br.topLeft());
-                    lowlightFrame->setGeometry(br);
-                    lowlightFrame->render(painter);
-                    painter->translate(-br.topLeft());
-                }
+        const QTextBlock to = findBlockByNumber(d.lowlight);
+        if (to.isValid()) {
+            QRect br = layout->blockBoundingRect(to).toAlignedRect();
+            br.setTop(0);
+            if (bounds.intersects(br)) {
+                br.adjust(-margin - 1, 0, margin + 1, 2);
+                painter->translate(br.topLeft());
+                lowlightFrame->setGeometry(br);
+                lowlightFrame->render(painter);
+                painter->translate(-br.topLeft());
             }
         }
     }
@@ -426,15 +409,7 @@ void TextDocument::appendLine(QTextCursor& cursor, TextBlockData* line)
                 else
                     ++it;
             }
-            QMap<int, int> ll;
-            QMap<int, int>::const_iterator j;
-            for (j = d.lowlights.begin(); j != d.lowlights.end(); ++j) {
-                int from = j.key() - diff;
-                int to = j.value() - diff;
-                if (to > 0)
-                    ll.insert(qMax(0, from), to);
-            }
-            d.lowlights = ll;
+            d.lowlight -= diff;
         }
     }
 
