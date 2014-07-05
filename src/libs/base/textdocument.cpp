@@ -79,6 +79,7 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
 
     d.uc = 0;
     d.dirty = -1;
+    d.rebuild = -1;
     d.lowlight = -1;
     d.clone = false;
     d.buffer = buffer;
@@ -104,7 +105,7 @@ void TextDocument::setTimeStampFormat(const QString& format)
 {
     if (d.timeStampFormat != format) {
         d.timeStampFormat = format;
-        rebuild();
+        scheduleRebuild();
     }
 }
 
@@ -118,7 +119,7 @@ void TextDocument::setStyleSheet(const QString& css)
     if (d.css != css) {
         d.css = css;
         setDefaultStyleSheet(css);
-        rebuild();
+        scheduleRebuild();
     }
 }
 
@@ -337,6 +338,8 @@ void TextDocument::timerEvent(QTimerEvent* event)
     if (event->timerId() == d.dirty) {
         delay -= 1000;
         flushLines();
+    } else if (event->timerId() == d.rebuild) {
+        rebuild();
     }
 }
 
@@ -387,6 +390,16 @@ void TextDocument::rebuild()
     }
     clear();
     flushLines();
+    if (d.rebuild > 0) {
+        killTimer(d.rebuild);
+        d.rebuild = 0;
+    }
+}
+
+void TextDocument::scheduleRebuild()
+{
+    if (d.rebuild < 0)
+        d.rebuild = startTimer(isVisible() ? 0 : 1000);
 }
 
 void TextDocument::appendLine(QTextCursor& cursor, TextBlockData* line)

@@ -72,16 +72,18 @@ protected:
     void timerEvent(QTimerEvent* event);
 
 private slots:
+    void rebuild();
     void flushLines();
 
 private:
-    void rebuild();
+    void scheduleRebuild();
     void appendLine(QTextCursor& cursor, TextBlockData* line);
 
     struct Private {
         int uc;
         int dirty;
         bool clone;
+        int rebuild;
         QString css;
         int lowlight;
         bool visible;
