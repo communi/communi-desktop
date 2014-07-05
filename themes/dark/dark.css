@@ -60,6 +60,10 @@ ListView::item {
     height: 20px;
 }
 
+TreeWidget::item:off, TreeHeader::section:off {
+    color: #929390;
+}
+
 TreeWidget::item:selected, TreeWidget::item:selected:hover {
     color: #eeeeec;
     background-color: #3465a4;
@@ -83,8 +87,8 @@ TreeHeader::section, TitleBar::section {
 }
 
 TextLowlight {
-    border: 1px solid #24282a;
-    background-color: #222222;
+    border: 1px solid #545959;
+    background-color: #353838;
 }
 
 TextHighlight {
@@ -197,8 +201,12 @@ QMenu {
     background: #555753;
 }
 
-QMenu::item:selected {
+QMenu::item:selected:!disabled {
     background: #3465a4;
+}
+
+QMenu::item:disabled {
+    color: #929390;
 }
 
 QMenu::separator {
