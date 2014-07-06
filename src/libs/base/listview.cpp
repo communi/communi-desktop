@@ -124,6 +124,8 @@ QMenu* ListView::createContextMenu(const QModelIndex& index)
     const QString prefix = index.data(Irc::PrefixRole).toString();
 
     QMenu* menu = new QMenu(this);
+    menu->addAction(name)->setEnabled(false);
+    menu->addSeparator();
 
     QAction* whoisAction = menu->addAction(tr("Whois"), this, SLOT(onWhoisTriggered()));
     QAction* queryAction = menu->addAction(tr("Query"), this, SLOT(onQueryTriggered()));
