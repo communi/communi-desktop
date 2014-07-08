@@ -16,13 +16,13 @@
 #include "messageformatter.h"
 #include <QAbstractTextDocumentLayout>
 #include <QTextDocumentFragment>
-#include <QTextBlockUserData>
 #include <IrcConnection>
 #include <QStylePainter>
 #include <QApplication>
 #include <QStyleOption>
 #include <QTextCursor>
 #include <QTextBlock>
+#include <IrcMessage>
 #include <IrcBuffer>
 #include <QPalette>
 #include <QPointer>
@@ -31,14 +31,6 @@
 #include <qmath.h>
 
 static int delay = 1000;
-
-class TextBlockData : public QTextBlockUserData
-{
-public:
-    QString message;
-    QDateTime timestamp;
-    IrcMessage::Type type;
-};
 
 class TextFrame : public QFrame
 {
@@ -82,6 +74,7 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
     d.rebuild = -1;
     d.lowlight = -1;
     d.clone = false;
+    d.events = true;
     d.buffer = buffer;
     d.visible = false;
 
@@ -126,30 +119,21 @@ void TextDocument::setStyleSheet(const QString& css)
 TextDocument* TextDocument::clone()
 {
     if (d.dirty > 0)
-        flushLines();
+        flush();
 
     TextDocument* doc = new TextDocument(d.buffer);
     doc->setDefaultStyleSheet(defaultStyleSheet());
     QTextCursor(doc).insertFragment(QTextDocumentFragment(this));
     doc->rootFrame()->setFrameFormat(rootFrame()->frameFormat());
 
-    QTextBlock source = begin();
-    while (source.isValid()) {
-        QTextBlock target = doc->findBlockByNumber(source.blockNumber());
-        if (target.isValid()) {
-            TextBlockData* data = static_cast<TextBlockData*>(source.userData());
-            if (data)
-                target.setUserData(new TextBlockData(*data));
-        }
-        source = source.next();
-    }
-
     // TODO:
     doc->d.uc = d.uc;
     doc->d.css = d.css;
+    doc->d.events = d.events;
     doc->d.lowlight = d.lowlight;
     doc->d.buffer = d.buffer;
     doc->d.highlights = d.highlights;
+    doc->d.allLines = d.allLines;
     doc->d.clone = true;
 
     return doc;
@@ -172,7 +156,7 @@ MessageFormatter* TextDocument::formatter() const
 
 int TextDocument::totalCount() const
 {
-    int count = d.lines.count();
+    int count = d.queue.count();
     if (!isEmpty())
         count += blockCount();
     return count;
@@ -188,11 +172,24 @@ void TextDocument::setVisible(bool visible)
     if (d.visible != visible) {
         if (visible) {
             if (d.dirty > 0)
-                flushLines();
+                flush();
         } else {
             d.uc = 0;
         }
         d.visible = visible;
+    }
+}
+
+bool TextDocument::showEvents() const
+{
+    return d.events;
+}
+
+void TextDocument::setShowEvents(bool show)
+{
+    if (d.events != show) {
+        d.events = show;
+        rebuild();
     }
 }
 
@@ -229,26 +226,27 @@ void TextDocument::reset()
     d.uc = 0;
     d.lowlight = -1;
     d.highlights.clear();
+    d.allLines.clear();
+    d.queue.clear();
 }
 
-void TextDocument::append(const QString& message, const QDateTime& timestamp, IrcMessage::Type type)
+void TextDocument::append(const MessageData& data)
 {
-    if (!message.isEmpty()) {
-        TextBlockData* data = new TextBlockData;
-        data->timestamp = timestamp;
-        data->message = message;
-        data->type = type;
-        if (d.dirty == 0 || d.visible) {
-            QTextCursor cursor(this);
-            cursor.beginEditBlock();
-            appendLine(cursor, data);
-            cursor.endEditBlock();
-        } else {
-            if (d.dirty <= 0) {
-                d.dirty = startTimer(delay);
-                delay += 1000;
+    if (!data.message.isEmpty()) {
+        d.allLines += data;
+        if (d.events || !data.event) {
+            if (d.dirty == 0 || d.visible) {
+                QTextCursor cursor(this);
+                cursor.beginEditBlock();
+                insert(cursor, data);
+                cursor.endEditBlock();
+            } else {
+                if (d.dirty <= 0) {
+                    d.dirty = startTimer(delay);
+                    delay += 1000;
+                }
+                d.queue += data;
             }
-            d.lines += data;
         }
     }
 }
@@ -337,21 +335,23 @@ void TextDocument::timerEvent(QTimerEvent* event)
     QTextDocument::timerEvent(event);
     if (event->timerId() == d.dirty) {
         delay -= 1000;
-        flushLines();
+        flush();
     } else if (event->timerId() == d.rebuild) {
         rebuild();
     }
 }
 
-void TextDocument::flushLines()
+void TextDocument::flush()
 {
-    if (!d.lines.isEmpty()) {
+    if (!d.queue.isEmpty()) {
         QTextCursor cursor(this);
         cursor.beginEditBlock();
-        foreach (TextBlockData* line, d.lines)
-            appendLine(cursor, line);
+        foreach (const MessageData& data, d.queue) {
+            if (d.events || !data.event)
+                insert(cursor, data);
+        }
         cursor.endEditBlock();
-        d.lines.clear();
+        d.queue.clear();
     }
 
     if (d.dirty > 0) {
@@ -362,7 +362,11 @@ void TextDocument::flushLines()
 
 void TextDocument::receiveMessage(IrcMessage* message)
 {
-    append(d.formatter->formatMessage(message), message->timeStamp(), message->type());
+    MessageData data;
+    data.message = d.formatter->formatMessage(message);
+    data.timestamp = message->timeStamp();
+    data.event = message->type() == IrcMessage::Join || message->type() == IrcMessage::Part || message->type() == IrcMessage::Quit;
+    append(data);
     emit messageReceived(message);
 
     if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
@@ -380,16 +384,9 @@ void TextDocument::receiveMessage(IrcMessage* message)
 
 void TextDocument::rebuild()
 {
-    flushLines();
-    QTextBlock block = begin();
-    while (block.isValid()) {
-        TextBlockData* data = static_cast<TextBlockData*>(block.userData());
-        if (data)
-            d.lines += new TextBlockData(*data);
-        block = block.next();
-    }
     clear();
-    flushLines();
+    d.queue = d.allLines;
+    flush();
     if (d.rebuild > 0) {
         killTimer(d.rebuild);
         d.rebuild = 0;
@@ -402,7 +399,7 @@ void TextDocument::scheduleRebuild()
         d.rebuild = startTimer(isVisible() ? 0 : 1000);
 }
 
-void TextDocument::appendLine(QTextCursor& cursor, TextBlockData* line)
+void TextDocument::insert(QTextCursor& cursor, const MessageData& data)
 {
     cursor.movePosition(QTextCursor::End);
 
@@ -428,11 +425,8 @@ void TextDocument::appendLine(QTextCursor& cursor, TextBlockData* line)
         }
     }
 
-    QString message = tr("<span class='timestamp'>%1</span> %2").arg(line->timestamp.time().toString(d.timeStampFormat)).arg(line->message);
+    QString message = tr("<span class='timestamp'>%1</span> %2").arg(data.timestamp.time().toString(d.timeStampFormat)).arg(data.message);
     cursor.insertHtml(message);
-
-    QTextBlock block = cursor.block();
-    block.setUserData(line);
 
     QTextBlockFormat format = cursor.blockFormat();
     format.setLineHeight(125, QTextBlockFormat::ProportionalHeight);

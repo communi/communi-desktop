@@ -17,14 +17,20 @@
 
 #include <QTextDocument>
 #include <QStringList>
-#include <IrcMessage>
 #include <QMetaType>
 #include <QDateTime>
 #include <QMap>
 
 class IrcBuffer;
-class TextBlockData;
+class IrcMessage;
 class MessageFormatter;
+
+struct MessageData
+{
+    bool event;
+    QString message;
+    QDateTime timestamp;
+};
 
 class TextDocument : public QTextDocument
 {
@@ -50,6 +56,9 @@ public:
     bool isVisible() const;
     void setVisible(bool visible);
 
+    bool showEvents() const;
+    void setShowEvents(bool show);
+
     void drawBackground(QPainter* painter, const QRect& bounds);
     void drawForeground(QPainter* painter, const QRect& bounds);
 
@@ -58,7 +67,7 @@ public slots:
     void lowlight(int block = -1);
     void addHighlight(int block = -1);
     void removeHighlight(int block);
-    void append(const QString& message, const QDateTime& timestamp = QDateTime(), IrcMessage::Type = IrcMessage::Unknown);
+    void append(const MessageData& message);
     void receiveMessage(IrcMessage* message);
 
 signals:
@@ -72,17 +81,18 @@ protected:
     void timerEvent(QTimerEvent* event);
 
 private slots:
+    void flush();
     void rebuild();
-    void flushLines();
 
 private:
     void scheduleRebuild();
-    void appendLine(QTextCursor& cursor, TextBlockData* line);
+    void insert(QTextCursor& cursor, const MessageData& data);
 
     struct Private {
         int uc;
         int dirty;
         bool clone;
+        bool events;
         int rebuild;
         QString css;
         int lowlight;
@@ -90,7 +100,8 @@ private:
         IrcBuffer* buffer;
         QList<int> highlights;
         QString timeStampFormat;
-        QList<TextBlockData*> lines;
+        QList<MessageData> queue;
+        QList<MessageData> allLines;
         MessageFormatter* formatter;
     } d;
 };

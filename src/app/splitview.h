@@ -79,6 +79,7 @@ private:
     void addViewActions(QMenu* menu, BufferView* view);
     void addSplitActions(QMenu* menu, BufferView* view);
     void addZoomActions(QMenu* menu, BufferView* view);
+    void addShowActions(QMenu* menu, BufferView* view);
     void addGlobalActions(QMenu* menu);
 
     QVariantMap saveSplittedViews(const QSplitter* splitter) const;

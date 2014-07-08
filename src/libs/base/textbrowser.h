@@ -43,6 +43,8 @@ public:
 
     QMenu* createContextMenu(const QPoint& pos);
 
+    bool showEvents() const;
+
 public slots:
     void clear();
     void resetZoom();
@@ -51,6 +53,7 @@ public slots:
     void scrollToNextPage();
     void scrollToPreviousPage();
     void moveCursorToBottom();
+    void setShowEvents(bool show);
 
 signals:
     void queried(const QString& user);
@@ -73,6 +76,7 @@ private slots:
 
 private:
     struct Private {
+        bool events;
         QWidget* bud;
         TextShadow* shadow;
     } d;

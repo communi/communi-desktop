@@ -32,6 +32,7 @@ class TextShadow : public QFrame { Q_OBJECT };
 TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent)
 {
     d.bud = 0;
+    d.events = true;
     d.shadow = new TextShadow;
     d.shadow->setParent(this);
 
@@ -78,6 +79,7 @@ void TextBrowser::setDocument(TextDocument* document)
         if (document) {
             document->setVisible(true);
             document->setDefaultFont(font());
+            document->setShowEvents(d.events);
             connect(document->documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(keepAtBottom()));
             connect(document, SIGNAL(lineRemoved(int)), this, SLOT(keepPosition(int)));
         }
@@ -188,6 +190,21 @@ QMenu* TextBrowser::createContextMenu(const QPoint& pos)
         whoisAction->setData(nick);
     }
     return menu;
+}
+
+bool TextBrowser::showEvents() const
+{
+    return d.events;
+}
+
+void TextBrowser::setShowEvents(bool show)
+{
+    if (d.events != show) {
+        d.events = show;
+        TextDocument* doc = document();
+        if (doc)
+            doc->setShowEvents(show);
+    }
 }
 
 void TextBrowser::clear()
