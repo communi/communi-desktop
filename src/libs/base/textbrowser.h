@@ -39,6 +39,7 @@ public:
 
     bool isAtTop() const;
     bool isAtBottom() const;
+    bool isZoomed() const;
 
     QMenu* createContextMenu(const QPoint& pos);
 

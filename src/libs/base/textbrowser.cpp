@@ -147,6 +147,14 @@ bool TextBrowser::isAtBottom() const
     return verticalScrollBar()->value() >= verticalScrollBar()->maximum();
 }
 
+bool TextBrowser::isZoomed() const
+{
+    QFont f = font();
+    if (f.pointSize() != -1)
+        return f.pointSize() != QFont().pointSize();
+    return f.pixelSize() != QFont().pixelSize();
+}
+
 QMenu* TextBrowser::createContextMenu(const QPoint& pos)
 {
     // QTextEdit::createStandardContextMenu() expects document coordinates

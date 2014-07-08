@@ -478,6 +478,7 @@ void SplitView::addZoomActions(QMenu* menu, BufferView* view)
     zoomOutAction->setData(QVariant::fromValue(view));
 
     QAction* resetZoomAction = menu->addAction(tr("Reset zoom"), this, SLOT(resetZoom()), QKeySequence(tr("Ctrl+0")));
+    resetZoomAction->setEnabled(view->textBrowser()->isZoomed());
     resetZoomAction->setShortcutContext(Qt::WidgetShortcut);
     resetZoomAction->setData(QVariant::fromValue(view));
 }
