@@ -20,6 +20,10 @@ ThemeLoader::ThemeLoader(QObject* parent) : QObject(parent)
     d.themes.append(info.name());
     d.infos.insert(info.name(), info);
 
+    QDir inst(COMMUNI_INSTALL_THEMES);
+    if (inst.exists())
+        load(inst);
+
 #if defined(Q_OS_MAC)
     QDir dir(QApplication::applicationDirPath());
     if (dir.dirName() == "MacOS" && dir.cd("../Resources/themes"))
@@ -30,7 +34,7 @@ ThemeLoader::ThemeLoader(QObject* parent) : QObject(parent)
         load(dir);
 #elif defined(Q_OS_UNIX)
     QDir sys("/usr/share/themes/communi");
-    if (sys.exists())
+    if (sys != inst && sys.exists())
         load(sys);
     QDir home = QDir::home();
     if (home.cd(".local/share/themes/communi"))

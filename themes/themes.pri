@@ -10,16 +10,15 @@ RESOURCES += $$PWD/cute/cute.qrc
     OTHER_FILES += $$files(*.theme, true)
 }
 
-win32 {
-    themes.files = $$SOURCE_TREE/themes/dark
-    themes.path = $$[QT_INSTALL_BINS]/themes
-    INSTALLS += themes
-} else:mac {
+load(communi_installs.prf)
+isEmpty(COMMUNI_INSTALL_THEMES):error(COMMUNI_INSTALL_THEMES empty!)
+
+mac {
     themes.files = $$SOURCE_TREE/themes/dark
     themes.path = Contents/Resources/themes
     QMAKE_BUNDLE_DATA += themes
-} else:unix {
+} else {
     themes.files = $$SOURCE_TREE/themes/dark
-    themes.path = /usr/share/themes/communi
+    themes.path = $$COMMUNI_INSTALL_THEMES
     INSTALLS += themes
 }

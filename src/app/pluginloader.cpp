@@ -24,12 +24,10 @@ static QObjectList loadPlugins(const QStringList& paths)
     QObjectList instances;
     foreach (const QString& path, paths) {
         QDir dir(path);
-        if (dir.cd("communi")) {
-            foreach (const QFileInfo& file, dir.entryInfoList()) {
-                QPluginLoader loader(file.absoluteFilePath());
-                if (loader.load())
-                    instances += loader.instance();
-            }
+        foreach (const QFileInfo& file, dir.entryInfoList(QDir::Files)) {
+            QPluginLoader loader(file.absoluteFilePath());
+            if (loader.load())
+                instances += loader.instance();
         }
     }
     return instances;
@@ -44,14 +42,11 @@ static QObjectList pluginInstances()
 QStringList PluginLoader::paths()
 {
     QStringList lst;
-#if defined(Q_OS_MAC)
+    lst += COMMUNI_INSTALL_PLUGINS;
+#ifdef Q_OS_MAC
     QDir dir(QApplication::applicationFilePath());
     if (dir.cd("../../PlugIns"))
         lst += dir.absolutePath();
-#elif defined(Q_OS_WIN)
-    // TODO
-#elif defined(Q_OS_UNIX)
-    // TODO
 #endif
     return lst;
 }

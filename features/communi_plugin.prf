@@ -11,7 +11,10 @@ DESTDIR = $$BUILD_TREE/plugins
 DEPENDPATH += $$_PRO_FILE_PWD_
 INCLUDEPATH += $$_PRO_FILE_PWD_
 
+include(communi_installs.prf)
+isEmpty(COMMUNI_INSTALL_PLUGINS):error(COMMUNI_INSTALL_PLUGINS empty!)
+
 !mac {
-    target.path = $$[QT_INSTALL_PLUGINS]/communi
+    target.path = $$COMMUNI_INSTALL_PLUGINS
     INSTALLS += target
 }

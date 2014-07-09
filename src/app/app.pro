@@ -19,9 +19,17 @@ else:win32:LIBS += -lole32 -luuid
 else:unix:QT += dbus
 qtHaveModule(multimedia):QT += multimedia
 
-win32:target.path = $$[QT_INSTALL_BINS]
-else:mac:target.path = /Applications
-else:target.path = /usr/bin
+load(communi_installs.prf)
+isEmpty(COMMUNI_INSTALL_BINS):error(COMMUNI_INSTALL_BINS empty!)
+isEmpty(COMMUNI_INSTALL_PLUGINS):error(COMMUNI_INSTALL_PLUGINS empty!)
+isEmpty(COMMUNI_INSTALL_ICONS):error(COMMUNI_INSTALL_ICONS empty!)
+isEmpty(COMMUNI_INSTALL_DESKTOP):error(COMMUNI_INSTALL_DESKTOP empty!)
+isEmpty(COMMUNI_INSTALL_THEMES):error(COMMUNI_INSTALL_THEMES empty!)
+
+DEFINES += COMMUNI_INSTALL_PLUGINS=\\\"$$COMMUNI_INSTALL_PLUGINS\\\"
+DEFINES += COMMUNI_INSTALL_THEMES=\\\"$$COMMUNI_INSTALL_THEMES\\\"
+
+target.path = $$COMMUNI_INSTALL_BINS
 INSTALLS += target
 
 RESOURCES += ../../communi.qrc
@@ -31,9 +39,9 @@ mac:QMAKE_INFO_PLIST = ../../communi.plist
 
 unix:!mac {
     icons.files = ../../images/icons/*
-    icons.path = /usr/share/icons/hicolor
-    desktop.path = /usr/share/applications
+    icons.path = $$COMMUNI_INSTALL_ICONS
     desktop.files = ../../communi.desktop
+    desktop.path = $$COMMUNI_INSTALL_DESKTOP
     INSTALLS += icons desktop
 }
 
