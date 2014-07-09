@@ -3,6 +3,5 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS += monitor
 SUBDIRS += verifier
 SUBDIRS += znc

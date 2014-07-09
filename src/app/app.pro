@@ -73,6 +73,7 @@ SOURCES += $$PWD/overlay.cpp
 include(3rdparty/3rdparty.pri)
 include(dock/dock.pri)
 include(finder/finder.pri)
+include(monitor/monitor.pri)
 include(theme/theme.pri)
 include(tree/tree.pri)
 include(../../themes/themes.pri)

@@ -21,6 +21,7 @@ class IrcBuffer;
 class IrcMessage;
 class BufferView;
 class IrcConnection;
+class SystemMonitor;
 
 class MainWindow : public QMainWindow
 {
@@ -45,11 +46,6 @@ public slots:
 
 signals:
     void activated();
-    void screenLocked();
-    void screenUnlocked();
-    void screenSaverStarted();
-    void screenSaverStopped();
-
     void currentViewChanged(BufferView* view);
     void connectionAdded(IrcConnection* connection);
     void connectionRemoved(IrcConnection* connection);
@@ -80,6 +76,7 @@ private:
         Dock* dock;
         ChatPage* chatPage;
         QStackedWidget* stack;
+        SystemMonitor* monitor;
         QPointer<BufferView> view;
         QList<IrcConnection*> connections;
         QQueue<IrcConnection*> restoredConnections;

@@ -2,14 +2,10 @@
 # Communi
 ######################################################################
 
-TEMPLATE = lib
-COMMUNI += core
-CONFIG += communi_plugin
+DEPENDPATH += $$PWD
+INCLUDEPATH += $$PWD
 
-HEADERS += $$PWD/monitorplugin.h
 HEADERS += $$PWD/systemmonitor.h
-
-SOURCES += $$PWD/monitorplugin.cpp
 SOURCES += $$PWD/systemmonitor.cpp
 
 mac {

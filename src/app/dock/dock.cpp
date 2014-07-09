@@ -38,10 +38,6 @@ Dock::Dock(MainWindow* window) : QObject(window)
     d.active = false;
 
     connect(window, SIGNAL(activated()), this, SLOT(onWindowActivated()));
-    connect(window, SIGNAL(screenLocked()), this, SLOT(activateAlert()));
-    connect(window, SIGNAL(screenUnlocked()), this, SLOT(deactivateAlert()));
-    connect(window, SIGNAL(screenSaverStarted()), this, SLOT(activateAlert()));
-    connect(window, SIGNAL(screenSaverStopped()), this, SLOT(deactivateAlert()));
     connect(window, SIGNAL(connectionAdded(IrcConnection*)), this, SLOT(onConnectionAdded(IrcConnection*)));
     connect(window, SIGNAL(connectionRemoved(IrcConnection*)), this, SLOT(onConnectionRemoved(IrcConnection*)));
 
