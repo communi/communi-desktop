@@ -25,6 +25,9 @@ static QObjectList loadPlugins(const QStringList& paths)
     foreach (const QString& path, paths) {
         QDir dir(path);
         foreach (const QFileInfo& file, dir.entryInfoList(QDir::Files)) {
+            // blacklisted obsolete plugin
+            if (file.baseName() == "monitorplugin" || file.baseName() == "libmonitorplugin")
+                continue;
             QPluginLoader loader(file.absoluteFilePath());
             if (loader.load())
                 instances += loader.instance();
