@@ -28,10 +28,14 @@ static QObjectList loadPlugins(const QStringList& paths)
             // blacklisted obsolete plugin
             if (base.startsWith("monitorplugin") || base.startsWith("libmonitorplugin"))
                 continue;
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN)
             // avoid loading undesired files from %QTDIR%\bin
             if (base.startsWith("Qt5") || base.startsWith("Irc") || base.startsWith("Enginio")
                     || base.startsWith("icu") || file.suffix() != "dll")
+                continue;
+#elif defined(Q_OS_UNIX)
+            // avoid trying to load the whole /usr/bin
+            if (!base.startsWith("lib"))
                 continue;
 #endif
             QPluginLoader loader(file.absoluteFilePath());
