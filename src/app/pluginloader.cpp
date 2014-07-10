@@ -23,11 +23,17 @@ static QObjectList loadPlugins(const QStringList& paths)
 {
     QObjectList instances;
     foreach (const QString& path, paths) {
-        QDir dir(path);
-        foreach (const QFileInfo& file, dir.entryInfoList(QDir::Files)) {
+        foreach (const QFileInfo& file, QDir(path).entryInfoList(QDir::Files)) {
+            const QString base = file.baseName();
             // blacklisted obsolete plugin
-            if (file.baseName() == "monitorplugin" || file.baseName() == "libmonitorplugin")
+            if (base.startsWith("monitorplugin") || base.startsWith("libmonitorplugin"))
                 continue;
+#ifdef Q_OS_WIN
+            // avoid loading undesired files from %QTDIR%\bin
+            if (base.startsWith("Qt5") || base.startsWith("Irc") || base.startsWith("Enginio")
+                    || base.startsWith("icu") || file.suffix() != "dll")
+                continue;
+#endif
             QPluginLoader loader(file.absoluteFilePath());
             if (loader.load())
                 instances += loader.instance();
