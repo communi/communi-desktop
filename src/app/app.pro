@@ -8,7 +8,7 @@ else:TARGET = communi
 
 CONFIG += communi
 COMMUNI += core model util
-CONFIG += communi_base communi_plugins
+CONFIG += communi_base
 
 DESTDIR = ../../bin
 DEPENDPATH += $$PWD
@@ -34,8 +34,17 @@ INSTALLS += target
 
 RESOURCES += ../../communi.qrc
 win32:RC_FILE = ../../communi.rc
-mac:ICON = ../../images/communi.icns
-mac:QMAKE_INFO_PLIST = ../../communi.plist
+
+mac {
+    ICON = ../../images/communi.icns
+    QMAKE_INFO_PLIST = ../../communi.plist
+
+    plugins.files += $$BUILD_TREE/plugins/libfilterplugin.$$QMAKE_EXTENSION_SHLIB
+    plugins.files += $$BUILD_TREE/plugins/libverifierplugin.$$QMAKE_EXTENSION_SHLIB
+    plugins.files += $$BUILD_TREE/plugins/libzncplugin.$$QMAKE_EXTENSION_SHLIB
+    plugins.path = Contents/PlugIns
+    QMAKE_BUNDLE_DATA += plugins
+}
 
 unix:!mac {
     icons.files = ../../images/icons/*
