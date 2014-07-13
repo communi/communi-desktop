@@ -46,6 +46,14 @@ private slots:
             QMetaObject::invokeMethod(monitor, "online");
     }
 
+    void screenSaverActiveChanged(bool active)
+    {
+        if (active)
+            QMetaObject::invokeMethod(monitor, "screenSaverStarted");
+        else
+            QMetaObject::invokeMethod(monitor, "screenSaverStopped");
+    }
+
 private:
     SystemMonitor* monitor;
 };
@@ -54,14 +62,20 @@ void SystemMonitor::initialize()
 {
     d = new SystemMonitorPrivate(this);
 
-    QDBusConnection bus = QDBusConnection::systemBus();
-    bus.connect("org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager",
-                "org.freedesktop.NetworkManager", "StateChanged", d, SLOT(networkStateChanged(uint)));
+    QDBusConnection system = QDBusConnection::systemBus();
+    system.connect("org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager",
+                   "org.freedesktop.NetworkManager", "StateChanged", d, SLOT(networkStateChanged(uint)));
 
-    bus.connect("org.freedesktop.UPower", "/org/freedesktop/UPower",
-                "org.freedesktop.UPower", "Sleeping", d, SLOT(sleeping()));
-    bus.connect("org.freedesktop.UPower", "/org/freedesktop/UPower",
-                "org.freedesktop.UPower", "Resuming", d, SLOT(resuming()));
+    system.connect("org.freedesktop.UPower", "/org/freedesktop/UPower",
+                   "org.freedesktop.UPower", "Sleeping", d, SLOT(sleeping()));
+    system.connect("org.freedesktop.UPower", "/org/freedesktop/UPower",
+                   "org.freedesktop.UPower", "Resuming", d, SLOT(resuming()));
+
+    QDBusConnection session = QDBusConnection::sessionBus();
+    session.connect("org.freedesktop.ScreenSaver", "/ScreenSaver",
+                    "org.freedesktop.ScreenSaver", "ActiveChanged", d, SLOT(screenSaverActiveChanged(bool)));
+    session.connect("org.gnome.ScreenSaver", "/org/gnome/ScreenSaver",
+                    "org.gnome.ScreenSaver", "ActiveChanged", d, SLOT(screenSaverActiveChanged(bool)));
 }
 
 void SystemMonitor::uninitialize()
