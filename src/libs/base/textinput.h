@@ -19,9 +19,9 @@
 #include <QPointer>
 #include <QLineEdit>
 #include <QStringList>
+#include <IrcCompleter>
 
 class IrcBuffer;
-class IrcCompleter;
 class IrcCommandParser;
 
 class TextInput : public QLineEdit
@@ -53,7 +53,7 @@ private slots:
     void goBackward();
     void goForward();
     void sendInput();
-    void tryComplete();
+    void tryComplete(IrcCompleter::Direction direction);
     void doComplete(const QString& text, int cursor);
 
 private:
