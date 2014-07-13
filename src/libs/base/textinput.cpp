@@ -252,8 +252,13 @@ void TextInput::sendInput()
             if (cmd) {
                 cmd->setProperty("TextInput", true);
                 b->sendCommand(cmd);
-                if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::Notice || cmd->type() == IrcCommand::CtcpAction)
-                    b->receiveMessage(cmd->toMessage(c->nickName(), c));
+                if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::Notice || cmd->type() == IrcCommand::CtcpAction) {
+                    IrcMessage* msg = cmd->toMessage(c->nickName(), c);
+                    if (msg) {
+                        b->receiveMessage(msg);
+                        msg->deleteLater();
+                    }
+                }
             } else {
                 error = true;
             }

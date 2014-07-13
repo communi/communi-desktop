@@ -211,7 +211,11 @@ bool ChatPage::commandFilter(IrcCommand* command)
                 IrcCommand* command = IrcCommand::createMessage(target, message);
                 if (buffer->sendCommand(command)) {
                     IrcConnection* connection = buffer->connection();
-                    buffer->receiveMessage(command->toMessage(connection->nickName(), connection));
+                    IrcMessage* msg = command->toMessage(connection->nickName(), connection);
+                    if (msg) {
+                        buffer->receiveMessage(msg);
+                        msg->deleteLater();
+                    }
                 }
                 d.splitView->currentView()->textInput()->clear();
                 d.splitView->setCurrentBuffer(buffer);
@@ -225,7 +229,11 @@ bool ChatPage::commandFilter(IrcCommand* command)
                 IrcCommand* command = IrcCommand::createMessage(target, message);
                 if (buffer->sendCommand(command)) {
                     IrcConnection* connection = buffer->connection();
-                    buffer->receiveMessage(command->toMessage(connection->nickName(), connection));
+                    IrcMessage* msg = command->toMessage(connection->nickName(), connection);
+                    if (msg) {
+                        buffer->receiveMessage(msg);
+                        msg->deleteLater();
+                    }
                 }
             }
             d.splitView->currentView()->textInput()->clear();
