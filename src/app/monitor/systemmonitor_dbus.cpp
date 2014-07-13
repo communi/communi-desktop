@@ -25,16 +25,6 @@ public:
     }
 
 private slots:
-    void sleeping()
-    {
-        QMetaObject::invokeMethod(monitor, "sleep");
-    }
-
-    void resuming()
-    {
-        QMetaObject::invokeMethod(monitor, "wake");
-    }
-
     void networkStateChanged(uint state)
     {
         static const uint NM_STATE_DISCONNECTED = 20;
@@ -67,9 +57,9 @@ void SystemMonitor::initialize()
                    "org.freedesktop.NetworkManager", "StateChanged", d, SLOT(networkStateChanged(uint)));
 
     system.connect("org.freedesktop.UPower", "/org/freedesktop/UPower",
-                   "org.freedesktop.UPower", "Sleeping", d, SLOT(sleeping()));
+                   "org.freedesktop.UPower", "Sleeping", this, SIGNAL(sleep()));
     system.connect("org.freedesktop.UPower", "/org/freedesktop/UPower",
-                   "org.freedesktop.UPower", "Resuming", d, SLOT(resuming()));
+                   "org.freedesktop.UPower", "Resuming", this, SIGNAL(wake()));
 
     QDBusConnection session = QDBusConnection::sessionBus();
     session.connect("org.freedesktop.ScreenSaver", "/ScreenSaver",
