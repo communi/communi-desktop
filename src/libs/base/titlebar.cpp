@@ -76,6 +76,7 @@ TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
     d.menuButton->setObjectName("menu");
     d.menuButton->setMenu(new TitleMenu(d.menuButton));
     d.menuButton->setPopupMode(QToolButton::InstantPopup);
+    d.menuButton->setFocusPolicy(Qt::NoFocus);
     d.menuButton->adjustSize();
 
     adjustSize();
