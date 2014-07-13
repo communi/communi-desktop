@@ -213,6 +213,7 @@ bool ChatPage::commandFilter(IrcCommand* command)
                     IrcConnection* connection = buffer->connection();
                     buffer->receiveMessage(command->toMessage(connection->nickName(), connection));
                 }
+                d.splitView->currentView()->textInput()->clear();
                 d.splitView->setCurrentBuffer(buffer);
                 return true;
             }
@@ -227,6 +228,7 @@ bool ChatPage::commandFilter(IrcCommand* command)
                     buffer->receiveMessage(command->toMessage(connection->nickName(), connection));
                 }
             }
+            d.splitView->currentView()->textInput()->clear();
             d.splitView->setCurrentBuffer(buffer);
             return true;
         } else if (cmd == "SET") {
