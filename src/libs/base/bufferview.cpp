@@ -53,6 +53,14 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     resetZoom->setContext(Qt::WidgetWithChildrenShortcut);
     connect(resetZoom, SIGNAL(activated()), d.textBrowser, SLOT(resetZoom()));
 
+    QShortcut* pageDown = new QShortcut(QKeySequence::MoveToNextPage, this);
+    pageDown->setContext(Qt::WidgetWithChildrenShortcut);
+    connect(pageDown, SIGNAL(activated()), d.textBrowser, SLOT(scrollToNextPage()));
+
+    QShortcut* pageUp = new QShortcut(QKeySequence::MoveToPreviousPage, this);
+    pageUp->setContext(Qt::WidgetWithChildrenShortcut);
+    connect(pageUp, SIGNAL(activated()), d.textBrowser, SLOT(scrollToPreviousPage()));
+
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setSpacing(0);
     layout->setMargin(0);
