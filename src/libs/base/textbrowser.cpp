@@ -39,6 +39,7 @@ TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent)
     setOpenLinks(false);
     setTabChangesFocus(true);
     setContextMenuPolicy(Qt::CustomContextMenu);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     connect(this, SIGNAL(anchorClicked(QUrl)), this, SLOT(onAnchorClicked(QUrl)));
 }

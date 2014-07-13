@@ -9,10 +9,12 @@
 
 #include "connectpage.h"
 #include "simplecrypt.h"
+#include "scrollbarstyle.h"
 #include <QRegExpValidator>
 #include <IrcConnection>
 #include <QStringList>
 #include <QPushButton>
+#include <QScrollBar>
 #include <QCompleter>
 #include <QSettings>
 #include <QShortcut>
@@ -358,6 +360,9 @@ QVariant ConnectPage::defaultValue(const QString& key, const QString& field, con
 void ConnectPage::init(IrcConnection *connection)
 {
     ui.setupUi(this);
+
+    ui.scrollArea->horizontalScrollBar()->setStyle(ScrollBarStyle::narrow());
+    ui.scrollArea->verticalScrollBar()->setStyle(ScrollBarStyle::narrow());
 
     ui.connection = connection;
     ui.displayNameCompleter = 0;

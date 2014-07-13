@@ -22,40 +22,18 @@
 #include "overlay.h"
 #include "finder.h"
 #include "mainwindow.h"
+#include "scrollbarstyle.h"
 #include "messagehandler.h"
 #include <QCoreApplication>
 #include <IrcCommandParser>
 #include <IrcBufferModel>
-#include <QStyleFactory>
 #include <IrcConnection>
 #include <QStringList>
-#include <QProxyStyle>
 #include <QScrollBar>
 #include <IrcChannel>
 #include <IrcBuffer>
 #include <QSettings>
 #include <Irc>
-
-class ProxyStyle : public QProxyStyle
-{
-public:
-    static ProxyStyle* instance()
-    {
-        static ProxyStyle style;
-        return &style;
-    }
-
-    int styleHint(StyleHint hint, const QStyleOption *option = 0,
-                  const QWidget *widget = 0, QStyleHintReturn *returnData = 0) const
-    {
-        if (hint == QStyle::SH_ScrollBar_Transient)
-            return 1;
-        return QProxyStyle::styleHint(hint, option, widget, returnData);
-    }
-
-private:
-    ProxyStyle() : QProxyStyle(QStyleFactory::create("fusion")) { }
-};
 
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 {
@@ -66,8 +44,7 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
     addWidget(d.splitView);
 
 #if QT_VERSION >= 0x050300 && !defined(Q_OS_MAC)
-    d.treeWidget->horizontalScrollBar()->setStyle(ProxyStyle::instance());
-    d.treeWidget->verticalScrollBar()->setStyle(ProxyStyle::instance());
+    d.treeWidget->verticalScrollBar()->setStyle(ScrollBarStyle::expanding());
 #endif
 
     connect(d.treeWidget, SIGNAL(bufferClosed(IrcBuffer*)), this, SLOT(closeBuffer(IrcBuffer*)));
@@ -365,10 +342,8 @@ void ChatPage::addView(BufferView* view)
     bar->setStyleSheet(d.theme.style());
 
 #if QT_VERSION >= 0x050300 && !defined(Q_OS_MAC)
-    view->textBrowser()->horizontalScrollBar()->setStyle(ProxyStyle::instance());
-    view->textBrowser()->verticalScrollBar()->setStyle(ProxyStyle::instance());
-    view->listView()->horizontalScrollBar()->setStyle(ProxyStyle::instance());
-    view->listView()->verticalScrollBar()->setStyle(ProxyStyle::instance());
+    view->textBrowser()->verticalScrollBar()->setStyle(ScrollBarStyle::expanding());
+    view->listView()->verticalScrollBar()->setStyle(ScrollBarStyle::expanding());
 #endif
 
     view->textInput()->setParser(createParser(view));

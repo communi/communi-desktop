@@ -8,15 +8,20 @@
  */
 
 #include "settingspage.h"
+#include "scrollbarstyle.h"
 #include "themeloader.h"
 #include "themewidget.h"
 #include "themeinfo.h"
 #include <QPushButton>
+#include <QScrollBar>
 #include <QShortcut>
 
 SettingsPage::SettingsPage(QWidget* parent) : QWidget(parent)
 {
     ui.setupUi(this);
+
+    ui.scrollArea->horizontalScrollBar()->setStyle(ScrollBarStyle::narrow());
+    ui.scrollArea->verticalScrollBar()->setStyle(ScrollBarStyle::narrow());
 
     connect(ui.buttonBox, SIGNAL(accepted()), this, SIGNAL(accepted()));
     connect(ui.buttonBox, SIGNAL(rejected()), this, SIGNAL(rejected()));
