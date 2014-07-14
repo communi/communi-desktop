@@ -700,6 +700,10 @@ QMenu* TreeWidget::createContextMenu(TreeItem* item)
     const bool channel = item->buffer()->isChannel();
 
     if (!child) {
+        QAction* editAction = menu->addAction(tr("Edit"), this, SLOT(onEditTriggered()));
+        editAction->setData(QVariant::fromValue(item));
+        menu->addSeparator();
+
         if (connected) {
             QAction* disconnectAction = menu->addAction(tr("Disconnect"));
             connect(disconnectAction, SIGNAL(triggered()), item->connection(), SLOT(setDisabled()));
@@ -725,13 +729,6 @@ QMenu* TreeWidget::createContextMenu(TreeItem* item)
     QAction* closeAction = menu->addAction(tr("Close"), this, SLOT(onCloseTriggered()), QKeySequence::Close);
     closeAction->setShortcutContext(Qt::WidgetShortcut);
     closeAction->setData(QVariant::fromValue(item));
-
-    if (!child) {
-        menu->addSeparator();
-        QAction* editAction = menu->addAction(tr("Edit"), this, SLOT(onEditTriggered()));
-        editAction->setData(QVariant::fromValue(item));
-        editAction->setEnabled(!connected);
-    }
 
     return menu;
 }
