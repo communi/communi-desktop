@@ -531,7 +531,7 @@ void SplitView::showContextMenu(const QPoint& pos)
         QAction* restoreViews = 0;
 
         QSplitter* splitter = qobject_cast<QSplitter*>(browser->parentWidget());
-        if (splitter && !anchor.startsWith("nick:")) {
+        if (splitter && anchor.isEmpty()) {
             BufferView* view = qobject_cast<BufferView*>(splitter->parentWidget());
             if (view) {
                 menu->addSeparator();
