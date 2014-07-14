@@ -197,10 +197,10 @@ BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
         addViewActions(menu, view);
         menu->addSeparator();
         addShowActions(menu, view);
-        QMenu* zoom = menu->addMenu(tr("Zoom"));
-        addZoomActions(zoom, view);
-        QMenu* split = menu->addMenu(tr("Split"));
-        addSplitActions(split, view);
+        menu->addSeparator();
+        addZoomActions(menu, view);
+        menu->addSeparator();
+        addSplitActions(menu, view);
         menu->addSeparator();
         addGlobalActions(menu);
     }
@@ -536,10 +536,10 @@ void SplitView::showContextMenu(const QPoint& pos)
             if (view) {
                 menu->addSeparator();
                 addShowActions(menu, view);
-                QMenu* zoom = menu->addMenu(tr("Zoom"));
-                addZoomActions(zoom, view);
-                QMenu* split = menu->addMenu(tr("Split"));
-                addSplitActions(split, view);
+                menu->addSeparator();
+                addZoomActions(menu, view);
+                menu->addSeparator();
+                addSplitActions(menu, view);
             }
 
             QAction* separator = 0;
