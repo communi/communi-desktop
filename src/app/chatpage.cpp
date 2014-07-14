@@ -243,6 +243,7 @@ void ChatPage::addConnection(IrcConnection* connection)
 
     connect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(addBuffer(IrcBuffer*)));
     connect(connection, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onSocketError()));
+    connect(connection, SIGNAL(secureError()), this, SLOT(onSecureError()));
 
     MessageHandler* handler = new MessageHandler(bufferModel);
     handler->setDefaultBuffer(serverBuffer);
@@ -385,6 +386,24 @@ void ChatPage::onSocketError()
                 TreeItem* item = d.treeWidget->connectionItem(connection);
                 if (item && d.treeWidget->currentItem() != item)
                     d.treeWidget->highlightItem(item);
+            }
+        }
+    }
+}
+
+void ChatPage::onSecureError()
+{
+    IrcConnection* connection = qobject_cast<IrcConnection*>(sender());
+    if (connection && connection->status() == IrcConnection::Error) {
+        IrcBufferModel* model = connection->findChild<IrcBufferModel*>(); // TODO
+        if (model) {
+            IrcBuffer* buffer = model->get(0);
+            if (buffer) {
+                QStringList params = QStringList() << connection->nickName() << tr("Unable to establish secure connection.");
+                IrcMessage* message = IrcMessage::fromParameters(buffer->title(), QString::number(Irc::ERR_UNKNOWNERROR), params, connection);
+                foreach (TextDocument* doc, buffer->findChildren<TextDocument*>())
+                    doc->receiveMessage(message);
+                delete message;
             }
         }
     }

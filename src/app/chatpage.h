@@ -71,6 +71,7 @@ private slots:
     void setupDocument(TextDocument* document);
     void onCurrentViewChanged(BufferView* current, BufferView* previous);
     void onSocketError();
+    void onSecureError();
 
 private:
     static IrcCommandParser* createParser(QObject* parent);
