@@ -55,6 +55,7 @@ ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 
     connect(d.splitView, SIGNAL(viewAdded(BufferView*)), this, SLOT(addView(BufferView*)));
     connect(d.splitView, SIGNAL(viewRemoved(BufferView*)), this, SLOT(removeView(BufferView*)));
+    connect(d.splitView, SIGNAL(currentBufferChanged(IrcBuffer*)), this, SLOT(onCurrentBufferChanged(IrcBuffer*)));
     connect(d.splitView, SIGNAL(currentViewChanged(BufferView*,BufferView*)), this, SLOT(onCurrentViewChanged(BufferView*,BufferView*)));
 
     setStretchFactor(1, 1);
@@ -248,7 +249,6 @@ void ChatPage::addConnection(IrcConnection* connection)
     MessageHandler* handler = new MessageHandler(bufferModel);
     handler->setDefaultBuffer(serverBuffer);
     handler->setCurrentBuffer(serverBuffer);
-    connect(d.splitView, SIGNAL(currentBufferChanged(IrcBuffer*)), handler, SLOT(setCurrentBuffer(IrcBuffer*)));
 
     addBuffer(serverBuffer);
     if (!d.treeWidget->currentBuffer())
@@ -360,6 +360,13 @@ void ChatPage::addView(BufferView* view)
 void ChatPage::removeView(BufferView* view)
 {
     PluginLoader::instance()->viewRemoved(view);
+}
+
+void ChatPage::onCurrentBufferChanged(IrcBuffer* buffer)
+{
+    MessageHandler* handler = buffer->model()->findChild<MessageHandler*>();
+    if (handler)
+        handler->setCurrentBuffer(buffer);
 }
 
 void ChatPage::onCurrentViewChanged(BufferView* current, BufferView* previous)
