@@ -77,6 +77,7 @@ signals:
 
 protected:
     QSize sizeHint() const;
+    bool viewportEvent(QEvent* event);
     void contextMenuEvent(QContextMenuEvent* event);
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);

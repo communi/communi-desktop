@@ -30,7 +30,9 @@
 #include <IrcBuffer>
 #include <QShortcut>
 #include <QBitArray>
+#include <QToolTip>
 #include <QAction>
+#include <QStyle>
 #include <QTimer>
 #include <QMenu>
 
@@ -320,6 +322,30 @@ QSize TreeWidget::sizeHint() const
 {
     const int w = 16 * fontMetrics().width('#') + verticalScrollBar()->sizeHint().width();
     return QSize(w, QTreeWidget::sizeHint().height());
+}
+
+bool TreeWidget::viewportEvent(QEvent* event)
+{
+    if (event->type() == QEvent::ToolTip) {
+        QHelpEvent* he = static_cast<QHelpEvent*>(event);
+        TreeItem* item = static_cast<TreeItem*>(itemAt(he->pos()));
+        if (item && !item->parentItem() && !item->toolTip(0).isEmpty()) {
+            QStyleOptionViewItem opt = viewOptions();
+            opt.icon = item->icon(0);
+            opt.rect = visualItemRect(item);
+            opt.features |= QStyleOptionViewItem::HasDecoration;
+            QRect rect = style()->subElementRect(QStyle::SE_ItemViewItemDecoration, &opt, this);
+            if (rect.contains(he->pos())) {
+#if QT_VERSION >= 0x050200
+                QToolTip::showText(he->globalPos(), item->toolTip(0), this, rect, 1250);
+#else
+                QToolTip::showText(he->globalPos(), item->toolTip(0), this, rect);
+#endif
+            }
+        }
+        return true;
+    }
+    return QTreeWidget::viewportEvent(event);
 }
 
 void TreeWidget::contextMenuEvent(QContextMenuEvent* event)
