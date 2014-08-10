@@ -11,9 +11,10 @@ before_install:
   - cd libcommuni && qmake -qt=qt5 && make && sudo make install && cd ..
 cache: apt
 script:
+  - nproc
   - qmake -qt=qt5 -v
   - qmake -qt=qt5
-  - make
+  - make -j$(nproc)
 notifications:
   email: false
   irc:
