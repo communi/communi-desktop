@@ -196,8 +196,6 @@ BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
         QMenu* menu = view->titleBar()->menu();
         addViewActions(menu, view);
         menu->addSeparator();
-        addShowActions(menu, view);
-        menu->addSeparator();
         addZoomActions(menu, view);
         menu->addSeparator();
         addSplitActions(menu, view);
@@ -288,7 +286,6 @@ QVariantMap SplitView::saveSplittedViews(const QSplitter* splitter) const
             if (QSplitter* sp = bv->findChild<QSplitter*>())
                 buf.insert("state", sp->saveState());
             buf.insert("fontSize", bv->textBrowser()->font().pointSize());
-            buf.insert("showEvents", bv->textBrowser()->showEvents());
             buffers += buf;
         }
     }
@@ -337,8 +334,6 @@ void SplitView::restoreSplittedViews(QSplitter* splitter, const QVariantMap& sta
                 font.setPointSize(buf.value("fontSize").toInt());
                 bv->textBrowser()->setFont(font);
             }
-            if (buf.contains("showEvents"))
-                bv->textBrowser()->setShowEvents(buf.value("showEvents").toBool());
             if (buf.value("current", false).toBool())
                 setCurrentView(bv);
             bv->setObjectName("__unrestored__");
@@ -488,17 +483,6 @@ void SplitView::addZoomActions(QMenu* menu, BufferView* view)
     resetZoomAction->setData(QVariant::fromValue(view));
 }
 
-void SplitView::addShowActions(QMenu* menu, BufferView* view)
-{
-    TextBrowser* browser = view->textBrowser();
-    if (browser) {
-        QAction* eventsAction = menu->addAction(tr("Show events"));
-        eventsAction->setCheckable(true);
-        eventsAction->setChecked(browser->showEvents());
-        connect(eventsAction, SIGNAL(toggled(bool)), browser, SLOT(setShowEvents(bool)));
-    }
-}
-
 void SplitView::addGlobalActions(QMenu* menu)
 {
     QAction* settingsAction = menu->addAction(tr("Settings"), window(), SLOT(showSettings()), QKeySequence::Preferences);
@@ -534,8 +518,6 @@ void SplitView::showContextMenu(const QPoint& pos)
         if (splitter && anchor.isEmpty()) {
             BufferView* view = qobject_cast<BufferView*>(splitter->parentWidget());
             if (view) {
-                menu->addSeparator();
-                addShowActions(menu, view);
                 menu->addSeparator();
                 addZoomActions(menu, view);
                 menu->addSeparator();

@@ -17,19 +17,35 @@
 
 #include <QTextDocument>
 #include <QStringList>
+#include <IrcMessage>
 #include <QMetaType>
 #include <QDateTime>
 #include <QMap>
+#include <QSet>
 
 class IrcBuffer;
-class IrcMessage;
 class MessageFormatter;
 
 struct MessageData
 {
-    bool event;
+    bool isEvent() const
+    {
+        return types.contains(IrcMessage::Join) ||
+               types.contains(IrcMessage::Nick) ||
+               types.contains(IrcMessage::Part) ||
+               types.contains(IrcMessage::Quit);
+    }
+    void merge(const MessageData& other)
+    {
+        types.unite(other.types);
+        prefixes.unite(other.prefixes);
+        lines += other.lines;
+    }
+    QSet<int> types;
+    QSet<QString> prefixes;
     QString message;
     QDateTime timestamp;
+    QStringList lines;
 };
 
 class TextDocument : public QTextDocument
@@ -55,9 +71,6 @@ public:
 
     bool isVisible() const;
     void setVisible(bool visible);
-
-    bool showEvents() const;
-    void setShowEvents(bool show);
 
     void drawBackground(QPainter* painter, const QRect& bounds);
     void drawForeground(QPainter* painter, const QRect& bounds);
@@ -92,7 +105,6 @@ private:
         int uc;
         int dirty;
         bool clone;
-        bool events;
         int rebuild;
         QString css;
         int lowlight;

@@ -24,6 +24,7 @@
 #include <IrcBuffer>
 #include <QKeyEvent>
 #include <QPainter>
+#include <QToolTip>
 #include <QAction>
 #include <QMenu>
 
@@ -80,7 +81,6 @@ void TextBrowser::setDocument(TextDocument* document)
         if (document) {
             document->setVisible(true);
             document->setDefaultFont(font());
-            document->setShowEvents(d.events);
             connect(document->documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(keepAtBottom()));
             connect(document, SIGNAL(lineRemoved(int)), this, SLOT(keepPosition(int)));
         }
@@ -100,6 +100,14 @@ QWidget* TextBrowser::buddy() const
 void TextBrowser::setBuddy(QWidget* buddy)
 {
     d.bud = buddy;
+}
+
+void TextBrowser::mousePressEvent(QMouseEvent* event)
+{
+    const QUrl url(anchorAt(event->pos()));
+    if (url.scheme() == "nick")
+        QToolTip::showText(event->globalPos(), QByteArray::fromPercentEncoding(url.fragment().toUtf8()), viewport());
+    QTextBrowser::mousePressEvent(event);
 }
 
 void TextBrowser::keyPressEvent(QKeyEvent* event)
@@ -186,26 +194,11 @@ QMenu* TextBrowser::createContextMenu(const QPoint& pos)
         menu->insertAction(queryAction, whoisAction);
         connect(whoisAction, SIGNAL(triggered()), this, SLOT(onWhoisTriggered()));
 
-        QString nick = QUrl(anchor).toString(QUrl::RemoveScheme);
+        QString nick = QUrl(anchor).toString(QUrl::RemoveScheme | QUrl::RemoveFragment);
         queryAction->setData(nick);
         whoisAction->setData(nick);
     }
     return menu;
-}
-
-bool TextBrowser::showEvents() const
-{
-    return d.events;
-}
-
-void TextBrowser::setShowEvents(bool show)
-{
-    if (d.events != show) {
-        d.events = show;
-        TextDocument* doc = document();
-        if (doc)
-            doc->setShowEvents(show);
-    }
 }
 
 void TextBrowser::clear()
@@ -302,9 +295,7 @@ void TextBrowser::moveShadow(int offset)
 
 void TextBrowser::onAnchorClicked(const QUrl& url)
 {
-    if (url.scheme() == "nick")
-        emit queried(url.toString(QUrl::RemoveScheme));
-    else
+    if (url.scheme() != "nick")
         QDesktopServices::openUrl(url);
     clearFocus();
     d.bud->setFocus();

@@ -22,7 +22,6 @@
 #include <QStyleOption>
 #include <QTextCursor>
 #include <QTextBlock>
-#include <IrcMessage>
 #include <IrcBuffer>
 #include <QPalette>
 #include <QPointer>
@@ -74,7 +73,6 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
     d.rebuild = -1;
     d.lowlight = -1;
     d.clone = false;
-    d.events = true;
     d.buffer = buffer;
     d.visible = false;
 
@@ -129,7 +127,6 @@ TextDocument* TextDocument::clone()
     // TODO:
     doc->d.uc = d.uc;
     doc->d.css = d.css;
-    doc->d.events = d.events;
     doc->d.lowlight = d.lowlight;
     doc->d.buffer = d.buffer;
     doc->d.highlights = d.highlights;
@@ -180,19 +177,6 @@ void TextDocument::setVisible(bool visible)
     }
 }
 
-bool TextDocument::showEvents() const
-{
-    return d.events;
-}
-
-void TextDocument::setShowEvents(bool show)
-{
-    if (d.events != show) {
-        d.events = show;
-        rebuild();
-    }
-}
-
 void TextDocument::lowlight(int block)
 {
     if (block == -1)
@@ -233,20 +217,36 @@ void TextDocument::reset()
 void TextDocument::append(const MessageData& data)
 {
     if (!data.message.isEmpty()) {
-        d.allLines += data;
-        if (d.events || !data.event) {
+        MessageData msg = data;
+        if (msg.isEvent() && !d.allLines.isEmpty() && d.allLines.last().isEvent()) {
+            // merge to consecutive events
+            msg.merge(d.allLines.takeLast());
+            d.formatter->setTimeStampFormat(d.timeStampFormat);
+            msg.lines += d.formatter->formatTimestamp(msg.message, msg.timestamp);
+            d.formatter->setTimeStampFormat(QString());
+            msg.message = d.formatter->formatEvents(msg.types.toList(), msg.prefixes.toList(), msg.lines, msg.timestamp);
             if (d.dirty == 0 || d.visible) {
                 QTextCursor cursor(this);
                 cursor.beginEditBlock();
-                insert(cursor, data);
+                cursor.movePosition(QTextCursor::End);
+                cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
+                cursor.removeSelectedText();
+                cursor.deletePreviousChar();
                 cursor.endEditBlock();
-            } else {
-                if (d.dirty <= 0) {
-                    d.dirty = startTimer(delay);
-                    delay += 1000;
-                }
-                d.queue += data;
             }
+        }
+        d.allLines += msg;
+        if (d.dirty == 0 || d.visible) {
+            QTextCursor cursor(this);
+            cursor.beginEditBlock();
+            insert(cursor, msg);
+            cursor.endEditBlock();
+        } else {
+            if (d.dirty <= 0) {
+                d.dirty = startTimer(delay);
+                delay += 1000;
+            }
+            d.queue += msg;
         }
     }
 }
@@ -346,10 +346,8 @@ void TextDocument::flush()
     if (!d.queue.isEmpty()) {
         QTextCursor cursor(this);
         cursor.beginEditBlock();
-        foreach (const MessageData& data, d.queue) {
-            if (d.events || !data.event)
-                insert(cursor, data);
-        }
+        foreach (const MessageData& data, d.queue)
+            insert(cursor, data);
         cursor.endEditBlock();
         d.queue.clear();
     }
@@ -365,7 +363,8 @@ void TextDocument::receiveMessage(IrcMessage* message)
     MessageData data;
     data.message = d.formatter->formatMessage(message);
     data.timestamp = message->timeStamp();
-    data.event = message->type() == IrcMessage::Join || message->type() == IrcMessage::Part || message->type() == IrcMessage::Quit;
+    data.types.insert(message->type());
+    data.prefixes.insert(message->prefix());
     append(data);
     emit messageReceived(message);
 
@@ -425,8 +424,9 @@ void TextDocument::insert(QTextCursor& cursor, const MessageData& data)
         }
     }
 
-    QString message = tr("<span class='timestamp'>%1</span> %2").arg(data.timestamp.time().toString(d.timeStampFormat)).arg(data.message);
-    cursor.insertHtml(message);
+    d.formatter->setTimeStampFormat(d.timeStampFormat);
+    cursor.insertHtml(d.formatter->formatTimestamp(data.message, data.timestamp));
+    d.formatter->setTimeStampFormat(QString());
 
     QTextBlockFormat format = cursor.blockFormat();
     format.setLineHeight(125, QTextBlockFormat::ProportionalHeight);

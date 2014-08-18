@@ -43,8 +43,6 @@ public:
 
     QMenu* createContextMenu(const QPoint& pos);
 
-    bool showEvents() const;
-
 public slots:
     void clear();
     void resetZoom();
@@ -53,13 +51,13 @@ public slots:
     void scrollToNextPage();
     void scrollToPreviousPage();
     void moveCursorToBottom();
-    void setShowEvents(bool show);
 
 signals:
     void queried(const QString& user);
     void documentChanged(TextDocument* document);
 
 protected:
+    void mousePressEvent(QMouseEvent* event);
     void keyPressEvent(QKeyEvent* event);
     void paintEvent(QPaintEvent* event);
     void resizeEvent(QResizeEvent* event);
