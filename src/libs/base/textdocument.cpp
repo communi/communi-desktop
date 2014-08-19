@@ -231,6 +231,8 @@ void TextDocument::append(const MessageData& data)
                 cursor.deletePreviousChar();
                 cursor.endEditBlock();
             }
+        } else {
+            ++d.uc;
         }
         d.allLines += msg;
         if (d.dirty == 0 || d.visible) {
@@ -431,8 +433,6 @@ void TextDocument::insert(QTextCursor& cursor, const MessageData& data)
     QTextBlockFormat format = cursor.blockFormat();
     format.setLineHeight(125, QTextBlockFormat::ProportionalHeight);
     cursor.setBlockFormat(format);
-
-    ++d.uc;
 }
 
 #include "textdocument.moc"
