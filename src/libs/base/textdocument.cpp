@@ -221,9 +221,6 @@ void TextDocument::append(const MessageData& data)
         if (msg.isEvent() && !d.allLines.isEmpty() && d.allLines.last().isEvent()) {
             // merge to consecutive events
             msg.merge(d.allLines.takeLast());
-            d.formatter->setTimeStampFormat(d.timeStampFormat);
-            msg.lines += d.formatter->formatTimestamp(msg.message, msg.timestamp);
-            d.formatter->setTimeStampFormat(QString());
             msg.message = d.formatter->formatEvents(msg.types.toList(), msg.prefixes.toList(), msg.lines, msg.timestamp);
             if (d.dirty == 0 || d.visible) {
                 QTextCursor cursor(this);
@@ -361,8 +358,11 @@ void TextDocument::flush()
 void TextDocument::receiveMessage(IrcMessage* message)
 {
     MessageData data;
-    data.message = d.formatter->formatMessage(message);
     data.timestamp = message->timeStamp();
+    data.message = d.formatter->formatMessage(message);
+    d.formatter->setTimeStampFormat(d.timeStampFormat);
+    data.lines += d.formatter->formatTimestamp(data.message, data.timestamp);
+    d.formatter->setTimeStampFormat(QString());
     data.types.insert(message->type());
     data.prefixes.insert(message->prefix());
     append(data);

@@ -106,7 +106,7 @@ void TextBrowser::mousePressEvent(QMouseEvent* event)
 {
     const QUrl url(anchorAt(event->pos()));
     if (url.scheme() == "nick")
-        QToolTip::showText(event->globalPos(), QByteArray::fromPercentEncoding(url.fragment().toUtf8()), viewport());
+        QToolTip::showText(event->globalPos(), QByteArray::fromBase64(url.fragment().toUtf8()), viewport());
     QTextBrowser::mousePressEvent(event);
 }
 
