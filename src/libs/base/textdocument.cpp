@@ -396,7 +396,7 @@ void TextDocument::rebuild()
 
 void TextDocument::scheduleRebuild()
 {
-    if (d.rebuild < 0)
+    if (d.rebuild < 0 && !isEmpty())
         d.rebuild = startTimer(isVisible() ? 0 : 1000);
 }
 
