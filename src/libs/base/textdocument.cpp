@@ -400,6 +400,19 @@ void TextDocument::scheduleRebuild()
         d.rebuild = startTimer(isVisible() ? 0 : 1000);
 }
 
+void TextDocument::shiftLights(int diff)
+{
+    QList<int>::iterator it = d.highlights.begin();
+    while (it != d.highlights.end()) {
+        *it -= diff;
+        if (*it < 0)
+            it = d.highlights.erase(it);
+        else
+            ++it;
+    }
+    d.lowlight -= diff;
+}
+
 void TextDocument::insert(QTextCursor& cursor, const MessageData& data)
 {
     cursor.movePosition(QTextCursor::End);
@@ -412,17 +425,7 @@ void TextDocument::insert(QTextCursor& cursor, const MessageData& data)
 
         if (count >= max) {
             emit lineRemoved(qRound(br.bottom()));
-
-            const int diff = max - count + 1;
-            QList<int>::iterator it = d.highlights.begin();
-            while (it != d.highlights.end()) {
-                *it -= diff;
-                if (*it < 0)
-                    it = d.highlights.erase(it);
-                else
-                    ++it;
-            }
-            d.lowlight -= diff;
+            shiftLights(max - count + 1);
         }
     }
 

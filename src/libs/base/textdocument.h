@@ -100,6 +100,7 @@ private slots:
 
 private:
     void scheduleRebuild();
+    void shiftLights(int diff);
     void insert(QTextCursor& cursor, const MessageData& data);
 
     struct Private {
