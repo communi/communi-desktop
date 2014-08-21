@@ -105,8 +105,8 @@ void TextBrowser::setBuddy(QWidget* buddy)
 void TextBrowser::mousePressEvent(QMouseEvent* event)
 {
     const QUrl url(anchorAt(event->pos()));
-    if (url.scheme() == "nick")
-        QToolTip::showText(event->globalPos(), QByteArray::fromBase64(url.fragment().toUtf8()), viewport());
+    if (url.scheme() == "tooltip")
+        QToolTip::showText(event->globalPos(), QByteArray::fromBase64(url.toString(QUrl::RemoveScheme).toUtf8()), viewport());
     QTextBrowser::mousePressEvent(event);
 }
 

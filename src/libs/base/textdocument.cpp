@@ -13,7 +13,6 @@
 */
 
 #include "textdocument.h"
-#include "messageformatter.h"
 #include <QAbstractTextDocumentLayout>
 #include <QTextDocumentFragment>
 #include <IrcConnection>
@@ -77,7 +76,6 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
     d.visible = false;
 
     d.formatter = new MessageFormatter(this);
-    d.formatter->setTimeStampFormat(QString());
     d.formatter->setBuffer(buffer);
 
     setUndoRedoEnabled(false);
@@ -216,28 +214,28 @@ void TextDocument::reset()
 
 void TextDocument::append(const MessageData& data)
 {
-    if (!data.message.isEmpty()) {
+    if (!data.isEmpty()) {
         MessageData msg = data;
-        if (msg.isEvent() && !d.allLines.isEmpty() && d.allLines.last().isEvent()) {
-            // merge to consecutive events
-            msg.merge(d.allLines.takeLast());
-            msg.message = d.formatter->formatEvents(msg.types.toList(), msg.prefixes.toList(), msg.lines, msg.timestamp);
-            if (d.dirty == 0 || d.visible) {
-                QTextCursor cursor(this);
-                cursor.beginEditBlock();
+        MessageData last = d.allLines.value(d.allLines.count() - 1);
+        const bool merge = last.canMerge(data);
+        if (merge) {
+            msg = mergeEvents(last.events << data);
+            d.allLines.replace(d.allLines.count() - 1, msg);
+            if (!d.queue.isEmpty())
+                d.queue.replace(d.queue.count() - 1, msg);
+        } else {
+            ++d.uc;
+            d.allLines += msg;
+        }
+        if (d.dirty == 0 || d.visible) {
+            QTextCursor cursor(this);
+            cursor.beginEditBlock();
+            if (merge) {
                 cursor.movePosition(QTextCursor::End);
                 cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
                 cursor.removeSelectedText();
                 cursor.deletePreviousChar();
-                cursor.endEditBlock();
             }
-        } else {
-            ++d.uc;
-        }
-        d.allLines += msg;
-        if (d.dirty == 0 || d.visible) {
-            QTextCursor cursor(this);
-            cursor.beginEditBlock();
             insert(cursor, msg);
             cursor.endEditBlock();
         } else {
@@ -245,7 +243,8 @@ void TextDocument::append(const MessageData& data)
                 d.dirty = startTimer(delay);
                 delay += 1000;
             }
-            d.queue += msg;
+            if (!merge)
+                d.queue += msg;
         }
     }
 }
@@ -359,25 +358,20 @@ void TextDocument::flush()
 
 void TextDocument::receiveMessage(IrcMessage* message)
 {
-    MessageData data;
-    data.timestamp = message->timeStamp();
-    data.message = d.formatter->formatMessage(message);
-    d.formatter->setTimeStampFormat(d.timeStampFormat);
-    data.lines += d.formatter->formatTimestamp(data.message, data.timestamp);
-    d.formatter->setTimeStampFormat(QString());
-    data.types.insert(message->type());
-    data.prefixes.insert(message->prefix());
-    append(data);
-    emit messageReceived(message);
+    MessageData data = MessageData::format(d.formatter, message);
+    if (!data.isEmpty()) {
+        append(data);
+        emit messageReceived(message);
 
-    if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
-        if (!message->isOwn()) {
-            const bool contains = message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive);
-            if (contains) {
-                addHighlight(totalCount() - 1);
-                emit messageHighlighted(message);
-            } else if (message->property("private").toBool()) {
-                emit privateMessageReceived(message);
+        if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
+            if (!message->isOwn()) {
+                const bool contains = message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive);
+                if (contains) {
+                    addHighlight(totalCount() - 1);
+                    emit messageHighlighted(message);
+                } else if (message->property("private").toBool()) {
+                    emit privateMessageReceived(message);
+                }
             }
         }
     }
@@ -429,13 +423,91 @@ void TextDocument::insert(QTextCursor& cursor, const MessageData& data)
         }
     }
 
-    d.formatter->setTimeStampFormat(d.timeStampFormat);
-    cursor.insertHtml(d.formatter->formatTimestamp(data.message, data.timestamp));
-    d.formatter->setTimeStampFormat(QString());
+    const QString tooltip = data.events.isEmpty() ? formatBlock(data.timestamp, data.detailed) : data.detailed;
+    cursor.insertHtml(formatBlock(data.timestamp, data.richText, tooltip));
 
     QTextBlockFormat format = cursor.blockFormat();
     format.setLineHeight(125, QTextBlockFormat::ProportionalHeight);
     cursor.setBlockFormat(format);
+}
+
+MessageData TextDocument::mergeEvents(const QList<MessageData>& events) const
+{
+    QStringList actions;
+    QStringList changes;
+    QStringList details;
+    QSet<QString> nicks;
+    QSet<IrcMessage::Type> handled;
+
+    foreach (const MessageData& event, events) {
+        nicks.insert(event.nick);
+        details += formatBlock(event.timestamp, event.detailed);
+        if (event.type == IrcMessage::Join && !handled.contains(event.type)) {
+            actions += tr("joined");
+            handled.insert(event.type);
+        }
+        if (event.type == IrcMessage::Part && !handled.contains(event.type)) {
+            actions += tr("parted");
+            handled.insert(event.type);
+        }
+        if (event.type == IrcMessage::Quit && !handled.contains(event.type)) {
+            actions += tr("quit");
+            handled.insert(event.type);
+        }
+        if (event.type == IrcMessage::Nick && !handled.contains(event.type)) {
+            changes += tr("nick");
+            handled.insert(event.type);
+        }
+        if (event.type == IrcMessage::Mode && !handled.contains(event.type)) {
+            changes += tr("mode");
+            handled.insert(event.type);
+        }
+        if (event.type == IrcMessage::Topic && !handled.contains(event.type)) {
+            changes += tr("topic");
+            handled.insert(event.type);
+        }
+    }
+
+    if (!changes.isEmpty())
+        actions += tr("changed %1").arg(changes.join(tr(" and ")));
+
+    MessageData data = events.last();
+    if (nicks.count() == 1) {
+        if (actions.count() > 2)
+            actions = QStringList() << QStringList(actions.mid(0, actions.count() - 1)).join(tr(", ")) << actions.last();
+        const QString summary = actions.join(tr(" and "));
+        data.plainText = tr("%1 %2").arg(d.formatter->formatNick(*nicks.begin(), Qt::PlainText), summary);
+        data.richText = tr("! %1 %2").arg(d.formatter->formatNick(*nicks.begin(), Qt::RichText), summary);
+    } else {
+        const QString summary = actions.join(tr(", "));
+        data.plainText = tr("%1 %2").arg(d.formatter->formatNick(tr("%1 users"), Qt::PlainText).arg(nicks.count()), summary);
+        data.richText = tr("! %1 %2").arg(d.formatter->formatNick(tr("%1 users"), Qt::RichText).arg(nicks.count()), summary);
+    }
+    data.detailed = details.join(tr("<br/>"));
+    data.events = events;
+    return data;
+}
+
+QString TextDocument::formatBlock(const QDateTime& timestamp, const QString& message, const QString& href) const
+{
+    QString formatted = message;
+    if (formatted.isEmpty())
+        return QString();
+
+    QString cls = "message";
+    switch (formatted.at(0).unicode()) {
+        case '!': cls = "event"; break;
+        case '[': cls = "notice"; break;
+        case '*': cls = "action"; break;
+        case '?': cls = "unknown"; break;
+        default: break;
+    }
+    formatted = tr("<span class='%1'>%2</span>").arg(cls, formatted);
+
+    const QString time = timestamp.time().toString(d.timeStampFormat);
+    if (!href.isEmpty())
+        return tr("<a class='timestamp' href='tooltip:%3' style='text-decoration: none;'>%1</a> %2").arg(time, formatted, QString::fromUtf8(href.toUtf8().toBase64()));
+    return tr("<span class='timestamp'>%1</span> %2").arg(time, formatted);
 }
 
 #include "textdocument.moc"
