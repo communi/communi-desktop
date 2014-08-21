@@ -33,7 +33,8 @@ struct MessageData
         return types.contains(IrcMessage::Join) ||
                types.contains(IrcMessage::Nick) ||
                types.contains(IrcMessage::Part) ||
-               types.contains(IrcMessage::Quit);
+               types.contains(IrcMessage::Quit) ||
+               types.contains(IrcMessage::Mode);
     }
     void merge(const MessageData& other)
     {
