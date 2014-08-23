@@ -19,6 +19,7 @@
 #include <QStylePainter>
 #include <QStyleOption>
 #include <QApplication>
+#include <QTextBlock>
 #include <IrcCommand>
 #include <QScrollBar>
 #include <IrcBuffer>
@@ -105,8 +106,15 @@ void TextBrowser::setBuddy(QWidget* buddy)
 void TextBrowser::mousePressEvent(QMouseEvent* event)
 {
     const QUrl url(anchorAt(event->pos()));
-    if (url.scheme() == "tooltip")
-        QToolTip::showText(event->globalPos(), QByteArray::fromBase64(url.toString(QUrl::RemoveScheme).toUtf8()), viewport());
+    if (url.scheme() == "expand") {
+        QString text;
+        if (TextDocument* doc = document()) {
+            const QPoint offset(horizontalScrollBar()->value(), verticalScrollBar()->value());
+            text = doc->tooltip(event->pos() + offset);
+        }
+        if (!text.isEmpty())
+            QToolTip::showText(event->globalPos(), text, viewport());
+    }
     QTextBrowser::mousePressEvent(event);
 }
 

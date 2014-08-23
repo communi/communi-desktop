@@ -299,7 +299,7 @@ void TitleBar::refresh()
     IrcChannel* channel = qobject_cast<IrcChannel*>(d.buffer);
     QString topic = channel ? channel->topic() : QString();
     if (!topic.isEmpty())
-        title = tr("%1: %2").arg(title, d.formatter->formatText(topic, Qt::RichText));
+        title = tr("%1: %2").arg(title, d.formatter->formatText(topic));
     setText(title);
     foreach (QTextDocument* doc, findChildren<QTextDocument*>())
         doc->setDefaultStyleSheet(d.css);

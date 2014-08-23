@@ -16,51 +16,14 @@
 #define TEXTDOCUMENT_H
 
 #include <QTextDocument>
-#include <QStringList>
-#include <IrcMessage>
 #include <QMetaType>
 #include <QDateTime>
-#include <QMap>
-#include <QSet>
-#include "messageformatter.h"
+#include "messagedata.h"
 
 class IrcBuffer;
-
-struct MessageData : MessageFormat
-{
-    MessageData() : own(false), type(IrcMessage::Unknown) { }
-
-    bool isEmpty() const { return plainText.isEmpty(); }
-    bool isEvent() const { return type == IrcMessage::Join ||
-                                  type == IrcMessage::Mode ||
-                                  type == IrcMessage::Nick ||
-                                  type == IrcMessage::Part ||
-                                  type == IrcMessage::Quit ||
-                                  type == IrcMessage::Topic; }
-
-    bool canMerge(const MessageData& other) const {
-        return isEvent() && (!own || type != IrcMessage::Join)
-               && other.isEvent() && (!other.own || other.type != IrcMessage::Join);
-    }
-
-    static MessageData format(MessageFormatter* formatter, IrcMessage* message) {
-        MessageData data;
-        data.MessageFormat::operator=(formatter->formatMessage(message));
-        data.timestamp = message->timeStamp();
-        data.nick = message->nick();
-        data.type = message->type();
-        data.own = message->isOwn();
-        if (data.isEvent())
-            data.events += data;
-        return data;
-    }
-
-    bool own;
-    QString nick;
-    QDateTime timestamp;
-    IrcMessage::Type type;
-    QList<MessageData> events;
-};
+class IrcMessage;
+class MessageData;
+class MessageFormatter;
 
 class TextDocument : public QTextDocument
 {
@@ -89,6 +52,8 @@ public:
     void drawBackground(QPainter* painter, const QRect& bounds);
     void drawForeground(QPainter* painter, const QRect& bounds);
 
+    QString tooltip(const QPoint& pos) const;
+
 public slots:
     void reset();
     void lowlight(int block = -1);
@@ -116,8 +81,12 @@ private:
     void shiftLights(int diff);
     void insert(QTextCursor& cursor, const MessageData& data);
 
-    MessageData mergeEvents(const QList<MessageData>& events) const;
-    QString formatBlock(const QDateTime& timestamp, const QString& message, const QString& href = QString()) const;
+    MessageData formatMessage(IrcMessage* message) const;
+    QString formatEvents(const QList<MessageData>& events) const;
+    QString formatSummary(const QList<MessageData>& events) const;
+    QString formatBlock(const QDateTime& timestamp, const QString& message) const;
+
+    friend class TextBrowser;
 
     struct Private {
         int uc;
@@ -131,7 +100,6 @@ private:
         QList<int> highlights;
         QString timeStampFormat;
         QList<MessageData> queue;
-        QList<MessageData> allLines;
         MessageFormatter* formatter;
     } d;
 };

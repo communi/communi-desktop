@@ -13,14 +13,17 @@
 */
 
 #include "textdocument.h"
+#include "eventformatter.h"
 #include <QAbstractTextDocumentLayout>
 #include <QTextDocumentFragment>
+#include <QTextBlockUserData>
 #include <IrcConnection>
 #include <QStylePainter>
 #include <QApplication>
 #include <QStyleOption>
 #include <QTextCursor>
 #include <QTextBlock>
+#include <IrcMessage>
 #include <IrcBuffer>
 #include <QPalette>
 #include <QPointer>
@@ -61,6 +64,12 @@ class TextLowlight : public TextFrame
     Q_OBJECT
 public:
     TextLowlight(QWidget* parent = 0) : TextFrame(parent) { }
+};
+
+struct TextBlockMessageData : QTextBlockUserData
+{
+    TextBlockMessageData(const MessageData& data) : data(data) { }
+    MessageData data;
 };
 
 TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
@@ -128,7 +137,6 @@ TextDocument* TextDocument::clone()
     doc->d.lowlight = d.lowlight;
     doc->d.buffer = d.buffer;
     doc->d.highlights = d.highlights;
-    doc->d.allLines = d.allLines;
     doc->d.clone = true;
 
     return doc;
@@ -208,24 +216,27 @@ void TextDocument::reset()
     d.uc = 0;
     d.lowlight = -1;
     d.highlights.clear();
-    d.allLines.clear();
     d.queue.clear();
 }
 
 void TextDocument::append(const MessageData& data)
 {
     if (!data.isEmpty()) {
+        MessageData last;
+        if (!d.queue.isEmpty())
+            last = d.queue.last();
+        else if (TextBlockMessageData* block = static_cast<TextBlockMessageData*>(lastBlock().userData()))
+            last = block->data;
+
         MessageData msg = data;
-        MessageData last = d.allLines.value(d.allLines.count() - 1);
         const bool merge = last.canMerge(data);
         if (merge) {
-            msg = mergeEvents(last.events << data);
-            d.allLines.replace(d.allLines.count() - 1, msg);
+            msg.merge(last);
+            msg.setFormat(formatSummary(msg.getEvents()));
             if (!d.queue.isEmpty())
                 d.queue.replace(d.queue.count() - 1, msg);
         } else {
             ++d.uc;
-            d.allLines += msg;
         }
         if (d.dirty == 0 || d.visible) {
             QTextCursor cursor(this);
@@ -319,6 +330,16 @@ void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
     }
 }
 
+QString TextDocument::tooltip(const QPoint& point) const
+{
+    const int pos = documentLayout()->hitTest(point, Qt::FuzzyHit);
+    const QTextBlock block = findBlock(pos);
+    TextBlockMessageData* blockData = static_cast<TextBlockMessageData*>(block.userData());
+    if (blockData)
+        return formatEvents(blockData->data.getEvents());
+    return QString();
+}
+
 void TextDocument::updateBlock(int number)
 {
     if (d.visible) {
@@ -358,7 +379,7 @@ void TextDocument::flush()
 
 void TextDocument::receiveMessage(IrcMessage* message)
 {
-    MessageData data = MessageData::format(d.formatter, message);
+    MessageData data = formatMessage(message);
     if (!data.isEmpty()) {
         append(data);
         emit messageReceived(message);
@@ -379,8 +400,16 @@ void TextDocument::receiveMessage(IrcMessage* message)
 
 void TextDocument::rebuild()
 {
+    QList<MessageData> lines;
+    QTextBlock block = firstBlock();
+    while (block.isValid()) {
+        TextBlockMessageData* blockData = static_cast<TextBlockMessageData*>(block.userData());
+        if (blockData)
+            lines += blockData->data;
+        block = block.next();
+    }
     clear();
-    d.queue = d.allLines;
+    d.queue = lines;
     flush();
     if (d.rebuild > 0) {
         killTimer(d.rebuild);
@@ -423,91 +452,106 @@ void TextDocument::insert(QTextCursor& cursor, const MessageData& data)
         }
     }
 
-    const QString tooltip = data.events.isEmpty() ? formatBlock(data.timestamp, data.detailed) : data.detailed;
-    cursor.insertHtml(formatBlock(data.timestamp, data.richText, tooltip));
+    cursor.insertHtml(formatBlock(data.timestamp(), data.format()));
+    cursor.block().setUserData(new TextBlockMessageData(data));
 
     QTextBlockFormat format = cursor.blockFormat();
     format.setLineHeight(125, QTextBlockFormat::ProportionalHeight);
     cursor.setBlockFormat(format);
 }
 
-MessageData TextDocument::mergeEvents(const QList<MessageData>& events) const
+MessageData TextDocument::formatMessage(IrcMessage* message) const
+{
+    MessageData data;
+    data.initFrom(message);
+    data.setFormat(d.formatter->formatMessage(message));
+    return data;
+}
+
+QString TextDocument::formatEvents(const QList<MessageData>& events) const
+{
+    EventFormatter formatter;
+    formatter.setBuffer(d.buffer);
+
+    QStringList lines;
+    foreach (const MessageData& event, events) {
+        if (!event.isEmpty()) {
+            IrcMessage* msg = IrcMessage::fromData(event.data(), d.buffer->connection());
+            lines += formatBlock(event.timestamp(), formatter.formatMessage(msg));
+            delete msg;
+        }
+    }
+    if (!lines.isEmpty())
+        return tr("<html><head><style>%1</style></head><body>%2</body></html>").arg(d.css, lines.join(tr("<br/>")));
+    return QString();
+}
+
+QString TextDocument::formatSummary(const QList<MessageData>& events) const
 {
     QStringList actions;
     QStringList changes;
-    QStringList details;
     QSet<QString> nicks;
     QSet<IrcMessage::Type> handled;
+    EventFormatter formatter;
 
     foreach (const MessageData& event, events) {
-        nicks.insert(event.nick);
-        details += formatBlock(event.timestamp, event.detailed);
-        if (event.type == IrcMessage::Join && !handled.contains(event.type)) {
-            actions += tr("joined");
-            handled.insert(event.type);
+        switch (event.type()) {
+        case IrcMessage::Join:
+            if (!handled.contains(event.type()))
+                actions += tr("joined");
+            break;
+        case IrcMessage::Part:
+            if (!handled.contains(event.type()))
+                actions += tr("left");
+            break;
+        case IrcMessage::Quit:
+            if (!handled.contains(event.type()))
+                actions += tr("quit");
+            break;
+        case IrcMessage::Kick:
+            if (!handled.contains(event.type()))
+                actions += tr("kicked");
+            break;
+        case IrcMessage::Nick:
+            if (!handled.contains(event.type()))
+                changes += tr("nick");
+            break;
+        case IrcMessage::Mode:
+            if (!handled.contains(event.type()))
+                changes += tr("mode");
+            break;
+        case IrcMessage::Topic:
+            if (!handled.contains(event.type()))
+                changes += tr("topic");
+            break;
+        default:
+            break;
         }
-        if (event.type == IrcMessage::Part && !handled.contains(event.type)) {
-            actions += tr("parted");
-            handled.insert(event.type);
-        }
-        if (event.type == IrcMessage::Quit && !handled.contains(event.type)) {
-            actions += tr("quit");
-            handled.insert(event.type);
-        }
-        if (event.type == IrcMessage::Nick && !handled.contains(event.type)) {
-            changes += tr("nick");
-            handled.insert(event.type);
-        }
-        if (event.type == IrcMessage::Mode && !handled.contains(event.type)) {
-            changes += tr("mode");
-            handled.insert(event.type);
-        }
-        if (event.type == IrcMessage::Topic && !handled.contains(event.type)) {
-            changes += tr("topic");
-            handled.insert(event.type);
-        }
+        nicks.insert(event.nick());
+        handled.insert(event.type());
     }
 
     if (!changes.isEmpty())
         actions += tr("changed %1").arg(changes.join(tr(" and ")));
 
-    MessageData data = events.last();
-    if (nicks.count() == 1) {
-        if (actions.count() > 2)
-            actions = QStringList() << QStringList(actions.mid(0, actions.count() - 1)).join(tr(", ")) << actions.last();
-        const QString summary = actions.join(tr(" and "));
-        data.plainText = tr("%1 %2").arg(d.formatter->formatNick(*nicks.begin(), Qt::PlainText), summary);
-        data.richText = tr("! %1 %2").arg(d.formatter->formatNick(*nicks.begin(), Qt::RichText), summary);
-    } else {
-        const QString summary = actions.join(tr(", "));
-        data.plainText = tr("%1 %2").arg(d.formatter->formatNick(tr("%1 users"), Qt::PlainText).arg(nicks.count()), summary);
-        data.richText = tr("! %1 %2").arg(d.formatter->formatNick(tr("%1 users"), Qt::RichText).arg(nicks.count()), summary);
-    }
-    data.detailed = details.join(tr("<br/>"));
-    data.events = events;
-    return data;
+    if (actions.count() > 2)
+        actions = QStringList() << QStringList(actions.mid(0, actions.count() - 1)).join(tr(", ")) << actions.last();
+
+    if (nicks.count() == 1)
+        return formatter.formatEvent(tr("%1 %2").arg(formatter.styledText(*nicks.begin(), MessageFormatter::Bold),
+                                                     actions.join(tr(" and "))));
+
+    return formatter.formatEvent(tr("%1 %2").arg(formatter.styledText(tr("%1 users").arg(nicks.count()), MessageFormatter::Bold),
+                                                 actions.join(tr(" or "))));
 }
 
-QString TextDocument::formatBlock(const QDateTime& timestamp, const QString& message, const QString& href) const
+QString TextDocument::formatBlock(const QDateTime& timestamp, const QString& message) const
 {
-    QString formatted = message;
-    if (formatted.isEmpty())
+    if (message.isEmpty())
         return QString();
 
-    QString cls = "message";
-    switch (formatted.at(0).unicode()) {
-        case '!': cls = "event"; break;
-        case '[': cls = "notice"; break;
-        case '*': cls = "action"; break;
-        case '?': cls = "unknown"; break;
-        default: break;
-    }
-    formatted = tr("<span class='%1'>%2</span>").arg(cls, formatted);
-
     const QString time = timestamp.time().toString(d.timeStampFormat);
-    if (!href.isEmpty())
-        return tr("<a class='timestamp' href='tooltip:%3' style='text-decoration: none;'>%1</a> %2").arg(time, formatted, QString::fromUtf8(href.toUtf8().toBase64()));
-    return tr("<span class='timestamp'>%1</span> %2").arg(time, formatted);
+    return tr("<span class='timestamp'>%1</span> %2").arg(time, message);
 }
 
 #include "textdocument.moc"
