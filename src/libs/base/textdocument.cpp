@@ -137,6 +137,7 @@ TextDocument* TextDocument::clone()
     doc->d.lowlight = d.lowlight;
     doc->d.buffer = d.buffer;
     doc->d.highlights = d.highlights;
+    doc->d.timeStampFormat = d.timeStampFormat;
     doc->d.clone = true;
 
     return doc;
