@@ -331,13 +331,9 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg) const
         case Irc::RPL_NOWAWAY:
             return tr("! %1").arg(formatText(P_(1)));
 
-        case Irc::RPL_TOPIC:
         case Irc::RPL_TOPICWHOTIME:
         case Irc::RPL_CHANNEL_URL:
         case Irc::RPL_CREATIONTIME:
-        case Irc::RPL_NAMREPLY:
-        case Irc::RPL_ENDOFNAMES:
-        case Irc::RPL_ENDOFWHOIS:
             break;
 
         default:

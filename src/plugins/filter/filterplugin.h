@@ -20,13 +20,14 @@
 #include <QString>
 #include <QtPlugin>
 #include <QDateTime>
+#include <IrcCommandFilter>
 #include <IrcMessageFilter>
 #include "connectionplugin.h"
 
-class FilterPlugin : public QObject, public ConnectionPlugin, public IrcMessageFilter
+class FilterPlugin : public QObject, public ConnectionPlugin, public IrcMessageFilter, public IrcCommandFilter
 {
     Q_OBJECT
-    Q_INTERFACES(ConnectionPlugin IrcMessageFilter)
+    Q_INTERFACES(ConnectionPlugin IrcCommandFilter IrcMessageFilter)
     Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
 
 public:
@@ -35,10 +36,12 @@ public:
     void connectionAdded(IrcConnection* connection);
     void connectionRemoved(IrcConnection* connection);
 
+    bool commandFilter(IrcCommand* command);
     bool messageFilter(IrcMessage* message);
 
 private:
     struct Private {
+        QHash<int, QPair<QDateTime, QString> > sentCommands;
         QHash<QString, QPair<QDateTime, QString> > awayReplies;
     } d;
 };
