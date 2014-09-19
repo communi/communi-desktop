@@ -118,6 +118,12 @@ void TextBrowser::mousePressEvent(QMouseEvent* event)
     QTextBrowser::mousePressEvent(event);
 }
 
+void TextBrowser::mouseMoveEvent(QMouseEvent* event)
+{
+    QToolTip::hideText();
+    QTextBrowser::mouseMoveEvent(event);
+}
+
 void TextBrowser::keyPressEvent(QKeyEvent* event)
 {
     // for example:
