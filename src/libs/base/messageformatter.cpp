@@ -343,7 +343,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg) const
         default:
             if (Irc::codeToString(msg->code()).startsWith("ERR_"))
                 return tr("[ERROR] %1").arg(formatText(MID_(1)));
-            return tr("[%1] %1").arg(msg->code()).arg(formatText(MID_(1)));
+            return tr("[%1] %2").arg(msg->code()).arg(d.textFormat->toHtml(MID_(1)));
     }
 
     return QString();
