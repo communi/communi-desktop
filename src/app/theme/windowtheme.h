@@ -12,33 +12,17 @@
 * GNU General Public License for more details.
 */
 
-#ifndef THEMEINFO_H
-#define THEMEINFO_H
+#ifndef WINDOWTHEME_H
+#define WINDOWTHEME_H
 
-#include <QString>
+#include <QWidget>
 
-class ThemeInfo
+class ThemeInfo;
+
+class WindowTheme
 {
 public:
-    bool isValid() const;
-    bool load(const QString& filePath);
-
-    QString name() const;
-    QString author() const;
-    QString version() const;
-    QString description() const;
-    QString style() const;
-    QString gtkTheme() const;
-
-private:
-    struct Private {
-        QString name;
-        QString author;
-        QString version;
-        QString description;
-        QString style;
-        QString gtkTheme;
-    } d;
+    static void setTheme(QWidget* window, const ThemeInfo& theme);
 };
 
-#endif // THEMEINFO_H
+#endif // WINDOWTHEME_H

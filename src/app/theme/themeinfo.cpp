@@ -49,6 +49,11 @@ QString ThemeInfo::style() const
     return d.style;
 }
 
+QString ThemeInfo::gtkTheme() const
+{
+    return d.gtkTheme;
+}
+
 static QString readFile(const QDir& dir, const QString& fileName)
 {
     QFile file;
@@ -73,6 +78,7 @@ bool ThemeInfo::load(const QString& filePath)
         d.version = settings.value("version").toString();
         d.description = settings.value("description").toString();
         d.style = readFile(QFileInfo(filePath).dir(), settings.value("style").toString());
+        d.gtkTheme = settings.value("gtk-theme").toString();
         settings.endGroup();
     }
     return isValid();

@@ -11,6 +11,7 @@
 #include "treeitem.h"
 #include "treewidget.h"
 #include "themeloader.h"
+#include "windowtheme.h"
 #include "textdocument.h"
 #include "pluginloader.h"
 #include "textbrowser.h"
@@ -100,7 +101,7 @@ void ChatPage::setTheme(const QString& theme)
             setupDocument(doc);
         foreach (BufferView* view, d.splitView->views())
             view->titleBar()->setStyleSheet(d.theme.style());
-        window()->setStyleSheet(d.theme.style());
+        WindowTheme::setTheme(window(), d.theme);
     }
 }
 
