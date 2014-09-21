@@ -309,7 +309,7 @@ void TextBrowser::moveShadow(int offset)
 
 void TextBrowser::onAnchorClicked(const QUrl& url)
 {
-    if (url.scheme() != "nick")
+    if (url.scheme() != "expand")
         QDesktopServices::openUrl(url);
     clearFocus();
     d.bud->setFocus();
