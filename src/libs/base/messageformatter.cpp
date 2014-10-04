@@ -277,6 +277,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg) const
     if (msg->code() < 300)
         return tr("[INFO] %1").arg(formatText(MID_(1)));
 
+    QString formatted;
     switch (msg->code()) {
         case Irc::RPL_MOTDSTART:
         case Irc::RPL_MOTD:
@@ -289,34 +290,31 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg) const
         case Irc::RPL_AWAY:
             return tr("! %1 is away").arg(styledText(P_(1), Bold|Dim));
 
-        case Irc::RPL_WHOISOPERATOR:
-        case Irc::RPL_WHOISMODES: // "is using modes"
-        case Irc::RPL_WHOISREGNICK: // "is a registered nick"
-        case Irc::RPL_WHOISHELPOP: // "is available for help"
-        case Irc::RPL_WHOISSPECIAL: // "is identified to services"
-        case Irc::RPL_WHOISHOST: // nick is connecting from <...>
-        case Irc::RPL_WHOISSECURE: // nick is using a secure connection
-            return tr("! %1 %2").arg(styledText(P_(1), Bold), formatText(MID_(2)));
-
         case Irc::RPL_WHOISUSER:
-            return tr("! %1 is %2@%3 (%4)").arg(styledText(P_(1), Bold), P_(2), P_(3), formatText(MID_(5)));
-
-        case Irc::RPL_WHOISSERVER:
-            return tr("! %1 connected via %2 (%3)").arg(styledText(P_(1), Bold), P_(2), P_(3));
-
-        case Irc::RPL_WHOISACCOUNT: // nick user is logged in as
-            return tr("! %1 %3 %2").arg(styledText(P_(1), Bold), P_(2), P_(3));
+            formatted = tr("%1 is %2@%3 (%4)").arg(P_(1), P_(2), P_(3), formatText(MID_(5)));
+            break;
 
         case Irc::RPL_WHOWASUSER:
-            return tr("! %1 was %2@%3 %4 %5").arg(styledText(P_(1), Bold), P_(2), P_(3), P_(4), P_(5));
+            formatted = tr("%1 was %2@%3 (%4)").arg(P_(1), P_(2), P_(3), formatText(MID_(5)));
+            break;
+
+        case Irc::RPL_WHOISSERVER:
+            formatted = tr("%1 via %2 (%3)").arg(P_(1), P_(2), P_(3));
+            break;
+
+        case Irc::RPL_WHOISACCOUNT: // nick user is logged in as
+            formatted = tr("%1 as %2").arg(P_(1), P_(2));
+            break;
 
         case Irc::RPL_WHOISIDLE:
-            return tr("! %1 has been online since %2 (idle for %3)").arg(styledText(P_(1), Bold),
-                                                                         QDateTime::fromTime_t(P_(3).toInt()).toString(),
-                                                                         formatDuration(P_(2).toInt()));
+            formatted = tr("%1 since %2 (idle %3)").arg(P_(1),
+                                                        QDateTime::fromTime_t(P_(3).toInt()).toString(),
+                                                        formatDuration(P_(2).toInt()));
+            break;
 
         case Irc::RPL_WHOISCHANNELS:
-            return tr("! %1 is on channels %2").arg(styledText(P_(1), Bold), P_(2));
+            formatted = tr("%1 on %2").arg(P_(1), P_(2));
+            break;
 
         case Irc::RPL_INVITING: // TODO: IrcInviteMessage::isReply()
             return tr("! inviting %1 to %2").arg(styledText(P_(1), Bold), P_(2));
@@ -334,15 +332,15 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg) const
         case Irc::RPL_TOPICWHOTIME:
         case Irc::RPL_CHANNEL_URL:
         case Irc::RPL_CREATIONTIME:
-            break;
-
-        default:
-            if (Irc::codeToString(msg->code()).startsWith("ERR_"))
-                return tr("[ERROR] %1").arg(formatText(MID_(1)));
-            return tr("[%1] %2").arg(msg->code()).arg(d.textFormat->toHtml(MID_(1)));
+            return QString();
     }
 
-    return QString();
+    if (formatted.isEmpty()) {
+        if (Irc::codeToString(msg->code()).startsWith("ERR_"))
+            return tr("[ERROR] %1").arg(formatText(MID_(1)));
+        formatted = d.textFormat->toHtml(MID_(1));
+    }
+    return tr("[%1] %2").arg(msg->code()).arg(formatted);
 }
 
 QString MessageFormatter::formatPartMessage(IrcPartMessage* msg) const
