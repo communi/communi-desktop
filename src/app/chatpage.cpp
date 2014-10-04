@@ -110,6 +110,7 @@ QByteArray ChatPage::saveSettings() const
     QVariantMap settings;
     settings.insert("theme", d.theme.name());
     settings.insert("timestamp", d.timestamp);
+    settings.insert("latest", d.latest);
 
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -124,6 +125,7 @@ void ChatPage::restoreSettings(const QByteArray& data)
     in >> settings;
 
     d.timestamp = settings.value("timestamp", "[hh:mm:ss]").toString();
+    d.latest = settings.value("latest").toDateTime();
     setTheme(settings.value("theme", "Cute").toString());
 }
 
@@ -332,10 +334,8 @@ void ChatPage::setupDocument(TextDocument* document)
     document->setTimeStampFormat(d.timestamp);
     document->setStyleSheet(d.theme.style());
 
-    if (!document->isClone()) {
-        connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SIGNAL(messageHighlighted(IrcMessage*)));
-        connect(document, SIGNAL(privateMessageReceived(IrcMessage*)), this, SIGNAL(privateMessageReceived(IrcMessage*)));
-    }
+    connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onAlert(IrcMessage*)));
+    connect(document, SIGNAL(privateMessageReceived(IrcMessage*)), this, SLOT(onAlert(IrcMessage*)));
 }
 
 void ChatPage::addView(BufferView* view)
@@ -375,6 +375,22 @@ void ChatPage::onCurrentViewChanged(BufferView* current, BufferView* previous)
     d.finder->cancelListSearch(previous);
     d.finder->cancelBrowserSearch(previous);
     emit currentViewChanged(current);
+}
+
+void ChatPage::onAlert(IrcMessage* message)
+{
+    if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
+        TextDocument* doc = qobject_cast<TextDocument*>(sender());
+        if (doc && !doc->isVisible() && message->timeStamp() > d.latest) {
+            emit alert(message);
+
+            IrcBuffer* buffer = doc->buffer();
+            TreeItem* item = d.treeWidget->bufferItem(buffer);
+            if (buffer && item != d.treeWidget->currentItem())
+                d.treeWidget->highlightItem(item);
+        }
+        d.latest = qMax(message->timeStamp(), d.latest);
+    }
 }
 
 void ChatPage::onSocketError()

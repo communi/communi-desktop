@@ -12,6 +12,7 @@
 
 #include <QSet>
 #include <QSplitter>
+#include <QDateTime>
 #include <IrcCommandFilter>
 #include "themeinfo.h"
 
@@ -57,8 +58,7 @@ signals:
     void currentViewChanged(BufferView* view);
     void currentBufferChanged(IrcBuffer* buffer);
 
-    void messageHighlighted(IrcMessage* message);
-    void privateMessageReceived(IrcMessage* message);
+    void alert(IrcMessage* message);
 
 protected:
     bool commandFilter(IrcCommand* command);
@@ -71,6 +71,7 @@ private slots:
     void setupDocument(TextDocument* document);
     void onCurrentBufferChanged(IrcBuffer* buffer);
     void onCurrentViewChanged(BufferView* current, BufferView* previous);
+    void onAlert(IrcMessage* message);
     void onSocketError();
     void onSecureError();
 
@@ -80,6 +81,7 @@ private:
     struct Private {
         Finder* finder;
         ThemeInfo theme;
+        QDateTime latest;
         QString timestamp;
         QStringList chans;
         SplitView* splitView;

@@ -81,8 +81,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     connect(shortcut, SIGNAL(activated()), d.chatPage, SLOT(closeBuffer()));
 
     d.dock = new Dock(this);
-    connect(d.chatPage, SIGNAL(messageHighlighted(IrcMessage*)), d.dock, SLOT(alert(IrcMessage*)));
-    connect(d.chatPage, SIGNAL(privateMessageReceived(IrcMessage*)), d.dock, SLOT(alert(IrcMessage*)));
+    connect(d.chatPage, SIGNAL(alert(IrcMessage*)), d.dock, SLOT(alert(IrcMessage*)));
 
     d.monitor = new SystemMonitor(this);
     connect(d.monitor, SIGNAL(screenLocked()), d.dock, SLOT(activateAlert()));
