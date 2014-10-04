@@ -14,6 +14,7 @@
 
 #include "treedelegate.h"
 #include "treeheader.h"
+#include "treebadge.h"
 #include "treerole.h"
 #include <QStyleOptionViewItem>
 #include <QStylePainter>
@@ -26,94 +27,6 @@
 #include <QLabel>
 #include <QStyle>
 #include <QColor>
-
-class TreeBadge : public QLabel
-{
-    Q_OBJECT
-
-public:
-    TreeBadge(QWidget* parent = 0) : QLabel(parent)
-    {
-        d.num = 0;
-        d.hilite = false;
-        setAlignment(Qt::AlignCenter);
-        setAttribute(Qt::WA_TranslucentBackground);
-        setAttribute(Qt::WA_NoSystemBackground);
-        setVisible(false);
-    }
-
-    static TreeBadge* instance(QWidget* parent = 0)
-    {
-        static QHash<QWidget*, TreeBadge*> badges;
-        QWidget* window = parent ? parent->window() : 0;
-        TreeBadge* badge = badges.value(window);
-        if (!badge) {
-            badge = new TreeBadge(window);
-            badges.insert(window, badge);
-        }
-        return badge;
-    }
-
-    void setHighlighted(int hilite) { d.hilite = hilite; }
-
-    void setNum(int num)
-    {
-        d.num = num;
-        QString txt;
-        if (d.num > 999)
-            txt = QLatin1String("...");
-        else
-            txt = fontMetrics().elidedText(QString::number(d.num), Qt::ElideRight, width());
-        setText(txt);
-    }
-
-protected:
-    void paintEvent(QPaintEvent*)
-    {
-        QPainter painter(this);
-        drawBackground(&painter);
-        QRect cr = contentsRect();
-        cr.adjust(margin(), margin(), -margin(), -margin());
-        style()->drawItemText(&painter, cr, alignment(), palette(), isEnabled(), text(), foregroundRole());
-    }
-
-    void drawBackground(QPainter* painter)
-    {
-        QStyleOptionFrame frame;
-        frame.init(this);
-        int frameShape  = frameStyle() & QFrame::Shape_Mask;
-        int frameShadow = frameStyle() & QFrame::Shadow_Mask;
-        frame.frameShape = Shape(int(frame.frameShape) | frameShape);
-        frame.rect = frameRect();
-        switch (frameShape) {
-            case QFrame::Box:
-            case QFrame::HLine:
-            case QFrame::VLine:
-            case QFrame::StyledPanel:
-            case QFrame::Panel:
-                frame.lineWidth = lineWidth();
-                frame.midLineWidth = midLineWidth();
-                break;
-            default:
-                frame.lineWidth = frameWidth();
-                break;
-        }
-        if (frameShadow == Sunken)
-            frame.state |= QStyle::State_Sunken;
-        else if (frameShadow == Raised)
-            frame.state |= QStyle::State_Raised;
-        if (d.hilite)
-            frame.state |= QStyle::State_On;
-        style()->drawPrimitive(QStyle::PE_Widget, &frame, painter, this);
-        style()->drawControl(QStyle::CE_ShapedFrame, &frame, painter, this);
-    }
-
-private:
-    struct Private {
-        int num;
-        bool hilite;
-    } d;
-};
 
 TreeDelegate::TreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
 {
@@ -180,5 +93,3 @@ void TreeDelegate::initStyleOption(QStyleOptionViewItem* option, const QModelInd
     if (index.parent().isValid())
         option->backgroundBrush = Qt::transparent;
 }
-
-#include "treedelegate.moc"
