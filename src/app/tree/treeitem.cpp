@@ -15,35 +15,13 @@
 #include "treeitem.h"
 #include "treerole.h"
 #include "treewidget.h"
+#include "treespinner.h"
 #include <IrcConnection>
 #include <IrcLagTimer>
 #include <IrcBuffer>
 #include <QPainter>
 #include <QPixmap>
 #include <qmath.h>
-
-class BusyIndicator : public QFrame
-{
-    Q_OBJECT
-
-public:
-    BusyIndicator(QWidget* parent = 0) : QFrame(parent)
-    {
-        setVisible(false);
-    }
-
-    static BusyIndicator* instance(QWidget* parent = 0)
-    {
-        static QHash<QWidget*, BusyIndicator*> indicators;
-        QWidget* window = parent ? parent->window() : 0;
-        BusyIndicator* indicator = indicators.value(window);
-        if (!indicator) {
-            indicator = new BusyIndicator(window);
-            indicators.insert(window, indicator);
-        }
-        return indicator;
-    }
-};
 
 TreeItem::TreeItem(IrcBuffer* buffer, TreeItem* parent) : QObject(buffer), QTreeWidgetItem(parent)
 {
@@ -155,8 +133,8 @@ void TreeItem::updateIcon()
         painter.translate(8, 10);
 #endif
         painter.rotate(d.anim->currentValue().toInt());
-        BusyIndicator* indicator = BusyIndicator::instance(treeWidget());
-        indicator->render(&painter, QPoint(-8, -8));
+        TreeSpinner* spinner = TreeSpinner::instance(treeWidget());
+        spinner->render(&painter, QPoint(-8, -8));
     } else {
         painter.setPen(QPen(QPalette().color(QPalette::Mid), 0.5));
         QColor color(Qt::transparent);
@@ -194,5 +172,3 @@ void TreeItem::onBufferDestroyed()
 {
     d.buffer = 0;
 }
-
-#include "treeitem.moc"

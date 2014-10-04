@@ -67,14 +67,14 @@ TextShadow {
                                       stop: 0 palette(shadow), stop: 1 transparent);
 }
 
-BusyIndicator {
+TreeSpinner {
     border: none;
     background: transparent;
     min-width: 16px;
     max-width: 16px;
     min-height: 16px;
     max-height: 16px;
-    background-image: url(gray:busy.png);
+    background-image: url(gray:spinner.png);
 }
 
 TreeBadge {
