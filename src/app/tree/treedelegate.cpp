@@ -13,9 +13,9 @@
 */
 
 #include "treedelegate.h"
+#include "treeheader.h"
 #include "treerole.h"
 #include <QStyleOptionViewItem>
-#include <QStyleOptionHeader>
 #include <QStylePainter>
 #include <QApplication>
 #include <QHeaderView>
@@ -26,59 +26,6 @@
 #include <QLabel>
 #include <QStyle>
 #include <QColor>
-
-class TreeHeader : public QFrame
-{
-    Q_OBJECT
-
-public:
-    TreeHeader(QWidget* parent = 0) : QFrame(parent)
-    {
-        d.state = QStyle::State_None;
-        setAttribute(Qt::WA_TranslucentBackground);
-        setAttribute(Qt::WA_NoSystemBackground);
-        setVisible(false);
-    }
-
-    static TreeHeader* instance(QWidget* parent = 0)
-    {
-        static QHash<QWidget*, TreeHeader*> headers;
-        QWidget* window = parent ? parent->window() : 0;
-        TreeHeader* header = headers.value(window);
-        if (!header) {
-            header = new TreeHeader(window);
-            headers.insert(window, header);
-        }
-        return header;
-    }
-
-    void setText(const QString& text) { d.text = text; }
-    void setIcon(const QIcon& icon) { d.icon = icon; }
-    void setState(QStyle::State state) { d.state = state; }
-
-protected:
-    void paintEvent(QPaintEvent*)
-    {
-        QStyleOptionHeader option;
-        option.init(this);
-#ifdef Q_OS_WIN
-        option.rect.adjust(0, 0, 0, 1);
-#endif
-        option.state = (d.state | QStyle::State_Raised | QStyle::State_Horizontal);
-        option.icon = d.icon;
-        option.text = d.text;
-        option.position = QStyleOptionHeader::OnlyOneSection;
-        QStylePainter painter(this);
-        painter.drawControl(QStyle::CE_Header, option);
-    }
-
-private:
-    struct Private {
-        QIcon icon;
-        QString text;
-        QStyle::State state;
-    } d;
-};
 
 class TreeBadge : public QLabel
 {
