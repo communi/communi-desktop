@@ -559,7 +559,7 @@ void TreeWidget::swapItems(QTreeWidgetItem* source, QTreeWidgetItem* target)
 
 void TreeWidget::highlightItem(QTreeWidgetItem* item)
 {
-    if (item && item->parent() && !d.highlightedItems.contains(item)) {
+    if (item && !d.highlightedItems.contains(item)) {
         if (d.highlightedItems.isEmpty())
             SharedTimer::instance()->registerReceiver(this, "blinkItems");
         d.highlightedItems.insert(item);
@@ -569,7 +569,7 @@ void TreeWidget::highlightItem(QTreeWidgetItem* item)
 
 void TreeWidget::unhighlightItem(QTreeWidgetItem* item)
 {
-    if (item && item->parent() && d.highlightedItems.contains(item)) {
+    if (item && d.highlightedItems.contains(item)) {
         d.highlightedItems.remove(item);
         if (d.highlightedItems.isEmpty())
             SharedTimer::instance()->unregisterReceiver(this, "blinkItems");
@@ -584,6 +584,9 @@ void TreeWidget::updateHighlight(QTreeWidgetItem* item)
         const bool hilite = d.blink && d.highlightedItems.contains(item);
         item->setData(0, TreeRole::Highlight, hilite);
         item->setData(1, TreeRole::Highlight, hilite);
+        TreeItem* pi = ti->parentItem();
+        if (pi)
+            pi->setData(0, TreeRole::Highlight, hilite && !pi->isExpanded());
     }
 }
 

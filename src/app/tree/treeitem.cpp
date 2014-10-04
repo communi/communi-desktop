@@ -118,6 +118,13 @@ QVariant TreeItem::data(int column, int role) const
     return QTreeWidgetItem::data(column, role);
 }
 
+void TreeItem::setData(int column, int role, const QVariant& value)
+{
+    QTreeWidgetItem::setData(column, role, value);
+    if (role == TreeRole::Highlight && !parentItem())
+        updateIcon();
+}
+
 bool TreeItem::operator<(const QTreeWidgetItem& other) const
 {
     return treeWidget()->lessThan(this, static_cast<const TreeItem*>(&other));
@@ -130,6 +137,9 @@ void TreeItem::refresh()
 
 void TreeItem::updateIcon()
 {
+    if (!d.timer || !d.anim)
+        return;
+
     qint64 lag = d.timer->lag();
     setToolTip(0, lag > 0 ? tr("%1ms").arg(lag) : QString());
 

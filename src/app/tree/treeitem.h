@@ -43,6 +43,7 @@ public:
     TreeWidget* treeWidget() const;
 
     QVariant data(int column, int role) const;
+    void setData(int column, int role, const QVariant& value);
 
     bool operator<(const QTreeWidgetItem& other) const;
 
