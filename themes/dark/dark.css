@@ -112,6 +112,21 @@ TreeSpinner {
     background-image: url(white:spinner.png);
 }
 
+TreeIndicator {
+    min-width: 6px;
+    max-width: 6px;
+    min-height: 6px;
+    max-height: 6px;
+    border-radius: 2px;
+    margin: 4px;
+    border: 1px solid palette(mid);
+}
+
+TreeIndicator:on {
+    background: #3e83db;
+    border-color: #3e83db;
+}
+
 TreeBadge {
     color: #eeeeec;
     margin: 3px;

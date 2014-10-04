@@ -16,12 +16,12 @@
 #include "treerole.h"
 #include "treewidget.h"
 #include "treespinner.h"
+#include "treeindicator.h"
 #include <IrcConnection>
 #include <IrcLagTimer>
 #include <IrcBuffer>
 #include <QPainter>
 #include <QPixmap>
-#include <qmath.h>
 
 TreeItem::TreeItem(IrcBuffer* buffer, TreeItem* parent) : QObject(buffer), QTreeWidgetItem(parent)
 {
@@ -124,9 +124,9 @@ void TreeItem::updateIcon()
     QPixmap pixmap(16, 16);
     pixmap.fill(Qt::transparent);
     QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
     if (connection()->isActive() && !connection()->isConnected()) {
-        painter.setRenderHint(QPainter::SmoothPixmapTransform);
 #if defined(Q_OS_WIN) || defined(Q_OS_MAC)
         painter.translate(8, 8);
 #else
@@ -136,21 +136,10 @@ void TreeItem::updateIcon()
         TreeSpinner* spinner = TreeSpinner::instance(treeWidget());
         spinner->render(&painter, QPoint(-8, -8));
     } else {
-        painter.setPen(QPen(QPalette().color(QPalette::Mid), 0.5));
-        QColor color(Qt::transparent);
-        if (lag > 0) {
-            qreal f = qMin(100.0, qSqrt(lag)) / 100;
-            color = QColor::fromHsl(120 - f * 120, 96, 152); // TODO
-        }
-        painter.setBrush(color);
-        painter.setRenderHint(QPainter::Antialiasing);
-#if defined(Q_OS_WIN)
-        painter.drawEllipse(4, 3, 8, 8);
-#elif defined(Q_OS_MAC)
-        painter.drawEllipse(4, 5, 8, 8);
-#else
-        painter.drawEllipse(4, 6, 8, 8);
-#endif
+        TreeIndicator* indicator = TreeIndicator::instance(treeWidget());
+        indicator->setHighlighted(data(0, TreeRole::Highlight).toBool());
+        indicator->setLag(lag);
+        indicator->render(&painter);
     }
 
     setIcon(0, pixmap);
