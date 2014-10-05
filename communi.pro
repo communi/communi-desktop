@@ -12,6 +12,8 @@ lessThan(QT_MAJOR_VERSION, 5): \
 load(communi-config.prf, true)
 !contains(DEFINES, IRC_SHARED): \
     error(The Communi framework is missing. Install libcommuni from http://communi.github.com)
+lessThan(IRC_VERSION_MAJOR, 3)|lessThan(IRC_VERSION_MINOR, 3): \
+    error(Communi framework 3.3 is required but $$IRC_VERSION was detected.)
 
 !exists(src/libs/base/shared/shared.pri): \
     error(A Git submodule is missing. Run \'git submodule update --init\' in $${PWD}.)
