@@ -211,6 +211,10 @@ QString MessageFormatter::styledText(const QString& text, Style style) const
 
 QString MessageFormatter::formatInviteMessage(IrcInviteMessage* msg) const
 {
+    if (msg->isReply())
+        return tr("! invited %1 to %2").arg(styledText(msg->user(), Bold),
+                                            styledText(msg->channel(), Bold));
+
     return tr("%1 %2 invited to %3").arg(formatExpander("!"),
                                          formatSender(msg),
                                          styledText(msg->channel(), Bold));
@@ -316,9 +320,6 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg) const
             formatted = tr("%1 on %2").arg(P_(1), P_(2));
             break;
 
-        case Irc::RPL_INVITING: // TODO: IrcInviteMessage::isReply()
-            return tr("! inviting %1 to %2").arg(styledText(P_(1), Bold), P_(2));
-
         case Irc::RPL_VERSION: // TODO: IrcVersionMessage?
             return tr("! %1 version is %2").arg(styledText(msg->nick(), Bold), P_(1));
 
@@ -329,6 +330,8 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg) const
         case Irc::RPL_NOWAWAY:
             return tr("! %1").arg(formatText(P_(1)));
 
+        case Irc::RPL_INVITING:
+        case Irc::RPL_INVITED:
         case Irc::RPL_TOPICWHOTIME:
         case Irc::RPL_CHANNEL_URL:
         case Irc::RPL_CREATIONTIME:
