@@ -380,14 +380,15 @@ void ChatPage::onCurrentViewChanged(BufferView* current, BufferView* previous)
 void ChatPage::onAlert(IrcMessage* message)
 {
     if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
-        TextDocument* doc = qobject_cast<TextDocument*>(sender());
-        if (doc && !doc->isVisible() && message->timeStamp() > d.latest) {
+        if (message->timeStamp() > d.latest) {
             emit alert(message);
-
-            IrcBuffer* buffer = doc->buffer();
-            TreeItem* item = d.treeWidget->bufferItem(buffer);
-            if (buffer && item != d.treeWidget->currentItem())
-                d.treeWidget->highlightItem(item);
+            TextDocument* doc = qobject_cast<TextDocument*>(sender());
+            if (doc && !doc->isVisible()) {
+                IrcBuffer* buffer = doc->buffer();
+                TreeItem* item = d.treeWidget->bufferItem(buffer);
+                if (buffer && item != d.treeWidget->currentItem())
+                    d.treeWidget->highlightItem(item);
+            }
         }
         d.latest = qMax(message->timeStamp(), d.latest);
     }
