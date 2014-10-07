@@ -211,7 +211,6 @@ void TreeWidget::addBuffer(IrcBuffer* buffer)
         item = new TreeItem(buffer, parent);
     }
     connect(item, SIGNAL(destroyed(TreeItem*)), this, SLOT(onItemDestroyed(TreeItem*)));
-    connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
     d.bufferItems.insert(buffer, item);
     emit bufferAdded(buffer);
 }
@@ -223,7 +222,6 @@ void TreeWidget::removeBuffer(IrcBuffer* buffer)
         d.connectionItems.remove(connection);
         d.connections.removeOne(connection);
     }
-    disconnect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
     emit bufferRemoved(buffer);
     delete d.bufferItems.take(buffer);
 }
@@ -409,26 +407,6 @@ void TreeWidget::delayedResetBadge(QTreeWidgetItem* item)
 {
     d.resetBadges.enqueue(static_cast<TreeItem*>(item));
     QTimer::singleShot(500, this, SLOT(resetBadge()));
-}
-
-void TreeWidget::onMessageReceived(IrcMessage* message)
-{
-    if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
-        IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
-        TreeItem* item = bufferItem(buffer);
-        if (buffer && item != currentItem()) {
-            bool visible = false;
-            foreach (TextDocument* doc, buffer->findChildren<TextDocument*>()) {
-                if (doc->isVisible()) {
-                    visible = true;
-                    break;
-                }
-            }
-            // exclude broadcasted global notices
-            if (!visible && message->property("target") != "$$*")
-                item->setData(1, TreeRole::Badge, item->data(1, TreeRole::Badge).toInt() + 1);
-        }
-    }
 }
 
 void TreeWidget::onItemExpanded(QTreeWidgetItem* item)

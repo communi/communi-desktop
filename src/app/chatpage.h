@@ -71,6 +71,7 @@ private slots:
     void setupDocument(TextDocument* document);
     void onCurrentBufferChanged(IrcBuffer* buffer);
     void onCurrentViewChanged(BufferView* current, BufferView* previous);
+    void onMessageReceived(IrcMessage* message);
     void onAlert(IrcMessage* message);
     void onSocketError();
     void onSecureError();
@@ -81,8 +82,9 @@ private:
     struct Private {
         Finder* finder;
         ThemeInfo theme;
-        QDateTime latest;
         QString timestamp;
+        QDateTime latestSeen;
+        QDateTime latestAlert;
         QStringList chans;
         SplitView* splitView;
         TreeWidget* treeWidget;

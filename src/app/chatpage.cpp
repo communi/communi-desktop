@@ -9,6 +9,7 @@
 
 #include "chatpage.h"
 #include "treeitem.h"
+#include "treerole.h"
 #include "treewidget.h"
 #include "themeloader.h"
 #include "windowtheme.h"
@@ -110,7 +111,8 @@ QByteArray ChatPage::saveSettings() const
     QVariantMap settings;
     settings.insert("theme", d.theme.name());
     settings.insert("timestamp", d.timestamp);
-    settings.insert("latest", d.latest);
+    settings.insert("latest", d.latestSeen);
+    settings.insert("alert", d.latestAlert);
 
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -125,7 +127,8 @@ void ChatPage::restoreSettings(const QByteArray& data)
     in >> settings;
 
     d.timestamp = settings.value("timestamp", "[hh:mm:ss]").toString();
-    d.latest = settings.value("latest").toDateTime();
+    d.latestSeen = settings.value("latest").toDateTime();
+    d.latestAlert = settings.value("alert").toDateTime();
     setTheme(settings.value("theme", "Cute").toString());
 }
 
@@ -303,6 +306,7 @@ void ChatPage::addBuffer(IrcBuffer* buffer)
     PluginLoader::instance()->documentAdded(doc);
 
     connect(buffer, SIGNAL(destroyed(IrcBuffer*)), this, SLOT(removeBuffer(IrcBuffer*)));
+    connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
 
     if (buffer->isChannel() && d.chans.contains(buffer->title())) {
         d.chans.removeAll(buffer->title());
@@ -377,10 +381,33 @@ void ChatPage::onCurrentViewChanged(BufferView* current, BufferView* previous)
     emit currentViewChanged(current);
 }
 
+void ChatPage::onMessageReceived(IrcMessage* message)
+{
+    if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
+        if (message->timeStamp() > d.latestSeen) {
+            IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
+            TreeItem* item = d.treeWidget->bufferItem(buffer);
+            if (buffer && item != d.treeWidget->currentItem()) {
+                bool visible = false;
+                foreach (TextDocument* doc, buffer->findChildren<TextDocument*>()) {
+                    if (doc->isVisible()) {
+                        visible = true;
+                        break;
+                    }
+                }
+                // exclude broadcasted global notices
+                if (!visible && message->property("target") != "$$*")
+                    item->setData(1, TreeRole::Badge, item->data(1, TreeRole::Badge).toInt() + 1);
+            }
+        }
+        d.latestSeen = qMax(message->timeStamp(), d.latestSeen);
+    }
+}
+
 void ChatPage::onAlert(IrcMessage* message)
 {
     if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
-        if (message->timeStamp() > d.latest) {
+        if (message->timeStamp() > d.latestAlert) {
             emit alert(message);
             TextDocument* doc = qobject_cast<TextDocument*>(sender());
             if (doc && !doc->isVisible()) {
@@ -390,7 +417,7 @@ void ChatPage::onAlert(IrcMessage* message)
                     d.treeWidget->highlightItem(item);
             }
         }
-        d.latest = qMax(message->timeStamp(), d.latest);
+        d.latestAlert = qMax(message->timeStamp(), d.latestAlert);
     }
 }
 

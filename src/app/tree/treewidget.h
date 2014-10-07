@@ -86,7 +86,6 @@ protected:
 private slots:
     void resetBadge(QTreeWidgetItem* item = 0);
     void delayedResetBadge(QTreeWidgetItem* item);
-    void onMessageReceived(IrcMessage* message);
     void onItemExpanded(QTreeWidgetItem* item);
     void onItemCollapsed(QTreeWidgetItem* item);
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
