@@ -27,6 +27,7 @@ public:
 
     bool isEmpty() const;
     bool isEvent() const;
+    bool isError() const;
 
     QList<MessageData> getEvents() const;
     bool canMerge(const MessageData& other) const;
@@ -44,6 +45,7 @@ public:
 private:
     struct Private {
         bool own;
+        bool error;
         QString nick;
         QString format;
         QByteArray data;

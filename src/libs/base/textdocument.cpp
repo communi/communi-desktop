@@ -506,8 +506,16 @@ QString TextDocument::formatSummary(const QList<MessageData>& events) const
                 actions += tr("left");
             break;
         case IrcMessage::Quit:
-            if (!handled.contains(event.type()))
-                actions += tr("quit");
+            if (event.isError()) {
+                if (!handled.contains(IrcMessage::Error))
+                    actions += tr("disconnected");
+                nicks.insert(event.nick());
+                handled.insert(IrcMessage::Error);
+                continue;
+            } else {
+                if (!handled.contains(event.type()))
+                    actions += tr("quit");
+            }
             break;
         case IrcMessage::Kick:
             if (!handled.contains(event.type()))

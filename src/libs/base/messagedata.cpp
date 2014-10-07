@@ -17,6 +17,7 @@
 MessageData::MessageData()
 {
     d.own = false;
+    d.error = false;
     d.type = IrcMessage::Unknown;
 }
 
@@ -34,6 +35,11 @@ bool MessageData::isEvent() const
            d.type == IrcMessage::Part ||
            d.type == IrcMessage::Quit ||
            d.type == IrcMessage::Topic;
+}
+
+bool MessageData::isError() const
+{
+    return d.error || d.type == IrcMessage::Error;
 }
 
 QList<MessageData> MessageData::getEvents() const
@@ -62,6 +68,15 @@ void MessageData::initFrom(IrcMessage* message)
     d.nick = message->nick();
     d.type = message->type();
     d.own = message->isOwn();
+
+    if (message->type() == IrcMessage::Quit) {
+        QString reason = static_cast<IrcQuitMessage*>(message)->reason();
+        if (reason.contains("Ping timeout")
+                || reason.contains("Connection reset by peer")
+                || reason.contains("Remote host closed the connection")) {
+            d.error = true;
+        }
+    }
 }
 
 QString MessageData::format() const
