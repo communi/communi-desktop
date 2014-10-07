@@ -83,8 +83,11 @@ TreeIndicator {
     min-height: 6px;
     max-height: 6px;
     border-radius: 2px;
-    margin: 4px;
     border: 1px solid palette(mid);
+}
+
+TreeIndicator:off {
+    background: palette(button);
 }
 
 TreeIndicator:on {

@@ -16,6 +16,7 @@
 #define TREEINDICATOR_H
 
 #include <QFrame>
+#include <QStyle>
 
 class TreeIndicator : public QFrame
 {
@@ -27,7 +28,7 @@ public:
     static TreeIndicator* instance(QWidget* parent = 0);
 
     void setLag(qint64 lag) { d.lag = lag; }
-    void setHighlighted(bool hilite) { d.hilite = hilite; }
+    void setState(QStyle::State state) { d.state = state; }
 
 protected:
     void paintEvent(QPaintEvent* event);
@@ -36,7 +37,7 @@ protected:
 private:
     struct Private {
         qint64 lag;
-        bool hilite;
+        QStyle::State state;
     } d;
 };
 

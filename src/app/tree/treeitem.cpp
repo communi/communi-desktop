@@ -137,9 +137,18 @@ void TreeItem::updateIcon()
         spinner->render(&painter, QPoint(-8, -8));
     } else {
         TreeIndicator* indicator = TreeIndicator::instance(treeWidget());
-        indicator->setHighlighted(data(0, TreeRole::Highlight).toBool());
+        QStyle::State state;
+        if (data(0, TreeRole::Highlight).toBool())
+            state |= QStyle::State_On;
+        if (!connection()->isConnected())
+            state |= QStyle::State_Off;
+        indicator->setState(state);
         indicator->setLag(lag);
-        indicator->render(&painter);
+#if defined(Q_OS_WIN) || defined(Q_OS_MAC)
+        indicator->render(&painter, QPoint(4, 4));
+#else
+        indicator->render(&painter, QPoint(4, 6));
+#endif
     }
 
     setIcon(0, pixmap);

@@ -118,8 +118,11 @@ TreeIndicator {
     min-height: 6px;
     max-height: 6px;
     border-radius: 2px;
-    margin: 4px;
-    border: 1px solid palette(mid);
+    border: 1px solid #828380;
+}
+
+TreeIndicator:off {
+    background: #5d5e5b;
 }
 
 TreeIndicator:on {

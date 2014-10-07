@@ -22,7 +22,7 @@
 TreeIndicator::TreeIndicator(QWidget* parent) : QFrame(parent)
 {
     d.lag = 0;
-    d.hilite = false;
+    d.state = QStyle::State_None;
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_NoSystemBackground);
     setVisible(false);
@@ -65,10 +65,9 @@ void TreeIndicator::paintEvent(QPaintEvent*)
         frame.state |= QStyle::State_Sunken;
     else if (frameShadow == Raised)
         frame.state |= QStyle::State_Raised;
-    if (d.hilite)
-        frame.state |= QStyle::State_On;
+    frame.state |= d.state;
 
-    if (d.lag > 0 && !d.hilite) {
+    if (d.lag > 0 && d.state == QStyle::State_None) {
         qreal f = qMin(100.0, qSqrt(d.lag)) / 100;
         QColor color = QColor::fromHsl(120 - f * 120, 96, 152); // TODO
         setStyleSheet(QString("background-color:%1").arg(color.name()));
