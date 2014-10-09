@@ -127,7 +127,7 @@ void ChatPage::restoreSettings(const QByteArray& data)
     in >> settings;
 
     d.timestamp = settings.value("timestamp", "[hh:mm:ss]").toString();
-    d.latestSeen = settings.value("latest").toDateTime();
+    d.latestPreviously = settings.value("latest").toDateTime();
     d.latestAlert = settings.value("alert").toDateTime();
     setTheme(settings.value("theme", "Cute").toString());
 }
@@ -384,7 +384,7 @@ void ChatPage::onCurrentViewChanged(BufferView* current, BufferView* previous)
 void ChatPage::onMessageReceived(IrcMessage* message)
 {
     if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
-        if (message->timeStamp() > d.latestSeen) {
+        if (message->timeStamp() > d.latestPreviously) {
             IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
             TreeItem* item = d.treeWidget->bufferItem(buffer);
             if (buffer && item != d.treeWidget->currentItem()) {
