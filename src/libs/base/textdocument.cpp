@@ -483,7 +483,7 @@ QString TextDocument::formatEvents(const QList<MessageData>& events) const
         }
     }
     if (!lines.isEmpty())
-        return tr("<html><head><style>%1</style></head><body>%2</body></html>").arg(d.css, lines.join(tr("<br/>")));
+        return tr("<html><head><style>%1</style></head><body style='white-space:pre'>%2</body></html>").arg(d.css, lines.join(tr("<br/>")));
     return QString();
 }
 
