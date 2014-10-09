@@ -251,6 +251,7 @@ void ChatPage::addConnection(IrcConnection* connection)
     connect(bufferModel, SIGNAL(added(IrcBuffer*)), this, SLOT(addBuffer(IrcBuffer*)));
     connect(connection, SIGNAL(socketError(QAbstractSocket::SocketError)), this, SLOT(onSocketError()));
     connect(connection, SIGNAL(secureError()), this, SLOT(onSecureError()));
+    connect(connection, SIGNAL(connected()), this, SLOT(onConnected()));
 
     MessageHandler* handler = new MessageHandler(bufferModel);
     handler->setDefaultBuffer(serverBuffer);
@@ -458,6 +459,16 @@ void ChatPage::onSecureError()
                 delete message;
             }
         }
+    }
+}
+
+void ChatPage::onConnected()
+{
+    IrcConnection* connection = qobject_cast<IrcConnection*>(sender());
+    if (connection) {
+        TreeItem* item = d.treeWidget->connectionItem(connection);
+        if (item)
+            d.treeWidget->unhighlightItem(item);
     }
 }
 
