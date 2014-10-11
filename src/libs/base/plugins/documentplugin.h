@@ -26,8 +26,6 @@ public:
 
     virtual void documentAdded(TextDocument*) {}
     virtual void documentRemoved(TextDocument*) {}
-
-    TextDocument* currentDocument() const;
 };
 
 Q_DECLARE_INTERFACE(DocumentPlugin, "Communi.DocumentPlugin")

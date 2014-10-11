@@ -26,9 +26,6 @@ public:
 
     virtual void viewAdded(BufferView*) {}
     virtual void viewRemoved(BufferView*) {}
-
-    BufferView* currentView() const;
-    void setCurrentView(BufferView* view);
 };
 
 Q_DECLARE_INTERFACE(ViewPlugin, "Communi.ViewPlugin")

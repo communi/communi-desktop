@@ -15,7 +15,6 @@
 #ifndef CONNECTIONPLUGIN_H
 #define CONNECTIONPLUGIN_H
 
-#include <QList>
 #include <QtPlugin>
 
 class IrcConnection;
@@ -27,10 +26,6 @@ public:
 
     virtual void connectionAdded(IrcConnection*) {}
     virtual void connectionRemoved(IrcConnection*) {}
-
-    QList<IrcConnection*> connections() const;
-    void addConnection(IrcConnection* connection);
-    void removeConnection(IrcConnection* connection);
 };
 
 Q_DECLARE_INTERFACE(ConnectionPlugin, "Communi.ConnectionPlugin")

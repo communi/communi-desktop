@@ -26,9 +26,6 @@ public:
 
     virtual void bufferAdded(IrcBuffer*) {}
     virtual void bufferRemoved(IrcBuffer*) {}
-
-    IrcBuffer* currentBuffer() const;
-    void setCurrentBuffer(IrcBuffer* buffer);
 };
 
 Q_DECLARE_INTERFACE(BufferPlugin, "Communi.BufferPlugin")
