@@ -86,7 +86,8 @@ private:
         QString timestamp;
         QDateTime latestSeen;
         QDateTime latestAlert;
-        QDateTime latestPreviously;
+        QDateTime previousSeen;
+        QDateTime previousAlert;
         QStringList chans;
         SplitView* splitView;
         TreeWidget* treeWidget;

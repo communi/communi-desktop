@@ -127,8 +127,8 @@ void ChatPage::restoreSettings(const QByteArray& data)
     in >> settings;
 
     d.timestamp = settings.value("timestamp", "[hh:mm:ss]").toString();
-    d.latestPreviously = settings.value("latest").toDateTime();
-    d.latestAlert = settings.value("alert").toDateTime();
+    d.previousSeen = settings.value("latest").toDateTime();
+    d.previousAlert = settings.value("alert").toDateTime();
     setTheme(settings.value("theme", "Cute").toString());
 }
 
@@ -385,7 +385,7 @@ void ChatPage::onCurrentViewChanged(BufferView* current, BufferView* previous)
 void ChatPage::onMessageReceived(IrcMessage* message)
 {
     if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
-        if (message->timeStamp() > d.latestPreviously) {
+        if (message->timeStamp() > d.previousSeen) {
             IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
             TreeItem* item = d.treeWidget->bufferItem(buffer);
             if (buffer && item != d.treeWidget->currentItem()) {
@@ -408,7 +408,7 @@ void ChatPage::onMessageReceived(IrcMessage* message)
 void ChatPage::onAlert(IrcMessage* message)
 {
     if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
-        if (message->timeStamp() > d.latestAlert) {
+        if (message->timeStamp() > d.previousAlert) {
             emit alert(message);
             TextDocument* doc = qobject_cast<TextDocument*>(sender());
             if (doc && !doc->isVisible()) {
