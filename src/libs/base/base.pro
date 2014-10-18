@@ -19,6 +19,7 @@ HEADERS += $$PWD/messageformatter.h
 HEADERS += $$PWD/textbrowser.h
 HEADERS += $$PWD/textdocument.h
 HEADERS += $$PWD/textinput.h
+HEADERS += $$PWD/themeinfo.h
 HEADERS += $$PWD/titlebar.h
 
 SOURCES += $$PWD/bufferview.cpp
@@ -29,6 +30,7 @@ SOURCES += $$PWD/messageformatter.cpp
 SOURCES += $$PWD/textbrowser.cpp
 SOURCES += $$PWD/textdocument.cpp
 SOURCES += $$PWD/textinput.cpp
+SOURCES += $$PWD/themeinfo.cpp
 SOURCES += $$PWD/titlebar.cpp
 
 include(shared/shared.pri)
