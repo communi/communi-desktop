@@ -13,6 +13,7 @@
 #include <QPluginLoader>
 
 class IrcBuffer;
+class ThemeInfo;
 class TreeWidget;
 class BufferView;
 class TextDocument;
@@ -39,6 +40,8 @@ public slots:
 
     void documentAdded(TextDocument* doc);
     void documentRemoved(TextDocument* doc);
+
+    void themeChanged(const ThemeInfo& theme);
 
 private:
     PluginLoader(QObject* parent = 0);

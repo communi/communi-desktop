@@ -17,6 +17,7 @@
 #include "bufferplugin.h"
 #include "connectionplugin.h"
 #include "documentplugin.h"
+#include "themeplugin.h"
 #include "viewplugin.h"
 
 static QObjectList loadPlugins(const QStringList& paths)
@@ -144,5 +145,14 @@ void PluginLoader::documentRemoved(TextDocument* doc)
         DocumentPlugin* plugin = qobject_cast<DocumentPlugin*>(instance);
         if (plugin)
             plugin->documentRemoved(doc);
+    }
+}
+
+void PluginLoader::themeChanged(const ThemeInfo& theme)
+{
+    foreach (QObject* instance, pluginInstances()) {
+        ThemePlugin* plugin = qobject_cast<ThemePlugin*>(instance);
+        if (plugin)
+            plugin->themeChanged(theme);
     }
 }
