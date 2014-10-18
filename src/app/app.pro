@@ -18,7 +18,6 @@ mac:LIBS += -framework AppKit -framework SystemConfiguration
 else:win32:LIBS += -lole32 -luuid
 else:unix:QT += dbus
 qtHaveModule(multimedia):QT += multimedia
-qtHaveModule(x11extras):QT += x11extras
 
 load(communi_installs.prf)
 isEmpty(COMMUNI_INSTALL_BINS):error(COMMUNI_INSTALL_BINS empty!)

@@ -12,15 +12,23 @@
 * GNU General Public License for more details.
 */
 
-#include "windowtheme.h"
-#include "themeinfo.h"
+#ifndef GNOMEPLUGIN_H
+#define GNOMEPLUGIN_H
 
+#include <QObject>
+#include <QtPlugin>
+#include "themeplugin.h"
 
-void WindowTheme::setTheme(QWidget* window, const ThemeInfo& theme)
+class GnomePlugin : public QObject, public ThemePlugin
 {
-    window->setStyleSheet(theme.style());
+    Q_OBJECT
+    Q_INTERFACES(ThemePlugin)
+    Q_PLUGIN_METADATA(IID "Communi.ThemePlugin")
 
-#ifdef QT_X11EXTRAS_LIB
-    setGtkTheme(window->winId(), theme.gtkTheme().toUtf8());
-#endif
-}
+public:
+    GnomePlugin(QObject* parent = 0);
+
+    void themeChanged(const ThemeInfo& theme);
+};
+
+#endif // GNOMEPLUGIN_H

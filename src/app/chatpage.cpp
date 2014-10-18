@@ -102,7 +102,7 @@ void ChatPage::setTheme(const QString& theme)
             setupDocument(doc);
         foreach (BufferView* view, d.splitView->views())
             view->titleBar()->setStyleSheet(d.theme.style());
-        WindowTheme::setTheme(window(), d.theme);
+        window()->setStyleSheet(d.theme.style());
 
         // TODO: because of theme preview
         if (window()->inherits("QMainWindow"))
