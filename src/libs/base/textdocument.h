@@ -49,6 +49,9 @@ public:
     bool isVisible() const;
     void setVisible(bool visible);
 
+    QDateTime timestamp() const;
+    void setTimestamp(const QDateTime& timestamp);
+
     void drawBackground(QPainter* painter, const QRect& bounds);
     void drawForeground(QPainter* painter, const QRect& bounds);
 
@@ -97,6 +100,7 @@ private:
         int lowlight;
         bool visible;
         IrcBuffer* buffer;
+        QDateTime timestamp;
         QList<int> highlights;
         QString timeStampFormat;
         QList<MessageData> queue;

@@ -111,8 +111,6 @@ QByteArray ChatPage::saveSettings() const
     QVariantMap settings;
     settings.insert("theme", d.theme.name());
     settings.insert("timestamp", d.timestamp);
-    settings.insert("latest", d.latestSeen);
-    settings.insert("alert", d.latestAlert);
 
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -127,8 +125,6 @@ void ChatPage::restoreSettings(const QByteArray& data)
     in >> settings;
 
     d.timestamp = settings.value("timestamp", "[hh:mm:ss]").toString();
-    d.previousSeen = settings.value("latest").toDateTime();
-    d.previousAlert = settings.value("alert").toDateTime();
     setTheme(settings.value("theme", "Cute").toString());
 }
 
@@ -138,6 +134,17 @@ QByteArray ChatPage::saveState() const
     state.insert("splitter", QSplitter::saveState());
     state.insert("views", d.splitView->saveState());
     state.insert("tree", d.treeWidget->saveState());
+
+    QVariantMap timestamps;
+    foreach (TextDocument* doc, d.documents) {
+        if (doc->timestamp().isValid()) {
+            IrcBuffer* buffer = doc->buffer();
+            QString id = buffer->connection()->userData().value("uuid").toString();
+            id += "/" + buffer->title();
+            timestamps[id] = doc->timestamp();
+        }
+    }
+    state.insert("timestamps", timestamps);
 
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -157,6 +164,8 @@ void ChatPage::restoreState(const QByteArray& data)
         QSplitter::restoreState(state.value("splitter").toByteArray());
     if (state.contains("views"))
         d.splitView->restoreState(state.value("views").toByteArray());
+
+    d.timestamps = state.value("timestamps").toMap();
 
     // restore server buffers
     QList<IrcConnection*> connections = findChildren<IrcConnection*>();
@@ -303,11 +312,14 @@ void ChatPage::addBuffer(IrcBuffer* buffer)
 
     PluginLoader::instance()->bufferAdded(buffer);
 
+    QString id = buffer->connection()->userData().value("uuid").toString();
+    id += "/" + buffer->title();
+    doc->setTimestamp(d.timestamps.value(id).toDateTime());
+
     setupDocument(doc);
     PluginLoader::instance()->documentAdded(doc);
 
     connect(buffer, SIGNAL(destroyed(IrcBuffer*)), this, SLOT(removeBuffer(IrcBuffer*)));
-    connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
 
     if (buffer->isChannel() && d.chans.contains(buffer->title())) {
         d.chans.removeAll(buffer->title());
@@ -339,6 +351,7 @@ void ChatPage::setupDocument(TextDocument* document)
     document->setTimeStampFormat(d.timestamp);
     document->setStyleSheet(d.theme.style());
 
+    connect(document, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
     connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onAlert(IrcMessage*)));
     connect(document, SIGNAL(privateMessageReceived(IrcMessage*)), this, SLOT(onAlert(IrcMessage*)));
 }
@@ -385,8 +398,9 @@ void ChatPage::onCurrentViewChanged(BufferView* current, BufferView* previous)
 void ChatPage::onMessageReceived(IrcMessage* message)
 {
     if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
-        if (message->timeStamp() > d.previousSeen) {
-            IrcBuffer* buffer = qobject_cast<IrcBuffer*>(sender());
+        TextDocument* doc = qobject_cast<TextDocument*>(sender());
+        if (doc && !doc->isClone()) {
+            IrcBuffer* buffer = doc->buffer();
             TreeItem* item = d.treeWidget->bufferItem(buffer);
             if (buffer && item != d.treeWidget->currentItem()) {
                 bool visible = false;
@@ -401,24 +415,20 @@ void ChatPage::onMessageReceived(IrcMessage* message)
                     item->setData(1, TreeRole::Badge, item->data(1, TreeRole::Badge).toInt() + 1);
             }
         }
-        d.latestSeen = qMax(message->timeStamp(), d.latestSeen);
     }
 }
 
 void ChatPage::onAlert(IrcMessage* message)
 {
     if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
-        if (message->timeStamp() > d.previousAlert) {
-            emit alert(message);
-            TextDocument* doc = qobject_cast<TextDocument*>(sender());
-            if (doc && !doc->isVisible()) {
-                IrcBuffer* buffer = doc->buffer();
-                TreeItem* item = d.treeWidget->bufferItem(buffer);
-                if (buffer && item != d.treeWidget->currentItem())
-                    d.treeWidget->highlightItem(item);
-            }
+        emit alert(message);
+        TextDocument* doc = qobject_cast<TextDocument*>(sender());
+        if (doc && !doc->isVisible()) {
+            IrcBuffer* buffer = doc->buffer();
+            TreeItem* item = d.treeWidget->bufferItem(buffer);
+            if (buffer && item != d.treeWidget->currentItem())
+                d.treeWidget->highlightItem(item);
         }
-        d.latestAlert = qMax(message->timeStamp(), d.latestAlert);
     }
 }
 

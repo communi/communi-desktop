@@ -179,9 +179,25 @@ void TextDocument::setVisible(bool visible)
                 flush();
         } else {
             d.uc = 0;
+            if (TextBlockMessageData* block = static_cast<TextBlockMessageData*>(lastBlock().userData()))
+                d.timestamp = block->data.timestamp();
         }
         d.visible = visible;
     }
+}
+
+QDateTime TextDocument::timestamp() const
+{
+    if (d.visible) {
+        if (TextBlockMessageData* block = static_cast<TextBlockMessageData*>(lastBlock().userData()))
+            return block->data.timestamp();
+    }
+    return d.timestamp;
+}
+
+void TextDocument::setTimestamp(const QDateTime& timestamp)
+{
+    d.timestamp = timestamp;
 }
 
 void TextDocument::lowlight(int block)
@@ -237,7 +253,10 @@ void TextDocument::append(const MessageData& data)
             if (!d.queue.isEmpty())
                 d.queue.replace(d.queue.count() - 1, msg);
         } else {
-            ++d.uc;
+            if (d.timestamp < data.timestamp())
+                ++d.uc;
+            else
+                d.uc = 0;
         }
         if (d.dirty == 0 || d.visible) {
             QTextCursor cursor(this);
@@ -383,16 +402,19 @@ void TextDocument::receiveMessage(IrcMessage* message)
     MessageData data = formatMessage(message);
     if (!data.isEmpty()) {
         append(data);
-        emit messageReceived(message);
 
-        if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
-            if (!message->isOwn()) {
-                const bool contains = message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive);
-                if (contains) {
-                    addHighlight(totalCount() - 1);
-                    emit messageHighlighted(message);
-                } else if (message->property("private").toBool()) {
-                    emit privateMessageReceived(message);
+        if (d.timestamp < message->timeStamp()) {
+            emit messageReceived(message);
+
+            if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
+                if (!message->isOwn()) {
+                    const bool contains = message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive);
+                    if (contains) {
+                        addHighlight(totalCount() - 1);
+                        emit messageHighlighted(message);
+                    } else if (message->property("private").toBool()) {
+                        emit privateMessageReceived(message);
+                    }
                 }
             }
         }

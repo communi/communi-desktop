@@ -13,6 +13,7 @@
 #include <QSet>
 #include <QSplitter>
 #include <QDateTime>
+#include <QVariantMap>
 #include <IrcCommandFilter>
 #include "themeinfo.h"
 
@@ -84,13 +85,10 @@ private:
         Finder* finder;
         ThemeInfo theme;
         QString timestamp;
-        QDateTime latestSeen;
-        QDateTime latestAlert;
-        QDateTime previousSeen;
-        QDateTime previousAlert;
         QStringList chans;
         SplitView* splitView;
         TreeWidget* treeWidget;
+        QVariantMap timestamps;
         QSet<TextDocument*> documents;
     } d;
 };
