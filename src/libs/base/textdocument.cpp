@@ -403,18 +403,19 @@ void TextDocument::receiveMessage(IrcMessage* message)
     if (!data.isEmpty()) {
         append(data);
 
-        if (d.timestamp < message->timeStamp()) {
+        bool unseen = d.timestamp < message->timeStamp();
+        if (unseen)
             emit messageReceived(message);
 
-            if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
-                if (!message->isOwn()) {
-                    const bool contains = message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive);
-                    if (contains) {
-                        addHighlight(totalCount() - 1);
+        if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
+            if (!message->isOwn()) {
+                const bool contains = message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive);
+                if (contains) {
+                    addHighlight(totalCount() - 1);
+                    if (unseen)
                         emit messageHighlighted(message);
-                    } else if (message->property("private").toBool()) {
-                        emit privateMessageReceived(message);
-                    }
+                } else if (unseen && message->property("private").toBool()) {
+                    emit privateMessageReceived(message);
                 }
             }
         }
