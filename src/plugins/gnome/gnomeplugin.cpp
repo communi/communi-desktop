@@ -15,11 +15,13 @@
 #include "gnomeplugin.h"
 #include "themeinfo.h"
 #include <QSystemTrayIcon>
+#include <QMainWindow>
 #include <QApplication>
 #include <X11/Xlib.h>
 #include <QX11Info>
 #include <QLibrary>
 #include <QWidget>
+#include <QAction>
 
 static bool setGtkTheme(WId winId, const QByteArray& theme)
 {
@@ -51,16 +53,27 @@ static bool setGtkTheme(WId winId, const QByteArray& theme)
 
 GnomePlugin::GnomePlugin(QObject* parent) : QObject(parent)
 {
+    d.mute = 0;
+    d.window = 0;
+}
+
+void GnomePlugin::windowCreated(QMainWindow* window)
+{
+    d.window = window;
 }
 
 void GnomePlugin::themeChanged(const ThemeInfo& theme)
 {
     QByteArray gtkTheme = theme.gtkTheme().toUtf8();
-    foreach (QWidget* window, QApplication::topLevelWidgets())
-        setGtkTheme(window->winId(), gtkTheme);
+    setGtkTheme(d.window->winId(), gtkTheme);
 }
 
 void GnomePlugin::setupTrayIcon(QSystemTrayIcon* tray)
 {
     tray->setVisible(false);
+}
+
+void GnomePlugin::setupMuteAction(QAction* action)
+{
+    d.mute = action;
 }
