@@ -10,6 +10,7 @@
 #include "pluginloader.h"
 
 #include <QDir>
+#include <QFileInfo>
 #include <QApplication>
 
 #include <QtPlugin>
@@ -27,7 +28,7 @@ static QObjectList loadPlugins(const QStringList& paths)
     foreach (const QString& path, paths) {
         foreach (const QFileInfo& file, QDir(path).entryInfoList(QDir::Files)) {
             const QString base = file.baseName();
-            // blacklisted obsolete plugin
+            // blacklisted obsolete plugins
             if (base.startsWith("monitorplugin") || base.startsWith("libmonitorplugin"))
                 continue;
 #if defined(Q_OS_WIN)

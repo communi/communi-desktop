@@ -14,7 +14,6 @@
 
 class IrcBuffer;
 class ThemeInfo;
-class TreeWidget;
 class BufferView;
 class TextDocument;
 class IrcConnection;
@@ -52,4 +51,4 @@ private:
     PluginLoader(QObject* parent = 0);
 };
 
-#endif // CHATPAGE_H
+#endif // PLUGINLOADER_H
