@@ -77,101 +77,64 @@ PluginLoader* PluginLoader::instance()
     return &loader;
 }
 
+#define COMMUNI_PLUGIN_CALL(T, F) \
+    foreach (QObject* instance, pluginInstances()) { \
+        T* plugin = qobject_cast<T*>(instance); \
+        if (plugin) \
+            plugin->F; \
+    }
+
 void PluginLoader::bufferAdded(IrcBuffer* buffer)
 {
-    foreach (QObject* instance, pluginInstances()) {
-        BufferPlugin* plugin = qobject_cast<BufferPlugin*>(instance);
-        if (plugin)
-            plugin->bufferAdded(buffer);
-    }
+    COMMUNI_PLUGIN_CALL(BufferPlugin, bufferAdded(buffer))
 }
 
 void PluginLoader::bufferRemoved(IrcBuffer* buffer)
 {
-    foreach (QObject* instance, pluginInstances()) {
-        BufferPlugin* plugin = qobject_cast<BufferPlugin*>(instance);
-        if (plugin)
-            plugin->bufferRemoved(buffer);
-    }
+    COMMUNI_PLUGIN_CALL(BufferPlugin, bufferRemoved(buffer))
 }
 
 void PluginLoader::connectionAdded(IrcConnection* connection)
 {
-    foreach (QObject* instance, pluginInstances()) {
-        ConnectionPlugin* plugin = qobject_cast<ConnectionPlugin*>(instance);
-        if (plugin)
-            plugin->connectionAdded(connection);
-    }
+    COMMUNI_PLUGIN_CALL(ConnectionPlugin, connectionAdded(connection))
 }
 
 void PluginLoader::connectionRemoved(IrcConnection* connection)
 {
-    foreach (QObject* instance, pluginInstances()) {
-        ConnectionPlugin* plugin = qobject_cast<ConnectionPlugin*>(instance);
-        if (plugin)
-            plugin->connectionRemoved(connection);
-    }
+    COMMUNI_PLUGIN_CALL(ConnectionPlugin, connectionRemoved(connection))
 }
 
 void PluginLoader::viewAdded(BufferView* view)
 {
-    foreach (QObject* instance, pluginInstances()) {
-        ViewPlugin* plugin = qobject_cast<ViewPlugin*>(instance);
-        if (plugin)
-            plugin->viewAdded(view);
-    }
+    COMMUNI_PLUGIN_CALL(ViewPlugin, viewAdded(view))
 }
 
 void PluginLoader::viewRemoved(BufferView* view)
 {
-    foreach (QObject* instance, pluginInstances()) {
-        ViewPlugin* plugin = qobject_cast<ViewPlugin*>(instance);
-        if (plugin)
-            plugin->viewRemoved(view);
-    }
+    COMMUNI_PLUGIN_CALL(ViewPlugin, viewRemoved(view))
 }
 
 void PluginLoader::documentAdded(TextDocument* doc)
 {
-    foreach (QObject* instance, pluginInstances()) {
-        DocumentPlugin* plugin = qobject_cast<DocumentPlugin*>(instance);
-        if (plugin)
-            plugin->documentAdded(doc);
-    }
+    COMMUNI_PLUGIN_CALL(DocumentPlugin, documentAdded(doc))
 }
 
 void PluginLoader::documentRemoved(TextDocument* doc)
 {
-    foreach (QObject* instance, pluginInstances()) {
-        DocumentPlugin* plugin = qobject_cast<DocumentPlugin*>(instance);
-        if (plugin)
-            plugin->documentRemoved(doc);
-    }
+    COMMUNI_PLUGIN_CALL(DocumentPlugin, documentRemoved(doc))
 }
 
 void PluginLoader::themeChanged(const ThemeInfo& theme)
 {
-    foreach (QObject* instance, pluginInstances()) {
-        ThemePlugin* plugin = qobject_cast<ThemePlugin*>(instance);
-        if (plugin)
-            plugin->themeChanged(theme);
-    }
+    COMMUNI_PLUGIN_CALL(ThemePlugin, themeChanged(theme))
 }
 
 void PluginLoader::windowCreated(QMainWindow* window)
 {
-    foreach (QObject* instance, pluginInstances()) {
-        WindowPlugin* plugin = qobject_cast<WindowPlugin*>(instance);
-        if (plugin)
-            plugin->windowCreated(window);
-    }
+    COMMUNI_PLUGIN_CALL(WindowPlugin, windowCreated(window))
 }
 
 void PluginLoader::windowDestroyed(QMainWindow* window)
 {
-    foreach (QObject* instance, pluginInstances()) {
-        WindowPlugin* plugin = qobject_cast<WindowPlugin*>(instance);
-        if (plugin)
-            plugin->windowDestroyed(window);
-    }
+    COMMUNI_PLUGIN_CALL(WindowPlugin, windowDestroyed(window))
 }
