@@ -90,16 +90,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     connect(d.monitor, SIGNAL(screenSaverStarted()), d.dock, SLOT(activateAlert()));
     connect(d.monitor, SIGNAL(screenSaverStopped()), d.dock, SLOT(deactivateAlert()));
 
-#ifdef Q_OS_MAC
-    QMenu* menu = new QMenu(this);
-    menuBar()->addMenu(menu);
-
-    QAction* action = new QAction(tr("Preferences"), this);
-    action->setMenuRole(QAction::PreferencesRole);
-    connect(action, SIGNAL(triggered()), this, SLOT(showSettings()));
-    menu->addAction(action);
-#endif // Q_OS_MAC
-
     PluginLoader::instance()->windowCreated(this);
 
     restoreState();

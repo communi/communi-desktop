@@ -2,9 +2,9 @@
 # Communi
 ######################################################################
 
-TEMPLATE = subdirs
-SUBDIRS += filter
-SUBDIRS += verifier
-SUBDIRS += znc
-osx:SUBDIRS += osx
-qtHaveModule(x11extras):SUBDIRS += gnome
+TEMPLATE = lib
+COMMUNI += core model util
+CONFIG += communi_plugin
+
+HEADERS += $$PWD/osxplugin.h
+SOURCES += $$PWD/osxplugin.cpp
