@@ -12,7 +12,6 @@
 #include "treerole.h"
 #include "treewidget.h"
 #include "themeloader.h"
-#include "windowtheme.h"
 #include "textdocument.h"
 #include "pluginloader.h"
 #include "textbrowser.h"
