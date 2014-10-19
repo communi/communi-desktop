@@ -13,43 +13,11 @@
 */
 
 #include "gnomeplugin.h"
+#include "x11helper.h"
 #include "themeinfo.h"
 #include <QSystemTrayIcon>
 #include <QMainWindow>
-#include <QApplication>
-#include <X11/Xlib.h>
-#include <QX11Info>
-#include <QLibrary>
-#include <QWidget>
 #include <QAction>
-
-static bool setGtkTheme(WId winId, const QByteArray& theme)
-{
-    typedef Atom (*XInternAtomFunc)(Display*, const char*, int);
-    typedef void (*XChangePropertyFunc)(Display*, Window, Atom, Atom, int, int, const unsigned char*, int);
-    typedef void (*XDeletePropertyFunc)(Display*, Window, Atom);
-
-    QLibrary xlib("libX11.so");
-    if (!xlib.load())
-        return false;
-
-    XInternAtomFunc xInternAtom = (XInternAtomFunc) xlib.resolve("XInternAtom");
-    XChangePropertyFunc xChangeProperty = (XChangePropertyFunc) xlib.resolve("XChangeProperty");
-    XDeletePropertyFunc xDeleteProperty = (XDeletePropertyFunc) xlib.resolve("XDeleteProperty");
-    if (!xInternAtom || !xChangeProperty || !xDeleteProperty)
-        return false;
-
-    if (!theme.isEmpty()) {
-        xChangeProperty(QX11Info::display(), winId,
-                        xInternAtom(QX11Info::display(), "_GTK_THEME_VARIANT", false),
-                        xInternAtom(QX11Info::display(), "UTF8_STRING", false),
-                        8, PropModeReplace, (uchar*) theme.data(), theme.length());
-    } else {
-        xDeleteProperty(QX11Info::display(), winId,
-                        xInternAtom(QX11Info::display(), "_GTK_THEME_VARIANT", false));
-    }
-    return true;
-}
 
 GnomePlugin::GnomePlugin(QObject* parent) : QObject(parent)
 {
@@ -65,7 +33,7 @@ void GnomePlugin::windowCreated(QMainWindow* window)
 void GnomePlugin::themeChanged(const ThemeInfo& theme)
 {
     QByteArray gtkTheme = theme.gtkTheme().toUtf8();
-    setGtkTheme(d.window->winId(), gtkTheme);
+    X11Helper::setWindowProperty(d.window->winId(), "_GTK_THEME_VARIANT", gtkTheme);
 }
 
 void GnomePlugin::setupTrayIcon(QSystemTrayIcon* tray)
