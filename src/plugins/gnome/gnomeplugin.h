@@ -18,17 +18,20 @@
 #include <QObject>
 #include <QtPlugin>
 #include "themeplugin.h"
+#include "dockplugin.h"
 
-class GnomePlugin : public QObject, public ThemePlugin
+class GnomePlugin : public QObject, public ThemePlugin, public DockPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(ThemePlugin)
+    Q_INTERFACES(ThemePlugin DockPlugin)
     Q_PLUGIN_METADATA(IID "Communi.ThemePlugin")
+    Q_PLUGIN_METADATA(IID "Communi.DockPlugin")
 
 public:
     GnomePlugin(QObject* parent = 0);
 
     void themeChanged(const ThemeInfo& theme);
+    void setupTrayIcon(QSystemTrayIcon* tray);
 };
 
 #endif // GNOMEPLUGIN_H

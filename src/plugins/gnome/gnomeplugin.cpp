@@ -14,6 +14,7 @@
 
 #include "gnomeplugin.h"
 #include "themeinfo.h"
+#include <QSystemTrayIcon>
 #include <QApplication>
 #include <X11/Xlib.h>
 #include <QX11Info>
@@ -57,4 +58,9 @@ void GnomePlugin::themeChanged(const ThemeInfo& theme)
     QByteArray gtkTheme = theme.gtkTheme().toUtf8();
     foreach (QWidget* window, QApplication::topLevelWidgets())
         setGtkTheme(window->winId(), gtkTheme);
+}
+
+void GnomePlugin::setupTrayIcon(QSystemTrayIcon* tray)
+{
+    tray->setVisible(false);
 }
