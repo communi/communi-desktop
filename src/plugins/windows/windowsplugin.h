@@ -17,18 +17,24 @@
 
 #include <QObject>
 #include <QtPlugin>
-#include "windowplugin.h"
+#include "dockplugin.h"
 
-class WindowsPlugin : public QObject, public WindowPlugin
+class WindowsPlugin : public QObject, public DockPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(WindowPlugin)
-    Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
+    Q_INTERFACES(DockPlugin)
+    Q_PLUGIN_METADATA(IID "Communi.DockPlugin")
 
 public:
     WindowsPlugin(QObject* parent = 0);
 
-    void windowCreated(QMainWindow* window);
+    void setupTrayIcon(QSystemTrayIcon* tray);
+    void dockAlert(IrcMessage* message);
+
+private:
+    struct Private {
+        QSystemTrayIcon* tray;
+    } d;
 };
 
 #endif // WINDOWSPLUGIN_H

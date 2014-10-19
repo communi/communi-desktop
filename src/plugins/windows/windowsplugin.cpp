@@ -13,13 +13,23 @@
 */
 
 #include "windowsplugin.h"
-#include <QMainWindow>
+#include <QSystemTrayIcon>
+#include <IrcTextFormat>
+#include <IrcMessage>
 
 WindowsPlugin::WindowsPlugin(QObject* parent) : QObject(parent)
 {
+    d.tray = 0;
 }
 
-void WindowsPlugin::windowCreated(QMainWindow* window)
+void WindowsPlugin::setupTrayIcon(QSystemTrayIcon* tray)
 {
-    Q_UNUSED(window);
+    d.tray = tray;
+}
+
+void WindowsPlugin::dockAlert(IrcMessage* message)
+{
+    QString content = message->property("content").toString();
+    if (!content.isEmpty())
+        d.tray->showMessage(tr("Communi"), message->nick() + ": " + IrcTextFormat().toPlainText(content));
 }

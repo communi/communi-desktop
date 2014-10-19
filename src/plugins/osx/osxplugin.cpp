@@ -13,12 +13,16 @@
 */
 
 #include "osxplugin.h"
+#include <QSystemTrayIcon>
+#include <IrcTextFormat>
 #include <QMainWindow>
+#include <IrcMessage>
 #include <QMenuBar>
 #include <QMenu>
 
 OsxPlugin::OsxPlugin(QObject* parent) : QObject(parent)
 {
+    d.tray = 0;
 }
 
 void OsxPlugin::windowCreated(QMainWindow* window)
@@ -30,4 +34,16 @@ void OsxPlugin::windowCreated(QMainWindow* window)
     action->setMenuRole(QAction::PreferencesRole);
     connect(action, SIGNAL(triggered()), window, SLOT(showSettings()));
     menu->addAction(action);
+}
+
+void OsxPlugin::setupTrayIcon(QSystemTrayIcon* tray)
+{
+    d.tray = tray;
+}
+
+void OsxPlugin::dockAlert(IrcMessage* message)
+{
+    QString content = message->property("content").toString();
+    if (!content.isEmpty())
+        d.tray->showMessage(tr("Communi"), message->nick() + ": " + IrcTextFormat().toPlainText(content));
 }

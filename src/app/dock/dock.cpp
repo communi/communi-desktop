@@ -100,11 +100,7 @@ void Dock::alert(IrcMessage* message)
         if (d.alert && (!d.mute || !d.mute->isChecked()))
             d.alert->play();
         if (d.tray && !d.blinking) {
-#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
-            QString content = message->property("content").toString();
-            if (!content.isEmpty())
-                d.tray->showMessage(tr("Communi"), message->nick() + ": " + IrcTextFormat().toPlainText(content));
-#endif
+            PluginLoader::instance()->dockAlert(message);
             SharedTimer::instance()->registerReceiver(this, "updateTray");
             d.blinking = true;
             d.blink = true;

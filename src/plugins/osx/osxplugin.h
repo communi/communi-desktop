@@ -17,18 +17,27 @@
 
 #include <QObject>
 #include <QtPlugin>
+#include "dockplugin.h"
 #include "windowplugin.h"
 
-class OsxPlugin : public QObject, public WindowPlugin
+class OsxPlugin : public QObject, public WindowPlugin, public DockPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(WindowPlugin)
+    Q_INTERFACES(WindowPlugin DockPlugin)
     Q_PLUGIN_METADATA(IID "Communi.WindowPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.DockPlugin")
 
 public:
     OsxPlugin(QObject* parent = 0);
 
     void windowCreated(QMainWindow* window);
+    void setupTrayIcon(QSystemTrayIcon* tray);
+    void dockAlert(IrcMessage* message);
+
+private:
+    struct Private {
+        QSystemTrayIcon* tray;
+    } d;
 };
 
 #endif // OSXPLUGIN_H
