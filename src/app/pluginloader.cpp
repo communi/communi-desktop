@@ -19,6 +19,7 @@
 #include "documentplugin.h"
 #include "themeplugin.h"
 #include "viewplugin.h"
+#include "windowplugin.h"
 
 static QObjectList loadPlugins(const QStringList& paths)
 {
@@ -154,5 +155,23 @@ void PluginLoader::themeChanged(const ThemeInfo& theme)
         ThemePlugin* plugin = qobject_cast<ThemePlugin*>(instance);
         if (plugin)
             plugin->themeChanged(theme);
+    }
+}
+
+void PluginLoader::windowCreated(QMainWindow* window)
+{
+    foreach (QObject* instance, pluginInstances()) {
+        WindowPlugin* plugin = qobject_cast<WindowPlugin*>(instance);
+        if (plugin)
+            plugin->windowCreated(window);
+    }
+}
+
+void PluginLoader::windowDestroyed(QMainWindow* window)
+{
+    foreach (QObject* instance, pluginInstances()) {
+        WindowPlugin* plugin = qobject_cast<WindowPlugin*>(instance);
+        if (plugin)
+            plugin->windowDestroyed(window);
     }
 }

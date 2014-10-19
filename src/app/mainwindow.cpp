@@ -10,6 +10,7 @@
 #include "mainwindow.h"
 #include "settingspage.h"
 #include "systemmonitor.h"
+#include "pluginloader.h"
 #include "textdocument.h"
 #include "connectpage.h"
 #include "bufferview.h"
@@ -99,6 +100,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     menu->addAction(action);
 #endif // Q_OS_MAC
 
+    PluginLoader::instance()->windowCreated(this);
+
     restoreState();
 
     if (d.connections.isEmpty())
@@ -107,6 +110,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 
 MainWindow::~MainWindow()
 {
+    PluginLoader::instance()->windowDestroyed(this);
 }
 
 void MainWindow::saveState()

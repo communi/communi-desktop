@@ -19,6 +19,8 @@ class BufferView;
 class TextDocument;
 class IrcConnection;
 
+QT_FORWARD_DECLARE_CLASS(QMainWindow)
+
 class PluginLoader : public QObject
 {
     Q_OBJECT
@@ -42,6 +44,9 @@ public slots:
     void documentRemoved(TextDocument* doc);
 
     void themeChanged(const ThemeInfo& theme);
+
+    void windowCreated(QMainWindow* window);
+    void windowDestroyed(QMainWindow* window);
 
 private:
     PluginLoader(QObject* parent = 0);
