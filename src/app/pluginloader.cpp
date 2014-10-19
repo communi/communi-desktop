@@ -17,6 +17,7 @@
 #include "bufferview.h"
 #include "bufferplugin.h"
 #include "connectionplugin.h"
+#include "dockplugin.h"
 #include "documentplugin.h"
 #include "themeplugin.h"
 #include "viewplugin.h"
@@ -138,4 +139,19 @@ void PluginLoader::windowCreated(QMainWindow* window)
 void PluginLoader::windowDestroyed(QMainWindow* window)
 {
     COMMUNI_PLUGIN_CALL(WindowPlugin, windowDestroyed(window))
+}
+
+void PluginLoader::dockAlert(IrcMessage* message)
+{
+    COMMUNI_PLUGIN_CALL(DockPlugin, dockAlert(message))
+}
+
+void PluginLoader::setupTrayIcon(QSystemTrayIcon* tray)
+{
+    COMMUNI_PLUGIN_CALL(DockPlugin, setupTrayIcon(tray))
+}
+
+void PluginLoader::setupMuteAction(QAction* action)
+{
+    COMMUNI_PLUGIN_CALL(DockPlugin, setupMuteAction(action))
 }

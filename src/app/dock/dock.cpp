@@ -17,6 +17,7 @@
 #include "mainwindow.h"
 #include "sharedtimer.h"
 #include "qtdocktile.h"
+#include "pluginloader.h"
 #include <QDesktopServices>
 #include <IrcTextFormat>
 #include <IrcConnection>
@@ -72,6 +73,9 @@ Dock::Dock(MainWindow* window) : QObject(window)
         connect(d.tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
                 this, SLOT(onTrayActivated(QSystemTrayIcon::ActivationReason)));
         connect(d.tray, SIGNAL(messageClicked()), this, SLOT(onTrayMessageClicked()));
+
+        PluginLoader::instance()->setupTrayIcon(d.tray);
+        PluginLoader::instance()->setupMuteAction(d.mute);
 
         updateTray();
     }

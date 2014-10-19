@@ -15,10 +15,13 @@
 class IrcBuffer;
 class ThemeInfo;
 class BufferView;
+class IrcMessage;
 class TextDocument;
 class IrcConnection;
 
+QT_FORWARD_DECLARE_CLASS(QAction)
 QT_FORWARD_DECLARE_CLASS(QMainWindow)
+QT_FORWARD_DECLARE_CLASS(QSystemTrayIcon)
 
 class PluginLoader : public QObject
 {
@@ -46,6 +49,10 @@ public slots:
 
     void windowCreated(QMainWindow* window);
     void windowDestroyed(QMainWindow* window);
+
+    void dockAlert(IrcMessage* message);
+    void setupTrayIcon(QSystemTrayIcon* tray);
+    void setupMuteAction(QAction* action);
 
 private:
     PluginLoader(QObject* parent = 0);
