@@ -13,6 +13,7 @@
 */
 
 #include "gnomeplugin.h"
+#include "gnomemenu.h"
 #include "x11helper.h"
 #include "themeinfo.h"
 #include <QSystemTrayIcon>
@@ -28,6 +29,25 @@ GnomePlugin::GnomePlugin(QObject* parent) : QObject(parent)
 void GnomePlugin::windowCreated(QMainWindow* window)
 {
     d.window = window;
+
+#ifdef COMMUNI_HAVE_GIO
+    GnomeMenu *section1 = new GnomeMenu(window);
+    section1->addSimpleItem("showConnect", "Connect...", window, "doConnect");
+    section1->addSimpleItem("showSettings", "Settings", window, "showSettings");
+    section1->addSimpleItem("showHelp", "Help", window, "showHelp");
+
+    GnomeMenu *section2 = new GnomeMenu(window);
+    section2->addToggleItem("toggleMute", "Mute", d.mute->isChecked(), d.mute, "toggle");
+
+    GnomeMenu *section3 = new GnomeMenu(window);
+    section3->addSimpleItem("quit", "Quit", window, "close");
+
+    GnomeMenu *builder = new GnomeMenu(window);
+    builder->addSection(section1);
+    builder->addSection(section2);
+    builder->addSection(section3);
+    builder->setMenuToWindow(window->winId(), "/org/communi/gnomeintegration");
+#endif // COMMUNI_HAVE_GIO
 }
 
 void GnomePlugin::themeChanged(const ThemeInfo& theme)
