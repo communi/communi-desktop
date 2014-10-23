@@ -174,7 +174,7 @@ QString MessageFormatter::formatText(const QString& text) const
                             // test word end boundary
                             finder.setPosition(pos + user.length());
                             if (finder.isAtBoundary()) {
-                                const QString formatted = styledText(user, Bold | Color);
+                                const QString formatted = QString("<a style='text-decoration:none;' href='nick:%1'>%2</a>").arg(user, styledText(user, Bold | Color));
                                 msg.replace(pos, user.length(), formatted);
                                 pos += formatted.length();
                                 finder = QTextBoundaryFinder(QTextBoundaryFinder::Word, msg);
@@ -369,8 +369,9 @@ QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* msg) const
         return tr("* %1 %2").arg(formatSender(msg),
                                  formatText(msg->content()));
 
-    return tr("&lt;%1&gt; %2").arg(formatSender(msg),
-                                   formatText(msg->content()));
+    return tr("&lt;<a style='text-decoration:none;' href='nick:%1'>%2</a>&gt; %3").arg(msg->nick(),
+                                                                                       formatSender(msg),
+                                                                                       formatText(msg->content()));
 }
 
 QString MessageFormatter::formatQuitMessage(IrcQuitMessage* msg) const

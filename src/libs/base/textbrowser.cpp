@@ -114,6 +114,10 @@ void TextBrowser::mousePressEvent(QMouseEvent* event)
         }
         if (!text.isEmpty())
             QToolTip::showText(event->globalPos(), text, viewport());
+    } else if (url.scheme() == "nick") {
+        QMenu* menu = createContextMenu(event->pos());
+        menu->exec(event->globalPos());
+        menu->deleteLater();
     }
     QTextBrowser::mousePressEvent(event);
 }
@@ -209,6 +213,13 @@ QMenu* TextBrowser::createContextMenu(const QPoint& pos)
         connect(whoisAction, SIGNAL(triggered()), this, SLOT(onWhoisTriggered()));
 
         QString nick = QUrl(anchor).toString(QUrl::RemoveScheme | QUrl::RemoveFragment);
+
+        QAction* nickAction = new QAction(nick, menu);
+        menu->insertAction(whoisAction, nickAction);
+        nickAction->setEnabled(false);
+        menu->insertSeparator(whoisAction);
+
+        nickAction->setText(nick);
         queryAction->setData(nick);
         whoisAction->setData(nick);
     }
@@ -309,7 +320,7 @@ void TextBrowser::moveShadow(int offset)
 
 void TextBrowser::onAnchorClicked(const QUrl& url)
 {
-    if (url.scheme() != "expand")
+    if (url.scheme() != "expand" && url.scheme() != "nick")
         QDesktopServices::openUrl(url);
     clearFocus();
     d.bud->setFocus();
