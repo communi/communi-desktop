@@ -31,7 +31,7 @@
      <item row="1" column="1">
       <widget class="QLabel" name="sloganLabel">
        <property name="text">
-        <string>&lt;small&gt;Communi is a simple and light-weight cross-platform IRC client.&lt;/small&gt;</string>
+        <string>&lt;small&gt;Communi is a simple and elegant cross-platform IRC client.&lt;/small&gt;</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
