@@ -72,7 +72,8 @@ void GnomePlugin::themeChanged(const ThemeInfo& theme)
 
 void GnomePlugin::setupTrayIcon(QSystemTrayIcon* tray)
 {
-    tray->setVisible(false);
+    if (qgetenv("XDG_CURRENT_DESKTOP") != "KDE" && qgetenv("KDE_FULL_SESSION").isEmpty())
+        tray->setVisible(false);
 }
 
 void GnomePlugin::setupMuteAction(QAction* action)
