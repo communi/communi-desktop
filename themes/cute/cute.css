@@ -116,7 +116,7 @@ TreeHeader::section:on, TreeWidget::item:on {
     color: #ff4040;
 }
 
-TreeHeader::section:off, TreeWidget::item:off {
+TreeHeader::section:off, TreeWidget::item:off, ListView::item:off {
     color: palette(dark);
 }
 

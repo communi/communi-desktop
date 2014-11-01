@@ -60,7 +60,7 @@ ListView::item {
     height: 20px;
 }
 
-TreeWidget::item:off, TreeHeader::section:off {
+TreeWidget::item:off, TreeHeader::section:off, ListView:off {
     color: #929390;
 }
 

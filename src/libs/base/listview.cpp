@@ -27,6 +27,7 @@
 */
 
 #include "listview.h"
+#include <QStyledItemDelegate>
 #include <QContextMenuEvent>
 #include <IrcUserModel>
 #include <QFontMetrics>
@@ -34,8 +35,23 @@
 #include <IrcCommand>
 #include <IrcChannel>
 #include <QAction>
+#include <IrcUser>
 #include <QMenu>
 #include <Irc>
+
+class ListDelegate : public QStyledItemDelegate
+{
+public:
+    ListDelegate(QObject* parent) : QStyledItemDelegate(parent) { }
+
+    void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+    {
+        IrcUser* user = index.data(Irc::UserRole).value<IrcUser*>();
+        if (user && user->isAway())
+            const_cast<QStyleOptionViewItem&>(option).state |= QStyle::State_Off;
+        QStyledItemDelegate::paint(painter, option, index);
+    }
+};
 
 ListView::ListView(QWidget* parent) : QListView(parent)
 {
@@ -44,6 +60,7 @@ ListView::ListView(QWidget* parent) : QListView(parent)
 #ifdef Q_OS_MAC
     setVerticalScrollMode(ScrollPerPixel);
 #endif
+    setItemDelegate(new ListDelegate(this));
 
     d.model = new IrcUserModel(this);
     d.model->setSortMethod(Irc::SortByTitle);
