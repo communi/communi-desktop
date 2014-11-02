@@ -3,6 +3,7 @@
 ######################################################################
 
 TEMPLATE = subdirs
+SUBDIRS += away
 SUBDIRS += filter
 SUBDIRS += verifier
 SUBDIRS += znc
