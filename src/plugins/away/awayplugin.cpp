@@ -53,10 +53,9 @@ void AwayPlugin::bufferAdded(IrcBuffer* buffer)
 {
     IrcChannel* channel = buffer->toChannel();
     if (channel) {
+        queueChannel(channel);
         connect(channel, SIGNAL(activeChanged(bool)), this, SLOT(onChannelActiveChanged()));
         connect(channel, SIGNAL(destroyed(IrcChannel*)), this, SLOT(onChannelDestroyed(IrcChannel*)));
-        if (channel->isActive())
-            queueChannel(channel);
     }
 }
 
@@ -80,9 +79,7 @@ bool AwayPlugin::messageFilter(IrcMessage* message)
 
 void AwayPlugin::onChannelActiveChanged()
 {
-    IrcChannel* channel = qobject_cast<IrcChannel*>(sender());
-    if (channel && channel->isActive())
-        queueChannel(channel);
+    queueChannel(qobject_cast<IrcChannel*>(sender()));
 }
 
 void AwayPlugin::onChannelDestroyed(IrcChannel* channel)
@@ -92,8 +89,11 @@ void AwayPlugin::onChannelDestroyed(IrcChannel* channel)
 
 void AwayPlugin::queueChannel(IrcChannel* channel)
 {
-    if (!d.queue.contains(channel)) {
-        QTimer::singleShot(500, channel, SLOT(who()));
-        d.queue.insert(channel);
+    if (channel && channel->isActive() && !d.queue.contains(channel)) {
+        IrcNetwork* network = channel->network();
+        if (network && network->isCapable("away-notify")) {
+            QTimer::singleShot(500, channel, SLOT(who()));
+            d.queue.insert(channel);
+        }
     }
 }
