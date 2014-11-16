@@ -376,6 +376,13 @@ QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* msg) const
 
 QString MessageFormatter::formatQuitMessage(IrcQuitMessage* msg) const
 {
+    QString reason = msg->reason();
+    if (reason.contains("Ping timeout")
+            || reason.contains("Connection reset by peer")
+            || reason.contains("Remote host closed the connection")) {
+        return tr("%1 %2 disconnected").arg(formatExpander("!"),
+                                            formatSender(msg));
+    }
     return tr("%1 %2 quit").arg(formatExpander("!"),
                                 formatSender(msg));
 }
