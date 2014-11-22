@@ -153,6 +153,7 @@ void MainWindow::restoreState()
         QVariantMap state = v.toMap();
         IrcConnection* connection = new IrcConnection(d.chatPage);
         connection->restoreState(state.value("connection").toByteArray());
+        connection->setReconnectDelay(10);
         addConnection(connection);
         IrcBufferModel* model = connection->findChild<IrcBufferModel*>();
         if (model)
@@ -300,6 +301,7 @@ void MainWindow::onConnectAccepted()
     ConnectPage* page = qobject_cast<ConnectPage*>(sender());
     if (page) {
         IrcConnection* connection = new IrcConnection(d.chatPage);
+        connection->setReconnectDelay(10);
         connection->setHost(page->host());
         connection->setPort(page->port());
         connection->setSecure(page->isSecure());
