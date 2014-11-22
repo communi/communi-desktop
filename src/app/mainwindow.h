@@ -87,8 +87,6 @@ private slots:
     void showSettings();
     void showHelp();
     void editConnection(IrcConnection* connection);
-    void restoreConnection(IrcConnection* connection = 0);
-    void delayedRestoreConnection();
 
 private:
     struct Private {
@@ -98,7 +96,6 @@ private:
         SystemMonitor* monitor;
         QPointer<BufferView> view;
         QList<IrcConnection*> connections;
-        QQueue<IrcConnection*> restoredConnections;
     } d;
 };
 

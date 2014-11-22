@@ -154,10 +154,9 @@ void MainWindow::restoreState()
         IrcConnection* connection = new IrcConnection(d.chatPage);
         connection->restoreState(state.value("connection").toByteArray());
         addConnection(connection);
-        if (state.contains("model") && connection->isEnabled()) {
-            connection->setProperty("__modelState__", state.value("model").toByteArray());
-            connect(connection, SIGNAL(connected()), this, SLOT(delayedRestoreConnection()));
-        }
+        IrcBufferModel* model = connection->findChild<IrcBufferModel*>();
+        if (model)
+            model->restoreState(state.value("model").toByteArray());
     }
 
     d.chatPage->restoreState(settings.value("state").toByteArray());
@@ -371,31 +370,4 @@ void MainWindow::editConnection(IrcConnection* connection)
     page->setDisplayName(connection->displayName());
     page->setPassword(connection->password());
     push(page);
-}
-
-void MainWindow::restoreConnection(IrcConnection* connection)
-{
-    if (!connection && !d.restoredConnections.isEmpty())
-        connection = d.restoredConnections.dequeue();
-    if (connection && connection->isConnected()) {
-        QByteArray state = connection->property("__modelState__").toByteArray();
-        if (!state.isNull()) {
-            IrcBufferModel* model = connection->findChild<IrcBufferModel*>();
-            if (model && model->count() == 1)
-                model->restoreState(state);
-        }
-        connection->setProperty("__modelState__", QVariant());
-    }
-}
-
-void MainWindow::delayedRestoreConnection()
-{
-    IrcConnection* connection = qobject_cast<IrcConnection*>(sender());
-    if (connection) {
-        // give bouncers 1 second to start joining channels, otherwise a
-        // non-bouncer connection is assumed and model state is restored
-        disconnect(connection, SIGNAL(connected()), this, SLOT(delayedRestoreConnection()));
-        QTimer::singleShot(1000, this, SLOT(restoreConnection()));
-        d.restoredConnections.enqueue(connection);
-    }
 }

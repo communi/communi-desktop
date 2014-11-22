@@ -274,6 +274,9 @@ void ChatPage::addConnection(IrcConnection* connection)
 {
     IrcBufferModel* bufferModel = new IrcBufferModel(connection);
     bufferModel->setSortMethod(Irc::SortByTitle);
+    // give bouncers 1 second to start joining channels, otherwise a
+    // non-bouncer connection is assumed and model state is restored
+    bufferModel->setJoinDelay(1);
 
     IrcBuffer* serverBuffer = bufferModel->add(connection->displayName());
     serverBuffer->setSticky(true);
