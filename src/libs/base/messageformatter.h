@@ -70,6 +70,9 @@ public:
 
     QString styledText(const QString& text, Style style) const;
 
+signals:
+    void formatted(const MessageData& msg);
+
 protected:
     virtual QString formatAwayMessage(IrcAwayMessage* msg) const;
     virtual QString formatInviteMessage(IrcInviteMessage* msg) const;

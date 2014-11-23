@@ -99,6 +99,7 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
     d.visible = false;
 
     d.formatter = new MessageFormatter(this);
+    connect(d.formatter, SIGNAL(formatted(MessageData)), this, SLOT(append(MessageData)));
     d.formatter->setBuffer(buffer);
 
     setUndoRedoEnabled(false);
