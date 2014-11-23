@@ -94,7 +94,7 @@ void MessageFormatter::setTextFormat(IrcTextFormat* format)
     d.textFormat = format;
 }
 
-MessageData MessageFormatter::formatMessage(IrcMessage* msg) const
+MessageData MessageFormatter::formatMessage(IrcMessage* msg)
 {
     QString fmt;
     switch (msg->type()) {
@@ -112,6 +112,9 @@ MessageData MessageFormatter::formatMessage(IrcMessage* msg) const
             break;
         case IrcMessage::Mode:
             fmt = formatModeMessage(static_cast<IrcModeMessage*>(msg));
+            break;
+        case IrcMessage::Names:
+            fmt = formatNamesMessage(static_cast<IrcNamesMessage*>(msg));
             break;
         case IrcMessage::Nick:
             fmt = formatNickMessage(static_cast<IrcNickMessage*>(msg));
@@ -216,7 +219,7 @@ QString MessageFormatter::styledText(const QString& text, Style style) const
     return fmt;
 }
 
-QString MessageFormatter::formatAwayMessage(IrcAwayMessage* msg) const
+QString MessageFormatter::formatAwayMessage(IrcAwayMessage* msg)
 {
     if (msg->isOwn())
         return tr("! %1").arg(formatText(msg->content()));
@@ -226,7 +229,7 @@ QString MessageFormatter::formatAwayMessage(IrcAwayMessage* msg) const
     return tr("! %1 is back").arg(formatSender(msg));
 }
 
-QString MessageFormatter::formatInviteMessage(IrcInviteMessage* msg) const
+QString MessageFormatter::formatInviteMessage(IrcInviteMessage* msg)
 {
     if (msg->isReply())
         return tr("! invited %1 to %2").arg(styledText(msg->user(), Bold),
@@ -237,20 +240,20 @@ QString MessageFormatter::formatInviteMessage(IrcInviteMessage* msg) const
                                          styledText(msg->channel(), Bold));
 }
 
-QString MessageFormatter::formatJoinMessage(IrcJoinMessage* msg) const
+QString MessageFormatter::formatJoinMessage(IrcJoinMessage* msg)
 {
     return tr("%1 %2 joined").arg(formatExpander("!"),
                                   formatSender(msg));
 }
 
-QString MessageFormatter::formatKickMessage(IrcKickMessage* msg) const
+QString MessageFormatter::formatKickMessage(IrcKickMessage* msg)
 {
     return tr("%1 %2 kicked %3").arg(formatExpander("!"),
                                      formatSender(msg),
                                      styledText(msg->user(), Bold));
 }
 
-QString MessageFormatter::formatModeMessage(IrcModeMessage* msg) const
+QString MessageFormatter::formatModeMessage(IrcModeMessage* msg)
 {
     if (msg->isReply())
         return tr("%1 %2 mode is %3 %4").arg(formatExpander("!"),
@@ -264,13 +267,34 @@ QString MessageFormatter::formatModeMessage(IrcModeMessage* msg) const
                                            styledText(msg->argument(), Bold));
 }
 
-QString MessageFormatter::formatNickMessage(IrcNickMessage* msg) const
+QString MessageFormatter::formatNamesMessage(IrcNamesMessage* msg)
+{
+    if (msg->flags() & IrcMessage::Implicit)
+        return QString();
+
+    if (d.buffer) {
+        IrcUserModel userModel(d.buffer);
+        userModel.setSortMethod(Irc::SortByTitle);
+        QStringList titles = userModel.titles();
+        for (int i = 0; i < titles.count(); i += 10) {
+            QStringList row = titles.mid(i, 10);
+            MessageData data;
+            data.initFrom(msg);
+            data.setFormat(tr("<span class='%1'>[NAMES] %2</span>").arg(formatClass(msg), row.join(tr(" "))));
+            emit formatted(data);
+        }
+    }
+
+    return QString();
+}
+
+QString MessageFormatter::formatNickMessage(IrcNickMessage* msg)
 {
     return tr("%1 %2 changed nick").arg(formatExpander("!"),
                                         styledText(msg->newNick(), Bold));
 }
 
-QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* msg) const
+QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* msg)
 {
     if (msg->isReply()) {
         const QStringList params = msg->content().split(" ", QString::SkipEmptyParts);
@@ -293,7 +317,7 @@ QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* msg) const
 #define P_(x) msg->parameters().value(x)
 #define MID_(x) QStringList(msg->parameters().mid(x)).join(" ")
 
-QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg) const
+QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg)
 {
     if (msg->code() < 300)
         return tr("[INFO] %1").arg(formatText(MID_(1)));
@@ -344,6 +368,9 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg) const
         case Irc::RPL_AWAY:
         case Irc::RPL_UNAWAY:
         case Irc::RPL_NOWAWAY:
+        case Irc::RPL_NAMREPLY:
+        case Irc::RPL_ENDOFNAMES:
+        case Irc::RPL_TOPIC:
         case Irc::RPL_TOPICWHOTIME:
         case Irc::RPL_CHANNEL_URL:
         case Irc::RPL_CREATIONTIME:
@@ -358,19 +385,19 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg) const
     return tr("[%1] %2").arg(msg->code()).arg(formatted);
 }
 
-QString MessageFormatter::formatPartMessage(IrcPartMessage* msg) const
+QString MessageFormatter::formatPartMessage(IrcPartMessage* msg)
 {
     return tr("%1 %2 left").arg(formatExpander("!"),
                                 formatSender(msg));
 }
 
-QString MessageFormatter::formatPongMessage(IrcPongMessage* msg) const
+QString MessageFormatter::formatPongMessage(IrcPongMessage* msg)
 {
     const QString secs = formatSeconds(msg->argument().toInt());
     return tr("! %1 replied in %2").arg(formatSender(msg), secs);
 }
 
-QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* msg) const
+QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* msg)
 {
     if (msg->isRequest())
         return tr("%1 %2 requested %3").arg(formatExpander("!"),
@@ -386,7 +413,7 @@ QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* msg) const
                                                                                        formatText(msg->content()));
 }
 
-QString MessageFormatter::formatQuitMessage(IrcQuitMessage* msg) const
+QString MessageFormatter::formatQuitMessage(IrcQuitMessage* msg)
 {
     QString reason = msg->reason();
     if (reason.contains("Ping timeout")
@@ -399,10 +426,16 @@ QString MessageFormatter::formatQuitMessage(IrcQuitMessage* msg) const
                                 formatSender(msg));
 }
 
-QString MessageFormatter::formatTopicMessage(IrcTopicMessage* msg) const
+QString MessageFormatter::formatTopicMessage(IrcTopicMessage* msg)
 {
-    if (msg->isReply())
+    if (msg->flags() & IrcMessage::Implicit)
         return QString();
+
+    if (msg->isReply()) {
+        if (msg->topic().isEmpty())
+            return tr("! no topic");
+        return tr("[TOPIC] %1").arg(formatText(msg->topic()));
+    }
 
     if (msg->topic().isEmpty())
         return tr("%1 %2 cleared topic").arg(formatExpander("!"),
@@ -412,7 +445,7 @@ QString MessageFormatter::formatTopicMessage(IrcTopicMessage* msg) const
                                          formatSender(msg));
 }
 
-QString MessageFormatter::formatUnknownMessage(IrcMessage* msg) const
+QString MessageFormatter::formatUnknownMessage(IrcMessage* msg)
 {
     return tr("%1 %2 %3 %4").arg(formatExpander("?"),
                                  formatSender(msg),

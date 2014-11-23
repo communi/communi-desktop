@@ -66,18 +66,6 @@ bool FilterPlugin::messageFilter(IrcMessage* message)
             if (!filter || !d.awayReplies.contains(message->prefix()))
                 d.awayReplies.insert(message->prefix(), qMakePair(message->timeStamp(), message->parameters().last()));
             return filter;
-        } else if (code == Irc::RPL_TOPIC || code == Irc::RPL_NOTOPIC) {
-            QPair<QDateTime, QString> command = d.sentCommands.value(IrcCommand::Topic);
-            QString channel = message->parameters().value(1);
-            return !command.first.isValid() ||
-                    command.first.secsTo(QDateTime::currentDateTime()) >= 120 ||
-                    command.second.compare(channel, Qt::CaseInsensitive) != 0;
-        } else if (code == Irc::RPL_NAMREPLY || code == Irc::RPL_ENDOFNAMES) {
-            QPair<QDateTime, QString> command = d.sentCommands.value(IrcCommand::Names);
-            QString channel = message->parameters().value(code == Irc::RPL_NAMREPLY ? 2 : 1);
-            return !command.first.isValid() ||
-                    command.first.secsTo(QDateTime::currentDateTime()) >= 120 ||
-                    command.second.compare(channel, Qt::CaseInsensitive) != 0;
         }
     }
     return false;

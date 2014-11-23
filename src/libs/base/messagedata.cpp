@@ -32,6 +32,7 @@ MessageData::MessageData()
 {
     d.own = false;
     d.error = false;
+    d.reply = false;
     d.type = IrcMessage::Unknown;
 }
 
@@ -42,13 +43,14 @@ bool MessageData::isEmpty() const
 
 bool MessageData::isEvent() const
 {
-    return d.type == IrcMessage::Join ||
-           d.type == IrcMessage::Kick ||
-           d.type == IrcMessage::Mode ||
-           d.type == IrcMessage::Nick ||
-           d.type == IrcMessage::Part ||
-           d.type == IrcMessage::Quit ||
-           d.type == IrcMessage::Topic;
+    return !d.reply &&
+           (d.type == IrcMessage::Join ||
+            d.type == IrcMessage::Kick ||
+            d.type == IrcMessage::Mode ||
+            d.type == IrcMessage::Nick ||
+            d.type == IrcMessage::Part ||
+            d.type == IrcMessage::Quit ||
+            d.type == IrcMessage::Topic);
 }
 
 bool MessageData::isError() const
@@ -82,6 +84,7 @@ void MessageData::initFrom(IrcMessage* message)
     d.nick = message->nick();
     d.type = message->type();
     d.own = message->isOwn();
+    d.reply = message->property("reply").toBool();
 
     if (message->type() == IrcMessage::Quit) {
         QString reason = static_cast<IrcQuitMessage*>(message)->reason();

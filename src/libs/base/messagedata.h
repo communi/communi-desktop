@@ -60,6 +60,7 @@ private:
     struct Private {
         bool own;
         bool error;
+        bool reply;
         QString nick;
         QString format;
         QByteArray data;

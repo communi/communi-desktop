@@ -37,18 +37,18 @@ QString EventFormatter::formatEvent(const QString& event) const
     return tr("<span class='event'>%1 %2</span>").arg(formatExpander("!"), event);
 }
 
-QString EventFormatter::formatInviteMessage(IrcInviteMessage* msg) const
+QString EventFormatter::formatInviteMessage(IrcInviteMessage* msg)
 {
     return tr("! %1 invited to %2").arg(formatSender(msg),
                                         styledText(msg->channel(), Bold));
 }
 
-QString EventFormatter::formatJoinMessage(IrcJoinMessage* msg) const
+QString EventFormatter::formatJoinMessage(IrcJoinMessage* msg)
 {
     return tr("! %1 joined").arg(formatSender(msg));
 }
 
-QString EventFormatter::formatKickMessage(IrcKickMessage* msg) const
+QString EventFormatter::formatKickMessage(IrcKickMessage* msg)
 {
     if (msg->reason().isEmpty() || msg->reason() == msg->user())
         return tr("! %1 kicked %2").arg(formatSender(msg),
@@ -59,7 +59,7 @@ QString EventFormatter::formatKickMessage(IrcKickMessage* msg) const
                                          formatText(msg->reason()));
 }
 
-QString EventFormatter::formatModeMessage(IrcModeMessage* msg) const
+QString EventFormatter::formatModeMessage(IrcModeMessage* msg)
 {
     if (msg->isReply())
         return tr("! %1 mode is %2 %3").arg(styledText(msg->target(), Bold),
@@ -71,23 +71,23 @@ QString EventFormatter::formatModeMessage(IrcModeMessage* msg) const
                                           styledText(msg->argument(), Bold));
 }
 
-QString EventFormatter::formatNickMessage(IrcNickMessage* msg) const
+QString EventFormatter::formatNickMessage(IrcNickMessage* msg)
 {
     return tr("! %1 changed nick to %2").arg(formatSender(msg),
                                              styledText(msg->newNick(), Bold|Color));
 }
 
-QString EventFormatter::formatNoticeMessage(IrcNoticeMessage* msg) const
+QString EventFormatter::formatNoticeMessage(IrcNoticeMessage* msg)
 {
     return MessageFormatter::formatNoticeMessage(msg);
 }
 
-QString EventFormatter::formatNumericMessage(IrcNumericMessage* msg) const
+QString EventFormatter::formatNumericMessage(IrcNumericMessage* msg)
 {
     return MessageFormatter::formatNumericMessage(msg);
 }
 
-QString EventFormatter::formatPartMessage(IrcPartMessage* msg) const
+QString EventFormatter::formatPartMessage(IrcPartMessage* msg)
 {
     if (msg->reason().isEmpty() || msg->reason() == msg->nick())
         return tr("! %1 left").arg(formatSender(msg));
@@ -96,12 +96,12 @@ QString EventFormatter::formatPartMessage(IrcPartMessage* msg) const
                                     formatText(msg->reason()));
 }
 
-QString EventFormatter::formatPongMessage(IrcPongMessage* msg) const
+QString EventFormatter::formatPongMessage(IrcPongMessage* msg)
 {
     return MessageFormatter::formatPongMessage(msg);
 }
 
-QString EventFormatter::formatPrivateMessage(IrcPrivateMessage* msg) const
+QString EventFormatter::formatPrivateMessage(IrcPrivateMessage* msg)
 {
     if (msg->isRequest())
         return tr("! %1 requested %2").arg(formatSender(msg),
@@ -115,7 +115,7 @@ QString EventFormatter::formatPrivateMessage(IrcPrivateMessage* msg) const
                                    formatText(msg->content()));
 }
 
-QString EventFormatter::formatQuitMessage(IrcQuitMessage* msg) const
+QString EventFormatter::formatQuitMessage(IrcQuitMessage* msg)
 {
     if (msg->reason().isEmpty() || msg->reason() == msg->nick())
         return tr("! %1 quit").arg(formatSender(msg));
@@ -124,8 +124,11 @@ QString EventFormatter::formatQuitMessage(IrcQuitMessage* msg) const
                                     formatText(msg->reason()));
 }
 
-QString EventFormatter::formatTopicMessage(IrcTopicMessage* msg) const
+QString EventFormatter::formatTopicMessage(IrcTopicMessage* msg)
 {
+    if (msg->isReply())
+        return QString();
+
     if (msg->topic().isEmpty())
         return tr("! %1 cleared topic").arg(formatSender(msg));
 
@@ -133,7 +136,7 @@ QString EventFormatter::formatTopicMessage(IrcTopicMessage* msg) const
                                                   formatText(msg->topic()));
 }
 
-QString EventFormatter::formatUnknownMessage(IrcMessage* msg) const
+QString EventFormatter::formatUnknownMessage(IrcMessage* msg)
 {
     return tr("? %2 %3 %4").arg(formatSender(msg),
                                 msg->command(),

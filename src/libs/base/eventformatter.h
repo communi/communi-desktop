@@ -41,19 +41,19 @@ public:
     QString formatEvent(const QString& event) const;
 
 protected:
-    virtual QString formatInviteMessage(IrcInviteMessage* msg) const;
-    virtual QString formatJoinMessage(IrcJoinMessage* msg) const;
-    virtual QString formatKickMessage(IrcKickMessage* msg) const;
-    virtual QString formatModeMessage(IrcModeMessage* msg) const;
-    virtual QString formatNickMessage(IrcNickMessage* msg) const;
-    virtual QString formatNoticeMessage(IrcNoticeMessage* msg) const;
-    virtual QString formatNumericMessage(IrcNumericMessage* msg) const;
-    virtual QString formatPartMessage(IrcPartMessage* msg) const;
-    virtual QString formatPongMessage(IrcPongMessage* msg) const;
-    virtual QString formatPrivateMessage(IrcPrivateMessage* msg) const;
-    virtual QString formatQuitMessage(IrcQuitMessage* msg) const;
-    virtual QString formatTopicMessage(IrcTopicMessage* msg) const;
-    virtual QString formatUnknownMessage(IrcMessage* msg) const;
+    virtual QString formatInviteMessage(IrcInviteMessage* msg);
+    virtual QString formatJoinMessage(IrcJoinMessage* msg);
+    virtual QString formatKickMessage(IrcKickMessage* msg);
+    virtual QString formatModeMessage(IrcModeMessage* msg);
+    virtual QString formatNickMessage(IrcNickMessage* msg);
+    virtual QString formatNoticeMessage(IrcNoticeMessage* msg);
+    virtual QString formatNumericMessage(IrcNumericMessage* msg);
+    virtual QString formatPartMessage(IrcPartMessage* msg);
+    virtual QString formatPongMessage(IrcPongMessage* msg);
+    virtual QString formatPrivateMessage(IrcPrivateMessage* msg);
+    virtual QString formatQuitMessage(IrcQuitMessage* msg);
+    virtual QString formatTopicMessage(IrcTopicMessage* msg);
+    virtual QString formatUnknownMessage(IrcMessage* msg);
 
     virtual QString formatSender(IrcMessage* msg) const;
 };
