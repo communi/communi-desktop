@@ -98,6 +98,9 @@ QString MessageFormatter::formatMessage(IrcMessage* msg) const
 {
     QString fmt;
     switch (msg->type()) {
+        case IrcMessage::Away:
+            fmt = formatAwayMessage(static_cast<IrcAwayMessage*>(msg));
+            break;
         case IrcMessage::Invite:
             fmt = formatInviteMessage(static_cast<IrcInviteMessage*>(msg));
             break;
@@ -209,6 +212,16 @@ QString MessageFormatter::styledText(const QString& text, Style style) const
     return fmt;
 }
 
+QString MessageFormatter::formatAwayMessage(IrcAwayMessage* msg) const
+{
+    if (msg->isOwn())
+        return tr("! %1").arg(formatText(msg->content()));
+    else if (!msg->content().isEmpty())
+        return tr("! %1 is away (%2)").arg(formatSender(msg),
+                                           formatText(msg->content()));
+    return tr("! %1 is back").arg(formatSender(msg));
+}
+
 QString MessageFormatter::formatInviteMessage(IrcInviteMessage* msg) const
 {
     if (msg->isReply())
@@ -291,9 +304,6 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg) const
         case Irc::ERR_NOMOTD:
             return tr("! %1 reconnected").arg(d.buffer->connection()->nickName());
 
-        case Irc::RPL_AWAY:
-            return tr("! %1 is away").arg(styledText(P_(1), Bold|Dim));
-
         case Irc::RPL_WHOISUSER:
             formatted = tr("%1 is %2@%3 (%4)").arg(P_(1), P_(2), P_(3), formatText(MID_(5)));
             break;
@@ -326,12 +336,10 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg) const
         case Irc::RPL_TIME: // TODO: IrcTimeMessage?
             return tr("! %1 time is %2").arg(styledText(P_(1), Bold), P_(2));
 
+        // TODO: IrcNumericMessage::isComposed()
+        case Irc::RPL_AWAY:
         case Irc::RPL_UNAWAY:
         case Irc::RPL_NOWAWAY:
-            return tr("! %1").arg(formatText(P_(1)));
-
-        case Irc::RPL_INVITING:
-        case Irc::RPL_INVITED:
         case Irc::RPL_TOPICWHOTIME:
         case Irc::RPL_CHANNEL_URL:
         case Irc::RPL_CREATIONTIME:
@@ -411,6 +419,7 @@ QString MessageFormatter::formatUnknownMessage(IrcMessage* msg) const
 QString MessageFormatter::formatClass(IrcMessage* msg) const
 {
     switch (msg->type()) {
+        case IrcMessage::Away:
         case IrcMessage::Invite:
         case IrcMessage::Join:
         case IrcMessage::Kick:
