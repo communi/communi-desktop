@@ -35,6 +35,7 @@
 #include <QDateTime>
 #include <IrcGlobal>
 #include <IrcMessage>
+#include "messagedata.h"
 
 class IrcBuffer;
 class IrcUserModel;
@@ -55,7 +56,7 @@ public:
     IrcTextFormat* textFormat() const;
     void setTextFormat(IrcTextFormat* format);
 
-    QString formatMessage(IrcMessage* msg) const;
+    MessageData formatMessage(IrcMessage* msg) const;
     QString formatText(const QString& text) const;
 
     enum StyleFlag

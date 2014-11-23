@@ -94,7 +94,7 @@ void MessageFormatter::setTextFormat(IrcTextFormat* format)
     d.textFormat = format;
 }
 
-QString MessageFormatter::formatMessage(IrcMessage* msg) const
+MessageData MessageFormatter::formatMessage(IrcMessage* msg) const
 {
     QString fmt;
     switch (msg->type()) {
@@ -145,7 +145,11 @@ QString MessageFormatter::formatMessage(IrcMessage* msg) const
     }
     if (!fmt.isEmpty())
         fmt = tr("<span class='%1'>%2</span>").arg(formatClass(msg), fmt);
-    return fmt;
+
+    MessageData data;
+    data.initFrom(msg);
+    data.setFormat(fmt);
+    return data;
 }
 
 QString MessageFormatter::formatText(const QString& text) const

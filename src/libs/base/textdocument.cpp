@@ -413,7 +413,7 @@ void TextDocument::flush()
 
 void TextDocument::receiveMessage(IrcMessage* message)
 {
-    MessageData data = formatMessage(message);
+    MessageData data = d.formatter->formatMessage(message);
     if (!data.isEmpty()) {
         append(data);
 
@@ -498,14 +498,6 @@ void TextDocument::insert(QTextCursor& cursor, const MessageData& data)
     cursor.setBlockFormat(format);
 }
 
-MessageData TextDocument::formatMessage(IrcMessage* message) const
-{
-    MessageData data;
-    data.initFrom(message);
-    data.setFormat(d.formatter->formatMessage(message));
-    return data;
-}
-
 QString TextDocument::formatEvents(const QList<MessageData>& events) const
 {
     EventFormatter formatter;
@@ -515,7 +507,7 @@ QString TextDocument::formatEvents(const QList<MessageData>& events) const
     foreach (const MessageData& event, events) {
         if (!event.isEmpty()) {
             IrcMessage* msg = IrcMessage::fromData(event.data(), d.buffer->connection());
-            lines += formatBlock(event.timestamp(), formatter.formatMessage(msg));
+            lines += formatBlock(event.timestamp(), formatter.formatMessage(msg).format());
             delete msg;
         }
     }

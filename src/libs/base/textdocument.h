@@ -98,7 +98,6 @@ private:
     void shiftLights(int diff);
     void insert(QTextCursor& cursor, const MessageData& data);
 
-    MessageData formatMessage(IrcMessage* message) const;
     QString formatEvents(const QList<MessageData>& events) const;
     QString formatSummary(const QList<MessageData>& events) const;
     QString formatBlock(const QDateTime& timestamp, const QString& message) const;
