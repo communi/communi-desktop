@@ -79,6 +79,7 @@ protected:
     virtual QString formatJoinMessage(IrcJoinMessage* msg);
     virtual QString formatKickMessage(IrcKickMessage* msg);
     virtual QString formatModeMessage(IrcModeMessage* msg);
+    virtual QString formatMotdMessage(IrcMotdMessage* msg);
     virtual QString formatNamesMessage(IrcNamesMessage* msg);
     virtual QString formatNickMessage(IrcNickMessage* msg);
     virtual QString formatNoticeMessage(IrcNoticeMessage* msg);

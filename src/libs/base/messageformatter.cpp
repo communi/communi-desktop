@@ -113,6 +113,9 @@ MessageData MessageFormatter::formatMessage(IrcMessage* msg)
         case IrcMessage::Mode:
             fmt = formatModeMessage(static_cast<IrcModeMessage*>(msg));
             break;
+        case IrcMessage::Motd:
+            fmt = formatMotdMessage(static_cast<IrcMotdMessage*>(msg));
+            break;
         case IrcMessage::Names:
             fmt = formatNamesMessage(static_cast<IrcNamesMessage*>(msg));
             break;
@@ -267,6 +270,17 @@ QString MessageFormatter::formatModeMessage(IrcModeMessage* msg)
                                            styledText(msg->argument(), Bold));
 }
 
+QString MessageFormatter::formatMotdMessage(IrcMotdMessage *msg)
+{
+    foreach (const QString& line, msg->lines()) {
+        MessageData data;
+        data.initFrom(msg);
+        data.setFormat(tr("<span class='%1'>[MOTD] %2</span>").arg(formatClass(msg), formatText(line)));
+        emit formatted(data);
+    }
+    return QString();
+}
+
 QString MessageFormatter::formatNamesMessage(IrcNamesMessage* msg)
 {
     if (msg->flags() & IrcMessage::Implicit)
@@ -324,14 +338,6 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg)
 
     QString formatted;
     switch (msg->code()) {
-        case Irc::RPL_MOTDSTART:
-        case Irc::RPL_MOTD:
-            return tr("[MOTD] %1").arg(formatText(MID_(1)));
-
-        case Irc::RPL_ENDOFMOTD:
-        case Irc::ERR_NOMOTD:
-            return tr("! %1 reconnected").arg(d.buffer->connection()->nickName());
-
         case Irc::RPL_WHOISUSER:
             formatted = tr("%1 is %2@%3 (%4)").arg(P_(1), P_(2), P_(3), formatText(MID_(5)));
             break;
@@ -370,6 +376,10 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg)
         case Irc::RPL_NOWAWAY:
         case Irc::RPL_NAMREPLY:
         case Irc::RPL_ENDOFNAMES:
+        case Irc::RPL_MOTDSTART:
+        case Irc::RPL_MOTD:
+        case Irc::RPL_ENDOFMOTD:
+        case Irc::ERR_NOMOTD:
         case Irc::RPL_TOPIC:
         case Irc::RPL_TOPICWHOTIME:
         case Irc::RPL_CHANNEL_URL:
@@ -461,6 +471,7 @@ QString MessageFormatter::formatClass(IrcMessage* msg) const
         case IrcMessage::Join:
         case IrcMessage::Kick:
         case IrcMessage::Mode:
+        case IrcMessage::Motd:
         case IrcMessage::Names:
         case IrcMessage::Nick:
         case IrcMessage::Part:
