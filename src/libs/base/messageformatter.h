@@ -90,6 +90,7 @@ protected:
     virtual QString formatQuitMessage(IrcQuitMessage* msg);
     virtual QString formatTopicMessage(IrcTopicMessage* msg);
     virtual QString formatUnknownMessage(IrcMessage* msg);
+    virtual QString formatWhoReplyMessage(IrcWhoReplyMessage* msg);
 
     virtual QString formatClass(IrcMessage* msg) const;
     virtual QString formatSender(IrcMessage* msg) const;

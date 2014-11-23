@@ -146,6 +146,9 @@ MessageData MessageFormatter::formatMessage(IrcMessage* msg)
         case IrcMessage::Unknown:
             fmt = formatUnknownMessage(msg);
             break;
+        case IrcMessage::WhoReply:
+            fmt = formatWhoReplyMessage(static_cast<IrcWhoReplyMessage*>(msg));
+            break;
         default:
             break;
     }
@@ -453,6 +456,16 @@ QString MessageFormatter::formatUnknownMessage(IrcMessage* msg)
                                  msg->parameters().join(" "));
 }
 
+QString MessageFormatter::formatWhoReplyMessage(IrcWhoReplyMessage* msg)
+{
+    QString format = tr("[WHO] %1 (%2)").arg(formatSender(msg), msg->realName());
+    if (msg->isAway())
+        format += tr(" - away");
+    if (msg->isServOp())
+        format += tr(" - server operator");
+    return format;
+}
+
 QString MessageFormatter::formatClass(IrcMessage* msg) const
 {
     switch (msg->type()) {
@@ -468,6 +481,7 @@ QString MessageFormatter::formatClass(IrcMessage* msg) const
         case IrcMessage::Pong:
         case IrcMessage::Quit:
         case IrcMessage::Topic:
+        case IrcMessage::WhoReply:
             return "event";
         case IrcMessage::Unknown:
             return "unknown";

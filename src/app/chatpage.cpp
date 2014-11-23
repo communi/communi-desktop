@@ -539,7 +539,7 @@ IrcCommandParser* ChatPage::createParser(QObject *parent)
     parser->addCommand(IrcCommand::Trace, "TRACE (<target>)");
     parser->addCommand(IrcCommand::Users, "USERS (<server>)");
     parser->addCommand(IrcCommand::Version, "VERSION (<user>)");
-    parser->addCommand(IrcCommand::Who, "WHO <user>");
+    parser->addCommand(IrcCommand::Who, "WHO <mask>");
     parser->addCommand(IrcCommand::Whois, "WHOIS <user>");
     parser->addCommand(IrcCommand::Whowas, "WHOWAS <user>");
 
