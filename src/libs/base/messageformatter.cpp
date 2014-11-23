@@ -370,22 +370,12 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg)
         case Irc::RPL_TIME: // TODO: IrcTimeMessage?
             return tr("! %1 time is %2").arg(styledText(P_(1), Bold), P_(2));
 
-        // TODO: IrcNumericMessage::isComposed()
-        case Irc::RPL_AWAY:
-        case Irc::RPL_UNAWAY:
-        case Irc::RPL_NOWAWAY:
-        case Irc::RPL_NAMREPLY:
-        case Irc::RPL_ENDOFNAMES:
-        case Irc::RPL_MOTDSTART:
-        case Irc::RPL_MOTD:
-        case Irc::RPL_ENDOFMOTD:
-        case Irc::ERR_NOMOTD:
-        case Irc::RPL_TOPIC:
-        case Irc::RPL_TOPICWHOTIME:
-        case Irc::RPL_CHANNEL_URL:
-        case Irc::RPL_CREATIONTIME:
-            return QString();
+        default:
+            break;
     }
+
+    if (msg->isComposed() || msg->flags() & IrcMessage::Implicit)
+        return QString();
 
     if (formatted.isEmpty()) {
         if (Irc::codeToString(msg->code()).startsWith("ERR_"))
