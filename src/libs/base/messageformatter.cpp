@@ -146,19 +146,19 @@ MessageData MessageFormatter::formatMessage(IrcMessage* msg)
         case IrcMessage::Unknown:
             fmt = formatUnknownMessage(msg);
             break;
+        case IrcMessage::Whois:
+            fmt = formatWhoisMessage(static_cast<IrcWhoisMessage*>(msg));
+            break;
+        case IrcMessage::Whowas:
+            fmt = formatWhowasMessage(static_cast<IrcWhowasMessage*>(msg));
+            break;
         case IrcMessage::WhoReply:
             fmt = formatWhoReplyMessage(static_cast<IrcWhoReplyMessage*>(msg));
             break;
         default:
             break;
     }
-    if (!fmt.isEmpty())
-        fmt = tr("<span class='%1'>%2</span>").arg(formatClass(msg), fmt);
-
-    MessageData data;
-    data.initFrom(msg);
-    data.setFormat(fmt);
-    return data;
+    return formatClass(fmt, msg);
 }
 
 QString MessageFormatter::formatText(const QString& text) const
@@ -276,9 +276,7 @@ QString MessageFormatter::formatModeMessage(IrcModeMessage* msg)
 QString MessageFormatter::formatMotdMessage(IrcMotdMessage *msg)
 {
     foreach (const QString& line, msg->lines()) {
-        MessageData data;
-        data.initFrom(msg);
-        data.setFormat(tr("<span class='%1'>[MOTD] %2</span>").arg(formatClass(msg), formatText(line)));
+        MessageData data = formatClass(tr("[MOTD] %1").arg(formatText(line)), msg);
         emit formatted(data);
     }
     return QString();
@@ -295,9 +293,7 @@ QString MessageFormatter::formatNamesMessage(IrcNamesMessage* msg)
         QStringList titles = userModel.titles();
         for (int i = 0; i < titles.count(); i += 10) {
             QStringList row = titles.mid(i, 10);
-            MessageData data;
-            data.initFrom(msg);
-            data.setFormat(tr("<span class='%1'>[NAMES] %2</span>").arg(formatClass(msg), row.join(tr(" "))));
+            MessageData data = formatClass(tr("[NAMES] %1").arg(row.join(tr(" "))), msg);
             emit formatted(data);
         }
     }
@@ -456,6 +452,31 @@ QString MessageFormatter::formatUnknownMessage(IrcMessage* msg)
                                  msg->parameters().join(" "));
 }
 
+QString MessageFormatter::formatWhoisMessage(IrcWhoisMessage* msg)
+{
+    emit formatted(formatClass(tr("[WHOIS] %1 is %2@%3 (%4)").arg(msg->nick(), msg->ident(), msg->host(), formatText(msg->realName())), msg));
+    emit formatted(formatClass(tr("[WHOIS] %1 is connected via %2 (%3)").arg(msg->nick(), msg->server(), msg->info()), msg));
+    emit formatted(formatClass(tr("[WHOIS] %1 is connected since %2 (idle %3)").arg(msg->nick(), msg->since().toString(), formatDuration(msg->idle())), msg));
+    if (!msg->account().isEmpty())
+        emit formatted(formatClass(tr("[WHOIS] %1 is logged in as %2").arg(msg->nick(), msg->account()), msg));
+    if (!msg->address().isEmpty())
+        emit formatted(formatClass(tr("[WHOIS] %1 is connected from %2").arg(msg->nick(), msg->address()), msg));
+    if (msg->isSecure())
+        emit formatted(formatClass(tr("[WHOIS] %1 is using a secure connection").arg(msg->nick()), msg));
+    if (!msg->channels().isEmpty())
+        emit formatted(formatClass(tr("[WHOIS] %1 is on %2").arg(msg->nick(), msg->channels().join(" ")), msg));
+    return QString();
+}
+
+QString MessageFormatter::formatWhowasMessage(IrcWhowasMessage* msg)
+{
+    emit formatted(formatClass(tr("[WHOWAS] %1 was %2@%3 (%4)").arg(msg->nick(), msg->ident(), msg->host(), formatText(msg->realName())), msg));
+    emit formatted(formatClass(tr("[WHOWAS] %1 was connected via %2 (%3)").arg(msg->nick(), msg->server(), msg->info()), msg));
+    if (!msg->account().isEmpty())
+        emit formatted(formatClass(tr("[WHOWAS] %1 was logged in as %2").arg(msg->nick(), msg->account()), msg));
+    return QString();
+}
+
 QString MessageFormatter::formatWhoReplyMessage(IrcWhoReplyMessage* msg)
 {
     QString format = tr("[WHO] %1 (%2)").arg(formatSender(msg), msg->realName());
@@ -466,8 +487,9 @@ QString MessageFormatter::formatWhoReplyMessage(IrcWhoReplyMessage* msg)
     return format;
 }
 
-QString MessageFormatter::formatClass(IrcMessage* msg) const
+MessageData MessageFormatter::formatClass(const QString& format, IrcMessage* msg) const
 {
+    QString cls = "message";
     switch (msg->type()) {
         case IrcMessage::Away:
         case IrcMessage::Invite:
@@ -481,26 +503,35 @@ QString MessageFormatter::formatClass(IrcMessage* msg) const
         case IrcMessage::Pong:
         case IrcMessage::Quit:
         case IrcMessage::Topic:
+        case IrcMessage::Whois:
+        case IrcMessage::Whowas:
         case IrcMessage::WhoReply:
-            return "event";
+            cls = "event";
+            break;
         case IrcMessage::Unknown:
-            return "unknown";
+            cls = "unknown";
+            break;
         case IrcMessage::Notice:
             if (IrcNoticeMessage* m = static_cast<IrcNoticeMessage*>(msg))
-                return m->isReply() ? "event" : "notice";
+                cls = m->isReply() ? "event" : "notice";
             break;
         case IrcMessage::Private:
             if (IrcPrivateMessage* m = static_cast<IrcPrivateMessage*>(msg))
-                return m->isAction() ? "action" : m->isRequest() ? "event" : "message";
+                cls = m->isAction() ? "action" : m->isRequest() ? "event" : "message";
             break;
         case IrcMessage::Numeric:
             if (IrcNumericMessage* m = static_cast<IrcNumericMessage*>(msg))
-                return Irc::codeToString(m->code()).startsWith("ERR_") ? "notice" : "event";
+                cls = Irc::codeToString(m->code()).startsWith("ERR_") ? "notice" : "event";
             break;
         default:
             break;
     }
-    return "message";
+
+    MessageData data;
+    data.initFrom(msg);
+    if (!format.isEmpty())
+        data.setFormat(tr("<span class='%1'>%2</span>").arg(cls, format));
+    return data;
 }
 
 QString MessageFormatter::formatSender(IrcMessage* msg) const
