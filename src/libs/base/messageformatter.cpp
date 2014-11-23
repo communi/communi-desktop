@@ -335,34 +335,7 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg)
     if (msg->code() < 300)
         return tr("[INFO] %1").arg(formatText(MID_(1)));
 
-    QString formatted;
     switch (msg->code()) {
-        case Irc::RPL_WHOISUSER:
-            formatted = tr("%1 is %2@%3 (%4)").arg(P_(1), P_(2), P_(3), formatText(MID_(5)));
-            break;
-
-        case Irc::RPL_WHOWASUSER:
-            formatted = tr("%1 was %2@%3 (%4)").arg(P_(1), P_(2), P_(3), formatText(MID_(5)));
-            break;
-
-        case Irc::RPL_WHOISSERVER:
-            formatted = tr("%1 via %2 (%3)").arg(P_(1), P_(2), P_(3));
-            break;
-
-        case Irc::RPL_WHOISACCOUNT: // nick user is logged in as
-            formatted = tr("%1 as %2").arg(P_(1), P_(2));
-            break;
-
-        case Irc::RPL_WHOISIDLE:
-            formatted = tr("%1 since %2 (idle %3)").arg(P_(1),
-                                                        QDateTime::fromTime_t(P_(3).toInt()).toString(),
-                                                        formatDuration(P_(2).toInt()));
-            break;
-
-        case Irc::RPL_WHOISCHANNELS:
-            formatted = tr("%1 on %2").arg(P_(1), P_(2));
-            break;
-
         case Irc::RPL_VERSION: // TODO: IrcVersionMessage?
             return tr("! %1 version is %2").arg(styledText(msg->nick(), Bold), P_(1));
 
@@ -376,12 +349,10 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg)
     if (msg->isComposed() || msg->flags() & IrcMessage::Implicit)
         return QString();
 
-    if (formatted.isEmpty()) {
-        if (Irc::codeToString(msg->code()).startsWith("ERR_"))
-            return tr("[ERROR] %1").arg(formatText(MID_(1)));
-        formatted = d.textFormat->toHtml(MID_(1));
-    }
-    return tr("[%1] %2").arg(msg->code()).arg(formatted);
+    if (Irc::codeToString(msg->code()).startsWith("ERR_"))
+        return tr("[ERROR] %1").arg(formatText(MID_(1)));
+
+    return tr("[%1] %2").arg(msg->code()).arg(d.textFormat->toHtml(MID_(1)));
 }
 
 QString MessageFormatter::formatPartMessage(IrcPartMessage* msg)
