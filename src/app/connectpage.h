@@ -70,6 +70,9 @@ signals:
     void accepted();
     void rejected();
 
+protected:
+    bool eventFilter(QObject* object, QEvent* event);
+
 private slots:
     void autoFill();
     void restoreSettings();

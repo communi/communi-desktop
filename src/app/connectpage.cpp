@@ -155,6 +155,15 @@ QDialogButtonBox* ConnectPage::buttonBox() const
     return ui.buttonBox;
 }
 
+bool ConnectPage::eventFilter(QObject* object, QEvent* event)
+{
+    if (event->type() == QEvent::Wheel) {
+        event->ignore();
+        return true;
+    }
+    return QWidget::eventFilter(object, event);
+}
+
 void ConnectPage::autoFill()
 {
     QString displayName = ui.displayNameField->text();
@@ -318,6 +327,9 @@ void ConnectPage::init(IrcConnection *connection)
 
     QRegExpValidator* validator = new QRegExpValidator(this);
     ui.userNameField->setValidator(validator);
+
+    ui.serverField->viewport()->installEventFilter(this);
+    ui.nickNameField->viewport()->installEventFilter(this);
 
     qsrand(QTime::currentTime().msec());
     ui.nickNameField->setPlaceholderText(ui.nickNameField->placeholderText().arg(qrand() % 9999));
