@@ -288,9 +288,7 @@ void MainWindow::onEditAccepted()
     ConnectPage* page = qobject_cast<ConnectPage*>(sender());
     if (page) {
         IrcConnection* connection = page->connection();
-        connection->setHost(page->host());
-        connection->setPort(page->port());
-        connection->setSecure(page->isSecure());
+        connection->setServers(page->servers());
         connection->setNickNames(page->nickNames());
         connection->setRealName(page->realName());
         connection->setUserName(page->userName());
@@ -306,9 +304,7 @@ void MainWindow::onConnectAccepted()
     ConnectPage* page = qobject_cast<ConnectPage*>(sender());
     if (page) {
         IrcConnection* connection = new IrcConnection(d.chatPage);
-        connection->setHost(page->host());
-        connection->setPort(page->port());
-        connection->setSecure(page->isSecure());
+        connection->setServers(page->servers());
         connection->setNickNames(page->nickNames());
         connection->setRealName(page->realName());
         connection->setUserName(page->userName());
@@ -367,9 +363,7 @@ void MainWindow::editConnection(IrcConnection* connection)
     ConnectPage* page = new ConnectPage(connection, this);
     connect(page, SIGNAL(accepted()), this, SLOT(onEditAccepted()));
     connect(page, SIGNAL(rejected()), this, SLOT(pop()));
-    page->setHost(connection->host());
-    page->setPort(connection->port());
-    page->setSecure(connection->isSecure());
+    page->setServers(connection->servers());
     page->setNickNames(connection->nickNames());
     page->setRealName(connection->realName());
     page->setUserName(connection->userName());

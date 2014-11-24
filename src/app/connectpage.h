@@ -45,14 +45,8 @@ public:
     QString displayName() const;
     void setDisplayName(const QString& name);
 
-    QString host() const;
-    void setHost(const QString& host);
-
-    int port() const;
-    void setPort(int port);
-
-    bool isSecure() const;
-    void setSecure(bool secure);
+    QStringList servers() const;
+    void setServers(const QStringList& servers);
 
     QString saslMechanism() const;
     void setSaslMechanism(const QString& mechanism);
@@ -77,10 +71,7 @@ signals:
     void rejected();
 
 private slots:
-    void onDisplayNameFieldChanged();
-    void onHostFieldChanged();
-    void onPortFieldChanged(int port);
-    void onSecureBoxToggled(bool secure);
+    void autoFill();
     void restoreSettings();
     void saveSettings();
     void updateUi();
@@ -94,7 +85,6 @@ private:
     struct Private : public Ui::ConnectPage {
         IrcConnection* connection;
         QCompleter* displayNameCompleter;
-        QCompleter* hostCompleter;
         QCompleter* nickNameCompleter;
         QCompleter* realNameCompleter;
         QCompleter* userNameCompleter;
