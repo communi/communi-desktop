@@ -30,6 +30,7 @@
 #include "simplecrypt.h"
 #include "scrollbarstyle.h"
 #include <QRegExpValidator>
+#include <QStringListModel>
 #include <IrcConnection>
 #include <QStringList>
 #include <QPushButton>
@@ -301,6 +302,10 @@ void ConnectPage::reset()
     ui.realNameField->clear();
     ui.userNameField->clear();
     ui.passwordField->clear();
+    ui.displayNameCompleter->setModel(new QStringListModel(ui.displayNameCompleter));
+    ui.realNameCompleter->setModel(new QStringListModel(ui.realNameCompleter));
+    ui.userNameCompleter->setModel(new QStringListModel(ui.userNameCompleter));
+    QSettings().remove("credentials");
     saveSettings();
 }
 
