@@ -1,6 +1,7 @@
 a { color: #4040ff; }
 .timestamp { color: #808080; font-size: small }
 
+.message { white-space: pre-wrap; }
 .notice { color: #a54242; }
 .action { color: #8b388b; }
 .event { color: #808080; }
