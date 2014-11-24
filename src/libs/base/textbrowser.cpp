@@ -250,7 +250,9 @@ void TextBrowser::clear()
 
 void TextBrowser::resetZoom()
 {
-    setFont(QFont());
+    QFont f = font();
+    f.setPointSize(QFont().pointSize());
+    setFont(f);
 }
 
 void TextBrowser::scrollToTop()

@@ -305,6 +305,7 @@ QVariantMap SplitView::saveSplittedViews(const QSplitter* splitter) const
             if (QSplitter* sp = bv->findChild<QSplitter*>())
                 buf.insert("state", sp->saveState());
             buf.insert("fontSize", bv->textBrowser()->font().pointSize());
+            buf.insert("fontFamily", bv->textBrowser()->font().family());
             buffers += buf;
         }
     }
@@ -348,11 +349,12 @@ void SplitView::restoreSplittedViews(QSplitter* splitter, const QVariantMap& sta
                 if (QSplitter* sp = bv->findChild<QSplitter*>())
                     sp->restoreState(buf.value("state").toByteArray());
             }
-            if (buf.contains("fontSize")) {
-                QFont font;
-                font.setPointSize(buf.value("fontSize").toInt());
-                bv->textBrowser()->setFont(font);
-            }
+            QFont f = font();
+            if (buf.contains("fontFamily"))
+                f.setFamily(buf.value("fontFamily").toString());
+            if (buf.contains("fontSize"))
+                f.setPointSize(buf.value("fontSize").toInt());
+            bv->textBrowser()->setFont(f);
             if (buf.value("current", false).toBool())
                 setCurrentView(bv);
             bv->setObjectName("__unrestored__");
