@@ -57,8 +57,8 @@ public:
     QString saslMechanism() const;
     void setSaslMechanism(const QString& mechanism);
 
-    QString nickName() const;
-    void setNickName(const QString& name);
+    QStringList nickNames() const;
+    void setNickNames(const QStringList& names);
 
     QString userName() const;
     void setUserName(const QString& name);

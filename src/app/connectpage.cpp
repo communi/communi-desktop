@@ -37,11 +37,17 @@
 #include <QCompleter>
 #include <QSettings>
 #include <QShortcut>
+#include <QRegExp>
 #include <QTime>
 #include <Irc>
 
 static const int SSL_PORTS[] = { 6697, 7000, 7070 };
 static const int NORMAL_PORTS[] = { 6667, 6666, 6665 };
+
+static QStringList splitNickNames(const QString& nicks)
+{
+    return nicks.split(QRegExp("[, ]"), QString::SkipEmptyParts);
+}
 
 ConnectPage::ConnectPage(QWidget* parent) : QWidget(parent)
 {
@@ -112,14 +118,14 @@ void ConnectPage::setSaslMechanism(const QString& mechanism)
     ui.saslBox->setChecked(!mechanism.isEmpty());
 }
 
-QString ConnectPage::nickName() const
+QStringList ConnectPage::nickNames() const
 {
-    return fieldValue(ui.nickNameField->text(), ui.nickNameField->placeholderText());
+    return splitNickNames(fieldValue(ui.nickNameField->text(), ui.nickNameField->placeholderText()));
 }
 
-void ConnectPage::setNickName(const QString& name)
+void ConnectPage::setNickNames(const QStringList& names)
 {
-    ui.nickNameField->setText(name);
+    ui.nickNameField->setText(names.join(", "));
 }
 
 QString ConnectPage::realName() const
@@ -199,7 +205,7 @@ void ConnectPage::onHostFieldChanged()
         if (!isSecure())
             setSecure(defaultValue("secures", displayName, defaultValue("secures", host, isSecure()).toBool()).toBool());
         if (ui.nickNameField->text().isEmpty())
-            setNickName(defaultValue("nickNames", displayName, defaultValue("nickNames", host).toString()).toString());
+            setNickNames(splitNickNames(defaultValue("nickNames", displayName, defaultValue("nickNames", host).toString()).toString()));
         if (ui.realNameField->text().isEmpty())
             setRealName(defaultValue("realNames", displayName, defaultValue("realNames", host).toString()).toString());
         if (ui.userNameField->text().isEmpty())

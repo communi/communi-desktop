@@ -205,7 +205,7 @@
           <item row="0" column="0">
            <widget class="QLabel" name="nickNameLabel">
             <property name="text">
-             <string>&amp;Nick name:</string>
+             <string>&amp;Nick names:</string>
             </property>
             <property name="buddy">
              <cstring>nickNameField</cstring>

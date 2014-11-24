@@ -153,7 +153,6 @@ void MainWindow::restoreState()
         QVariantMap state = v.toMap();
         IrcConnection* connection = new IrcConnection(d.chatPage);
         connection->restoreState(state.value("connection").toByteArray());
-        connection->setReconnectDelay(10);
         addConnection(connection);
         IrcBufferModel* model = connection->findChild<IrcBufferModel*>();
         if (model)
@@ -188,6 +187,12 @@ void MainWindow::addConnection(IrcConnection* connection)
         ud.insert("uuid", QUuid::createUuid());
         connection->setUserData(ud);
     }
+
+    connection->setReconnectDelay(10);
+    if (connection->nickNames().isEmpty())
+        connection->setNickNames(QStringList() << connection->nickName()
+                                               << connection->nickName() + "_"
+                                               << connection->nickName() + "__");
 
     connect(d.monitor, SIGNAL(wake()), connection, SLOT(open()));
     connect(d.monitor, SIGNAL(online()), connection, SLOT(open()));
@@ -286,7 +291,7 @@ void MainWindow::onEditAccepted()
         connection->setHost(page->host());
         connection->setPort(page->port());
         connection->setSecure(page->isSecure());
-        connection->setNickName(page->nickName());
+        connection->setNickNames(page->nickNames());
         connection->setRealName(page->realName());
         connection->setUserName(page->userName());
         connection->setDisplayName(page->displayName());
@@ -301,11 +306,10 @@ void MainWindow::onConnectAccepted()
     ConnectPage* page = qobject_cast<ConnectPage*>(sender());
     if (page) {
         IrcConnection* connection = new IrcConnection(d.chatPage);
-        connection->setReconnectDelay(10);
         connection->setHost(page->host());
         connection->setPort(page->port());
         connection->setSecure(page->isSecure());
-        connection->setNickName(page->nickName());
+        connection->setNickNames(page->nickNames());
         connection->setRealName(page->realName());
         connection->setUserName(page->userName());
         connection->setDisplayName(page->displayName());
@@ -366,7 +370,7 @@ void MainWindow::editConnection(IrcConnection* connection)
     page->setHost(connection->host());
     page->setPort(connection->port());
     page->setSecure(connection->isSecure());
-    page->setNickName(connection->nickName());
+    page->setNickNames(connection->nickNames());
     page->setRealName(connection->realName());
     page->setUserName(connection->userName());
     page->setDisplayName(connection->displayName());
