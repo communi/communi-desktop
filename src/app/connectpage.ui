@@ -181,13 +181,6 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="nickNameField">
-            <property name="placeholderText">
-             <string>Communi%1</string>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="0">
            <widget class="QLabel" name="realNameLabel">
             <property name="text">
@@ -250,6 +243,25 @@
             </item>
            </layout>
           </item>
+          <item row="0" column="1">
+           <widget class="QPlainTextEdit" name="nickNameField">
+            <property name="verticalScrollBarPolicy">
+             <enum>Qt::ScrollBarAlwaysOff</enum>
+            </property>
+            <property name="horizontalScrollBarPolicy">
+             <enum>Qt::ScrollBarAlwaysOff</enum>
+            </property>
+            <property name="tabChangesFocus">
+             <bool>true</bool>
+            </property>
+            <property name="lineWrapMode">
+             <enum>QPlainTextEdit::NoWrap</enum>
+            </property>
+            <property name="placeholderText">
+             <string>Communi%1</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -294,11 +306,13 @@
  </widget>
  <tabstops>
   <tabstop>displayNameField</tabstop>
+  <tabstop>serverField</tabstop>
   <tabstop>nickNameField</tabstop>
   <tabstop>realNameField</tabstop>
   <tabstop>userNameField</tabstop>
   <tabstop>passwordField</tabstop>
-  <tabstop>buttonBox</tabstop>
+  <tabstop>saslBox</tabstop>
+  <tabstop>scrollArea</tabstop>
  </tabstops>
  <resources>
   <include location="../../communi.qrc"/>

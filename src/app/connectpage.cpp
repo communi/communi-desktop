@@ -41,14 +41,9 @@
 #include <QTime>
 #include <Irc>
 
-static QStringList splitServers(const QString& nicks)
+static QStringList splitLines(const QString& nicks)
 {
     return nicks.split("\n", QString::SkipEmptyParts);
-}
-
-static QStringList splitNickNames(const QString& nicks)
-{
-    return nicks.split(QRegExp("[, ]"), QString::SkipEmptyParts);
 }
 
 ConnectPage::ConnectPage(QWidget* parent) : QWidget(parent)
@@ -82,7 +77,7 @@ void ConnectPage::setDisplayName(const QString& name)
 
 QStringList ConnectPage::servers() const
 {
-    QStringList lines = splitServers(ui.serverField->toPlainText());
+    QStringList lines = splitLines(ui.serverField->toPlainText());
     if (lines.isEmpty())
         lines += ui.serverField->placeholderText();
     return lines;
@@ -107,12 +102,17 @@ void ConnectPage::setSaslMechanism(const QString& mechanism)
 
 QStringList ConnectPage::nickNames() const
 {
-    return splitNickNames(fieldValue(ui.nickNameField->text(), ui.nickNameField->placeholderText()));
+    QStringList nicks = splitLines(ui.nickNameField->toPlainText());
+    if (nicks.isEmpty())
+        nicks += ui.nickNameField->placeholderText();
+    return nicks;
 }
 
 void ConnectPage::setNickNames(const QStringList& names)
 {
-    ui.nickNameField->setText(names.join(", "));
+    ui.nickNameField->clear();
+    foreach (const QString& name, names)
+        ui.nickNameField->appendPlainText(name);
 }
 
 QString ConnectPage::realName() const
@@ -160,9 +160,9 @@ void ConnectPage::autoFill()
     QString displayName = ui.displayNameField->text();
     if (!displayName.isEmpty()) {
         if (ui.serverField->toPlainText().isEmpty())
-            setServers(splitServers(defaultValue("servers", displayName).toString()));
-        if (ui.nickNameField->text().isEmpty())
-            setNickNames(splitNickNames(defaultValue("nickNames", displayName).toString()));
+            setServers(splitLines(defaultValue("servers", displayName).toString()));
+        if (ui.nickNameField->toPlainText().isEmpty())
+            setNickNames(splitLines(defaultValue("nickNames", displayName).toString()));
         if (ui.realNameField->text().isEmpty())
             setRealName(defaultValue("realNames", displayName).toString());
         if (ui.userNameField->text().isEmpty())
@@ -185,7 +185,7 @@ void ConnectPage::restoreSettings()
 
     ui.displayNameField->setText(credentials.value("displayName").toString());
     ui.serverField->setPlainText(credentials.value("servers").toString());
-    ui.nickNameField->setText(credentials.value("nickName").toString());
+    ui.nickNameField->setPlainText(credentials.value("nickNames").toString());
     ui.realNameField->setText(credentials.value("realName").toString());
     ui.userNameField->setText(credentials.value("userName").toString());
 
@@ -193,7 +193,6 @@ void ConnectPage::restoreSettings()
     ui.passwordField->setText(crypto.decryptToString(credentials.value("password").toString()));
 
     ui.displayNameCompleter = createCompleter(credentials.value("displayNames").toStringList(), ui.displayNameField);
-    ui.nickNameCompleter = createCompleter(credentials.value("allNickNames").toStringList(), ui.nickNameField);
     ui.realNameCompleter = createCompleter(credentials.value("allRealNames").toStringList(), ui.realNameField);
     ui.userNameCompleter = createCompleter(credentials.value("allUserNames").toStringList(), ui.userNameField);
 }
@@ -202,7 +201,7 @@ void ConnectPage::saveSettings()
 {
     const QString displayName = ui.displayNameField->text();
     const QString servers = ui.serverField->toPlainText();
-    const QString nickName = ui.nickNameField->text();
+    const QString nickNames = ui.nickNameField->toPlainText();
     const QString realName = ui.realNameField->text();
     const QString userName = ui.userNameField->text();
 
@@ -210,7 +209,7 @@ void ConnectPage::saveSettings()
     QVariantMap credentials = settings.value("credentials").toMap();
     credentials.insert("displayName", displayName);
     credentials.insert("servers", servers);
-    credentials.insert("nickName", nickName);
+    credentials.insert("nickNames", nickNames);
     credentials.insert("realName", realName);
     credentials.insert("userName", userName);
 
@@ -229,13 +228,9 @@ void ConnectPage::saveSettings()
         credentials.insert("servers", servers);
     }
 
-    if (!nickName.isEmpty()) {
-        QStringList allNickNames = credentials.value("allNickNames").toStringList();
-        if (!allNickNames.contains(nickName, Qt::CaseInsensitive))
-            credentials.insert("allNickNames", allNickNames << nickName);
-
+    if (!nickNames.isEmpty()) {
         QMap<QString, QVariant> nickNames = credentials.value("nickNames").toMap();
-        nickNames.insert(ConnectPage::displayName(), nickName);
+        nickNames.insert(ConnectPage::displayName(), nickNames);
         credentials.insert("nickNames", nickNames);
     }
 
@@ -264,13 +259,14 @@ void ConnectPage::saveSettings()
 
 void ConnectPage::updateUi()
 {
+    int lineSpacing = fontMetrics().lineSpacing();
     int margin = ui.serverField->document()->documentMargin();
-    int height = qMax(2, ui.serverField->blockCount()) * fontMetrics().lineSpacing();
-    ui.serverField->setMinimumHeight(height + 2 * margin);
+    ui.serverField->setMinimumHeight(qMax(2, servers().count()) * lineSpacing + 2 * margin);
+    ui.nickNameField->setMinimumHeight(qMax(2, nickNames().count()) * lineSpacing + 2 * margin);
 
     bool hasName = !ui.displayNameField->text().isEmpty();
     bool hasServer = !ui.serverField->toPlainText().isEmpty();
-    bool hasNick = !ui.nickNameField->text().isEmpty();
+    bool hasNick = !ui.nickNameField->toPlainText().isEmpty();
     bool hasReal = !ui.realNameField->text().isEmpty();
     bool hasUser = !ui.userNameField->text().isEmpty();
     bool hasPass = !ui.passwordField->text().isEmpty();
@@ -321,8 +317,6 @@ void ConnectPage::init(IrcConnection *connection)
     ui.userNameCompleter = 0;
 
     QRegExpValidator* validator = new QRegExpValidator(this);
-    validator->setRegExp(QRegExp("\\S*"));
-    ui.nickNameField->setValidator(validator);
     ui.userNameField->setValidator(validator);
 
     qsrand(QTime::currentTime().msec());
@@ -345,7 +339,7 @@ void ConnectPage::init(IrcConnection *connection)
 
     connect(ui.displayNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
     connect(ui.serverField, SIGNAL(textChanged()), this, SLOT(updateUi()));
-    connect(ui.nickNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
+    connect(ui.nickNameField, SIGNAL(textChanged()), this, SLOT(updateUi()));
     connect(ui.realNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
     connect(ui.userNameField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
     connect(ui.passwordField, SIGNAL(textChanged(QString)), this, SLOT(updateUi()));
