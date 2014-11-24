@@ -144,9 +144,6 @@
             <property name="lineWrapMode">
              <enum>QPlainTextEdit::NoWrap</enum>
             </property>
-            <property name="placeholderText">
-             <string>irc.freenode.net %1</string>
-            </property>
            </widget>
           </item>
          </layout>
@@ -256,9 +253,6 @@
             </property>
             <property name="lineWrapMode">
              <enum>QPlainTextEdit::NoWrap</enum>
-            </property>
-            <property name="placeholderText">
-             <string>Communi%1</string>
             </property>
            </widget>
           </item>

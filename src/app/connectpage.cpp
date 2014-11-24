@@ -79,8 +79,10 @@ void ConnectPage::setDisplayName(const QString& name)
 QStringList ConnectPage::servers() const
 {
     QStringList lines = splitLines(ui.serverField->toPlainText());
+#if QT_VERSION >= 0x050300
     if (lines.isEmpty())
         lines += ui.serverField->placeholderText();
+#endif // QT_VERSION
     return lines;
 }
 
@@ -104,8 +106,10 @@ void ConnectPage::setSaslMechanism(const QString& mechanism)
 QStringList ConnectPage::nickNames() const
 {
     QStringList nicks = splitLines(ui.nickNameField->toPlainText());
+#if QT_VERSION >= 0x050300
     if (nicks.isEmpty())
         nicks += ui.nickNameField->placeholderText();
+#endif // QT_VERSION
     return nicks;
 }
 
@@ -291,7 +295,7 @@ void ConnectPage::updateUi()
     resetButton->setEnabled(hasName || hasServer || hasNick || hasReal || hasUser || hasPass);
 
     QPushButton* okButton = ui.buttonBox->button(QDialogButtonBox::Ok);
-    okButton->setEnabled(validServers);
+    okButton->setEnabled(validServers && hasServer && hasNick);
 }
 
 void ConnectPage::reset()
@@ -336,14 +340,15 @@ void ConnectPage::init(IrcConnection *connection)
     ui.serverField->viewport()->installEventFilter(this);
     ui.nickNameField->viewport()->installEventFilter(this);
 
-    qsrand(QTime::currentTime().msec());
-    ui.nickNameField->setPlaceholderText(ui.nickNameField->placeholderText().arg(qrand() % 9999));
     ui.realNameField->setPlaceholderText(ui.realNameField->placeholderText().arg(IRC_VERSION_STR));
-
+#if QT_VERSION >= 0x050300
+    qsrand(QTime::currentTime().msec());
+    ui.nickNameField->setPlaceholderText(tr("Communi%1").arg(qrand() % 9999));
     if (IrcConnection::isSecureSupported())
-        ui.serverField->setPlaceholderText(ui.serverField->placeholderText().arg("+6697"));
+        ui.serverField->setPlaceholderText(tr("irc.freenode.net +6697"));
     else
-        ui.serverField->setPlaceholderText(ui.serverField->placeholderText().arg("6667"));
+        ui.serverField->setPlaceholderText(tr("irc.freenode.net 6667"));
+#endif // QT_VERSION
 
     connect(ui.buttonBox, SIGNAL(accepted()), ui.displayNameField, SLOT(setFocus()));
     connect(ui.buttonBox, SIGNAL(rejected()), ui.displayNameField, SLOT(setFocus()));
