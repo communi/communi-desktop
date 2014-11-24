@@ -270,8 +270,8 @@ void ConnectPage::updateUi()
 {
     int lineSpacing = fontMetrics().lineSpacing();
     int margin = ui.serverField->document()->documentMargin();
-    ui.serverField->setMinimumHeight(qMax(2, servers().count()) * lineSpacing + 2 * margin);
-    ui.nickNameField->setMinimumHeight(qMax(2, nickNames().count()) * lineSpacing + 2 * margin);
+    ui.serverField->setFixedHeight(qMax(2, ui.serverField->blockCount()) * lineSpacing + 2 * margin);
+    ui.nickNameField->setFixedHeight(qMax(2, ui.nickNameField->blockCount()) * lineSpacing + 2 * margin);
 
     bool hasName = !ui.displayNameField->text().isEmpty();
     bool hasServer = !ui.serverField->toPlainText().isEmpty();
