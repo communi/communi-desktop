@@ -190,6 +190,14 @@ void MainWindow::addConnection(IrcConnection* connection)
 
     connection->setReconnectDelay(10);
 
+    // backwards compatibility
+    if (connection->nickNames().isEmpty())
+        connection->setNickNames(QStringList() << connection->nickName());
+    if (connection->servers().isEmpty())
+        connection->setServers(QStringList() << QString("%1 %2%3").arg(connection->host())
+                                                                  .arg(connection->isSecure() ? "+" : "")
+                                                                  .arg(connection->port()));
+
     connect(d.monitor, SIGNAL(wake()), connection, SLOT(open()));
     connect(d.monitor, SIGNAL(online()), connection, SLOT(open()));
 
