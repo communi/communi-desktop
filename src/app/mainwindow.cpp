@@ -189,10 +189,6 @@ void MainWindow::addConnection(IrcConnection* connection)
     }
 
     connection->setReconnectDelay(10);
-    if (connection->nickNames().isEmpty())
-        connection->setNickNames(QStringList() << connection->nickName()
-                                               << connection->nickName() + "_"
-                                               << connection->nickName() + "__");
 
     connect(d.monitor, SIGNAL(wake()), connection, SLOT(open()));
     connect(d.monitor, SIGNAL(online()), connection, SLOT(open()));
