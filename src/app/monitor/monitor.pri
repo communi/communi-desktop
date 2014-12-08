@@ -21,7 +21,7 @@ mac {
     SOURCES += $$PWD/win/networkmonitor.cpp
     SOURCES += $$PWD/win/screenmonitor.cpp
     SOURCES += $$PWD/systemmonitor_win.cpp
-    LIBS += -lole32 -luuid
+    LIBS += -luuid -lole32 -loleaut32
 } else:unix {
     QT += dbus
     SOURCES += $$PWD/systemmonitor_dbus.cpp
