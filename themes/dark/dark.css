@@ -295,3 +295,7 @@ AbstractFinder[error="true"] > QToolButton#next {
     image: url(gray:down.png);
     background-color: #363939;
 }
+
+ConnectPage QPlainTextEdit[error="true"] {
+    background-color: #ff8080;
+}

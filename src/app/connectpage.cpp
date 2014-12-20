@@ -291,6 +291,9 @@ void ConnectPage::updateUi()
             validServers = false;
     }
 
+    ui.serverField->setProperty("error", !validServers);
+    ui.serverField->setStyleSheet(QString()); // force re-style
+
     QPushButton* resetButton = ui.buttonBox->button(QDialogButtonBox::Reset);
     resetButton->setEnabled(hasName || hasServer || hasNick || hasReal || hasUser || hasPass);
 
