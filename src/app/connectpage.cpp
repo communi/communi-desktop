@@ -278,12 +278,12 @@ void ConnectPage::updateUi()
     ui.serverField->setFixedHeight(qMax(2, ui.serverField->blockCount()) * lineSpacing + 2 * margin);
     ui.nickNameField->setFixedHeight(qMax(2, ui.nickNameField->blockCount()) * lineSpacing + 2 * margin);
 
-    bool hasName = !ui.displayNameField->text().isEmpty();
-    bool hasServer = !ui.serverField->toPlainText().isEmpty();
-    bool hasNick = !ui.nickNameField->toPlainText().isEmpty();
-    bool hasReal = !ui.realNameField->text().isEmpty();
-    bool hasUser = !ui.userNameField->text().isEmpty();
-    bool hasPass = !ui.passwordField->text().isEmpty();
+    bool hasName = !displayName().isEmpty();
+    bool hasServer = !servers().isEmpty();
+    bool hasNick = !nickNames().isEmpty();
+    bool hasReal = !realName().isEmpty();
+    bool hasUser = !userName().isEmpty();
+    bool hasPass = !password().isEmpty();
 
     bool validServers = true;
     foreach (const QString& server, servers()) {
