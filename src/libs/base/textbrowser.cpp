@@ -265,14 +265,25 @@ void TextBrowser::scrollToBottom()
     verticalScrollBar()->triggerAction(QScrollBar::SliderToMaximum);
 }
 
+static void scrollPage(QScrollBar* bar, qreal f)
+{
+    int add = f * bar->pageStep();
+    int pos = bar->value() + add;
+    if (add > 0 && pos < bar->value())
+        pos = bar->maximum();
+    else if (add < 0 && pos > bar->value())
+        pos = bar->minimum();
+    bar->setSliderPosition(pos);
+}
+
 void TextBrowser::scrollToNextPage()
 {
-    verticalScrollBar()->triggerAction(QScrollBar::SliderPageStepAdd);
+    scrollPage(verticalScrollBar(), 0.667);
 }
 
 void TextBrowser::scrollToPreviousPage()
 {
-    verticalScrollBar()->triggerAction(QScrollBar::SliderPageStepSub);
+    scrollPage(verticalScrollBar(), -0.667);
 }
 
 void TextBrowser::paintEvent(QPaintEvent* event)
