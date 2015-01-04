@@ -711,6 +711,7 @@ QMenu* TreeWidget::createContextMenu(TreeItem* item)
 
     const bool child = item->parentItem();
     const bool connected = item->connection()->isActive();
+    const bool waiting = item->connection()->status() == IrcConnection::Waiting;
     const bool active = item->buffer()->isActive();
     const bool channel = item->buffer()->isChannel();
 
@@ -719,7 +720,11 @@ QMenu* TreeWidget::createContextMenu(TreeItem* item)
         editAction->setData(QVariant::fromValue(item));
         menu->addSeparator();
 
-        if (connected) {
+        if (waiting) {
+            QAction* stopAction = menu->addAction(tr("Stop"));
+            connect(stopAction, SIGNAL(triggered()), item->connection(), SLOT(setDisabled()));
+            connect(stopAction, SIGNAL(triggered()), item->connection(), SLOT(close()));
+        } else if (connected) {
             QAction* disconnectAction = menu->addAction(tr("Disconnect"));
             connect(disconnectAction, SIGNAL(triggered()), item->connection(), SLOT(setDisabled()));
             connect(disconnectAction, SIGNAL(triggered()), item->connection(), SLOT(quit()));

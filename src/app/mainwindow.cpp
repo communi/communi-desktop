@@ -188,7 +188,7 @@ void MainWindow::addConnection(IrcConnection* connection)
         connection->setUserData(ud);
     }
 
-    connection->setReconnectDelay(10);
+    connection->setReconnectDelay(15);
 
     // backwards compatibility
     if (connection->nickNames().isEmpty())
