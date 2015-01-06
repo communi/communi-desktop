@@ -383,7 +383,7 @@ void TreeWidget::mouseMoveEvent(QMouseEvent* event)
         int time = d.pressedTime.elapsed();
         int distance = QPoint(event->pos() - d.pressedPoint).manhattanLength();
         if (time >= QApplication::startDragTime() && distance >= QApplication::startDragDistance())
-            d.pressedItem = itemAt(event->pos());
+            d.pressedItem = itemAt(d.pressedPoint);
     }
     if (d.pressedItem) {
         QTreeWidgetItem* target = itemAt(event->pos());
