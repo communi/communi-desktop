@@ -36,6 +36,7 @@
 #include "helppopup.h"
 #include "chatpage.h"
 #include "dock.h"
+#include <IrcCommandQueue>
 #include <IrcBufferModel>
 #include <IrcConnection>
 #include <QApplication>
@@ -189,6 +190,9 @@ void MainWindow::addConnection(IrcConnection* connection)
     }
 
     connection->setReconnectDelay(15);
+
+    IrcCommandQueue* queue = new IrcCommandQueue(connection);
+    queue->setConnection(connection);
 
     // backwards compatibility
     if (connection->nickNames().isEmpty())
