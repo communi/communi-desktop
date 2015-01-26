@@ -323,8 +323,12 @@ QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* msg)
             return tr("! %1 version is %2").arg(formatSender(msg), rest);
         }
     }
-    return tr("[%1] %2").arg(formatSender(msg),
-                             formatText(msg->content()));
+    QString pfx = msg->statusPrefix();
+    if (!pfx.isEmpty())
+        pfx = styledText(":" + pfx, Dim);
+    return tr("[%1%2] %3").arg(formatSender(msg),
+                               pfx,
+                               formatText(msg->content()));
 }
 
 #define P_(x) msg->parameters().value(x)
@@ -378,9 +382,14 @@ QString MessageFormatter::formatPrivateMessage(IrcPrivateMessage* msg)
         return tr("* %1 %2").arg(formatSender(msg),
                                  formatText(msg->content()));
 
-    return tr("&lt;<a style='text-decoration:none;' href='nick:%1'>%2</a>&gt; %3").arg(msg->nick(),
-                                                                                       formatSender(msg),
-                                                                                       formatText(msg->content()));
+    QString pfx = msg->statusPrefix();
+    if (!pfx.isEmpty())
+        pfx = styledText(":" + pfx, Dim);
+
+    return tr("&lt;<a style='text-decoration:none;' href='nick:%1'>%2</a>%3&gt; %4").arg(msg->nick(),
+                                                                                         formatSender(msg),
+                                                                                         pfx,
+                                                                                         formatText(msg->content()));
 }
 
 QString MessageFormatter::formatQuitMessage(IrcQuitMessage* msg)
