@@ -222,18 +222,18 @@ bool ChatPage::commandFilter(IrcCommand* command)
             const QString target = params.value(0);
             const QString message = QStringList(params.mid(1)).join(" ");
             if (!message.isEmpty()) {
-                IrcBuffer* buffer = currentBuffer()->model()->add(target);
                 IrcCommand* command = IrcCommand::createMessage(target, message);
-                if (buffer->sendCommand(command)) {
-                    IrcConnection* connection = buffer->connection();
+                IrcConnection* connection = currentBuffer()->connection();
+                if (connection->sendCommand(command)) {
                     IrcMessage* msg = command->toMessage(connection->nickName(), connection);
                     if (msg) {
+                        IrcBuffer* buffer = currentBuffer()->model()->add(msg->property("target").toString());
+                        d.splitView->setCurrentBuffer(buffer);
                         buffer->receiveMessage(msg);
                         msg->deleteLater();
                     }
                 }
                 d.splitView->currentView()->textInput()->clear();
-                d.splitView->setCurrentBuffer(buffer);
                 return true;
             }
         } else if (cmd == "QUERY") {
