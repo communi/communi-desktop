@@ -269,7 +269,7 @@ void TextInput::sendInput()
                 cmd->setProperty("TextInput", true);
                 b->sendCommand(cmd);
                 IrcNetwork* network = b->network();
-                if (network && network->isCapable("znc.in/echo-message"))
+                if (network && network->isCapable("echo-message"))
                     continue;
                 if (cmd->type() == IrcCommand::Message || cmd->type() == IrcCommand::Notice || cmd->type() == IrcCommand::CtcpAction) {
                     IrcMessage* msg = cmd->toMessage(c->nickName(), c);
