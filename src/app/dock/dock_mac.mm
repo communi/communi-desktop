@@ -26,62 +26,60 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef DOCK_H
-#define DOCK_H
+#include "dock.h"
+#include <Cocoa/Cocoa.h>
 
-#include <QObject>
-#include <QAction>
-#include <QSystemTrayIcon>
-
-class Alert;
-class MainWindow;
-class QtDockTile;
-class IrcMessage;
-class IrcConnection;
-
-class Dock : public QObject
+@interface InterfaceStyleListener : NSObject
 {
-    Q_OBJECT
+    Dock* dock;
+}
+@property (assign) Dock* dock;
+@end
 
-public:
-    explicit Dock(MainWindow* window);
-    ~Dock();
+static InterfaceStyleListener* dock_listener = 0;
 
-    void init();
-    void uninit();
+@implementation InterfaceStyleListener
+@synthesize dock;
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        [[NSDistributedNotificationCenter defaultCenter] addObserver: self
+            selector:@selector(receiveThemeNote:)
+            name:@"AppleInterfaceThemeChangedNotification" object:nil];
+    }
+    return self;
+}
 
-public slots:
-    void alert(IrcMessage* message);
+- (void) receiveThemeNote: (NSNotification*) note
+{
+    Q_UNUSED(note);
+    dock->init();
+    QMetaObject::invokeMethod(dock, "updateTray");
+}
+@end
 
-private slots:
-    void onConnectionAdded(IrcConnection* connection);
-    void onConnectionRemoved(IrcConnection* connection);
+void Dock::init()
+{
+    if (!dock_listener) {
+        dock_listener = [[InterfaceStyleListener alloc] init];
+        [dock_listener setDock: this];
+    }
 
-    void updateBadge();
-    void updateTray();
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    NSString* style = [defaults stringForKey:@"AppleInterfaceStyle"];
+    if (style) {
+        d.alertIcon.addFile(":/images/tray/white/blue.png");
+        d.onlineIcon.addFile(":/images/tray/white/transparent.png");
+        d.offlineIcon.addFile(":/images/tray/white/black.png");
+    } else {
+        d.alertIcon.addFile(":/images/tray/black/blue.png");
+        d.onlineIcon.addFile(":/images/tray/black/black.png");
+        d.offlineIcon.addFile(":/images/tray/black/transparent.png");
+    }
+}
 
-    void activateAlert();
-    void deactivateAlert();
-
-    void onWindowActivated();
-    void onMuteToggled(bool mute);
-    void onTrayActivated(QSystemTrayIcon::ActivationReason reason);
-    void onTrayMessageClicked();
-
-private:
-    struct Private {
-        bool blink;
-        bool blinking;
-        QIcon alertIcon;
-        QIcon onlineIcon;
-        QIcon offlineIcon;
-        MainWindow* window;
-        QSystemTrayIcon* tray;
-        QtDockTile* dock;
-        QAction* mute;
-        Alert* alert;
-        bool active;
-    } d;
-};
-
-#endif // DOCK_H
+void Dock::uninit()
+{
+    [dock_listener release];
+}

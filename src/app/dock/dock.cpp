@@ -62,15 +62,7 @@ Dock::Dock(MainWindow* window) : QObject(window)
     if (QSystemTrayIcon::isSystemTrayAvailable()) {
         d.tray = new QSystemTrayIcon(this);
 
-#ifdef Q_OS_MAC
-        d.alertIcon.addFile(":/images/tray/black/blue.png");
-        d.onlineIcon.addFile(":/images/tray/black/black.png");
-        d.offlineIcon.addFile(":/images/tray/black/transparent.png");
-#else
-        d.alertIcon.addFile(":/images/tray/white/black.png");
-        d.onlineIcon.addFile(":/images/tray/white/blue.png");
-        d.offlineIcon.addFile(":/images/tray/white/gray.png");
-#endif
+        init();
 
         QMenu* menu = new QMenu(window);
         d.tray->setContextMenu(menu);
@@ -105,6 +97,11 @@ Dock::Dock(MainWindow* window) : QObject(window)
             d.alert->setFilePath(filePath);
         }
     }
+}
+
+Dock::~Dock()
+{
+    uninit();
 }
 
 void Dock::alert(IrcMessage* message)
@@ -206,3 +203,16 @@ void Dock::onTrayMessageClicked()
     d.window->raise();
     d.window->activateWindow();
 }
+
+#ifndef Q_OS_MAC
+void Dock::init()
+{
+    d.alertIcon.addFile(":/images/tray/white/black.png");
+    d.onlineIcon.addFile(":/images/tray/white/blue.png");
+    d.offlineIcon.addFile(":/images/tray/white/gray.png");
+}
+
+void Dock::uninit()
+{
+}
+#endif

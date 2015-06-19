@@ -12,3 +12,4 @@ HEADERS += $$PWD/dock.h
 
 SOURCES += $$PWD/alert.cpp
 SOURCES += $$PWD/dock.cpp
+OBJECTIVE_SOURCES += $$PWD/dock_mac.mm
