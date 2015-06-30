@@ -49,11 +49,15 @@ mac {
 }
 
 unix:!mac {
-    icons.files = ../../images/icons/*
-    icons.path = $$COMMUNI_INSTALL_ICONS
+    ICONS_SIZES = 16 24 32 48 64 128 256 512
+    for(size, ICONS_SIZES) {
+        eval(icon$${size}.files = ../../images/icons/$${size}x$${size}/apps/communi.png)
+        eval(icon$${size}.path = $$COMMUNI_INSTALL_ICONS/$${size}x$${size}/apps)
+        INSTALLS += icon$${size}
+    }
     desktop.files = ../../communi.desktop
     desktop.path = $$COMMUNI_INSTALL_DESKTOP
-    INSTALLS += icons desktop
+    INSTALLS += desktop
 }
 
 OTHER_FILES += ../../communi.rc
