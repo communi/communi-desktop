@@ -46,10 +46,9 @@ int CommandVerifier::identify(IrcMessage* message) const
         QMapIterator<int, IrcCommand*> it(d.commands);
         while (it.hasNext()) {
             IrcMessage* cmd = it.next().value()->toMessage(message->prefix(), message->connection());
-            if (cmd) {
+            if (cmd && cmd->command() == message->command() && cmd->parameters() == message->parameters()) {
                 cmd->deleteLater();
-                if (cmd->toData() == QString::fromUtf8(message->toData()))
-                    return it.key();
+                return it.key();
             }
         }
     }
