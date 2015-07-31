@@ -58,6 +58,9 @@ int CommandVerifier::identify(IrcMessage* message) const
 
 bool CommandVerifier::messageFilter(IrcMessage* message)
 {
+    if (d.commands.isEmpty())
+        return false;
+
     if (message->type() == IrcMessage::Pong) {
         QString arg = static_cast<IrcPongMessage*>(message)->argument();
         if (arg.startsWith("communi/")) {
