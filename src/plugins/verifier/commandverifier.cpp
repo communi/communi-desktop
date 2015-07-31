@@ -78,7 +78,7 @@ bool CommandVerifier::messageFilter(IrcMessage* message)
 
 bool CommandVerifier::commandFilter(IrcCommand* command)
 {
-    if (command->type() == IrcCommand::Message) {
+    if (!command->parent() && command->type() == IrcCommand::Message) {
         command->setParent(this); // take ownership
         d.id = qMax(1, d.id + 1); // overflow -> 1
         d.commands.insert(d.id, command);
