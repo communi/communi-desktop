@@ -60,7 +60,20 @@ bool CommandVerifier::messageFilter(IrcMessage* message)
     if (d.commands.isEmpty())
         return false;
 
-    if (message->type() == IrcMessage::Pong) {
+    if (message->isOwn() && (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice)) {
+        IrcNetwork* network = message->network();
+        if (network && network->isCapable("echo-message")) {
+            int id = identify(message);
+            if (id > 0) {
+                IrcCommand* command = d.commands.take(id);
+                if (command) {
+                    emit verified(id);
+                    command->deleteLater();
+                    return true;
+                }
+            }
+        }
+    } else if (message->type() == IrcMessage::Pong) {
         QString arg = static_cast<IrcPongMessage*>(message)->argument();
         if (arg.startsWith("communi/")) {
             bool ok = false;
@@ -84,6 +97,14 @@ bool CommandVerifier::commandFilter(IrcCommand* command)
         command->setParent(this); // take ownership
         d.id = qMax(1, d.id + 1); // overflow -> 1
         d.commands.insert(d.id, command);
+
+        IrcConnection* connection = command->connection();
+        if (connection) {
+            IrcNetwork* network = connection->network();
+            if (network && network->isCapable("echo-message"))
+                return false;
+        }
+
         d.connection->sendCommand(command);
         d.connection->sendData("PING communi/" + QByteArray::number(d.id));
         return true;
