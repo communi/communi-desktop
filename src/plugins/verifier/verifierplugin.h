@@ -38,6 +38,7 @@
 class IrcCommand;
 class IrcMessage;
 class CommandVerifier;
+class QTextDocument;
 
 class VerifierPlugin : public QObject, public ConnectionPlugin, public DocumentPlugin
 {
@@ -58,7 +59,7 @@ private slots:
 
 private:
     struct Private {
-        QMultiHash<int, TextDocument*> documents;
+        QMultiHash<int, QTextDocument*> documents;
         QHash<IrcConnection*, CommandVerifier*> verifiers;
     } d;
 };

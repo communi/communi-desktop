@@ -72,7 +72,7 @@ void VerifierPlugin::onCommandVerified(int id)
 void VerifierPlugin::onMessageReceived(IrcMessage* message)
 {
     if (message->isOwn()) {
-        TextDocument* doc = qobject_cast<TextDocument*>(sender());
+        QTextDocument* doc = qobject_cast<QTextDocument*>(sender());
         CommandVerifier* verifier = d.verifiers.value(message->connection());
         if (doc && verifier) {
             int id = verifier->identify(message);
