@@ -38,11 +38,18 @@ class TreeDelegate : public QStyledItemDelegate
 public:
     explicit TreeDelegate(QObject* parent = 0);
 
+    bool isTransient() const;
+
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
 protected:
     void initStyleOption(QStyleOptionViewItem* option, const QModelIndex& index) const;
+
+private:
+    struct Private {
+        mutable bool transient;
+    } d;
 };
 
 #endif // TREEDELEGATE_H

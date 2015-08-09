@@ -149,6 +149,11 @@ TreeItem* TreeWidget::connectionItem(IrcConnection* connection) const
     return d.connectionItems.value(connection);
 }
 
+TreeDelegate* TreeWidget::itemDelegate() const
+{
+    return static_cast<TreeDelegate*>(QTreeWidget::itemDelegate());
+}
+
 bool TreeWidget::blockItemReset(bool block)
 {
     bool wasBlocked = d.block;

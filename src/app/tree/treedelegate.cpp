@@ -27,6 +27,7 @@
 */
 
 #include "treedelegate.h"
+#include "treewidget.h"
 #include "treeheader.h"
 #include "treebadge.h"
 #include "treerole.h"
@@ -44,6 +45,12 @@
 
 TreeDelegate::TreeDelegate(QObject* parent) : QStyledItemDelegate(parent)
 {
+    d.transient = false;
+}
+
+bool TreeDelegate::isTransient() const
+{
+    return d.transient;
 }
 
 QSize TreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -85,7 +92,21 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         if (hilite)
             const_cast<QStyleOptionViewItem&>(option).state |= QStyle::State_On;
 
+        // a selected inactive buffer should be visually the same then
+        // a selected and disabled tree item. however, a disabled tree
+        // item cannot have selection with all Qt styles, so we do the
+        // drawing in two steps. first the selection without text, and
+        // then disabled text without selection
+
+        d.transient = !active && option.state & QStyle::State_Selected;
+
         QStyledItemDelegate::paint(painter, option, index);
+
+        if (d.transient) {
+            d.transient = false;
+            const_cast<QStyleOptionViewItem&>(option).state &= ~(QStyle::State_Enabled | QStyle::State_Selected);
+            QStyledItemDelegate::paint(painter, option, index);
+        }
 
         int num = index.data(TreeRole::Badge).toInt();
         if (num > 0) {

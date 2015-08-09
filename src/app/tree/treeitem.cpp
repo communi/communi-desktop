@@ -31,6 +31,7 @@
 #include "treewidget.h"
 #include "treespinner.h"
 #include "treeindicator.h"
+#include "treedelegate.h"
 #include <IrcConnection>
 #include <IrcLagTimer>
 #include <IrcBuffer>
@@ -105,8 +106,12 @@ QVariant TreeItem::data(int column, int role) const
 {
     if (role == TreeRole::Active)
         return d.buffer->isActive();
-    if (column == 0 && role == Qt::DisplayRole && d.buffer)
-        return d.buffer->title();
+    if (column == 0 && role == Qt::DisplayRole && d.buffer) {
+        TreeWidget* tree = treeWidget();
+        if (!tree || !tree->itemDelegate()->isTransient())
+            return d.buffer->title();
+        return "";
+    }
     return QTreeWidgetItem::data(column, role);
 }
 

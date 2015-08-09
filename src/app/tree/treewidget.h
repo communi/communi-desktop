@@ -40,6 +40,7 @@ class TreeItem;
 class IrcBuffer;
 class IrcMessage;
 class IrcConnection;
+class TreeDelegate;
 
 typedef QHash<QString, QStringList> QHashStringList;
 
@@ -54,6 +55,8 @@ public:
     IrcBuffer* currentBuffer() const;
     TreeItem* bufferItem(IrcBuffer* buffer) const;
     TreeItem* connectionItem(IrcConnection* connection) const;
+
+    TreeDelegate* itemDelegate() const;
 
     bool blockItemReset(bool block);
 
