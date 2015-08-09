@@ -133,6 +133,7 @@ QByteArray ChatPage::saveSettings() const
     QVariantMap settings;
     settings.insert("theme", d.theme.name());
     settings.insert("timestamp", d.timestamp);
+    settings.insert("tree", d.treeWidget->saveState());
 
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -146,6 +147,9 @@ void ChatPage::restoreSettings(const QByteArray& data)
     QDataStream in(data);
     in >> settings;
 
+    if (settings.contains("tree"))
+        d.treeWidget->restoreState(settings.value("tree").toByteArray());
+
     d.timestamp = settings.value("timestamp", "[hh:mm:ss]").toString();
     setTheme(settings.value("theme", "Cute").toString());
 }
@@ -155,7 +159,6 @@ QByteArray ChatPage::saveState() const
     QVariantMap state;
     state.insert("splitter", QSplitter::saveState());
     state.insert("views", d.splitView->saveState());
-    state.insert("tree", d.treeWidget->saveState());
 
     QVariantMap timestamps;
     foreach (TextDocument* doc, d.documents) {
