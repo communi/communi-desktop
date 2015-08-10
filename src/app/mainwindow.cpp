@@ -54,6 +54,7 @@
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
     d.view = 0;
+    d.save = false;
 
     // TODO
     QDir::addSearchPath("black", ":/images/black");
@@ -113,6 +114,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     PluginLoader::instance()->windowCreated(this);
 
     restoreState();
+    d.save = true;
 
     if (d.connections.isEmpty())
         doConnect();
@@ -125,6 +127,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::saveState()
 {
+    if (!d.save)
+        return;
+
     QSettings settings;
     settings.setValue("geometry", saveGeometry());
     settings.setValue("settings", d.chatPage->saveSettings());
@@ -211,8 +216,11 @@ void MainWindow::addConnection(IrcConnection* connection)
     connect(d.monitor, SIGNAL(offline()), connection, SLOT(close()));
 
     d.connections += connection;
+    connect(connection, SIGNAL(enabledChanged(bool)), this, SLOT(saveState()));
     connect(connection, SIGNAL(destroyed(IrcConnection*)), this, SLOT(removeConnection(IrcConnection*)));
     emit connectionAdded(connection);
+
+    saveState();
 }
 
 void MainWindow::removeConnection(IrcConnection* connection)
@@ -221,6 +229,8 @@ void MainWindow::removeConnection(IrcConnection* connection)
         emit connectionRemoved(connection);
     if (d.connections.isEmpty())
         doConnect();
+    else
+        saveState();
 }
 
 void MainWindow::push(QWidget* page)
@@ -261,6 +271,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 {
     if (isVisible()) {
         saveState();
+        d.save = false;
 
         foreach (IrcConnection* connection, d.connections) {
             connection->quit(qApp->property("description").toString());
@@ -303,6 +314,7 @@ void MainWindow::onEditAccepted()
         connection->setDisplayName(page->displayName());
         connection->setPassword(page->password());
         connection->setSaslMechanism(page->saslMechanism());
+        saveState();
         pop();
     }
 }
@@ -329,6 +341,7 @@ void MainWindow::onSettingsAccepted()
     SettingsPage* page = qobject_cast<SettingsPage*>(sender());
     if (page) {
         d.chatPage->setTheme(page->theme());
+        saveState();
         pop();
     }
 }

@@ -55,10 +55,10 @@ public:
     BufferView* currentView() const;
     QList<IrcConnection*> connections() const;
 
+public slots:
     void saveState();
     void restoreState();
 
-public slots:
     void setCurrentView(BufferView* view);
     void addConnection(IrcConnection* connection);
     void removeConnection(IrcConnection* connection);
@@ -90,6 +90,7 @@ private slots:
 
 private:
     struct Private {
+        bool save;
         Dock* dock;
         ChatPage* chatPage;
         QStackedWidget* stack;
