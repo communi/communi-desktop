@@ -212,7 +212,7 @@ bool ChatPage::commandFilter(IrcCommand* command)
         const QString cmd = command->parameters().value(0);
         const QStringList params = command->parameters().mid(1);
         if (cmd == "CLEAR") {
-            d.splitView->currentView()->textDocument()->clear();
+            d.splitView->currentView()->textBrowser()->clear();
             return true;
         } else if (cmd == "CLOSE") {
             IrcBuffer* buffer = currentBuffer();
