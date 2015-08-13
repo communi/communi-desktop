@@ -42,7 +42,7 @@ CommandVerifier::CommandVerifier(IrcConnection* connection) : QObject(connection
 
 int CommandVerifier::identify(IrcMessage* message) const
 {
-    if (message->type() == IrcMessage::Private) {
+    if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
         QMapIterator<int, IrcCommand*> it(d.commands);
         while (it.hasNext()) {
             IrcMessage* cmd = it.next().value()->toMessage(message->prefix(), message->connection());
@@ -93,7 +93,9 @@ bool CommandVerifier::messageFilter(IrcMessage* message)
 
 bool CommandVerifier::commandFilter(IrcCommand* command)
 {
-    if (!command->parent() && command->type() == IrcCommand::Message) {
+    if (!command->parent() && (command->type() == IrcCommand::Message ||
+                               command->type() == IrcCommand::Notice ||
+                               command->type() == IrcCommand::CtcpAction)) {
         command->setParent(this); // take ownership
         d.id = qMax(1, d.id + 1); // overflow -> 1
         d.commands.insert(d.id, command);
