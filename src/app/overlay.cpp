@@ -31,6 +31,7 @@
 #include "textbrowser.h"
 #include <QStyleOptionToolButton>
 #include <QPropertyAnimation>
+#include <QCoreApplication>
 #include <QStylePainter>
 #include <IrcConnection>
 #include <QToolButton>
@@ -120,11 +121,11 @@ Overlay::Overlay(BufferView* view) : QFrame(view)
     d.view = view;
 
     d.button = new OverlayButton(view);
-    connect(d.button, SIGNAL(clicked()), this, SLOT(reconnect()));
+    connect(d.button, SIGNAL(clicked()), this, SLOT(toggle()));
 
     d.shortcut = new QShortcut(Qt::Key_Space, view);
     d.shortcut->setContext(Qt::WidgetWithChildrenShortcut);
-    connect(d.shortcut, SIGNAL(activated()), this, SLOT(reconnect()));
+    connect(d.shortcut, SIGNAL(activated()), this, SLOT(toggle()));
 
     setVisible(false);
     setFocusProxy(d.button);
@@ -167,12 +168,17 @@ void Overlay::relayout()
     d.button->setGeometry(QStyle::alignedRect(layoutDirection(), Qt::AlignCenter, d.button->size(), rect()));
 }
 
-void Overlay::reconnect()
+void Overlay::toggle()
 {
     IrcConnection* connection = d.buffer ? d.buffer->connection() : 0;
     if (connection) {
-        connection->setEnabled(true);
-        connection->open();
+        if (connection->isEnabled()) {
+            connection->setEnabled(false);
+            connection->quit(qApp->property("description").toString());
+        } else {
+            connection->setEnabled(true);
+            connection->open();
+        }
     }
 }
 

@@ -51,7 +51,7 @@ protected:
 private slots:
     void refresh();
     void relayout();
-    void reconnect();
+    void toggle();
     void init(IrcBuffer* buffer);
 
 private:
