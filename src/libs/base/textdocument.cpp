@@ -429,7 +429,7 @@ void TextDocument::receiveMessage(IrcMessage* message)
                     addHighlight(totalCount() - 1);
                     if (unseen)
                         emit messageHighlighted(message);
-                } else if (unseen && message->property("private").toBool()) {
+                } else if (unseen && message->property("private").toBool() && message->connection()->isConnected()) {
                     emit privateMessageReceived(message);
                 }
             }
