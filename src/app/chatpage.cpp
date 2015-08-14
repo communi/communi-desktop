@@ -307,7 +307,7 @@ void ChatPage::addConnection(IrcConnection* connection)
         d.treeWidget->setCurrentBuffer(serverBuffer);
 
     connection->installCommandFilter(this);
-    if (!connection->isActive() && connection->isEnabled())
+    if (!connection->isActive() && connection->isEnabled() && !QSettings().value("offline", false).toBool())
         connection->open();
 
     PluginLoader::instance()->connectionAdded(connection);

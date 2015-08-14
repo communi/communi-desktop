@@ -45,7 +45,8 @@
 Dock::Dock(MainWindow* window) : QObject(window)
 {
     d.tray = 0;
-    d.mute = 0;
+    d.muteAction = 0;
+    d.offlineAction = 0;
     d.alert = 0;
     d.blink = false;
     d.blinking = false;
@@ -66,12 +67,18 @@ Dock::Dock(MainWindow* window) : QObject(window)
 
         QMenu* menu = new QMenu(window);
         d.tray->setContextMenu(menu);
-        d.mute = menu->addAction(tr("Mute"));
-        d.mute->setCheckable(true);
+
+        d.muteAction = menu->addAction(tr("Mute"));
+        d.muteAction->setCheckable(true);
+
+        d.offlineAction = menu->addAction(tr("Offline"));
+        d.offlineAction->setCheckable(true);
 
         QSettings settings;
-        d.mute->setChecked(settings.value("mute", false).toBool());
-        connect(d.mute, SIGNAL(toggled(bool)), this, SLOT(onMuteToggled(bool)));
+        d.muteAction->setChecked(settings.value("mute", false).toBool());
+        connect(d.muteAction, SIGNAL(toggled(bool)), this, SLOT(onMuteToggled(bool)));
+        d.offlineAction->setChecked(settings.value("offline", false).toBool());
+        connect(d.offlineAction, SIGNAL(toggled(bool)), this, SLOT(onOfflineToggled(bool)));
 
         d.tray->setIcon(d.offlineIcon);
         d.tray->setVisible(true);
@@ -81,7 +88,7 @@ Dock::Dock(MainWindow* window) : QObject(window)
         connect(d.tray, SIGNAL(messageClicked()), this, SLOT(onTrayMessageClicked()));
 
         PluginLoader::instance()->setupTrayIcon(d.tray);
-        PluginLoader::instance()->setupMuteAction(d.mute);
+        PluginLoader::instance()->setupMuteAction(d.muteAction);
 
         updateTray();
     }
@@ -108,7 +115,7 @@ void Dock::alert(IrcMessage* message)
 {
     if (!d.window->isActiveWindow() || d.active) {
         QApplication::alert(d.window);
-        if (d.alert && (!d.mute || !d.mute->isChecked()))
+        if (d.alert && (!d.muteAction || !d.muteAction->isChecked()))
             d.alert->play();
         if (d.tray && !d.blinking) {
             PluginLoader::instance()->dockAlert(message);
@@ -180,6 +187,23 @@ void Dock::onMuteToggled(bool mute)
 {
     QSettings settings;
     settings.setValue("mute", mute);
+}
+
+void Dock::onOfflineToggled(bool offline)
+{
+    QSettings settings;
+    settings.setValue("offline", offline);
+    if (d.window) {
+        foreach (IrcConnection* connection, d.window->connections()) {
+            if (offline) {
+                if (connection->isActive())
+                    connection->quit(qApp->property("description").toString());
+            } else {
+                if (!connection->isActive())
+                    connection->open();
+            }
+        }
+    }
 }
 
 void Dock::onTrayActivated(QSystemTrayIcon::ActivationReason reason)
