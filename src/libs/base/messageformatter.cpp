@@ -97,7 +97,7 @@ void MessageFormatter::setTextFormat(IrcTextFormat* format)
 MessageData MessageFormatter::formatMessage(IrcMessage* msg)
 {
     QString fmt;
-    switch (msg->type()) {
+    switch (MessageData::effectiveType(msg)) {
         case IrcMessage::Away:
             fmt = formatAwayMessage(static_cast<IrcAwayMessage*>(msg));
             break;
@@ -469,8 +469,11 @@ QString MessageFormatter::formatWhoReplyMessage(IrcWhoReplyMessage* msg)
 
 MessageData MessageFormatter::formatClass(const QString& format, IrcMessage* msg) const
 {
+    MessageData data;
+    data.initFrom(msg);
+
     QString cls = "message";
-    switch (msg->type()) {
+    switch (data.type()) {
         case IrcMessage::Away:
         case IrcMessage::Invite:
         case IrcMessage::Join:
@@ -507,8 +510,6 @@ MessageData MessageFormatter::formatClass(const QString& format, IrcMessage* msg
             break;
     }
 
-    MessageData data;
-    data.initFrom(msg);
     if (!format.isEmpty())
         data.setFormat(tr("<span class='%1'>%2</span>").arg(cls, format));
     return data;

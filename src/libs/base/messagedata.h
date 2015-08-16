@@ -39,6 +39,8 @@ class MessageData
 public:
     MessageData();
 
+    static IrcMessage::Type effectiveType(const IrcMessage* msg);
+
     bool isEmpty() const;
     bool isEvent() const;
     bool isError() const;

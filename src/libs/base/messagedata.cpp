@@ -36,6 +36,28 @@ MessageData::MessageData()
     d.type = IrcMessage::Unknown;
 }
 
+IrcMessage::Type MessageData::effectiveType(const IrcMessage* msg)
+{
+    QString intent = msg->tag("intent").toString();
+    if (!intent.isEmpty()) {
+        if (intent == "JOIN")
+            return IrcMessage::Join;
+        if (intent == "PART")
+            return IrcMessage::Part;
+        if (intent == "QUIT")
+            return IrcMessage::Quit;
+        if (intent == "NICK")
+            return IrcMessage::Nick;
+        if (intent == "MODE")
+            return IrcMessage::Mode;
+        if (intent == "TOPIC")
+            return IrcMessage::Topic;
+        if (intent == "KICK")
+            return IrcMessage::Kick;
+    }
+    return msg->type();
+}
+
 bool MessageData::isEmpty() const
 {
     return d.format.isEmpty();
@@ -82,7 +104,7 @@ void MessageData::initFrom(IrcMessage* message)
     d.timestamp = message->timeStamp();
     d.data = message->toData();
     d.nick = message->nick();
-    d.type = message->type();
+    d.type = effectiveType(message);
     d.own = message->isOwn();
     d.reply = message->property("reply").toBool();
 
