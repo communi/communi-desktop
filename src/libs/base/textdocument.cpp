@@ -428,7 +428,7 @@ void TextDocument::receiveMessage(IrcMessage* message)
             if (unseen)
                 emit messageReceived(message);
 
-            if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
+            if (data.type() == IrcMessage::Private || data.type() == IrcMessage::Notice) {
                 if (!message->isOwn()) {
                     const bool contains = message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive);
                     if (contains) {
