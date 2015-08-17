@@ -430,12 +430,24 @@ void TextDocument::receiveMessage(IrcMessage* message)
 
             if (data.type() == IrcMessage::Private || data.type() == IrcMessage::Notice) {
                 if (!message->isOwn()) {
-                    const bool contains = message->property("content").toString().contains(message->connection()->nickName(), Qt::CaseInsensitive);
+                    QString content;
+                    bool priv = false;
+                    if (data.type() == IrcMessage::Private) {
+                        IrcPrivateMessage* pm = static_cast<IrcPrivateMessage*>(message);
+                        content = pm->content();
+                        priv = pm->isPrivate();
+                    } else {
+                        IrcNoticeMessage* nm = static_cast<IrcNoticeMessage*>(message);
+                        content = nm->content();
+                        priv = nm->isPrivate();
+                    }
+                    IrcConnection* connection = message->connection();
+                    const bool contains = content.contains(connection->nickName(), Qt::CaseInsensitive);
                     if (contains) {
                         addHighlight(totalCount() - 1);
                         if (unseen)
                             emit messageHighlighted(message);
-                    } else if (unseen && message->property("private").toBool() && message->connection()->isConnected()) {
+                    } else if (unseen && priv && connection->isConnected()) {
                         emit privateMessageReceived(message);
                     }
                 }
