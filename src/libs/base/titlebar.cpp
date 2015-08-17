@@ -191,8 +191,7 @@ void TitleBar::setBuffer(IrcBuffer* buffer)
                 connect(channel, SIGNAL(modeChanged(QString)), this, SLOT(refresh()));
                 if (!d.model) {
                     d.model = new IrcUserModel(this);
-                    connect(d.model, SIGNAL(added(IrcUser*)), this, SLOT(refresh()));
-                    connect(d.model, SIGNAL(removed(IrcUser*)), this, SLOT(refresh()));
+                    connect(d.model, SIGNAL(countChanged(int)), this, SLOT(refresh()));
                 }
                 d.model->setChannel(channel);
             } else {
