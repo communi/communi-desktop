@@ -319,24 +319,26 @@ void TitleBar::cleanup()
 void TitleBar::refresh()
 {
     clear();
+
     IrcChannel* channel = qobject_cast<IrcChannel*>(d.buffer);
-    if (channel) {
-        QStringList info;
-        if (!channel->mode().isEmpty())
-            info += channel->mode();
-        if (d.model->count() > 0)
-            info += QString::number(d.model->count());
-        if (info.isEmpty()) {
-            setText(tr("%1: %2").arg(channel->title())
-                                .arg(d.formatter->formatText(channel->topic())));
-        } else {
-            setText(tr("%1 (%2): %3").arg(channel->title())
-                                     .arg(info.join(tr(", ")))
-                                     .arg(d.formatter->formatText(channel->topic())));
-        }
-    } else {
-        setText(d.buffer ? d.buffer->title() : QString());
-    }
+    QString title = d.buffer ? d.buffer->title() : QString();
+    QString topic = channel ? d.formatter->formatText(channel->topic()) : QString();
+
+    QStringList info;
+    if (channel && !channel->mode().isEmpty())
+        info += channel->mode();
+    if (d.model && d.model->count() > 0)
+        info += QString::number(d.model->count());
+
+    if (info.isEmpty() && topic.isEmpty())
+        setText(title);
+    else if (info.isEmpty())
+        setText(tr("%1: %2").arg(title).arg(topic));
+    else if (topic.isEmpty())
+        setText(tr("%1: %2").arg(title).arg(info.join(tr(", "))));
+    else
+        setText(tr("%1 (%2): %3").arg(title).arg(info.join(tr(", "))).arg(topic));
+
     foreach (QTextDocument* doc, findChildren<QTextDocument*>())
         doc->setDefaultStyleSheet(d.css);
 }
