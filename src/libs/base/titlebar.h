@@ -34,6 +34,7 @@
 #include <QToolButton>
 
 class IrcBuffer;
+class IrcUserModel;
 class MessageFormatter;
 
 class TitleBar : public QLabel
@@ -93,6 +94,7 @@ private:
         QTextEdit* editor;
         QToolButton* menuButton;
         MessageFormatter* formatter;
+        IrcUserModel* model;
     } d;
 };
 

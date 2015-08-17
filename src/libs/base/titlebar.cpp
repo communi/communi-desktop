@@ -32,6 +32,7 @@
 #include <QPropertyAnimation>
 #include <QStylePainter>
 #include <IrcTextFormat>
+#include <IrcUserModel>
 #include <QApplication>
 #include <QMouseEvent>
 #include <QHeaderView>
@@ -64,6 +65,7 @@ protected:
 TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
 {
     d.buffer = 0;
+    d.model = 0;
     d.baseOffset = -1;
     d.editor = new QTextEdit(this);
     d.formatter = new MessageFormatter(this);
@@ -173,6 +175,8 @@ void TitleBar::setBuffer(IrcBuffer* buffer)
                 disconnect(channel, SIGNAL(destroyed(IrcChannel*)), this, SLOT(cleanup()));
                 disconnect(channel, SIGNAL(topicChanged(QString)), this, SLOT(refresh()));
                 disconnect(channel, SIGNAL(modeChanged(QString)), this, SLOT(refresh()));
+                if (d.model)
+                    d.model->setChannel(0);
             } else {
                 disconnect(d.buffer, SIGNAL(destroyed(IrcBuffer*)), this, SLOT(cleanup()));
             }
@@ -185,6 +189,12 @@ void TitleBar::setBuffer(IrcBuffer* buffer)
                 connect(channel, SIGNAL(destroyed(IrcChannel*)), this, SLOT(cleanup()));
                 connect(channel, SIGNAL(topicChanged(QString)), this, SLOT(refresh()));
                 connect(channel, SIGNAL(modeChanged(QString)), this, SLOT(refresh()));
+                if (!d.model) {
+                    d.model = new IrcUserModel(this);
+                    connect(d.model, SIGNAL(added(IrcUser*)), this, SLOT(refresh()));
+                    connect(d.model, SIGNAL(removed(IrcUser*)), this, SLOT(refresh()));
+                }
+                d.model->setChannel(channel);
             } else {
                 connect(d.buffer, SIGNAL(destroyed(IrcBuffer*)), this, SLOT(cleanup()));
             }
@@ -309,12 +319,24 @@ void TitleBar::cleanup()
 void TitleBar::refresh()
 {
     clear();
-    QString title = d.buffer ? d.buffer->title() : QString();
     IrcChannel* channel = qobject_cast<IrcChannel*>(d.buffer);
-    QString topic = channel ? channel->topic() : QString();
-    if (!topic.isEmpty())
-        title = tr("%1: %2").arg(title, d.formatter->formatText(topic));
-    setText(title);
+    if (channel) {
+        QStringList info;
+        if (!channel->mode().isEmpty())
+            info += channel->mode();
+        if (d.model->count() > 0)
+            info += QString::number(d.model->count());
+        if (info.isEmpty()) {
+            setText(tr("%1: %2").arg(channel->title())
+                                .arg(d.formatter->formatText(channel->topic())));
+        } else {
+            setText(tr("%1 (%2): %3").arg(channel->title())
+                                     .arg(info.join(tr(", ")))
+                                     .arg(d.formatter->formatText(channel->topic())));
+        }
+    } else {
+        setText(d.buffer ? d.buffer->title() : QString());
+    }
     foreach (QTextDocument* doc, findChildren<QTextDocument*>())
         doc->setDefaultStyleSheet(d.css);
 }
