@@ -518,7 +518,7 @@ MessageData MessageFormatter::formatClass(const QString& format, IrcMessage* msg
 QString MessageFormatter::formatSender(IrcMessage* msg) const
 {
     Style style = Bold;
-    if (msg->type() == IrcMessage::Private) {
+    if (MessageData::effectiveType(msg) == IrcMessage::Private) {
         IrcPrivateMessage* p = static_cast<IrcPrivateMessage*>(msg);
         if (!p->isAction() && !p->isRequest())
             style |= msg->isOwn() ? Dim : Color;
