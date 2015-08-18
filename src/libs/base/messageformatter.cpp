@@ -323,12 +323,20 @@ QString MessageFormatter::formatNoticeMessage(IrcNoticeMessage* msg)
             return tr("! %1 version is %2").arg(formatSender(msg), rest);
         }
     }
+
     QString pfx = msg->statusPrefix();
     if (!pfx.isEmpty())
         pfx = styledText(":" + pfx, Dim);
-    return tr("[%1%2] %3").arg(formatSender(msg),
-                               pfx,
-                               formatText(msg->content()));
+
+    if (msg->isPrivate())
+        return tr("[%1%2] %3").arg(formatSender(msg),
+                                   pfx,
+                                   formatText(msg->content()));
+
+    return tr("&lt;%1%2&gt; [%3] %4").arg(formatSender(msg),
+                                          pfx,
+                                          msg->target(),
+                                          formatText(msg->content()));
 }
 
 #define P_(x) msg->parameters().value(x)
