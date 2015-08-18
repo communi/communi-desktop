@@ -29,55 +29,63 @@
 #include "overlay.h"
 #include "bufferview.h"
 #include "textbrowser.h"
-#include <QStyleOptionToolButton>
+#include <QStyleOptionButton>
 #include <QPropertyAnimation>
 #include <QCoreApplication>
 #include <QStylePainter>
 #include <IrcConnection>
-#include <QToolButton>
+#include <QPushButton>
 #include <QShortcut>
 #include <IrcBuffer>
 #include <QPointer>
 #include <QStyle>
 #include <QEvent>
 
-class OverlayButton : public QToolButton
+class OverlayButton : public QPushButton
 {
     Q_OBJECT
     Q_PROPERTY(int rotation READ rotation WRITE setRotation)
+    Q_PROPERTY(bool waiting READ isWaiting WRITE setWaiting NOTIFY waitingChanged)
+    Q_PROPERTY(bool connecting READ isConnecting WRITE setConnecting NOTIFY connectingChanged)
 
 public:
-    OverlayButton(QWidget* parent) : QToolButton(parent)
+    OverlayButton(QWidget* parent) : QPushButton(parent)
     {
         d.rotation = 0;
+        d.waiting = false;
+        d.connecting = false;
     }
 
-    bool isBusy() const
+    bool isWaiting() const
     {
-        return d.animation && d.animation->state() == QAbstractAnimation::Running;
+        return d.waiting;
     }
 
-    void setBusy(bool busy)
+    void setWaiting(bool waiting)
     {
-        if (busy != isBusy()) {
-            if (busy) {
-                if (!d.animation) {
-                    d.animation = new QPropertyAnimation(this, "rotation");
-                    d.animation->setDuration(750);
-                    d.animation->setStartValue(0);
-                    d.animation->setEndValue(360);
-                    d.animation->setLoopCount(-1);
-                }
-                d.animation->start(QAbstractAnimation::DeleteWhenStopped);
-            } else if (d.animation) {
-                QPropertyAnimation* finish = new QPropertyAnimation(this, "rotation");
-                finish->setDuration(d.animation->duration() - d.animation->currentLoopTime());
-                finish->setStartValue(d.animation->currentValue());
-                finish->setEndValue(d.animation->endValue());
-                finish->setLoopCount(1);
-                finish->start(QAbstractAnimation::DeleteWhenStopped);
-                d.animation->stop();
-                delete d.animation;
+        if (d.waiting != waiting) {
+            d.waiting = waiting;
+            emit waitingChanged();
+            refresh();
+        }
+    }
+
+    bool isConnecting() const
+    {
+        return d.connecting;
+    }
+
+    void setConnecting(bool connecting)
+    {
+        if (d.connecting != connecting) {
+            d.connecting = connecting;
+            emit connectingChanged();
+            update();
+            if (isVisible()) {
+                if (connecting)
+                    startAnimation();
+                else
+                    stopAnimation();
             }
         }
     }
@@ -92,25 +100,79 @@ public:
         if (d.rotation != rotation) {
             d.rotation = rotation;
             update();
+            refresh();
         }
     }
+
+signals:
+    void waitingChanged();
+    void connectingChanged();
 
 protected:
     void paintEvent(QPaintEvent*)
     {
         QStylePainter painter(this);
-        QStyleOptionToolButton button;
+        QStyleOptionButton button;
         initStyleOption(&button);
         painter.translate(width() / 2, height() / 2);
         painter.rotate(d.rotation);
         painter.translate(-width() / 2, -height() / 2);
         painter.setRenderHint(QPainter::SmoothPixmapTransform);
-        painter.drawComplexControl(QStyle::CC_ToolButton, button);
+        painter.drawControl(QStyle::CE_PushButton, button);
+    }
+
+    void showEvent(QShowEvent *)
+    {
+        if (d.connecting)
+            startAnimation();
+    }
+
+    void hideEvent(QHideEvent *)
+    {
+        if (d.connecting)
+            stopAnimation();
+    }
+
+private slots:
+    void refresh()
+    {
+        setFlat(d.waiting && (d.rotation == 0 || d.rotation == 360));
+    }
+
+    void startAnimation()
+    {
+        if (!d.animation) {
+            d.animation = new QPropertyAnimation(this, "rotation");
+            d.animation->setDuration(750);
+            d.animation->setStartValue(0);
+            d.animation->setEndValue(360);
+            d.animation->setLoopCount(-1);
+        }
+        d.animation->start(QAbstractAnimation::DeleteWhenStopped);
+    }
+
+    void stopAnimation()
+    {
+        if (d.animation) {
+            QPropertyAnimation* finish = new QPropertyAnimation(this, "rotation");
+            finish->setDuration(d.animation->duration() - d.animation->currentLoopTime());
+            finish->setStartValue(d.animation->currentValue());
+            finish->setEndValue(d.animation->endValue());
+            finish->setLoopCount(1);
+            finish->start(QAbstractAnimation::DeleteWhenStopped);
+            connect(finish, SIGNAL(finished()), this, SLOT(refresh()));
+
+            d.animation->stop();
+            delete d.animation;
+            d.animation = 0;
+        }
     }
 
 private:
     struct Private {
         int rotation;
+        bool waiting;
+        bool connecting;
         QPointer<QPropertyAnimation> animation;
     } d;
 };
@@ -155,10 +217,12 @@ void Overlay::refresh()
 {
     IrcConnection* connection = d.buffer ? d.buffer->connection() : 0;
     const bool connected = connection && connection->status() == IrcConnection::Connected;
+    const bool waiting = connection && connection->status() == IrcConnection::Waiting;
     const bool connecting = connection && connection->status() == IrcConnection::Connecting;
     d.shortcut->setEnabled(!connected && !connecting);
     d.button->setVisible(!connected);
-    d.button->setBusy(connecting);
+    d.button->setWaiting(waiting);
+    d.button->setConnecting(connecting);
     setVisible(!connected);
 }
 

@@ -186,6 +186,14 @@ OverlayButton:pressed {
     image: url(black:refresh.png);
 }
 
+OverlayButton:flat {
+    image: url(gray:pause.png);
+}
+
+OverlayButton:flat:pressed {
+    image: url(black:pause.png);
+}
+
 AbstractFinder > QToolButton {
     min-width: 20px;
     max-width: 20px;

@@ -17,6 +17,7 @@
   <file>images/black/right.png</file>
   <file>images/black/spinner.png</file>
   <file>images/black/up.png</file>
+  <file>images/black/pause.png</file>
 
   <file>images/gray/close.png</file>
   <file>images/gray/menu.png</file>
@@ -26,6 +27,7 @@
   <file>images/gray/right.png</file>
   <file>images/gray/spinner.png</file>
   <file>images/gray/up.png</file>
+  <file>images/gray/pause.png</file>
 
   <file>images/white/close.png</file>
   <file>images/white/menu.png</file>
@@ -35,6 +37,7 @@
   <file>images/white/right.png</file>
   <file>images/white/spinner.png</file>
   <file>images/white/up.png</file>
+  <file>images/white/pause.png</file>
 
   <file>images/tray/black/black.png</file>
   <file>images/tray/black/blue.png</file>
