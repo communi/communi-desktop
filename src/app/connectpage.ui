@@ -121,16 +121,95 @@
            </widget>
           </item>
           <item row="1" column="0">
+           <widget class="QLabel" name="hostLabel">
+            <property name="text">
+             <string>&amp;Host:</string>
+            </property>
+            <property name="buddy">
+             <cstring>hostField</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="hostField">
+            <property name="inputMethodHints">
+             <set>Qt::ImhUrlCharactersOnly</set>
+            </property>
+            <property name="placeholderText">
+             <string>irc.freenode.net</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="portLabel">
+            <property name="text">
+             <string>&amp;Port:</string>
+            </property>
+            <property name="buddy">
+             <cstring>portField</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <layout class="QHBoxLayout" name="portLayout">
+            <item>
+             <widget class="QSpinBox" name="portField">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>1</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimum">
+               <number>1024</number>
+              </property>
+              <property name="maximum">
+               <number>65535</number>
+              </property>
+              <property name="value">
+               <number>6667</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="secureBox">
+              <property name="text">
+               <string>&amp;Secure</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="expandButton">
+              <property name="focusPolicy">
+               <enum>Qt::ClickFocus</enum>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <property name="toolButtonStyle">
+               <enum>Qt::ToolButtonTextOnly</enum>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="3" column="0">
            <widget class="QLabel" name="serverLabel">
             <property name="text">
-             <string>&amp;Servers:</string>
+             <string>&amp;Alternates:</string>
             </property>
             <property name="buddy">
              <cstring>serverField</cstring>
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
+          <item row="3" column="1">
            <widget class="QPlainTextEdit" name="serverField">
             <property name="verticalScrollBarPolicy">
              <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -300,6 +379,10 @@
  </widget>
  <tabstops>
   <tabstop>displayNameField</tabstop>
+  <tabstop>hostField</tabstop>
+  <tabstop>portField</tabstop>
+  <tabstop>secureBox</tabstop>
+  <tabstop>expandButton</tabstop>
   <tabstop>serverField</tabstop>
   <tabstop>nickNameField</tabstop>
   <tabstop>realNameField</tabstop>

@@ -75,10 +75,12 @@ protected:
 
 private slots:
     void autoFill();
+    void onPortChanged(int port);
     void restoreSettings();
     void saveSettings();
     void updateUi();
     void reset();
+    void expand(bool expand);
 
 private:
     QVariant defaultValue(const QString& key, const QString& field, const QVariant& defaultValue = QVariant()) const;
@@ -88,6 +90,7 @@ private:
     struct Private : public Ui::ConnectPage {
         IrcConnection* connection;
         QCompleter* displayNameCompleter;
+        QCompleter* hostCompleter;
         QCompleter* nickNameCompleter;
         QCompleter* realNameCompleter;
         QCompleter* userNameCompleter;
