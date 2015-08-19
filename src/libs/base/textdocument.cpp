@@ -424,11 +424,11 @@ void TextDocument::receiveMessage(IrcMessage* message)
         if (!data.isEmpty()) {
             append(data);
 
-            bool unseen = d.timestamp < message->timeStamp();
-            if (unseen)
-                emit messageReceived(message);
-
             if (data.type() == IrcMessage::Private || data.type() == IrcMessage::Notice) {
+                bool unseen = d.timestamp < message->timeStamp();
+                if (unseen)
+                    emit messageReceived(message);
+
                 if (!message->isOwn()) {
                     QString content;
                     bool priv = false;
