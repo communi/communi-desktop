@@ -447,7 +447,7 @@ void ChatPage::onMessageReceived(IrcMessage* message)
                     }
                 }
                 // exclude broadcasted global notices
-                if (!visible && message->property("target") != "$$*")
+                if (!visible && (message->type() != IrcMessage::Notice || static_cast<IrcNoticeMessage*>(message)->target() != "$$*"))
                     item->setData(1, TreeRole::Badge, item->data(1, TreeRole::Badge).toInt() + 1);
             }
         }
