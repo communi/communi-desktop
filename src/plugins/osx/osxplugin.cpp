@@ -57,7 +57,17 @@ void OsxPlugin::setupTrayIcon(QSystemTrayIcon* tray)
 
 void OsxPlugin::dockAlert(IrcMessage* message)
 {
-    QString content = message->property("content").toString();
-    if (!content.isEmpty())
-        d.tray->showMessage(tr("Communi"), message->nick() + ": " + IrcTextFormat().toPlainText(content));
+    if (message->type() == IrcMessage::Private) {
+        IrcPrivateMessage* pm = static_cast<IrcPrivateMessage*>(message);
+        if (pm->isPrivate())
+            d.tray->showMessage(tr("Private message from %1").arg(pm->nick()), IrcTextFormat().toPlainText(pm->content()));
+        else
+            d.tray->showMessage(tr("Message from %1 on %2").arg(pm->nick(), pm->target()), IrcTextFormat().toPlainText(pm->content()));
+    } else if (message->type() == IrcMessage::Notice) {
+        IrcNoticeMessage* nm = static_cast<IrcNoticeMessage*>(message);
+        if (nm->isPrivate())
+            d.tray->showMessage(tr("Private notice from %1").arg(nm->nick()), IrcTextFormat().toPlainText(nm->content()));
+        else
+            d.tray->showMessage(tr("Notice from %1 on %2").arg(nm->nick(), nm->target()), IrcTextFormat().toPlainText(nm->content()));
+    }
 }
