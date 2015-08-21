@@ -76,7 +76,10 @@ QString ConnectPage::displayName() const
 
 void ConnectPage::setDisplayName(const QString& name)
 {
+    // block autoFill()
+    ui.displayNameField->blockSignals(true);
     ui.displayNameField->setText(name);
+    ui.displayNameField->blockSignals(false);
 }
 
 QStringList ConnectPage::servers() const
@@ -295,17 +298,13 @@ void ConnectPage::saveSettings()
         credentials.insert("hosts", hosts);
     }
 
-    if (port != NORMAL_PORTS[0]) {
-        QMap<QString, QVariant> ports = credentials.value("ports").toMap();
-        ports.insert(ConnectPage::displayName(), port);
-        credentials.insert("ports", ports);
-    }
+    QMap<QString, QVariant> ports = credentials.value("ports").toMap();
+    ports.insert(ConnectPage::displayName(), port);
+    credentials.insert("ports", ports);
 
-    if (secure) {
-        QMap<QString, QVariant> secures = credentials.value("secures").toMap();
-        secures.insert(ConnectPage::displayName(), secure);
-        credentials.insert("secures", secures);
-    }
+    QMap<QString, QVariant> secures = credentials.value("secures").toMap();
+    secures.insert(ConnectPage::displayName(), secure);
+    credentials.insert("secures", secures);
 
     if (!server.isEmpty()) {
         QMap<QString, QVariant> servers = credentials.value("servers").toMap();
@@ -339,11 +338,9 @@ void ConnectPage::saveSettings()
         credentials.insert("userNames", userNames);
     }
 
-    if (sasl) {
-        QMap<QString, QVariant> sasls = credentials.value("sasls").toMap();
-        sasls.insert(ConnectPage::displayName(), sasl);
-        credentials.insert("sasls", sasls);
-    }
+    QMap<QString, QVariant> sasls = credentials.value("sasls").toMap();
+    sasls.insert(ConnectPage::displayName(), sasl);
+    credentials.insert("sasls", sasls);
 
     settings.setValue("credentials", credentials);
 }
