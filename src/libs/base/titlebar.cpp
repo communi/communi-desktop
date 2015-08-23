@@ -331,10 +331,10 @@ void TitleBar::refresh()
 
     if (info.isEmpty() && topic.isEmpty())
         setText(title);
-    else if (!topic.isEmpty())
-        setText(tr("%1: %2").arg(title).arg(topic));
-    else if (!info.isEmpty())
+    else if (topic.isEmpty())
         setText(tr("%1 (%2)").arg(title).arg(info.join(tr(", "))));
+    else if (info.isEmpty())
+        setText(tr("%1: %2").arg(title).arg(topic));
     else
         setText(tr("%1 (%2): %3").arg(title).arg(info.join(tr(", "))).arg(topic));
 
