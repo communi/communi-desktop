@@ -506,10 +506,10 @@ void SplitView::addZoomActions(QMenu* menu, BufferView* view)
 
 void SplitView::addGlobalActions(QMenu* menu)
 {
-    QAction* settingsAction = menu->addAction(tr("Settings"), window(), SLOT(showSettings()), QKeySequence::Preferences);
+    QAction* settingsAction = menu->addAction(tr("Settings..."), window(), SLOT(showSettings()), QKeySequence::Preferences);
     settingsAction->setShortcutContext(Qt::WidgetShortcut);
 
-    QAction* helpAction = menu->addAction(tr("Help"), window(), SLOT(showHelp()), QKeySequence::HelpContents);
+    QAction* helpAction = menu->addAction(tr("Help..."), window(), SLOT(showHelp()), QKeySequence::HelpContents);
     helpAction->setShortcutContext(Qt::WidgetShortcut);
 
     menu->addSeparator();
