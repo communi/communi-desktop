@@ -420,6 +420,7 @@ QVariant ConnectPage::defaultValue(const QString& key, const QString& field, con
 void ConnectPage::init(IrcConnection *connection)
 {
     ui.setupUi(this);
+    setFocusProxy(ui.displayNameField);
 
 #ifdef Q_OS_MAC
     ui.serverField->setAttribute(Qt::WA_MacShowFocusRect);

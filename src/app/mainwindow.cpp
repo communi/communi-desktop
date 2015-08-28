@@ -235,10 +235,14 @@ void MainWindow::removeConnection(IrcConnection* connection)
 
 void MainWindow::push(QWidget* page)
 {
-    if (d.stack->currentWidget())
-        d.stack->currentWidget()->setEnabled(false);
+    QWidget* prev = d.stack->currentWidget();
+    if (prev) {
+        prev->setProperty("__focus_widget__", QVariant::fromValue(prev->focusWidget()));
+        prev->setEnabled(false);
+    }
     d.stack->addWidget(page);
     d.stack->setCurrentWidget(page);
+    page->setFocus();
 }
 
 void MainWindow::pop()
@@ -247,8 +251,13 @@ void MainWindow::pop()
     if (!qobject_cast<ChatPage*>(page)) {
         d.stack->removeWidget(page);
         d.stack->setCurrentIndex(d.stack->count() - 1);
-        if (d.stack->currentWidget())
-            d.stack->currentWidget()->setEnabled(true);
+        QWidget* current = d.stack->currentWidget();
+        if (current) {
+            current->setEnabled(true);
+            QWidget* fw = current->property("__focus_widget__").value<QWidget*>();
+            if (fw)
+                fw->setFocus();
+        }
         page->deleteLater();
     }
 }

@@ -38,6 +38,7 @@
 SettingsPage::SettingsPage(QWidget* parent) : QWidget(parent)
 {
     ui.setupUi(this);
+    setFocusProxy(ui.themeCombo);
 
     ui.scrollArea->horizontalScrollBar()->setStyle(ScrollBarStyle::narrow());
     ui.scrollArea->verticalScrollBar()->setStyle(ScrollBarStyle::narrow());
