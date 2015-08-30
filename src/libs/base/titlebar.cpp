@@ -324,8 +324,8 @@ void TitleBar::refresh()
     QString topic = channel ? d.formatter->formatText(channel->topic()) : QString();
 
     QStringList info;
-    if (channel && !channel->mode().isEmpty())
-        info += channel->mode();
+//    if (channel && !channel->mode().isEmpty())
+//        info += channel->mode();
     if (d.model && d.model->count() > 0)
         info += QString::number(d.model->count());
 
