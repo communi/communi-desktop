@@ -57,6 +57,7 @@
 
 ChatPage::ChatPage(QWidget* parent) : QSplitter(parent)
 {
+    d.currentBuffer = 0;
     d.finder = new Finder(this);
     d.splitView = new SplitView(this);
     d.treeWidget = new TreeWidget(this);
@@ -419,9 +420,19 @@ void ChatPage::removeView(BufferView* view)
 
 void ChatPage::onCurrentBufferChanged(IrcBuffer* buffer)
 {
-    MessageHandler* handler = buffer->model()->findChild<MessageHandler*>();
-    if (handler)
-        handler->setCurrentBuffer(buffer);
+    if (d.currentBuffer != buffer) {
+        if (d.currentBuffer && (!buffer || d.currentBuffer->model() != buffer->model())) {
+            MessageHandler* handler = d.currentBuffer->model()->findChild<MessageHandler*>();
+            if (handler)
+                handler->setCurrentBuffer(0);
+        }
+        if (buffer) {
+            MessageHandler* handler = buffer->model()->findChild<MessageHandler*>();
+            if (handler)
+                handler->setCurrentBuffer(buffer);
+        }
+        d.currentBuffer = buffer;
+    }
 }
 
 void ChatPage::onCurrentViewChanged(BufferView* current, BufferView* previous)

@@ -108,6 +108,7 @@ private:
         SplitView* splitView;
         TreeWidget* treeWidget;
         QVariantMap timestamps;
+        IrcBuffer* currentBuffer;
         QSet<TextDocument*> documents;
     } d;
 };
