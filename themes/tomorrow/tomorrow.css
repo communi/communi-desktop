@@ -1,0 +1,330 @@
+a { color: #81a2be; }
+.timestamp { color: #808080; font-size: small }
+
+.message { white-space: pre-wrap; }
+.notice { color: #b23e3e; }
+.action { color: #b232b2; }
+.event { color: #808080; }
+
+.bold { font-weight: bold; }
+.italic { font-style: italic; }
+.underline { text-decoration: underline; }
+.line-through { text-decoration: line-through; }
+
+.gray { color: #969896; /* 03 */ }
+.lightgray { color: #b4b7b4; /* 04 */ }
+
+/* http://chriskempson.github.io/base16/#tomorrow */
+.blue { color: #81a2be; /* 0D */ }
+.green { color: #b5bd68; /* 0B */ }
+.red { color: #cc6666; /* 08 */ }
+.brown { color: #a3685a; /* 0F */ }
+.purple { color: #b294bb; /* 0E */ }
+.orange { color: #de935f; /* 09 */ }
+.yellow { color: #f0c674; /* 0A */ }
+.lightgreen { color: #b5bd68; /* 0B */ }
+.cyan { color: #8abeb7; /* 0C */ }
+.lightcyan { color: #8abeb7; /* 0C */ }
+.lightblue { color: #81a2be; /* 0D */ }
+.pink { color: #b294bb; /* 0E */ }
+
+TextBrowser, TextInput {
+    border: none;
+    color: #e0e0e0;
+    background: #282a2e;
+    selection-color: #282a2e;
+    selection-background-color: #b4b7b4;
+}
+
+SplitView {
+    background: #282a2e;
+}
+
+TextInput {
+    background: #373b41;
+    border-top: 1px solid #1d1f21;
+}
+
+TreeWidget, ListView {
+    border: none;
+    background: #1d1f21;
+    selection-background-color: #ff0000;
+}
+
+TreeWidget::item {
+    color: #b4b7b4;
+    height: 20px;
+}
+
+ListView::item {
+    color: #b4b7b4;
+    height: 20px;
+}
+
+TreeWidget::item:off, TreeHeader::section:off, ListView:off {
+    color: #969896;
+}
+
+TreeWidget::item:selected, TreeWidget::item:selected:hover {
+    color: #c5c8c6;
+    background-color: #282a2e;
+}
+
+ListView::item:selected, ListView::item:selected:hover {
+    color: #c5c8c6;
+    background-color: #282a2e;
+}
+
+TreeWidget::item:!selected:hover, ListView::item:!selected:hover {
+    background-color: transparent;
+}
+
+TreeHeader::section, TitleBar::section {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #414848, stop: 1 #343535);
+    color: #e0e0e0;
+    border: 4px solid transparent;
+    border-bottom: 1px solid #1d1f21;
+}
+
+TextLowlight {
+    border: 1px solid #545959;
+    background-color: #353838;
+}
+
+TextHighlight {
+    /* border: 1px solid #cc6666; */
+    background-color: rgba(221,102,102,40);
+}
+
+TextShadow {
+    max-height: 5px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #1d1f21, stop: 1 transparent);
+}
+
+TreeSpinner {
+    border: none;
+    background: transparent;
+    min-width: 16px;
+    max-width: 16px;
+    min-height: 16px;
+    max-height: 16px;
+    background-image: url(white:spinner.png);
+}
+
+TreeIndicator {
+    min-width: 6px;
+    max-width: 6px;
+    min-height: 6px;
+    max-height: 6px;
+    border-radius: 2px;
+    border: 1px solid #828380;
+}
+
+TreeIndicator:off {
+    background: #5d5e5b;
+}
+
+TreeIndicator:on {
+    background: #3e83db;
+    border-color: #3e83db;
+}
+
+TreeBadge {
+    color: #e0e0e0;
+    margin: 3px;
+    font-size: 9px;
+    border-radius: 5px;
+    background: #373b41;
+}
+
+TreeBadge:on {
+    color: #e0e0e0;
+    background: #cc6666;
+}
+
+TreeHeader {
+    min-height: 20px;
+}
+
+TreeHeader::section:on {
+    color: #3465a4;
+}
+
+TreeWidget::item:on {
+    color: #b4b7b4;
+}
+
+TitleBar > QTextEdit {
+    border-bottom: 1px solid #1d1f21;
+}
+
+QSplitter::handle {
+    width: 1px;
+    height: 1px;
+    background: #24282a;
+}
+
+QToolButton {
+    border: 1px solid #1d1f21;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #414848, stop: 1 #343535);
+}
+
+QToolButton:pressed {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #343535, stop: 1 #414848);
+}
+
+QToolButton::menu-indicator {
+    image: none;
+}
+
+TitleBar {
+    color: #e0e0e0;
+    min-height: 20px;
+}
+
+TitleBar > QTextEdit {
+    color: #e0e0e0;
+    background: #373b41;
+    selection-color: #e0e0e0;
+    selection-background-color: #373b41;
+    border: 1px solid #1d1f21;
+    border-bottom-color: transparent;
+}
+
+QToolButton#menu {
+    min-width: 20px;
+    max-width: 20px;
+    min-height: 20px;
+    max-height: 20px;
+    border-color: transparent;
+    background-color: transparent;
+    image: url(white:menu.png);
+}
+
+QToolButton#menu:hover {
+    border-left-color: #1d1f21;
+    border-bottom-color: #1d1f21;
+}
+
+QToolButton#menu:pressed {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #343535, stop: 1 #414848);
+}
+
+QMenu {
+    color: #e0e0e0;
+    background: #373b41;
+}
+
+QMenu::item:selected:!disabled {
+    background: #81a2be;
+}
+
+QMenu::item:disabled {
+    color: #969896;
+}
+
+QMenu::separator {
+    height: 1px;
+    margin: 4px;
+    background: #5d5e5b;
+}
+
+Overlay {
+    background: rgba(96,96,96,40%)
+}
+
+OverlayButton {
+    border: none;
+    background: transparent;
+    min-width: 48px;
+    max-width: 48px;
+    min-height: 48px;
+    max-height: 48px;
+    image: url(white:refresh.png);
+}
+
+OverlayButton:pressed {
+    border: none;
+    background: transparent;
+    image: url(gray:refresh.png);
+}
+
+OverlayButton:flat {
+    image: url(white:pause.png);
+}
+
+OverlayButton:flat:pressed {
+    image: url(gray:pause.png);
+}
+
+AbstractFinder > QToolButton {
+    min-width: 20px;
+    max-width: 20px;
+    min-height: 20px;
+    max-height: 20px;
+}
+
+AbstractFinder > QLineEdit {
+    color: #e0e0e0;
+    background: #373b41;
+    selection-color: #e0e0e0;
+    selection-background-color: #373b41;
+    border: 1px solid #1d1f21;
+    border-bottom-color: transparent;
+}
+
+AbstractFinder[error="true"] > QLineEdit {
+    background-color: #cc6666;
+}
+
+AbstractFinder > QToolButton {
+    border-left-color: transparent;
+}
+
+AbstractFinder > QToolButton#prev {
+    image: url(white:up.png)
+}
+
+AbstractFinder[error="true"] > QToolButton#prev {
+    image: url(gray:up.png);
+    background-color: #373b41;
+}
+
+AbstractFinder > QToolButton#next {
+    image: url(white:down.png)
+}
+
+AbstractFinder[error="true"] > QToolButton#next {
+    image: url(gray:down.png);
+    background-color: #373b41;
+}
+
+ConnectPage QPlainTextEdit[error="true"] {
+    background-color: #cc6666;
+}
+
+QScrollBar {
+    background-color: #24282a;
+    width: 8px;
+    border: none;
+}
+
+QScrollBar::handle {
+    background-color: #373b41;
+    border: 1px solid #1d1f21;
+    border-radius: 4px;
+    min-height: 16px;
+}
+
+QScrollBar::up-arrow, QScrollBar::down-arrow,
+QScrollBar::add-line, QScrollBar::sub-line,
+QScrollBar::add-page, QScrollBar::sub-page {
+    height: 0px;
+    background-color: #24282a;
+    border: none;
+}
