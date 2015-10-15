@@ -48,6 +48,7 @@
 #include <IrcCommandParser>
 #include <IrcBufferModel>
 #include <IrcConnection>
+#include <QFontDatabase>
 #include <QStringList>
 #include <QScrollBar>
 #include <IrcChannel>
@@ -117,6 +118,11 @@ void ChatPage::setTheme(const QString& theme)
 {
     if (!d.theme.isValid() || d.theme.name() != theme) {
         d.theme = ThemeLoader::instance()->theme(theme);
+
+        QString font = d.theme.font();
+        if (!font.isEmpty())
+            QFontDatabase::addApplicationFont(QDir(d.theme.path()).filePath(font));
+
         foreach (TextDocument* doc, d.documents)
             setupDocument(doc);
         foreach (BufferView* view, d.splitView->views())

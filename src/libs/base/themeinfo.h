@@ -43,6 +43,8 @@ public:
     QString description() const;
     QString style() const;
     QString gtkTheme() const;
+    QString font() const;
+    QString path() const;
 
 private:
     struct Private {
@@ -52,6 +54,8 @@ private:
         QString description;
         QString style;
         QString gtkTheme;
+        QString font;
+        QString path;
     } d;
 };
 

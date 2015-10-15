@@ -68,6 +68,16 @@ QString ThemeInfo::gtkTheme() const
     return d.gtkTheme;
 }
 
+QString ThemeInfo::font() const
+{
+    return d.font;
+}
+
+QString ThemeInfo::path() const
+{
+    return d.path;
+}
+
 static QString readFile(const QDir& dir, const QString& fileName)
 {
     QFile file;
@@ -83,6 +93,7 @@ static QString readFile(const QDir& dir, const QString& fileName)
 bool ThemeInfo::load(const QString& filePath)
 {
     QSettings settings(filePath, QSettings::IniFormat);
+    d.path = QFileInfo(filePath).path();
 
     QStringList groups = settings.childGroups();
     if (groups.contains("Theme")) {
@@ -93,6 +104,7 @@ bool ThemeInfo::load(const QString& filePath)
         d.description = settings.value("description").toString();
         d.style = readFile(QFileInfo(filePath).dir(), settings.value("style").toString());
         d.gtkTheme = settings.value("gtk-theme").toString();
+        d.font = settings.value("font").toString();
         settings.endGroup();
     }
     return isValid();
