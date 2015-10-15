@@ -59,7 +59,9 @@ void TreeHeader::paintEvent(QPaintEvent*)
     option.rect.adjust(0, 0, 0, 1);
 #endif
     option.state = (d.state | QStyle::State_Raised | QStyle::State_Horizontal);
-    option.icon = d.icon;
+    QPixmap px(16, 16);
+    px.fill(Qt::transparent);
+    option.icon = px;
     option.text = d.text;
     option.position = QStyleOptionHeader::OnlyOneSection;
     QStylePainter painter(this);

@@ -81,12 +81,14 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
     if (!index.parent().isValid()) {
         TreeHeader* header = TreeHeader::instance(const_cast<QWidget*>(option.widget));
         header->setText(index.data(Qt::DisplayRole).toString());
-        header->setIcon(index.data(Qt::DecorationRole).value<QIcon>());
         header->setState(option.state);
         header->setGeometry(option.rect);
         painter->translate(option.rect.topLeft());
         header->render(painter);
         painter->translate(-option.rect.topLeft());
+        QStyle* style = option.widget->style();
+        QIcon icon = index.data(Qt::DecorationRole).value<QIcon>();
+        style->drawItemPixmap(painter, option.rect.translated(2, 0), Qt::AlignLeft | Qt::AlignVCenter, icon.pixmap(16, 16));
     } else {
         bool hilite = index.data(TreeRole::Highlight).toBool();
         if (hilite)

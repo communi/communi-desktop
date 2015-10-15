@@ -146,13 +146,7 @@ void TreeItem::updateIcon()
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
     if (connection()->isActive() && !connection()->isConnected()) {
-#if defined(Q_OS_WIN)
-        painter.translate(8, 7);
-#elif defined(Q_OS_MAC)
         painter.translate(8, 8);
-#else
-        painter.translate(8, 10);
-#endif
         painter.rotate(d.anim->currentValue().toInt());
         TreeSpinner* spinner = TreeSpinner::instance(treeWidget());
         spinner->render(&painter, QPoint(-8, -8));
@@ -165,13 +159,7 @@ void TreeItem::updateIcon()
             state |= QStyle::State_Off;
         indicator->setState(state);
         indicator->setLag(lag);
-#if defined(Q_OS_WIN)
-        indicator->render(&painter, QPoint(4, 3));
-#elif defined(Q_OS_MAC)
         indicator->render(&painter, QPoint(4, 4));
-#else
-        indicator->render(&painter, QPoint(4, 6));
-#endif
     }
 
     setIcon(0, pixmap);

@@ -42,7 +42,6 @@ public:
     static TreeHeader* instance(QWidget* parent = 0);
 
     void setText(const QString& text) { d.text = text; }
-    void setIcon(const QIcon& icon) { d.icon = icon; }
     void setState(QStyle::State state) { d.state = state; }
 
 protected:
@@ -50,7 +49,6 @@ protected:
 
 private:
     struct Private {
-        QIcon icon;
         QString text;
         QStyle::State state;
     } d;
