@@ -2,8 +2,8 @@ a { color: #81a2be; }
 .timestamp { color: #808080; font-size: small }
 
 .message { white-space: pre-wrap; }
-.notice { color: #b23e3e; }
-.action { color: #b232b2; }
+.notice { color: #de935f; }
+.action { color: #b294bb; }
 .event { color: #808080; }
 
 .bold { font-weight: bold; }
@@ -27,6 +27,17 @@ a { color: #81a2be; }
 .lightcyan { color: #8abeb7; /* 0C */ }
 .lightblue { color: #81a2be; /* 0D */ }
 .pink { color: #b294bb; /* 0E */ }
+
+.nick0 { color: #b4b7b4; /* 04 */ }
+.nick1 { color: #ffffff; /* 07 */ }
+.nick2 { color: #cc6666; /* 08 */ }
+.nick3 { color: #de935f; /* 09 */ }
+.nick4 { color: #f0c674; /* 0A */ }
+.nick5 { color: #b5bd68; /* 0B */ }
+.nick6 { color: #8abeb7; /* 0C */ }
+.nick7 { color: #81a2be; /* 0D */ }
+.nick8 { color: #b294bb; /* 0E */ }
+.nick9 { color: #a3685a; /* 0F */ }
 
 TextBrowser, TextInput {
     border: none;

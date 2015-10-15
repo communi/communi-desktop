@@ -217,10 +217,11 @@ QString MessageFormatter::styledText(const QString& text, Style style) const
     if (style & Bold)
         fmt = tr("<b>%1</b>").arg(fmt);
     if (style & (Color | Dim)) {
-        const int h = qHash(text) % 359;
-        const int s = (style & Dim) ? 0 : 102;
-        const int l = 134;
-        fmt = tr("<font color='%2'>%1</font>").arg(fmt, QColor::fromHsl(h, s, l).name());
+        int bucket = (qHash(text) % 9) + 1;
+        if (style & Dim) {
+            bucket = 0;
+        }
+        fmt = tr("<span class='nick%2'>%1</span>").arg(fmt, QString::number(bucket));
     }
     return fmt;
 }
