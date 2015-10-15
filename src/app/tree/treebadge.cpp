@@ -65,13 +65,12 @@ void TreeBadge::setNum(int num)
     setText(txt);
 }
 
-void TreeBadge::paintEvent(QPaintEvent*)
+void TreeBadge::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
     drawBackground(&painter);
-    QRect cr = contentsRect();
-    cr.adjust(margin(), margin(), -margin(), -margin());
-    style()->drawItemText(&painter, cr, alignment(), palette(), isEnabled(), text(), foregroundRole());
+    painter.end();
+    QLabel::paintEvent(event);
 }
 
 void TreeBadge::drawBackground(QPainter* painter)

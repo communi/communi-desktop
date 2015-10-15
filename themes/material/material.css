@@ -1,0 +1,260 @@
+a { color: #ff4081; }
+.timestamp { color: #808080; font-size: small }
+
+.message { white-space: pre-wrap; }
+.notice { color: #a54242; }
+.action { color: #8b388b; }
+.event { color: #808080; }
+
+.bold { font-weight: bold; }
+.italic { font-style: italic; }
+.underline { text-decoration: underline; }
+.line-through { text-decoration: line-through; }
+
+.gray { color: #606060; }
+.lightgray { color: #808080; }
+
+/* http://ethanschoonover.com/solarized */
+.blue { color: #268bd2; }
+.green { color: #859900;}
+.red { color: #dc322f;}
+.brown { color: #cb4b16;}
+.purple { color: #6c71c4;}
+.orange { color: #cb4b16;}
+.yellow { color: #b58900;}
+.lightgreen { color: #859900;}
+.cyan { color: #2aa198;}
+.lightcyan { color: #2aa198;}
+.lightblue { color: #268bd2;}
+.pink { color: #6c71c4;}
+
+TextInput, TextBrowser {
+    font-family: "Open Sans";
+    font-size: 14px;
+    border: none;
+    color: #000;
+    background: #fff;
+    selection-background-color: #c5cae9;
+}
+
+TextInput {
+    border-top: 5px solid #fff;
+    border-bottom: 5px solid #fff;
+}
+
+TreeWidget, ListView {
+    font-family: "Open Sans";
+    font-size: 14px;
+    border: none;
+    background: #fff;
+    selection-background-color: #c5cae9;
+}
+
+TextBrowser, ListView {
+    border-top: 15px solid #fff;
+}
+
+TreeWidget::item, ListView::item {
+    min-height: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+TitleBar > QTextEdit {
+    border-bottom: 1px solid palette(mid);
+}
+
+TextLowlight {
+    background-color: #e8eaf6;
+}
+
+TextHighlight {
+    background-color: #f8bbd0;
+}
+
+TextShadow {
+    max-height: 0px;
+}
+
+TreeSpinner {
+    border: none;
+    background: transparent;
+    min-width: 16px;
+    max-width: 16px;
+    min-height: 16px;
+    max-height: 16px;
+    background-image: url(white:spinner.png);
+}
+
+TreeIndicator {
+    min-width: 6px;
+    max-width: 6px;
+    min-height: 6px;
+    max-height: 6px;
+    border-radius: 2px;
+    border: 1px solid #fff;
+}
+
+TreeIndicator:off {
+    border: 1px solid rgba(255,255,255,38%);
+    background: #3f51b5;
+}
+
+TreeIndicator:on {
+    background: #ff8888;
+    border-color: #ff8888;
+}
+
+TreeBadge {
+    color: rgba(0,0,0,38%);
+    margin-top: 8px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-bottom: 8px;
+    font-size: 9px;
+}
+
+TreeBadge:active {
+    color: #ff4081;
+}
+
+TreeHeader {
+    min-height: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+TreeHeader:section {
+    border: none;
+    color: #fff;
+    background: #3f51b5;
+}
+
+TreeHeader::section:off {
+    color: rgba(255,255,255,38%);
+}
+
+TreeWidget::item:off, ListView::item:off {
+    color: rgba(0,0,0,38%);
+}
+
+TreeWidget::item:on {
+    color: #ff4081;
+}
+
+ChatPage::handle:horizontal {
+    border-top: 30px solid #3f51b5;
+}
+
+QSplitter::handle:horizontal {
+    width: 20px;
+    background: #fff;
+}
+
+QToolButton {
+    border: 1px solid palette(mid);
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 palette(light), stop: 1 palette(button));
+}
+
+QToolButton:pressed {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 palette(dark), stop: 1 palette(light));
+}
+
+QToolButton::menu-indicator {
+    image: none;
+}
+
+TitleBar {
+    color: #fff;
+    min-height: 20px;
+    margin: 5px;
+}
+
+TitleBar:section {
+    border: none;
+    color: #fff;
+    background: #3f51b5;
+}
+
+QToolButton#menu {
+    min-width: 20px;
+    max-width: 20px;
+    min-height: 20px;
+    max-height: 20px;
+    border-color: transparent;
+    background-color: transparent;
+    image: url(white:menu.png);
+}
+
+QToolButton#menu:hover {
+    border-left-color: #fff;
+    border-bottom-color: #fff;
+}
+
+QToolButton#menu:pressed {
+    background-color: #5c6bc0;
+}
+
+Overlay {
+    background: transparent; /*rgba(228, 228, 228, 40%)*/
+}
+
+OverlayButton {
+    border: none;
+    background: transparent;
+    min-width: 48px;
+    max-width: 48px;
+    min-height: 48px;
+    max-height: 48px;
+    image: url(white:refresh.png);
+}
+
+OverlayButton:pressed {
+    border: none;
+    background: transparent;
+    image: url(black:refresh.png);
+}
+
+AbstractFinder > QToolButton {
+    min-width: 20px;
+    max-width: 20px;
+    min-height: 20px;
+    max-height: 20px;
+}
+
+AbstractFinder > QLineEdit {
+    border: 1px solid palette(mid);
+    border-bottom-color: transparent;
+}
+
+AbstractFinder[error="true"] > QLineEdit {
+    background-color: #ff4081;
+}
+
+AbstractFinder > QToolButton {
+    border-left-color: transparent;
+}
+
+AbstractFinder > QToolButton#prev {
+    image: url(black:up.png);
+}
+
+AbstractFinder[error="true"] > QToolButton#prev {
+    image: url(white:up.png);
+    background-color: palette(button);
+}
+
+AbstractFinder > QToolButton#next {
+    image: url(black:down.png);
+}
+
+AbstractFinder[error="true"] > QToolButton#next {
+    image: url(white:down.png);
+    background-color: palette(button);
+}
+
+ConnectPage QPlainTextEdit[error="true"] {
+    background-color: #ff4081;
+}

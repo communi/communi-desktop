@@ -112,7 +112,11 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 
         int num = index.data(TreeRole::Badge).toInt();
         if (num > 0) {
-            TreeBadge* badge = TreeBadge::instance(const_cast<QWidget*>(option.widget));
+            static QPointer<QWidget> inactiveParent;
+            if (!hilite && !inactiveParent)
+                inactiveParent = new QWidget(const_cast<QWidget*>(option.widget), Qt::Window);
+
+            TreeBadge* badge = TreeBadge::instance(hilite ? const_cast<QWidget*>(option.widget) : inactiveParent.data());
             badge->setNum(num);
             badge->setHighlighted(hilite);
 
