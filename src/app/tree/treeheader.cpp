@@ -63,6 +63,7 @@ void TreeHeader::paintEvent(QPaintEvent*)
     px.fill(Qt::transparent);
     option.icon = px;
     option.text = d.text;
+    option.textAlignment = Qt::AlignLeft | Qt::AlignVCenter;
     option.position = QStyleOptionHeader::OnlyOneSection;
     QStylePainter painter(this);
     painter.drawControl(QStyle::CE_Header, option);
