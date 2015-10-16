@@ -28,6 +28,17 @@ a { color: #4040ff; }
 .lightblue { color: #268bd2;}
 .pink { color: #6c71c4;}
 
+.nick0 { color: hsl(0, 0%, 60%); }
+.nick1 { color: hsl(0, 50%, 60%); }
+.nick2 { color: hsl(40, 50%, 60%); }
+.nick3 { color: hsl(80, 50%, 60%); }
+.nick4 { color: hsl(120, 50%, 60%); }
+.nick5 { color: hsl(160, 50%, 60%); }
+.nick6 { color: hsl(200, 50%, 60%); }
+.nick7 { color: hsl(240, 50%, 60%); }
+.nick8 { color: hsl(280, 50%, 60%); }
+.nick9 { color: hsl(320, 50%, 60%); }
+
 TextInput, TextBrowser {
     border: none;
     color: #000000;
