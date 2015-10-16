@@ -352,8 +352,9 @@ void SplitView::restoreSplittedViews(QSplitter* splitter, const QVariantMap& sta
             QFont f = font();
             if (buf.contains("fontFamily"))
                 f.setFamily(buf.value("fontFamily").toString());
-            if (buf.contains("fontSize"))
-                f.setPointSize(buf.value("fontSize").toInt());
+            int sz = buf.value("fontSize", -1).toInt();
+            if (sz > 0)
+                f.setPointSize(sz);
             bv->textBrowser()->setFont(f);
             if (buf.value("current", false).toBool())
                 setCurrentView(bv);
