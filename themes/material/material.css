@@ -1,43 +1,44 @@
-a { color: #ff4081; }
-.timestamp { color: #808080; font-size: small }
+/* https://www.google.com/design/spec/style/color.html */
+
+a { color: #e91e63; /* pink */ }
+.timestamp { color: #607d8b; /* blue grey */ font-size: small }
 
 .message { white-space: pre-wrap; }
-.notice { color: #a54242; }
-.action { color: #8b388b; }
-.event { color: #808080; }
+.notice { color: #795548; /* brown */ }
+.action { color: #9c27b0; /* purple */ }
+.event { color: #607d8b; /* blue gray */ }
 
 .bold { font-weight: bold; }
 .italic { font-style: italic; }
 .underline { text-decoration: underline; }
 .line-through { text-decoration: line-through; }
 
-.gray { color: #606060; }
-.lightgray { color: #808080; }
+.gray { color: #9e9e9e; }
+.lightgray { color: #bdbdbd; }
 
-/* http://ethanschoonover.com/solarized */
-.blue { color: #268bd2; }
-.green { color: #859900;}
-.red { color: #dc322f;}
-.brown { color: #cb4b16;}
-.purple { color: #6c71c4;}
-.orange { color: #cb4b16;}
-.yellow { color: #b58900;}
-.lightgreen { color: #859900;}
-.cyan { color: #2aa198;}
-.lightcyan { color: #2aa198;}
-.lightblue { color: #268bd2;}
-.pink { color: #6c71c4;}
+.blue { color: #2196f3; }
+.green { color: #4caf50;}
+.red { color: #f44336;}
+.brown { color: #795548;}
+.purple { color: #9c27b0;}
+.orange { color: #ff9800;}
+.yellow { color: #ffeb3b;}
+.lightgreen { color: #8bc34a;}
+.cyan { color: #00bcd4;}
+.lightcyan { color: #26c6da;}
+.lightblue { color: #03a9f4;}
+.pink { color: #e91e63;}
 
-.nick0 { color: hsl(0, 0%, 60%); }
-.nick1 { color: hsl(0, 50%, 60%); }
-.nick2 { color: hsl(40, 50%, 60%); }
-.nick3 { color: hsl(80, 50%, 60%); }
-.nick4 { color: hsl(120, 50%, 60%); }
-.nick5 { color: hsl(160, 50%, 60%); }
-.nick6 { color: hsl(200, 50%, 60%); }
-.nick7 { color: hsl(240, 50%, 60%); }
-.nick8 { color: hsl(280, 50%, 60%); }
-.nick9 { color: hsl(320, 50%, 60%); }
+.nick0 { color: #607d8b; /* blue grey */ }
+.nick1 { color: #f44336; /* red */ }
+.nick2 { color: #9c27b0; /* purple */ }
+.nick3 { color: #673ab7; /* deep purple */ }
+.nick4 { color: #3f51b5; /* indigo */ }
+.nick5 { color: #2196f3; /* blue */ }
+.nick6 { color: #009688; /* teal */ }
+.nick7 { color: #4caf50; /* green */ }
+.nick8 { color: #ff5722; /* deep orange */ }
+.nick9 { color: #795548; /* brown */ }
 
 TextInput, TextBrowser {
     font-family: "Open Sans";
