@@ -2,6 +2,10 @@
 
 A simple and elegant cross-platform [IRC] client for desktop platforms, based on [Qt] and the Communi [IRC framework].
 
+![Screenshot](https://raw.githubusercontent.com/wiki/communi/communi-desktop/images/cute.png)
+
+More screenshots: [Gallery](https://github.com/communi/communi-desktop/wiki/Gallery)
+
 ## Installation
 
 Prerequisites: Git, Qt 5
