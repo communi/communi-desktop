@@ -195,6 +195,7 @@ void MainWindow::addConnection(IrcConnection* connection)
     }
 
     connection->setReconnectDelay(15);
+    connection->network()->setRequestedCapabilities(Irc::supportedCapabilities());
 
     IrcCommandQueue* queue = new IrcCommandQueue(connection);
     queue->setConnection(connection);
