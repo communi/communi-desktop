@@ -81,7 +81,7 @@ QStringList PluginLoader::paths()
     lst += COMMUNI_INSTALL_PLUGINS;
     QDir dir(QApplication::applicationDirPath());
 #ifdef Q_OS_MAC
-    if (dir.dirName() == "MacOS" && dir.cd("../../PlugIns"))
+    if (dir.dirName() == "MacOS" && dir.cd("../PlugIns"))
         lst += dir.absolutePath();
     else
 #endif
