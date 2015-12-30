@@ -95,6 +95,7 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
     d.rebuild = -1;
     d.lowlight = -1;
     d.clone = false;
+    d.batch = false;
     d.buffer = buffer;
     d.visible = false;
 
@@ -273,7 +274,7 @@ void TextDocument::append(const MessageData& data)
             else
                 d.uc = 0;
         }
-        if (d.dirty == 0 || d.visible) {
+        if (!d.batch && (d.dirty == 0 || d.visible)) {
             QTextCursor cursor(this);
             cursor.beginEditBlock();
             if (merge) {
@@ -285,7 +286,7 @@ void TextDocument::append(const MessageData& data)
             insert(cursor, msg);
             cursor.endEditBlock();
         } else {
-            if (d.dirty <= 0) {
+            if (!d.batch && d.dirty <= 0) {
                 d.dirty = startTimer(delay);
                 delay += 1000;
             }
@@ -416,8 +417,17 @@ void TextDocument::receiveMessage(IrcMessage* message)
 {
     if (message->type() == IrcMessage::Batch) {
         IrcBatchMessage* batch = static_cast<IrcBatchMessage*>(message);
-        foreach (IrcMessage* msg, batch->messages()) {
+        d.batch = true;
+        foreach (IrcMessage* msg, batch->messages())
             receiveMessage(msg);
+        d.batch = false;
+        if (!d.queue.isEmpty()) {
+            if (d.visible) {
+                flush();
+            } else if (d.dirty <= 0) {
+                d.dirty = startTimer(delay);
+                delay += 1000;
+            }
         }
     } else {
         MessageData data = d.formatter->formatMessage(message);

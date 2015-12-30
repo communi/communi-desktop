@@ -108,6 +108,7 @@ private:
         int uc;
         int dirty;
         bool clone;
+        bool batch;
         int rebuild;
         QString css;
         int lowlight;
