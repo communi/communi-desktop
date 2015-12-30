@@ -53,14 +53,20 @@ bool TreeDelegate::isTransient() const
     return d.transient;
 }
 
+static QSize treeHeaderSize()
+{
+    // QMacStyle wants a QHeaderView that is a child of QTreeView :/
+    QTreeView tree;
+    QStyleOptionHeader opt;
+    return qApp->style()->sizeFromContents(QStyle::CT_HeaderSection, &opt, QSize(), tree.header());
+}
+
 QSize TreeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     QSize sz = QStyledItemDelegate::sizeHint(option, index);
     if (!index.parent().isValid()) {
-        // QMacStyle wants a QHeaderView that is a child of QTreeView :/
-        QTreeView tree;
-        QStyleOptionHeader opt;
-        QSize ss = qApp->style()->sizeFromContents(QStyle::CT_HeaderSection, &opt, QSize(), tree.header());
+        static const QSize headerSize = treeHeaderSize();
+        QSize ss = headerSize;
         TreeHeader* header = TreeHeader::instance(const_cast<QWidget*>(option.widget));
         if (header->minimumSize().isValid())
             ss = ss.expandedTo(header->minimumSize());
