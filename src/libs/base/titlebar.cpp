@@ -67,7 +67,7 @@ TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
     d.buffer = 0;
     d.model = 0;
     d.baseOffset = -1;
-    d.editor = new QTextEdit(this);
+    d.editor = 0;
     d.formatter = new MessageFormatter(this);
 
     setWordWrap(true);
@@ -80,13 +80,6 @@ TitleBar::TitleBar(QWidget* parent) : QLabel(parent)
     font.setPointSize(11.0);
     setFont(font);
 #endif
-
-    d.editor->setVisible(false);
-    d.editor->setAcceptRichText(false);
-    d.editor->setTabChangesFocus(true);
-    d.editor->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    d.editor->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    d.editor->installEventFilter(this);
 
     d.menuButton = new QToolButton(this);
     d.menuButton->setObjectName("menu");
@@ -225,11 +218,11 @@ bool TitleBar::event(QEvent* event)
 {
     switch (event->type()) {
     case QEvent::Enter:
-        if (!d.editor->isVisible())
+        if (!d.editor || !d.editor->isVisible())
             expand();
         break;
     case QEvent::Leave:
-        if (!d.editor->isVisible())
+        if (!d.editor || !d.editor->isVisible())
             collapse();
         break;
     default:
@@ -344,6 +337,15 @@ void TitleBar::refresh()
 
 void TitleBar::edit()
 {
+    if (!d.editor) {
+        d.editor = new QTextEdit(this);
+        d.editor->setAcceptRichText(false);
+        d.editor->setTabChangesFocus(true);
+        d.editor->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        d.editor->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        d.editor->installEventFilter(this);
+    }
+
     IrcChannel* channel = qobject_cast<IrcChannel*>(d.buffer);
     if (channel) {
         d.editor->setPlainText(channel->topic());
