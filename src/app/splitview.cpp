@@ -32,6 +32,7 @@
 #include "bufferview.h"
 #include "textbrowser.h"
 #include <QContextMenuEvent>
+#include <IrcBufferModel>
 #include <IrcConnection>
 #include <QApplication>
 #include <QScrollBar>
@@ -182,14 +183,19 @@ void SplitView::addBuffer(IrcBuffer* buffer)
         const QString uuid = connection->userData().value("uuid").toString();
         if (!uuid.isEmpty()) {
             // TODO: optimize
+            IrcBuffer* server = buffer->model()->get(0);
             QList<BufferView*> views = findChildren<BufferView*>("__unrestored__");
             foreach (BufferView* bv, views) {
-                if (bv->property("__uuid__").toString() == uuid &&
-                        bv->property("__buffer__").toString() == buffer->title()) {
+                bool tmatch = bv->property("__buffer__").toString() == buffer->title();
+                bool smatch = tmatch || bv->property("__server__").toString() == server->title();
+                if ((tmatch || smatch) && bv->property("__uuid__").toString() == uuid) {
                     bv->setBuffer(buffer);
-                    bv->setObjectName(QString());
-                    bv->setProperty("__buffer__", QVariant());
-                    bv->setProperty("__uuid__", QVariant());
+                    if (tmatch) {
+                        bv->setObjectName(QString());
+                        bv->setProperty("__buffer__", QVariant());
+                        bv->setProperty("__uuid__", QVariant());
+                        bv->setProperty("__server__", QVariant());
+                    }
                 }
             }
         }
@@ -302,6 +308,8 @@ QVariantMap SplitView::saveSplittedViews(const QSplitter* splitter) const
             buf.insert("buffer", buffer ? buffer->title() : QString());
             buf.insert("current", bv == d.current);
             buf.insert("uuid", connection ? connection->userData().value("uuid").toString() : QString());
+            IrcBuffer* server = buffer ? buffer->model()->get(0) : 0;
+            buf.insert("server", server ? server->title() : "");
             if (QSplitter* sp = bv->findChild<QSplitter*>())
                 buf.insert("state", sp->saveState());
             buf.insert("fontSize", bv->textBrowser()->font().pointSize());
@@ -345,6 +353,7 @@ void SplitView::restoreSplittedViews(QSplitter* splitter, const QVariantMap& sta
             QVariantMap buf = buffers.takeFirst().toMap();
             bv->setProperty("__buffer__", buf.value("buffer").toString());
             bv->setProperty("__uuid__", buf.value("uuid").toString());
+            bv->setProperty("__server__", buf.value("server").toString());
             if (buf.contains("state")) {
                 if (QSplitter* sp = bv->findChild<QSplitter*>())
                     sp->restoreState(buf.value("state").toByteArray());
