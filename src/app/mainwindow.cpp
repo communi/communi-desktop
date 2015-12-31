@@ -400,5 +400,6 @@ void MainWindow::editConnection(IrcConnection* connection)
     page->setUserName(connection->userName());
     page->setDisplayName(connection->displayName());
     page->setPassword(connection->password());
+    page->setSaslMechanism(connection->saslMechanism());
     push(page);
 }
