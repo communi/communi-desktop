@@ -454,7 +454,8 @@ void TextDocument::receiveMessage(IrcMessage* message)
                     IrcConnection* connection = message->connection();
                     const bool contains = content.contains(connection->nickName(), Qt::CaseInsensitive);
                     if (contains) {
-                        addHighlight(totalCount() - 1);
+                        if (connection->isConnected())
+                            addHighlight(totalCount() - 1);
                         if (unseen)
                             emit messageHighlighted(message);
                     } else if (unseen && priv && connection->isConnected()) {
