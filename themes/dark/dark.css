@@ -1,5 +1,6 @@
 a { color: #005fff; }
 .timestamp { color: #808080; font-size: small }
+.date { color: #808080; font-size: small }
 
 .message { white-space: pre-wrap; }
 .notice { color: #b23e3e; }

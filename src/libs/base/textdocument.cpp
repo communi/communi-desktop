@@ -261,6 +261,12 @@ void TextDocument::append(const MessageData& data)
         else if (TextBlockMessageData* block = static_cast<TextBlockMessageData*>(lastBlock().userData()))
             last = block->data;
 
+        if (!last.isEmpty() && data.type() != IrcMessage::Unknown && data.timestamp().date() != last.timestamp().date()) {
+            MessageData dc;
+            dc.setFormat(QString("<p class='date'>%1</p>").arg(data.timestamp().date().toString(Qt::ISODate)));
+            append(dc);
+        }
+
         MessageData msg = data;
         const bool merge = last.canMerge(data);
         if (merge) {
@@ -526,6 +532,10 @@ void TextDocument::insert(QTextCursor& cursor, const MessageData& data)
 
     QTextBlockFormat format = cursor.blockFormat();
     format.setLineHeight(125, QTextBlockFormat::ProportionalHeight);
+    if (data.type() == IrcMessage::Unknown)
+        format.setAlignment(Qt::AlignRight);
+    else
+        format.setAlignment(Qt::AlignLeft);
     cursor.setBlockFormat(format);
 }
 

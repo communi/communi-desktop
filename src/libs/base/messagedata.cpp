@@ -91,7 +91,8 @@ QList<MessageData> MessageData::getEvents() const
 bool MessageData::canMerge(const MessageData& other) const
 {
     return isEvent() && (!d.own || d.type != IrcMessage::Join)
-           && other.isEvent() && (!other.d.own || other.d.type != IrcMessage::Join);
+           && other.isEvent() && (!other.d.own || other.d.type != IrcMessage::Join)
+           && d.timestamp.date() == other.d.timestamp.date();
 }
 
 void MessageData::merge(const MessageData& other)

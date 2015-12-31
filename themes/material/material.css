@@ -2,6 +2,7 @@
 
 a { color: #e91e63; /* pink */ }
 .timestamp { color: #607d8b; /* blue grey */ font-size: small }
+.date { color: #607d8b; /* blue grey */ font-size: small }
 
 .message { white-space: pre-wrap; }
 .notice { color: #795548; /* brown */ }
