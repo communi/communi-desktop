@@ -84,6 +84,7 @@ protected:
     virtual QString formatNickMessage(IrcNickMessage* msg);
     virtual QString formatNoticeMessage(IrcNoticeMessage* msg);
     virtual QString formatNumericMessage(IrcNumericMessage* msg);
+    virtual QString formatErrorMessage(IrcErrorMessage* msg);
     virtual QString formatPartMessage(IrcPartMessage* msg);
     virtual QString formatPongMessage(IrcPongMessage* msg);
     virtual QString formatPrivateMessage(IrcPrivateMessage* msg);
