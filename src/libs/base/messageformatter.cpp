@@ -456,6 +456,8 @@ QString MessageFormatter::formatWhoisMessage(IrcWhoisMessage* msg)
     emit formatted(formatClass(tr("[WHOIS] %1 is %2@%3 (%4)").arg(msg->nick(), msg->ident(), msg->host(), formatText(msg->realName())), msg));
     emit formatted(formatClass(tr("[WHOIS] %1 is connected via %2 (%3)").arg(msg->nick(), msg->server(), msg->info()), msg));
     emit formatted(formatClass(tr("[WHOIS] %1 is connected since %2 (idle %3)").arg(msg->nick(), msg->since().toString(), formatDuration(msg->idle())), msg));
+    if (!msg->awayReason().isEmpty())
+        emit formatted(formatClass(tr("[WHOIS] %1 is away: %2").arg(msg->nick(), msg->awayReason()), msg));
     if (!msg->account().isEmpty())
         emit formatted(formatClass(tr("[WHOIS] %1 is logged in as %2").arg(msg->nick(), msg->account()), msg));
     if (!msg->address().isEmpty())
