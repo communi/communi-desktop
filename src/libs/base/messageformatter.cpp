@@ -155,6 +155,9 @@ MessageData MessageFormatter::formatMessage(IrcMessage* msg)
         case IrcMessage::WhoReply:
             fmt = formatWhoReplyMessage(static_cast<IrcWhoReplyMessage*>(msg));
             break;
+        case IrcMessage::Error:
+            fmt = formatErrorMessage(static_cast<IrcErrorMessage*>(msg));
+            break;
         default:
             break;
     }
@@ -362,10 +365,17 @@ QString MessageFormatter::formatNumericMessage(IrcNumericMessage* msg)
     if (msg->isComposed() || msg->flags() & IrcMessage::Implicit)
         return QString();
 
+    // if you change this, change formatErrorMessage too
     if (Irc::codeToString(msg->code()).startsWith("ERR_"))
         return tr("[ERROR] %1").arg(formatText(MID_(1)));
 
     return tr("[%1] %2").arg(msg->code()).arg(d.textFormat->toHtml(MID_(1)));
+}
+
+QString MessageFormatter::formatErrorMessage(IrcErrorMessage* msg)
+{
+    // if you change this, change ERR_ in formatNumericMessage too
+    return tr("[ERROR] %1").arg(msg->error());
 }
 
 QString MessageFormatter::formatPartMessage(IrcPartMessage* msg)
@@ -514,6 +524,9 @@ MessageData MessageFormatter::formatClass(const QString& format, IrcMessage* msg
         case IrcMessage::Numeric:
             if (IrcNumericMessage* m = static_cast<IrcNumericMessage*>(msg))
                 cls = Irc::codeToString(m->code()).startsWith("ERR_") ? "notice" : "event";
+            break;
+        case IrcMessage::Error:
+            cls = "notice";
             break;
         default:
             break;
