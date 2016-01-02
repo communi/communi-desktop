@@ -31,35 +31,21 @@
 
 #include <QObject>
 #include <QtPlugin>
-#include <QMultiHash>
 #include "connectionplugin.h"
-#include "documentplugin.h"
 
 class IrcBuffer;
 class IrcConnection;
 
-class ZncPlugin : public QObject, public ConnectionPlugin, public DocumentPlugin
+class ZncPlugin : public QObject, public ConnectionPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(ConnectionPlugin DocumentPlugin)
+    Q_INTERFACES(ConnectionPlugin)
     Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
-    Q_PLUGIN_METADATA(IID "Communi.DocumentPlugin")
 
 public:
     ZncPlugin(QObject* parent = 0);
 
     void connectionAdded(IrcConnection* connection);
-    void documentAdded(TextDocument* document);
-    void documentRemoved(TextDocument* document);
-
-//private slots:
-//    void onPlaybackBegin(IrcBuffer* buffer);
-//    void onPlaybackEnd(IrcBuffer* buffer);
-
-private:
-    struct Private {
-        QMultiHash<IrcBuffer*, TextDocument*> documents;
-    } d;
 };
 
 #endif // ZNCPLUGIN_H
