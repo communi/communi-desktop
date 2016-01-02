@@ -226,7 +226,7 @@ QMenu* TextBrowser::createContextMenu(const QPoint& pos)
         menu->insertAction(queryAction, whoisAction);
         connect(whoisAction, SIGNAL(triggered()), this, SLOT(onWhoisTriggered()));
 
-        QString nick = QUrl(anchor).toString(QUrl::RemoveScheme | QUrl::RemoveFragment);
+        QString nick = QUrl(anchor).toString(QUrl::RemoveScheme | QUrl::RemoveFragment | QUrl::FullyDecoded);
 
         QAction* nickAction = new QAction(nick, menu);
         menu->insertAction(whoisAction, nickAction);
