@@ -8,8 +8,8 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq qt5-qmake qtbase5-dev
   - git submodule update --init --recursive
-  - git clone git://github.com/communi/libcommuni.git
-  - cd libcommuni && qmake -qt=qt5 && make && sudo make install && cd ..
+  - git clone --depth 1 git://github.com/communi/libcommuni.git
+  - cd libcommuni && qmake -qt=qt5 -config no_tests -config no_examples && make && sudo make install && cd ..
 cache: apt
 script:
   - nproc
