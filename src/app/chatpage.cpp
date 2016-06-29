@@ -169,11 +169,11 @@ QByteArray ChatPage::saveState() const
 
     QVariantMap timestamps;
     foreach (TextDocument* doc, d.documents) {
-        if (doc->timestamp().isValid()) {
+        if (doc->latestMessageSeen().isValid()) {
             IrcBuffer* buffer = doc->buffer();
             QString id = buffer->connection()->userData().value("uuid").toString();
             id += "/" + buffer->title();
-            timestamps[id] = doc->timestamp();
+            timestamps[id] = doc->latestMessageSeen();
         }
     }
     state.insert("timestamps", timestamps);
@@ -361,7 +361,7 @@ void ChatPage::addBuffer(IrcBuffer* buffer)
 
     QString id = buffer->connection()->userData().value("uuid").toString();
     id += "/" + buffer->title();
-    doc->setTimestamp(d.timestamps.value(id).toDateTime());
+    doc->setLatestMessageSeen(d.timestamps.value(id).toDateTime());
 
     setupDocument(doc);
     PluginLoader::instance()->documentAdded(doc);

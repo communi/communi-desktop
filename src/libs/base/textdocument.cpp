@@ -90,7 +90,7 @@ TextDocument::TextDocument(IrcBuffer* buffer) : QTextDocument(buffer)
 {
     qRegisterMetaType<TextDocument*>();
 
-    d.uc = 0;
+    d.scrollbackMarkerPosition = -1;
     d.dirty = -1;
     d.rebuild = -1;
     d.lowlight = -1;
@@ -148,7 +148,7 @@ TextDocument* TextDocument::clone()
     doc->rootFrame()->setFrameFormat(rootFrame()->frameFormat());
 
     // TODO:
-    doc->d.uc = d.uc;
+    doc->d.scrollbackMarkerPosition = d.scrollbackMarkerPosition;
     doc->d.css = d.css;
     doc->d.lowlight = d.lowlight;
     doc->d.buffer = d.buffer;
@@ -189,31 +189,63 @@ bool TextDocument::isVisible() const
 
 void TextDocument::setVisible(bool visible)
 {
-    if (d.visible != visible) {
-        if (visible) {
-            if (d.dirty > 0)
-                flush();
-        } else {
-            d.uc = 0;
-            if (TextBlockMessageData* block = static_cast<TextBlockMessageData*>(lastBlock().userData()))
-                d.timestamp = block->data.timestamp();
+    if (d.visible == visible)
+        return;
+
+    if (visible) {
+        if (d.dirty > 0)
+            flush();
+
+        // Update scroll marker position before updating seen message timestamp
+        if (latestMessageReceived() > latestMessageSeen()) {
+            Q_ASSERT(d.queue.isEmpty());
+            QTextBlock block = lastBlock();
+            while (block.isValid()) {
+                TextBlockMessageData* blockData = static_cast<TextBlockMessageData*>(block.userData());
+                if (blockData && blockData->data.timestamp() <= latestMessageSeen())
+                    break;
+
+                d.scrollbackMarkerPosition = block.blockNumber();
+                block = block.previous();
+            }
         }
-        d.visible = visible;
+
+        setLatestMessageSeen(latestMessageReceived());
+    } else {
+        d.scrollbackMarkerPosition = -1;
     }
+
+    d.visible = visible;
 }
 
-QDateTime TextDocument::timestamp() const
+QDateTime TextDocument::latestMessageReceived() const
 {
-    if (d.visible) {
-        if (TextBlockMessageData* block = static_cast<TextBlockMessageData*>(lastBlock().userData()))
-            return block->data.timestamp();
+    if (!d.queue.isEmpty())
+        return d.queue.last().timestamp();
+
+    QTextBlock block = lastBlock();
+    while (block.isValid()) {
+        if (TextBlockMessageData* blockData = static_cast<TextBlockMessageData*>(block.userData()))
+            return blockData->data.timestamp();
+
+        block = block.previous();
     }
-    return d.timestamp;
+
+    return QDateTime();
 }
 
-void TextDocument::setTimestamp(const QDateTime& timestamp)
+QDateTime TextDocument::latestMessageSeen() const
 {
-    d.timestamp = timestamp;
+    return d.latestMessageSeen;
+}
+
+void TextDocument::setLatestMessageSeen(const QDateTime& timestamp)
+{
+    if (d.latestMessageSeen == timestamp)
+        return;
+
+    d.latestMessageSeen = timestamp;
+    emit latestMessageSeenChanged(timestamp);
 }
 
 void TextDocument::lowlight(int block)
@@ -246,7 +278,7 @@ void TextDocument::removeHighlight(int block)
 
 void TextDocument::reset()
 {
-    d.uc = 0;
+    d.scrollbackMarkerPosition = -1;
     d.lowlight = -1;
     d.highlights.clear();
     d.queue.clear();
@@ -274,11 +306,6 @@ void TextDocument::append(const MessageData& data)
             msg.setFormat(formatSummary(msg.getEvents()));
             if (!d.queue.isEmpty())
                 d.queue.replace(d.queue.count() - 1, msg);
-        } else {
-            if (d.timestamp < data.timestamp())
-                ++d.uc;
-            else
-                d.uc = 0;
         }
         if (!d.batch && (d.dirty == 0 || d.visible)) {
             QTextCursor cursor(this);
@@ -304,24 +331,28 @@ void TextDocument::append(const MessageData& data)
 
 void TextDocument::drawForeground(QPainter* painter, const QRect& bounds)
 {
-    const int num = blockCount() - d.uc;
-    if (num > 0) {
-        const QPen oldPen = painter->pen();
-        const QBrush oldBrush = painter->brush();
-        painter->setBrush(Qt::NoBrush);
-        painter->setPen(QPen(QPalette().color(QPalette::Mid), 1, Qt::DashLine));
-        QTextBlock block = findBlockByNumber(num);
-        if (block.isValid()) {
-            QRect br = documentLayout()->blockBoundingRect(block).toAlignedRect();
-            if (bounds.intersects(br)) {
-                QLine line(br.topLeft(), br.topRight());
-                line.translate(0, -2);
-                painter->drawLine(line);
-            }
-        }
-        painter->setPen(oldPen);
-        painter->setBrush(oldBrush);
-    }
+    if (d.scrollbackMarkerPosition <= 0)
+        return;
+
+    QTextBlock block = findBlockByNumber(d.scrollbackMarkerPosition);
+    if (!block.isValid())
+        return;
+
+    QRect blockRect = documentLayout()->blockBoundingRect(block).toAlignedRect();
+    if (!blockRect.intersects(bounds))
+        return;
+
+    const QPen oldPen = painter->pen();
+    const QBrush oldBrush = painter->brush();
+    painter->setBrush(Qt::NoBrush);
+    painter->setPen(QPen(QPalette().color(QPalette::Mid), 1, Qt::DashLine));
+
+    QLine line(blockRect.topLeft(), blockRect.topRight());
+    line.translate(0, -2);
+    painter->drawLine(line);
+
+    painter->setPen(oldPen);
+    painter->setBrush(oldBrush);
 }
 
 void TextDocument::drawBackground(QPainter* painter, const QRect& bounds)
@@ -438,10 +469,14 @@ void TextDocument::receiveMessage(IrcMessage* message)
     } else {
         MessageData data = d.formatter->formatMessage(message);
         if (!data.isEmpty()) {
+            bool unseen = message->timeStamp() > latestMessageSeen();
+
             append(data);
 
+            if (unseen && isVisible() && !(message->isOwn() && data.type() == IrcMessage::Join))
+                setLatestMessageSeen(message->timeStamp());
+
             if (data.type() == IrcMessage::Private || data.type() == IrcMessage::Notice) {
-                bool unseen = d.timestamp < message->timeStamp();
                 if (unseen)
                     emit messageReceived(message);
 
