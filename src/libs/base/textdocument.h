@@ -67,6 +67,8 @@ public:
     void setLatestMessageSeen(const QDateTime& timestamp);
     QDateTime latestMessageReceived() const;
 
+    int unreadMessages() const;
+
     void drawBackground(QPainter* painter, const QRect& bounds);
     void drawForeground(QPainter* painter, const QRect& bounds);
 

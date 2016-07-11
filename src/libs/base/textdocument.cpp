@@ -248,6 +248,43 @@ void TextDocument::setLatestMessageSeen(const QDateTime& timestamp)
     emit latestMessageSeenChanged(timestamp);
 }
 
+int TextDocument::unreadMessages() const
+{
+    int unread = 0;
+
+    // Note: The following logic assumes the queue and blocks are ordered by time
+
+    QListIterator<MessageData> iterator(d.queue);
+    iterator.toBack();
+    while (iterator.hasPrevious()) {
+        MessageData message = iterator.previous();
+        if (message.timestamp() <= d.latestMessageSeen)
+            return unread;
+
+        if (message.type() != IrcMessage::Private)
+            continue;
+
+        ++unread;
+    }
+
+    for (QTextBlock block = lastBlock(); block.isValid(); block = block.previous()) {
+        TextBlockMessageData* blockData = static_cast<TextBlockMessageData*>(block.userData());
+        if (!blockData)
+            continue;
+
+        MessageData message = blockData->data;
+        if (message.timestamp() <= d.latestMessageSeen)
+            break;
+
+        if (message.type() != IrcMessage::Private)
+            continue;
+
+        ++unread;
+    }
+
+    return unread;
+}
+
 void TextDocument::lowlight(int block)
 {
     if (block == -1)
