@@ -402,6 +402,7 @@ void ChatPage::setupDocument(TextDocument* document)
     connect(document, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
     connect(document, SIGNAL(messageHighlighted(IrcMessage*)), this, SLOT(onAlert(IrcMessage*)));
     connect(document, SIGNAL(privateMessageReceived(IrcMessage*)), this, SLOT(onAlert(IrcMessage*)));
+    connect(document, SIGNAL(latestMessageSeenChanged(const QDateTime&)), this, SLOT(onLatestMessageSeenChanged()));
 }
 
 void ChatPage::addView(BufferView* view)
@@ -453,25 +454,27 @@ void ChatPage::onCurrentViewChanged(BufferView* current, BufferView* previous)
     emit currentViewChanged(current);
 }
 
+void ChatPage::onLatestMessageSeenChanged()
+{
+    TextDocument* doc = qobject_cast<TextDocument*>(sender());
+    if (doc->isClone())
+        return;
+
+    IrcBuffer* buffer = doc->buffer();
+    TreeItem* item = d.treeWidget->bufferItem(buffer);
+    item->setData(1, TreeRole::Badge, doc->unreadMessages());
+    if (!doc->unreadMessages())
+        d.treeWidget->unhighlightItem(item);
+}
+
 void ChatPage::onMessageReceived(IrcMessage* message)
 {
-    if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
+    if (message->type() == IrcMessage::Private) {
         TextDocument* doc = qobject_cast<TextDocument*>(sender());
         if (doc && !doc->isClone()) {
             IrcBuffer* buffer = doc->buffer();
             TreeItem* item = d.treeWidget->bufferItem(buffer);
-            if (buffer && item != d.treeWidget->currentItem()) {
-                bool visible = false;
-                foreach (TextDocument* doc, buffer->findChildren<TextDocument*>()) {
-                    if (doc->isVisible()) {
-                        visible = true;
-                        break;
-                    }
-                }
-                // exclude broadcasted global notices
-                if (!visible && (message->type() != IrcMessage::Notice || static_cast<IrcNoticeMessage*>(message)->target() != "$$*"))
-                    item->setData(1, TreeRole::Badge, item->data(1, TreeRole::Badge).toInt() + 1);
-            }
+            item->setData(1, TreeRole::Badge, doc->unreadMessages());
         }
     }
 }

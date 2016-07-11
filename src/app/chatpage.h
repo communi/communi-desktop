@@ -96,6 +96,7 @@ private slots:
     void onSocketError();
     void onSecureError();
     void onConnected();
+    void onLatestMessageSeenChanged();
 
 private:
     static IrcCommandParser* createParser(QObject* parent);
