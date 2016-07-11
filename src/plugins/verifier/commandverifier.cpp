@@ -67,7 +67,7 @@ bool CommandVerifier::messageFilter(IrcMessage* message)
             if (id > 0) {
                 IrcCommand* command = d.commands.take(id);
                 if (command) {
-                    emit verified(id);
+                    emit verified(id, message);
                     command->deleteLater();
                     return true;
                 }
@@ -81,7 +81,7 @@ bool CommandVerifier::messageFilter(IrcMessage* message)
             if (ok) {
                 IrcCommand* command = d.commands.take(id);
                 if (command) {
-                    emit verified(id);
+                    emit verified(id, message);
                     command->deleteLater();
                     return true;
                 }
