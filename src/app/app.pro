@@ -39,13 +39,15 @@ mac {
     ICON = ../../images/communi.icns
     QMAKE_INFO_PLIST = ../../communi.plist
 
-    plugins.files += $$BUILD_TREE/plugins/libawayplugin.$$QMAKE_EXTENSION_SHLIB
-    plugins.files += $$BUILD_TREE/plugins/libfilterplugin.$$QMAKE_EXTENSION_SHLIB
-    plugins.files += $$BUILD_TREE/plugins/libosxplugin.$$QMAKE_EXTENSION_SHLIB
-    plugins.files += $$BUILD_TREE/plugins/libverifierplugin.$$QMAKE_EXTENSION_SHLIB
-    plugins.files += $$BUILD_TREE/plugins/libzncplugin.$$QMAKE_EXTENSION_SHLIB
+    plugins.files = $$files($$BUILD_TREE/plugins/*.$$QMAKE_EXTENSION_SHLIB)
     plugins.path = Contents/PlugIns
     QMAKE_BUNDLE_DATA += plugins
+
+    libs.files = $$files($$BUILD_TREE/lib/*.$$QMAKE_EXTENSION_SHLIB)
+    libs.path = Contents/Frameworks
+    QMAKE_BUNDLE_DATA += libs
+
+    QMAKE_RPATHDIR += ../Frameworks
 }
 
 unix:!mac {

@@ -9,7 +9,7 @@ defineTest(communiAddLib) {
     isEmpty(LIBNAME):error(LIBNAME must be set)
     LIBS *= -L$$BUILD_TREE/lib
     LIBS *= -l$$LIBNAME
-    PRE_TARGETDEPS *= $$BUILD_TREE/lib/$${QMAKE_PREFIX_STATICLIB}$${LIBNAME}.$${QMAKE_EXTENSION_STATICLIB}
+    PRE_TARGETDEPS *= $$BUILD_TREE/lib/lib$${LIBNAME}.$${QMAKE_EXTENSION_SHLIB}
     export(LIBS)
     export(PRE_TARGETDEPS)
 }
@@ -19,7 +19,7 @@ defineTest(communiAddPlugin) {
     isEmpty(PLUGINNAME):error(PLUGINNAME must be set)
     LIBS *= -L$$BUILD_TREE/plugins
     LIBS *= -l$${PLUGINNAME}plugin
-    PRE_TARGETDEPS *= $$BUILD_TREE/plugins/$${QMAKE_PREFIX_STATICLIB}$${PLUGINNAME}plugin.$${QMAKE_EXTENSION_STATICLIB}
+    PRE_TARGETDEPS *= $$BUILD_TREE/plugins/lib$${PLUGINNAME}plugin.$${QMAKE_EXTENSION_SHLIB}
     export(LIBS)
     export(PRE_TARGETDEPS)
 }
