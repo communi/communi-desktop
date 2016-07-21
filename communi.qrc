@@ -40,15 +40,25 @@
   <file>images/white/pause.png</file>
 
   <file>images/tray/black/black.png</file>
+  <file>images/tray/black/black@2x.png</file>
   <file>images/tray/black/blue.png</file>
+  <file>images/tray/black/blue@2x.png</file>
   <file>images/tray/black/gray.png</file>
+  <file>images/tray/black/gray@2x.png</file>
   <file>images/tray/black/transparent.png</file>
+  <file>images/tray/black/transparent@2x.png</file>
   <file>images/tray/black/white.png</file>
+  <file>images/tray/black/white@2x.png</file>
 
   <file>images/tray/white/black.png</file>
+  <file>images/tray/white/black@2x.png</file>
   <file>images/tray/white/blue.png</file>
+  <file>images/tray/white/blue@2x.png</file>
   <file>images/tray/white/gray.png</file>
+  <file>images/tray/white/gray@2x.png</file>
   <file>images/tray/white/transparent.png</file>
+  <file>images/tray/white/transparent@2x.png</file>
   <file>images/tray/white/white.png</file>
+  <file>images/tray/white/white@2x.png</file>
 </qresource>
 </RCC>
