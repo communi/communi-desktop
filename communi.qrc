@@ -1,13 +1,21 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
   <file alias="communi-16.png">images/icons/16x16/apps/communi.png</file>
+  <file alias="communi-16@2x.png">images/icons/16x16/apps/communi@2x.png</file>
   <file alias="communi-24.png">images/icons/24x24/apps/communi.png</file>
+  <file alias="communi-24@2x.png">images/icons/24x24/apps/communi@2x.png</file>
   <file alias="communi-32.png">images/icons/32x32/apps/communi.png</file>
+  <file alias="communi-32@2x.png">images/icons/32x32/apps/communi@2x.png</file>
   <file alias="communi-48.png">images/icons/48x48/apps/communi.png</file>
+  <file alias="communi-48@2x.png">images/icons/48x48/apps/communi@2x.png</file>
   <file alias="communi-64.png">images/icons/64x64/apps/communi.png</file>
+  <file alias="communi-64@2x.png">images/icons/64x64/apps/communi@2x.png</file>
   <file alias="communi-128.png">images/icons/128x128/apps/communi.png</file>
+  <file alias="communi-128@2x.png">images/icons/128x128/apps/communi@2x.png</file>
   <file alias="communi-256.png">images/icons/256x256/apps/communi.png</file>
+  <file alias="communi-256@2x.png">images/icons/256x256/apps/communi@2x.png</file>
   <file alias="communi-512.png">images/icons/512x512/apps/communi.png</file>
+  <file alias="communi-512@2x.png">images/icons/512x512/apps/communi@2x.png</file>
 
   <file>images/black/close.png</file>
   <file>images/black/menu.png</file>
