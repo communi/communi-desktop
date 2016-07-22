@@ -146,7 +146,7 @@ void TextInput::paintEvent(QPaintEvent* event)
     QLineEdit::paintEvent(event);
 
     if (!d.hint.isEmpty()) {
-        QStyleOptionFrameV2 option;
+        QStyleOptionFrame option;
         initStyleOption(&option);
 
         QRect r = style()->subElementRect(QStyle::SE_LineEditContents, &option, this);
