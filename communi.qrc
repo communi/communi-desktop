@@ -24,6 +24,7 @@
   <file>images/black/left.png</file>
   <file>images/black/right.png</file>
   <file>images/black/spinner.png</file>
+  <file>images/black/spinner@2x.png</file>
   <file>images/black/up.png</file>
   <file>images/black/pause.png</file>
 
@@ -34,6 +35,7 @@
   <file>images/gray/left.png</file>
   <file>images/gray/right.png</file>
   <file>images/gray/spinner.png</file>
+  <file>images/gray/spinner@2x.png</file>
   <file>images/gray/up.png</file>
   <file>images/gray/pause.png</file>
 
@@ -44,6 +46,7 @@
   <file>images/white/left.png</file>
   <file>images/white/right.png</file>
   <file>images/white/spinner.png</file>
+  <file>images/white/spinner@2x.png</file>
   <file>images/white/up.png</file>
   <file>images/white/pause.png</file>
 

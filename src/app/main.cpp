@@ -53,6 +53,7 @@ int main(int argc, char* argv[])
 #endif
 
     QApplication app(argc, argv);
+    app.setAttribute(Qt::AA_UseHighDpiPixmaps);
     app.setApplicationName("Communi");
     app.setOrganizationName("Communi");
     app.setApplicationVersion(Irc::version());

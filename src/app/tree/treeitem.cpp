@@ -140,8 +140,17 @@ void TreeItem::updateIcon()
     qint64 lag = d.timer->lag();
     setToolTip(0, lag > 0 ? tr("%1ms").arg(lag) : QString());
 
-    QPixmap pixmap(16, 16);
+    qreal dpr = 1.0;
+#if QT_VERSION >= 0x050600
+    dpr = treeWidget()->devicePixelRatioF();
+#endif
+
+    QPixmap pixmap(16 * dpr, 16 * dpr);
     pixmap.fill(Qt::transparent);
+#if QT_VERSION >= 0x050600
+    pixmap.setDevicePixelRatio(dpr);
+#endif
+
     QPainter painter(&pixmap);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
