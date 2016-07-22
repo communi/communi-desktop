@@ -520,7 +520,7 @@ void SplitView::addGlobalActions(QMenu* menu)
     settingsAction->setShortcutContext(Qt::WidgetShortcut);
 
     QAction* helpAction = menu->addAction(tr("Help..."), window(), SLOT(showHelp()), QKeySequence::HelpContents);
-    helpAction->setShortcutContext(Qt::WidgetShortcut);
+    helpAction->setShortcutContext(Qt::ApplicationShortcut);
 
     menu->addSeparator();
 
