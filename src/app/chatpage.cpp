@@ -118,6 +118,7 @@ void ChatPage::setTheme(const QString& theme)
 {
     if (!d.theme.isValid() || d.theme.name() != theme) {
         d.theme = ThemeLoader::instance()->theme(theme);
+        d.theme.reload();
 
         QString font = d.theme.font();
         if (!font.isEmpty())
