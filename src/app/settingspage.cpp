@@ -40,6 +40,7 @@ SettingsPage::SettingsPage(QWidget* parent) : QWidget(parent)
     ui.setupUi(this);
     setFocusProxy(ui.themeCombo);
 
+    ui.iconLabel->setPixmap(QIcon(":/communi-64.png").pixmap(64, 64));
     ui.scrollArea->horizontalScrollBar()->setStyle(ScrollBarStyle::narrow());
     ui.scrollArea->verticalScrollBar()->setStyle(ScrollBarStyle::narrow());
 

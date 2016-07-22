@@ -421,6 +421,7 @@ void ConnectPage::init(IrcConnection *connection)
 {
     ui.setupUi(this);
     setFocusProxy(ui.displayNameField);
+    ui.iconLabel->setPixmap(QIcon(":/communi-64.png").pixmap(64, 64));
 
 #ifdef Q_OS_MAC
     ui.serverField->setAttribute(Qt::WA_MacShowFocusRect);
