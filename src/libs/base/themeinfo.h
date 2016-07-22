@@ -36,6 +36,7 @@ class ThemeInfo
 public:
     bool isValid() const;
     bool load(const QString& filePath);
+    bool reload();
 
     QString name() const;
     QString author() const;
@@ -56,6 +57,7 @@ private:
         QString gtkTheme;
         QString font;
         QString path;
+        QString filePath;
     } d;
 };
 

@@ -94,6 +94,7 @@ bool ThemeInfo::load(const QString& filePath)
 {
     QSettings settings(filePath, QSettings::IniFormat);
     d.path = QFileInfo(filePath).path();
+    d.filePath = filePath;
 
     QStringList groups = settings.childGroups();
     if (groups.contains("Theme")) {
@@ -108,4 +109,9 @@ bool ThemeInfo::load(const QString& filePath)
         settings.endGroup();
     }
     return isValid();
+}
+
+bool ThemeInfo::reload()
+{
+    return load(d.filePath);
 }
