@@ -340,3 +340,7 @@ QScrollBar::add-page, QScrollBar::sub-page {
     background-color: #24282a;
     border: none;
 }
+
+QDialogButtonBox {
+    dialogbuttonbox-buttons-have-icons: 0;
+}

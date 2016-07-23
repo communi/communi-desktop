@@ -319,3 +319,7 @@ AbstractFinder[error="true"] > QToolButton#next {
 ConnectPage QPlainTextEdit[error="true"] {
     background-color: #ff8080;
 }
+
+QDialogButtonBox {
+    dialogbuttonbox-buttons-have-icons: 0;
+}
