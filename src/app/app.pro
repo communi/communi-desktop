@@ -48,7 +48,7 @@ mac {
     libs.path = Contents/Frameworks
     QMAKE_BUNDLE_DATA += libs
 
-    QMAKE_RPATHDIR += ../Frameworks
+    !no_rpath:QMAKE_RPATHDIR += ../Frameworks
 }
 
 unix:!mac {
@@ -62,7 +62,8 @@ unix:!mac {
     desktop.path = $$COMMUNI_INSTALL_DESKTOP
     INSTALLS += desktop
 
-    QMAKE_RPATHDIR += $$COMMUNI_INSTALL_LIBS
+    !no_rpath:QMAKE_RPATHDIR += $$BUILD_TREE/lib
+    !no_rpath:QMAKE_RPATHDIR += $$COMMUNI_INSTALL_LIBS
 }
 
 OTHER_FILES += ../../communi.rc
