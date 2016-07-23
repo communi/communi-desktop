@@ -33,7 +33,7 @@
   <file>images/black/spinner@2x.png</file>
   <file>images/black/up.png</file>
   <!--file>images/black/up@2x.png</file-->
-  <file>images/black/pause.png</file-->
+  <file>images/black/pause.png</file>
   <!--file>images/black/pause@2x.png</file-->
 
   <file>images/gray/menu.png</file>
@@ -50,7 +50,7 @@
   <file>images/gray/spinner@2x.png</file>
   <file>images/gray/up.png</file>
   <!--file>images/gray/up@2x.png</file-->
-  <file>images/gray/pause.png</file-->
+  <file>images/gray/pause.png</file>
   <!--file>images/gray/pause@2x.png</file-->
 
   <file>images/white/menu.png</file>
@@ -67,7 +67,7 @@
   <file>images/white/spinner@2x.png</file>
   <file>images/white/up.png</file>
   <!--file>images/white/up@2x.png</file-->
-  <file>images/white/pause.png</file-->
+  <file>images/white/pause.png</file>
   <!--file>images/white/pause@2x.png</file-->
 
   <file>images/tray/black/black.png</file>
