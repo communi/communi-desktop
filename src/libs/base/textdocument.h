@@ -63,8 +63,11 @@ public:
     bool isVisible() const;
     void setVisible(bool visible);
 
-    QDateTime timestamp() const;
-    void setTimestamp(const QDateTime& timestamp);
+    QDateTime latestMessageSeen() const;
+    void setLatestMessageSeen(const QDateTime& timestamp);
+    QDateTime latestMessageReceived() const;
+
+    int unreadMessages() const;
 
     void drawBackground(QPainter* painter, const QRect& bounds);
     void drawForeground(QPainter* painter, const QRect& bounds);
@@ -77,6 +80,7 @@ public slots:
     void addHighlight(int block = -1);
     void removeHighlight(int block);
     void append(const MessageData& message);
+    void insert(QTextCursor& cursor, const MessageData& message);
     void receiveMessage(IrcMessage* message);
 
 signals:
@@ -84,6 +88,7 @@ signals:
     void messageReceived(IrcMessage* message);
     void messageHighlighted(IrcMessage* message);
     void privateMessageReceived(IrcMessage* message);
+    void latestMessageSeenChanged(const QDateTime& timestamp);
 
 protected:
     void updateBlock(int number);
@@ -96,7 +101,6 @@ private slots:
 private:
     void scheduleRebuild();
     void shiftLights(int diff);
-    void insert(QTextCursor& cursor, const MessageData& data);
 
     QString formatEvents(const QList<MessageData>& events) const;
     QString formatSummary(const QList<MessageData>& events) const;
@@ -105,7 +109,7 @@ private:
     friend class TextBrowser;
 
     struct Private {
-        int uc;
+        int scrollbackMarkerPosition;
         int dirty;
         bool clone;
         bool batch;
@@ -114,7 +118,7 @@ private:
         int lowlight;
         bool visible;
         IrcBuffer* buffer;
-        QDateTime timestamp;
+        QDateTime latestMessageSeen;
         QList<int> highlights;
         QString timeStampFormat;
         QList<MessageData> queue;

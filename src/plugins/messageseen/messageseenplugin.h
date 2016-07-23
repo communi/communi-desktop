@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2008-2016 The Communi Project
+  Copyright (C) 2016 Tor Arne Vestbø
 
   You may use this file under the terms of BSD license as follows:
 
@@ -26,42 +26,46 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef VERIFIERPLUGIN_H
-#define VERIFIERPLUGIN_H
+#ifndef MSGSEENPLUGIN_H
+#define MSGSEENPLUGIN_H
 
-#include <QHash>
+#include <QObject>
 #include <QtPlugin>
-#include <QMultiHash>
+
+#include <IrcMessageFilter>
+#include <IrcBuffer>
+
 #include "connectionplugin.h"
+#include "viewplugin.h"
+#include "bufferplugin.h"
 #include "documentplugin.h"
 
-class IrcCommand;
+class IrcConnection;
 class IrcMessage;
-class CommandVerifier;
-class QTextDocument;
 
-class VerifierPlugin : public QObject, public ConnectionPlugin, public DocumentPlugin
+class MessageSeenPlugin : public QObject, public ConnectionPlugin, public DocumentPlugin, public IrcMessageFilter
 {
     Q_OBJECT
-    Q_INTERFACES(ConnectionPlugin DocumentPlugin)
+
+    Q_INTERFACES(ConnectionPlugin DocumentPlugin IrcMessageFilter)
+
     Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
     Q_PLUGIN_METADATA(IID "Communi.DocumentPlugin")
 
 public:
-    VerifierPlugin(QObject* parent = 0);
+    MessageSeenPlugin(QObject* parent = 0);
 
-    void connectionAdded(IrcConnection* connection);
-    void documentAdded(TextDocument* document);
+    void connectionAdded(IrcConnection*) Q_DECL_OVERRIDE;
+    void documentAdded(TextDocument*) Q_DECL_OVERRIDE;
 
 private slots:
-    void onCommandVerified(int id, IrcMessage* message);
-    void onMessageReceived(IrcMessage* message);
+    bool messageFilter(IrcMessage* message) Q_DECL_OVERRIDE;
+    void latestMessageSeenChanged(const QDateTime& timestamp);
+    void timerEvent(QTimerEvent* event) Q_DECL_OVERRIDE;
 
 private:
-    struct Private {
-        QMultiHash<int, TextDocument*> documents;
-        QHash<IrcConnection*, CommandVerifier*> verifiers;
-    } d;
+    QMap<IrcBuffer*, int> m_sendTimers;
+    bool m_processingMsgSeenMessage;
 };
 
-#endif // VERIFIERPLUGIN_H
+#endif // MSGSEENPLUGIN_H

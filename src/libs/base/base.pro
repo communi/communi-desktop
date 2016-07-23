@@ -4,7 +4,7 @@
 
 TEMPLATE = lib
 TARGET = base
-CONFIG += static communi
+CONFIG += communi
 COMMUNI += core model util
 
 DESTDIR = $$BUILD_TREE/lib
@@ -35,3 +35,5 @@ SOURCES += $$PWD/titlebar.cpp
 
 include(shared/shared.pri)
 include(plugins/plugins.pri)
+
+mac: QMAKE_SONAME_PREFIX = @rpath
