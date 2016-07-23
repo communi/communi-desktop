@@ -8,4 +8,4 @@ DEPENDPATH += $$BASEDIR $$BASEDIR/shared $$BASEDIR/plugins
 INCLUDEPATH += $$BASEDIR $$BASEDIR/shared $$BASEDIR/plugins
 
 include(communi_functions.prf)
-communiAddLib(base)
+communiAddLib(Communi)

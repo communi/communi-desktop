@@ -21,6 +21,7 @@ qtHaveModule(multimedia):QT += multimedia
 
 load(communi_installs.prf)
 isEmpty(COMMUNI_INSTALL_BINS):error(COMMUNI_INSTALL_BINS empty!)
+isEmpty(COMMUNI_INSTALL_LIBS):error(COMMUNI_INSTALL_LIBS empty!)
 isEmpty(COMMUNI_INSTALL_PLUGINS):error(COMMUNI_INSTALL_PLUGINS empty!)
 isEmpty(COMMUNI_INSTALL_ICONS):error(COMMUNI_INSTALL_ICONS empty!)
 isEmpty(COMMUNI_INSTALL_DESKTOP):error(COMMUNI_INSTALL_DESKTOP empty!)
@@ -39,13 +40,15 @@ mac {
     ICON = ../../images/communi.icns
     QMAKE_INFO_PLIST = ../../communi.plist
 
-    plugins.files += $$BUILD_TREE/plugins/libawayplugin.$$QMAKE_EXTENSION_SHLIB
-    plugins.files += $$BUILD_TREE/plugins/libfilterplugin.$$QMAKE_EXTENSION_SHLIB
-    plugins.files += $$BUILD_TREE/plugins/libosxplugin.$$QMAKE_EXTENSION_SHLIB
-    plugins.files += $$BUILD_TREE/plugins/libverifierplugin.$$QMAKE_EXTENSION_SHLIB
-    plugins.files += $$BUILD_TREE/plugins/libzncplugin.$$QMAKE_EXTENSION_SHLIB
+    plugins.files = $$files($$BUILD_TREE/plugins/*.$$QMAKE_EXTENSION_SHLIB)
     plugins.path = Contents/PlugIns
     QMAKE_BUNDLE_DATA += plugins
+
+    libs.files = $$files($$BUILD_TREE/lib/*.$$QMAKE_EXTENSION_SHLIB)
+    libs.path = Contents/Frameworks
+    QMAKE_BUNDLE_DATA += libs
+
+    QMAKE_RPATHDIR += ../Frameworks
 }
 
 unix:!mac {
@@ -58,6 +61,8 @@ unix:!mac {
     desktop.files = ../../communi.desktop
     desktop.path = $$COMMUNI_INSTALL_DESKTOP
     INSTALLS += desktop
+
+    QMAKE_RPATHDIR += $$COMMUNI_INSTALL_LIBS
 }
 
 OTHER_FILES += ../../communi.rc

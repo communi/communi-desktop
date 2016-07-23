@@ -3,13 +3,24 @@
 ######################################################################
 
 TEMPLATE = lib
-TARGET = base
-CONFIG += static communi
+TARGET = Communi
+CONFIG += communi
 COMMUNI += core model util
 
 DESTDIR = $$BUILD_TREE/lib
+DLLDESTDIR = $$BUILD_TREE/bin
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
+
+!mac {
+    load(communi_installs.prf)
+    isEmpty(COMMUNI_INSTALL_LIBS):error(COMMUNI_INSTALL_LIBS empty!)
+    isEmpty(COMMUNI_INSTALL_BINS):error(COMMUNI_INSTALL_BINS empty!)
+
+    target.path = $$COMMUNI_INSTALL_LIBS
+    dlltarget.path = $$COMMUNI_INSTALL_BINS
+    INSTALLS += target dlltarget
+}
 
 HEADERS += $$PWD/bufferview.h
 HEADERS += $$PWD/eventformatter.h
@@ -35,3 +46,5 @@ SOURCES += $$PWD/titlebar.cpp
 
 include(shared/shared.pri)
 include(plugins/plugins.pri)
+
+mac: QMAKE_SONAME_PREFIX = @rpath

@@ -2,14 +2,17 @@
 # Communi
 ######################################################################
 
-isEmpty(QMAKE_EXTENSION_STATICLIB):QMAKE_EXTENSION_STATICLIB = lib
+isEmpty(QMAKE_EXTENSION_SHLIB) {
+    win32:QMAKE_EXTENSION_SHLIB = dll
+    else:QMAKE_EXTENSION_SHLIB = so
+}
 
 defineTest(communiAddLib) {
     LIBNAME = $$1
     isEmpty(LIBNAME):error(LIBNAME must be set)
     LIBS *= -L$$BUILD_TREE/lib
     LIBS *= -l$$LIBNAME
-    PRE_TARGETDEPS *= $$BUILD_TREE/lib/$${QMAKE_PREFIX_STATICLIB}$${LIBNAME}.$${QMAKE_EXTENSION_STATICLIB}
+    PRE_TARGETDEPS *= $$BUILD_TREE/lib/$${QMAKE_PREFIX_SHLIB}$${LIBNAME}.$${QMAKE_EXTENSION_SHLIB}
     export(LIBS)
     export(PRE_TARGETDEPS)
 }
@@ -19,7 +22,7 @@ defineTest(communiAddPlugin) {
     isEmpty(PLUGINNAME):error(PLUGINNAME must be set)
     LIBS *= -L$$BUILD_TREE/plugins
     LIBS *= -l$${PLUGINNAME}plugin
-    PRE_TARGETDEPS *= $$BUILD_TREE/plugins/$${QMAKE_PREFIX_STATICLIB}$${PLUGINNAME}plugin.$${QMAKE_EXTENSION_STATICLIB}
+    PRE_TARGETDEPS *= $$BUILD_TREE/plugins/$${QMAKE_PREFIX_SHLIB}$${PLUGINNAME}plugin.$${QMAKE_EXTENSION_SHLIB}
     export(LIBS)
     export(PRE_TARGETDEPS)
 }
