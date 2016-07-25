@@ -507,6 +507,9 @@ void SplitView::addZoomActions(QMenu* menu, BufferView* view)
 
 void SplitView::addGlobalActions(QMenu* menu)
 {
+    QAction* fullScreenAction = menu->addAction(tr("Fullscreen"), window(), SLOT(toggleFullScreen()), QKeySequence::FullScreen);
+    fullScreenAction->setShortcutContext(Qt::ApplicationShortcut);
+
     QAction* settingsAction = menu->addAction(tr("Settings..."), window(), SLOT(showSettings()), QKeySequence::Preferences);
     settingsAction->setShortcutContext(Qt::WidgetShortcut);
 
