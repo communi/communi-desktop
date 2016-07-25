@@ -213,8 +213,13 @@ void Dock::onTrayActivated(QSystemTrayIcon::ActivationReason reason)
             d.window->setVisible(!d.window->isVisible());
             break;
         case QSystemTrayIcon::Trigger:
-            d.window->raise();
-            d.window->activateWindow();
+            if (!d.window->isHidden() && (d.window->isMinimized() || d.window->isActiveWindow())) {
+                d.window->hide();
+            } else {
+                d.window->show();
+                d.window->raise();
+                d.window->activateWindow();
+            }
             break;
         default:
             break;
