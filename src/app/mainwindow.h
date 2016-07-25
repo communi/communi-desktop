@@ -87,6 +87,7 @@ private slots:
     void showSettings();
     void showHelp();
     void editConnection(IrcConnection* connection);
+    void toggleFullScreen();
 
 private:
     struct Private {

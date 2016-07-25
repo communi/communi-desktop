@@ -403,3 +403,12 @@ void MainWindow::editConnection(IrcConnection* connection)
     page->setSaslMechanism(connection->saslMechanism());
     push(page);
 }
+
+void MainWindow::toggleFullScreen()
+{
+    if (!isFullScreen()) {
+        showFullScreen();
+    } else {
+        showNormal();
+    }
+}
