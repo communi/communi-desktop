@@ -54,12 +54,12 @@ public:
     void documentAdded(TextDocument* document);
 
 private slots:
-    void onCommandVerified(int id, IrcMessage* message);
+    void onCommandVerified(int id);
     void onMessageReceived(IrcMessage* message);
 
 private:
     struct Private {
-        QMultiHash<int, TextDocument*> documents;
+        QMultiHash<int, QTextDocument*> documents;
         QHash<IrcConnection*, CommandVerifier*> verifiers;
     } d;
 };

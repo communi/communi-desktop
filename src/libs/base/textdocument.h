@@ -80,7 +80,6 @@ public slots:
     void addHighlight(int block = -1);
     void removeHighlight(int block);
     void append(const MessageData& message);
-    void insert(QTextCursor& cursor, const MessageData& message);
     void receiveMessage(IrcMessage* message);
 
 signals:
@@ -101,6 +100,7 @@ private slots:
 private:
     void scheduleRebuild();
     void shiftLights(int diff);
+    void insert(QTextCursor& cursor, const MessageData& message);
 
     QString formatEvents(const QList<MessageData>& events) const;
     QString formatSummary(const QList<MessageData>& events) const;

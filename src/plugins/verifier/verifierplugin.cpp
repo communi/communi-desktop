@@ -29,11 +29,9 @@
 #include "verifierplugin.h"
 #include "commandverifier.h"
 #include "syntaxhighlighter.h"
-#include "messageformatter.h"
 #include "textdocument.h"
 #include <IrcMessage>
 #include <IrcBuffer>
-#include <qabstracttextdocumentlayout.h>
 
 VerifierPlugin::VerifierPlugin(QObject* parent) : QObject(parent)
 {
@@ -42,7 +40,7 @@ VerifierPlugin::VerifierPlugin(QObject* parent) : QObject(parent)
 void VerifierPlugin::connectionAdded(IrcConnection* connection)
 {
     CommandVerifier* verifier = new CommandVerifier(connection);
-    connect(verifier, SIGNAL(verified(int, IrcMessage*)), this, SLOT(onCommandVerified(int, IrcMessage*)));
+    connect(verifier, SIGNAL(verified(int)), this, SLOT(onCommandVerified(int)));
     d.verifiers.insert(connection, verifier);
 }
 
@@ -52,37 +50,18 @@ void VerifierPlugin::documentAdded(TextDocument* document)
     connect(document, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
 }
 
-void VerifierPlugin::onCommandVerified(int id, IrcMessage* message)
+void VerifierPlugin::onCommandVerified(int id)
 {
-    foreach (TextDocument* doc, d.documents.values(id)) {
+    foreach (QTextDocument* doc, d.documents.values(id)) {
         SyntaxHighlighter* highlighter = doc->findChild<SyntaxHighlighter*>();
         if (highlighter) {
             QTextBlock block = doc->lastBlock();
             while (block.isValid()) {
                 if (block.userState() == id) {
                     block.setUserState(-1);
-
-                    // FIXME: Allow selectively updating message data, e.g. just the timestamp
-
-                    MessageData data = doc->formatter()->formatMessage(message);
-                    if (!data.isEmpty()) {
-                        QTextCursor cursor(block);
-                        cursor.beginEditBlock();
-                        cursor.select(QTextCursor::BlockUnderCursor);
-                        cursor.removeSelectedText();
-                        doc->insert(cursor, data);
-                        cursor.endEditBlock();
-
-                        if (doc->isVisible() && data.timestamp() > doc->latestMessageSeen())
-                            doc->setLatestMessageSeen(data.timestamp());
-
-                    } else {
-                        highlighter->rehighlightBlock(block);
-                    }
-
+                    highlighter->rehighlightBlock(block);
                     break;
                 }
-
                 block = block.previous();
             }
         }
@@ -93,7 +72,7 @@ void VerifierPlugin::onCommandVerified(int id, IrcMessage* message)
 void VerifierPlugin::onMessageReceived(IrcMessage* message)
 {
     if (message->isOwn()) {
-        TextDocument* doc = qobject_cast<TextDocument*>(sender());
+        QTextDocument* doc = qobject_cast<QTextDocument*>(sender());
         CommandVerifier* verifier = d.verifiers.value(message->connection());
         if (doc && verifier) {
             int id = verifier->identify(message);

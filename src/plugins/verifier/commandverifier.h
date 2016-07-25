@@ -49,7 +49,7 @@ public:
     bool commandFilter(IrcCommand* command);
 
 signals:
-    void verified(int id, IrcMessage* message);
+    void verified(int id);
 
 private:
     struct Private {
