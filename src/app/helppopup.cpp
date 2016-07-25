@@ -37,6 +37,7 @@ HelpPopup::HelpPopup(QWidget* parent) : QLabel(parent)
     setForegroundRole(QPalette::ToolTipText);
     setBackgroundRole(QPalette::ToolTipBase);
     setPalette(QToolTip::palette());
+    setAutoFillBackground(true);
     ensurePolished();
     setMargin(1 + style()->pixelMetric(QStyle::PM_ToolTipLabelFrameWidth, 0, this));
     setFrameStyle(QFrame::NoFrame);
