@@ -75,6 +75,10 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     pageUp->setContext(Qt::WidgetWithChildrenShortcut);
     connect(pageUp, SIGNAL(activated()), d.textBrowser, SLOT(scrollToPreviousPage()));
 
+    QShortcut* clearBuffer = new QShortcut(QKeySequence(tr("CTRL+K")), this);
+    clearBuffer->setContext(Qt::WidgetWithChildrenShortcut);
+    connect(clearBuffer, SIGNAL(activated()), d.textBrowser, SLOT(clear()));
+
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setSpacing(0);
     layout->setMargin(0);
