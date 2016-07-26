@@ -34,6 +34,7 @@
 #include "treerole.h"
 #include <IrcBufferModel>
 #include <IrcConnection>
+#include <QSignalMapper>
 #include <QApplication>
 #include <QHeaderView>
 #include <QMouseEvent>
@@ -129,6 +130,15 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     shortcut = new QShortcut(this);
     shortcut->setKey(QKeySequence(tr("Ctrl+R")));
     connect(shortcut, SIGNAL(activated()), this, SLOT(resetItems()));
+
+    QSignalMapper *mapper = new QSignalMapper(this);
+    for (int n = 0; n <= 9; ++n) {
+        shortcut = new QShortcut(this);
+        shortcut->setKey(QKeySequence(navigate.arg(n)));
+        connect(shortcut, SIGNAL(activated()), mapper, SLOT(map()));
+        mapper->setMapping(shortcut, n);
+    }
+    connect(mapper, SIGNAL(mapped(int)), this, SLOT(moveToItem(int)));
 }
 
 IrcBuffer* TreeWidget::currentBuffer() const
@@ -756,4 +766,17 @@ QMenu* TreeWidget::createContextMenu(TreeItem* item)
     closeAction->setData(QVariant::fromValue(item));
 
     return menu;
+}
+
+void TreeWidget::moveToItem(int n)
+{
+    QTreeWidgetItemIterator it(this);
+    while (*it && n >= 0) {
+        if (n == 0) {
+            setCurrentItem(*it);
+            break;
+        }
+        --n;
+        ++it;
+    }
 }
