@@ -84,6 +84,7 @@ public slots:
     void expandCurrentConnection();
     void collapseCurrentConnection();
     void moveToMostActiveItem();
+    void moveToItem(int n);
 
 signals:
     void bufferAdded(IrcBuffer* buffer);

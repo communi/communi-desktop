@@ -129,6 +129,13 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     shortcut = new QShortcut(this);
     shortcut->setKey(QKeySequence(tr("Ctrl+R")));
     connect(shortcut, SIGNAL(activated()), this, SLOT(resetItems()));
+
+
+    for (int n=0; n<=9; n++) {
+        shortcut = new QShortcut(this);
+        shortcut->setKey(QKeySequence(navigate.arg(n)));
+        connect(shortcut, &QShortcut::activated, [=](){ this->moveToItem(n); });
+    }
 }
 
 IrcBuffer* TreeWidget::currentBuffer() const
@@ -756,4 +763,19 @@ QMenu* TreeWidget::createContextMenu(TreeItem* item)
     closeAction->setData(QVariant::fromValue(item));
 
     return menu;
+}
+
+void TreeWidget::moveToItem(int n)
+{
+    QTreeWidgetItem* firstConnection = topLevelItem(0);
+    if (firstConnection) {
+        if (n == 0) {
+            setCurrentItem(firstConnection);
+        } else {
+            QTreeWidgetItem* item = firstConnection->child(n-1);
+            if (item) {
+                setCurrentItem(item);
+            }
+        }
+    }
 }
