@@ -162,8 +162,16 @@ void ThemeWidget::resizeEvent(QResizeEvent* event)
 
 void ThemeWidget::updatePreview()
 {
-    QPixmap pixmap(d.page->size());
+    qreal dpr = 1.0;
+#if QT_VERSION >= 0x050600
+    dpr = devicePixelRatioF();
+#endif
+
+    QPixmap pixmap(d.page->size() * dpr);
+#if QT_VERSION >= 0x050600
+    pixmap.setDevicePixelRatio(dpr);
+#endif
     QPainter painter(&pixmap);
     d.page->render(&painter);
-    setPixmap(pixmap.scaled(contentsRect().size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    setPixmap(pixmap.scaled(contentsRect().size() * dpr, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
