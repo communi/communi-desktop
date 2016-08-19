@@ -32,6 +32,7 @@
 #include <QTextDocument>
 #include <QMetaType>
 #include <QDateTime>
+#include "baseglobal.h"
 #include "messagedata.h"
 
 class IrcBuffer;
@@ -39,7 +40,7 @@ class IrcMessage;
 class MessageData;
 class MessageFormatter;
 
-class TextDocument : public QTextDocument
+class BASE_EXPORT TextDocument : public QTextDocument
 {
     Q_OBJECT
 

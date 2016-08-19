@@ -32,12 +32,13 @@
 #include <QLabel>
 #include <QTextEdit>
 #include <QToolButton>
+#include "baseglobal.h"
 
 class IrcBuffer;
 class IrcUserModel;
 class MessageFormatter;
 
-class TitleBar : public QLabel
+class BASE_EXPORT TitleBar : public QLabel
 {
     Q_OBJECT
     Q_PROPERTY(int offset READ offset WRITE setOffset NOTIFY offsetChanged)

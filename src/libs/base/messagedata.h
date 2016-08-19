@@ -33,8 +33,9 @@
 #include <QString>
 #include <QDateTime>
 #include <IrcMessage>
+#include "baseglobal.h"
 
-class MessageData
+class BASE_EXPORT MessageData
 {
 public:
     MessageData();

@@ -26,37 +26,15 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef EVENTFORMATTER_H
-#define EVENTFORMATTER_H
+#ifndef BASEGLOBAL_H
+#define BASEGLOBAL_H
 
-#include "baseglobal.h"
-#include "messageformatter.h"
+#include <QtGlobal>
 
-class BASE_EXPORT EventFormatter : public MessageFormatter
-{
-    Q_OBJECT
+#if defined(BUILD_BASE)
+#  define BASE_EXPORT Q_DECL_EXPORT
+#else
+#  define BASE_EXPORT Q_DECL_IMPORT
+#endif
 
-public:
-    explicit EventFormatter(QObject* parent = 0);
-
-    QString formatEvent(const QString& event) const;
-
-protected:
-    virtual QString formatInviteMessage(IrcInviteMessage* msg);
-    virtual QString formatJoinMessage(IrcJoinMessage* msg);
-    virtual QString formatKickMessage(IrcKickMessage* msg);
-    virtual QString formatModeMessage(IrcModeMessage* msg);
-    virtual QString formatNickMessage(IrcNickMessage* msg);
-    virtual QString formatNoticeMessage(IrcNoticeMessage* msg);
-    virtual QString formatNumericMessage(IrcNumericMessage* msg);
-    virtual QString formatPartMessage(IrcPartMessage* msg);
-    virtual QString formatPongMessage(IrcPongMessage* msg);
-    virtual QString formatPrivateMessage(IrcPrivateMessage* msg);
-    virtual QString formatQuitMessage(IrcQuitMessage* msg);
-    virtual QString formatTopicMessage(IrcTopicMessage* msg);
-    virtual QString formatUnknownMessage(IrcMessage* msg);
-
-    virtual QString formatSender(IrcMessage* msg) const;
-};
-
-#endif // EVENTFORMATTER_H
+#endif // BASEGLOBAL_H

@@ -30,6 +30,7 @@
 #define BUFFERVIEW_H
 
 #include <QSplitter>
+#include "baseglobal.h"
 
 class TitleBar;
 class ListView;
@@ -38,7 +39,7 @@ class TextInput;
 class TextBrowser;
 class TextDocument;
 
-class BufferView : public QWidget
+class BASE_EXPORT BufferView : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(IrcBuffer* buffer READ buffer WRITE setBuffer NOTIFY bufferChanged)

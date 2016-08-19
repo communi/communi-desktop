@@ -30,8 +30,9 @@
 #define THEMEINFO_H
 
 #include <QString>
+#include "baseglobal.h"
 
-class ThemeInfo
+class BASE_EXPORT ThemeInfo
 {
 public:
     bool isValid() const;

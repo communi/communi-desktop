@@ -30,11 +30,12 @@
 #define LISTVIEW_H
 
 #include <QListView>
+#include "baseglobal.h"
 
 class IrcChannel;
 class IrcUserModel;
 
-class ListView : public QListView
+class BASE_EXPORT ListView : public QListView
 {
     Q_OBJECT
     Q_PROPERTY(IrcChannel* channel READ channel WRITE setChannel NOTIFY channelChanged)

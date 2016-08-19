@@ -34,11 +34,12 @@
 #include <QLineEdit>
 #include <QStringList>
 #include <IrcCompleter>
+#include "baseglobal.h"
 
 class IrcBuffer;
 class IrcCommandParser;
 
-class TextInput : public QLineEdit
+class BASE_EXPORT TextInput : public QLineEdit
 {
     Q_OBJECT
     Q_PROPERTY(IrcBuffer* buffer READ buffer WRITE setBuffer NOTIFY bufferChanged)

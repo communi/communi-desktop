@@ -30,12 +30,13 @@
 #define TEXTBROWSER_H
 
 #include <QTextBrowser>
+#include "baseglobal.h"
 
 class IrcBuffer;
 class TextShadow;
 class TextDocument;
 
-class TextBrowser : public QTextBrowser
+class BASE_EXPORT TextBrowser : public QTextBrowser
 {
     Q_OBJECT
 

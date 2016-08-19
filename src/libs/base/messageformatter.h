@@ -35,13 +35,14 @@
 #include <QDateTime>
 #include <IrcGlobal>
 #include <IrcMessage>
+#include "baseglobal.h"
 #include "messagedata.h"
 
 class IrcBuffer;
 class IrcUserModel;
 class IrcTextFormat;
 
-class MessageFormatter : public QObject
+class BASE_EXPORT MessageFormatter : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(IrcBuffer* buffer READ buffer WRITE setBuffer)

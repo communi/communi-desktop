@@ -11,6 +11,7 @@ DESTDIR = $$BUILD_TREE/lib
 DLLDESTDIR = $$BUILD_TREE/bin
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$PWD
+DEFINES += BUILD_BASE
 
 !mac {
     load(communi_installs.prf)
