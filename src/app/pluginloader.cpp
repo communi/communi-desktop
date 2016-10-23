@@ -44,10 +44,13 @@
 
 static QObjectList loadPlugins(const QStringList& paths)
 {
+    QSet<QString> loaded;
     QObjectList instances;
     foreach (const QString& path, paths) {
         foreach (const QFileInfo& file, QDir(path).entryInfoList(QDir::Files)) {
             const QString base = file.baseName();
+            if (loaded.contains(base))
+                continue;
             // blacklisted obsolete plugins
             if (base.startsWith("monitorplugin") || base.startsWith("libmonitorplugin"))
                 continue;
@@ -62,8 +65,10 @@ static QObjectList loadPlugins(const QStringList& paths)
                 continue;
 #endif
             QPluginLoader loader(file.absoluteFilePath());
-            if (loader.load())
+            if (loader.load()) {
                 instances += loader.instance();
+                loaded += base;
+            }
         }
     }
     return instances;
