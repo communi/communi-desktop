@@ -31,6 +31,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QApplication>
+#include <QSet>
 
 #include <QtPlugin>
 #include "bufferview.h"
