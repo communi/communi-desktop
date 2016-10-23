@@ -64,7 +64,9 @@ void VerifierPlugin::onCommandVerified(int id, IrcMessage* message)
 
                     // FIXME: Allow selectively updating message data, e.g. just the timestamp
 
-                    MessageData data = doc->formatter()->formatMessage(message);
+                    MessageData data;
+                    if (message)
+                        data = doc->formatter()->formatMessage(message);
                     if (!data.isEmpty()) {
                         QTextCursor cursor(block);
                         cursor.beginEditBlock();
