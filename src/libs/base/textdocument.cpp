@@ -261,7 +261,7 @@ int TextDocument::unreadMessages() const
         if (message.timestamp() <= d.latestMessageSeen)
             return unread;
 
-        if (message.type() != IrcMessage::Private)
+        if (message.type() != IrcMessage::Private && message.type() != IrcMessage::Notice)
             continue;
 
         ++unread;
@@ -276,7 +276,7 @@ int TextDocument::unreadMessages() const
         if (message.timestamp() <= d.latestMessageSeen)
             break;
 
-        if (message.type() != IrcMessage::Private)
+        if (message.type() != IrcMessage::Private && message.type() != IrcMessage::Notice)
             continue;
 
         ++unread;

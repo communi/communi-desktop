@@ -469,7 +469,7 @@ void ChatPage::onLatestMessageSeenChanged()
 
 void ChatPage::onMessageReceived(IrcMessage* message)
 {
-    if (message->type() == IrcMessage::Private) {
+    if (message->type() == IrcMessage::Private || message->type() == IrcMessage::Notice) {
         TextDocument* doc = qobject_cast<TextDocument*>(sender());
         if (doc && !doc->isClone()) {
             IrcBuffer* buffer = doc->buffer();
