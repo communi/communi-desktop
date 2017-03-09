@@ -91,5 +91,6 @@ void TreeIndicator::paintEvent(QPaintEvent*)
 
     QStylePainter painter(this);
     painter.drawPrimitive(QStyle::PE_Widget, frame);
+
     painter.drawControl(QStyle::CE_ShapedFrame, frame);
 }

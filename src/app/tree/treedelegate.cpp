@@ -97,8 +97,11 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
         style->drawItemPixmap(painter, option.rect.translated(2, 0), Qt::AlignLeft | Qt::AlignVCenter, icon.pixmap(16, 16));
     } else {
         bool hilite = index.data(TreeRole::Highlight).toBool();
+        bool notice = index.data(TreeRole::Notice).toBool();
         if (hilite)
             const_cast<QStyleOptionViewItem&>(option).state |= QStyle::State_On;
+        else if (notice)
+            const_cast<QStyleOptionViewItem&>(option).state |= QStyle::State_NoChange;
 
         // a selected inactive buffer should be visually the same then
         // a selected and disabled tree item. however, a disabled tree
@@ -124,6 +127,7 @@ void TreeDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 
             TreeBadge* badge = TreeBadge::instance(hilite ? const_cast<QWidget*>(option.widget) : inactiveParent.data());
             badge->setNum(num);
+            badge->setNoticed(notice);
             badge->setHighlighted(hilite);
 
             badge->setGeometry(option.rect);

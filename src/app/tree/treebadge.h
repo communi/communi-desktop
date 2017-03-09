@@ -41,7 +41,8 @@ public:
     static TreeBadge* instance(QWidget* parent = 0);
 
     void setNum(int num);
-    void setHighlighted(int hilite) { d.hilite = hilite; }
+    void setNoticed(bool notice) { d.notice = notice; }
+    void setHighlighted(bool hilite) { d.hilite = hilite; }
 
 protected:
     void paintEvent(QPaintEvent* event);
@@ -50,6 +51,7 @@ protected:
 private:
     struct Private {
         int num;
+        bool notice;
         bool hilite;
     } d;
 };

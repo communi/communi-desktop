@@ -72,6 +72,7 @@ public slots:
     void setCurrentBuffer(IrcBuffer* buffer);
     void closeBuffer(IrcBuffer* buffer = 0);
 
+    void noticeItem(QTreeWidgetItem* item, bool notice = true);
     void highlightItem(QTreeWidgetItem* item);
     void unhighlightItem(QTreeWidgetItem* item);
 

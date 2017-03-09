@@ -151,6 +151,13 @@ TreeBadge {
     background: #373b41;
 }
 
+/* notice */
+TreeBadge:indeterminate {
+    color: #e0e0e0;
+    background: #ab7149;
+}
+
+/* highlight */
 TreeBadge:on {
     color: #e0e0e0;
     background: #cc6666;
@@ -164,6 +171,12 @@ TreeHeader::section:on {
     color: #3465a4;
 }
 
+/* notice */
+TreeWidget::item:indeterminate {
+    color: #de935f;
+}
+
+/* highlight */
 TreeWidget::item:on {
     color: #b4b7b4;
 }

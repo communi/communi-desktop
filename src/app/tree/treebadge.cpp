@@ -35,6 +35,7 @@
 TreeBadge::TreeBadge(QWidget* parent) : QLabel(parent)
 {
     d.num = 0;
+    d.notice = false;
     d.hilite = false;
     setAlignment(Qt::AlignCenter);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -100,6 +101,8 @@ void TreeBadge::drawBackground(QPainter* painter)
         frame.state |= QStyle::State_Raised;
     if (d.hilite)
         frame.state |= QStyle::State_On;
+    else if (d.notice)
+        frame.state |= QStyle::State_NoChange;
     style()->drawPrimitive(QStyle::PE_Widget, &frame, painter, this);
     style()->drawControl(QStyle::CE_ShapedFrame, &frame, painter, this);
 }

@@ -118,7 +118,7 @@ QVariant TreeItem::data(int column, int role) const
 void TreeItem::setData(int column, int role, const QVariant& value)
 {
     QTreeWidgetItem::setData(column, role, value);
-    if (role == TreeRole::Highlight && !parentItem())
+    if ((role == TreeRole::Highlight || role == TreeRole::Notice) && !parentItem())
         updateIcon();
 }
 
@@ -162,6 +162,8 @@ void TreeItem::updateIcon()
     } else {
         TreeIndicator* indicator = TreeIndicator::instance(treeWidget());
         QStyle::State state;
+        if (data(0, TreeRole::Notice).toBool())
+            state |= QStyle::State_NoChange;
         if (data(0, TreeRole::Highlight).toBool())
             state |= QStyle::State_On;
         if (!connection()->isConnected())

@@ -558,6 +558,16 @@ void TreeWidget::swapItems(QTreeWidgetItem* source, QTreeWidgetItem* target)
     target->setFirstColumnSpanned(ts);
 }
 
+void TreeWidget::noticeItem(QTreeWidgetItem *item, bool notice)
+{
+    TreeItem* ti = static_cast<TreeItem*>(item);
+    if (ti) {
+        item->setData(0, TreeRole::Notice, notice);
+        item->setData(1, TreeRole::Notice, notice);
+        // TODO: visualize notices in collapsed root items
+    }
+}
+
 void TreeWidget::highlightItem(QTreeWidgetItem* item)
 {
     if (item && !d.highlightedItems.contains(item)) {

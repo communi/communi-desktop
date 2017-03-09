@@ -463,8 +463,10 @@ void ChatPage::onLatestMessageSeenChanged()
     IrcBuffer* buffer = doc->buffer();
     TreeItem* item = d.treeWidget->bufferItem(buffer);
     item->setData(1, TreeRole::Badge, doc->unreadMessages());
-    if (!doc->unreadMessages())
+    if (!doc->unreadMessages()) {
         d.treeWidget->unhighlightItem(item);
+        d.treeWidget->noticeItem(item, false);
+    }
 }
 
 void ChatPage::onMessageReceived(IrcMessage* message)
@@ -474,7 +476,11 @@ void ChatPage::onMessageReceived(IrcMessage* message)
         if (doc && !doc->isClone()) {
             IrcBuffer* buffer = doc->buffer();
             TreeItem* item = d.treeWidget->bufferItem(buffer);
-            item->setData(1, TreeRole::Badge, doc->unreadMessages());
+            if (buffer && item != d.treeWidget->currentItem()) {
+                item->setData(1, TreeRole::Badge, doc->unreadMessages());
+                if (message->type() == IrcMessage::Notice)
+                    d.treeWidget->noticeItem(item);
+            }
         }
     }
 }
@@ -538,8 +544,10 @@ void ChatPage::onConnected()
     IrcConnection* connection = qobject_cast<IrcConnection*>(sender());
     if (connection) {
         TreeItem* item = d.treeWidget->connectionItem(connection);
-        if (item)
+        if (item) {
             d.treeWidget->unhighlightItem(item);
+            d.treeWidget->noticeItem(item, false);
+        }
     }
 }
 

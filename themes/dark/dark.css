@@ -151,6 +151,13 @@ TreeBadge {
     background: #414848;
 }
 
+/* notice */
+TreeBadge:indeterminate {
+    color: #ffffff;
+    background: #993535;
+}
+
+/* highlight */
 TreeBadge:on {
     color: #eeeeec;
     background: #3465a4;
@@ -160,10 +167,17 @@ TreeHeader {
     min-height: 20px;
 }
 
+/* highlight */
 TreeHeader::section:on {
     color: #3465a4;
 }
 
+/* notice */
+TreeWidget::item:indeterminate {
+    color: #b23e3e;
+}
+
+/* highlight */
 TreeWidget::item:on {
     color: #3e83db;
 }
