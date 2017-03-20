@@ -5,6 +5,7 @@
 TEMPLATE = subdirs
 SUBDIRS += away
 SUBDIRS += filter
+SUBDIRS += logger
 SUBDIRS += verifier
 SUBDIRS += znc
 SUBDIRS += messageseen
