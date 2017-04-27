@@ -41,6 +41,7 @@ class IrcConnection;
 QT_FORWARD_DECLARE_CLASS(QAction)
 QT_FORWARD_DECLARE_CLASS(QMainWindow)
 QT_FORWARD_DECLARE_CLASS(QSystemTrayIcon)
+QT_FORWARD_DECLARE_CLASS(QShowEvent)
 
 class PluginLoader : public QObject
 {
@@ -68,6 +69,7 @@ public slots:
 
     void windowCreated(QMainWindow* window);
     void windowDestroyed(QMainWindow* window);
+    void windowShowEvent(QMainWindow* window, QShowEvent *event);
 
     void dockAlert(IrcMessage* message);
     void setupTrayIcon(QSystemTrayIcon* tray);

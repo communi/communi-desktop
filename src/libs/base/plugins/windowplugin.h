@@ -32,6 +32,7 @@
 #include <QtPlugin>
 
 QT_FORWARD_DECLARE_CLASS(QMainWindow)
+QT_FORWARD_DECLARE_CLASS(QShowEvent)
 
 class WindowPlugin
 {
@@ -40,6 +41,7 @@ public:
 
     virtual void windowCreated(QMainWindow*) {}
     virtual void windowDestroyed(QMainWindow*) {}
+    virtual void windowShowEvent(QMainWindow*, QShowEvent*) {}
 };
 
 Q_DECLARE_INTERFACE(WindowPlugin, "Communi.WindowPlugin")

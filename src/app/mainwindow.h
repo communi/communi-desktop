@@ -77,6 +77,7 @@ protected:
     QSize sizeHint() const;
     bool event(QEvent* event);
     void closeEvent(QCloseEvent* event);
+    void showEvent(QShowEvent* event);
 
 private slots:
     void doConnect();

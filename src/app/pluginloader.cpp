@@ -169,6 +169,11 @@ void PluginLoader::windowDestroyed(QMainWindow* window)
     COMMUNI_PLUGIN_CALL(WindowPlugin, windowDestroyed(window))
 }
 
+void PluginLoader::windowShowEvent(QMainWindow* window, QShowEvent* event)
+{
+    COMMUNI_PLUGIN_CALL(WindowPlugin, windowShowEvent(window, event))
+}
+
 void PluginLoader::dockAlert(IrcMessage* message)
 {
     COMMUNI_PLUGIN_CALL(DockPlugin, dockAlert(message))

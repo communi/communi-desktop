@@ -295,6 +295,11 @@ void MainWindow::closeEvent(QCloseEvent* event)
     }
 }
 
+void MainWindow::showEvent(QShowEvent* event)
+{
+    PluginLoader::instance()->windowShowEvent(this, event);
+}
+
 void MainWindow::doConnect()
 {
     for (int i = 0; i < d.stack->count(); ++i) {
