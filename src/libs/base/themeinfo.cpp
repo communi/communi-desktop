@@ -63,9 +63,9 @@ QString ThemeInfo::style() const
     return d.style;
 }
 
-QString ThemeInfo::gtkTheme() const
+QString ThemeInfo::gtkThemeVariant() const
 {
-    return d.gtkTheme;
+    return d.gtkThemeVariant;
 }
 
 QString ThemeInfo::font() const
@@ -104,7 +104,7 @@ bool ThemeInfo::load(const QString& filePath)
         d.version = settings.value("version").toString();
         d.description = settings.value("description").toString();
         d.style = readFile(QFileInfo(filePath).dir(), settings.value("style").toString());
-        d.gtkTheme = settings.value("gtk-theme").toString();
+        d.gtkThemeVariant = settings.value("gtk-theme-variant").toString();
         d.font = settings.value("font").toString();
         settings.endGroup();
     }

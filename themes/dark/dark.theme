@@ -4,4 +4,4 @@ version=1.0
 description=A dark Communi theme
 author=J-P Nurmi <jpnurmi@gmail.com>
 style=dark.css
-gtk-theme=dark
+gtk-theme-variant=dark

@@ -88,10 +88,10 @@ void GnomePlugin::themeChanged(const ThemeInfo& theme)
         return;
 
     d.theme = &theme;
-    QByteArray gtkTheme = theme.gtkTheme().toUtf8();
+    QByteArray gtkThemeVariant = theme.gtkThemeVariant().toUtf8();
 
     if (d.isRunningX11) {
-        X11Helper::setWindowProperty(d.window->winId(), "_GTK_THEME_VARIANT", gtkTheme);
+        X11Helper::setWindowProperty(d.window->winId(), "_GTK_THEME_VARIANT", gtkThemeVariant);
     }
 }
 

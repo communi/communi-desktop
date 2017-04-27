@@ -4,4 +4,4 @@ version=1.0
 description=A dark Communi theme based on the Base16 color schemes by Chris Kempson
 author=John Reese <john@noswap.com>
 style=tomorrow.css
-gtk-theme=dark
+gtk-theme-variant=dark

@@ -44,7 +44,7 @@ public:
     QString version() const;
     QString description() const;
     QString style() const;
-    QString gtkTheme() const;
+    QString gtkThemeVariant() const;
     QString font() const;
     QString path() const;
 
@@ -55,7 +55,7 @@ private:
         QString version;
         QString description;
         QString style;
-        QString gtkTheme;
+        QString gtkThemeVariant;
         QString font;
         QString path;
         QString filePath;
