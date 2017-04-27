@@ -33,17 +33,24 @@
 #include <QSystemTrayIcon>
 #include <QMainWindow>
 #include <QAction>
+#include <QDebug>
+#include <QGuiApplication>
 
 GnomePlugin::GnomePlugin(QObject* parent) : QObject(parent)
 {
     d.mute = 0;
     d.window = 0;
+    d.theme = 0;
+    d.isActive = (qgetenv("XDG_CURRENT_DESKTOP") == "GNOME");
+    d.isRunningX11 = (static_cast<QGuiApplication*>(QCoreApplication::instance())->platformName() == "xcb");
 }
 
 void GnomePlugin::windowCreated(QMainWindow* window)
 {
-    d.window = window;
+    if (!d.isActive)
+        return;
 
+    d.window = window;
 #ifdef COMMUNI_HAVE_GIO
     GnomeMenu *section1 = new GnomeMenu(window);
     section1->addSimpleItem("showConnect", "Connect...", window, "doConnect");
@@ -64,19 +71,43 @@ void GnomePlugin::windowCreated(QMainWindow* window)
 #endif // COMMUNI_HAVE_GIO
 }
 
+void GnomePlugin::windowShowEvent(QMainWindow *, QShowEvent *)
+{
+    if (!d.isActive)
+        return;
+
+    if (d.theme) {
+        d.window->createWinId();
+        themeChanged(*d.theme);
+    }
+}
+
 void GnomePlugin::themeChanged(const ThemeInfo& theme)
 {
+    if (!d.isActive)
+        return;
+
+    d.theme = &theme;
     QByteArray gtkTheme = theme.gtkTheme().toUtf8();
-    X11Helper::setWindowProperty(d.window->winId(), "_GTK_THEME_VARIANT", gtkTheme);
+
+    if (d.isRunningX11) {
+        X11Helper::setWindowProperty(d.window->winId(), "_GTK_THEME_VARIANT", gtkTheme);
+    }
 }
 
 void GnomePlugin::setupTrayIcon(QSystemTrayIcon* tray)
 {
+    if (!d.isActive)
+        return;
+
     if (qgetenv("XDG_CURRENT_DESKTOP") != "KDE" && qgetenv("KDE_FULL_SESSION").isEmpty())
         tray->setVisible(false);
 }
 
 void GnomePlugin::setupMuteAction(QAction* action)
 {
+    if (!d.isActive)
+        return;
+
     d.mute = action;
 }

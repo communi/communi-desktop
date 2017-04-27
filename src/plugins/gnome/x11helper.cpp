@@ -36,8 +36,8 @@ namespace X11Helper
     {
         if (!value.isEmpty()) {
             XChangeProperty(QX11Info::display(), winId,
-                            XInternAtom(QX11Info::display(), name.data(), false),
-                            XInternAtom(QX11Info::display(), "UTF8_STRING", false),
+                            XInternAtom(QX11Info::display(), name.data(), False),
+                            XInternAtom(QX11Info::display(), "UTF8_STRING", False),
                             8, PropModeReplace, (uchar*) value.data(), value.length());
         } else {
             XDeleteProperty(QX11Info::display(), winId,

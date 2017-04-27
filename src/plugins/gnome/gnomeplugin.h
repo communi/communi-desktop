@@ -47,6 +47,7 @@ public:
     GnomePlugin(QObject* parent = 0);
 
     void windowCreated(QMainWindow* window);
+    void windowShowEvent(QMainWindow *window, QShowEvent *event);
     void themeChanged(const ThemeInfo& theme);
     void setupTrayIcon(QSystemTrayIcon* tray);
     void setupMuteAction(QAction* action);
@@ -55,6 +56,9 @@ private:
     struct Private {
         QAction* mute;
         QMainWindow* window;
+        const ThemeInfo* theme;
+        bool isActive;
+        bool isRunningX11;
     } d;
 };
 
