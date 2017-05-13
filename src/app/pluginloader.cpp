@@ -42,6 +42,7 @@
 #include "themeplugin.h"
 #include "viewplugin.h"
 #include "windowplugin.h"
+#include "settingsplugin.h"
 
 static QObjectList loadPlugins(const QStringList& paths)
 {
@@ -187,4 +188,9 @@ void PluginLoader::setupTrayIcon(QSystemTrayIcon* tray)
 void PluginLoader::setupMuteAction(QAction* action)
 {
     COMMUNI_PLUGIN_CALL(DockPlugin, setupMuteAction(action))
+}
+
+void PluginLoader::settingsChanged()
+{
+    COMMUNI_PLUGIN_CALL(SettingsPlugin, settingsChanged())
 }

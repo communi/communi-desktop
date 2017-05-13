@@ -26,59 +26,19 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef PLUGINLOADER_H
-#define PLUGINLOADER_H
+#ifndef SETTINGSPLUGIN_H
+#define SETTINGSPLUGIN_H
 
-#include <QPluginLoader>
+#include <QtPlugin>
 
-class IrcBuffer;
-class ThemeInfo;
-class BufferView;
-class IrcMessage;
-class TextDocument;
-class IrcConnection;
-
-QT_FORWARD_DECLARE_CLASS(QAction)
-QT_FORWARD_DECLARE_CLASS(QMainWindow)
-QT_FORWARD_DECLARE_CLASS(QSystemTrayIcon)
-QT_FORWARD_DECLARE_CLASS(QShowEvent)
-
-class PluginLoader : public QObject
+class SettingsPlugin
 {
-    Q_OBJECT
-
 public:
-    static PluginLoader* instance();
+    virtual ~SettingsPlugin() {}
 
-    static QStringList paths();
-
-public slots:
-    void bufferAdded(IrcBuffer* buffer);
-    void bufferRemoved(IrcBuffer* buffer);
-
-    void connectionAdded(IrcConnection* connection);
-    void connectionRemoved(IrcConnection* connection);
-
-    void viewAdded(BufferView* view);
-    void viewRemoved(BufferView* view);
-
-    void documentAdded(TextDocument* doc);
-    void documentRemoved(TextDocument* doc);
-
-    void themeChanged(const ThemeInfo& theme);
-
-    void windowCreated(QMainWindow* window);
-    void windowDestroyed(QMainWindow* window);
-    void windowShowEvent(QMainWindow* window, QShowEvent *event);
-
-    void dockAlert(IrcMessage* message);
-    void setupTrayIcon(QSystemTrayIcon* tray);
-    void setupMuteAction(QAction* action);
-
-    void settingsChanged();
-
-private:
-    PluginLoader(QObject* parent = 0);
+    virtual void settingsChanged() {}
 };
 
-#endif // PLUGINLOADER_H
+Q_DECLARE_INTERFACE(SettingsPlugin, "Communi.SettingsPlugin")
+
+#endif // SETTINGSPLUGIN_H
