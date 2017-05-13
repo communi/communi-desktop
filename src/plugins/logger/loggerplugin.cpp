@@ -35,13 +35,12 @@
 #include <Irc>
 #include <QDir>
 #include <QTextStream>
+#include <QSettings>
+#include <QDebug>
 
 LoggerPlugin::LoggerPlugin(QObject* parent) : QObject(parent)
-    , m_logDirPath(QDir::homePath()+"/communilogs/")
 {
-    QDir logDir;
-    if (!logDir.exists(m_logDirPath))
-        logDir.mkpath(m_logDirPath);
+    this->settingsChanged();
 }
 
 LoggerPlugin::~LoggerPlugin()
@@ -65,6 +64,15 @@ void LoggerPlugin::bufferRemoved(IrcBuffer* buffer)
     disconnect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(logMessage(IrcMessage*)));
 }
 
+void LoggerPlugin::settingsChanged()
+{
+    QSettings settings;
+    m_logDirPath = settings.value("loggingLocation").toString();
+    QDir logDir;
+    if (!logDir.exists(m_logDirPath))
+        logDir.mkpath(m_logDirPath);
+}
+
 void LoggerPlugin::logMessage(IrcMessage *message)
 {
     if (message->type() != IrcMessage::Private)
@@ -77,7 +85,7 @@ void LoggerPlugin::logMessage(IrcMessage *message)
 
 void LoggerPlugin::writeToFile(const QString &fileName, const QString &text)
 {
-    QFile logfile(m_logDirPath + fileName);
+    QFile logfile(m_logDirPath + "/" + fileName);
     logfile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
 
     QTextStream ts(&logfile);

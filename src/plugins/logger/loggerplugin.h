@@ -32,21 +32,24 @@
 #include <QtPlugin>
 #include <IrcMessageFilter>
 #include "bufferplugin.h"
+#include "settingsplugin.h"
 
 class IrcChannel;
 class IrcPrivateMessage;
 
-class LoggerPlugin : public QObject, public BufferPlugin
+class LoggerPlugin : public QObject, public BufferPlugin, public SettingsPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(BufferPlugin)
+    Q_INTERFACES(BufferPlugin SettingsPlugin)
     Q_PLUGIN_METADATA(IID "Communi.BufferPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.SettingsPlugin")
 
 public:
     LoggerPlugin(QObject* parent = 0);
     ~LoggerPlugin();
     void bufferAdded(IrcBuffer* buffer);
     void bufferRemoved(IrcBuffer* buffer);
+    void settingsChanged();
 
 private slots:
     void logMessage(IrcMessage *message);
