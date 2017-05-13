@@ -32,8 +32,9 @@
 #include <QFileInfo>
 #include <QApplication>
 #include <QSet>
-
 #include <QtPlugin>
+#include <QDebug>
+
 #include "bufferview.h"
 #include "bufferplugin.h"
 #include "connectionplugin.h"
@@ -79,8 +80,15 @@ static QMap<QString, QObject*> loadPlugins(const QStringList& paths)
 void PluginLoader::enablePlugin(const QString &plugin)
 {
     if (d.disabledPlugins.contains(plugin)) {
-        d.enabledPlugins.insert(plugin, d.disabledPlugins[plugin]);
+        QObject *instance = d.disabledPlugins[plugin];
+        d.enabledPlugins.insert(plugin, instance);
         d.disabledPlugins.remove(plugin);
+
+        // Special case for SettingsPlugin instances so that they don't remain in an obsolete state
+        SettingsPlugin *settingPluginInstance = qobject_cast<SettingsPlugin*>(instance);
+        if (settingPluginInstance) {
+            settingPluginInstance->settingsChanged();
+        }
     }
 }
 
