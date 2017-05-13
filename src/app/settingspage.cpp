@@ -78,3 +78,19 @@ void SettingsPage::setTheme(const QString& name)
     ui.descriptionField->setText(theme.description());
     ui.themeCombo->setCurrentIndex(ui.themeCombo->findText(theme.name()));
 }
+
+bool SettingsPage::loggingEnabled() const {
+    return ui.loggingGroup->isChecked();
+}
+
+void SettingsPage::setLoggingEnabled(bool enabled) {
+    ui.loggingGroup->setChecked(enabled);
+}
+
+QString SettingsPage::loggingLocation() const {
+    return ui.loggingLocationLineEdit->text();
+}
+
+void SettingsPage::setLoggingLocation(const QString &location) {
+    ui.loggingLocationLineEdit->setText(location);
+}

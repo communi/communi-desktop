@@ -40,9 +40,13 @@ public:
     ~SettingsPage();
 
     QString theme() const;
+    bool loggingEnabled() const;
+    QString loggingLocation() const;
 
 public slots:
     void setTheme(const QString& theme);
+    void setLoggingEnabled(bool enabled);
+    void setLoggingLocation(const QString &location);
 
 signals:
     void accepted();
