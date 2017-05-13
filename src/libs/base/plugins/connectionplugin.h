@@ -40,7 +40,7 @@ public:
 
     virtual void connectionAdded(IrcConnection*) {}
     virtual void connectionRemoved(IrcConnection*) {}
-    virtual void setConnectionsList(const QList<IrcConnection*>*);
+    virtual void setConnectionsList(const QList<IrcConnection*>*) {}
 };
 
 Q_DECLARE_INTERFACE(ConnectionPlugin, "Communi.ConnectionPlugin")
