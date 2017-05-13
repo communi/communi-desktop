@@ -30,6 +30,7 @@
 #define PLUGINLOADER_H
 
 #include <QPluginLoader>
+#include <QMap>
 
 class IrcBuffer;
 class ThemeInfo;
@@ -51,6 +52,9 @@ public:
     static PluginLoader* instance();
 
     static QStringList paths();
+
+    void enablePlugin(const QString &plugin);
+    void disablePlugin(const QString &plugin);
 
 public slots:
     void bufferAdded(IrcBuffer* buffer);
@@ -79,6 +83,10 @@ public slots:
 
 private:
     PluginLoader(QObject* parent = 0);
+    struct Private {
+        QMap<QString, QObject*> enabledPlugins;
+        QMap<QString, QObject*> disabledPlugins;
+    } d;
 };
 
 #endif // PLUGINLOADER_H

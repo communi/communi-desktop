@@ -44,14 +44,14 @@
 #include "windowplugin.h"
 #include "settingsplugin.h"
 
-static QObjectList loadPlugins(const QStringList& paths)
+static QMap<QString, QObject*> loadPlugins(const QStringList& paths)
 {
-    QSet<QString> loaded;
-    QObjectList instances;
+    QMap<QString, QObject*> result;
+
     foreach (const QString& path, paths) {
         foreach (const QFileInfo& file, QDir(path).entryInfoList(QDir::Files)) {
             const QString base = file.baseName();
-            if (loaded.contains(base))
+            if (result.contains(base))
                 continue;
             // blacklisted obsolete plugins
             if (base.startsWith("monitorplugin") || base.startsWith("libmonitorplugin"))
@@ -68,18 +68,28 @@ static QObjectList loadPlugins(const QStringList& paths)
 #endif
             QPluginLoader loader(file.absoluteFilePath());
             if (loader.load()) {
-                instances += loader.instance();
-                loaded += base;
+                result.insert(base, loader.instance());
             }
         }
     }
-    return instances;
+
+    return result;
 }
 
-static QObjectList pluginInstances()
+void PluginLoader::enablePlugin(const QString &plugin)
 {
-    static QObjectList instances = loadPlugins(QApplication::libraryPaths());
-    return instances;
+    if (d.disabledPlugins.contains(plugin)) {
+        d.enabledPlugins.insert(plugin, d.disabledPlugins[plugin]);
+        d.disabledPlugins.remove(plugin);
+    }
+}
+
+void PluginLoader::disablePlugin(const QString &plugin)
+{
+    if (d.enabledPlugins.contains(plugin)) {
+        d.disabledPlugins.insert(plugin, d.enabledPlugins[plugin]);
+        d.enabledPlugins.remove(plugin);
+    }
 }
 
 QStringList PluginLoader::paths()
@@ -100,6 +110,7 @@ QStringList PluginLoader::paths()
 PluginLoader::PluginLoader(QObject* parent) : QObject(parent)
 {
     qRegisterMetaType<BufferView*>();
+    d.enabledPlugins = loadPlugins(QApplication::libraryPaths());
 }
 
 PluginLoader* PluginLoader::instance()
@@ -109,7 +120,7 @@ PluginLoader* PluginLoader::instance()
 }
 
 #define COMMUNI_PLUGIN_CALL(T, F) \
-    foreach (QObject* instance, pluginInstances()) { \
+    foreach (QObject* instance, d.enabledPlugins) { \
         T* plugin = qobject_cast<T*>(instance); \
         if (plugin) \
             plugin->F; \
