@@ -90,6 +90,10 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 
     d.stack->addWidget(d.chatPage);
 
+    d.settingsPage = new SettingsPage(0);
+    connect(d.settingsPage, SIGNAL(accepted()), this, SLOT(onSettingsAccepted()));
+    connect(d.settingsPage, SIGNAL(rejected()), this, SLOT(pop()));
+
     QShortcut* shortcut = new QShortcut(QKeySequence::Quit, this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(close()));
 
@@ -123,6 +127,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 MainWindow::~MainWindow()
 {
     PluginLoader::instance()->windowDestroyed(this);
+    delete d.settingsPage;
 }
 
 void MainWindow::saveState()
@@ -166,6 +171,10 @@ void MainWindow::restoreState()
     }
 
     d.chatPage->restoreState(settings.value("state").toByteArray());
+
+    d.settingsPage->setTheme(d.chatPage->theme());
+    d.settingsPage->setLoggingEnabled(settings.value("loggingEnabled", false).toBool());
+    d.settingsPage->setLoggingLocation(settings.value("loggingLocation", QDir::homePath() + "/communi-irc-logs").toString());
 }
 
 BufferView* MainWindow::currentView() const
@@ -358,6 +367,12 @@ void MainWindow::onSettingsAccepted()
         d.chatPage->setTheme(page->theme());
         saveState();
         pop();
+
+        QSettings settings;
+        settings.setValue("loggingEnabled", page->loggingEnabled());
+        settings.setValue("loggingLocation", page->loggingLocation());
+
+        PluginLoader::instance()->settingsChanged();
     }
 }
 
@@ -372,20 +387,7 @@ void MainWindow::updateTitle()
 
 void MainWindow::showSettings()
 {
-    for (int i = 0; i < d.stack->count(); ++i) {
-        SettingsPage* page = qobject_cast<SettingsPage*>(d.stack->widget(i));
-        if (page) {
-            d.stack->setCurrentWidget(page);
-            return;
-        }
-    }
-
-    SettingsPage* page = new SettingsPage(d.stack);
-    page->setTheme(d.chatPage->theme());
-
-    connect(page, SIGNAL(accepted()), this, SLOT(onSettingsAccepted()));
-    connect(page, SIGNAL(rejected()), this, SLOT(pop()));
-    push(page);
+    push(d.settingsPage);
 }
 
 void MainWindow::showHelp()

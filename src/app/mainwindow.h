@@ -36,6 +36,7 @@
 
 class Dock;
 class ChatPage;
+class SettingsPage;
 class IrcBuffer;
 class IrcMessage;
 class BufferView;
@@ -95,6 +96,7 @@ private:
         bool save;
         Dock* dock;
         ChatPage* chatPage;
+        SettingsPage* settingsPage;
         QStackedWidget* stack;
         SystemMonitor* monitor;
         QPointer<BufferView> view;
