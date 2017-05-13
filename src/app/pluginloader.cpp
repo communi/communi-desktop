@@ -154,6 +154,11 @@ void PluginLoader::connectionRemoved(IrcConnection* connection)
     COMMUNI_PLUGIN_CALL(ConnectionPlugin, connectionRemoved(connection))
 }
 
+void PluginLoader::setConnectionsList(const QList<IrcConnection*>* list)
+{
+    COMMUNI_PLUGIN_CALL(ConnectionPlugin, setConnectionsList(list))
+}
+
 void PluginLoader::viewAdded(BufferView* view)
 {
     COMMUNI_PLUGIN_CALL(ViewPlugin, viewAdded(view))

@@ -122,6 +122,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 
     if (d.connections.isEmpty())
         doConnect();
+
+    PluginLoader::instance()->setConnectionsList(&(d.connections));
 }
 
 MainWindow::~MainWindow()

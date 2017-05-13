@@ -62,6 +62,7 @@ public slots:
 
     void connectionAdded(IrcConnection* connection);
     void connectionRemoved(IrcConnection* connection);
+    void setConnectionsList(const QList<IrcConnection*>*);
 
     void viewAdded(BufferView* view);
     void viewRemoved(BufferView* view);
