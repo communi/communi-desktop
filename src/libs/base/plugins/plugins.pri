@@ -3,6 +3,7 @@
 ######################################################################
 
 HEADERS += $$PWD/bufferplugin.h
+HEADERS += $$PWD/genericplugin.h
 HEADERS += $$PWD/settingsplugin.h
 HEADERS += $$PWD/connectionplugin.h
 HEADERS += $$PWD/dockplugin.h

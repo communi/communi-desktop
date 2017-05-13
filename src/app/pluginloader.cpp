@@ -44,6 +44,7 @@
 #include "viewplugin.h"
 #include "windowplugin.h"
 #include "settingsplugin.h"
+#include "genericplugin.h"
 
 static QMap<QString, QObject*> loadPlugins(const QStringList& paths)
 {
@@ -89,14 +90,25 @@ void PluginLoader::enablePlugin(const QString &plugin)
         if (settingPluginInstance) {
             settingPluginInstance->settingsChanged();
         }
+
+        GenericPlugin *genericPluginInstance = qobject_cast<GenericPlugin*>(instance);
+        if (genericPluginInstance) {
+            genericPluginInstance->pluginEnabled();
+        }
     }
 }
 
 void PluginLoader::disablePlugin(const QString &plugin)
 {
     if (d.enabledPlugins.contains(plugin)) {
-        d.disabledPlugins.insert(plugin, d.enabledPlugins[plugin]);
+        QObject *instance = d.enabledPlugins[plugin];
+        d.disabledPlugins.insert(plugin, instance);
         d.enabledPlugins.remove(plugin);
+
+        GenericPlugin *genericPluginInstance = qobject_cast<GenericPlugin*>(instance);
+        if (genericPluginInstance) {
+            genericPluginInstance->pluginDisabled();
+        }
     }
 }
 
