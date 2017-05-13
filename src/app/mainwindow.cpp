@@ -172,9 +172,22 @@ void MainWindow::restoreState()
 
     d.chatPage->restoreState(settings.value("state").toByteArray());
 
+    if (!settings.value("loggingLocation").isValid()) {
+        settings.setValue("loggingLocation", QDir::homePath() + "/communi-irc-logs");
+    }
+
     d.settingsPage->setTheme(d.chatPage->theme());
     d.settingsPage->setLoggingEnabled(settings.value("loggingEnabled", false).toBool());
-    d.settingsPage->setLoggingLocation(settings.value("loggingLocation", QDir::homePath() + "/communi-irc-logs").toString());
+    d.settingsPage->setLoggingLocation(settings.value("loggingLocation").toString());
+
+    PluginLoader::instance()->settingsChanged();
+
+    if (d.settingsPage->loggingEnabled()) {
+        PluginLoader::instance()->enablePlugin("libloggerplugin");
+    }
+    else {
+        PluginLoader::instance()->disablePlugin("libloggerplugin");
+    }
 }
 
 BufferView* MainWindow::currentView() const
@@ -246,6 +259,10 @@ void MainWindow::removeConnection(IrcConnection* connection)
 void MainWindow::push(QWidget* page)
 {
     QWidget* prev = d.stack->currentWidget();
+
+    if (prev == page)
+        return;
+
     if (prev) {
         prev->setProperty("__focus_widget__", QVariant::fromValue(prev->focusWidget()));
         prev->setEnabled(false);
@@ -268,7 +285,10 @@ void MainWindow::pop()
             if (fw)
                 fw->setFocus();
         }
-        page->deleteLater();
+
+        // Don't delete the settings page, it has a single instance
+        if (page != d.settingsPage)
+            page->deleteLater();
     }
 }
 
@@ -373,6 +393,13 @@ void MainWindow::onSettingsAccepted()
         settings.setValue("loggingLocation", page->loggingLocation());
 
         PluginLoader::instance()->settingsChanged();
+
+        if (page->loggingEnabled()) {
+            PluginLoader::instance()->enablePlugin("libloggerplugin");
+        }
+        else {
+            PluginLoader::instance()->disablePlugin("libloggerplugin");
+        }
     }
 }
 
