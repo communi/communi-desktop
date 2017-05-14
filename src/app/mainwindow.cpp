@@ -116,6 +116,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     connect(d.monitor, SIGNAL(screenSaverStopped()), d.dock, SLOT(deactivateAlert()));
 
     PluginLoader::instance()->windowCreated(this);
+    PluginLoader::instance()->setConnectionsList(&(d.connections));
 
     restoreState();
     d.save = true;
@@ -123,7 +124,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     if (d.connections.isEmpty())
         doConnect();
 
-    PluginLoader::instance()->setConnectionsList(&(d.connections));
 }
 
 MainWindow::~MainWindow()
