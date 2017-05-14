@@ -70,7 +70,7 @@ public:
 
 private slots:
     void logMessage(IrcMessage *message);
-    void onBufferDestroyed();
+    void removeLogitemForBuffer(IrcBuffer *buffer);
 
 private:
     void writeToFile(IrcBuffer* buffer, const QString &text);

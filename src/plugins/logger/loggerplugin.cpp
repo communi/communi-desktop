@@ -48,8 +48,10 @@ LoggerPlugin::LoggerPlugin(QObject* parent) : QObject(parent)
 
 LoggerPlugin::~LoggerPlugin()
 {
-    // This will iterate over all log items and close all open files, etc.
-    this->pluginDisabled();
+    // Iterate over all log items and close all open files, etc.
+    foreach (IrcBuffer *buf, this->m_logitems.keys()) {
+        this->removeLogitemForBuffer(buf);
+    }
 }
 
 void LoggerPlugin::setConnectionsList(const QList<IrcConnection*>* list)
@@ -109,6 +111,10 @@ void LoggerPlugin::bufferRemoved(IrcBuffer* buffer)
     disconnect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(logMessage(IrcMessage*)));
     disconnect(buffer, SIGNAL(destroyed()), this, SLOT(onBufferDestroyed()));
 
+    removeLogitemForBuffer(buffer);
+}
+
+void LoggerPlugin::removeLogitemForBuffer(IrcBuffer *buffer) {
     if (this->m_logitems.contains(buffer)) {
         Item item = this->m_logitems.take(buffer);
 
@@ -117,14 +123,6 @@ void LoggerPlugin::bufferRemoved(IrcBuffer* buffer)
 
         item.logfile->close();
         delete item.logfile;
-    }
-}
-
-void LoggerPlugin::onBufferDestroyed()
-{
-    IrcBuffer *buf = qobject_cast<IrcBuffer*>(QObject::sender());
-    if (buf) {
-        bufferRemoved(buf);
     }
 }
 
