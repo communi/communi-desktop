@@ -34,7 +34,8 @@
 #include <QMainWindow>
 #include <QAction>
 #include <QDebug>
-#include <QGuiApplication>
+#include <QApplication>
+#include <QStyleFactory>
 
 GnomePlugin::GnomePlugin(QObject* parent) : QObject(parent)
 {
@@ -92,6 +93,22 @@ void GnomePlugin::themeChanged(const ThemeInfo& theme)
 
     if (d.isRunningX11) {
         X11Helper::setWindowProperty(d.window->winId(), "_GTK_THEME_VARIANT", gtkThemeVariant);
+    }
+
+    QStyle *style;
+    if (theme.gtkThemeVariant() == "dark") {
+        style = QStyleFactory::create("adwaita-dark");
+    }
+    else {
+        style = QStyleFactory::create("adwaita");
+    }
+
+    if (style) {
+        QApplication *app = static_cast<QApplication*>(QCoreApplication::instance());
+        app->setStyle(style);
+    }
+    else {
+        qWarning() << Q_FUNC_INFO << "The Adwaita Qt theme is not present on your system, please install it.";
     }
 }
 
