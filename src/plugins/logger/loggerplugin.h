@@ -30,19 +30,33 @@
 #define LOGGERPLUGIN_H
 
 #include <QtPlugin>
+#include <QMap>
 #include <IrcMessageFilter>
 #include "bufferplugin.h"
 #include "settingsplugin.h"
+#include "connectionplugin.h"
+#include "genericplugin.h"
+
+class QFile;
+class QTextStream;
 
 class IrcChannel;
 class IrcPrivateMessage;
 
-class LoggerPlugin : public QObject, public BufferPlugin, public SettingsPlugin
+class LoggerPlugin : public QObject, public BufferPlugin, public SettingsPlugin, public ConnectionPlugin, public GenericPlugin
 {
     Q_OBJECT
-    Q_INTERFACES(BufferPlugin SettingsPlugin)
+    Q_INTERFACES(BufferPlugin SettingsPlugin ConnectionPlugin GenericPlugin)
     Q_PLUGIN_METADATA(IID "Communi.BufferPlugin")
     Q_PLUGIN_METADATA(IID "Communi.SettingsPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.ConnectionPlugin")
+    Q_PLUGIN_METADATA(IID "Communi.GenericPlugin")
+
+    struct Item
+    {
+        QFile* logfile;
+        QTextStream* textStream;
+    };
 
 public:
     LoggerPlugin(QObject* parent = 0);
@@ -50,16 +64,22 @@ public:
     void bufferAdded(IrcBuffer* buffer);
     void bufferRemoved(IrcBuffer* buffer);
     void settingsChanged();
+    void setConnectionsList(const QList<IrcConnection*>* list);
+    void pluginEnabled();
+    void pluginDisabled();
 
 private slots:
     void logMessage(IrcMessage *message);
+    void onBufferDestroyed();
+
 private:
-    void writeToFile(const QString &fileName, const QString &text);
-    QString logfileName(IrcPrivateMessage *message) const;
+    void writeToFile(IrcBuffer* buffer, const QString &text);
     QString logfileName(IrcBuffer *buffer) const;
     QString timestamp() const;
 
     QString m_logDirPath;
+    QMap<IrcBuffer*, Item> m_logitems;
+    const QList<IrcConnection*>* m_connections;
 };
 
 #endif // LOGGERPLUGIN_H

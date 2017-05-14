@@ -32,6 +32,8 @@
 #include <IrcMessage>
 #include <IrcCommand>
 #include <IrcChannel>
+#include <IrcConnection>
+#include <IrcBufferModel>
 #include <Irc>
 #include <QDir>
 #include <QTextStream>
@@ -39,12 +41,44 @@
 #include <QDebug>
 
 LoggerPlugin::LoggerPlugin(QObject* parent) : QObject(parent)
+    , m_connections(0)
 {
     this->settingsChanged();
 }
 
 LoggerPlugin::~LoggerPlugin()
 {
+    // This will iterate over all log items and close all open files, etc.
+    this->pluginDisabled();
+}
+
+void LoggerPlugin::setConnectionsList(const QList<IrcConnection*>* list)
+{
+    if (list != this->m_connections) {
+        pluginDisabled();
+        this->m_connections = list;
+        pluginEnabled();
+    }
+}
+
+void LoggerPlugin::pluginEnabled()
+{
+    if (!this->m_connections)
+        return;
+
+    foreach (IrcConnection* conn, *(this->m_connections)) {
+        IrcBufferModel* model = conn->findChild<IrcBufferModel*>();
+        foreach (IrcBuffer* buf, model->buffers()) {
+            this->bufferAdded(buf);
+        }
+    }
+}
+
+void LoggerPlugin::pluginDisabled()
+{
+    foreach (IrcBuffer *buf, this->m_logitems.keys()) {
+        this->bufferRemoved(buf);
+    }
 }
 
 void LoggerPlugin::bufferAdded(IrcBuffer* buffer)
@@ -53,21 +87,53 @@ void LoggerPlugin::bufferAdded(IrcBuffer* buffer)
     if (buffer->network()->name().isEmpty())
         return;
 
-    const QString filename = logfileName(buffer);
-    writeToFile(filename, "=== Logfile started on " + timestamp() + " ===");
+    // Don't add buffer if already added
+    if (this->m_logitems.contains(buffer))
+        return;
 
     connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(logMessage(IrcMessage*)));
+    connect(buffer, SIGNAL(destroyed()), this, SLOT(onBufferDestroyed()));
+
+    const QString filename = logfileName(buffer);
+    Item item;
+    item.logfile = new QFile(m_logDirPath + "/" + filename, this);
+    item.logfile->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
+    item.textStream = new QTextStream(item.logfile);
+
+    this->m_logitems.insert(buffer, item);
+    writeToFile(buffer, "=== Logfile started on " + timestamp() + " ===");
 }
 
 void LoggerPlugin::bufferRemoved(IrcBuffer* buffer)
 {
     disconnect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(logMessage(IrcMessage*)));
+    disconnect(buffer, SIGNAL(destroyed()), this, SLOT(onBufferDestroyed()));
+
+    if (this->m_logitems.contains(buffer)) {
+        Item item = this->m_logitems.take(buffer);
+
+        item.textStream->flush();
+        delete item.textStream;
+
+        item.logfile->close();
+        delete item.logfile;
+    }
+}
+
+void LoggerPlugin::onBufferDestroyed()
+{
+    IrcBuffer *buf = qobject_cast<IrcBuffer*>(QObject::sender());
+    if (buf) {
+        bufferRemoved(buf);
+    }
 }
 
 void LoggerPlugin::settingsChanged()
 {
     QSettings settings;
-    m_logDirPath = settings.value("loggingLocation").toString();
+    QString loggingLocation = settings.value("loggingLocation").toString();
+
+    m_logDirPath = loggingLocation;
     QDir logDir;
     if (!logDir.exists(m_logDirPath))
         logDir.mkpath(m_logDirPath);
@@ -78,24 +144,18 @@ void LoggerPlugin::logMessage(IrcMessage *message)
     if (message->type() != IrcMessage::Private)
         return;
 
-    IrcPrivateMessage *m = static_cast<IrcPrivateMessage*>(message);
-    const QString filename = logfileName(m);
-    writeToFile(filename , timestamp() + " " + m->nick() + ": " + m->content());
+    IrcBuffer *buffer = qobject_cast<IrcBuffer*>(QObject::sender());
+
+    if (buffer) {
+        IrcPrivateMessage *m = static_cast<IrcPrivateMessage*>(message);
+        writeToFile(buffer, timestamp() + " " + m->nick() + ": " + m->content());
+    }
 }
 
-void LoggerPlugin::writeToFile(const QString &fileName, const QString &text)
+void LoggerPlugin::writeToFile(IrcBuffer* buffer, const QString &text)
 {
-    QFile logfile(m_logDirPath + "/" + fileName);
-    logfile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
-
-    QTextStream ts(&logfile);
-    ts << text << endl;
-}
-
-QString LoggerPlugin::logfileName(IrcPrivateMessage *message) const
-{
-    return message->isPrivate() ? message->network()->name() + "_" + message->nick() + ".log"
-                                : message->network()->name() + "_" + message->target() + ".log";
+    Item item = this->m_logitems[buffer];
+    *(item.textStream) << text << endl;
 }
 
 QString LoggerPlugin::logfileName(IrcBuffer *buffer) const
