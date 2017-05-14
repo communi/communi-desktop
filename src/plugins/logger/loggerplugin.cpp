@@ -133,10 +133,16 @@ void LoggerPlugin::settingsChanged()
     QSettings settings;
     QString loggingLocation = settings.value("loggingLocation").toString();
 
-    m_logDirPath = loggingLocation;
-    QDir logDir;
-    if (!logDir.exists(m_logDirPath))
-        logDir.mkpath(m_logDirPath);
+    if (m_logDirPath != loggingLocation) {
+        pluginDisabled();
+
+        m_logDirPath = loggingLocation;
+        QDir logDir;
+        if (!logDir.exists(m_logDirPath))
+            logDir.mkpath(m_logDirPath);
+
+        pluginEnabled();
+    }
 }
 
 void LoggerPlugin::logMessage(IrcMessage *message)
