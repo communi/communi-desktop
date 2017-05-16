@@ -94,7 +94,6 @@ void LoggerPlugin::bufferAdded(IrcBuffer* buffer)
         return;
 
     connect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(logMessage(IrcMessage*)));
-    connect(buffer, SIGNAL(destroyed()), this, SLOT(onBufferDestroyed()));
 
     const QString filename = logfileName(buffer);
     Item item;
@@ -109,7 +108,6 @@ void LoggerPlugin::bufferAdded(IrcBuffer* buffer)
 void LoggerPlugin::bufferRemoved(IrcBuffer* buffer)
 {
     disconnect(buffer, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(logMessage(IrcMessage*)));
-    disconnect(buffer, SIGNAL(destroyed()), this, SLOT(onBufferDestroyed()));
 
     removeLogitemForBuffer(buffer);
 }
