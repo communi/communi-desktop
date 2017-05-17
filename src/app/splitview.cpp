@@ -60,6 +60,9 @@ SplitView::SplitView(QWidget* parent) : QSplitter(parent)
     shortcut = new QShortcut(QKeySequence(previous), this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(activatePreviousView()));
 
+    shortcut = new QShortcut(QKeySequence(tr("CTRL+K")), this);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(clearCurrentView()));
+
     connect(this, SIGNAL(viewAdded(BufferView*)), this, SLOT(updateActions()));
     connect(this, SIGNAL(viewRemoved(BufferView*)), this, SLOT(updateActions()));
 }
@@ -121,6 +124,11 @@ void SplitView::reset()
     d.views.clear();
     d.current = createBufferView(this);
     emit viewAdded(d.current);
+}
+
+void SplitView::clearCurrentView()
+{
+    currentView()->textBrowser()->clear();
 }
 
 void SplitView::split(Qt::Orientation orientation)
