@@ -5,16 +5,18 @@ compiler:
   - gcc
   - clang
 before_install:
+  - sudo apt-add-repository -y ppa:beineri/opt-qt542-trusty
   - sudo apt-get update -qq
-  - sudo apt-get install -qq qt5-qmake qtbase5-dev
+  - sudo apt-get install -qq qt54base
+  - source /opt/qt54/bin/qt54-env.sh
   - git submodule update --init --recursive
   - git clone --depth 1 git://github.com/communi/libcommuni.git
-  - cd libcommuni && qmake -qt=qt5 -config no_tests -config no_examples && make && sudo make install && cd ..
+  - cd libcommuni && qmake -config no_tests -config no_examples && make && sudo make install && cd ..
 cache: apt
 script:
   - nproc
-  - qmake -qt=qt5 -v
-  - qmake -qt=qt5
+  - qmake -v
+  - qmake 
   - make -j$(nproc)
 notifications:
   email: false
