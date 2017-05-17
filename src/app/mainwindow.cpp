@@ -38,6 +38,7 @@
 #include "dock.h"
 #include <IrcCommandQueue>
 #include <IrcBufferModel>
+#include <QStandardPaths>
 #include <IrcConnection>
 #include <QApplication>
 #include <QCloseEvent>
@@ -175,7 +176,11 @@ void MainWindow::restoreState()
     d.chatPage->restoreState(settings.value("state").toByteArray());
 
     if (!settings.value("loggingLocation").isValid()) {
-        settings.setValue("loggingLocation", QDir::homePath() + "/communi-irc-logs");
+#if QT_VERSION >= 0x050400
+        settings.setValue("loggingLocation", QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/logs");
+#else
+        settings.setValue("loggingLocation", QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/logs");
+#endif
     }
 
     d.settingsPage->setTheme(d.chatPage->theme());
