@@ -35,3 +35,5 @@ Thumbs.db
 moc_*.cpp
 /lib/
 /plugins/
+*_wrapper.sh
+*_wrapper.bat
