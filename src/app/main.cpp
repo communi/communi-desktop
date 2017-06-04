@@ -52,8 +52,12 @@ int main(int argc, char* argv[])
     QFont::insertSubstitution(".Lucida Grande UI", "Lucida Grande");
 #endif
 
+    QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+#if QT_VERSION >= 0x050600
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
+
     QApplication app(argc, argv);
-    app.setAttribute(Qt::AA_UseHighDpiPixmaps);
     app.setApplicationName("Communi");
     app.setOrganizationName("Communi");
     app.setApplicationVersion(Irc::version());
