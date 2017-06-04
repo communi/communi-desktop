@@ -43,14 +43,10 @@
 #include <QAction>
 #include <QMenu>
 
-class TextShadow : public QFrame { Q_OBJECT };
-
 TextBrowser::TextBrowser(QWidget* parent) : QTextBrowser(parent)
 {
     d.bud = 0;
     d.events = true;
-    d.shadow = new TextShadow;
-    d.shadow->setParent(this);
 
     setOpenLinks(false);
     setTabChangesFocus(true);
@@ -174,8 +170,6 @@ void TextBrowser::resizeEvent(QResizeEvent* event)
 {
     QTextBrowser::resizeEvent(event);
 
-    d.shadow->resize(width(), d.shadow->height());
-
     // http://www.qtsoftware.com/developer/task-tracker/index_html?method=entry&id=240940
     QMetaObject::invokeMethod(this, "scrollToBottom", Qt::QueuedConnection);
 }
@@ -288,9 +282,6 @@ void TextBrowser::scrollToPreviousPage()
 
 void TextBrowser::paintEvent(QPaintEvent* event)
 {
-    // TODO: make sure the shadow is always on top (of transient scrollbars)
-    d.shadow->raise();
-
     const int hoffset = horizontalScrollBar()->value();
     const int voffset = verticalScrollBar()->value();
     const QRect bounds = rect().translated(hoffset, voffset);
@@ -340,11 +331,6 @@ void TextBrowser::moveCursorToBottom()
     setTextCursor(cursor);
 }
 
-void TextBrowser::moveShadow(int offset)
-{
-    d.shadow->move(0, offset);
-}
-
 void TextBrowser::onAnchorClicked(const QUrl& url)
 {
     if (url.scheme() != "expand" && url.scheme() != "nick")
@@ -368,5 +354,3 @@ void TextBrowser::onQueryTriggered()
     if (action)
         emit queried(action->data().toString());
 }
-
-#include "textbrowser.moc"

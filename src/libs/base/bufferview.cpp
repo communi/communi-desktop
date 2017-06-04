@@ -86,7 +86,6 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     layout->addWidget(d.textInput);
     layout->setStretchFactor(d.splitter, 1);
 
-    connect(d.titleBar, SIGNAL(offsetChanged(int)), d.textBrowser, SLOT(moveShadow(int)));
     d.titleBar->raise();
 
     d.splitter->addWidget(d.textBrowser);

@@ -74,12 +74,6 @@ TextHighlight {
     background-color: rgba(224,32,32,48);
 }
 
-TextShadow {
-    max-height: 2px;
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 palette(shadow), stop: 1 transparent);
-}
-
 TreeSpinner {
     border: none;
     background: transparent;

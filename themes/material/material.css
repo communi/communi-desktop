@@ -85,10 +85,6 @@ TextHighlight {
     background-color: #f8bbd0;
 }
 
-TextShadow {
-    max-height: 0px;
-}
-
 TreeSpinner {
     border: none;
     background: transparent;

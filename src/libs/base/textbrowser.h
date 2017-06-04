@@ -33,7 +33,6 @@
 #include "baseglobal.h"
 
 class IrcBuffer;
-class TextShadow;
 class TextDocument;
 
 class BASE_EXPORT TextBrowser : public QTextBrowser
@@ -82,7 +81,6 @@ protected:
 private slots:
     void keepAtBottom();
     void keepPosition(int delta);
-    void moveShadow(int offset);
     void onAnchorClicked(const QUrl& url);
 
     void onWhoisTriggered();
@@ -92,7 +90,6 @@ private:
     struct Private {
         bool events;
         QWidget* bud;
-        TextShadow* shadow;
     } d;
 };
 
