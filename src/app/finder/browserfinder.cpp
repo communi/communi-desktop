@@ -28,12 +28,38 @@
 #include "browserfinder.h"
 #include "textbrowser.h"
 #include "textdocument.h"
+#include <QWidgetAction>
+#include <QActionGroup>
+#include <QTextBlock>
+#include <QDebug>
+#include <QMenu>
 
 BrowserFinder::BrowserFinder(TextBrowser* browser) : AbstractFinder(browser)
 {
     d.textBrowser = browser;
     connect(browser, SIGNAL(documentChanged(TextDocument*)), this, SLOT(deleteLater()));
     connect(this, SIGNAL(returnPressed()), this, SLOT(findNext()));
+
+    QMenu *menu = new QMenu(this);
+    QAction *search = menu->addAction(tr("Search"));
+    search->setCheckable(true);
+    search->setChecked(true);
+    QAction *filter = menu->addAction(tr("Filter"));
+    connect(filter, SIGNAL(toggled(bool)), this, SLOT(setFilter(bool)));
+    connect(this, SIGNAL(filterChanged(bool)), filter, SLOT(setChecked(bool)));
+    filter->setCheckable(true);
+    QActionGroup *group = new QActionGroup(this);
+    group->setExclusive(true);
+    group->addAction(search);
+    group->addAction(filter);
+
+    d.menuButton = new QToolButton(lineEdit());
+    d.menuButton->setObjectName("filter");
+    d.menuButton->setMenu(menu);
+    d.menuButton->setPopupMode(QToolButton::InstantPopup);
+    QWidgetAction *action = new QWidgetAction(this);
+    action->setDefaultWidget(d.menuButton);
+    lineEdit()->addAction(action, QLineEdit::LeadingPosition);
 }
 
 BrowserFinder::~BrowserFinder()
@@ -50,6 +76,14 @@ void BrowserFinder::setVisible(bool visible)
             d.textBrowser->setTextCursor(cursor);
         }
         d.textBrowser->setExtraSelections(QList<QTextEdit::ExtraSelection>());
+
+        QTextDocument* doc = d.textBrowser->document();
+        for (QTextBlock block = doc->begin(); block != doc->end(); block = block.next()) {
+            if (!block.isVisible()) {
+                block.setVisible(true);
+                doc->markContentsDirty(block.position(), block.length());
+            }
+        }
     }
 }
 
@@ -99,6 +133,62 @@ void BrowserFinder::find(const QString& text, bool forward, bool backward, bool 
     if (!isVisible())
         animateShow();
     d.textBrowser->setTextCursor(newCursor);
+    d.textBrowser->setExtraSelections(extraSelections);
+    setError(error);
+}
+
+void BrowserFinder::filter(const QString& text)
+{
+    if (!d.textBrowser)
+        return;
+
+    QTextDocument* doc = d.textBrowser->document();
+
+    bool error = true;
+    QList<QTextEdit::ExtraSelection> extraSelections;
+
+    if (!text.isEmpty()) {
+        QTextCursor prevCursor(doc);
+        QTextCursor findCursor(doc);
+        while (!(findCursor = doc->find(text, findCursor)).isNull()) {
+            error = false;
+            findCursor.block().setVisible(true);
+            doc->markContentsDirty(findCursor.block().position(), findCursor.block().length());
+            QTextEdit::ExtraSelection extra;
+            extra.format.setBackground(Qt::yellow);
+            extra.cursor = findCursor;
+            extraSelections.append(extra);
+            while (prevCursor.blockNumber() < findCursor.blockNumber()) {
+                QTextBlock block = prevCursor.block();
+                block.setVisible(false);
+                doc->markContentsDirty(block.position(), block.length());
+                if (!prevCursor.movePosition(QTextCursor::NextBlock))
+                    break;
+            }
+            prevCursor = findCursor;
+            prevCursor.movePosition(QTextCursor::NextBlock);
+        }
+        while (!prevCursor.atEnd()) {
+            QTextBlock block = prevCursor.block();
+            if (block.isVisible()) {
+                block.setVisible(false);
+                doc->markContentsDirty(block.position(), block.length());
+            }
+            if (!prevCursor.movePosition(QTextCursor::NextBlock))
+                break;
+        }
+    } else {
+        error = false;
+        for (QTextBlock block = doc->begin(); block != doc->end(); block = block.next()) {
+            if (!block.isVisible()) {
+                block.setVisible(true);
+                doc->markContentsDirty(block.position(), block.length());
+            }
+        }
+    }
+
+    if (!isVisible())
+        animateShow();
     d.textBrowser->setExtraSelections(extraSelections);
     setError(error);
 }

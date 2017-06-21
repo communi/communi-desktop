@@ -42,6 +42,7 @@
 Finder::Finder(ChatPage* page) : QObject(page)
 {
     d.page = page;
+    d.browserFilter = false;
     d.nextShortcut = 0;
     d.prevShortcut = 0;
     d.lastSearch = NoSearch;
@@ -105,7 +106,7 @@ void Finder::searchBrowser(BufferView* view)
         d.lastSearch = BrowserSearch;
         AbstractFinder* finder = view->textBrowser()->findChild<BrowserFinder*>();
         if (!finder)
-            startSearch(new BrowserFinder(view->textBrowser()), d.browserSearch);
+            startSearch(new BrowserFinder(view->textBrowser()), d.browserSearch, d.browserFilter);
         else if (!finder->isAncestorOf(qApp->focusWidget()))
             finder->reFind();
     }
@@ -145,7 +146,7 @@ void Finder::findPrevious()
         d.currentFinder->findPrevious();
 }
 
-void Finder::startSearch(AbstractFinder* finder, const QString& text)
+void Finder::startSearch(AbstractFinder* finder, const QString& text, bool filter)
 {
     connect(finder, SIGNAL(destroyed(AbstractFinder*)), this, SLOT(finderDestroyed(AbstractFinder*)));
     d.cancelShortcut->setEnabled(true);
@@ -153,6 +154,7 @@ void Finder::startSearch(AbstractFinder* finder, const QString& text)
     d.currentFinder = finder;
 
     finder->setText(text);
+    finder->setFilter(filter);
     finder->doFind();
 }
 
@@ -193,6 +195,7 @@ void Finder::cancelBrowserSearch(BufferView* view)
         AbstractFinder* finder = view->textBrowser()->findChild<BrowserFinder*>();
         if (finder) {
             d.browserSearch = finder->text();
+            d.browserFilter = finder->isFilter();
             finder->animateHide();
         }
         view->textBrowser()->moveCursorToBottom();

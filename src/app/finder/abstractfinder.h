@@ -52,7 +52,13 @@ public:
     bool hasError() const;
     void setError(bool error);
 
+    QLineEdit *lineEdit() const;
+
+    bool isFilter() const;
+
 public slots:
+    void setFilter(bool filter);
+
     void doFind();
     void reFind();
     void findNext();
@@ -66,17 +72,23 @@ public slots:
 signals:
     void returnPressed();
     void destroyed(AbstractFinder* input);
+    void filterChanged(bool filter);
 
 protected slots:
+    virtual void filter(const QString&) { }
     virtual void find(const QString& text, bool forward = false, bool backward = false, bool typed = true) = 0;
 
 protected slots:
     virtual void relocate() = 0;
 
+private slots:
+    void textEdited();
+
 private:
     struct Private {
         int offset;
         bool error;
+        bool filter;
         QLineEdit* lineEdit;
         QToolButton* prevButton;
         QToolButton* nextButton;

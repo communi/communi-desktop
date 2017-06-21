@@ -59,7 +59,7 @@ private slots:
     void findAgain();
     void findNext();
     void findPrevious();
-    void startSearch(AbstractFinder* input, const QString& text);
+    void startSearch(AbstractFinder* input, const QString& text, bool filter = false);
     void finderDestroyed(AbstractFinder* input);
 
 private:
@@ -67,6 +67,7 @@ private:
 
     struct Private {
         ChatPage* page;
+        bool browserFilter;
         QString treeSearch;
         QString listSearch;
         QString browserSearch;

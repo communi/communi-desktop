@@ -40,6 +40,7 @@ AbstractFinder::AbstractFinder(QWidget* parent) : QWidget(parent)
 {
     d.offset = -1;
     d.error = false;
+    d.filter = false;
 
     parent->installEventFilter(this);
     setGraphicsEffect(new QGraphicsOpacityEffect(this));
@@ -66,7 +67,7 @@ AbstractFinder::AbstractFinder(QWidget* parent) : QWidget(parent)
     layout->setMargin(0);
 
     connect(d.lineEdit, SIGNAL(returnPressed()), this, SIGNAL(returnPressed()));
-    connect(d.lineEdit, SIGNAL(textEdited(QString)), this, SLOT(find(QString)));
+    connect(d.lineEdit, SIGNAL(textEdited(QString)), this, SLOT(textEdited()));
 }
 
 AbstractFinder::~AbstractFinder()
@@ -109,6 +110,32 @@ void AbstractFinder::setError(bool error)
         d.lineEdit->setStyleSheet(QString());
         d.nextButton->setEnabled(!error);
         d.prevButton->setEnabled(!error);
+    }
+}
+
+QLineEdit *AbstractFinder::lineEdit() const
+{
+    return d.lineEdit;
+}
+
+bool AbstractFinder::isFilter() const
+{
+    return d.filter;
+}
+
+void AbstractFinder::setFilter(bool enabled)
+{
+    if (d.filter != enabled) {
+        d.filter = enabled;
+        d.prevButton->setVisible(!enabled);
+        d.nextButton->setVisible(!enabled);
+        if (enabled) {
+            filter(d.lineEdit->text());
+        } else {
+            filter(QString());
+            find(d.lineEdit->text());
+        }
+        emit filterChanged(enabled);
     }
 }
 
@@ -162,4 +189,12 @@ void AbstractFinder::animateHide()
     animation->start(QAbstractAnimation::DeleteWhenStopped);
     connect(animation, SIGNAL(destroyed()), this, SLOT(hide()));
     connect(animation, SIGNAL(destroyed()), this, SLOT(deleteLater()));
+}
+
+void AbstractFinder::textEdited()
+{
+    if (d.filter)
+        filter(d.lineEdit->text());
+    else
+        find(d.lineEdit->text());
 }

@@ -45,11 +45,13 @@ public:
 
 protected slots:
     void find(const QString& text, bool forward = false, bool backward = false, bool typed = true);
+    void filter(const QString &text);
     void relocate();
 
 private:
     struct Private {
         TextBrowser* textBrowser;
+        QToolButton* menuButton;
     } d;
 };
 

@@ -230,6 +230,12 @@ OverlayButton:pressed {
     image: url(black:refresh.png);
 }
 
+QLineEdit > QToolButton#filter {
+    image: url(gray:menu.png);
+    background-color: transparent;
+    border: none;
+}
+
 AbstractFinder > QToolButton {
     min-width: 20px;
     max-width: 20px;
