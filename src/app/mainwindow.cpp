@@ -47,7 +47,7 @@
 #include <QShortcut>
 #include <QSettings>
 #include <QMenuBar>
-#include <QTimer>
+#include <QThread>
 #include <QUuid>
 #include <QMenu>
 #include <QDir>
@@ -315,20 +315,19 @@ bool MainWindow::event(QEvent* event)
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    if (isVisible()) {
-        saveState();
-        d.save = false;
+    saveState();
+    d.save = false;
 
-        foreach (IrcConnection* connection, d.connections) {
-            connection->quit(qApp->property("description").toString());
-            connection->close();
-        }
-
-        // let the sessions close in the background
-        hide();
-        event->ignore();
-        QTimer::singleShot(1000, qApp, SLOT(quit()));
+    foreach (IrcConnection* connection, d.connections) {
+        connection->quit(qApp->property("description").toString());
+        connection->close();
     }
+
+    // let the sessions close in the background
+    hide();
+    QThread::sleep(1);
+    event->accept();
+    qApp->quit();
 }
 
 void MainWindow::showEvent(QShowEvent* event)
