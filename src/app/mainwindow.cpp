@@ -325,8 +325,14 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
     // let the sessions close in the background
     hide();
-    event->ignore();
+    event->accept();
     QTimer::singleShot(1000, qApp, SLOT(quit()));
+
+    foreach (IrcConnection* connection, d.connections) {
+        QAbstractSocket *socket = connection->socket();
+        if (socket && socket->state() == QAbstractSocket::ClosingState)
+            socket->waitForDisconnected(1000);
+    }
 }
 
 void MainWindow::showEvent(QShowEvent* event)
