@@ -60,6 +60,8 @@ Dock::Dock(MainWindow* window) : QObject(window)
     if (QtDockTile::isAvailable())
         d.dock = new QtDockTile(window);
 
+    QSettings settings;
+
     if (QSystemTrayIcon::isSystemTrayAvailable()) {
         d.tray = new QSystemTrayIcon(this);
 
@@ -74,7 +76,6 @@ Dock::Dock(MainWindow* window) : QObject(window)
         d.offlineAction = menu->addAction(tr("Offline"));
         d.offlineAction->setCheckable(true);
 
-        QSettings settings;
         d.muteAction->setChecked(settings.value("mute", false).toBool());
         connect(d.muteAction, SIGNAL(toggled(bool)), this, SLOT(onMuteToggled(bool)));
         d.offlineAction->setChecked(settings.value("offline", false).toBool());
@@ -91,6 +92,13 @@ Dock::Dock(MainWindow* window) : QObject(window)
         PluginLoader::instance()->setupMuteAction(d.muteAction);
 
         updateTray();
+    } else {
+        // Set up mute action even when system tray is not available, for plugins that may rely on it.
+        QAction *muteAction = new QAction("Mute", this);
+        muteAction->setCheckable(true);
+        muteAction->setChecked(settings.value("mute", false).toBool());
+        connect(muteAction, SIGNAL(toggled(bool)), this, SLOT(onMuteToggled(bool)));
+        PluginLoader::instance()->setupMuteAction(muteAction);
     }
 
     if (Alert::isAvailable()) {
