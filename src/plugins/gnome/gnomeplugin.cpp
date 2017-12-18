@@ -53,21 +53,24 @@ void GnomePlugin::windowCreated(QMainWindow* window)
 
     d.window = window;
 #ifdef COMMUNI_HAVE_GIO
+    GnomeMenu *builder = new GnomeMenu(window);
+
     GnomeMenu *section1 = new GnomeMenu(window);
     section1->addSimpleItem("showConnect", "Connect...", window, "doConnect");
     section1->addSimpleItem("showSettings", "Settings", window, "showSettings");
     section1->addSimpleItem("showHelp", "Help", window, "showHelp");
+    builder->addSection(section1);
 
-    GnomeMenu *section2 = new GnomeMenu(window);
-    section2->addToggleItem("toggleMute", "Mute", d.mute->isChecked(), d.mute, "toggle");
+    if (d.mute) {
+        GnomeMenu *section2 = new GnomeMenu(window);
+        section2->addToggleItem("toggleMute", "Mute", d.mute->isChecked(), d.mute, "toggle");
+        builder->addSection(section2);
+    }
 
     GnomeMenu *section3 = new GnomeMenu(window);
     section3->addSimpleItem("quit", "Quit", window, "close");
-
-    GnomeMenu *builder = new GnomeMenu(window);
-    builder->addSection(section1);
-    builder->addSection(section2);
     builder->addSection(section3);
+
     builder->setMenuToWindow(window->winId(), "/org/communi/gnomeintegration");
 #endif // COMMUNI_HAVE_GIO
 }
