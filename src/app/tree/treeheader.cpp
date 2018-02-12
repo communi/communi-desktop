@@ -55,8 +55,10 @@ void TreeHeader::paintEvent(QPaintEvent*)
 {
     QStyleOptionHeader option;
     option.init(this);
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN)
     option.rect.adjust(0, 0, 0, 1);
+#elif defined(Q_OS_MAC)
+    option.rect.adjust(0, 0, 1, 0);
 #endif
     option.state = (d.state | QStyle::State_Raised | QStyle::State_Horizontal);
     QPixmap px(16, 16);
