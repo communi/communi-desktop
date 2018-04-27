@@ -333,7 +333,9 @@ void TextBrowser::moveCursorToBottom()
 
 void TextBrowser::onAnchorClicked(const QUrl& url)
 {
-    if (url.scheme() != "expand" && url.scheme() != "nick")
+    if (url.scheme() == "channel")
+        emit joinChannel(url.toString().mid(8));
+    else if (url.scheme() != "expand" && url.scheme() != "nick")
         QDesktopServices::openUrl(url);
     clearFocus();
     d.bud->setFocus();

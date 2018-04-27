@@ -182,6 +182,26 @@ QString MessageFormatter::formatText(const QString& text) const
                         pos = end + 4;
                         continue;
                     }
+                } else if (c == '#') {
+                    int end = pos + 1;
+                    const int length = msg.length();
+                    while (end < length) {
+                        const QChar nextChar = msg.at(end);
+                        if (!nextChar.isLetterOrNumber() && (nextChar != '-') && (nextChar != '_'))
+                            break;
+                        ++end;
+                    }
+                    if (end - pos < 2) {
+                        ++pos;
+                        continue;
+                    }
+
+                    const QString channel = msg.mid(pos, end - pos);
+
+                    const QString formatted = QString("<a style='text-decoration:none;' href='channel:%1'>%2</a>").arg(channel.mid(1), styledText(channel, Bold | Color));
+                    msg.replace(pos, channel.length(), formatted);
+                    pos += formatted.length();
+                    continue;
                 }
                 // test word start boundary
                 finder.setPosition(pos);
