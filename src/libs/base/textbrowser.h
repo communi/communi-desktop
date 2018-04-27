@@ -69,6 +69,7 @@ public slots:
 signals:
     void queried(const QString& user);
     void documentChanged(TextDocument* document);
+    void joinChannel(const QString &channel);
 
 protected:
     void mousePressEvent(QMouseEvent* event);

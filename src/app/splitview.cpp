@@ -209,6 +209,10 @@ BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
     BufferView* view = new BufferView(splitter);
     connect(view, SIGNAL(destroyed(BufferView*)), this, SLOT(onViewRemoved(BufferView*)));
     connect(view->textBrowser(), SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
+    connect(view->textBrowser(), &TextBrowser::joinChannel, view, [view](const QString &channel) {
+        view->textInput()->setText("/JOIN #" + channel);
+        view->textInput()->setFocus();
+    });
 
     // TODO: because of theme preview
     if (window()->inherits("QMainWindow")) {
