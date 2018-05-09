@@ -115,19 +115,21 @@ void TextBrowser::setBuddy(QWidget* buddy)
 
 void TextBrowser::mousePressEvent(QMouseEvent* event)
 {
-    const QUrl url(anchorAt(event->pos()));
-    if (url.scheme() == "expand") {
-        QString text;
-        if (TextDocument* doc = document()) {
-            const QPoint offset(horizontalScrollBar()->value(), verticalScrollBar()->value());
-            text = doc->tooltip(event->pos() + offset);
+    if (event->button() == Qt::LeftButton) {
+        const QUrl url(anchorAt(event->pos()));
+        if (url.scheme() == "expand") {
+            QString text;
+            if (TextDocument* doc = document()) {
+                const QPoint offset(horizontalScrollBar()->value(), verticalScrollBar()->value());
+                text = doc->tooltip(event->pos() + offset);
+            }
+            if (!text.isEmpty())
+                QToolTip::showText(event->globalPos(), text, viewport());
+        } else if (url.scheme() == "nick" || url.scheme() == "channel") {
+            QMenu* menu = createContextMenu(event->pos());
+            menu->exec(event->globalPos());
+            menu->deleteLater();
         }
-        if (!text.isEmpty())
-            QToolTip::showText(event->globalPos(), text, viewport());
-    } else if (url.scheme() == "nick" || url.scheme() == "channel") {
-        QMenu* menu = createContextMenu(event->pos());
-        menu->exec(event->globalPos());
-        menu->deleteLater();
     }
     QTextBrowser::mousePressEvent(event);
 }
