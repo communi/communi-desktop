@@ -198,7 +198,7 @@ QString MessageFormatter::formatText(const QString& text) const
 
                     const QString channel = msg.mid(pos, end - pos);
 
-                    const QString formatted = QString("<a style='text-decoration:none;' href='channel:%1'>%2</a>").arg(channel.mid(1), styledText(channel, Bold | Color));
+                    const QString formatted = QString("<a style='text-decoration:none;' href='channel:%1'>%2</a>").arg(channel, styledText(channel, Bold | Color));
                     msg.replace(pos, channel.length(), formatted);
                     pos += formatted.length();
                     continue;

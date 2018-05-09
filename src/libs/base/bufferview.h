@@ -58,6 +58,7 @@ public:
 
 public slots:
     void setBuffer(IrcBuffer* buffer);
+    void openBuffer(const QString& title);
     void closeBuffer();
 
 signals:
@@ -68,9 +69,6 @@ signals:
 
 protected:
     void resizeEvent(QResizeEvent* event);
-
-private slots:
-    void query(const QString& user);
 
 private:
     struct Private {

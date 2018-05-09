@@ -209,10 +209,6 @@ BufferView* SplitView::createBufferView(QSplitter* splitter, int index)
     BufferView* view = new BufferView(splitter);
     connect(view, SIGNAL(destroyed(BufferView*)), this, SLOT(onViewRemoved(BufferView*)));
     connect(view->textBrowser(), SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
-    connect(view->textBrowser(), &TextBrowser::joinChannel, view, [view](const QString &channel) {
-        view->textInput()->setText("/JOIN #" + channel);
-        view->textInput()->setFocus();
-    });
 
     // TODO: because of theme preview
     if (window()->inherits("QMainWindow")) {
@@ -530,9 +526,9 @@ void SplitView::showContextMenu(const QPoint& pos)
 {
     TextBrowser* browser = qobject_cast<TextBrowser*>(sender());
     if (browser) {
-        // select nick under to enable "Copy"
+        // select nick/channel under to enable "Copy"
         const QString anchor = browser->anchorAt(pos);
-        if (anchor.startsWith("nick:")) {
+        if (anchor.startsWith("nick:") || anchor.startsWith("channel:")) {
             QTextCursor cursor = browser->cursorForPosition(pos);
             cursor.select(QTextCursor::WordUnderCursor);
             browser->setTextCursor(cursor);

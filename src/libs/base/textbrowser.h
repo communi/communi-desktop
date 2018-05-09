@@ -67,9 +67,9 @@ public slots:
     void moveCursorToBottom();
 
 signals:
+    void joined(const QString &channel);
     void queried(const QString& user);
     void documentChanged(TextDocument* document);
-    void joinChannel(const QString &channel);
 
 protected:
     void mousePressEvent(QMouseEvent* event);
@@ -86,6 +86,7 @@ private slots:
 
     void onWhoisTriggered();
     void onQueryTriggered();
+    void onJoinTriggered();
 
 private:
     struct Private {

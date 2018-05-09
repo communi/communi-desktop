@@ -124,7 +124,7 @@ void TextBrowser::mousePressEvent(QMouseEvent* event)
         }
         if (!text.isEmpty())
             QToolTip::showText(event->globalPos(), text, viewport());
-    } else if (url.scheme() == "nick") {
+    } else if (url.scheme() == "nick" || url.scheme() == "channel") {
         QMenu* menu = createContextMenu(event->pos());
         menu->exec(event->globalPos());
         menu->deleteLater();
@@ -230,6 +230,28 @@ QMenu* TextBrowser::createContextMenu(const QPoint& pos)
         nickAction->setText(nick);
         queryAction->setData(nick);
         whoisAction->setData(nick);
+    } else if (anchor.startsWith("channel:")) {
+        // disable "Copy Link Location" for channels
+        QAction* action = menu->actions().value(1);
+        if (action)
+            action->setDisabled(true);
+
+        // inject join
+        QAction* separator = menu->insertSeparator(menu->actions().value(0));
+
+        QAction* joinAction = new QAction(tr("Join"), menu);
+        menu->insertAction(separator, joinAction);
+        connect(joinAction, SIGNAL(triggered()), this, SLOT(onJoinTriggered()));
+
+        QString channel = QUrl(anchor).toString(QUrl::RemoveScheme | QUrl::FullyDecoded);
+
+        QAction* channelAction = new QAction(channel, menu);
+        menu->insertAction(joinAction, channelAction);
+        channelAction->setEnabled(false);
+        menu->insertSeparator(joinAction);
+
+        channelAction->setText(channel);
+        joinAction->setData(channel);
     }
     return menu;
 }
@@ -333,9 +355,7 @@ void TextBrowser::moveCursorToBottom()
 
 void TextBrowser::onAnchorClicked(const QUrl& url)
 {
-    if (url.scheme() == "channel")
-        emit joinChannel(url.toString().mid(8));
-    else if (url.scheme() != "expand" && url.scheme() != "nick")
+    if (url.scheme() != "expand" && url.scheme() != "nick" && url.scheme() != "channel")
         QDesktopServices::openUrl(url);
     clearFocus();
     d.bud->setFocus();
@@ -355,4 +375,11 @@ void TextBrowser::onQueryTriggered()
     QAction* action = qobject_cast<QAction*>(sender());
     if (action)
         emit queried(action->data().toString());
+}
+
+void TextBrowser::onJoinTriggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action)
+        emit joined(action->data().toString());
 }

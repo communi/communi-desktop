@@ -92,8 +92,9 @@ BufferView::BufferView(QWidget* parent) : QWidget(parent)
     d.splitter->addWidget(d.listView);
     d.splitter->setStretchFactor(0, 1);
 
-    connect(d.listView, SIGNAL(queried(QString)), this, SLOT(query(QString)));
-    connect(d.textBrowser, SIGNAL(queried(QString)), this, SLOT(query(QString)));
+    connect(d.listView, SIGNAL(queried(QString)), this, SLOT(openBuffer(QString)));
+    connect(d.textBrowser, SIGNAL(queried(QString)), this, SLOT(openBuffer(QString)));
+    connect(d.textBrowser, SIGNAL(joined(QString)), this, SLOT(openBuffer(QString)));
 }
 
 BufferView::~BufferView()
@@ -179,9 +180,14 @@ void BufferView::resizeEvent(QResizeEvent* event)
     layout()->setContentsMargins(0, tbh + d.titleBar->baseOffset(), 0, 0);
 }
 
-void BufferView::query(const QString& user)
+void BufferView::openBuffer(const QString& title)
 {
     IrcBufferModel* model = d.buffer ? d.buffer->model() : 0;
-    if (model)
-        setBuffer(model->add(user));
+    if (model) {
+        IrcBuffer* buffer = model->add(title);
+        IrcChannel* channel = qobject_cast<IrcChannel*>(buffer);
+        if (channel && !channel->isActive())
+            channel->join();
+        setBuffer(buffer);
+    }
 }
