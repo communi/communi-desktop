@@ -109,6 +109,7 @@ private:
         IrcUserModel* userModel;
         IrcTextFormat* textFormat;
         QMultiHash<QChar, QString> names;
+        QStringList channelTypes;
     } d;
 };
 

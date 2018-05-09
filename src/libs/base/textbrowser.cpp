@@ -243,7 +243,7 @@ QMenu* TextBrowser::createContextMenu(const QPoint& pos)
         menu->insertAction(separator, joinAction);
         connect(joinAction, SIGNAL(triggered()), this, SLOT(onJoinTriggered()));
 
-        QString channel = QUrl(anchor).toString(QUrl::RemoveScheme | QUrl::FullyDecoded);
+        QString channel = anchor.mid(8);
 
         QAction* channelAction = new QAction(channel, menu);
         menu->insertAction(joinAction, channelAction);
