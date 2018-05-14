@@ -81,7 +81,6 @@ void MessageFormatter::setBuffer(IrcBuffer* buffer)
     if (d.buffer != buffer) {
         d.buffer = buffer;
         d.userModel->setChannel(qobject_cast<IrcChannel*>(buffer));
-        d.channelTypes = buffer ? buffer->network()->channelTypes() : QStringList();
     }
 }
 
@@ -183,12 +182,14 @@ QString MessageFormatter::formatText(const QString& text) const
                         pos = end + 4;
                         continue;
                     }
-                } else if (d.channelTypes.contains(c)) {
+                } else if (c == '#') {
                     int end = pos + 1;
                     const int length = msg.length();
+                    if (end < length && msg.at(end) == '#')
+                        ++end;
                     while (end < length) {
                         const QChar nextChar = msg.at(end);
-                        if (!nextChar.isLetterOrNumber() && (nextChar != '-') && (nextChar != '_') && !d.channelTypes.contains(nextChar))
+                        if (!nextChar.isLetterOrNumber() && (nextChar != '-') && (nextChar != '_'))
                             break;
                         ++end;
                     }
