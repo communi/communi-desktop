@@ -71,7 +71,7 @@ void GnomePlugin::windowCreated(QMainWindow* window)
     section3->addSimpleItem("quit", "Quit", window, "close");
     builder->addSection(section3);
 
-    builder->setMenuToWindow(window->winId(), "/org/communi/gnomeintegration");
+    builder->setMenuToWindow(window->winId(), "/org/communi/gnomeintegration", d.isRunningX11);
 #endif // COMMUNI_HAVE_GIO
 }
 

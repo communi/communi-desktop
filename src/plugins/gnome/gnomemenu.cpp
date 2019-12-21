@@ -145,7 +145,7 @@ void GnomeMenu::addSection(GnomeMenu* section)
     g_menu_append_section(d->menu, nullptr, G_MENU_MODEL(section->d->menu));
 }
 
-void GnomeMenu::setMenuToWindow(WId winId, const QByteArray& dbusPathPrefix)
+void GnomeMenu::setMenuToWindow(WId winId, const QByteArray& dbusPathPrefix, bool x11)
 {
     QByteArray dbusActionPath = dbusPathPrefix + "/actions";
     QByteArray dbusMenuPath = dbusPathPrefix + "/menuitems";
@@ -170,10 +170,12 @@ void GnomeMenu::setMenuToWindow(WId winId, const QByteArray& dbusPathPrefix)
     if (err)
         qWarning() << "g_dbus_connection_export_menu_model:" << err->code << err->message;
 
-    X11Helper::setWindowProperty(winId, "_GTK_APPLICATION_ID", QCoreApplication::applicationName().toUtf8());
-    X11Helper::setWindowProperty(winId, "_GTK_UNIQUE_BUS_NAME", g_dbus_connection_get_unique_name(d->dbusSession));
-    X11Helper::setWindowProperty(winId, "_GTK_APPLICATION_OBJECT_PATH", dbusActionPath);
-    X11Helper::setWindowProperty(winId, "_GTK_APP_MENU_OBJECT_PATH", dbusMenuPath);
+    if (x11) {
+        X11Helper::setWindowProperty(winId, "_GTK_APPLICATION_ID", QCoreApplication::applicationName().toUtf8());
+        X11Helper::setWindowProperty(winId, "_GTK_UNIQUE_BUS_NAME", g_dbus_connection_get_unique_name(d->dbusSession));
+        X11Helper::setWindowProperty(winId, "_GTK_APPLICATION_OBJECT_PATH", dbusActionPath);
+        X11Helper::setWindowProperty(winId, "_GTK_APP_MENU_OBJECT_PATH", dbusMenuPath);
+    }
 
     // NOTE: there is also a _GTK_WINDOW_OBJECT_PATH but it's not needed at the moment
 }

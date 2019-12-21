@@ -50,7 +50,7 @@ public:
     void setToggleItemState(const QByteArray& id, bool checked);
     void addSection(GnomeMenu* section);
 
-    void setMenuToWindow(WId winId, const QByteArray& dbusPathPrefix);
+    void setMenuToWindow(WId winId, const QByteArray& dbusPathPrefix, bool x11);
 
 private:
     QScopedPointer<GnomeMenuPrivate> d;
