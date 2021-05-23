@@ -150,17 +150,16 @@ void TextInput::paintEvent(QPaintEvent* event)
         initStyleOption(&option);
 
         QRect r = style()->subElementRect(QStyle::SE_LineEditContents, &option, this);
-        int left, top, right, bottom;
-        getTextMargins(&left, &top, &right, &bottom);
-        left += qMax(0, -fontMetrics().minLeftBearing());
-        r.adjust(left, top, -right, -bottom);
+        QMargins margins = textMargins();
+        int left = qMax(0, -fontMetrics().minLeftBearing());
+        r.adjust(margins.left() + left, margins.top(), -margins.right(), -margins.bottom());
         r.adjust(hMargin, vMargin, -hMargin, -vMargin);
 
         QString txt = text();
         if (!txt.isEmpty()) {
             if (!txt.endsWith(" "))
                 txt += " ";
-            r.adjust(fontMetrics().width(txt), 0, 0, 0);
+            r.adjust(fontMetrics().horizontalAdvance(txt), 0, 0, 0);
         }
 
         QPainter painter(this);

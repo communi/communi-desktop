@@ -32,7 +32,7 @@
 #include "sharedtimer.h"
 #include "qtdocktile.h"
 #include "pluginloader.h"
-#include <QDesktopServices>
+#include <QStandardPaths>
 #include <IrcTextFormat>
 #include <IrcConnection>
 #include <QApplication>
@@ -104,7 +104,8 @@ Dock::Dock(MainWindow* window) : QObject(window)
     if (Alert::isAvailable()) {
         d.alert = new Alert(this);
 
-        QDir dataDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
+        QDir dataDir(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) +
+            QStringLiteral("/data/%1/%2").arg(QCoreApplication::organizationName(), QCoreApplication::applicationName()));
         if (dataDir.exists() || dataDir.mkpath(".")) {
             QString filePath = dataDir.filePath("alert.mp3");
             if (!QFile::exists(filePath))

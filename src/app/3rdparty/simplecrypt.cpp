@@ -140,14 +140,14 @@ QString SimpleCrypt::encryptToString(const QString& plaintext)
 {
     QByteArray plaintextArray = plaintext.toUtf8();
     QByteArray cypher = encryptToByteArray(plaintextArray);
-    QString cypherString = QString::fromAscii(cypher.toBase64());
+    QString cypherString = QString::fromLatin1(cypher.toBase64());
     return cypherString;
 }
 
 QString SimpleCrypt::encryptToString(QByteArray plaintext)
 {
     QByteArray cypher = encryptToByteArray(plaintext);
-    QString cypherString = QString::fromAscii(cypher.toBase64());
+    QString cypherString = QString::fromLatin1(cypher.toBase64());
     return cypherString;
 }
 
