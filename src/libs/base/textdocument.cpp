@@ -301,7 +301,7 @@ void TextDocument::addHighlight(int block)
     if (block == -1)
         block = max;
     if (block >= 0 && block <= max) {
-        QList<int>::iterator it = qLowerBound(d.highlights.begin(), d.highlights.end(), block);
+        QList<int>::iterator it = std::lower_bound(d.highlights.begin(), d.highlights.end(), block);
         d.highlights.insert(it, block);
         updateBlock(block);
     }

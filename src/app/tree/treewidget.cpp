@@ -78,12 +78,12 @@ TreeWidget::TreeWidget(QWidget* parent) : QTreeWidget(parent)
     sortByColumn(0, Qt::AscendingOrder);
 
     header()->setStretchLastSection(false);
-    header()->setResizeMode(0, QHeaderView::Stretch);
-    header()->setResizeMode(1, QHeaderView::Fixed);
+    header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    header()->setSectionResizeMode(1, QHeaderView::Fixed);
 #ifdef Q_OS_WIN
     header()->resizeSection(1, fontMetrics().width("9999"));
 #else
-    header()->resizeSection(1, fontMetrics().width("999"));
+    header()->resizeSection(1, fontMetrics().horizontalAdvance("999"));
 #endif
 
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(onItemExpanded(QTreeWidgetItem*)));
@@ -347,7 +347,7 @@ void TreeWidget::collapseCurrentConnection()
 
 QSize TreeWidget::sizeHint() const
 {
-    const int w = 16 * fontMetrics().width('#') + verticalScrollBar()->sizeHint().width();
+    const int w = 16 * fontMetrics().horizontalAdvance('#') + verticalScrollBar()->sizeHint().width();
     return QSize(w, QTreeWidget::sizeHint().height());
 }
 

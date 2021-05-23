@@ -29,7 +29,7 @@
 #ifndef TREEWIDGET_H
 #define TREEWIDGET_H
 
-#include <QTime>
+#include <QElapsedTimer>
 #include <QHash>
 #include <QQueue>
 #include <QPointer>
@@ -142,7 +142,7 @@ private:
         bool blink;
         QVariantMap sorting;
         bool sortingBlocked;
-        QTime pressedTime;
+        QElapsedTimer pressedTime;
         QPoint pressedPoint;
         QStringList parentOrder;
         QTreeWidgetItem* pressedItem;
