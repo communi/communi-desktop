@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ${{matrix.os}}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+    - name: Cache Qt
+      id: cache-qt
+      uses: actions/cache@v1
+      with:
+        path: ../Qt
+        key: ${{runner.os}}-QtCache
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        cached: ${{steps.cache-qt.outputs.cache-hit}}
+
+    - name: Git Checkout
+      uses: actions/checkout@v1
+
+    # - name: Build
+    #   run: |
+    #     qmake -config verbose
+    #     make -j2
+    #   if: matrix.os != 'windows-latest'
+
+    # - name: Build
+    #   run: |
+    #     call "%programfiles(x86)%\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+    #     qmake
+    #     qmake -config verbose
+    #     set CL=/MP
+    #     nmake
+    #   shell: cmd
+    #   if: matrix.os == 'windows-latest'
