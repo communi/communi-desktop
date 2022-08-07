@@ -116,7 +116,7 @@
           <item row="0" column="1">
            <widget class="QLineEdit" name="displayNameField">
             <property name="placeholderText">
-             <string>Freenode</string>
+             <string>Libera Chat</string>
             </property>
            </widget>
           </item>
@@ -136,7 +136,7 @@
              <set>Qt::ImhUrlCharactersOnly</set>
             </property>
             <property name="placeholderText">
-             <string>irc.freenode.net</string>
+             <string>irc.libera.chat</string>
             </property>
            </widget>
           </item>
