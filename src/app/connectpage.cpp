@@ -455,9 +455,9 @@ void ConnectPage::init(IrcConnection *connection)
     qsrand(QTime::currentTime().msec());
     ui.nickNameField->setPlaceholderText(tr("Communi%1").arg(qrand() % 9999));
     if (IrcConnection::isSecureSupported())
-        ui.serverField->setPlaceholderText(tr("irc.freenode.net +6697"));
+        ui.serverField->setPlaceholderText(tr("irc.libera.chat +6697"));
     else
-        ui.serverField->setPlaceholderText(tr("irc.freenode.net 6667"));
+        ui.serverField->setPlaceholderText(tr("irc.libera.chat 6667"));
 #endif // QT_VERSION
 
     connect(ui.buttonBox, SIGNAL(accepted()), ui.displayNameField, SLOT(setFocus()));
