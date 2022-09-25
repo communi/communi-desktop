@@ -35,7 +35,7 @@ Communi is free software; you can redistribute and/or modify it under the terms 
 
 - Website: [github.com/communi/communi-desktop][Home]
 - Issue tracker: [github.com/communi/communi-desktop/issues][Issues]
-- IRC channel: `#communi` on irc.freenode.net
+- IRC channel: `#communi` on irc.libera.chat
 
 [Home]:          http://github.com/communi/communi-desktop
 [Issues]:        http://github.com/communi/communi-desktop/issues
